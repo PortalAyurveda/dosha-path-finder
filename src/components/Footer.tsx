@@ -36,6 +36,12 @@ const Footer = () => {
               <Link to="/cursos" className="hover:text-white transition-colors">Cursos</Link>
               <Link to="/terapeutas-do-brasil" className="hover:text-white transition-colors">Terapeutas</Link>
             </nav>
+            <h4 className="text-sm font-bold mb-2 mt-4 text-white">Doshas</h4>
+            <nav className="flex flex-col gap-2 text-sm text-white/70">
+              <Link to="/dosha/vata" className="hover:text-white transition-colors">🌬️ Vata</Link>
+              <Link to="/dosha/pitta" className="hover:text-white transition-colors">☀️ Pitta</Link>
+              <Link to="/dosha/kapha" className="hover:text-white transition-colors">⛰️ Kapha</Link>
+            </nav>
           </div>
 
           {/* Loja */}
