@@ -1,58 +1,48 @@
 
 
-## Busca Comum + Busca Avançada com Timestamps Clicáveis
+## Busca Avançada com Grid de Resultados + Detalhe com Timestamps
 
 ### O que muda
 
-A Biblioteca ganha dois modos de busca:
-- **Busca Comum** (padrão): pesquisa pelo `novo_titulo` — retorna grid de cards como hoje
-- **Busca Avançada** (toggle): pesquisa pelo `texto_para_embedding` — retorna o vídeo mais relevante com a descrição completa, onde timestamps como `00:31:00 - Controle natural do colesterol` viram links clicáveis que abrem o player naquela minutagem
+A busca avançada deixa de mostrar apenas 1 vídeo. Agora mostra um **grid de cards** (como a busca comum), onde cada card exibe a miniatura do vídeo e, abaixo dela, o **timestamp matching em bold e sublinhado** (ex: "00:11:00 - Controle natural do colesterol"). Ao clicar num card, abre a view detalhada com o player + todos os timestamps clicáveis.
 
-### Dados confirmados
+### Fluxo do usuário
 
-O campo `texto_para_embedding` contém um índice de minutos estruturado assim:
+```text
+Busca avançada: "colesterol"
+  → Grid com N vídeos que mencionam "colesterol" no texto_para_embedding
+  → Cada card: miniatura + timestamp relevante em bold/sublinhado
+  → Clique no card → abre AdvancedVideoResult com player + índice completo
+  → Player inicia no timestamp clicado
 ```
-00:31:00 - Controle natural do colesterol pelo Ayurveda
-00:33:00 - Relação entre digestão, intoxicação e colesterol alto
-```
-
-Isso permite parsear timestamps e converter para segundos (`00:31:00` → `1860s`).
 
 ### Componentes
 
-**1. SearchHeader.tsx — Atualizar**
-- Adicionar botão toggle "Busca Avançada" ao lado do input (ícone ou badge)
-- Passar estado `isAdvanced` para o componente pai
+**1. Biblioteca.tsx — Atualizar query avançada**
+- Mudar `.limit(1)` para `.limit(20)` — retorna múltiplos resultados
+- Retornar array ao invés de objeto único
+- Adicionar estado `selectedAdvancedVideo` para controlar qual vídeo está aberto na view detalhada
+- Dois estados de UI: grid de resultados OU view detalhada de um vídeo
 
-**2. Biblioteca.tsx — Atualizar lógica de query**
-- Busca comum: `.ilike('novo_titulo', '%termo%')` → retorna até 20 resultados
-- Busca avançada: `.ilike('texto_para_embedding', '%termo%')` → retorna 1 resultado (mais recente), incluindo `texto_para_embedding` no select
+**2. Novo componente: `AdvancedVideoCard.tsx`**
+- Recebe `videoId`, `title`, `textoParaEmbedding`, `searchTerm`
+- Mostra miniatura do YouTube (como VideoResultCard)
+- Abaixo: parseia timestamps do `texto_para_embedding`, encontra o primeiro que contém o `searchTerm` (case-insensitive), e mostra essa linha em **bold + sublinhado**
+- Se houver mais matches, mostra contagem (ex: "+2 menções")
+- onClick dispara navegação para a view detalhada
 
-**3. AdvancedVideoResult.tsx — Novo componente**
-- Layout especial para resultado de busca avançada: vídeo grande + descrição completa
-- Player iframe no topo (16:9), inicialmente sem timestamp
-- Abaixo: título + texto_para_embedding com timestamps parseados
-- Regex `/(\d{2}:\d{2}:\d{2})\s*-\s*(.+)/g` extrai cada timestamp
-- Cada linha de timestamp vira um botão clicável
-- Ao clicar, atualiza o `src` do iframe para `youtube.com/embed/${videoId}?autoplay=1&start=${seconds}`
+**3. AdvancedVideoResult.tsx — Adicionar `initialSeconds` prop**
+- Recebe prop opcional `initialSeconds` para iniciar o player na minutagem do timestamp clicado no card
+- Adicionar botão "← Voltar aos resultados" no topo
+- Destacar (highlight) as linhas de timestamp que contêm o termo buscado
 
-**4. Fluxo do usuário**
-```text
-[Input de busca] [🔍 Busca Avançada toggle]
-
-Toggle OFF (padrão):
-  → pesquisa por novo_titulo
-  → grid de cards (como hoje)
-
-Toggle ON:
-  → pesquisa por texto_para_embedding  
-  → mostra 1 vídeo com player + descrição com timestamps clicáveis
-  → clicar em "00:31:00 - Colesterol" → player pula para 31min
-```
+**4. Layout na Biblioteca.tsx**
+- Busca avançada sem vídeo selecionado → grid de `AdvancedVideoCard`
+- Busca avançada com vídeo selecionado → `AdvancedVideoResult` com botão voltar
+- Ao mudar o termo de busca, limpa a seleção e volta ao grid
 
 ### Detalhes técnicos
-- Conversão de timestamp: `HH:MM:SS` → `H*3600 + M*60 + S` segundos para o param `&start=`
-- O iframe é re-renderizado via key ou state change no `src` quando o usuário clica em um timestamp
-- Sem dependências externas — tudo com regex nativo e iframe HTML5
-- Mantém compatibilidade total com a busca comum existente
+- Regex para encontrar match: percorre timestamps parseados e faz `.toLowerCase().includes(searchTerm)` no label
+- `initialSeconds` é passado ao iframe src: `?autoplay=1&start=${initialSeconds}`
+- Botão voltar usa `setSelectedAdvancedVideo(null)` — sem navegação de rota
 
