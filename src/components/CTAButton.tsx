@@ -7,7 +7,7 @@ interface CTAButtonProps extends ButtonProps {
 }
 
 const CTAButton = ({ to, children, className = "", ...props }: CTAButtonProps) => {
-  const classes = `bg-secondary hover:bg-secondary/90 text-secondary-foreground font-bold text-lg px-8 py-6 rounded-2xl shadow-lg hover:shadow-xl transition-all ${className}`;
+  const classes = `bg-secondary hover:bg-secondary/90 text-secondary-foreground font-bold text-lg px-8 py-6 rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm shadow-lg hover:shadow-xl transition-all ${className}`;
 
   if (to) {
     return (
