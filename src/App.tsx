@@ -11,6 +11,9 @@ import Biblioteca from "./pages/Biblioteca";
 import Cursos from "./pages/Cursos";
 import TerapeutasDoBrasil from "./pages/TerapeutasDoBrasil";
 import Akasha from "./pages/Akasha";
+import DoshaVata from "./pages/DoshaVata";
+import DoshaPitta from "./pages/DoshaPitta";
+import DoshaKapha from "./pages/DoshaKapha";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
