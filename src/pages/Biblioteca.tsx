@@ -5,6 +5,7 @@ import PageContainer from "@/components/PageContainer";
 import SearchHeader from "@/components/biblioteca/SearchHeader";
 import VideoResultCard from "@/components/biblioteca/VideoResultCard";
 import VideoPlayerDialog from "@/components/biblioteca/VideoPlayerDialog";
+import AdvancedVideoCard from "@/components/biblioteca/AdvancedVideoCard";
 import AdvancedVideoResult from "@/components/biblioteca/AdvancedVideoResult";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -28,11 +29,23 @@ const Biblioteca = () => {
     nova_descricao: string;
   } | null>(null);
 
+  const [selectedAdvancedVideo, setSelectedAdvancedVideo] = useState<{
+    video_id: string;
+    novo_titulo: string;
+    texto_para_embedding: string;
+    initialSeconds: number;
+  } | null>(null);
+
+  // Reset advanced selection when search term changes
+  useEffect(() => {
+    setSelectedAdvancedVideo(null);
+  }, [debouncedSearch]);
+
   // Common search
   const { data: videos, isLoading } = useQuery({
     queryKey: ["biblioteca-videos", debouncedSearch, isAdvanced],
     queryFn: async () => {
-      if (isAdvanced) return null; // skip for advanced mode
+      if (isAdvanced) return null;
 
       let query = supabase
         .from("videos_seo2")
@@ -51,8 +64,8 @@ const Biblioteca = () => {
     enabled: !isAdvanced,
   });
 
-  // Advanced search
-  const { data: advancedResult, isLoading: isAdvancedLoading } = useQuery({
+  // Advanced search — multiple results
+  const { data: advancedResults, isLoading: isAdvancedLoading } = useQuery({
     queryKey: ["biblioteca-advanced", debouncedSearch],
     queryFn: async () => {
       if (!debouncedSearch.trim()) return null;
@@ -62,10 +75,10 @@ const Biblioteca = () => {
         .select("video_id, novo_titulo, texto_para_embedding, criado_em")
         .ilike("texto_para_embedding", `%${debouncedSearch.trim()}%`)
         .order("criado_em", { ascending: false })
-        .limit(1);
+        .limit(20);
 
       if (error) throw error;
-      return data && data.length > 0 ? data[0] : null;
+      return data && data.length > 0 ? data : null;
     },
     enabled: isAdvanced && debouncedSearch.trim().length > 0,
   });
@@ -86,20 +99,28 @@ const Biblioteca = () => {
 
       {loading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {Array.from({ length: isAdvanced ? 1 : 6 }).map((_, i) => (
+          {Array.from({ length: 6 }).map((_, i) => (
             <div key={i} className="rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm overflow-hidden border border-border">
               <Skeleton className="aspect-video w-full" />
               <div className="p-4 space-y-2">
                 <Skeleton className="h-5 w-3/4" />
                 <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-2/3" />
               </div>
             </div>
           ))}
         </div>
       ) : isAdvanced ? (
         // Advanced mode
-        !debouncedSearch.trim() ? (
+        selectedAdvancedVideo ? (
+          <AdvancedVideoResult
+            videoId={selectedAdvancedVideo.video_id}
+            title={selectedAdvancedVideo.novo_titulo}
+            textoParaEmbedding={selectedAdvancedVideo.texto_para_embedding}
+            initialSeconds={selectedAdvancedVideo.initialSeconds}
+            searchTerm={debouncedSearch}
+            onBack={() => setSelectedAdvancedVideo(null)}
+          />
+        ) : !debouncedSearch.trim() ? (
           <div className="flex items-center justify-center min-h-[30vh]">
             <div className="text-center p-12 rounded-2xl bg-surface-sun border border-border">
               <p className="text-muted-foreground text-lg">
@@ -107,12 +128,26 @@ const Biblioteca = () => {
               </p>
             </div>
           </div>
-        ) : advancedResult ? (
-          <AdvancedVideoResult
-            videoId={advancedResult.video_id}
-            title={advancedResult.novo_titulo || "Sem título"}
-            textoParaEmbedding={advancedResult.texto_para_embedding || ""}
-          />
+        ) : advancedResults && advancedResults.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {advancedResults.map((v) => (
+              <AdvancedVideoCard
+                key={v.video_id}
+                videoId={v.video_id}
+                title={v.novo_titulo || "Sem título"}
+                textoParaEmbedding={v.texto_para_embedding || ""}
+                searchTerm={debouncedSearch}
+                onClick={(initialSeconds) =>
+                  setSelectedAdvancedVideo({
+                    video_id: v.video_id,
+                    novo_titulo: v.novo_titulo || "Sem título",
+                    texto_para_embedding: v.texto_para_embedding || "",
+                    initialSeconds,
+                  })
+                }
+              />
+            ))}
+          </div>
         ) : (
           <div className="flex items-center justify-center min-h-[30vh]">
             <div className="text-center p-12 rounded-2xl bg-surface-sun border border-border">
