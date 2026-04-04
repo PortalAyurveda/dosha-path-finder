@@ -3,7 +3,6 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
-import { TooltipProvider } from "@/components/ui/tooltip";
 import Layout from "@/components/Layout";
 import Index from "./pages/Index";
 import TesteDeDosha from "./pages/TesteDeDosha";
@@ -19,24 +18,22 @@ const queryClient = new QueryClient();
 const App = () => (
   <HelmetProvider>
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Layout>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/teste-de-dosha" element={<TesteDeDosha />} />
-              <Route path="/meu-dosha" element={<MeuDosha />} />
-              <Route path="/biblioteca" element={<Biblioteca />} />
-              <Route path="/cursos" element={<Cursos />} />
-              <Route path="/terapeutas-do-brasil" element={<TerapeutasDoBrasil />} />
-              <Route path="/akasha" element={<Akasha />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </Layout>
-        </BrowserRouter>
-      </TooltipProvider>
+      <Toaster />
+      <Sonner />
+      <BrowserRouter>
+        <Layout>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/teste-de-dosha" element={<TesteDeDosha />} />
+            <Route path="/meu-dosha" element={<MeuDosha />} />
+            <Route path="/biblioteca" element={<Biblioteca />} />
+            <Route path="/cursos" element={<Cursos />} />
+            <Route path="/terapeutas-do-brasil" element={<TerapeutasDoBrasil />} />
+            <Route path="/akasha" element={<Akasha />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Layout>
+      </BrowserRouter>
     </QueryClientProvider>
   </HelmetProvider>
 );
