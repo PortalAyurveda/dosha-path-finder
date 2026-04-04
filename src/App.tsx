@@ -11,6 +11,9 @@ import Biblioteca from "./pages/Biblioteca";
 import Cursos from "./pages/Cursos";
 import TerapeutasDoBrasil from "./pages/TerapeutasDoBrasil";
 import Akasha from "./pages/Akasha";
+import DoshaVata from "./pages/DoshaVata";
+import DoshaPitta from "./pages/DoshaPitta";
+import DoshaKapha from "./pages/DoshaKapha";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -30,6 +33,9 @@ const App = () => (
             <Route path="/cursos" element={<Cursos />} />
             <Route path="/terapeutas-do-brasil" element={<TerapeutasDoBrasil />} />
             <Route path="/akasha" element={<Akasha />} />
+            <Route path="/dosha/vata" element={<DoshaVata />} />
+            <Route path="/dosha/pitta" element={<DoshaPitta />} />
+            <Route path="/dosha/kapha" element={<DoshaKapha />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Layout>
