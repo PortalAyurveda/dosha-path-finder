@@ -15,7 +15,7 @@ const doshaStyles = {
 
 const DoshaCard = ({ dosha, title, description, icon }: DoshaCardProps) => {
   return (
-    <Card className={`border-2 rounded-2xl transition-all hover:shadow-lg hover:-translate-y-1 ${doshaStyles[dosha]}`}>
+    <Card className={`border-2 rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm transition-all hover:shadow-lg hover:-translate-y-1 ${doshaStyles[dosha]}`}>
       <CardContent className="p-6 text-center">
         {icon && <div className="mb-4 flex justify-center text-primary">{icon}</div>}
         <h4 className="mb-2">{title}</h4>
