@@ -83,7 +83,7 @@ const DoshaPitta = () => {
           approachText='Pitta é ardente. Para apagá-lo, o corpo necessita de peso, frio e alcalinidade. A regra de ouro é: Sabor Doce antes das refeições para "assentar" o fogo (ex: coma uma tâmara hidratada para proteger a mucosa se o fogo estiver queimando demais). Sabor Amargo depois das refeições para "fechar" o processo e reduzir a hiperprodução de enzimas.'
           approachDetail="Privilegie: Dieta refrescante e alcalinizante. Arroz branco, basmati ou jasmim (são mais estáveis; evite o integral que exige muito ácido). Peras, melão e coco. Abasteça-se de folhas amargas e adicione Ghee nas refeições (1 colher de sopa/dia) por suas propriedades doces, pesadas e frias que acalmam Pitta perfeitamente."
           avoidTitle="Evitar (Ácido, Picante, Salgado)"
-          avoidText="Altamente sensíveis a qualquer acidez. O sabor Picante atrita a digestão e o sangue como querosene no fogo. Preste muita atenção aos gatilhos ácidos que, se consumidos no inverno, \"estouram\" em forma de doenças na primavera e no verão."
+          avoidText={'Altamente sensíveis a qualquer acidez. O sabor Picante atrita a digestão e o sangue como querosene no fogo. Preste muita atenção aos gatilhos ácidos que, se consumidos no inverno, "estouram" em forma de doenças na primavera e no verão.'}
           avoidDetail="Fuja de acidificantes diários: Tomate, pimentão, berinjela, conservas, enlatados, embutidos, vinagre e shoyu. Evite frutas cítricas e azeite quando Pitta estiver agravado. Corte picantes extremos (pimenta malagueta, pimenta-do-reino, calabresa)."
           doItems={[
             "Mantenha a mucosa digestiva como prioridade máxima: proteja o estômago antes de comer se ele estiver irritado.",
