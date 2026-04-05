@@ -36,88 +36,70 @@ const doshaMainRoutes = {
   kapha: "/biblioteca/kapha",
 };
 
+const pills = [
+  { id: "principal" as DoshaTab, label: "Principal", icon: Home },
+  { id: "horarios" as DoshaTab, label: "Horários", icon: Clock },
+  { id: "alimentacao" as DoshaTab, label: "Alimentação", icon: UtensilsCrossed },
+  { id: "remedios" as const, label: "Remédios", icon: Pill },
+  { id: "avancado" as DoshaTab, label: "Avançado", icon: Bird },
+];
+
 const DoshaNavPills = ({ dosha, activeTab, onTabChange }: DoshaNavPillsProps) => {
   const navigate = useNavigate();
 
-  const handleScrollPill = (id: string) => {
-    if (activeTab !== "principal") {
+  const handleClick = (id: string) => {
+    if (id === "principal") {
       onTabChange("principal");
       navigate(doshaMainRoutes[dosha], { replace: true });
-      setTimeout(() => {
-        const el = document.getElementById(id);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } else if (id === "horarios") {
+      onTabChange("horarios");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } else if (id === "alimentacao") {
+      onTabChange("alimentacao");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } else if (id === "avancado") {
+      onTabChange("avancado");
+      navigate(doshaAdvancedRoutes[dosha], { replace: true });
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } else if (id === "remedios") {
+      if (activeTab !== "principal") {
+        onTabChange("principal");
+        navigate(doshaMainRoutes[dosha], { replace: true });
+        setTimeout(() => {
+          const el = document.getElementById("remedios");
+          if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+        }, 100);
+      } else {
+        const el = document.getElementById("remedios");
         if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-      }, 100);
-    } else {
-      const el = document.getElementById(id);
-      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
     }
   };
 
-  const handlePrincipal = () => {
-    onTabChange("principal");
-    navigate(doshaMainRoutes[dosha], { replace: true });
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
-
-  const handleHorarios = () => {
-    onTabChange("horarios");
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
-
-  const handleAlimentacao = () => {
-    onTabChange("alimentacao");
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
-
-  const handleAvancado = () => {
-    onTabChange("avancado");
-    navigate(doshaAdvancedRoutes[dosha], { replace: true });
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
-
   const colors = doshaColors[dosha];
-  const isPrincipal = activeTab === "principal";
-  const isHorarios = activeTab === "horarios";
-  const isAlimentacao = activeTab === "alimentacao";
-  const isAvancado = activeTab === "avancado";
 
   return (
-    <div className="flex flex-wrap justify-center gap-2.5 mt-8">
-      <button
-        onClick={handlePrincipal}
-        className={`flex items-center gap-1.5 px-5 py-2.5 rounded-full border font-semibold text-sm transition-all ${isPrincipal ? colors.active : colors.inactive}`}
-      >
-        <Home className="h-4 w-4" />
-        Principal
-      </button>
-      <button
-        onClick={handleHorarios}
-        className={`flex items-center gap-1.5 px-5 py-2.5 rounded-full border font-semibold text-sm transition-all ${isHorarios ? colors.active : colors.inactive}`}
-      >
-        <Clock className="h-4 w-4" />
-        Horários
-      </button>
-      <button
-        onClick={handleAlimentacao}
-        className={`flex items-center gap-1.5 px-5 py-2.5 rounded-full border font-semibold text-sm transition-all ${isAlimentacao ? colors.active : colors.inactive}`}
-      >
-        <UtensilsCrossed className="h-4 w-4" />
-        Alimentação
-      </button>
-      <button
-        onClick={() => handleScrollPill("remedios")}
-        className={`flex items-center gap-1.5 px-5 py-2.5 rounded-full border font-semibold text-sm transition-all ${colors.inactive}`}
-      >
-        <Pill className="h-4 w-4" />
-        Remédios
-      </button>
-      <button
-        onClick={handleAvancado}
-        className={`flex items-center gap-1.5 px-5 py-2.5 rounded-full border font-semibold text-sm transition-all ${isAvancado ? colors.active : colors.inactive}`}
-      >
-        <Bird className="h-4 w-4" />
-        Avançado
-      </button>
+    <div className="mt-6 overflow-x-auto scrollbar-hide -mx-4 px-4">
+      <div className="flex gap-2 w-max mx-auto">
+        {pills.map((p) => {
+          const Icon = p.icon;
+          const isActive = p.id === activeTab;
+          const isScroll = p.id === "remedios";
+          return (
+            <button
+              key={p.id}
+              onClick={() => handleClick(p.id)}
+              className={`flex items-center gap-1 px-3 sm:px-4 py-2 rounded-full border font-semibold text-xs sm:text-sm transition-all whitespace-nowrap shrink-0 ${
+                isActive && !isScroll ? colors.active : colors.inactive
+              }`}
+            >
+              <Icon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+              {p.label}
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 };
