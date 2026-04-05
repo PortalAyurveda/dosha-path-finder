@@ -38,6 +38,7 @@ const App = () => (
             <Route path="/dosha/vata" element={<DoshaVata />} />
             <Route path="/dosha/vata/adoecimento" element={<DoshaVataAdoecimento />} />
             <Route path="/dosha/pitta" element={<DoshaPitta />} />
+            <Route path="/dosha/pitta/adoecimento" element={<DoshaPittaAdoecimento />} />
             <Route path="/dosha/kapha" element={<DoshaKapha />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
