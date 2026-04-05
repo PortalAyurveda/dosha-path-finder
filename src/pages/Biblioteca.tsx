@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import PageContainer from "@/components/PageContainer";
-import SearchHeader from "@/components/biblioteca/SearchHeader";
+import SearchHeader, { type VideoCategory } from "@/components/biblioteca/SearchHeader";
 import VideoResultCard from "@/components/biblioteca/VideoResultCard";
 import VideoPlayerDialog from "@/components/biblioteca/VideoPlayerDialog";
 import AdvancedVideoCard from "@/components/biblioteca/AdvancedVideoCard";
@@ -18,9 +18,18 @@ function useDebounce(value: string, delay: number) {
   return debounced;
 }
 
+const TABLE_MAP: Record<VideoCategory, "portal_oficial" | "portal_receitas" | "portal_lives"> = {
+  selecao: "portal_oficial",
+  receitas: "portal_receitas",
+  lives: "portal_lives",
+};
+
+const ALL_TABLES = ["portal_oficial", "portal_receitas", "portal_lives"] as const;
+
 const Biblioteca = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isAdvanced, setIsAdvanced] = useState(false);
+  const [category, setCategory] = useState<VideoCategory>("selecao");
   const debouncedSearch = useDebounce(searchTerm, 300);
 
   const [selectedVideo, setSelectedVideo] = useState<{
@@ -37,19 +46,17 @@ const Biblioteca = () => {
     initialSeconds: number;
   } | null>(null);
 
-  // Reset advanced selection when search term changes
   useEffect(() => {
     setSelectedAdvancedVideo(null);
   }, [debouncedSearch]);
 
-  // Common search — now includes texto_para_embedding
+  // Common search — single table based on category
   const { data: videos, isLoading } = useQuery({
-    queryKey: ["biblioteca-videos", debouncedSearch, isAdvanced],
+    queryKey: ["biblioteca-videos", debouncedSearch, category],
     queryFn: async () => {
-      if (isAdvanced) return null;
-
+      const table = TABLE_MAP[category];
       let query = supabase
-        .from("videos_seo2")
+        .from(table)
         .select("video_id, novo_titulo, mini_resumo, nova_descricao, tags, texto_para_embedding, criado_em")
         .order("criado_em", { ascending: false })
         .limit(20);
@@ -65,21 +72,35 @@ const Biblioteca = () => {
     enabled: !isAdvanced,
   });
 
-  // Advanced search — multiple results
+  // Advanced search — all tables
   const { data: advancedResults, isLoading: isAdvancedLoading } = useQuery({
     queryKey: ["biblioteca-advanced", debouncedSearch],
     queryFn: async () => {
       if (!debouncedSearch.trim()) return null;
 
-      const { data, error } = await supabase
-        .from("videos_seo2")
-        .select("video_id, novo_titulo, texto_para_embedding, criado_em")
-        .ilike("texto_para_embedding", `%${debouncedSearch.trim()}%`)
-        .order("criado_em", { ascending: false })
-        .limit(20);
+      const results = await Promise.all(
+        ALL_TABLES.map(async (table) => {
+          const { data, error } = await supabase
+            .from(table)
+            .select("video_id, novo_titulo, texto_para_embedding, criado_em")
+            .ilike("texto_para_embedding", `%${debouncedSearch.trim()}%`)
+            .order("criado_em", { ascending: false })
+            .limit(10);
+          if (error) throw error;
+          return data ?? [];
+        })
+      );
 
-      if (error) throw error;
-      return data && data.length > 0 ? data : null;
+      const merged = results.flat();
+      // Deduplicate by video_id
+      const seen = new Set<string>();
+      const unique = merged.filter((v) => {
+        if (seen.has(v.video_id)) return false;
+        seen.add(v.video_id);
+        return true;
+      });
+
+      return unique.length > 0 ? unique : null;
     },
     enabled: isAdvanced && debouncedSearch.trim().length > 0,
   });
@@ -96,6 +117,8 @@ const Biblioteca = () => {
         onSearchChange={setSearchTerm}
         isAdvanced={isAdvanced}
         onAdvancedChange={setIsAdvanced}
+        category={category}
+        onCategoryChange={setCategory}
       />
 
       {loading ? (
@@ -124,7 +147,7 @@ const Biblioteca = () => {
           <div className="flex items-center justify-center min-h-[30vh]">
             <div className="text-center p-12 rounded-2xl bg-surface-sun border border-border">
               <p className="text-muted-foreground text-lg">
-                🔍 Digite um termo para buscar no conteúdo dos vídeos.
+                🔍 Digite um termo para buscar no conteúdo de todos os vídeos.
               </p>
             </div>
           </div>
