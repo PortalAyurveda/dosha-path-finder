@@ -17,6 +17,7 @@ import DoshaKapha from "./pages/DoshaKapha";
 import DoshaVataAdoecimento from "./pages/DoshaVataAdoecimento";
 import DoshaPittaAdoecimento from "./pages/DoshaPittaAdoecimento";
 import DoshaKaphaAdoecimento from "./pages/DoshaKaphaAdoecimento";
+import Horarios from "./pages/Horarios";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -42,6 +43,7 @@ const App = () => (
             <Route path="/dosha/pitta/adoecimento" element={<DoshaPittaAdoecimento />} />
             <Route path="/dosha/kapha" element={<DoshaKapha />} />
             <Route path="/dosha/kapha/adoecimento" element={<DoshaKaphaAdoecimento />} />
+            <Route path="/horarios" element={<Horarios />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Layout>
