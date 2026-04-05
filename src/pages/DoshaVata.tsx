@@ -1,5 +1,6 @@
 import { Helmet } from "react-helmet-async";
 import DoshaHeroBanner from "@/components/dosha/DoshaHeroBanner";
+import DoshaSelector from "@/components/dosha/DoshaSelector";
 import DoshaSection from "@/components/dosha/DoshaSection";
 import PrakritiSection from "@/components/dosha/PrakritiSection";
 import OrganList from "@/components/dosha/OrganList";
@@ -10,6 +11,7 @@ import NutritionHabits from "@/components/dosha/NutritionHabits";
 const DoshaVata = () => {
   return (
     <>
+      <DoshaSelector />
       <Helmet>
         <title>Guia do Dosha Vata — Portal Ayurveda</title>
         <meta name="description" content="Tudo sobre o dosha Vata: corpo físico, órgãos sede, os 5 ventos (Vayus), sabores, nutrição e hábitos de ouro para equilibrar Ar e Éter." />
