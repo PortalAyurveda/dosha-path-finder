@@ -63,17 +63,8 @@ const DoshaNavPills = ({ dosha, activeTab, onTabChange }: DoshaNavPillsProps) =>
       navigate(doshaAdvancedRoutes[dosha], { replace: true });
       window.scrollTo({ top: 0, behavior: "smooth" });
     } else if (id === "remedios") {
-      if (activeTab !== "principal") {
-        onTabChange("principal");
-        navigate(doshaMainRoutes[dosha], { replace: true });
-        setTimeout(() => {
-          const el = document.getElementById("remedios");
-          if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-        }, 100);
-      } else {
-        const el = document.getElementById("remedios");
-        if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-      }
+      onTabChange("remedios");
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
 
