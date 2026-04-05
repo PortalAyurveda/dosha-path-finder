@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import DoshaHeroBanner from "@/components/dosha/DoshaHeroBanner";
 import DoshaSelector from "@/components/dosha/DoshaSelector";
