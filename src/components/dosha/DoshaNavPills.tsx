@@ -44,10 +44,6 @@ const DoshaNavPills = ({ dosha, activeTab, onTabChange }: DoshaNavPillsProps) =>
   const navigate = useNavigate();
 
   const handleScrollPill = (id: string) => {
-    if (id === "horarios") {
-      navigate(`/horarios/${dosha}`);
-      return;
-    }
     if (activeTab !== "principal") {
       onTabChange("principal");
       navigate(doshaMainRoutes[dosha], { replace: true });
