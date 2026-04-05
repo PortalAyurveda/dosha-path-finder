@@ -1,4 +1,4 @@
-import DoshaNavPills from "@/components/dosha/DoshaNavPills";
+import DoshaNavPills, { type DoshaTab } from "@/components/dosha/DoshaNavPills";
 import DoshaClock from "@/components/dosha/DoshaClock";
 
 interface DoshaHeroBannerProps {
@@ -9,8 +9,8 @@ interface DoshaHeroBannerProps {
   subtitle: string;
   description: string;
   badges: string[];
-  activeTab: "principal" | "horarios" | "avancado";
-  onTabChange: (tab: "principal" | "horarios" | "avancado") => void;
+  activeTab: DoshaTab;
+  onTabChange: (tab: DoshaTab) => void;
 }
 
 const doshaGradients = {

@@ -48,7 +48,9 @@ const DoshaKapha = ({ defaultTab = "principal" }: DoshaKaphaProps) => {
         onTabChange={setActiveTab}
       />
 
-      {activeTab === "principal" ? (
+      {activeTab === "alimentacao" ? (
+        <DoshaFoodContent dosha="kapha" {...kaphaFoodData} />
+      ) : activeTab === "principal" ? (
         <>
           <AgravamentosSection
             dosha="kapha"

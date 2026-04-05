@@ -48,7 +48,9 @@ const DoshaPitta = ({ defaultTab = "principal" }: DoshaPittaProps) => {
         onTabChange={setActiveTab}
       />
 
-      {activeTab === "principal" ? (
+      {activeTab === "alimentacao" ? (
+        <DoshaFoodContent dosha="pitta" {...pittaFoodData} />
+      ) : activeTab === "principal" ? (
         <>
           <AgravamentosSection
             dosha="pitta"

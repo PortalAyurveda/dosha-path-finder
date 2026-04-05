@@ -48,7 +48,9 @@ const DoshaVata = ({ defaultTab = "principal" }: DoshaVataProps) => {
         onTabChange={setActiveTab}
       />
 
-      {activeTab === "principal" ? (
+      {activeTab === "alimentacao" ? (
+        <DoshaFoodContent dosha="vata" {...vataFoodData} />
+      ) : activeTab === "principal" ? (
         <>
           <AgravamentosSection
             dosha="vata"
