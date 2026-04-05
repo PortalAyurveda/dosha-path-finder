@@ -29,15 +29,15 @@ const scrollPills = [
 ];
 
 const doshaAdvancedRoutes = {
-  vata: "/dosha/vata/adoecimento",
-  pitta: "/dosha/pitta/adoecimento",
-  kapha: "/dosha/kapha/adoecimento",
+  vata: "/biblioteca/vata/adoecimento",
+  pitta: "/biblioteca/pitta/adoecimento",
+  kapha: "/biblioteca/kapha/adoecimento",
 };
 
 const doshaMainRoutes = {
-  vata: "/dosha/vata",
-  pitta: "/dosha/pitta",
-  kapha: "/dosha/kapha",
+  vata: "/biblioteca/vata",
+  pitta: "/biblioteca/pitta",
+  kapha: "/biblioteca/kapha",
 };
 
 const DoshaNavPills = ({ dosha, activeTab, onTabChange }: DoshaNavPillsProps) => {

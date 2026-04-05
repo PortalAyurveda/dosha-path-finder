@@ -40,16 +40,16 @@ const App = () => (
             <Route path="/cursos" element={<Cursos />} />
             <Route path="/terapeutas-do-brasil" element={<TerapeutasDoBrasil />} />
             <Route path="/akasha" element={<Akasha />} />
-            <Route path="/dosha/vata" element={<DoshaVata />} />
-            <Route path="/dosha/vata/adoecimento" element={<DoshaVataAdoecimento />} />
-            <Route path="/dosha/pitta" element={<DoshaPitta />} />
-            <Route path="/dosha/pitta/adoecimento" element={<DoshaPittaAdoecimento />} />
-            <Route path="/dosha/kapha" element={<DoshaKapha />} />
-            <Route path="/dosha/kapha/adoecimento" element={<DoshaKaphaAdoecimento />} />
-            <Route path="/horarios" element={<Horarios />} />
-            <Route path="/horarios/vata" element={<HorariosVata />} />
-            <Route path="/horarios/pitta" element={<HorariosPitta />} />
-            <Route path="/horarios/kapha" element={<HorariosKapha />} />
+            <Route path="/biblioteca/vata" element={<DoshaVata />} />
+            <Route path="/biblioteca/vata/adoecimento" element={<DoshaVataAdoecimento />} />
+            <Route path="/biblioteca/pitta" element={<DoshaPitta />} />
+            <Route path="/biblioteca/pitta/adoecimento" element={<DoshaPittaAdoecimento />} />
+            <Route path="/biblioteca/kapha" element={<DoshaKapha />} />
+            <Route path="/biblioteca/kapha/adoecimento" element={<DoshaKaphaAdoecimento />} />
+            <Route path="/biblioteca/horarios" element={<Horarios />} />
+            <Route path="/biblioteca/vata/horarios" element={<HorariosVata />} />
+            <Route path="/biblioteca/pitta/horarios" element={<HorariosPitta />} />
+            <Route path="/biblioteca/kapha/horarios" element={<HorariosKapha />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Layout>
