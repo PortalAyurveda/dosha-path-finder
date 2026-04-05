@@ -20,10 +20,10 @@ const doshaBorder = {
   kapha: "border-kapha/40",
 };
 
-const doshaBadge = {
-  vata: "bg-vata/20 text-vata",
-  pitta: "bg-pitta/20 text-pitta",
-  kapha: "bg-kapha/20 text-kapha",
+const doshaSubtitle = {
+  vata: "text-vata/70",
+  pitta: "text-pitta/70",
+  kapha: "text-kapha/70",
 };
 
 const DoshaHeroBanner = ({ dosha, emoji, title, elements, subtitle, description, badges }: DoshaHeroBannerProps) => {
@@ -32,19 +32,15 @@ const DoshaHeroBanner = ({ dosha, emoji, title, elements, subtitle, description,
       <div className="max-w-4xl mx-auto px-4 sm:px-6 py-12 md:py-20 text-center">
         <p className="text-sm font-medium text-muted-foreground mb-1">{elements}</p>
         <p className="text-xs text-muted-foreground mb-4">{subtitle}</p>
-        <h1 className="text-4xl md:text-6xl font-serif font-bold italic text-primary mb-6">
+        <h1 className="text-4xl md:text-6xl font-serif font-bold italic text-primary mb-2">
           {title} {emoji}
         </h1>
-        <p className="text-base md:text-lg text-foreground max-w-2xl mx-auto mb-6 leading-relaxed">
+        <p className={`text-sm font-medium ${doshaSubtitle[dosha]} mb-6`}>
+          {badges.join(" · ")}
+        </p>
+        <p className="text-base md:text-lg text-foreground max-w-2xl mx-auto leading-relaxed">
           {description}
         </p>
-        <div className="flex justify-center gap-3">
-          {badges.map((b) => (
-            <span key={b} className={`px-4 py-1.5 rounded-full text-sm font-medium ${doshaBadge[dosha]}`}>
-              {b}
-            </span>
-          ))}
-        </div>
       </div>
     </section>
   );
