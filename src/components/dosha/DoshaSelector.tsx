@@ -21,7 +21,8 @@ const inactiveStyles = {
 
 const DoshaSelector = () => {
   const location = useLocation();
-  const currentDosha = location.pathname.split("/").pop();
+  const pathParts = location.pathname.split("/");
+  const currentDosha = pathParts[2]; // /dosha/{vata|pitta|kapha}/...
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 pt-6 pb-2">
