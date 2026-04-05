@@ -129,7 +129,7 @@ const doshaCards = [
     emoji: "💨",
     label: "Rotina para Vata",
     desc: "Aterramento, nutrição profunda e estabilidade para a mente aérea.",
-    to: "/dosha/vata",
+    to: "/horarios/vata",
     color: "border-vata/40 hover:border-vata bg-vata/5 hover:bg-vata/10",
     textColor: "text-vata",
   },
