@@ -14,6 +14,7 @@ import Akasha from "./pages/Akasha";
 import DoshaVata from "./pages/DoshaVata";
 import DoshaPitta from "./pages/DoshaPitta";
 import DoshaKapha from "./pages/DoshaKapha";
+import DoshaVataAdoecimento from "./pages/DoshaVataAdoecimento";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
