@@ -1,48 +1,44 @@
 
 
-## Busca Avançada com Grid de Resultados + Detalhe com Timestamps
+## Problema Identificado
 
-### O que muda
+A regex atual só reconhece timestamps no formato `HH:MM:SS` (ex: `00:31:00`), mas **713 dos 888 vídeos** usam o formato `MM:SS` (ex: `14:00`). Apenas 173 vídeos têm `HH:MM:SS`. Por isso a maioria dos vídeos não mostra timestamps.
 
-A busca avançada deixa de mostrar apenas 1 vídeo. Agora mostra um **grid de cards** (como a busca comum), onde cada card exibe a miniatura do vídeo e, abaixo dela, o **timestamp matching em bold e sublinhado** (ex: "00:11:00 - Controle natural do colesterol"). Ao clicar num card, abre a view detalhada com o player + todos os timestamps clicáveis.
+Além disso, na **busca comum**, ao clicar num vídeo o `VideoPlayerDialog` mostra apenas `nova_descricao` como texto simples — sem timestamps clicáveis e sem buscar `texto_para_embedding`.
 
-### Fluxo do usuário
+## Solução
 
-```text
-Busca avançada: "colesterol"
-  → Grid com N vídeos que mencionam "colesterol" no texto_para_embedding
-  → Cada card: miniatura + timestamp relevante em bold/sublinhado
-  → Clique no card → abre AdvancedVideoResult com player + índice completo
-  → Player inicia no timestamp clicado
+### 1. Corrigir a regex de timestamps (3 arquivos)
+
+Atualizar `parseTimestamps` em `AdvancedVideoCard.tsx`, `AdvancedVideoResult.tsx`, e no novo código do `VideoPlayerDialog` para aceitar ambos os formatos:
+
+```
+Antes:  /(\d{2}:\d{2}:\d{2})\s*[-–]\s*(.+)/g     → só HH:MM:SS
+Depois: /((\d{1,2}:)?\d{1,2}:\d{2})\s*[-–]\s*(.+)/g  → MM:SS e HH:MM:SS
 ```
 
-### Componentes
+Conversão: se tem 2 partes (`14:00`), faz `M*60 + S`; se tem 3 partes (`00:14:00`), faz `H*3600 + M*60 + S`.
 
-**1. Biblioteca.tsx — Atualizar query avançada**
-- Mudar `.limit(1)` para `.limit(20)` — retorna múltiplos resultados
-- Retornar array ao invés de objeto único
-- Adicionar estado `selectedAdvancedVideo` para controlar qual vídeo está aberto na view detalhada
-- Dois estados de UI: grid de resultados OU view detalhada de um vídeo
+### 2. Busca comum: incluir `texto_para_embedding` na query
 
-**2. Novo componente: `AdvancedVideoCard.tsx`**
-- Recebe `videoId`, `title`, `textoParaEmbedding`, `searchTerm`
-- Mostra miniatura do YouTube (como VideoResultCard)
-- Abaixo: parseia timestamps do `texto_para_embedding`, encontra o primeiro que contém o `searchTerm` (case-insensitive), e mostra essa linha em **bold + sublinhado**
-- Se houver mais matches, mostra contagem (ex: "+2 menções")
-- onClick dispara navegação para a view detalhada
+Em `Biblioteca.tsx`, adicionar `texto_para_embedding` ao `select` da busca comum e passar para o `VideoPlayerDialog`.
 
-**3. AdvancedVideoResult.tsx — Adicionar `initialSeconds` prop**
-- Recebe prop opcional `initialSeconds` para iniciar o player na minutagem do timestamp clicado no card
-- Adicionar botão "← Voltar aos resultados" no topo
-- Destacar (highlight) as linhas de timestamp que contêm o termo buscado
+### 3. Atualizar `VideoPlayerDialog` com timestamps clicáveis
 
-**4. Layout na Biblioteca.tsx**
-- Busca avançada sem vídeo selecionado → grid de `AdvancedVideoCard`
-- Busca avançada com vídeo selecionado → `AdvancedVideoResult` com botão voltar
-- Ao mudar o termo de busca, limpa a seleção e volta ao grid
+Adicionar ao dialog:
+- Parsear `texto_para_embedding` com a regex corrigida
+- Renderizar timestamps como botões clicáveis (como no `AdvancedVideoResult`)
+- Ao clicar num timestamp, atualizar o `src` do iframe com `&start=${seconds}`
+- Se veio de busca avançada, receber `searchTerm` opcional e destacar (bold+sublinhado) as linhas que contêm o termo
 
-### Detalhes técnicos
-- Regex para encontrar match: percorre timestamps parseados e faz `.toLowerCase().includes(searchTerm)` no label
-- `initialSeconds` é passado ao iframe src: `?autoplay=1&start=${initialSeconds}`
-- Botão voltar usa `setSelectedAdvancedVideo(null)` — sem navegação de rota
+### 4. Busca avançada: iniciar no timestamp correto
+
+Quando o vídeo é aberto via busca avançada, passar `initialSeconds` e `searchTerm` para que o player comece na minutagem e as linhas relevantes fiquem destacadas.
+
+### Resumo dos arquivos alterados
+
+- `src/components/biblioteca/AdvancedVideoCard.tsx` — regex corrigida
+- `src/components/biblioteca/AdvancedVideoResult.tsx` — regex corrigida  
+- `src/components/biblioteca/VideoPlayerDialog.tsx` — adicionar timestamps clicáveis + highlight
+- `src/pages/Biblioteca.tsx` — busca comum inclui `texto_para_embedding`, passa dados ao dialog
 
