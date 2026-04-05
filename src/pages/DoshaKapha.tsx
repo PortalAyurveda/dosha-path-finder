@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { Helmet } from "react-helmet-async";
+import DoshaRoutineContent from "@/components/dosha/DoshaRoutineContent";
+import { kaphaRoutineData } from "@/data/routineData";
 import DoshaHeroBanner from "@/components/dosha/DoshaHeroBanner";
 import DoshaSelector from "@/components/dosha/DoshaSelector";
 import AgravamentosSection from "@/components/dosha/AgravamentosSection";
