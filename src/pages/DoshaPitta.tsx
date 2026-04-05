@@ -15,11 +15,11 @@ import AdoecimentoSubdoshaCard from "@/components/dosha/AdoecimentoSubdoshaCard"
 import { AlertTriangle, Droplets } from "lucide-react";
 
 interface DoshaPittaProps {
-  defaultTab?: "principal" | "avancado";
+  defaultTab?: "principal" | "horarios" | "avancado";
 }
 
 const DoshaPitta = ({ defaultTab = "principal" }: DoshaPittaProps) => {
-  const [activeTab, setActiveTab] = useState<"principal" | "avancado">(defaultTab);
+  const [activeTab, setActiveTab] = useState<"principal" | "horarios" | "avancado">(defaultTab);
 
   return (
     <>
