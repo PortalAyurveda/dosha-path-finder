@@ -638,6 +638,141 @@ export type Database = {
         }
         Relationships: []
       }
+      portal_lives: {
+        Row: {
+          criado_em: string | null
+          embedding: string | null
+          legenda: string | null
+          mini_resumo: string | null
+          nova_descricao: string | null
+          novo_titulo: string | null
+          status: string | null
+          tags: string | null
+          texto_para_embedding: string | null
+          titulo_original: string | null
+          url: string | null
+          video_id: string
+        }
+        Insert: {
+          criado_em?: string | null
+          embedding?: string | null
+          legenda?: string | null
+          mini_resumo?: string | null
+          nova_descricao?: string | null
+          novo_titulo?: string | null
+          status?: string | null
+          tags?: string | null
+          texto_para_embedding?: string | null
+          titulo_original?: string | null
+          url?: string | null
+          video_id: string
+        }
+        Update: {
+          criado_em?: string | null
+          embedding?: string | null
+          legenda?: string | null
+          mini_resumo?: string | null
+          nova_descricao?: string | null
+          novo_titulo?: string | null
+          status?: string | null
+          tags?: string | null
+          texto_para_embedding?: string | null
+          titulo_original?: string | null
+          url?: string | null
+          video_id?: string
+        }
+        Relationships: []
+      }
+      portal_oficial: {
+        Row: {
+          criado_em: string | null
+          embedding: string | null
+          legenda: string | null
+          mini_resumo: string | null
+          nova_descricao: string | null
+          novo_titulo: string | null
+          status: string | null
+          tags: string | null
+          texto_para_embedding: string | null
+          titulo_original: string | null
+          url: string | null
+          video_id: string
+        }
+        Insert: {
+          criado_em?: string | null
+          embedding?: string | null
+          legenda?: string | null
+          mini_resumo?: string | null
+          nova_descricao?: string | null
+          novo_titulo?: string | null
+          status?: string | null
+          tags?: string | null
+          texto_para_embedding?: string | null
+          titulo_original?: string | null
+          url?: string | null
+          video_id: string
+        }
+        Update: {
+          criado_em?: string | null
+          embedding?: string | null
+          legenda?: string | null
+          mini_resumo?: string | null
+          nova_descricao?: string | null
+          novo_titulo?: string | null
+          status?: string | null
+          tags?: string | null
+          texto_para_embedding?: string | null
+          titulo_original?: string | null
+          url?: string | null
+          video_id?: string
+        }
+        Relationships: []
+      }
+      portal_receitas: {
+        Row: {
+          criado_em: string | null
+          embedding: string | null
+          legenda: string | null
+          mini_resumo: string | null
+          nova_descricao: string | null
+          novo_titulo: string | null
+          status: string | null
+          tags: string | null
+          texto_para_embedding: string | null
+          titulo_original: string | null
+          url: string | null
+          video_id: string
+        }
+        Insert: {
+          criado_em?: string | null
+          embedding?: string | null
+          legenda?: string | null
+          mini_resumo?: string | null
+          nova_descricao?: string | null
+          novo_titulo?: string | null
+          status?: string | null
+          tags?: string | null
+          texto_para_embedding?: string | null
+          titulo_original?: string | null
+          url?: string | null
+          video_id: string
+        }
+        Update: {
+          criado_em?: string | null
+          embedding?: string | null
+          legenda?: string | null
+          mini_resumo?: string | null
+          nova_descricao?: string | null
+          novo_titulo?: string | null
+          status?: string | null
+          tags?: string | null
+          texto_para_embedding?: string | null
+          titulo_original?: string | null
+          url?: string | null
+          video_id?: string
+        }
+        Relationships: []
+      }
       samkhya: {
         Row: {
           content: string | null
