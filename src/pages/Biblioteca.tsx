@@ -109,10 +109,12 @@ const Biblioteca = () => {
   const loading = isAdvanced ? isAdvancedLoading : isLoading;
 
   return (
-    <PageContainer
-      title="Biblioteca — Sommelier Ayurveda"
-      description="Encontre vídeos sobre Ayurveda: busque por sintomas, doshas, alimentos e muito mais."
-    >
+    <>
+      <DoshaSelector />
+      <PageContainer
+        title="Biblioteca — Sommelier Ayurveda"
+        description="Encontre vídeos sobre Ayurveda: busque por sintomas, doshas, alimentos e muito mais."
+      >
       <SearchHeader
         searchTerm={searchTerm}
         onSearchChange={setSearchTerm}
