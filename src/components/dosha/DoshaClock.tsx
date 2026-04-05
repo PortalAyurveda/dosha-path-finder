@@ -119,7 +119,7 @@ const DoshaClock = ({ variant = "neutral", centerLabel = "Ciclo", centerValue = 
         {/* Glass overlay */}
         <div
           className="absolute inset-0 rounded-full pointer-events-none"
-          style={{ background: "radial-gradient(circle, transparent 30%, hsla(var(--primary), 0.05) 100%)" }}
+          style={{ background: "radial-gradient(circle, transparent 30%, rgba(53, 47, 84, 0.05) 100%)" }}
         />
 
         {/* Dosha labels */}
