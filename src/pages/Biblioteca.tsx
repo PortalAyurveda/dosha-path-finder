@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import PageContainer from "@/components/PageContainer";
+import DoshaSelector from "@/components/dosha/DoshaSelector";
 import SearchHeader, { type VideoCategory } from "@/components/biblioteca/SearchHeader";
 import VideoResultCard from "@/components/biblioteca/VideoResultCard";
 import VideoPlayerDialog from "@/components/biblioteca/VideoPlayerDialog";
