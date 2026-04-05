@@ -107,7 +107,7 @@ const DoshaVata = () => {
           <SubdoshaCard number={2} name="Udana Vayu" subtitle="O Vento da Expressão (Garganta e Voz)" adequate="Rege a energia ascendente que sai do coração para a garganta. Governa a comunicação e a capacidade de expressar sentimentos." disturbed="Rouquidão, dificuldade de colocar sentimentos para fora. Ligado à tireoide." />
           <SubdoshaCard number={3} name="Samana Vayu" subtitle="O Ritmo Digestivo (Estômago e Intestino Delgado)" adequate="Coordena o tempo de trânsito, processamento e trituração rítmica do alimento." disturbed="Digestão inconstante, gases dolorosos e distensão abdominal severa." />
           <SubdoshaCard number={4} name="Vyana Vayu" subtitle="O Distribuidor (Coração e Circulação Periférica)" adequate="Puxa a nutrição do centro para a periferia. Garante calor nas mãos, braços e pernas." disturbed="Mãos e pés gélidos, dormências, palpitações e arritmias." />
-          <SubdoshaCard number={5} name="Apana Vayu" subtitle="A Descarga (Pelve e Cólon Descendente)" adequate="Governa todo movimento para baixo: eliminação, ciclo menstrual, reflexos de parto." disturbed="Fezes como \"bolinhas\", dores lombares, cólicas intensas e candidíase." />
+          <SubdoshaCard number={5} name="Apana Vayu" subtitle="A Descarga (Pelve e Cólon Descendente)" adequate="Governa todo movimento para baixo: eliminação, ciclo menstrual, reflexos de parto." disturbed={'Fezes como "bolinhas", dores lombares, cólicas intensas e candidíase.'} />
         </div>
       </DoshaSection>
 
