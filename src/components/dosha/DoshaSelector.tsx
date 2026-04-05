@@ -15,10 +15,11 @@ const activeStyles: Record<string, string> = {
   horarios: "bg-accent/20 border-accent text-accent-foreground ring-2 ring-accent/30",
 };
 
-const inactiveStyles = {
+const inactiveStyles: Record<string, string> = {
   vata: "border-border hover:border-vata/50 hover:bg-vata/5 text-muted-foreground hover:text-vata",
   pitta: "border-border hover:border-pitta/50 hover:bg-pitta/5 text-muted-foreground hover:text-pitta",
   kapha: "border-border hover:border-kapha/50 hover:bg-kapha/5 text-muted-foreground hover:text-kapha",
+  horarios: "border-border hover:border-accent/50 hover:bg-accent/5 text-muted-foreground hover:text-accent-foreground",
 };
 
 const DoshaSelector = () => {
