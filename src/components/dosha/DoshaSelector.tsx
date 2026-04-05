@@ -1,10 +1,11 @@
 import { Link, useLocation } from "react-router-dom";
-import { Wind, Flame, Mountain } from "lucide-react";
+import { Wind, Flame, Mountain, Clock } from "lucide-react";
 
 const doshas = [
   { key: "vata", label: "Vata", path: "/dosha/vata", icon: Wind, elements: "Éter + Ar" },
   { key: "pitta", label: "Pitta", path: "/dosha/pitta", icon: Flame, elements: "Fogo + Água" },
   { key: "kapha", label: "Kapha", path: "/dosha/kapha", icon: Mountain, elements: "Terra + Água" },
+  { key: "horarios", label: "Horários", path: "/horarios", icon: Clock, elements: "Dinacharya" },
 ] as const;
 
 const activeStyles = {
