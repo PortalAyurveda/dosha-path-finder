@@ -8,8 +8,8 @@ interface DoshaHeroBannerProps {
   subtitle: string;
   description: string;
   badges: string[];
-  activeTab: "principal" | "avancado";
-  onTabChange: (tab: "principal" | "avancado") => void;
+  activeTab: "principal" | "horarios" | "avancado";
+  onTabChange: (tab: "principal" | "horarios" | "avancado") => void;
 }
 
 const doshaGradients = {
