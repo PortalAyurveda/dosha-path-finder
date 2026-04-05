@@ -113,7 +113,7 @@ const DoshaClock = ({ variant = "neutral", centerLabel = "Ciclo", centerValue = 
         className="w-full h-full rounded-full flex items-center justify-center border-4 border-white relative"
         style={{
           background: gradients[variant],
-          boxShadow: "0 20px 40px -10px hsla(var(--primary), 0.2)",
+          boxShadow: "0 20px 40px -10px rgba(53, 47, 84, 0.2)",
         }}
       >
         {/* Glass overlay */}
