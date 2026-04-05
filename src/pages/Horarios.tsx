@@ -1,6 +1,6 @@
 import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
-import { Clock, Flame, Shield, Coffee, Sun, Leaf, Home as HomeIcon, Moon, Baby, ExternalLink, ChevronDown } from "lucide-react";
+import { ExternalLink } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import DoshaSelector from "@/components/dosha/DoshaSelector";
 import DoshaClock from "@/components/dosha/DoshaClock";
@@ -35,7 +35,6 @@ const timelineSteps = [
     time: "Por volta das 06h",
     dosha: "KAPHA",
     doshaColor: "text-kapha",
-    doshaBg: "bg-kapha/10",
     paragraphs: [
       'Levantar da cama antes do pico do horário Kapha (06h às 10h) é fundamental para não se sentir pesado como lenha o resto do dia. É o momento ideal para movimento e mobilidade. Comece influenciando o corpo com algo quente e fluido no desjejum para auxiliar a eliminação (como água quente do seu dosha ou a Panaceia Desidratada da Samkhya).',
       'Após sentir-se vazio, o café da manhã entra como uma refeição valiosa. Consuma algo quente, doce e untuoso (como um Suco Matinal Ayurveda, podendo usar o Tônico da Samkhya ou Chyawanprash). Células abertas e úmidas estão prontas para receber bons alimentos com propriedade estrutural.',
@@ -47,7 +46,6 @@ const timelineSteps = [
     time: "Por volta das 10h",
     dosha: "PITTA",
     doshaColor: "text-pitta",
-    doshaBg: "bg-pitta/10",
     paragraphs: [
       'Você pode lanchar de acordo com as suas necessidades: para uns é uma fruta, para outros é um chutney, suco, ou até mesmo um pão, sanduíche ou chai. O café preto não é um vilão absoluto, desde que não seja a sua primeira ação no desjejum com o estômago vazio (o que apaga o Agni). Use-o com inteligência.',
     ],
@@ -58,7 +56,6 @@ const timelineSteps = [
     time: "Meio-dia (12h às 14h)",
     dosha: "PITTA",
     doshaColor: "text-pitta",
-    doshaBg: "bg-pitta/10",
     checklist: [
       { label: "Estimule a Fome", text: "É hora de ter fome real. Se você não tem, usar o Madhu Anti-Vata 15 a 30 minutos antes do almoço é excelente para melhorar o Agni e estimular o apetite." },
       { label: "O Sabor Doce Primeiro", text: "O doce antes das refeições gera uma mucosa de absorção ideal. Pode ser uma tâmara hidratada ou até mesmo mastigar extremamente bem o arroz branco (gohan) no começo do prato." },
@@ -73,7 +70,6 @@ const timelineSteps = [
     time: "14h às 18h",
     dosha: "VATA",
     doshaColor: "text-vata",
-    doshaBg: "bg-vata/10",
     paragraphs: [
       'O período da tarde é excelente para lanches isolados, frutas ou chás medicinais. A regra fundamental aqui é não dormir. Fique alerta. Dormir no meio do dia, quando o Agni já está abaixando, vai estagnar o processo digestivo e gerar toxina (Ama).',
     ],
@@ -84,7 +80,6 @@ const timelineSteps = [
     time: "A partir das 18h até 20h",
     dosha: "KAPHA",
     doshaColor: "text-kapha",
-    doshaBg: "bg-kapha/10",
     paragraphs: [
       'Às 18h o horário Kapha entra trazendo o instinto natural de conforto, resguardo e cuidado. Os animais se recolhem. Isso melhora sua conexão com a vitalidade e regeneração. Um banho tomado, roupa confortável, sofá, uma sopinha quente e uma atividade de lazer têm um valor clínico incrível para a mente.',
       'Jante até as 20h. Pessoas muito Pitta costumam pecar nisso, mas comer próximo ao horário de dormir prejudica severamente a digestão e o sono, gerando inflamação no corpo justamente na hora que ele deveria estar reciclando nutrientes e descartando toxinas.',
@@ -96,7 +91,6 @@ const timelineSteps = [
     time: "22h às 23h",
     dosha: "PITTA",
     doshaColor: "text-pitta",
-    doshaBg: "bg-pitta/10",
     paragraphs: [
       'Deitar até as 22h é o ideal, mas se não for possível, coloque 23h como seu horário limite inegociável. Passar desse horário abre portas para a insônia do Vata ou a "fritação de pensamentos" noturna do Pitta.',
     ],
@@ -131,7 +125,7 @@ const doshaCards = [
     emoji: "💨",
     label: "Rotina para Vata",
     desc: "Aterramento, nutrição profunda e estabilidade para a mente aérea.",
-    to: "/biblioteca/vata",
+    to: "/biblioteca/vata?tab=horarios",
     color: "border-vata/40 hover:border-vata bg-vata/5 hover:bg-vata/10",
     textColor: "text-vata",
   },
@@ -139,7 +133,7 @@ const doshaCards = [
     emoji: "🔥",
     label: "Rotina para Pitta",
     desc: "Resfriamento, moderação de estresse e foco na qualidade da digestão.",
-    to: "/biblioteca/pitta",
+    to: "/biblioteca/pitta?tab=horarios",
     color: "border-pitta/40 hover:border-pitta bg-pitta/5 hover:bg-pitta/10",
     textColor: "text-pitta",
   },
@@ -147,7 +141,7 @@ const doshaCards = [
     emoji: "🪨",
     label: "Rotina para Kapha",
     desc: "Estímulo, termogênese matinal e leveza estrutural para combater inércia.",
-    to: "/biblioteca/kapha",
+    to: "/biblioteca/kapha?tab=horarios",
     color: "border-kapha/40 hover:border-kapha bg-kapha/5 hover:bg-kapha/10",
     textColor: "text-kapha",
   },
@@ -188,7 +182,6 @@ const Horarios = () => {
               </div>
             </div>
 
-            {/* Clock visual — user's conic gradient design */}
             <div className="flex justify-center">
               <div className="w-64 h-64 md:w-80 md:h-80">
                 <DoshaClock variant="neutral" centerLabel="Ciclo" centerValue="24h" />
@@ -198,6 +191,32 @@ const Horarios = () => {
         </div>
       </section>
 
+      {/* Dosha cards */}
+      <section className="py-12 bg-background">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+          <div className="text-center mb-8">
+            <h2 className="text-2xl md:text-3xl font-serif font-bold italic text-primary mb-2">
+              Aprofunde-se no Seu Dosha Dominante
+            </h2>
+            <p className="text-foreground/70 max-w-2xl mx-auto">
+              A rotina geral é a base, mas o ajuste fino mora na sua individualidade. Escolha seu caminho abaixo para ver os táticos específicos para cada constituição.
+            </p>
+          </div>
+          <div className="grid sm:grid-cols-3 gap-4">
+            {doshaCards.map((card) => (
+              <Link
+                key={card.to}
+                to={card.to}
+                className={`rounded-2xl border-2 p-6 text-center transition-all ${card.color}`}
+              >
+                <span className="text-4xl block mb-3">{card.emoji}</span>
+                <h3 className={`font-serif font-bold text-lg mb-2 ${card.textColor}`}>{card.label}</h3>
+                <p className="text-sm text-foreground/70">{card.desc}</p>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* Wisdom cards */}
       <section id="fisiologia" className="py-12 bg-surface-sun/50">

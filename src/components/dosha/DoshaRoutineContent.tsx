@@ -1,4 +1,3 @@
-import DoshaClock from "./DoshaClock";
 import DoshaSection from "./DoshaSection";
 
 interface TimelineStep {
@@ -34,8 +33,6 @@ const doshaAccent = {
 
 const DoshaRoutineContent = ({
   dosha,
-  clockLabel,
-  clockValue,
   principlesTitle,
   principlesSubtitle,
   principles,
@@ -47,28 +44,15 @@ const DoshaRoutineContent = ({
 
   return (
     <>
-      {/* Clock + intro */}
-      <section className="py-10 bg-background">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6">
-          <div className="grid md:grid-cols-2 gap-10 items-center">
-            <div className="flex justify-center">
-              <div className="w-64 h-64 md:w-80 md:h-80">
-                <DoshaClock variant={dosha} centerLabel={clockLabel} centerValue={clockValue} />
-              </div>
-            </div>
-            <div>
-              <h2 className="text-2xl md:text-3xl font-serif font-bold italic text-primary mb-4">
-                {principlesTitle}
-              </h2>
-              <p className="text-foreground/70 leading-relaxed mb-6">{principlesSubtitle}</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Principles */}
       <section className="py-10 bg-surface-sun/50">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
+          <div className="text-center mb-8">
+            <h2 className="text-2xl md:text-3xl font-serif font-bold italic text-primary mb-2">
+              {principlesTitle}
+            </h2>
+            <p className="text-foreground/70 max-w-2xl mx-auto">{principlesSubtitle}</p>
+          </div>
           <div className="grid sm:grid-cols-2 gap-4">
             {principles.map((card, i) => (
               <div key={i} className="bg-white rounded-2xl border border-border p-5 flex gap-4">

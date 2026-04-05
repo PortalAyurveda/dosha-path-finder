@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import DoshaRoutineContent from "@/components/dosha/DoshaRoutineContent";
 import { pittaRoutineData } from "@/data/routineData";
@@ -19,7 +20,9 @@ interface DoshaPittaProps {
 }
 
 const DoshaPitta = ({ defaultTab = "principal" }: DoshaPittaProps) => {
-  const [activeTab, setActiveTab] = useState<"principal" | "horarios" | "avancado">(defaultTab);
+  const [searchParams] = useSearchParams();
+  const tabFromUrl = searchParams.get("tab") as "principal" | "horarios" | "avancado" | null;
+  const [activeTab, setActiveTab] = useState<"principal" | "horarios" | "avancado">(tabFromUrl || defaultTab);
 
   return (
     <>
