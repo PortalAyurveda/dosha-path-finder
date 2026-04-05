@@ -101,6 +101,15 @@ const DoshaKapha = () => {
           ]}
         />
       </DoshaSection>
+      {/* Link para Adoecimento */}
+      <section className="max-w-4xl mx-auto px-4 sm:px-6 pb-12">
+        <Link
+          to="/dosha/kapha/adoecimento"
+          className="block w-full text-center bg-kapha/90 hover:bg-kapha text-white font-bold py-4 px-6 rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm transition-all hover:shadow-lg hover:shadow-kapha/25"
+        >
+          🩺 Adoecimento de Kapha — Fisiopatologia Avançada
+        </Link>
+      </section>
     </>
   );
 };
