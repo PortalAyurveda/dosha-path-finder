@@ -1,5 +1,6 @@
 import { Helmet } from "react-helmet-async";
 import DoshaHeroBanner from "@/components/dosha/DoshaHeroBanner";
+import DoshaSelector from "@/components/dosha/DoshaSelector";
 import DoshaSection from "@/components/dosha/DoshaSection";
 import PrakritiSection from "@/components/dosha/PrakritiSection";
 import OrganList from "@/components/dosha/OrganList";
@@ -10,6 +11,7 @@ import NutritionHabits from "@/components/dosha/NutritionHabits";
 const DoshaPitta = () => {
   return (
     <>
+      <DoshaSelector />
       <Helmet>
         <title>Guia do Dosha Pitta — Portal Ayurveda</title>
         <meta name="description" content="Tudo sobre o dosha Pitta: corpo físico, órgãos sede, os 5 fogos do corpo, sabores, nutrição e hábitos de ouro para equilibrar Fogo e Água." />
