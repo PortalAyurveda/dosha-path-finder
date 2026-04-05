@@ -20,7 +20,9 @@ interface DoshaKaphaProps {
 }
 
 const DoshaKapha = ({ defaultTab = "principal" }: DoshaKaphaProps) => {
-  const [activeTab, setActiveTab] = useState<"principal" | "horarios" | "avancado">(defaultTab);
+  const [searchParams] = useSearchParams();
+  const tabFromUrl = searchParams.get("tab") as "principal" | "horarios" | "avancado" | null;
+  const [activeTab, setActiveTab] = useState<"principal" | "horarios" | "avancado">(tabFromUrl || defaultTab);
 
   return (
     <>
