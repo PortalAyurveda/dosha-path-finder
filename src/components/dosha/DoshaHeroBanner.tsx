@@ -8,6 +8,8 @@ interface DoshaHeroBannerProps {
   subtitle: string;
   description: string;
   badges: string[];
+  activeTab: "principal" | "avancado";
+  onTabChange: (tab: "principal" | "avancado") => void;
 }
 
 const doshaGradients = {
@@ -28,7 +30,7 @@ const doshaSubtitle = {
   kapha: "text-kapha/70",
 };
 
-const DoshaHeroBanner = ({ dosha, emoji, title, elements, subtitle, description, badges }: DoshaHeroBannerProps) => {
+const DoshaHeroBanner = ({ dosha, emoji, title, elements, subtitle, description, badges, activeTab, onTabChange }: DoshaHeroBannerProps) => {
   return (
     <section className={`bg-gradient-to-b ${doshaGradients[dosha]} border-b ${doshaBorder[dosha]}`}>
       <div className="max-w-4xl mx-auto px-4 sm:px-6 py-12 md:py-20 text-center">
@@ -43,7 +45,7 @@ const DoshaHeroBanner = ({ dosha, emoji, title, elements, subtitle, description,
         <p className="text-base md:text-lg text-foreground max-w-2xl mx-auto leading-relaxed">
           {description}
         </p>
-        <DoshaNavPills dosha={dosha} />
+        <DoshaNavPills dosha={dosha} activeTab={activeTab} onTabChange={onTabChange} />
       </div>
     </section>
   );
