@@ -75,17 +75,18 @@ const DoshaNavPills = ({ dosha, activeTab, onTabChange }: DoshaNavPillsProps) =>
   return (
     <div className="flex flex-wrap justify-center gap-2.5 mt-8">
       <button
+        onClick={handlePrincipal}
+        className={`flex items-center gap-1.5 px-5 py-2.5 rounded-full border font-semibold text-sm transition-all ${isPrincipal ? colors.active : colors.inactive}`}
+      >
+        <Home className="h-4 w-4" />
+        Principal
+      </button>
+      <button
         onClick={() => navigate(`/biblioteca/${dosha}/horarios`)}
         className={`flex items-center gap-1.5 px-5 py-2.5 rounded-full border font-semibold text-sm transition-all ${colors.inactive}`}
       >
         <Clock className="h-4 w-4" />
         Horários
-      </button>
-      
-        className={`flex items-center gap-1.5 px-5 py-2.5 rounded-full border font-semibold text-sm transition-all ${isPrincipal ? colors.active : colors.inactive}`}
-      >
-        <Home className="h-4 w-4" />
-        Principal
       </button>
       {scrollPills.map((p) => {
         const Icon = p.icon;
