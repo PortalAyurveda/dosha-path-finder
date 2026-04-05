@@ -76,13 +76,12 @@ const DoshaNavPills = ({ dosha, activeTab, onTabChange }: DoshaNavPillsProps) =>
         {pills.map((p) => {
           const Icon = p.icon;
           const isActive = p.id === activeTab;
-          const isScroll = p.id === "remedios";
           return (
             <button
               key={p.id}
               onClick={() => handleClick(p.id)}
               className={`flex items-center gap-1 px-3 sm:px-4 py-2 rounded-full border font-semibold text-xs sm:text-sm transition-all whitespace-nowrap shrink-0 ${
-                isActive && !isScroll ? colors.active : colors.inactive
+                isActive ? colors.active : colors.inactive
               }`}
             >
               <Icon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
