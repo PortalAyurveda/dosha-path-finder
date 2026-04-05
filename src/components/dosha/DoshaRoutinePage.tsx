@@ -72,16 +72,16 @@ const doshaStyles = {
 
 const otherDoshas = {
   vata: [
-    { label: "Ver Rotina Pitta 🔥", to: "/horarios/pitta" },
-    { label: "Ver Rotina Kapha 🪨", to: "/horarios/kapha" },
+    { label: "Ver Rotina Pitta 🔥", to: "/biblioteca/pitta/horarios" },
+    { label: "Ver Rotina Kapha 🪨", to: "/biblioteca/kapha/horarios" },
   ],
   pitta: [
-    { label: "Ver Rotina Vata 💨", to: "/horarios/vata" },
-    { label: "Ver Rotina Kapha 🪨", to: "/horarios/kapha" },
+    { label: "Ver Rotina Vata 💨", to: "/biblioteca/vata/horarios" },
+    { label: "Ver Rotina Kapha 🪨", to: "/biblioteca/kapha/horarios" },
   ],
   kapha: [
-    { label: "Ver Rotina Vata 💨", to: "/horarios/vata" },
-    { label: "Ver Rotina Pitta 🔥", to: "/horarios/pitta" },
+    { label: "Ver Rotina Vata 💨", to: "/biblioteca/vata/horarios" },
+    { label: "Ver Rotina Pitta 🔥", to: "/biblioteca/pitta/horarios" },
   ],
 };
 
