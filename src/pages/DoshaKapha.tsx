@@ -2,7 +2,10 @@ import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import DoshaRoutineContent from "@/components/dosha/DoshaRoutineContent";
+import DoshaFoodContent from "@/components/dosha/DoshaFoodContent";
 import { kaphaRoutineData } from "@/data/routineData";
+import { kaphaFoodData } from "@/data/foodData";
+import { type DoshaTab } from "@/components/dosha/DoshaNavPills";
 import DoshaHeroBanner from "@/components/dosha/DoshaHeroBanner";
 import DoshaSelector from "@/components/dosha/DoshaSelector";
 import AgravamentosSection from "@/components/dosha/AgravamentosSection";
@@ -16,13 +19,13 @@ import AdoecimentoSubdoshaCard from "@/components/dosha/AdoecimentoSubdoshaCard"
 import { AlertTriangle, Droplets } from "lucide-react";
 
 interface DoshaKaphaProps {
-  defaultTab?: "principal" | "horarios" | "avancado";
+  defaultTab?: DoshaTab;
 }
 
 const DoshaKapha = ({ defaultTab = "principal" }: DoshaKaphaProps) => {
   const [searchParams] = useSearchParams();
-  const tabFromUrl = searchParams.get("tab") as "principal" | "horarios" | "avancado" | null;
-  const [activeTab, setActiveTab] = useState<"principal" | "horarios" | "avancado">(tabFromUrl || defaultTab);
+  const tabFromUrl = searchParams.get("tab") as DoshaTab | null;
+  const [activeTab, setActiveTab] = useState<DoshaTab>(tabFromUrl || defaultTab);
 
   return (
     <>
