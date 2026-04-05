@@ -13,12 +13,15 @@ interface AdvancedVideoResultProps {
 }
 
 function parseTimestamps(text: string) {
-  const regex = /(\d{2}:\d{2}:\d{2})\s*[-–]\s*(.+)/g;
+  const regex = /((\d{1,2}:)?\d{1,2}:\d{2})\s*[-–]\s*(.+)/g;
   const entries: { timestamp: string; seconds: number; label: string }[] = [];
   let match;
   while ((match = regex.exec(text)) !== null) {
-    const [h, m, s] = match[1].split(":").map(Number);
-    entries.push({ timestamp: match[1], seconds: h * 3600 + m * 60 + s, label: match[2].trim() });
+    const parts = match[1].split(":").map(Number);
+    const seconds = parts.length === 3
+      ? parts[0] * 3600 + parts[1] * 60 + parts[2]
+      : parts[0] * 60 + parts[1];
+    entries.push({ timestamp: match[1], seconds, label: match[3].trim() });
   }
   return entries;
 }
