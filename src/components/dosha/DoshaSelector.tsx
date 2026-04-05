@@ -1,11 +1,12 @@
 import { Link, useLocation } from "react-router-dom";
-import { Wind, Flame, Mountain, Clock } from "lucide-react";
+import { Wind, Flame, Mountain, Clock, BookOpen } from "lucide-react";
 
 const doshas = [
-  { key: "vata", label: "Vata", path: "/dosha/vata", icon: Wind, elements: "Éter + Ar" },
-  { key: "pitta", label: "Pitta", path: "/dosha/pitta", icon: Flame, elements: "Fogo + Água" },
-  { key: "kapha", label: "Kapha", path: "/dosha/kapha", icon: Mountain, elements: "Terra + Água" },
-  { key: "horarios", label: "Horários", path: "/horarios", icon: Clock, elements: "Dinacharya" },
+  { key: "vata", label: "Vata", path: "/biblioteca/vata", icon: Wind, elements: "Éter + Ar" },
+  { key: "pitta", label: "Pitta", path: "/biblioteca/pitta", icon: Flame, elements: "Fogo + Água" },
+  { key: "kapha", label: "Kapha", path: "/biblioteca/kapha", icon: Mountain, elements: "Terra + Água" },
+  { key: "horarios", label: "Horários", path: "/biblioteca/horarios", icon: Clock, elements: "Dinacharya" },
+  { key: "sommelier", label: "Sommelier", path: "/biblioteca", icon: BookOpen, elements: "Acervo" },
 ] as const;
 
 const activeStyles: Record<string, string> = {
