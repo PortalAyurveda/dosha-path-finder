@@ -2,6 +2,7 @@ import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
 import { Clock, Flame, Shield, Coffee, Sun, Leaf, Home as HomeIcon, Moon, Baby, ExternalLink, ChevronDown } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import DoshaSelector from "@/components/dosha/DoshaSelector";
 
 const wisdomCards = [
   {
