@@ -40,7 +40,7 @@ const pills = [
   { id: "principal" as DoshaTab, label: "Principal", icon: Home },
   { id: "horarios" as DoshaTab, label: "Horários", icon: Clock },
   { id: "alimentacao" as DoshaTab, label: "Alimentação", icon: UtensilsCrossed },
-  { id: "remedios" as const, label: "Remédios", icon: Pill },
+  { id: "remedios" as DoshaTab, label: "Remédios", icon: Pill },
   { id: "avancado" as DoshaTab, label: "Avançado", icon: Bird },
 ];
 
