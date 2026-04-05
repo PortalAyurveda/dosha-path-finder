@@ -122,6 +122,8 @@ const DoshaKapha = ({ defaultTab = "principal" }: DoshaKaphaProps) => {
             />
           </DoshaSection>
         </>
+      ) : activeTab === "horarios" ? (
+        <DoshaRoutineContent dosha="kapha" {...kaphaRoutineData} />
       ) : (
         <>
           <DoshaSection icon="🔍" title="Sinais Diagnósticos">

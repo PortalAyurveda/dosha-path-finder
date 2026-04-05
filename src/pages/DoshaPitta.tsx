@@ -121,6 +121,8 @@ const DoshaPitta = ({ defaultTab = "principal" }: DoshaPittaProps) => {
             />
           </DoshaSection>
         </>
+      ) : activeTab === "horarios" ? (
+        <DoshaRoutineContent dosha="pitta" {...pittaRoutineData} />
       ) : (
         <>
           <DoshaSection icon="🔍" title="Sinais Diagnósticos">
