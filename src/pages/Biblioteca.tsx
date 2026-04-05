@@ -27,6 +27,7 @@ const Biblioteca = () => {
     video_id: string;
     novo_titulo: string;
     nova_descricao: string;
+    texto_para_embedding: string;
   } | null>(null);
 
   const [selectedAdvancedVideo, setSelectedAdvancedVideo] = useState<{
@@ -41,7 +42,7 @@ const Biblioteca = () => {
     setSelectedAdvancedVideo(null);
   }, [debouncedSearch]);
 
-  // Common search
+  // Common search — now includes texto_para_embedding
   const { data: videos, isLoading } = useQuery({
     queryKey: ["biblioteca-videos", debouncedSearch, isAdvanced],
     queryFn: async () => {
@@ -49,7 +50,7 @@ const Biblioteca = () => {
 
       let query = supabase
         .from("videos_seo2")
-        .select("video_id, novo_titulo, mini_resumo, nova_descricao, tags, criado_em")
+        .select("video_id, novo_titulo, mini_resumo, nova_descricao, tags, texto_para_embedding, criado_em")
         .order("criado_em", { ascending: false })
         .limit(20);
 
@@ -110,7 +111,6 @@ const Biblioteca = () => {
           ))}
         </div>
       ) : isAdvanced ? (
-        // Advanced mode
         selectedAdvancedVideo ? (
           <AdvancedVideoResult
             videoId={selectedAdvancedVideo.video_id}
@@ -158,7 +158,6 @@ const Biblioteca = () => {
           </div>
         )
       ) : (
-        // Common mode
         videos && videos.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {videos.map((v) => (
@@ -173,6 +172,7 @@ const Biblioteca = () => {
                     video_id: v.video_id,
                     novo_titulo: v.novo_titulo || "Sem título",
                     nova_descricao: v.nova_descricao || "",
+                    texto_para_embedding: v.texto_para_embedding || "",
                   })
                 }
               />
@@ -195,6 +195,7 @@ const Biblioteca = () => {
         videoId={selectedVideo?.video_id ?? null}
         title={selectedVideo?.novo_titulo ?? ""}
         description={selectedVideo?.nova_descricao ?? ""}
+        textoParaEmbedding={selectedVideo?.texto_para_embedding}
       />
     </PageContainer>
   );
