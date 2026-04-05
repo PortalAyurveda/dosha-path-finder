@@ -7,6 +7,15 @@ html, body {
   width: 100%;
 }
 
+/* Hide scrollbar for horizontal scroll menus */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
 @layer base {
   :root {
     --background: 210 20% 98%;
