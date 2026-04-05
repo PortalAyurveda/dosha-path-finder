@@ -191,33 +191,6 @@ const Horarios = () => {
         </div>
       </section>
 
-      {/* Dosha cards */}
-      <section className="py-12 bg-background">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6">
-          <div className="text-center mb-8">
-            <h2 className="text-2xl md:text-3xl font-serif font-bold italic text-primary mb-2">
-              Aprofunde-se no Seu Dosha Dominante
-            </h2>
-            <p className="text-foreground/70 max-w-2xl mx-auto">
-              A rotina geral é a base, mas o ajuste fino mora na sua individualidade. Escolha seu caminho abaixo para ver os táticos específicos para cada constituição.
-            </p>
-          </div>
-          <div className="grid sm:grid-cols-3 gap-4">
-            {doshaCards.map((card) => (
-              <Link
-                key={card.to}
-                to={card.to}
-                className={`rounded-2xl border-2 p-6 text-center transition-all ${card.color}`}
-              >
-                <span className="text-4xl block mb-3">{card.emoji}</span>
-                <h3 className={`font-serif font-bold text-lg mb-2 ${card.textColor}`}>{card.label}</h3>
-                <p className="text-sm text-foreground/70">{card.desc}</p>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* Wisdom cards */}
       <section id="fisiologia" className="py-12 bg-surface-sun/50">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
@@ -239,6 +212,118 @@ const Horarios = () => {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* A Dança dos Elementos */}
+      <section className="py-12 bg-background">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 space-y-8">
+          <div className="text-center mb-4">
+            <h2 className="text-3xl md:text-4xl font-serif font-bold text-primary mb-4">A Dança dos Elementos</h2>
+            <p className="text-foreground/70 text-lg max-w-3xl mx-auto">
+              Aprofundamento na fisiologia, nas emoções e nas rotinas para equilibrar Vata, Pitta e Kapha ao longo do dia.
+            </p>
+          </div>
+
+          {/* Vata */}
+          <div className="bg-surface-sun rounded-2xl border-l-8 border-vata p-6 md:p-8 lg:p-10 shadow-sm relative overflow-hidden">
+            <div className="absolute top-0 right-0 p-8 opacity-10 text-8xl pointer-events-none">💨</div>
+            <h3 className="font-serif text-2xl md:text-3xl font-bold text-primary mb-2">Ciclo Vata: O Movimento, o Éter e o Prana</h3>
+            <p className="text-vata font-bold mb-6 md:mb-8 uppercase tracking-widest text-xs sm:text-sm">02h às 06h (Madrugada) | 14h às 18h (Tarde)</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10">
+              <div className="space-y-6">
+                <div>
+                  <h4 className="font-bold text-lg mb-2 text-primary border-b border-border pb-2">Atributos & Horários</h4>
+                  <p className="text-foreground/80"><strong>Qualidades:</strong> Leve, frio, seco, móvel, difuso.</p>
+                  <p className="text-foreground/80 mt-2">A <strong>madrugada</strong> é fria, etérea e silenciosa, marcando o pico de Prana e criatividade. A <strong>tarde</strong> é propensa ao embotamento mental e moleza caso o fogo digestivo do almoço não tenha sido estimulado adequadamente com picantes.</p>
+                </div>
+                <div>
+                  <h4 className="font-bold text-lg mb-2 text-primary border-b border-border pb-2">Características do Desequilíbrio</h4>
+                  <ul className="list-disc pl-5 space-y-2 text-foreground/80">
+                    <li><strong>O Despertar Vata:</strong> Insônia letárgica ou paralisia na madrugada; a pessoa desperta subitamente, sem sono, com a mente difusa e frio nas extremidades.</li>
+                    <li>Primeira crise de labirintite ou paralisia de ouvido geralmente estoura neste horário.</li>
+                    <li>Viver apenas de saladas, sucos verdes e jejuns para "ficar leve" agrava severamente a secura do corpo e as articulações.</li>
+                    <li>Na terceira idade (50+), o corpo seca naturalmente, aumentando a constipação e os estalos.</li>
+                  </ul>
+                </div>
+              </div>
+              <div>
+                <h4 className="font-bold text-lg mb-4 text-primary bg-white px-4 py-2 rounded-md shadow-sm">Rotinas e Aterramento (O que fazer)</h4>
+                <ul className="space-y-4 text-foreground/80">
+                  <li className="flex gap-3"><span className="text-xl">🛌</span><span><strong>O Segredo do Sono:</strong> O indivíduo Vata deve tentar deitar até as 22h. Se ficar acordado, acumula a insônia Vata da madrugada com o estresse Pitta noturno. É permitido permanecer na cama até as 7h, 8h ou 9h se estiver em tratamento focado.</span></li>
+                  <li className="flex gap-3"><span className="text-xl">🥛</span><span><strong>Estratégia Noturna:</strong> Tomar um leite quente (animal ou vegetal denso) ou um <strong>Chai</strong> bem cozido com especiarias meia hora antes de dormir aterra a insônia.</span></li>
+                  <li className="flex gap-3"><span className="text-xl">🍯</span><span><strong>Alimentação e Constipação:</strong> Comer tâmaras hidratadas antes das refeições ajuda no ganho de peso (sabor doce antes das refeições aterra o corpo). Para tratar a constipação de forma profunda, a solução é usar o <strong>Madhu Anti-Vata</strong> da Samkhya no almoço e 30 minutos antes de dormir.</span></li>
+                  <li className="flex gap-3"><span className="text-xl">🚫</span><span><strong>Evite à Tarde:</strong> Banho frio, vento e exposição a intempéries. Se viajar, tome um banho quente assim que chegar em seu destino para aterrar imediatamente.</span></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          {/* Pitta */}
+          <div className="bg-surface-sun rounded-2xl border-l-8 border-pitta p-6 md:p-8 lg:p-10 shadow-sm relative overflow-hidden">
+            <div className="absolute top-0 right-0 p-8 opacity-10 text-8xl pointer-events-none">🔥</div>
+            <h3 className="font-serif text-2xl md:text-3xl font-bold text-primary mb-2">Ciclo Pitta: O Metabolismo, a Transformação e o Tejas</h3>
+            <p className="text-pitta font-bold mb-6 md:mb-8 uppercase tracking-widest text-xs sm:text-sm">10h às 14h (Dia) | 22h às 02h (Noite)</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10">
+              <div className="space-y-6">
+                <div>
+                  <h4 className="font-bold text-lg mb-2 text-primary border-b border-border pb-2">Atributos & Horários</h4>
+                  <p className="text-foreground/80"><strong>Qualidades:</strong> Calor, metabolismo, penetrabilidade, brilhante e leve.</p>
+                  <p className="text-foreground/80 mt-2">O <strong>meio-dia</strong> é o momento de maior acidez estomacal, fome, irritabilidade mental e pico da capacidade digestiva (gerador de Tejas). A <strong>noite</strong> é o horário de processamento interno e limpeza do sangue.</p>
+                </div>
+                <div>
+                  <h4 className="font-bold text-lg mb-2 text-primary border-b border-border pb-2">Características do Desequilíbrio</h4>
+                  <ul className="list-disc pl-5 space-y-2 text-foreground/80">
+                    <li><strong>A Insônia Pitta:</strong> Estar acordado entre 22h e 02h gera irritação, "fritação de pensamento", fome noturna estressante e inflamações severas.</li>
+                    <li>Pular o almoço ou comer "dieta de passarinho" esfria o fogo, frustra as células e não gera nutrição. Se o Pitta não come ao meio-dia, fica agressivo e nervoso.</li>
+                    <li>O excesso gera estresse, queimação, problemas de pele e dores pulsantes (tendinites). Grande parte das arritmias/infartos estouram na madrugada pela soma de sangue estressado (Pitta) com arritmia de movimento (Vata).</li>
+                  </ul>
+                </div>
+              </div>
+              <div>
+                <h4 className="font-bold text-lg mb-4 text-primary bg-white px-4 py-2 rounded-md shadow-sm">Rotinas e Apaziguamento (O que fazer)</h4>
+                <ul className="space-y-4 text-foreground/80">
+                  <li className="flex gap-3"><span className="text-xl">☀️</span><span><strong>Almoço Absoluto:</strong> O meio-dia, com o sol a pino, é o momento perfeito e inegociável para a refeição mais pesada e complexa.</span></li>
+                  <li className="flex gap-3"><span className="text-xl">🚶🏽‍♂️</span><span><strong>100 Passos da Digestão:</strong> Após almoçar, não volte ao trabalho rápido. Sente-se de pernas cruzadas de olhos abertos para contemplar por 15 minutos e depois caminhe levemente cem passos para firmar a energia sem letargia.</span></li>
+                  <li className="flex gap-3"><span className="text-xl">🛡️</span><span><strong>Prevenção de Azia:</strong> Para combater a azia e diminuir a acidez, o tratamento deve ocorrer às 10h da manhã (quando o Pitta está começando, não no pico). O uso do <strong>Madhu Anti-Pitta</strong> (às 10h e no fim da tarde) é ideal.</span></li>
+                  <li className="flex gap-3"><span className="text-xl">🌿</span><span><strong>Para Diminuir Acidez:</strong> Buttermilk, sabores amargos e adstringentes são excelentes aliados. É fundamental não comer nada pesado depois das 20h.</span></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          {/* Kapha */}
+          <div className="bg-surface-sun rounded-2xl border-l-8 border-kapha p-6 md:p-8 lg:p-10 shadow-sm relative overflow-hidden">
+            <div className="absolute top-0 right-0 p-8 opacity-10 text-8xl pointer-events-none">🪨</div>
+            <h3 className="font-serif text-2xl md:text-3xl font-bold text-primary mb-2">Ciclo Kapha: A Estrutura, a Nutrição e o Ojas</h3>
+            <p className="text-kapha font-bold mb-6 md:mb-8 uppercase tracking-widest text-xs sm:text-sm">06h às 10h (Manhã) | 18h às 22h (Noite)</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10">
+              <div className="space-y-6">
+                <div>
+                  <h4 className="font-bold text-lg mb-2 text-primary border-b border-border pb-2">Atributos & Horários</h4>
+                  <p className="text-foreground/80"><strong>Qualidades:</strong> Estrutura, peso, umidade, densidade.</p>
+                  <p className="text-foreground/80 mt-2">A <strong>manhã</strong> traz sensação de proteção, cama pesada e enorme capacidade celular de absorção. A <strong>noite</strong> é o momento onde o corpo pede colo, sofá, família e coisas fáceis para a mente descansar.</p>
+                </div>
+                <div>
+                  <h4 className="font-bold text-lg mb-2 text-primary border-b border-border pb-2">Características do Desequilíbrio</h4>
+                  <ul className="list-disc pl-5 space-y-2 text-foreground/80">
+                    <li><strong>A Armadilha do Sono Kapha:</strong> A "depressão de cama" e a inércia em levantar ocorrem porque a pessoa volta a dormir após as 06h, horário onde a cama se torna pesada como lenha.</li>
+                    <li><strong>A Ilusão do Doce:</strong> A "ansiedade pelo sabor doce" às 18h não é um vício mental; é o corpo implorando por nutrição estrutural que não foi entregue durante o dia.</li>
+                    <li>O Kapha letárgico come pequenas refeições o tempo todo sem ter fome, entupindo o corpo de muco, peso e odor forte.</li>
+                  </ul>
+                </div>
+              </div>
+              <div>
+                <h4 className="font-bold text-lg mb-4 text-primary bg-white px-4 py-2 rounded-md shadow-sm">Rotinas e Estimulação (O que fazer)</h4>
+                <ul className="space-y-4 text-foreground/80">
+                  <li className="flex gap-3"><span className="text-xl">🔥</span><span><strong>Café Estruturado & Termogênese:</strong> O foco matinal é a termogênese. Não use café preto puramente. Consuma alimentos doces ou salgados, mas cozidos com bastante especiaria. Se for tomar um café, que seja com massala doce. O café puro apaga o agni, principalmente em jejum.</span></li>
+                  <li className="flex gap-3"><span className="text-xl">🏃🏽‍♂️</span><span><strong>Estratégia Anti-Kapha:</strong> Quem quer remover muco deve acordar cedo, tomar um chá quente com o <strong>Madhu Anti-Kapha</strong> (no desjejum e na hora do almoço) e movimentar o corpo antes das 06h.</span></li>
+                  <li className="flex gap-3"><span className="text-xl">🌶️</span><span><strong>Dica Kapha:</strong> Use bastante o sabor picante nas refeições. É válido até mesmo beber um cálice de vinho 10 minutos antes de uma refeição pesada (como fazem os italianos) para aquecer o apetite e despertar a digestão.</span></li>
+                  <li className="flex gap-3"><span className="text-xl">🍎</span><span><strong>O Truque das 10h:</strong> Se bater fome às 10h, uma fruta crua esfria o agni. O genial é comer uma fruta cozida com um cravo, mantendo o estômago aquecido até as 11h30.</span></li>
+                </ul>
+              </div>
+            </div>
           </div>
         </div>
       </section>
