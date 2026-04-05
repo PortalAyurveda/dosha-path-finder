@@ -1,14 +1,11 @@
 import { Helmet } from "react-helmet-async";
-import { Link } from "react-router-dom";
 import DoshaHeroBanner from "@/components/dosha/DoshaHeroBanner";
 import DoshaSelector from "@/components/dosha/DoshaSelector";
-import DoshaNavPills from "@/components/dosha/DoshaNavPills";
 import AgravamentosSection from "@/components/dosha/AgravamentosSection";
 import DoshaSection from "@/components/dosha/DoshaSection";
 import PrakritiSection from "@/components/dosha/PrakritiSection";
 import OrganList from "@/components/dosha/OrganList";
 import BalanceCard from "@/components/dosha/BalanceCard";
-import SubdoshaCard from "@/components/dosha/SubdoshaCard";
 import NutritionHabits from "@/components/dosha/NutritionHabits";
 
 const DoshaKapha = () => {
@@ -30,8 +27,6 @@ const DoshaKapha = () => {
         description={'Nascido da junção de Terra e Água, Kapha é frio, pesado, úmido, denso e resistente. Ele governa a estrutura, a estabilidade e a inteligência das funções mucosas no corpo. Não é apenas "catarro"; é a proteção do estômago, a umidade da boca e a lubrificação que adere e sustenta os tecidos. Dá uma sensação profunda de "chão", paciência e calma à mente.'}
         badges={["Estabilidade", "Resistência"]}
       />
-
-      <DoshaNavPills dosha="kapha" />
 
       <AgravamentosSection
         dosha="kapha"
@@ -98,19 +93,6 @@ const DoshaKapha = () => {
         </DoshaSection>
       </div>
 
-      <DoshaSection icon="⚙️" title="As 5 Mucosas do Corpo (Subdoshas)">
-        <p className="text-sm text-muted-foreground -mt-2 mb-4">
-          Os centros de aderência, memória e umidade. Quando adoecem, o excesso de Terra e Água sufoca o movimento (Vata) e apaga o fogo (Pitta).
-        </p>
-        <div className="space-y-4">
-          <SubdoshaCard number={1} name="Avalambaka Kapha" subtitle="O Pulmão e a Sustentação" adequate="A grande força do tórax. Transforma o ar em oxigênio denso." disturbed="Gera pulmão carregado, asma, bronquite e forte congestão." />
-          <SubdoshaCard number={2} name="Bodhaka Kapha" subtitle="A Boca e a Fala" adequate="Regula a saliva e o paladar. Garante voz macia e melodiosa." disturbed="Embotamento do paladar, perda de voz e rouquidão por adesão." />
-          <SubdoshaCard number={3} name="Kledaka Kapha" subtitle="A Fleuma Digestiva (Estômago)" adequate="Muco protetor que engloba o alimento. Dita o ritmo calmo da digestão." disturbed={'A digestão trava (inércia mucosa). A pessoa sente uma "âncora" no estômago após comer e sofre de náuseas.'} />
-          <SubdoshaCard number={4} name="Tarpaka Kapha" subtitle="A Memória (Cérebro e Sinus)" adequate={'A "cola" da mente que sustenta o foco. Proporciona memória profunda e duradoura.'} disturbed="A mente fica letárgica e as vias aéreas entopem cronicamente (sinusites)." />
-          <SubdoshaCard number={5} name="Shleshaka Kapha" subtitle="A Lubrificação Articular" adequate="Líquido sinovial que protege os ossos. Permite mobilidade ampla e livre de dores." disturbed="As juntas incham com líquidos retidos, tornando-se frouxas, doloridas e edemaciadas." />
-        </div>
-      </DoshaSection>
-
       <DoshaSection icon="⚖️" title="Balanço Energético">
         <BalanceCard
           equilibriumTitle="🌿 Em Equilíbrio (Ojas & 7 Dhatus Fortes)"
@@ -123,15 +105,6 @@ const DoshaKapha = () => {
           ]}
         />
       </DoshaSection>
-
-      <section className="max-w-4xl mx-auto px-4 sm:px-6 pb-12">
-        <Link
-          to="/dosha/kapha/adoecimento"
-          className="block w-full text-center bg-kapha/90 hover:bg-kapha text-white font-bold py-4 px-6 rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm transition-all hover:shadow-lg hover:shadow-kapha/25"
-        >
-          🩺 Fisiopatologia Avançada de Kapha — Subdoshas & Mistura
-        </Link>
-      </section>
     </>
   );
 };

@@ -1,14 +1,11 @@
 import { Helmet } from "react-helmet-async";
-import { Link } from "react-router-dom";
 import DoshaHeroBanner from "@/components/dosha/DoshaHeroBanner";
 import DoshaSelector from "@/components/dosha/DoshaSelector";
-import DoshaNavPills from "@/components/dosha/DoshaNavPills";
 import AgravamentosSection from "@/components/dosha/AgravamentosSection";
 import DoshaSection from "@/components/dosha/DoshaSection";
 import PrakritiSection from "@/components/dosha/PrakritiSection";
 import OrganList from "@/components/dosha/OrganList";
 import BalanceCard from "@/components/dosha/BalanceCard";
-import SubdoshaCard from "@/components/dosha/SubdoshaCard";
 import NutritionHabits from "@/components/dosha/NutritionHabits";
 
 const DoshaPitta = () => {
@@ -30,8 +27,6 @@ const DoshaPitta = () => {
         description={'Nascido da junção de Fogo e Água, Pitta é quente e "estressado" por natureza. Ele governa todo o metabolismo, a digestão, a percepção sensorial e a transformação. Operando através de uma inteligência distribuída em cinco fogos, Pitta é a principal fonte de calor que transforma tanto o alimento em nutrientes quanto as experiências em compreensão profunda.'}
         badges={["Transformação", "Intensidade"]}
       />
-
-      <DoshaNavPills dosha="pitta" />
 
       <AgravamentosSection
         dosha="pitta"
@@ -97,19 +92,6 @@ const DoshaPitta = () => {
         </DoshaSection>
       </div>
 
-      <DoshaSection icon="⚙️" title="Os 5 Fogos do Corpo (Subdoshas)">
-        <p className="text-sm text-muted-foreground -mt-2 mb-4">
-          Os cinco fogos descrevem os padrões de transformação contínuos. Quando um fogo superaquece, ele inevitavelmente empurra calor para os demais.
-        </p>
-        <div className="space-y-4">
-          <SubdoshaCard number={1} name="Pachaka Pitta" subtitle="A Fornalha (Estômago e Intestino Delgado)" adequate="Sede principal da digestão. Extrai a nutrição do alimento com precisão e eficiência." disturbed="Gera azia e úlceras, empurrando calor para o sangue e inflamando a periferia." />
-          <SubdoshaCard number={2} name="Ranjaka Pitta" subtitle="O Radiador (Fígado e Sangue)" adequate="Distribui o calor pelo corpo e dá cor ao sangue. Metaboliza toxinas no fígado." disturbed={'O "sangue ferve", gerando hipertensão, hepatites e inflamações cutâneas.'} />
-          <SubdoshaCard number={3} name="Sadhaka Pitta" subtitle="O Discernimento (Mente e Coração)" adequate="Fogo mental que processa informações com clareza. Traz liderança e inteligência." disturbed="Obsessão, raiva controladora e perda do fio da meada." />
-          <SubdoshaCard number={4} name="Bhrajaka Pitta" subtitle="A Barreira (Pele)" adequate="Metabolismo da pele saudável. Brilho e luminosidade natural." disturbed="Manchas, rosácea e acne inflamatória — reflexo do transbordamento interno." />
-          <SubdoshaCard number={5} name="Alochaka Pitta" subtitle="A Visão (Olhos)" adequate="Metabolismo da luz nos olhos. Visão clara e percepção aguçada." disturbed="Ardência ocular, conjuntivite e fotofobia como manifestação sistêmica." />
-        </div>
-      </DoshaSection>
-
       <DoshaSection icon="⚖️" title="Balanço Energético">
         <BalanceCard
           equilibriumTitle="🌿 Em Equilíbrio (Agni & Tejas)"
@@ -122,15 +104,6 @@ const DoshaPitta = () => {
           ]}
         />
       </DoshaSection>
-
-      <section className="max-w-4xl mx-auto px-4 sm:px-6 pb-12">
-        <Link
-          to="/dosha/pitta/adoecimento"
-          className="block w-full text-center bg-pitta/90 hover:bg-pitta text-white font-bold py-4 px-6 rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm transition-all hover:shadow-lg hover:shadow-pitta/25"
-        >
-          🩺 Fisiopatologia Avançada de Pitta — Subdoshas & Mistura
-        </Link>
-      </section>
     </>
   );
 };
