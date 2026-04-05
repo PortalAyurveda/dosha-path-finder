@@ -1,4 +1,5 @@
 import { Helmet } from "react-helmet-async";
+import { Link } from "react-router-dom";
 import DoshaHeroBanner from "@/components/dosha/DoshaHeroBanner";
 import DoshaSelector from "@/components/dosha/DoshaSelector";
 import DoshaSection from "@/components/dosha/DoshaSection";
@@ -102,6 +103,15 @@ const DoshaPitta = () => {
           ]}
         />
       </DoshaSection>
+      {/* Link para Adoecimento */}
+      <section className="max-w-4xl mx-auto px-4 sm:px-6 pb-12">
+        <Link
+          to="/dosha/pitta/adoecimento"
+          className="block w-full text-center bg-pitta/90 hover:bg-pitta text-white font-bold py-4 px-6 rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm transition-all hover:shadow-lg hover:shadow-pitta/25"
+        >
+          🩺 Adoecimento de Pitta — Fisiopatologia Avançada
+        </Link>
+      </section>
     </>
   );
 };
