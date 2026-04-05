@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Clock, Flame, Shield, Coffee, Sun, Leaf, Home as HomeIcon, Moon, Baby, ExternalLink, ChevronDown } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import DoshaSelector from "@/components/dosha/DoshaSelector";
+import DoshaClock from "@/components/dosha/DoshaClock";
 
 const wisdomCards = [
   {
@@ -130,7 +131,7 @@ const doshaCards = [
     emoji: "💨",
     label: "Rotina para Vata",
     desc: "Aterramento, nutrição profunda e estabilidade para a mente aérea.",
-    to: "/biblioteca/vata/horarios",
+    to: "/biblioteca/vata",
     color: "border-vata/40 hover:border-vata bg-vata/5 hover:bg-vata/10",
     textColor: "text-vata",
   },
@@ -138,7 +139,7 @@ const doshaCards = [
     emoji: "🔥",
     label: "Rotina para Pitta",
     desc: "Resfriamento, moderação de estresse e foco na qualidade da digestão.",
-    to: "/biblioteca/pitta/horarios",
+    to: "/biblioteca/pitta",
     color: "border-pitta/40 hover:border-pitta bg-pitta/5 hover:bg-pitta/10",
     textColor: "text-pitta",
   },
@@ -146,19 +147,10 @@ const doshaCards = [
     emoji: "🪨",
     label: "Rotina para Kapha",
     desc: "Estímulo, termogênese matinal e leveza estrutural para combater inércia.",
-    to: "/biblioteca/kapha/horarios",
+    to: "/biblioteca/kapha",
     color: "border-kapha/40 hover:border-kapha bg-kapha/5 hover:bg-kapha/10",
     textColor: "text-kapha",
   },
-];
-
-const clockSegments = [
-  { label: "06h", dosha: "Kapha", color: "text-kapha" },
-  { label: "10h", dosha: "Pitta", color: "text-pitta" },
-  { label: "14h", dosha: "Vata", color: "text-vata" },
-  { label: "18h", dosha: "Kapha", color: "text-kapha" },
-  { label: "22h", dosha: "Pitta", color: "text-pitta" },
-  { label: "02h", dosha: "Vata", color: "text-vata" },
 ];
 
 const Horarios = () => {
@@ -184,69 +176,28 @@ const Horarios = () => {
                 Entender o relógio dos doshas é fundamental para que o tratamento ayurvédico flua sem radicalismos. Este processo de ciclar o seu dia garante a colheita de resultados a longo prazo, alinhando sua fisiologia ao ritmo do planeta.
               </p>
               <div className="flex flex-wrap gap-3">
-                <a href="#dinacharya" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-primary text-primary-foreground font-semibold text-sm hover:opacity-90 transition-opacity">
-                  Explorar a Rotina
-                </a>
-                <a href="#fisiologia" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-primary/30 text-primary font-semibold text-sm hover:bg-primary/5 transition-colors">
-                  Ver Fisiologia
-                </a>
+                {doshaCards.map((card) => (
+                  <Link
+                    key={card.to}
+                    to={card.to}
+                    className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-full font-semibold text-sm transition-all border-2 ${card.color}`}
+                  >
+                    {card.emoji} {card.label}
+                  </Link>
+                ))}
               </div>
             </div>
 
-            {/* Clock visual */}
+            {/* Clock visual — user's conic gradient design */}
             <div className="flex justify-center">
-              <div className="relative w-64 h-64 md:w-80 md:h-80 rounded-full border-4 border-primary/20 bg-white/60 backdrop-blur-sm flex items-center justify-center">
-                <div className="text-center">
-                  <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Ciclo</p>
-                  <p className="text-3xl md:text-4xl font-serif font-bold text-primary">24h</p>
-                </div>
-                {clockSegments.map((seg, i) => {
-                  const angle = (i * 60) - 90;
-                  const rad = (angle * Math.PI) / 180;
-                  const r = 52;
-                  const x = 50 + r * Math.cos(rad);
-                  const y = 50 + r * Math.sin(rad);
-                  return (
-                    <div
-                      key={seg.label}
-                      className="absolute text-center"
-                      style={{ left: `${x}%`, top: `${y}%`, transform: "translate(-50%, -50%)" }}
-                    >
-                      <p className="text-[10px] font-bold text-muted-foreground">{seg.label}</p>
-                      <p className={`text-xs font-bold ${seg.color}`}>{seg.dosha}</p>
-                    </div>
-                  );
-                })}
+              <div className="w-64 h-64 md:w-80 md:h-80">
+                <DoshaClock variant="neutral" centerLabel="Ciclo" centerValue="24h" />
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Dosha cards */}
-      <section className="py-12 bg-background">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 text-center">
-          <h2 className="text-2xl md:text-3xl font-serif font-bold italic text-primary mb-3">
-            Aprofunde-se no Seu Dosha Dominante
-          </h2>
-          <p className="text-foreground/70 max-w-2xl mx-auto mb-8">
-            A rotina geral é a base, mas o ajuste fino mora na sua individualidade. Escolha seu caminho abaixo.
-          </p>
-          <div className="grid sm:grid-cols-3 gap-4">
-            {doshaCards.map((card) => (
-              <Link
-                key={card.to}
-                to={card.to}
-                className={`rounded-2xl border-2 p-6 text-center transition-all ${card.color}`}
-              >
-                <span className="text-4xl block mb-3">{card.emoji}</span>
-                <h3 className={`font-serif font-bold text-lg ${card.textColor} mb-1`}>{card.label}</h3>
-                <p className="text-sm text-foreground/60">{card.desc}</p>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* Wisdom cards */}
       <section id="fisiologia" className="py-12 bg-surface-sun/50">

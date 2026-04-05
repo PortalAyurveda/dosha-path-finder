@@ -3,8 +3,8 @@ import { Clock, UtensilsCrossed, Pill, Bird, Home } from "lucide-react";
 
 interface DoshaNavPillsProps {
   dosha: "vata" | "pitta" | "kapha";
-  activeTab: "principal" | "avancado";
-  onTabChange: (tab: "principal" | "avancado") => void;
+  activeTab: "principal" | "horarios" | "avancado";
+  onTabChange: (tab: "principal" | "horarios" | "avancado") => void;
 }
 
 const doshaColors = {
@@ -62,6 +62,11 @@ const DoshaNavPills = ({ dosha, activeTab, onTabChange }: DoshaNavPillsProps) =>
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  const handleHorarios = () => {
+    onTabChange("horarios");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   const handleAvancado = () => {
     onTabChange("avancado");
     navigate(doshaAdvancedRoutes[dosha], { replace: true });
@@ -70,6 +75,7 @@ const DoshaNavPills = ({ dosha, activeTab, onTabChange }: DoshaNavPillsProps) =>
 
   const colors = doshaColors[dosha];
   const isPrincipal = activeTab === "principal";
+  const isHorarios = activeTab === "horarios";
   const isAvancado = activeTab === "avancado";
 
   return (
@@ -82,8 +88,8 @@ const DoshaNavPills = ({ dosha, activeTab, onTabChange }: DoshaNavPillsProps) =>
         Principal
       </button>
       <button
-        onClick={() => navigate(`/biblioteca/${dosha}/horarios`)}
-        className={`flex items-center gap-1.5 px-5 py-2.5 rounded-full border font-semibold text-sm transition-all ${colors.inactive}`}
+        onClick={handleHorarios}
+        className={`flex items-center gap-1.5 px-5 py-2.5 rounded-full border font-semibold text-sm transition-all ${isHorarios ? colors.active : colors.inactive}`}
       >
         <Clock className="h-4 w-4" />
         Horários

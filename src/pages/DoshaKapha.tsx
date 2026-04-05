@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { Helmet } from "react-helmet-async";
+import DoshaRoutineContent from "@/components/dosha/DoshaRoutineContent";
+import { kaphaRoutineData } from "@/data/routineData";
 import DoshaHeroBanner from "@/components/dosha/DoshaHeroBanner";
 import DoshaSelector from "@/components/dosha/DoshaSelector";
 import AgravamentosSection from "@/components/dosha/AgravamentosSection";
@@ -13,11 +15,11 @@ import AdoecimentoSubdoshaCard from "@/components/dosha/AdoecimentoSubdoshaCard"
 import { AlertTriangle, Droplets } from "lucide-react";
 
 interface DoshaKaphaProps {
-  defaultTab?: "principal" | "avancado";
+  defaultTab?: "principal" | "horarios" | "avancado";
 }
 
 const DoshaKapha = ({ defaultTab = "principal" }: DoshaKaphaProps) => {
-  const [activeTab, setActiveTab] = useState<"principal" | "avancado">(defaultTab);
+  const [activeTab, setActiveTab] = useState<"principal" | "horarios" | "avancado">(defaultTab);
 
   return (
     <>
@@ -120,6 +122,8 @@ const DoshaKapha = ({ defaultTab = "principal" }: DoshaKaphaProps) => {
             />
           </DoshaSection>
         </>
+      ) : activeTab === "horarios" ? (
+        <DoshaRoutineContent dosha="kapha" {...kaphaRoutineData} />
       ) : (
         <>
           <DoshaSection icon="🔍" title="Sinais Diagnósticos">

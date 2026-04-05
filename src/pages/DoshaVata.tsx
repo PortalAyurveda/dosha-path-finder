@@ -10,14 +10,16 @@ import BalanceCard from "@/components/dosha/BalanceCard";
 import NutritionHabits from "@/components/dosha/NutritionHabits";
 import CollapsibleSubdoshaCard from "@/components/dosha/CollapsibleSubdoshaCard";
 import AdoecimentoSubdoshaCard from "@/components/dosha/AdoecimentoSubdoshaCard";
+import DoshaRoutineContent from "@/components/dosha/DoshaRoutineContent";
+import { vataRoutineData } from "@/data/routineData";
 import { AlertTriangle, Droplets } from "lucide-react";
 
 interface DoshaVataProps {
-  defaultTab?: "principal" | "avancado";
+  defaultTab?: "principal" | "horarios" | "avancado";
 }
 
 const DoshaVata = ({ defaultTab = "principal" }: DoshaVataProps) => {
-  const [activeTab, setActiveTab] = useState<"principal" | "avancado">(defaultTab);
+  const [activeTab, setActiveTab] = useState<"principal" | "horarios" | "avancado">(defaultTab);
 
   return (
     <>
@@ -120,6 +122,8 @@ const DoshaVata = ({ defaultTab = "principal" }: DoshaVataProps) => {
             />
           </DoshaSection>
         </>
+      ) : activeTab === "horarios" ? (
+        <DoshaRoutineContent dosha="vata" {...vataRoutineData} />
       ) : (
         <>
           {/* AVANÇADO */}
