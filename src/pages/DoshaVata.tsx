@@ -13,8 +13,10 @@ import CollapsibleSubdoshaCard from "@/components/dosha/CollapsibleSubdoshaCard"
 import AdoecimentoSubdoshaCard from "@/components/dosha/AdoecimentoSubdoshaCard";
 import DoshaRoutineContent from "@/components/dosha/DoshaRoutineContent";
 import DoshaFoodContent from "@/components/dosha/DoshaFoodContent";
+import DoshaRemediesContent from "@/components/dosha/DoshaRemediesContent";
 import { vataRoutineData } from "@/data/routineData";
 import { vataFoodData } from "@/data/foodData";
+import { vataRemediesData } from "@/data/remediesData";
 import { type DoshaTab } from "@/components/dosha/DoshaNavPills";
 import { AlertTriangle, Droplets } from "lucide-react";
 
@@ -50,6 +52,8 @@ const DoshaVata = ({ defaultTab = "principal" }: DoshaVataProps) => {
 
       {activeTab === "alimentacao" ? (
         <DoshaFoodContent dosha="vata" {...vataFoodData} />
+      ) : activeTab === "remedios" ? (
+        <DoshaRemediesContent dosha="vata" {...vataRemediesData} />
       ) : activeTab === "principal" ? (
         <>
           <AgravamentosSection

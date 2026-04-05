@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { Clock, UtensilsCrossed, Pill, Bird, Home } from "lucide-react";
 
-export type DoshaTab = "principal" | "horarios" | "alimentacao" | "avancado";
+export type DoshaTab = "principal" | "horarios" | "alimentacao" | "remedios" | "avancado";
 
 interface DoshaNavPillsProps {
   dosha: "vata" | "pitta" | "kapha";
@@ -40,7 +40,7 @@ const pills = [
   { id: "principal" as DoshaTab, label: "Principal", icon: Home },
   { id: "horarios" as DoshaTab, label: "Horários", icon: Clock },
   { id: "alimentacao" as DoshaTab, label: "Alimentação", icon: UtensilsCrossed },
-  { id: "remedios" as const, label: "Remédios", icon: Pill },
+  { id: "remedios" as DoshaTab, label: "Remédios", icon: Pill },
   { id: "avancado" as DoshaTab, label: "Avançado", icon: Bird },
 ];
 
@@ -63,17 +63,8 @@ const DoshaNavPills = ({ dosha, activeTab, onTabChange }: DoshaNavPillsProps) =>
       navigate(doshaAdvancedRoutes[dosha], { replace: true });
       window.scrollTo({ top: 0, behavior: "smooth" });
     } else if (id === "remedios") {
-      if (activeTab !== "principal") {
-        onTabChange("principal");
-        navigate(doshaMainRoutes[dosha], { replace: true });
-        setTimeout(() => {
-          const el = document.getElementById("remedios");
-          if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-        }, 100);
-      } else {
-        const el = document.getElementById("remedios");
-        if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-      }
+      onTabChange("remedios");
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
 
@@ -85,13 +76,12 @@ const DoshaNavPills = ({ dosha, activeTab, onTabChange }: DoshaNavPillsProps) =>
         {pills.map((p) => {
           const Icon = p.icon;
           const isActive = p.id === activeTab;
-          const isScroll = p.id === "remedios";
           return (
             <button
               key={p.id}
               onClick={() => handleClick(p.id)}
               className={`flex items-center gap-1 px-3 sm:px-4 py-2 rounded-full border font-semibold text-xs sm:text-sm transition-all whitespace-nowrap shrink-0 ${
-                isActive && !isScroll ? colors.active : colors.inactive
+                isActive ? colors.active : colors.inactive
               }`}
             >
               <Icon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />

@@ -3,8 +3,10 @@ import { useSearchParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import DoshaRoutineContent from "@/components/dosha/DoshaRoutineContent";
 import DoshaFoodContent from "@/components/dosha/DoshaFoodContent";
+import DoshaRemediesContent from "@/components/dosha/DoshaRemediesContent";
 import { kaphaRoutineData } from "@/data/routineData";
 import { kaphaFoodData } from "@/data/foodData";
+import { kaphaRemediesData } from "@/data/remediesData";
 import { type DoshaTab } from "@/components/dosha/DoshaNavPills";
 import DoshaHeroBanner from "@/components/dosha/DoshaHeroBanner";
 import DoshaSelector from "@/components/dosha/DoshaSelector";
@@ -50,6 +52,8 @@ const DoshaKapha = ({ defaultTab = "principal" }: DoshaKaphaProps) => {
 
       {activeTab === "alimentacao" ? (
         <DoshaFoodContent dosha="kapha" {...kaphaFoodData} />
+      ) : activeTab === "remedios" ? (
+        <DoshaRemediesContent dosha="kapha" {...kaphaRemediesData} />
       ) : activeTab === "principal" ? (
         <>
           <AgravamentosSection
