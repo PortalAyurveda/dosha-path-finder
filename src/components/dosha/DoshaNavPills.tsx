@@ -1,10 +1,12 @@
 import { useNavigate } from "react-router-dom";
 import { Clock, UtensilsCrossed, Pill, Bird, Home } from "lucide-react";
 
+export type DoshaTab = "principal" | "horarios" | "alimentacao" | "avancado";
+
 interface DoshaNavPillsProps {
   dosha: "vata" | "pitta" | "kapha";
-  activeTab: "principal" | "horarios" | "avancado";
-  onTabChange: (tab: "principal" | "horarios" | "avancado") => void;
+  activeTab: DoshaTab;
+  onTabChange: (tab: DoshaTab) => void;
 }
 
 const doshaColors = {
@@ -21,11 +23,6 @@ const doshaColors = {
     active: "border-kapha bg-kapha text-white shadow-md shadow-kapha/30",
   },
 };
-
-const scrollPills = [
-  { id: "alimentacao", label: "Alimentação", icon: UtensilsCrossed },
-  { id: "remedios", label: "Remédios", icon: Pill },
-];
 
 const doshaAdvancedRoutes = {
   vata: "/biblioteca/vata/adoecimento",
@@ -67,6 +64,11 @@ const DoshaNavPills = ({ dosha, activeTab, onTabChange }: DoshaNavPillsProps) =>
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  const handleAlimentacao = () => {
+    onTabChange("alimentacao");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   const handleAvancado = () => {
     onTabChange("avancado");
     navigate(doshaAdvancedRoutes[dosha], { replace: true });
@@ -76,6 +78,7 @@ const DoshaNavPills = ({ dosha, activeTab, onTabChange }: DoshaNavPillsProps) =>
   const colors = doshaColors[dosha];
   const isPrincipal = activeTab === "principal";
   const isHorarios = activeTab === "horarios";
+  const isAlimentacao = activeTab === "alimentacao";
   const isAvancado = activeTab === "avancado";
 
   return (
@@ -94,19 +97,20 @@ const DoshaNavPills = ({ dosha, activeTab, onTabChange }: DoshaNavPillsProps) =>
         <Clock className="h-4 w-4" />
         Horários
       </button>
-      {scrollPills.map((p) => {
-        const Icon = p.icon;
-        return (
-          <button
-            key={p.id}
-            onClick={() => handleScrollPill(p.id)}
-            className={`flex items-center gap-1.5 px-5 py-2.5 rounded-full border font-semibold text-sm transition-all ${colors.inactive}`}
-          >
-            <Icon className="h-4 w-4" />
-            {p.label}
-          </button>
-        );
-      })}
+      <button
+        onClick={handleAlimentacao}
+        className={`flex items-center gap-1.5 px-5 py-2.5 rounded-full border font-semibold text-sm transition-all ${isAlimentacao ? colors.active : colors.inactive}`}
+      >
+        <UtensilsCrossed className="h-4 w-4" />
+        Alimentação
+      </button>
+      <button
+        onClick={() => handleScrollPill("remedios")}
+        className={`flex items-center gap-1.5 px-5 py-2.5 rounded-full border font-semibold text-sm transition-all ${colors.inactive}`}
+      >
+        <Pill className="h-4 w-4" />
+        Remédios
+      </button>
       <button
         onClick={handleAvancado}
         className={`flex items-center gap-1.5 px-5 py-2.5 rounded-full border font-semibold text-sm transition-all ${isAvancado ? colors.active : colors.inactive}`}
