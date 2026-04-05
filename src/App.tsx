@@ -17,6 +17,7 @@ import DoshaKapha from "./pages/DoshaKapha";
 import DoshaVataAdoecimento from "./pages/DoshaVataAdoecimento";
 import DoshaPittaAdoecimento from "./pages/DoshaPittaAdoecimento";
 import DoshaKaphaAdoecimento from "./pages/DoshaKaphaAdoecimento";
+import Horarios from "./pages/Horarios";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
