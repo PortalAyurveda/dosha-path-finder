@@ -145,7 +145,7 @@ const doshaCards = [
     emoji: "🪨",
     label: "Rotina para Kapha",
     desc: "Estímulo, termogênese matinal e leveza estrutural para combater inércia.",
-    to: "/dosha/kapha",
+    to: "/horarios/kapha",
     color: "border-kapha/40 hover:border-kapha bg-kapha/5 hover:bg-kapha/10",
     textColor: "text-kapha",
   },

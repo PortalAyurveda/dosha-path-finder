@@ -47,6 +47,9 @@ const App = () => (
             <Route path="/dosha/kapha" element={<DoshaKapha />} />
             <Route path="/dosha/kapha/adoecimento" element={<DoshaKaphaAdoecimento />} />
             <Route path="/horarios" element={<Horarios />} />
+            <Route path="/horarios/vata" element={<HorariosVata />} />
+            <Route path="/horarios/pitta" element={<HorariosPitta />} />
+            <Route path="/horarios/kapha" element={<HorariosKapha />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Layout>
