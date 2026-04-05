@@ -166,7 +166,7 @@ const Horarios = () => {
       <Helmet>
         <title>Relógio dos Doshas & Dinacharya — Portal Ayurveda</title>
         <meta name="description" content="Guia profundo e completo sobre o ciclo natural de 24 horas dos Doshas, englobando sono, rotinas, alimentação e fisiologia clínica." />
-        <link rel="canonical" href="https://dosha-path-finder.lovable.app/horarios" />
+        <link rel="canonical" href="https://portalayurveda.com.br/biblioteca/horarios" />
       </Helmet>
 
       {/* Hero */}
