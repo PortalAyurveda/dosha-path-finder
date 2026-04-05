@@ -8,10 +8,11 @@ const doshas = [
   { key: "horarios", label: "Horários", path: "/horarios", icon: Clock, elements: "Dinacharya" },
 ] as const;
 
-const activeStyles = {
+const activeStyles: Record<string, string> = {
   vata: "bg-vata/20 border-vata text-vata ring-2 ring-vata/30",
   pitta: "bg-pitta/20 border-pitta text-pitta ring-2 ring-pitta/30",
   kapha: "bg-kapha/20 border-kapha text-kapha ring-2 ring-kapha/30",
+  horarios: "bg-accent/20 border-accent text-accent-foreground ring-2 ring-accent/30",
 };
 
 const inactiveStyles = {
