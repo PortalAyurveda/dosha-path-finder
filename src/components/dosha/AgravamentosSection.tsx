@@ -1,4 +1,10 @@
-import { AlertTriangle } from "lucide-react";
+import { AlertTriangle, ChevronDown } from "lucide-react";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 interface AgravamentoItem {
   title: string;
@@ -12,9 +18,9 @@ interface AgravamentosSectionProps {
 }
 
 const doshaAccent = {
-  vata: { border: "border-vata/30", bg: "bg-vata/5", dot: "bg-vata" },
-  pitta: { border: "border-pitta/30", bg: "bg-pitta/5", dot: "bg-pitta" },
-  kapha: { border: "border-kapha/30", bg: "bg-kapha/5", dot: "bg-kapha" },
+  vata: { border: "border-vata/30", bg: "bg-vata/5", dot: "bg-vata", trigger: "hover:bg-vata/10" },
+  pitta: { border: "border-pitta/30", bg: "bg-pitta/5", dot: "bg-pitta", trigger: "hover:bg-pitta/10" },
+  kapha: { border: "border-kapha/30", bg: "bg-kapha/5", dot: "bg-kapha", trigger: "hover:bg-kapha/10" },
 };
 
 const AgravamentosSection = ({ dosha, intro, items }: AgravamentosSectionProps) => {
@@ -27,19 +33,28 @@ const AgravamentosSection = ({ dosha, intro, items }: AgravamentosSectionProps) 
         Principais Agravamentos e Manifestações Clínicas
       </h2>
       <p className="text-sm text-muted-foreground mb-6 leading-relaxed">{intro}</p>
-      <div className="space-y-3">
+
+      <Accordion type="multiple" className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
         {items.map((item, i) => (
-          <div
+          <AccordionItem
             key={i}
-            className={`${colors.bg} border ${colors.border} rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm p-4 flex items-start gap-3`}
+            value={`item-${i}`}
+            className={`${colors.bg} border ${colors.border} rounded-xl px-4 py-0 overflow-hidden`}
           >
-            <span className={`mt-1.5 h-2.5 w-2.5 rounded-full ${colors.dot} shrink-0`} />
-            <p className="text-sm text-foreground leading-relaxed">
-              <span className="font-bold text-secondary">{item.title}:</span> {item.text}
-            </p>
-          </div>
+            <AccordionTrigger
+              className={`py-3 text-left text-sm font-bold text-secondary no-underline hover:no-underline ${colors.trigger} gap-2`}
+            >
+              <span className="flex items-center gap-2">
+                <span className={`h-2 w-2 rounded-full ${colors.dot} shrink-0`} />
+                {item.title}
+              </span>
+            </AccordionTrigger>
+            <AccordionContent className="text-sm text-foreground leading-relaxed pb-3 pt-0">
+              {item.text}
+            </AccordionContent>
+          </AccordionItem>
         ))}
-      </div>
+      </Accordion>
     </section>
   );
 };
