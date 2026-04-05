@@ -1,3 +1,5 @@
+import DoshaNavPills from "@/components/dosha/DoshaNavPills";
+
 interface DoshaHeroBannerProps {
   dosha: "vata" | "pitta" | "kapha";
   emoji: string;
@@ -41,6 +43,7 @@ const DoshaHeroBanner = ({ dosha, emoji, title, elements, subtitle, description,
         <p className="text-base md:text-lg text-foreground max-w-2xl mx-auto leading-relaxed">
           {description}
         </p>
+        <DoshaNavPills dosha={dosha} />
       </div>
     </section>
   );

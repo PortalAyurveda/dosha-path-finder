@@ -1,14 +1,11 @@
 import { Helmet } from "react-helmet-async";
-import { Link } from "react-router-dom";
 import DoshaHeroBanner from "@/components/dosha/DoshaHeroBanner";
 import DoshaSelector from "@/components/dosha/DoshaSelector";
-import DoshaNavPills from "@/components/dosha/DoshaNavPills";
 import AgravamentosSection from "@/components/dosha/AgravamentosSection";
 import DoshaSection from "@/components/dosha/DoshaSection";
 import PrakritiSection from "@/components/dosha/PrakritiSection";
 import OrganList from "@/components/dosha/OrganList";
 import BalanceCard from "@/components/dosha/BalanceCard";
-import SubdoshaCard from "@/components/dosha/SubdoshaCard";
 import NutritionHabits from "@/components/dosha/NutritionHabits";
 
 const DoshaVata = () => {
@@ -30,8 +27,6 @@ const DoshaVata = () => {
         description="Nascido da junção de Éter e Ar, Vata é leve, irregular e seco por natureza. Ele governa o movimento, a rapidez, a difusão e a criatividade. Operando através de uma inteligência distribuída em cinco ventos (Vayus), Vata é a força vital (Prana) que distribui os nutrientes, coordena a mente, rege a respiração e empurra as eliminações. Como Pitta e Kapha são inertes sem ele, todo adoecimento sistêmico envolve uma quebra no ritmo de Vata."
         badges={["Movimento", "Sutil"]}
       />
-
-      <DoshaNavPills dosha="vata" />
 
       <AgravamentosSection
         dosha="vata"
@@ -98,19 +93,6 @@ const DoshaVata = () => {
         </DoshaSection>
       </div>
 
-      <DoshaSection icon="⚙️" title="Os 5 Ventos do Corpo (Subdoshas)">
-        <p className="text-sm text-muted-foreground -mt-2 mb-4">
-          Os cinco ventos descrevem os padrões de movimento contínuos. Quando um vento seca, trava ou inverte a direção, ele invariavelmente puxa os outros.
-        </p>
-        <div className="space-y-4">
-          <SubdoshaCard number={1} name="Prana Vayu" subtitle="O Vento das Ideias (Cérebro, Coração e Eixo Respiratório)" adequate="Governa a captação, direção e organização do fluxo mental. Quando livre, a mente percebe o mundo com clareza." disturbed="Confusão profunda e incapacidade de organizar o pensamento. Ansiedade e pânico." />
-          <SubdoshaCard number={2} name="Udana Vayu" subtitle="O Vento da Expressão (Garganta e Voz)" adequate="Rege a energia ascendente que sai do coração para a garganta. Governa a comunicação e a capacidade de expressar sentimentos." disturbed="Rouquidão, dificuldade de colocar sentimentos para fora. Ligado à tireoide." />
-          <SubdoshaCard number={3} name="Samana Vayu" subtitle="O Ritmo Digestivo (Estômago e Intestino Delgado)" adequate="Coordena o tempo de trânsito, processamento e trituração rítmica do alimento." disturbed="Digestão inconstante, gases dolorosos e distensão abdominal severa." />
-          <SubdoshaCard number={4} name="Vyana Vayu" subtitle="O Distribuidor (Coração e Circulação Periférica)" adequate="Puxa a nutrição do centro para a periferia. Garante calor nas mãos, braços e pernas." disturbed="Mãos e pés gélidos, dormências, palpitações e arritmias." />
-          <SubdoshaCard number={5} name="Apana Vayu" subtitle="A Descarga (Pelve e Cólon Descendente)" adequate="Governa todo movimento para baixo: eliminação, ciclo menstrual, reflexos de parto." disturbed={'Fezes como "bolinhas", dores lombares, cólicas intensas e candidíase.'} />
-        </div>
-      </DoshaSection>
-
       <DoshaSection icon="⚖️" title="Balanço Energético">
         <BalanceCard
           equilibriumTitle="🌿 Em Equilíbrio (Prana & Srotas Livres)"
@@ -123,16 +105,6 @@ const DoshaVata = () => {
           ]}
         />
       </DoshaSection>
-
-      {/* Link para Adoecimento Avançado */}
-      <section className="max-w-4xl mx-auto px-4 sm:px-6 pb-12">
-        <Link
-          to="/dosha/vata/adoecimento"
-          className="block w-full text-center bg-vata/90 hover:bg-vata text-white font-bold py-4 px-6 rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm transition-all hover:shadow-lg hover:shadow-vata/25"
-        >
-          🩺 Fisiopatologia Avançada de Vata — Subdoshas & Mistura
-        </Link>
-      </section>
     </>
   );
 };
