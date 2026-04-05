@@ -23,7 +23,6 @@ const doshaColors = {
 };
 
 const scrollPills = [
-  { id: "horarios", label: "Horários", icon: Clock },
   { id: "alimentacao", label: "Alimentação", icon: UtensilsCrossed },
   { id: "remedios", label: "Remédios", icon: Pill },
 ];
