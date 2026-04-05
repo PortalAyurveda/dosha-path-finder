@@ -198,30 +198,6 @@ const Horarios = () => {
         </div>
       </section>
 
-      {/* Dosha cards */}
-      <section className="py-12 bg-background">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 text-center">
-          <h2 className="text-2xl md:text-3xl font-serif font-bold italic text-primary mb-3">
-            Aprofunde-se no Seu Dosha Dominante
-          </h2>
-          <p className="text-foreground/70 max-w-2xl mx-auto mb-8">
-            A rotina geral é a base, mas o ajuste fino mora na sua individualidade. Escolha seu caminho abaixo.
-          </p>
-          <div className="grid sm:grid-cols-3 gap-4">
-            {doshaCards.map((card) => (
-              <Link
-                key={card.to}
-                to={card.to}
-                className={`rounded-2xl border-2 p-6 text-center transition-all ${card.color}`}
-              >
-                <span className="text-4xl block mb-3">{card.emoji}</span>
-                <h3 className={`font-serif font-bold text-lg ${card.textColor} mb-1`}>{card.label}</h3>
-                <p className="text-sm text-foreground/60">{card.desc}</p>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* Wisdom cards */}
       <section id="fisiologia" className="py-12 bg-surface-sun/50">
