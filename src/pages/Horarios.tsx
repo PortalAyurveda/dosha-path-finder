@@ -164,6 +164,7 @@ const clockSegments = [
 const Horarios = () => {
   return (
     <>
+      <DoshaSelector />
       <Helmet>
         <title>Relógio dos Doshas & Dinacharya — Portal Ayurveda</title>
         <meta name="description" content="Guia profundo e completo sobre o ciclo natural de 24 horas dos Doshas, englobando sono, rotinas, alimentação e fisiologia clínica." />

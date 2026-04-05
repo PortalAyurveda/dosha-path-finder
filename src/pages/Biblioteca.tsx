@@ -223,7 +223,8 @@ const Biblioteca = () => {
         description={selectedVideo?.nova_descricao ?? ""}
         textoParaEmbedding={selectedVideo?.texto_para_embedding}
       />
-    </PageContainer>
+      </PageContainer>
+    </>
   );
 };
 
