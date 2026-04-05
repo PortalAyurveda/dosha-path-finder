@@ -12,17 +12,20 @@ import NutritionHabits from "@/components/dosha/NutritionHabits";
 import CollapsibleSubdoshaCard from "@/components/dosha/CollapsibleSubdoshaCard";
 import AdoecimentoSubdoshaCard from "@/components/dosha/AdoecimentoSubdoshaCard";
 import DoshaRoutineContent from "@/components/dosha/DoshaRoutineContent";
+import DoshaFoodContent from "@/components/dosha/DoshaFoodContent";
 import { vataRoutineData } from "@/data/routineData";
+import { vataFoodData } from "@/data/foodData";
+import { type DoshaTab } from "@/components/dosha/DoshaNavPills";
 import { AlertTriangle, Droplets } from "lucide-react";
 
 interface DoshaVataProps {
-  defaultTab?: "principal" | "horarios" | "avancado";
+  defaultTab?: DoshaTab;
 }
 
 const DoshaVata = ({ defaultTab = "principal" }: DoshaVataProps) => {
   const [searchParams] = useSearchParams();
-  const tabFromUrl = searchParams.get("tab") as "principal" | "horarios" | "avancado" | null;
-  const [activeTab, setActiveTab] = useState<"principal" | "horarios" | "avancado">(tabFromUrl || defaultTab);
+  const tabFromUrl = searchParams.get("tab") as DoshaTab | null;
+  const [activeTab, setActiveTab] = useState<DoshaTab>(tabFromUrl || defaultTab);
 
   return (
     <>
@@ -45,7 +48,9 @@ const DoshaVata = ({ defaultTab = "principal" }: DoshaVataProps) => {
         onTabChange={setActiveTab}
       />
 
-      {activeTab === "principal" ? (
+      {activeTab === "alimentacao" ? (
+        <DoshaFoodContent dosha="vata" {...vataFoodData} />
+      ) : activeTab === "principal" ? (
         <>
           <AgravamentosSection
             dosha="vata"
