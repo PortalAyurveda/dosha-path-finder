@@ -25,7 +25,7 @@ const inactiveStyles: Record<string, string> = {
 const DoshaSelector = () => {
   const location = useLocation();
   const pathParts = location.pathname.split("/");
-  const currentDosha = pathParts[2]; // /dosha/{vata|pitta|kapha}/...
+  const currentDosha = pathParts[1] === "horarios" ? "horarios" : pathParts[2];
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 pt-6 pb-2">
