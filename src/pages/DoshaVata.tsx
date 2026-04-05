@@ -122,6 +122,8 @@ const DoshaVata = ({ defaultTab = "principal" }: DoshaVataProps) => {
             />
           </DoshaSection>
         </>
+      ) : activeTab === "horarios" ? (
+        <DoshaRoutineContent dosha="vata" {...vataRoutineData} />
       ) : (
         <>
           {/* AVANÇADO */}
