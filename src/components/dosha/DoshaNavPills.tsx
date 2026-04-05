@@ -23,21 +23,20 @@ const doshaColors = {
 };
 
 const scrollPills = [
-  { id: "horarios", label: "Horários", icon: Clock },
   { id: "alimentacao", label: "Alimentação", icon: UtensilsCrossed },
   { id: "remedios", label: "Remédios", icon: Pill },
 ];
 
 const doshaAdvancedRoutes = {
-  vata: "/dosha/vata/adoecimento",
-  pitta: "/dosha/pitta/adoecimento",
-  kapha: "/dosha/kapha/adoecimento",
+  vata: "/biblioteca/vata/adoecimento",
+  pitta: "/biblioteca/pitta/adoecimento",
+  kapha: "/biblioteca/kapha/adoecimento",
 };
 
 const doshaMainRoutes = {
-  vata: "/dosha/vata",
-  pitta: "/dosha/pitta",
-  kapha: "/dosha/kapha",
+  vata: "/biblioteca/vata",
+  pitta: "/biblioteca/pitta",
+  kapha: "/biblioteca/kapha",
 };
 
 const DoshaNavPills = ({ dosha, activeTab, onTabChange }: DoshaNavPillsProps) => {
@@ -81,6 +80,13 @@ const DoshaNavPills = ({ dosha, activeTab, onTabChange }: DoshaNavPillsProps) =>
       >
         <Home className="h-4 w-4" />
         Principal
+      </button>
+      <button
+        onClick={() => navigate(`/biblioteca/${dosha}/horarios`)}
+        className={`flex items-center gap-1.5 px-5 py-2.5 rounded-full border font-semibold text-sm transition-all ${colors.inactive}`}
+      >
+        <Clock className="h-4 w-4" />
+        Horários
       </button>
       {scrollPills.map((p) => {
         const Icon = p.icon;

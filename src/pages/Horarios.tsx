@@ -2,6 +2,7 @@ import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
 import { Clock, Flame, Shield, Coffee, Sun, Leaf, Home as HomeIcon, Moon, Baby, ExternalLink, ChevronDown } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import DoshaSelector from "@/components/dosha/DoshaSelector";
 
 const wisdomCards = [
   {
@@ -129,7 +130,7 @@ const doshaCards = [
     emoji: "💨",
     label: "Rotina para Vata",
     desc: "Aterramento, nutrição profunda e estabilidade para a mente aérea.",
-    to: "/horarios/vata",
+    to: "/biblioteca/vata/horarios",
     color: "border-vata/40 hover:border-vata bg-vata/5 hover:bg-vata/10",
     textColor: "text-vata",
   },
@@ -137,7 +138,7 @@ const doshaCards = [
     emoji: "🔥",
     label: "Rotina para Pitta",
     desc: "Resfriamento, moderação de estresse e foco na qualidade da digestão.",
-    to: "/horarios/pitta",
+    to: "/biblioteca/pitta/horarios",
     color: "border-pitta/40 hover:border-pitta bg-pitta/5 hover:bg-pitta/10",
     textColor: "text-pitta",
   },
@@ -145,7 +146,7 @@ const doshaCards = [
     emoji: "🪨",
     label: "Rotina para Kapha",
     desc: "Estímulo, termogênese matinal e leveza estrutural para combater inércia.",
-    to: "/horarios/kapha",
+    to: "/biblioteca/kapha/horarios",
     color: "border-kapha/40 hover:border-kapha bg-kapha/5 hover:bg-kapha/10",
     textColor: "text-kapha",
   },
@@ -163,10 +164,11 @@ const clockSegments = [
 const Horarios = () => {
   return (
     <>
+      <DoshaSelector />
       <Helmet>
         <title>Relógio dos Doshas & Dinacharya — Portal Ayurveda</title>
         <meta name="description" content="Guia profundo e completo sobre o ciclo natural de 24 horas dos Doshas, englobando sono, rotinas, alimentação e fisiologia clínica." />
-        <link rel="canonical" href="https://dosha-path-finder.lovable.app/horarios" />
+        <link rel="canonical" href="https://portalayurveda.com.br/biblioteca/horarios" />
       </Helmet>
 
       {/* Hero */}

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import PageContainer from "@/components/PageContainer";
+import DoshaSelector from "@/components/dosha/DoshaSelector";
 import SearchHeader, { type VideoCategory } from "@/components/biblioteca/SearchHeader";
 import VideoResultCard from "@/components/biblioteca/VideoResultCard";
 import VideoPlayerDialog from "@/components/biblioteca/VideoPlayerDialog";
@@ -108,10 +109,12 @@ const Biblioteca = () => {
   const loading = isAdvanced ? isAdvancedLoading : isLoading;
 
   return (
-    <PageContainer
-      title="Biblioteca — Sommelier Ayurveda"
-      description="Encontre vídeos sobre Ayurveda: busque por sintomas, doshas, alimentos e muito mais."
-    >
+    <>
+      <DoshaSelector />
+      <PageContainer
+        title="Biblioteca — Sommelier Ayurveda"
+        description="Encontre vídeos sobre Ayurveda: busque por sintomas, doshas, alimentos e muito mais."
+      >
       <SearchHeader
         searchTerm={searchTerm}
         onSearchChange={setSearchTerm}
@@ -220,7 +223,8 @@ const Biblioteca = () => {
         description={selectedVideo?.nova_descricao ?? ""}
         textoParaEmbedding={selectedVideo?.texto_para_embedding}
       />
-    </PageContainer>
+      </PageContainer>
+    </>
   );
 };
 

@@ -1,11 +1,12 @@
 import { Link, useLocation } from "react-router-dom";
-import { Wind, Flame, Mountain, Clock } from "lucide-react";
+import { Wind, Flame, Mountain, Clock, BookOpen } from "lucide-react";
 
 const doshas = [
-  { key: "vata", label: "Vata", path: "/dosha/vata", icon: Wind, elements: "Éter + Ar" },
-  { key: "pitta", label: "Pitta", path: "/dosha/pitta", icon: Flame, elements: "Fogo + Água" },
-  { key: "kapha", label: "Kapha", path: "/dosha/kapha", icon: Mountain, elements: "Terra + Água" },
-  { key: "horarios", label: "Horários", path: "/horarios", icon: Clock, elements: "Dinacharya" },
+  { key: "vata", label: "Vata", path: "/biblioteca/vata", icon: Wind, elements: "Éter + Ar" },
+  { key: "pitta", label: "Pitta", path: "/biblioteca/pitta", icon: Flame, elements: "Fogo + Água" },
+  { key: "kapha", label: "Kapha", path: "/biblioteca/kapha", icon: Mountain, elements: "Terra + Água" },
+  { key: "horarios", label: "Horários", path: "/biblioteca/horarios", icon: Clock, elements: "Dinacharya" },
+  { key: "sommelier", label: "Sommelier", path: "/biblioteca", icon: BookOpen, elements: "Acervo" },
 ] as const;
 
 const activeStyles: Record<string, string> = {
@@ -13,6 +14,7 @@ const activeStyles: Record<string, string> = {
   pitta: "bg-pitta/20 border-pitta text-pitta ring-2 ring-pitta/30",
   kapha: "bg-kapha/20 border-kapha text-kapha ring-2 ring-kapha/30",
   horarios: "bg-accent/20 border-accent text-accent-foreground ring-2 ring-accent/30",
+  sommelier: "bg-primary/20 border-primary text-primary ring-2 ring-primary/30",
 };
 
 const inactiveStyles: Record<string, string> = {
@@ -20,12 +22,19 @@ const inactiveStyles: Record<string, string> = {
   pitta: "border-border hover:border-pitta/50 hover:bg-pitta/5 text-muted-foreground hover:text-pitta",
   kapha: "border-border hover:border-kapha/50 hover:bg-kapha/5 text-muted-foreground hover:text-kapha",
   horarios: "border-border hover:border-accent/50 hover:bg-accent/5 text-muted-foreground hover:text-accent-foreground",
+  sommelier: "border-border hover:border-primary/50 hover:bg-primary/5 text-muted-foreground hover:text-primary",
 };
 
 const DoshaSelector = () => {
   const location = useLocation();
-  const pathParts = location.pathname.split("/");
-  const currentDosha = pathParts[1] === "horarios" ? "horarios" : pathParts[2];
+  const path = location.pathname;
+  const currentDosha = path === "/biblioteca"
+    ? "sommelier"
+    : path.startsWith("/biblioteca/horarios")
+      ? "horarios"
+      : path.startsWith("/biblioteca/")
+        ? path.split("/")[2]
+        : undefined;
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 pt-6 pb-2">

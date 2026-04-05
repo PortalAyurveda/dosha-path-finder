@@ -25,7 +25,7 @@ const DoshaVata = ({ defaultTab = "principal" }: DoshaVataProps) => {
       <Helmet>
         <title>{activeTab === "avancado" ? "Dosha Vata e Subdoshas — Avançado" : "Guia do Dosha Vata"} — Portal Ayurveda</title>
         <meta name="description" content="Tudo sobre o dosha Vata: corpo físico, órgãos sede, os 5 ventos (Vayus), sabores, nutrição e hábitos de ouro para equilibrar Ar e Éter." />
-        <link rel="canonical" href={activeTab === "avancado" ? "https://portalayurveda.com.br/dosha/vata/adoecimento" : "https://portalayurveda.com.br/dosha/vata"} />
+        <link rel="canonical" href={activeTab === "avancado" ? "https://portalayurveda.com.br/biblioteca/vata/adoecimento" : "https://portalayurveda.com.br/biblioteca/vata"} />
       </Helmet>
 
       <DoshaHeroBanner

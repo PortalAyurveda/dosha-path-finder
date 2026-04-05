@@ -72,16 +72,16 @@ const doshaStyles = {
 
 const otherDoshas = {
   vata: [
-    { label: "Ver Rotina Pitta 🔥", to: "/horarios/pitta" },
-    { label: "Ver Rotina Kapha 🪨", to: "/horarios/kapha" },
+    { label: "Ver Rotina Pitta 🔥", to: "/biblioteca/pitta/horarios" },
+    { label: "Ver Rotina Kapha 🪨", to: "/biblioteca/kapha/horarios" },
   ],
   pitta: [
-    { label: "Ver Rotina Vata 💨", to: "/horarios/vata" },
-    { label: "Ver Rotina Kapha 🪨", to: "/horarios/kapha" },
+    { label: "Ver Rotina Vata 💨", to: "/biblioteca/vata/horarios" },
+    { label: "Ver Rotina Kapha 🪨", to: "/biblioteca/kapha/horarios" },
   ],
   kapha: [
-    { label: "Ver Rotina Vata 💨", to: "/horarios/vata" },
-    { label: "Ver Rotina Pitta 🔥", to: "/horarios/pitta" },
+    { label: "Ver Rotina Vata 💨", to: "/biblioteca/vata/horarios" },
+    { label: "Ver Rotina Pitta 🔥", to: "/biblioteca/pitta/horarios" },
   ],
 };
 
@@ -220,7 +220,7 @@ const DoshaRoutinePage = ({
           <h3 className="font-serif font-bold text-primary text-xl mb-4">Navegue pelas Rotinas</h3>
           <div className="flex flex-wrap justify-center gap-3">
             <Link
-              to="/horarios"
+              to="/biblioteca/horarios"
               className="px-5 py-2.5 rounded-full border border-primary/30 text-primary font-semibold text-sm hover:bg-primary/5 transition-colors"
             >
               Voltar ao Dinacharya Geral
