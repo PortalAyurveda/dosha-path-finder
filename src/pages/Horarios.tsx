@@ -137,7 +137,7 @@ const doshaCards = [
     emoji: "🔥",
     label: "Rotina para Pitta",
     desc: "Resfriamento, moderação de estresse e foco na qualidade da digestão.",
-    to: "/dosha/pitta",
+    to: "/horarios/pitta",
     color: "border-pitta/40 hover:border-pitta bg-pitta/5 hover:bg-pitta/10",
     textColor: "text-pitta",
   },
