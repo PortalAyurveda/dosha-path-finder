@@ -55,6 +55,8 @@ const DoshaPitta = ({ defaultTab = "principal" }: DoshaPittaProps) => {
         <DoshaFoodContent dosha="pitta" {...pittaFoodData} />
       ) : activeTab === "remedios" ? (
         <DoshaRemediesContent dosha="pitta" {...pittaRemediesData} />
+      ) : activeTab === "videos" ? (
+        <DoshaVideosContent dosha="pitta" />
       ) : activeTab === "principal" ? (
         <>
           <AgravamentosSection

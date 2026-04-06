@@ -55,6 +55,8 @@ const DoshaKapha = ({ defaultTab = "principal" }: DoshaKaphaProps) => {
         <DoshaFoodContent dosha="kapha" {...kaphaFoodData} />
       ) : activeTab === "remedios" ? (
         <DoshaRemediesContent dosha="kapha" {...kaphaRemediesData} />
+      ) : activeTab === "videos" ? (
+        <DoshaVideosContent dosha="kapha" />
       ) : activeTab === "principal" ? (
         <>
           <AgravamentosSection
