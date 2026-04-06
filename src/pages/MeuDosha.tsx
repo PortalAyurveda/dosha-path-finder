@@ -311,9 +311,13 @@ const ThreeColumnTable = ({ atributos, equilibrio, desequilibrio }: {
   desequilibrio: string | null;
 }) => {
   const parseTags = (content: string | null): string[] => {
-    if (!content || content.trim().length < 5) return [];
+    if (!content || content.trim().length < 3) return [];
     const stripped = stripHtml(content);
-    return stripped.split(/[,\n•·–—|]/).map(t => t.trim()).filter(t => t.length > 1 && t.length < 60).slice(0, 5);
+    // Split by newline first, then fallback to other separators
+    const items = stripped.split(/\n/).map(t => t.trim()).filter(t => t.length > 1 && t.length < 80);
+    if (items.length >= 2) return items.slice(0, 5);
+    // Fallback: comma/bullet separated
+    return stripped.split(/[,•·–—|]/).map(t => t.trim()).filter(t => t.length > 1 && t.length < 80).slice(0, 5);
   };
 
   const attrTags = parseTags(atributos);
