@@ -647,6 +647,227 @@ export type Database = {
         }
         Relationships: []
       }
+      jogo_campanha: {
+        Row: {
+          cena_atual_id: number | null
+          created_at: string | null
+          id: string
+          metadata: Json | null
+          no_atual_id: number | null
+          nome_campanha: string
+          player_boechat_id: string | null
+          player_summers_id: string | null
+          progresso_global: number | null
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          cena_atual_id?: number | null
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          no_atual_id?: number | null
+          nome_campanha: string
+          player_boechat_id?: string | null
+          player_summers_id?: string | null
+          progresso_global?: number | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          cena_atual_id?: number | null
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          no_atual_id?: number | null
+          nome_campanha?: string
+          player_boechat_id?: string | null
+          player_summers_id?: string | null
+          progresso_global?: number | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      jogo_cenas: {
+        Row: {
+          action_mage: Json | null
+          action_warrior: Json | null
+          ataque_mage: Json | null
+          ataque_warrior: Json | null
+          conteudo: Json | null
+          created_at: string | null
+          descricao_base: string
+          id: number
+          magia_mage: Json | null
+          magia_warrior: Json | null
+          metadata: Json | null
+          nome_cena: string
+          ordem: number
+          tipo: string | null
+        }
+        Insert: {
+          action_mage?: Json | null
+          action_warrior?: Json | null
+          ataque_mage?: Json | null
+          ataque_warrior?: Json | null
+          conteudo?: Json | null
+          created_at?: string | null
+          descricao_base: string
+          id?: number
+          magia_mage?: Json | null
+          magia_warrior?: Json | null
+          metadata?: Json | null
+          nome_cena: string
+          ordem: number
+          tipo?: string | null
+        }
+        Update: {
+          action_mage?: Json | null
+          action_warrior?: Json | null
+          ataque_mage?: Json | null
+          ataque_warrior?: Json | null
+          conteudo?: Json | null
+          created_at?: string | null
+          descricao_base?: string
+          id?: number
+          magia_mage?: Json | null
+          magia_warrior?: Json | null
+          metadata?: Json | null
+          nome_cena?: string
+          ordem?: number
+          tipo?: string | null
+        }
+        Relationships: []
+      }
+      jogo_inventario: {
+        Row: {
+          created_at: string | null
+          id: string
+          metadata: Json | null
+          nome_item: string
+          owner_id: string
+          tipo: string
+          valor: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          nome_item: string
+          owner_id: string
+          tipo: string
+          valor?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          nome_item?: string
+          owner_id?: string
+          tipo?: string
+          valor?: number | null
+        }
+        Relationships: []
+      }
+      jogo_monstros: {
+        Row: {
+          ataque: number | null
+          cena_id: number | null
+          created_at: string | null
+          defesa: number | null
+          hp_atual: number
+          hp_max: number
+          id: string
+          is_boss: boolean | null
+          metadata: Json | null
+          nome: string
+          status_efeitos: Json | null
+          updated_at: string | null
+        }
+        Insert: {
+          ataque?: number | null
+          cena_id?: number | null
+          created_at?: string | null
+          defesa?: number | null
+          hp_atual: number
+          hp_max: number
+          id?: string
+          is_boss?: boolean | null
+          metadata?: Json | null
+          nome: string
+          status_efeitos?: Json | null
+          updated_at?: string | null
+        }
+        Update: {
+          ataque?: number | null
+          cena_id?: number | null
+          created_at?: string | null
+          defesa?: number | null
+          hp_atual?: number
+          hp_max?: number
+          id?: string
+          is_boss?: boolean | null
+          metadata?: Json | null
+          nome?: string
+          status_efeitos?: Json | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "jogo_monstros_cena_id_fkey"
+            columns: ["cena_id"]
+            isOneToOne: false
+            referencedRelation: "jogo_cenas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      jogo_personagens: {
+        Row: {
+          classe: string
+          created_at: string | null
+          defesa: number | null
+          delay_especial: number | null
+          hp_atual: number
+          hp_max: number
+          id: string
+          metadata: Json | null
+          nome: string
+          ouro: number | null
+          status_efeitos: Json | null
+          updated_at: string | null
+        }
+        Insert: {
+          classe: string
+          created_at?: string | null
+          defesa?: number | null
+          delay_especial?: number | null
+          hp_atual?: number
+          hp_max?: number
+          id?: string
+          metadata?: Json | null
+          nome: string
+          ouro?: number | null
+          status_efeitos?: Json | null
+          updated_at?: string | null
+        }
+        Update: {
+          classe?: string
+          created_at?: string | null
+          defesa?: number | null
+          delay_especial?: number | null
+          hp_atual?: number
+          hp_max?: number
+          id?: string
+          metadata?: Json | null
+          nome?: string
+          ouro?: number | null
+          status_efeitos?: Json | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       jornada_autodi: {
         Row: {
           "Created Date": string | null
