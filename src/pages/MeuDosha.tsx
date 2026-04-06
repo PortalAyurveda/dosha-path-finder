@@ -590,8 +590,8 @@ const MeuDosha = () => {
             {/* 3-column table */}
             <ThreeColumnTable
               atributos={glossario.atributos}
-              equilibrio={glossario.caracteristicasPrincipais}
-              desequilibrio={glossario.manifestacoesComuns}
+              equilibrio={glossario.equilibrio}
+              desequilibrio={glossario.desequilibrio}
             />
 
             <ExpandableSection title="Principais Causas" content={glossario.principaisCausas} icon="⚡" />
