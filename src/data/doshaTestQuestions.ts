@@ -99,25 +99,27 @@ export const PART2_QUESTIONS: Question[] = [
 ];
 
 export const FOOD_TAGS: FoodTag[] = [
+  // Vata
   { label: 'Saladas', dosha: 'v' },
-  { label: 'Conservas', dosha: 'v' },
-  { label: 'Beliscos/Petiscos', dosha: 'v' },
-  { label: 'Pipoca', dosha: 'v' },
+  { label: 'Frutas', dosha: 'v' },
+  { label: 'Chás', dosha: 'v' },
+  { label: 'Integrais', dosha: 'v' },
   { label: 'Torradas', dosha: 'v' },
-  { label: 'Sementes', dosha: 'v' },
   { label: 'Germinados', dosha: 'v' },
-  { label: 'Bebidas Alcoólicas', dosha: 'v' },
-  { label: 'Frutas cruas', dosha: 'v' },
+  // Pitta
+  { label: 'Conservas', dosha: 'p' },
+  { label: 'Molhos', dosha: 'p' },
+  { label: 'Bebidas Alcoólicas', dosha: 'p' },
   { label: 'Pimentas', dosha: 'p' },
   { label: 'Especiarias', dosha: 'p' },
   { label: 'Fermentados', dosha: 'p' },
-  { label: 'Queijos', dosha: 'p' },
-  { label: 'Molhos', dosha: 'p' },
-  { label: 'Frituras/Salgados', dosha: 'p' },
+  // Kapha
+  { label: 'Beliscos/Petiscos', dosha: 'k' },
   { label: 'Doces', dosha: 'k' },
   { label: 'Massas', dosha: 'k' },
-  { label: 'Integrais', dosha: 'k' },
-  { label: 'Laticínios', dosha: 'k' },
+  { label: 'Queijos', dosha: 'k' },
+  { label: 'Sementes', dosha: 'k' },
+  { label: 'Frituras/Salgados', dosha: 'k' },
 ];
 
 export const PART3_QUESTIONS: Question[] = [

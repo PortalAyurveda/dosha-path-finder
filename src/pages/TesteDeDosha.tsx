@@ -363,32 +363,28 @@ const TesteDeDosha = () => {
 
   const renderAgravamentosStep = () => (
     <div className="space-y-6">
-      {[
-        { label: '💨 Agravamentos Vata', items: AGRAVAMENTOS_VATA, selected: agravVata, dosha: 'v' as const, color: 'border-vata' },
-        { label: '🔥 Agravamentos Pitta', items: AGRAVAMENTOS_PITTA, selected: agravPitta, dosha: 'p' as const, color: 'border-pitta' },
-        { label: '🪨 Agravamentos Kapha', items: AGRAVAMENTOS_KAPHA, selected: agravKapha, dosha: 'k' as const, color: 'border-kapha' },
-      ].map(group => (
-        <div key={group.dosha} className={cn("border-l-4 pl-3 space-y-2", group.color)}>
-          <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">{group.label}</p>
-          <div className="flex flex-wrap gap-2">
-            {group.items.map(tag => (
-              <button
-                key={tag}
-                type="button"
-                onClick={() => toggleAgrav(tag, group.dosha)}
-                className={cn(
-                  "px-3 py-1.5 rounded-full border text-xs transition-all",
-                  group.selected.includes(tag)
-                    ? "bg-primary text-primary-foreground border-primary"
-                    : "border-border hover:border-primary/40"
-                )}
-              >
-                {tag}
-              </button>
-            ))}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        {[
+          { label: '💨 Vata', items: AGRAVAMENTOS_VATA, selected: agravVata, dosha: 'v' as const, color: 'border-vata' },
+          { label: '🔥 Pitta', items: AGRAVAMENTOS_PITTA, selected: agravPitta, dosha: 'p' as const, color: 'border-pitta' },
+          { label: '🪨 Kapha', items: AGRAVAMENTOS_KAPHA, selected: agravKapha, dosha: 'k' as const, color: 'border-kapha' },
+        ].map(group => (
+          <div key={group.dosha} className={cn("border-l-4 pl-3 space-y-2", group.color)}>
+            <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">{group.label}</p>
+            <div className="space-y-1.5">
+              {group.items.map(tag => (
+                <label key={tag} className="flex items-center gap-2 cursor-pointer">
+                  <Checkbox
+                    checked={group.selected.includes(tag)}
+                    onCheckedChange={() => toggleAgrav(tag, group.dosha)}
+                  />
+                  <span className="text-sm">{tag}</span>
+                </label>
+              ))}
+            </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 
