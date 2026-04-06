@@ -579,12 +579,9 @@ const MeuDosha = () => {
         {/* ===== GLOSSARY INFO PACK ===== */}
         {glossario && (
           <div className="space-y-4">
-            <div className="text-center space-y-1">
-              <h2 className="font-serif font-bold text-foreground text-xl">
-                Seu Dosha principal é: {glossario.doshaNome || glossario.Title}
-              </h2>
-              <p className="text-muted-foreground text-sm">O que isso significa?</p>
-            </div>
+            <h2 className="font-serif font-bold text-foreground text-xl text-center">
+              Sobre o Dosha {glossario.doshaNome || glossario.Title}
+            </h2>
 
             <ExpandableSection title="O que é?" content={glossario.oque} icon="🧬" />
 
