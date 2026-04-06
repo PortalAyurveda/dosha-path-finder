@@ -338,6 +338,111 @@ export type Database = {
         }
         Relationships: []
       }
+      doshas_registros2: {
+        Row: {
+          agniforte: number | null
+          agnifraco: number | null
+          agniirregular: number | null
+          agniPrincipal: string | null
+          agravKaphaTags: string | null
+          agravPittaTags: string | null
+          agravVataTags: string | null
+          aliment: string | null
+          alimKapha: string | null
+          alimPitta: string | null
+          alimVata: string | null
+          altura: string | null
+          conhecimentoAyurveda: string | null
+          created_at: string | null
+          diagn: string | null
+          doshaprincipal: string | null
+          email: string | null
+          espiritual: string | null
+          id: string
+          idade: number | null
+          idPublico: string | null
+          imc: number | null
+          kaphascore: number | null
+          mentoria: string | null
+          nome: string | null
+          peso: string | null
+          pittascore: number | null
+          produtos: string | null
+          relato_aberto: string | null
+          remedios: string | null
+          texto_ia: string | null
+          vatascore: number | null
+        }
+        Insert: {
+          agniforte?: number | null
+          agnifraco?: number | null
+          agniirregular?: number | null
+          agniPrincipal?: string | null
+          agravKaphaTags?: string | null
+          agravPittaTags?: string | null
+          agravVataTags?: string | null
+          aliment?: string | null
+          alimKapha?: string | null
+          alimPitta?: string | null
+          alimVata?: string | null
+          altura?: string | null
+          conhecimentoAyurveda?: string | null
+          created_at?: string | null
+          diagn?: string | null
+          doshaprincipal?: string | null
+          email?: string | null
+          espiritual?: string | null
+          id: string
+          idade?: number | null
+          idPublico?: string | null
+          imc?: number | null
+          kaphascore?: number | null
+          mentoria?: string | null
+          nome?: string | null
+          peso?: string | null
+          pittascore?: number | null
+          produtos?: string | null
+          relato_aberto?: string | null
+          remedios?: string | null
+          texto_ia?: string | null
+          vatascore?: number | null
+        }
+        Update: {
+          agniforte?: number | null
+          agnifraco?: number | null
+          agniirregular?: number | null
+          agniPrincipal?: string | null
+          agravKaphaTags?: string | null
+          agravPittaTags?: string | null
+          agravVataTags?: string | null
+          aliment?: string | null
+          alimKapha?: string | null
+          alimPitta?: string | null
+          alimVata?: string | null
+          altura?: string | null
+          conhecimentoAyurveda?: string | null
+          created_at?: string | null
+          diagn?: string | null
+          doshaprincipal?: string | null
+          email?: string | null
+          espiritual?: string | null
+          id?: string
+          idade?: number | null
+          idPublico?: string | null
+          imc?: number | null
+          kaphascore?: number | null
+          mentoria?: string | null
+          nome?: string | null
+          peso?: string | null
+          pittascore?: number | null
+          produtos?: string | null
+          relato_aberto?: string | null
+          remedios?: string | null
+          texto_ia?: string | null
+          vatascore?: number | null
+        }
+        Relationships: []
+      }
       feed_resultados: {
         Row: {
           created_at: string | null
