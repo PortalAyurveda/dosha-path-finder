@@ -14,6 +14,7 @@ import AdoecimentoSubdoshaCard from "@/components/dosha/AdoecimentoSubdoshaCard"
 import DoshaRoutineContent from "@/components/dosha/DoshaRoutineContent";
 import DoshaFoodContent from "@/components/dosha/DoshaFoodContent";
 import DoshaRemediesContent from "@/components/dosha/DoshaRemediesContent";
+import DoshaVideosContent from "@/components/dosha/DoshaVideosContent";
 import { vataRoutineData } from "@/data/routineData";
 import { vataFoodData } from "@/data/foodData";
 import { vataRemediesData } from "@/data/remediesData";
