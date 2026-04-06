@@ -48,9 +48,9 @@ const DOSHA_COLORS_BADGE: Record<string, string> = {
 };
 
 const PIE_COLORS: Record<string, string> = {
-  Vata: 'hsl(213, 94%, 78%)',
-  Pitta: 'hsl(0, 94%, 82%)',
-  Kapha: 'hsl(142, 77%, 73%)',
+  Vata: '#4F75FF',
+  Pitta: '#FF5C5C',
+  Kapha: '#22C55E',
 };
 
 const DOSHA_ROUTES: Record<string, string> = {
@@ -59,7 +59,7 @@ const DOSHA_ROUTES: Record<string, string> = {
   Kapha: '/biblioteca/kapha',
 };
 
-// Severity levels for each dosha
+// Severity levels for each dosha (top to bottom: Fixado → Pouco)
 const VATA_LEVELS = [
   { label: 'Fixado', range: '50+', min: 50, max: 999 },
   { label: 'Adoecido', range: '36-49', min: 36, max: 49 },
@@ -90,14 +90,21 @@ const DOSHA_LEVELS: Record<string, typeof VATA_LEVELS> = {
   Kapha: KAPHA_LEVELS,
 };
 
-const LEVEL_COLORS: Record<string, string> = {
-  Fixado: 'bg-red-500',
-  Adoecido: 'bg-orange-500',
-  'Acúmulo': 'bg-yellow-500',
-  Normal: 'bg-emerald-500',
-  Pouco: 'bg-blue-400',
-  Reduzido: 'bg-blue-400',
+// Color scales per dosha (level 1=lightest to 5=darkest)
+const DOSHA_COLOR_SCALE: Record<string, string[]> = {
+  Vata: ['#D6E0FF', '#A3C1FF', '#709AFF', '#4F75FF', '#2A4BCC'],
+  Pitta: ['#FFE0E0', '#FFB3B3', '#FF8585', '#FF5C5C', '#CC3333'],
+  Kapha: ['#D1F4E0', '#9AE6B8', '#5ED58F', '#22C55E', '#15803D'],
 };
+
+function getLevelIndex(score: number, levels: typeof VATA_LEVELS): number {
+  // levels are ordered top(5) to bottom(1), reversed array index
+  // level 5=Fixado(idx 0), level 1=Pouco(idx 4)
+  for (let i = 0; i < levels.length; i++) {
+    if (score >= levels[i].min && score <= levels[i].max) return levels.length - i; // 1-based level
+  }
+  return 1;
+}
 
 function getLevel(score: number, levels: typeof VATA_LEVELS) {
   for (const l of levels) {
@@ -127,39 +134,80 @@ function isValidContent(content: string | null): boolean {
   return true;
 }
 
-// Vertical bar chart for a single dosha
-const DoshaVerticalBar = ({ name, score, emoji, color }: { name: string; score: number; emoji: string; color: string }) => {
-  const levels = DOSHA_LEVELS[name] || VATA_LEVELS;
-  const currentLevel = getLevel(score, levels);
+// Y-axis labels (shared across all 3 columns)
+const LEVEL_LABELS = ['Fixado', 'Adoecido', 'Acúmulo', 'Normal', 'Pouco'];
+
+// Thermometer component with progressive fill
+const ClinicalThermometer = ({ doshaScores }: { doshaScores: { name: string; score: number }[] }) => {
+  const doshaData = doshaScores.map(d => {
+    const levels = DOSHA_LEVELS[d.name] || VATA_LEVELS;
+    const currentLevel = getLevelIndex(d.score, levels);
+    const colors = DOSHA_COLOR_SCALE[d.name];
+    return { ...d, currentLevel, colors, levels };
+  });
 
   return (
-    <div className="flex flex-col items-center gap-1 flex-1 min-w-0">
-      <div className="text-center mb-1">
-        <p className="text-xs font-bold text-foreground">{emoji} {name}</p>
-        <p className="text-lg font-bold" style={{ color }}>{score}</p>
-        <p className="text-[10px] text-muted-foreground">pts</p>
-        <span className={cn("text-[10px] font-semibold px-1.5 py-0.5 rounded-full text-white mt-0.5 inline-block", LEVEL_COLORS[currentLevel])}>
-          {currentLevel}
-        </span>
+    <div>
+      <h2 className="font-serif font-bold text-foreground text-sm mb-3 text-center">Quadro Clínico</h2>
+      {/* Score summary */}
+      <div className="flex justify-center gap-4 mb-3">
+        {doshaData.map(d => (
+          <div key={d.name} className="text-center">
+            <p className="text-xs font-bold text-foreground">{d.name}</p>
+            <p className="text-lg font-bold" style={{ color: PIE_COLORS[d.name] }}>{d.score}</p>
+            <p className="text-[10px] text-muted-foreground">pts</p>
+          </div>
+        ))}
       </div>
-      <div className="flex flex-col gap-[2px] w-full">
-        {levels.map((level) => {
-          const isActive = currentLevel === level.label;
+
+      {/* Thermometer grid: [Y-axis] [Vata] [Pitta] [Kapha] */}
+      <div className="grid grid-cols-[auto_1fr_1fr_1fr] gap-x-1 gap-y-[2px]">
+        {LEVEL_LABELS.map((label, rowIdx) => {
+          // rowIdx 0=Fixado(level 5), 1=Adoecido(level 4), ...4=Pouco(level 1)
+          const levelNum = 5 - rowIdx; // 5,4,3,2,1
+          const levelData = doshaData[0].levels[rowIdx]; // get range from first dosha for label
+
           return (
-            <div
-              key={level.label}
-              className={cn(
-                "rounded-sm px-1.5 py-1 text-[9px] leading-tight transition-all border",
-                isActive
-                  ? cn(LEVEL_COLORS[level.label], "text-white font-bold border-transparent shadow-sm")
-                  : "bg-muted/30 text-muted-foreground/60 border-transparent"
-              )}
-            >
-              <span className="block font-medium">{level.label}</span>
-              <span className="block opacity-80">{level.range}</span>
+            <div key={label} className="contents">
+              {/* Y-axis label */}
+              <div className="flex flex-col justify-center items-end pr-1.5 h-12">
+                <span className="text-[10px] font-semibold text-muted-foreground leading-none">{label}</span>
+                <span className="text-[8px] text-muted-foreground/60 leading-none mt-0.5">
+                  {doshaData[0].levels[rowIdx].range}
+                </span>
+              </div>
+
+              {/* 3 dosha columns */}
+              {doshaData.map(d => {
+                const isFilled = levelNum <= d.currentLevel;
+                const isActiveLevel = levelNum === d.currentLevel;
+                const bgColor = isFilled ? d.colors[levelNum - 1] : undefined;
+
+                return (
+                  <div
+                    key={d.name}
+                    className={cn(
+                      "h-12 rounded-sm transition-all",
+                      isFilled ? "shadow-sm" : "bg-muted/20",
+                      isActiveLevel && "ring-2 ring-offset-1 ring-foreground/20"
+                    )}
+                    style={isFilled ? { backgroundColor: bgColor } : undefined}
+                  />
+                );
+              })}
             </div>
           );
         })}
+      </div>
+
+      {/* Column headers below */}
+      <div className="grid grid-cols-[auto_1fr_1fr_1fr] gap-x-1 mt-1">
+        <div />
+        {doshaData.map(d => (
+          <p key={d.name} className="text-[10px] font-bold text-center" style={{ color: PIE_COLORS[d.name] }}>
+            {d.name}
+          </p>
+        ))}
       </div>
     </div>
   );
@@ -198,21 +246,40 @@ const ExpandableSection = ({ title, content, icon }: { title: string; content: s
   );
 };
 
-const TagsSection = ({ title, content, icon }: { title: string; content: string | null; icon: string }) => {
-  if (!content || content.trim().length < 5) return null;
-  const stripped = stripHtml(content);
-  // Split by common separators
-  const tags = stripped.split(/[,\n•·–—|]/).map(t => t.trim()).filter(t => t.length > 1 && t.length < 60);
-  if (tags.length === 0) return null;
+// 3-column tags grid: Atributos / Equilíbrio / Desequilíbrio
+const ThreeColumnTags = ({ atributos, equilibrio, desequilibrio }: {
+  atributos: string | null;
+  equilibrio: string | null;
+  desequilibrio: string | null;
+}) => {
+  const parseTags = (content: string | null): string[] => {
+    if (!content || content.trim().length < 5) return [];
+    const stripped = stripHtml(content);
+    return stripped.split(/[,\n•·–—|]/).map(t => t.trim()).filter(t => t.length > 1 && t.length < 60).slice(0, 5);
+  };
+
+  const cols = [
+    { title: 'Atributos', icon: '✨', tags: parseTags(atributos) },
+    { title: 'Equilíbrio', icon: '⚖️', tags: parseTags(equilibrio) },
+    { title: 'Desequilíbrio', icon: '🔻', tags: parseTags(desequilibrio) },
+  ];
+
+  if (cols.every(c => c.tags.length === 0)) return null;
 
   return (
-    <div className="space-y-1.5">
-      <p className="text-xs font-bold text-muted-foreground uppercase">{icon} {title}</p>
-      <div className="flex flex-wrap gap-1.5">
-        {tags.map((tag, i) => (
-          <span key={i} className="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
-            {tag}
-          </span>
+    <div className="bg-card rounded-xl border border-border p-4">
+      <div className="grid grid-cols-3 gap-3">
+        {cols.map(col => (
+          <div key={col.title} className="space-y-2">
+            <p className="text-[10px] font-bold text-muted-foreground uppercase text-center">{col.icon} {col.title}</p>
+            <div className="flex flex-col gap-1.5">
+              {col.tags.map((tag, i) => (
+                <span key={i} className="text-[11px] px-2 py-1 rounded-md bg-primary/10 text-primary border border-primary/20 text-center leading-tight">
+                  {tag}
+                </span>
+              ))}
+            </div>
+          </div>
         ))}
       </div>
     </div>
@@ -226,7 +293,7 @@ const CustomPieLabel = ({ cx, cy, midAngle, outerRadius, name, value }: any) => 
   const y = cy + radius * Math.sin(-midAngle * RADIAN);
   return (
     <text x={x} y={y} fill="hsl(var(--foreground))" textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central" className="text-[11px] font-medium">
-      {name} ({value})
+      {name}
     </text>
   );
 };
@@ -301,9 +368,9 @@ const MeuDosha = () => {
   }
 
   const doshaScores = [
-    { name: 'Vata', score: result.vatascore || 0, emoji: '💨' },
-    { name: 'Pitta', score: result.pittascore || 0, emoji: '🔥' },
-    { name: 'Kapha', score: result.kaphascore || 0, emoji: '🪨' },
+    { name: 'Vata', score: result.vatascore || 0 },
+    { name: 'Pitta', score: result.pittascore || 0 },
+    { name: 'Kapha', score: result.kaphascore || 0 },
   ];
 
   const pieData = doshaScores.map(d => ({ name: d.name, value: d.score }));
@@ -328,7 +395,7 @@ const MeuDosha = () => {
         {/* ===== CLINICAL DASHBOARD CARD ===== */}
         <div className="bg-card rounded-xl border border-border p-4 space-y-4">
 
-          {/* Row 1: Pie Chart + Vertical Bars */}
+          {/* Row 1: Pie Chart + Thermometer Bars */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
             {/* Pie Chart */}
@@ -357,31 +424,19 @@ const MeuDosha = () => {
                   />
                 </PieChart>
               </ResponsiveContainer>
+              {/* Color legend only (no scores) */}
               <div className="flex gap-3 text-[10px] text-muted-foreground mt-1">
                 {doshaScores.map(d => (
                   <span key={d.name} className="flex items-center gap-1">
                     <span className="w-2 h-2 rounded-full" style={{ background: PIE_COLORS[d.name] }} />
-                    {d.emoji} {d.name}: {d.score}
+                    {d.name}
                   </span>
                 ))}
               </div>
             </div>
 
-            {/* Vertical Bars */}
-            <div>
-              <h2 className="font-serif font-bold text-foreground text-sm mb-2 text-center">Quadro Clínico</h2>
-              <div className="flex gap-2">
-                {doshaScores.map(d => (
-                  <DoshaVerticalBar
-                    key={d.name}
-                    name={d.name}
-                    score={d.score}
-                    emoji={d.emoji}
-                    color={PIE_COLORS[d.name]}
-                  />
-                ))}
-              </div>
-            </div>
+            {/* Thermometer Bars */}
+            <ClinicalThermometer doshaScores={doshaScores} />
           </div>
 
           {/* Row 2: Agni + Agravamentos */}
@@ -390,7 +445,7 @@ const MeuDosha = () => {
             {/* Agni */}
             {result.agniPrincipal && (
               <div className="bg-surface-sun rounded-lg border border-border p-3">
-                <h3 className="font-serif font-bold text-foreground text-sm mb-1">🔥 Fogo Digestivo (Agni)</h3>
+                <h3 className="font-serif font-bold text-foreground text-sm mb-1">Fogo Digestivo (Agni)</h3>
                 <p className="text-xs text-muted-foreground">{result.agniPrincipal}</p>
               </div>
             )}
@@ -398,7 +453,7 @@ const MeuDosha = () => {
             {/* Agravamentos */}
             {(result.agravVataTags || result.agravPittaTags || result.agravKaphaTags) && (
               <div className="bg-card rounded-lg border border-border p-3 space-y-2">
-                <h3 className="font-serif font-bold text-foreground text-sm">⚠️ Agravamentos</h3>
+                <h3 className="font-serif font-bold text-foreground text-sm">Agravamentos</h3>
                 {result.agravVataTags && (
                   <div>
                     <p className="text-[10px] font-bold text-vata uppercase mb-0.5">Vata</p>
@@ -444,17 +499,15 @@ const MeuDosha = () => {
               <p className="text-muted-foreground text-sm">O que isso significa?</p>
             </div>
 
-            {/* O que é */}
             <ExpandableSection title="O que é?" content={glossario.oque} icon="🧬" />
 
-            {/* Tags sections */}
-            <div className="bg-card rounded-xl border border-border p-4 space-y-4">
-              <TagsSection title="Atributos" content={glossario.atributos} icon="✨" />
-              <TagsSection title="Equilíbrio" content={glossario.caracteristicasPrincipais} icon="⚖️" />
-              <TagsSection title="Desequilíbrio" content={glossario.manifestacoesComuns} icon="🔻" />
-            </div>
+            {/* 3-column tags grid */}
+            <ThreeColumnTags
+              atributos={glossario.atributos}
+              equilibrio={glossario.caracteristicasPrincipais}
+              desequilibrio={glossario.manifestacoesComuns}
+            />
 
-            {/* Expandable detail sections */}
             <ExpandableSection title="Principais Causas" content={glossario.principaisCausas} icon="⚡" />
             <ExpandableSection title="Principais Enfermidades" content={glossario.principaisDoencas} icon="🩺" />
             <ExpandableSection title="Caminhos de Equilíbrio" content={glossario.caminhosEquilibrio} icon="🌿" />
@@ -473,7 +526,7 @@ const MeuDosha = () => {
             {doshaScores.map(d => (
               <Button key={d.name} variant="outline" asChild className="w-full">
                 <Link to={DOSHA_ROUTES[d.name]}>
-                  {d.emoji} Biblioteca {d.name} <ExternalLink className="w-3 h-3 ml-1" />
+                  Biblioteca {d.name} <ExternalLink className="w-3 h-3 ml-1" />
                 </Link>
               </Button>
             ))}
