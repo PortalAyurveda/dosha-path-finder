@@ -465,6 +465,9 @@ const TesteDeDosha = () => {
         <div className="mb-6 mt-4">
           <h1 className="font-serif text-2xl font-bold text-foreground">{currentStep.title}</h1>
           <p className="text-muted-foreground text-sm mt-1">{currentStep.subtitle}</p>
+          {currentStep.part !== 'info' && currentStep.part !== 'interests' && (
+            <p className="text-xs text-muted-foreground/70 mt-2 italic">💡 Se não se encontrar em alguma pergunta, pode deixar em branco.</p>
+          )}
         </div>
 
         {/* Content */}
