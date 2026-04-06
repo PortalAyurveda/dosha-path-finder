@@ -335,32 +335,29 @@ const TesteDeDosha = () => {
   const renderFoodStep = () => (
     <div className="space-y-4 mt-4">
       <p className="font-serif font-semibold text-foreground text-base">Quais alimentos você mais consome? (múltipla escolha)</p>
-      {[
-        { label: '💨 Alimentos Vata (Secos/Leves/Frios)', dosha: 'v' as const, color: 'border-vata' },
-        { label: '🔥 Alimentos Pitta (Quentes/Ácidos/Picantes)', dosha: 'p' as const, color: 'border-pitta' },
-        { label: '🪨 Alimentos Kapha (Pesados/Doces/Densos)', dosha: 'k' as const, color: 'border-kapha' },
-      ].map(group => (
-        <div key={group.dosha} className={cn("border-l-4 pl-3 space-y-2", group.color)}>
-          <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">{group.label}</p>
-          <div className="flex flex-wrap gap-2">
-            {FOOD_TAGS.filter(f => f.dosha === group.dosha).map(f => (
-              <button
-                key={f.label}
-                type="button"
-                onClick={() => toggleFood(f.label)}
-                className={cn(
-                  "px-3 py-1.5 rounded-full border text-xs transition-all",
-                  selectedFoods.includes(f.label)
-                    ? "bg-primary text-primary-foreground border-primary"
-                    : "border-border hover:border-primary/40"
-                )}
-              >
-                {f.label}
-              </button>
-            ))}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        {[
+          { label: '💨 Vata', subtitle: 'Secos / Leves / Frios', dosha: 'v' as const, color: 'border-vata' },
+          { label: '🔥 Pitta', subtitle: 'Quentes / Ácidos / Picantes', dosha: 'p' as const, color: 'border-pitta' },
+          { label: '🪨 Kapha', subtitle: 'Pesados / Doces / Densos', dosha: 'k' as const, color: 'border-kapha' },
+        ].map(group => (
+          <div key={group.dosha} className={cn("border-l-4 pl-3 space-y-2", group.color)}>
+            <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">{group.label}</p>
+            <p className="text-[10px] text-muted-foreground/70">{group.subtitle}</p>
+            <div className="space-y-1.5">
+              {FOOD_TAGS.filter(f => f.dosha === group.dosha).map(f => (
+                <label key={f.label} className="flex items-center gap-2 cursor-pointer">
+                  <Checkbox
+                    checked={selectedFoods.includes(f.label)}
+                    onCheckedChange={() => toggleFood(f.label)}
+                  />
+                  <span className="text-sm">{f.label}</span>
+                </label>
+              ))}
+            </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 
