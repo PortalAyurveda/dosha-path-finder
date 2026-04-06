@@ -51,20 +51,11 @@ const DoshaNavPills = ({ dosha, activeTab, onTabChange }: DoshaNavPillsProps) =>
     if (id === "principal") {
       onTabChange("principal");
       navigate(doshaMainRoutes[dosha], { replace: true });
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    } else if (id === "horarios") {
-      onTabChange("horarios");
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    } else if (id === "alimentacao") {
-      onTabChange("alimentacao");
-      window.scrollTo({ top: 0, behavior: "smooth" });
     } else if (id === "avancado") {
       onTabChange("avancado");
       navigate(doshaAdvancedRoutes[dosha], { replace: true });
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    } else if (id === "remedios") {
-      onTabChange("remedios");
-      window.scrollTo({ top: 0, behavior: "smooth" });
+    } else {
+      onTabChange(id as DoshaTab);
     }
   };
 
