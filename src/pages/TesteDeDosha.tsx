@@ -87,16 +87,12 @@ const TesteDeDosha = () => {
     if (currentStep.part === 'info') {
       return !!(info.nome && info.email && info.idade && info.altura && info.peso && info.nivel);
     }
-    const questions = QUESTIONS_BY_STEP[currentStep.part];
-    if (questions) {
-      return questions.every(q => answers[q.id] !== undefined);
-    }
-    return true; // agravamentos and interests are optional
+    return true; // all question steps are optional now
   };
 
   const handleNext = () => {
     if (!canAdvance()) {
-      toast({ title: "Responda todas as perguntas", description: "Preencha todos os campos antes de avançar.", variant: "destructive" });
+      toast({ title: "Preencha os dados básicos", description: "Nome, e-mail, idade, altura, peso e nível são obrigatórios.", variant: "destructive" });
       return;
     }
     if (step < totalSteps - 1) setStep(step + 1);
