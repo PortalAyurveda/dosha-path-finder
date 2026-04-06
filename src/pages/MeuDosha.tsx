@@ -2,10 +2,11 @@ import { useEffect, useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import PageContainer from "@/components/PageContainer";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, Copy, Check, ExternalLink } from "lucide-react";
+import { Loader2, Copy, Check, ExternalLink, ChevronDown, ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 
 interface DoshaResult {
   nome: string | null;
@@ -22,30 +23,32 @@ interface DoshaResult {
   conhecimentoAyurveda: string | null;
 }
 
-interface GlossarioEntry {
-  doshanome: string | null;
+interface PortalGlossario {
+  Title: string | null;
   oque: string | null;
-  caracteristicasprincipais: string | null;
-  alimentospriorizar: string | null;
-  alimentosevitar: string | null;
-  rotinasequilibrar: string | null;
-  rotinasinadequadas: string | null;
-  dicasgeraisfazer: string | null;
-  dicasgeraisnaofazer: string | null;
-  remediosAyurvedicos: string | null;
-  receitasAyurvedicas: string | null;
+  caracteristicasPrincipais: string | null;
+  manifestacoesComuns: string | null;
+  principaisCausas: string | null;
+  caminhosEquilibrio: string | null;
+  alimentosEvitar: string | null;
+  alimentosPriorizar: string | null;
+  rotinasEquilibrar: string | null;
+  rotinasInadequadas: string | null;
+  dicasGeraisFazer: string | null;
+  dicasGeraisNaoFazer: string | null;
+  atributos: string | null;
 }
 
-const DOSHA_COLORS: Record<string, string> = {
+const DOSHA_COLORS_BADGE: Record<string, string> = {
   Vata: 'bg-vata/20 text-vata border-vata',
   Pitta: 'bg-pitta/20 text-pitta border-pitta',
   Kapha: 'bg-kapha/20 text-kapha border-kapha',
 };
 
-const DOSHA_BAR_COLORS: Record<string, string> = {
-  Vata: 'bg-vata',
-  Pitta: 'bg-pitta',
-  Kapha: 'bg-kapha',
+const PIE_COLORS: Record<string, string> = {
+  Vata: 'hsl(213, 94%, 78%)',
+  Pitta: 'hsl(0, 94%, 82%)',
+  Kapha: 'hsl(142, 77%, 73%)',
 };
 
 const DOSHA_ROUTES: Record<string, string> = {
@@ -54,13 +57,66 @@ const DOSHA_ROUTES: Record<string, string> = {
   Kapha: '/biblioteca/kapha',
 };
 
+function stripHtml(html: string): string {
+  return html
+    .replace(/<br\s*\/?>/gi, '\n')
+    .replace(/<\/p>/gi, '\n\n')
+    .replace(/<[^>]+>/g, '')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+}
+
+const ExpandableSection = ({ title, content, icon }: { title: string; content: string | null; icon: string }) => {
+  const [expanded, setExpanded] = useState(false);
+  if (!content) return null;
+
+  const plainText = stripHtml(content);
+  const preview = plainText.slice(0, 200);
+  const needsExpand = plainText.length > 200;
+
+  return (
+    <div className="bg-card rounded-xl border border-border p-4 space-y-2">
+      <h3 className="font-serif font-bold text-foreground text-base flex items-center gap-2">
+        <span>{icon}</span> {title}
+      </h3>
+      <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
+        {expanded ? plainText : preview + (needsExpand ? '...' : '')}
+      </p>
+      {needsExpand && (
+        <button
+          onClick={() => setExpanded(!expanded)}
+          className="text-xs font-semibold text-primary flex items-center gap-1 hover:underline"
+        >
+          {expanded ? (
+            <>Recolher <ChevronUp className="w-3 h-3" /></>
+          ) : (
+            <>Saiba mais <ChevronDown className="w-3 h-3" /></>
+          )}
+        </button>
+      )}
+    </div>
+  );
+};
+
+const CustomPieLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, name, value }: any) => {
+  const RADIAN = Math.PI / 180;
+  const radius = outerRadius + 24;
+  const x = cx + radius * Math.cos(-midAngle * RADIAN);
+  const y = cy + radius * Math.sin(-midAngle * RADIAN);
+  return (
+    <text x={x} y={y} fill="hsl(var(--foreground))" textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central" className="text-xs font-medium">
+      {name} ({value})
+    </text>
+  );
+};
+
 const MeuDosha = () => {
   const [searchParams] = useSearchParams();
   const id = searchParams.get('id');
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
   const [result, setResult] = useState<DoshaResult | null>(null);
-  const [glossario, setGlossario] = useState<GlossarioEntry[]>([]);
+  const [glossario, setGlossario] = useState<PortalGlossario | null>(null);
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
@@ -80,14 +136,13 @@ const MeuDosha = () => {
 
       setResult(registro);
 
-      // Fetch glossario for the doshas in doshaprincipal
       if (registro.doshaprincipal) {
-        const doshaNames = registro.doshaprincipal.split('-').map((d: string) => d.trim());
         const { data: glossData } = await supabase
-          .from('glossario_v2')
+          .from('portal_glossario')
           .select('*')
-          .in('doshanome', doshaNames);
-        if (glossData) setGlossario(glossData);
+          .eq('Title', registro.doshaprincipal)
+          .maybeSingle();
+        if (glossData) setGlossario(glossData as unknown as PortalGlossario);
       }
       setLoading(false);
     };
@@ -124,27 +179,17 @@ const MeuDosha = () => {
     );
   }
 
-  const maxScore = Math.max(result.vatascore || 0, result.pittascore || 0, result.kaphascore || 0, 1);
   const doshaScores = [
     { name: 'Vata', score: result.vatascore || 0, emoji: '💨' },
     { name: 'Pitta', score: result.pittascore || 0, emoji: '🔥' },
     { name: 'Kapha', score: result.kaphascore || 0, emoji: '🪨' },
   ];
 
-  const primaryDosha = result.doshaprincipal?.split('-')[0] || 'Vata';
-  const badgeClass = DOSHA_COLORS[primaryDosha] || DOSHA_COLORS.Vata;
+  const pieData = doshaScores.map(d => ({ name: d.name, value: d.score }));
+  const totalScore = doshaScores.reduce((s, d) => s + d.score, 0);
 
-  const renderTextSection = (title: string, content: string | null, icon?: string) => {
-    if (!content) return null;
-    return (
-      <div className="bg-card rounded-xl border border-border p-4 space-y-2">
-        <h3 className="font-serif font-bold text-foreground text-base flex items-center gap-2">
-          {icon && <span>{icon}</span>} {title}
-        </h3>
-        <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">{content}</p>
-      </div>
-    );
-  };
+  const primaryDosha = result.doshaprincipal?.split('-')[0] || 'Vata';
+  const badgeClass = DOSHA_COLORS_BADGE[primaryDosha] || DOSHA_COLORS_BADGE.Vata;
 
   return (
     <PageContainer title={`Meu Dosha — ${result.nome}`} description={`Resultado do teste de dosha de ${result.nome}: ${result.doshaprincipal}`}>
@@ -158,23 +203,42 @@ const MeuDosha = () => {
           </div>
         </div>
 
-        {/* Score Bars */}
-        <div className="bg-card rounded-xl border border-border p-5 space-y-4">
-          <h2 className="font-serif font-bold text-foreground text-lg">Pontuação dos Doshas</h2>
-          {doshaScores.map(d => (
-            <div key={d.name} className="space-y-1">
-              <div className="flex justify-between text-sm">
-                <span className="font-medium">{d.emoji} {d.name}</span>
-                <span className="text-muted-foreground font-mono">{d.score} pts</span>
-              </div>
-              <div className="h-3 bg-muted rounded-full overflow-hidden">
-                <div
-                  className={cn("h-full rounded-full transition-all duration-700", DOSHA_BAR_COLORS[d.name])}
-                  style={{ width: `${(d.score / maxScore) * 100}%` }}
+        {/* Pie Chart */}
+        <div className="bg-card rounded-xl border border-border p-5 space-y-2">
+          <h2 className="font-serif font-bold text-foreground text-lg text-center">Pontuação dos Doshas</h2>
+          <div className="w-full flex justify-center">
+            <ResponsiveContainer width={280} height={240}>
+              <PieChart>
+                <Pie
+                  data={pieData}
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={80}
+                  innerRadius={40}
+                  dataKey="value"
+                  label={CustomPieLabel}
+                  strokeWidth={2}
+                  stroke="hsl(var(--card))"
+                >
+                  {pieData.map((entry) => (
+                    <Cell key={entry.name} fill={PIE_COLORS[entry.name]} />
+                  ))}
+                </Pie>
+                <Tooltip
+                  formatter={(value: number, name: string) => [`${value} pts (${totalScore > 0 ? Math.round((value / totalScore) * 100) : 0}%)`, name]}
+                  contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '8px', fontSize: '13px' }}
                 />
-              </div>
-            </div>
-          ))}
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+          <div className="flex justify-center gap-4 text-xs text-muted-foreground">
+            {doshaScores.map(d => (
+              <span key={d.name} className="flex items-center gap-1">
+                <span className="w-2.5 h-2.5 rounded-full" style={{ background: PIE_COLORS[d.name] }} />
+                {d.emoji} {d.name}: {d.score}
+              </span>
+            ))}
+          </div>
         </div>
 
         {/* Agni */}
@@ -222,24 +286,26 @@ const MeuDosha = () => {
           </div>
         )}
 
-        {/* Glossário Tips */}
-        {glossario.map((g, i) => (
-          <div key={i} className="space-y-3">
+        {/* Portal Glossário Content */}
+        {glossario && (
+          <div className="space-y-3">
             <h2 className="font-serif font-bold text-foreground text-xl text-center mt-6">
-              📖 Guia {g.doshanome}
+              📖 Guia {glossario.Title}
             </h2>
-            {renderTextSection('O que é?', g.oque, '🧬')}
-            {renderTextSection('Características Principais', g.caracteristicasprincipais, '📋')}
-            {renderTextSection('Alimentos para Priorizar', g.alimentospriorizar, '✅')}
-            {renderTextSection('Alimentos para Evitar', g.alimentosevitar, '🚫')}
-            {renderTextSection('Rotinas para Equilibrar', g.rotinasequilibrar, '🧘')}
-            {renderTextSection('Rotinas Inadequadas', g.rotinasinadequadas, '⛔')}
-            {renderTextSection('O que Fazer', g.dicasgeraisfazer, '👍')}
-            {renderTextSection('O que NÃO Fazer', g.dicasgeraisnaofazer, '👎')}
-            {renderTextSection('Remédios Ayurvédicos', g.remediosAyurvedicos, '🌿')}
-            {renderTextSection('Receitas Ayurvédicas', g.receitasAyurvedicas, '🍲')}
+            <ExpandableSection title="O que é?" content={glossario.oque} icon="🧬" />
+            <ExpandableSection title="Características Principais" content={glossario.caracteristicasPrincipais} icon="📋" />
+            <ExpandableSection title="Atributos" content={glossario.atributos} icon="✨" />
+            <ExpandableSection title="Manifestações Comuns" content={glossario.manifestacoesComuns} icon="🔍" />
+            <ExpandableSection title="Principais Causas" content={glossario.principaisCausas as string | null} icon="⚡" />
+            <ExpandableSection title="Caminhos de Equilíbrio" content={glossario.caminhosEquilibrio} icon="🧘" />
+            <ExpandableSection title="Alimentos a Priorizar" content={glossario.alimentosPriorizar} icon="✅" />
+            <ExpandableSection title="Alimentos a Evitar" content={glossario.alimentosEvitar} icon="🚫" />
+            <ExpandableSection title="Rotinas de Equilíbrio" content={glossario.rotinasEquilibrar} icon="🌅" />
+            <ExpandableSection title="Rotinas Inadequadas" content={glossario.rotinasInadequadas} icon="⛔" />
+            <ExpandableSection title="O que Fazer" content={glossario.dicasGeraisFazer} icon="👍" />
+            <ExpandableSection title="O que NÃO Fazer" content={glossario.dicasGeraisNaoFazer} icon="👎" />
           </div>
-        ))}
+        )}
 
         {/* Links */}
         <div className="space-y-3 pb-8">

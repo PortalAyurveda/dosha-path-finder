@@ -743,6 +743,76 @@ export type Database = {
         }
         Relationships: []
       }
+      portal_glossario: {
+        Row: {
+          alimentosEvitar: string | null
+          alimentosPriorizar: string | null
+          atributos: string | null
+          caminhosEquilibrio: string | null
+          caracteristicasPrincipais: string | null
+          "Created Date": string | null
+          'Created Date"_1,"Updated Date"_1,"Owner"_1,"doshaNome': string | null
+          dicasGeraisFazer: string | null
+          dicasGeraisNaoFazer: string | null
+          ID: string | null
+          manifestacoesComuns: string | null
+          oque: string | null
+          Owner: string | null
+          principaisCausas: string | null
+          principaisDoencas: string | null
+          rotinasEquilibrar: string | null
+          rotinasInadequadas: string | null
+          Title: string | null
+          "Updated Date": string | null
+        }
+        Insert: {
+          alimentosEvitar?: string | null
+          alimentosPriorizar?: string | null
+          atributos?: string | null
+          caminhosEquilibrio?: string | null
+          caracteristicasPrincipais?: string | null
+          "Created Date"?: string | null
+          'Created Date"_1,"Updated Date"_1,"Owner"_1,"doshaNome'?:
+            | string
+            | null
+          dicasGeraisFazer?: string | null
+          dicasGeraisNaoFazer?: string | null
+          ID?: string | null
+          manifestacoesComuns?: string | null
+          oque?: string | null
+          Owner?: string | null
+          principaisCausas?: string | null
+          principaisDoencas?: string | null
+          rotinasEquilibrar?: string | null
+          rotinasInadequadas?: string | null
+          Title?: string | null
+          "Updated Date"?: string | null
+        }
+        Update: {
+          alimentosEvitar?: string | null
+          alimentosPriorizar?: string | null
+          atributos?: string | null
+          caminhosEquilibrio?: string | null
+          caracteristicasPrincipais?: string | null
+          "Created Date"?: string | null
+          'Created Date"_1,"Updated Date"_1,"Owner"_1,"doshaNome'?:
+            | string
+            | null
+          dicasGeraisFazer?: string | null
+          dicasGeraisNaoFazer?: string | null
+          ID?: string | null
+          manifestacoesComuns?: string | null
+          oque?: string | null
+          Owner?: string | null
+          principaisCausas?: string | null
+          principaisDoencas?: string | null
+          rotinasEquilibrar?: string | null
+          rotinasInadequadas?: string | null
+          Title?: string | null
+          "Updated Date"?: string | null
+        }
+        Relationships: []
+      }
       portal_kapha: {
         Row: {
           criado_em: string | null
