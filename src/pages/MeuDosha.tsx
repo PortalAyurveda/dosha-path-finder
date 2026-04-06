@@ -29,7 +29,6 @@ interface PortalGlossario {
   caracteristicasPrincipais: string | null;
   manifestacoesComuns: string | null;
   principaisCausas: string | null;
-  caminhosEquilibrio: string | null;
   alimentosEvitar: string | null;
   alimentosPriorizar: string | null;
   rotinasEquilibrar: string | null;
@@ -62,15 +61,28 @@ function stripHtml(html: string): string {
     .replace(/<br\s*\/?>/gi, '\n')
     .replace(/<\/p>/gi, '\n\n')
     .replace(/<[^>]+>/g, '')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
     .replace(/\n{3,}/g, '\n\n')
     .trim();
 }
 
+function isValidContent(content: string | null): boolean {
+  if (!content) return false;
+  const stripped = stripHtml(content);
+  // Skip UUIDs and very short content
+  if (stripped.length < 30) return false;
+  if (/^[a-f0-9-]{36}$/i.test(stripped)) return false;
+  return true;
+}
+
 const ExpandableSection = ({ title, content, icon }: { title: string; content: string | null; icon: string }) => {
   const [expanded, setExpanded] = useState(false);
-  if (!content) return null;
+  if (!isValidContent(content)) return null;
 
-  const plainText = stripHtml(content);
+  const plainText = stripHtml(content!);
   const preview = plainText.slice(0, 200);
   const needsExpand = plainText.length > 200;
 
@@ -98,7 +110,7 @@ const ExpandableSection = ({ title, content, icon }: { title: string; content: s
   );
 };
 
-const CustomPieLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, name, value }: any) => {
+const CustomPieLabel = ({ cx, cy, midAngle, outerRadius, name, value }: any) => {
   const RADIAN = Math.PI / 180;
   const radius = outerRadius + 24;
   const x = cx + radius * Math.cos(-midAngle * RADIAN);
@@ -286,24 +298,27 @@ const MeuDosha = () => {
           </div>
         )}
 
-        {/* Portal Glossário Content */}
+        {/* Portal Glossário — Resultado do Dosha */}
         {glossario && (
           <div className="space-y-3">
-            <h2 className="font-serif font-bold text-foreground text-xl text-center mt-6">
-              📖 Guia {glossario.Title}
-            </h2>
+            <div className="text-center mt-6 space-y-1">
+              <h2 className="font-serif font-bold text-foreground text-xl">
+                Seu Dosha principal é: {glossario.Title}
+              </h2>
+              <p className="text-muted-foreground text-sm">O que isso significa?</p>
+            </div>
+
             <ExpandableSection title="O que é?" content={glossario.oque} icon="🧬" />
             <ExpandableSection title="Características Principais" content={glossario.caracteristicasPrincipais} icon="📋" />
             <ExpandableSection title="Atributos" content={glossario.atributos} icon="✨" />
             <ExpandableSection title="Manifestações Comuns" content={glossario.manifestacoesComuns} icon="🔍" />
-            <ExpandableSection title="Principais Causas" content={glossario.principaisCausas as string | null} icon="⚡" />
-            <ExpandableSection title="Caminhos de Equilíbrio" content={glossario.caminhosEquilibrio} icon="🧘" />
+            <ExpandableSection title="Principais Causas" content={glossario.principaisCausas} icon="⚡" />
+            <ExpandableSection title="O que Fazer" content={glossario.dicasGeraisFazer} icon="👍" />
+            <ExpandableSection title="O que NÃO Fazer" content={glossario.dicasGeraisNaoFazer} icon="👎" />
             <ExpandableSection title="Alimentos a Priorizar" content={glossario.alimentosPriorizar} icon="✅" />
             <ExpandableSection title="Alimentos a Evitar" content={glossario.alimentosEvitar} icon="🚫" />
             <ExpandableSection title="Rotinas de Equilíbrio" content={glossario.rotinasEquilibrar} icon="🌅" />
             <ExpandableSection title="Rotinas Inadequadas" content={glossario.rotinasInadequadas} icon="⛔" />
-            <ExpandableSection title="O que Fazer" content={glossario.dicasGeraisFazer} icon="👍" />
-            <ExpandableSection title="O que NÃO Fazer" content={glossario.dicasGeraisNaoFazer} icon="👎" />
           </div>
         )}
 
