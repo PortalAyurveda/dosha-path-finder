@@ -238,32 +238,32 @@ const ClinicalThermometer = ({ doshaScores }: { doshaScores: { name: string; sco
 // Level interpretation bullets below thermometer
 const DoshaLevelBullets = ({ doshaScores }: { doshaScores: { name: string; score: number }[] }) => {
   return (
-    <div className="space-y-2">
+    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
       {doshaScores.map(d => {
         const levels = DOSHA_LEVELS[d.name] || VATA_LEVELS;
         const levelLabel = getLevel(d.score, levels);
-        const levelIdx = getLevelIndex(d.score, levels); // 1-5
+        const levelIdx = getLevelIndex(d.score, levels);
         const color = DOSHA_COLOR_SCALE[d.name]?.[levelIdx - 1] || PIE_COLORS[d.name];
         const interpretation = DOSHA_INTERPRETATIONS[d.name]?.[levelLabel] || '';
 
         return (
           <div
             key={d.name}
-            className="rounded-lg border p-3 flex gap-3 items-start"
+            className="rounded-lg border p-3 space-y-1.5"
             style={{ borderColor: color, backgroundColor: `${color}15` }}
           >
-            <div
-              className="w-3 h-3 rounded-full mt-0.5 shrink-0"
-              style={{ backgroundColor: color }}
-            />
-            <div>
+            <div className="flex items-center gap-2">
+              <div
+                className="w-3 h-3 rounded-full shrink-0"
+                style={{ backgroundColor: color }}
+              />
               <p className="text-sm font-bold" style={{ color }}>
                 {d.name} — {levelLabel}
               </p>
-              <p className="text-xs text-muted-foreground leading-relaxed mt-0.5">
-                {interpretation}
-              </p>
             </div>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              {interpretation}
+            </p>
           </div>
         );
       })}
@@ -470,11 +470,10 @@ const MeuDosha = () => {
 
         {/* ===== HEADER ===== */}
         <div className="text-center space-y-2">
-          <p className="text-muted-foreground text-sm">Resultado de</p>
-          <h1 className="font-serif text-3xl font-bold text-foreground">{result.nome}</h1>
-          <div className={cn("inline-block px-5 py-2 rounded-full border-2 font-bold text-lg", badgeClass)}>
-            {result.doshaprincipal}
-          </div>
+          <h1 className="font-serif text-2xl md:text-3xl font-bold text-foreground">
+            Seu Dosha principal é: <span style={{ color: PIE_COLORS[primaryDosha] }}>{result.doshaprincipal}</span>
+          </h1>
+          <p className="text-muted-foreground text-sm">O que isso significa, {result.nome}?</p>
         </div>
 
         {/* ===== CLINICAL DASHBOARD ===== */}
@@ -580,12 +579,9 @@ const MeuDosha = () => {
         {/* ===== GLOSSARY INFO PACK ===== */}
         {glossario && (
           <div className="space-y-4">
-            <div className="text-center space-y-1">
-              <h2 className="font-serif font-bold text-foreground text-xl">
-                Seu Dosha principal é: {glossario.doshaNome || glossario.Title}
-              </h2>
-              <p className="text-muted-foreground text-sm">O que isso significa?</p>
-            </div>
+            <h2 className="font-serif font-bold text-foreground text-xl text-center">
+              Sobre o Dosha {glossario.doshaNome || glossario.Title}
+            </h2>
 
             <ExpandableSection title="O que é?" content={glossario.oque} icon="🧬" />
 
