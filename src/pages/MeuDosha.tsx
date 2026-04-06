@@ -470,11 +470,10 @@ const MeuDosha = () => {
 
         {/* ===== HEADER ===== */}
         <div className="text-center space-y-2">
-          <p className="text-muted-foreground text-sm">Resultado de</p>
-          <h1 className="font-serif text-3xl font-bold text-foreground">{result.nome}</h1>
-          <div className={cn("inline-block px-5 py-2 rounded-full border-2 font-bold text-lg", badgeClass)}>
-            {result.doshaprincipal}
-          </div>
+          <h1 className="font-serif text-2xl md:text-3xl font-bold text-foreground">
+            Seu Dosha principal é: <span style={{ color: PIE_COLORS[primaryDosha] }}>{result.doshaprincipal}</span>
+          </h1>
+          <p className="text-muted-foreground text-sm">O que isso significa, {result.nome}?</p>
         </div>
 
         {/* ===== CLINICAL DASHBOARD ===== */}
