@@ -25,10 +25,12 @@ interface DoshaResult {
 
 interface PortalGlossario {
   Title: string | null;
+  doshaNome: string | null;
   oque: string | null;
   caracteristicasPrincipais: string | null;
   manifestacoesComuns: string | null;
   principaisCausas: string | null;
+  principaisDoencas: string | null;
   alimentosEvitar: string | null;
   alimentosPriorizar: string | null;
   rotinasEquilibrar: string | null;
@@ -36,6 +38,7 @@ interface PortalGlossario {
   dicasGeraisFazer: string | null;
   dicasGeraisNaoFazer: string | null;
   atributos: string | null;
+  caminhosEquilibrio: string | null;
 }
 
 const DOSHA_COLORS_BADGE: Record<string, string> = {
@@ -56,6 +59,53 @@ const DOSHA_ROUTES: Record<string, string> = {
   Kapha: '/biblioteca/kapha',
 };
 
+// Severity levels for each dosha
+const VATA_LEVELS = [
+  { label: 'Fixado', range: '50+', min: 50, max: 999 },
+  { label: 'Adoecido', range: '36-49', min: 36, max: 49 },
+  { label: 'Acúmulo', range: '25-35', min: 25, max: 35 },
+  { label: 'Normal', range: '15-24', min: 15, max: 24 },
+  { label: 'Pouco', range: '0-14', min: 0, max: 14 },
+];
+
+const PITTA_LEVELS = [
+  { label: 'Fixado', range: '50+', min: 50, max: 999 },
+  { label: 'Adoecido', range: '41-49', min: 41, max: 49 },
+  { label: 'Acúmulo', range: '31-40', min: 31, max: 40 },
+  { label: 'Normal', range: '15-30', min: 15, max: 30 },
+  { label: 'Pouco', range: '0-14', min: 0, max: 14 },
+];
+
+const KAPHA_LEVELS = [
+  { label: 'Fixado', range: '60+', min: 60, max: 999 },
+  { label: 'Adoecido', range: '51-59', min: 51, max: 59 },
+  { label: 'Acúmulo', range: '36-50', min: 36, max: 50 },
+  { label: 'Normal', range: '15-35', min: 15, max: 35 },
+  { label: 'Pouco', range: '0-14', min: 0, max: 14 },
+];
+
+const DOSHA_LEVELS: Record<string, typeof VATA_LEVELS> = {
+  Vata: VATA_LEVELS,
+  Pitta: PITTA_LEVELS,
+  Kapha: KAPHA_LEVELS,
+};
+
+const LEVEL_COLORS: Record<string, string> = {
+  Fixado: 'bg-red-500',
+  Adoecido: 'bg-orange-500',
+  'Acúmulo': 'bg-yellow-500',
+  Normal: 'bg-emerald-500',
+  Pouco: 'bg-blue-400',
+  Reduzido: 'bg-blue-400',
+};
+
+function getLevel(score: number, levels: typeof VATA_LEVELS) {
+  for (const l of levels) {
+    if (score >= l.min && score <= l.max) return l.label;
+  }
+  return 'Normal';
+}
+
 function stripHtml(html: string): string {
   return html
     .replace(/<br\s*\/?>/gi, '\n')
@@ -72,19 +122,57 @@ function stripHtml(html: string): string {
 function isValidContent(content: string | null): boolean {
   if (!content) return false;
   const stripped = stripHtml(content);
-  // Skip UUIDs and very short content
   if (stripped.length < 30) return false;
   if (/^[a-f0-9-]{36}$/i.test(stripped)) return false;
   return true;
 }
+
+// Vertical bar chart for a single dosha
+const DoshaVerticalBar = ({ name, score, emoji, color }: { name: string; score: number; emoji: string; color: string }) => {
+  const levels = DOSHA_LEVELS[name] || VATA_LEVELS;
+  const currentLevel = getLevel(score, levels);
+
+  return (
+    <div className="flex flex-col items-center gap-1 flex-1 min-w-0">
+      <div className="text-center mb-1">
+        <p className="text-xs font-bold text-foreground">{emoji} {name}</p>
+        <p className="text-lg font-bold" style={{ color }}>{score}</p>
+        <p className="text-[10px] text-muted-foreground">pts</p>
+        <span className={cn("text-[10px] font-semibold px-1.5 py-0.5 rounded-full text-white mt-0.5 inline-block", LEVEL_COLORS[currentLevel])}>
+          {currentLevel}
+        </span>
+      </div>
+      <div className="flex flex-col gap-[2px] w-full">
+        {levels.map((level) => {
+          const isActive = currentLevel === level.label;
+          return (
+            <div
+              key={level.label}
+              className={cn(
+                "rounded-sm px-1.5 py-1 text-[9px] leading-tight transition-all border",
+                isActive
+                  ? cn(LEVEL_COLORS[level.label], "text-white font-bold border-transparent shadow-sm")
+                  : "bg-muted/30 text-muted-foreground/60 border-transparent"
+              )}
+            >
+              <span className="block font-medium">{level.label}</span>
+              <span className="block opacity-80">{level.range}</span>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
 
 const ExpandableSection = ({ title, content, icon }: { title: string; content: string | null; icon: string }) => {
   const [expanded, setExpanded] = useState(false);
   if (!isValidContent(content)) return null;
 
   const plainText = stripHtml(content!);
-  const preview = plainText.slice(0, 200);
-  const needsExpand = plainText.length > 200;
+  const lines = plainText.split('\n').filter(l => l.trim());
+  const previewLines = lines.slice(0, 4).join('\n');
+  const needsExpand = lines.length > 4;
 
   return (
     <div className="bg-card rounded-xl border border-border p-4 space-y-2">
@@ -92,7 +180,7 @@ const ExpandableSection = ({ title, content, icon }: { title: string; content: s
         <span>{icon}</span> {title}
       </h3>
       <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
-        {expanded ? plainText : preview + (needsExpand ? '...' : '')}
+        {expanded ? plainText : previewLines + (needsExpand ? '...' : '')}
       </p>
       {needsExpand && (
         <button
@@ -110,13 +198,34 @@ const ExpandableSection = ({ title, content, icon }: { title: string; content: s
   );
 };
 
+const TagsSection = ({ title, content, icon }: { title: string; content: string | null; icon: string }) => {
+  if (!content || content.trim().length < 5) return null;
+  const stripped = stripHtml(content);
+  // Split by common separators
+  const tags = stripped.split(/[,\n•·–—|]/).map(t => t.trim()).filter(t => t.length > 1 && t.length < 60);
+  if (tags.length === 0) return null;
+
+  return (
+    <div className="space-y-1.5">
+      <p className="text-xs font-bold text-muted-foreground uppercase">{icon} {title}</p>
+      <div className="flex flex-wrap gap-1.5">
+        {tags.map((tag, i) => (
+          <span key={i} className="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
+            {tag}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+};
+
 const CustomPieLabel = ({ cx, cy, midAngle, outerRadius, name, value }: any) => {
   const RADIAN = Math.PI / 180;
-  const radius = outerRadius + 24;
+  const radius = outerRadius + 22;
   const x = cx + radius * Math.cos(-midAngle * RADIAN);
   const y = cy + radius * Math.sin(-midAngle * RADIAN);
   return (
-    <text x={x} y={y} fill="hsl(var(--foreground))" textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central" className="text-xs font-medium">
+    <text x={x} y={y} fill="hsl(var(--foreground))" textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central" className="text-[11px] font-medium">
       {name} ({value})
     </text>
   );
@@ -152,7 +261,7 @@ const MeuDosha = () => {
         const { data: glossData } = await supabase
           .from('portal_glossario')
           .select('*')
-          .eq('Title', registro.doshaprincipal)
+          .eq('doshaNome', registro.doshaprincipal)
           .maybeSingle();
         if (glossData) setGlossario(glossData as unknown as PortalGlossario);
       }
@@ -205,9 +314,10 @@ const MeuDosha = () => {
 
   return (
     <PageContainer title={`Meu Dosha — ${result.nome}`} description={`Resultado do teste de dosha de ${result.nome}: ${result.doshaprincipal}`}>
-      <div className="max-w-2xl mx-auto space-y-6">
-        {/* Header */}
-        <div className="text-center space-y-3">
+      <div className="max-w-3xl mx-auto space-y-6">
+
+        {/* ===== HEADER: Name + Badge ===== */}
+        <div className="text-center space-y-2">
           <p className="text-muted-foreground text-sm">Resultado de</p>
           <h1 className="font-serif text-3xl font-bold text-foreground">{result.nome}</h1>
           <div className={cn("inline-block px-5 py-2 rounded-full border-2 font-bold text-lg", badgeClass)}>
@@ -215,114 +325,148 @@ const MeuDosha = () => {
           </div>
         </div>
 
-        {/* Pie Chart */}
-        <div className="bg-card rounded-xl border border-border p-5 space-y-2">
-          <h2 className="font-serif font-bold text-foreground text-lg text-center">Pontuação dos Doshas</h2>
-          <div className="w-full flex justify-center">
-            <ResponsiveContainer width={280} height={240}>
-              <PieChart>
-                <Pie
-                  data={pieData}
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={80}
-                  innerRadius={40}
-                  dataKey="value"
-                  label={CustomPieLabel}
-                  strokeWidth={2}
-                  stroke="hsl(var(--card))"
-                >
-                  {pieData.map((entry) => (
-                    <Cell key={entry.name} fill={PIE_COLORS[entry.name]} />
-                  ))}
-                </Pie>
-                <Tooltip
-                  formatter={(value: number, name: string) => [`${value} pts (${totalScore > 0 ? Math.round((value / totalScore) * 100) : 0}%)`, name]}
-                  contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '8px', fontSize: '13px' }}
-                />
-              </PieChart>
-            </ResponsiveContainer>
+        {/* ===== CLINICAL DASHBOARD CARD ===== */}
+        <div className="bg-card rounded-xl border border-border p-4 space-y-4">
+
+          {/* Row 1: Pie Chart + Vertical Bars */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+            {/* Pie Chart */}
+            <div className="flex flex-col items-center">
+              <h2 className="font-serif font-bold text-foreground text-sm mb-2 text-center">Pontuação dos Doshas</h2>
+              <ResponsiveContainer width="100%" height={200}>
+                <PieChart>
+                  <Pie
+                    data={pieData}
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={70}
+                    innerRadius={35}
+                    dataKey="value"
+                    label={CustomPieLabel}
+                    strokeWidth={2}
+                    stroke="hsl(var(--card))"
+                  >
+                    {pieData.map((entry) => (
+                      <Cell key={entry.name} fill={PIE_COLORS[entry.name]} />
+                    ))}
+                  </Pie>
+                  <Tooltip
+                    formatter={(value: number, name: string) => [`${value} pts (${totalScore > 0 ? Math.round((value / totalScore) * 100) : 0}%)`, name]}
+                    contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '8px', fontSize: '12px' }}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+              <div className="flex gap-3 text-[10px] text-muted-foreground mt-1">
+                {doshaScores.map(d => (
+                  <span key={d.name} className="flex items-center gap-1">
+                    <span className="w-2 h-2 rounded-full" style={{ background: PIE_COLORS[d.name] }} />
+                    {d.emoji} {d.name}: {d.score}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            {/* Vertical Bars */}
+            <div>
+              <h2 className="font-serif font-bold text-foreground text-sm mb-2 text-center">Quadro Clínico</h2>
+              <div className="flex gap-2">
+                {doshaScores.map(d => (
+                  <DoshaVerticalBar
+                    key={d.name}
+                    name={d.name}
+                    score={d.score}
+                    emoji={d.emoji}
+                    color={PIE_COLORS[d.name]}
+                  />
+                ))}
+              </div>
+            </div>
           </div>
-          <div className="flex justify-center gap-4 text-xs text-muted-foreground">
-            {doshaScores.map(d => (
-              <span key={d.name} className="flex items-center gap-1">
-                <span className="w-2.5 h-2.5 rounded-full" style={{ background: PIE_COLORS[d.name] }} />
-                {d.emoji} {d.name}: {d.score}
-              </span>
-            ))}
+
+          {/* Row 2: Agni + Agravamentos */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+            {/* Agni */}
+            {result.agniPrincipal && (
+              <div className="bg-surface-sun rounded-lg border border-border p-3">
+                <h3 className="font-serif font-bold text-foreground text-sm mb-1">🔥 Fogo Digestivo (Agni)</h3>
+                <p className="text-xs text-muted-foreground">{result.agniPrincipal}</p>
+              </div>
+            )}
+
+            {/* Agravamentos */}
+            {(result.agravVataTags || result.agravPittaTags || result.agravKaphaTags) && (
+              <div className="bg-card rounded-lg border border-border p-3 space-y-2">
+                <h3 className="font-serif font-bold text-foreground text-sm">⚠️ Agravamentos</h3>
+                {result.agravVataTags && (
+                  <div>
+                    <p className="text-[10px] font-bold text-vata uppercase mb-0.5">Vata</p>
+                    <div className="flex flex-wrap gap-1">
+                      {result.agravVataTags.split(',').map(t => (
+                        <span key={t} className="text-[10px] px-1.5 py-0.5 rounded-full bg-vata/10 text-vata border border-vata/30">{t.trim()}</span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {result.agravPittaTags && (
+                  <div>
+                    <p className="text-[10px] font-bold text-pitta uppercase mb-0.5">Pitta</p>
+                    <div className="flex flex-wrap gap-1">
+                      {result.agravPittaTags.split(',').map(t => (
+                        <span key={t} className="text-[10px] px-1.5 py-0.5 rounded-full bg-pitta/10 text-pitta border border-pitta/30">{t.trim()}</span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {result.agravKaphaTags && (
+                  <div>
+                    <p className="text-[10px] font-bold text-kapha uppercase mb-0.5">Kapha</p>
+                    <div className="flex flex-wrap gap-1">
+                      {result.agravKaphaTags.split(',').map(t => (
+                        <span key={t} className="text-[10px] px-1.5 py-0.5 rounded-full bg-kapha/10 text-kapha border border-kapha/30">{t.trim()}</span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Agni */}
-        {result.agniPrincipal && (
-          <div className="bg-surface-sun rounded-xl border border-border p-5">
-            <h2 className="font-serif font-bold text-foreground text-lg mb-1">🔥 Fogo Digestivo (Agni)</h2>
-            <p className="text-sm text-muted-foreground">{result.agniPrincipal}</p>
-          </div>
-        )}
-
-        {/* Agravamentos */}
-        {(result.agravVataTags || result.agravPittaTags || result.agravKaphaTags) && (
-          <div className="bg-card rounded-xl border border-border p-5 space-y-3">
-            <h2 className="font-serif font-bold text-foreground text-lg">⚠️ Agravamentos Detectados</h2>
-            {result.agravVataTags && (
-              <div>
-                <p className="text-xs font-bold text-vata uppercase mb-1">Vata</p>
-                <div className="flex flex-wrap gap-1.5">
-                  {result.agravVataTags.split(',').map(t => (
-                    <span key={t} className="text-xs px-2 py-0.5 rounded-full bg-vata/10 text-vata border border-vata/30">{t.trim()}</span>
-                  ))}
-                </div>
-              </div>
-            )}
-            {result.agravPittaTags && (
-              <div>
-                <p className="text-xs font-bold text-pitta uppercase mb-1">Pitta</p>
-                <div className="flex flex-wrap gap-1.5">
-                  {result.agravPittaTags.split(',').map(t => (
-                    <span key={t} className="text-xs px-2 py-0.5 rounded-full bg-pitta/10 text-pitta border border-pitta/30">{t.trim()}</span>
-                  ))}
-                </div>
-              </div>
-            )}
-            {result.agravKaphaTags && (
-              <div>
-                <p className="text-xs font-bold text-kapha uppercase mb-1">Kapha</p>
-                <div className="flex flex-wrap gap-1.5">
-                  {result.agravKaphaTags.split(',').map(t => (
-                    <span key={t} className="text-xs px-2 py-0.5 rounded-full bg-kapha/10 text-kapha border border-kapha/30">{t.trim()}</span>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Portal Glossário — Resultado do Dosha */}
+        {/* ===== GLOSSARY INFO PACK ===== */}
         {glossario && (
-          <div className="space-y-3">
-            <div className="text-center mt-6 space-y-1">
+          <div className="space-y-4">
+            <div className="text-center space-y-1">
               <h2 className="font-serif font-bold text-foreground text-xl">
-                Seu Dosha principal é: {glossario.Title}
+                Seu Dosha principal é: {glossario.doshaNome || glossario.Title}
               </h2>
               <p className="text-muted-foreground text-sm">O que isso significa?</p>
             </div>
 
+            {/* O que é */}
             <ExpandableSection title="O que é?" content={glossario.oque} icon="🧬" />
-            <ExpandableSection title="Características Principais" content={glossario.caracteristicasPrincipais} icon="📋" />
-            <ExpandableSection title="Atributos" content={glossario.atributos} icon="✨" />
-            <ExpandableSection title="Manifestações Comuns" content={glossario.manifestacoesComuns} icon="🔍" />
+
+            {/* Tags sections */}
+            <div className="bg-card rounded-xl border border-border p-4 space-y-4">
+              <TagsSection title="Atributos" content={glossario.atributos} icon="✨" />
+              <TagsSection title="Equilíbrio" content={glossario.caracteristicasPrincipais} icon="⚖️" />
+              <TagsSection title="Desequilíbrio" content={glossario.manifestacoesComuns} icon="🔻" />
+            </div>
+
+            {/* Expandable detail sections */}
             <ExpandableSection title="Principais Causas" content={glossario.principaisCausas} icon="⚡" />
-            <ExpandableSection title="O que Fazer" content={glossario.dicasGeraisFazer} icon="👍" />
-            <ExpandableSection title="O que NÃO Fazer" content={glossario.dicasGeraisNaoFazer} icon="👎" />
-            <ExpandableSection title="Alimentos a Priorizar" content={glossario.alimentosPriorizar} icon="✅" />
+            <ExpandableSection title="Principais Enfermidades" content={glossario.principaisDoencas} icon="🩺" />
+            <ExpandableSection title="Caminhos de Equilíbrio" content={glossario.caminhosEquilibrio} icon="🌿" />
+            <ExpandableSection title="Dicas: O que Fazer" content={glossario.dicasGeraisFazer} icon="👍" />
             <ExpandableSection title="Alimentos a Evitar" content={glossario.alimentosEvitar} icon="🚫" />
             <ExpandableSection title="Rotinas de Equilíbrio" content={glossario.rotinasEquilibrar} icon="🌅" />
-            <ExpandableSection title="Rotinas Inadequadas" content={glossario.rotinasInadequadas} icon="⛔" />
+            <ExpandableSection title="Dicas: Não Fazer" content={glossario.dicasGeraisNaoFazer} icon="👎" />
+            <ExpandableSection title="Alimentos a Priorizar" content={glossario.alimentosPriorizar} icon="✅" />
           </div>
         )}
 
-        {/* Links */}
+        {/* ===== LINKS ===== */}
         <div className="space-y-3 pb-8">
           <h2 className="font-serif font-bold text-foreground text-lg text-center">Aprofunde-se</h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
