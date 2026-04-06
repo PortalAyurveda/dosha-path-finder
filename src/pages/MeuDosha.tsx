@@ -483,7 +483,7 @@ const MeuDosha = () => {
           {/* Row 1: Pie Chart + Thermometer */}
           <div className="grid grid-cols-1 sm:grid-cols-[1.2fr_1fr] gap-4">
 
-            {/* Pie Chart — larger */}
+            {/* Pie Chart + Fogo Digestivo */}
             <div className="flex flex-col items-center">
               <h2 className="font-serif font-bold text-foreground text-base mb-2 text-center">Pontuação dos Doshas</h2>
               <ResponsiveContainer width="100%" height={240}>
@@ -521,6 +521,11 @@ const MeuDosha = () => {
 
             {/* Thermometer */}
             <ClinicalThermometer doshaScores={doshaScores} />
+          </div>
+
+          {/* Level Interpretation Bullets — inside dashboard */}
+          <div className="border-t border-border pt-4">
+            <DoshaLevelBullets doshaScores={doshaScores} />
           </div>
 
           {/* Agravamentos in 3 vertical columns below */}
@@ -571,9 +576,6 @@ const MeuDosha = () => {
             </div>
           )}
         </div>
-
-        {/* ===== LEVEL INTERPRETATION BULLETS ===== */}
-        <DoshaLevelBullets doshaScores={doshaScores} />
 
         {/* ===== GLOSSARY INFO PACK ===== */}
         {glossario && (
