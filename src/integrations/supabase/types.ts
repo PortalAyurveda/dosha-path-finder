@@ -749,12 +749,12 @@ export type Database = {
           alimentosPriorizar: string | null
           atributos: string | null
           caminhosEquilibrio: string | null
-          caracteristicasPrincipais: string | null
+          desequilibrio: string | null
           dicasGeraisFazer: string | null
           dicasGeraisNaoFazer: string | null
           doshaNome: string | null
+          equilibrio: string | null
           id: number
-          manifestacoesComuns: string | null
           oque: string | null
           principaisCausas: string | null
           principaisDoencas: string | null
@@ -767,12 +767,12 @@ export type Database = {
           alimentosPriorizar?: string | null
           atributos?: string | null
           caminhosEquilibrio?: string | null
-          caracteristicasPrincipais?: string | null
+          desequilibrio?: string | null
           dicasGeraisFazer?: string | null
           dicasGeraisNaoFazer?: string | null
           doshaNome?: string | null
+          equilibrio?: string | null
           id: number
-          manifestacoesComuns?: string | null
           oque?: string | null
           principaisCausas?: string | null
           principaisDoencas?: string | null
@@ -785,12 +785,12 @@ export type Database = {
           alimentosPriorizar?: string | null
           atributos?: string | null
           caminhosEquilibrio?: string | null
-          caracteristicasPrincipais?: string | null
+          desequilibrio?: string | null
           dicasGeraisFazer?: string | null
           dicasGeraisNaoFazer?: string | null
           doshaNome?: string | null
+          equilibrio?: string | null
           id?: number
-          manifestacoesComuns?: string | null
           oque?: string | null
           principaisCausas?: string | null
           principaisDoencas?: string | null

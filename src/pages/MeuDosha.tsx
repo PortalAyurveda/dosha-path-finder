@@ -27,8 +27,8 @@ interface PortalGlossario {
   Title: string | null;
   doshaNome: string | null;
   oque: string | null;
-  caracteristicasPrincipais: string | null;
-  manifestacoesComuns: string | null;
+  equilibrio: string | null;
+  desequilibrio: string | null;
   principaisCausas: string | null;
   principaisDoencas: string | null;
   alimentosEvitar: string | null;
@@ -311,9 +311,13 @@ const ThreeColumnTable = ({ atributos, equilibrio, desequilibrio }: {
   desequilibrio: string | null;
 }) => {
   const parseTags = (content: string | null): string[] => {
-    if (!content || content.trim().length < 5) return [];
+    if (!content || content.trim().length < 3) return [];
     const stripped = stripHtml(content);
-    return stripped.split(/[,\n•·–—|]/).map(t => t.trim()).filter(t => t.length > 1 && t.length < 60).slice(0, 5);
+    // Split by newline first, then fallback to other separators
+    const items = stripped.split(/\n/).map(t => t.trim()).filter(t => t.length > 1 && t.length < 80);
+    if (items.length >= 2) return items.slice(0, 5);
+    // Fallback: comma/bullet separated
+    return stripped.split(/[,•·–—|]/).map(t => t.trim()).filter(t => t.length > 1 && t.length < 80).slice(0, 5);
   };
 
   const attrTags = parseTags(atributos);
@@ -479,7 +483,7 @@ const MeuDosha = () => {
           {/* Row 1: Pie Chart + Thermometer */}
           <div className="grid grid-cols-1 sm:grid-cols-[1.2fr_1fr] gap-4">
 
-            {/* Pie Chart — larger */}
+            {/* Pie Chart + Fogo Digestivo */}
             <div className="flex flex-col items-center">
               <h2 className="font-serif font-bold text-foreground text-base mb-2 text-center">Pontuação dos Doshas</h2>
               <ResponsiveContainer width="100%" height={240}>
@@ -517,6 +521,11 @@ const MeuDosha = () => {
 
             {/* Thermometer */}
             <ClinicalThermometer doshaScores={doshaScores} />
+          </div>
+
+          {/* Level Interpretation Bullets — inside dashboard */}
+          <div className="border-t border-border pt-4">
+            <DoshaLevelBullets doshaScores={doshaScores} />
           </div>
 
           {/* Agravamentos in 3 vertical columns below */}
@@ -568,9 +577,6 @@ const MeuDosha = () => {
           )}
         </div>
 
-        {/* ===== LEVEL INTERPRETATION BULLETS ===== */}
-        <DoshaLevelBullets doshaScores={doshaScores} />
-
         {/* ===== GLOSSARY INFO PACK ===== */}
         {glossario && (
           <div className="space-y-4">
@@ -586,8 +592,8 @@ const MeuDosha = () => {
             {/* 3-column table */}
             <ThreeColumnTable
               atributos={glossario.atributos}
-              equilibrio={glossario.caracteristicasPrincipais}
-              desequilibrio={glossario.manifestacoesComuns}
+              equilibrio={glossario.equilibrio}
+              desequilibrio={glossario.desequilibrio}
             />
 
             <ExpandableSection title="Principais Causas" content={glossario.principaisCausas} icon="⚡" />
