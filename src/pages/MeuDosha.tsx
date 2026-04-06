@@ -27,8 +27,8 @@ interface PortalGlossario {
   Title: string | null;
   doshaNome: string | null;
   oque: string | null;
-  caracteristicasPrincipais: string | null;
-  manifestacoesComuns: string | null;
+  equilibrio: string | null;
+  desequilibrio: string | null;
   principaisCausas: string | null;
   principaisDoencas: string | null;
   alimentosEvitar: string | null;
