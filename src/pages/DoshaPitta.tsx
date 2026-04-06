@@ -4,6 +4,7 @@ import { Helmet } from "react-helmet-async";
 import DoshaRoutineContent from "@/components/dosha/DoshaRoutineContent";
 import DoshaFoodContent from "@/components/dosha/DoshaFoodContent";
 import DoshaRemediesContent from "@/components/dosha/DoshaRemediesContent";
+import DoshaVideosContent from "@/components/dosha/DoshaVideosContent";
 import { pittaRoutineData } from "@/data/routineData";
 import { pittaFoodData } from "@/data/foodData";
 import { pittaRemediesData } from "@/data/remediesData";
@@ -54,6 +55,8 @@ const DoshaPitta = ({ defaultTab = "principal" }: DoshaPittaProps) => {
         <DoshaFoodContent dosha="pitta" {...pittaFoodData} />
       ) : activeTab === "remedios" ? (
         <DoshaRemediesContent dosha="pitta" {...pittaRemediesData} />
+      ) : activeTab === "videos" ? (
+        <DoshaVideosContent dosha="pitta" />
       ) : activeTab === "principal" ? (
         <>
           <AgravamentosSection

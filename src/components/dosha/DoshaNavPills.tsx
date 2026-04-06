@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
-import { Clock, UtensilsCrossed, Pill, Bird, Home } from "lucide-react";
+import { Clock, UtensilsCrossed, Pill, Bird, Home, Video } from "lucide-react";
 
-export type DoshaTab = "principal" | "horarios" | "alimentacao" | "remedios" | "avancado";
+export type DoshaTab = "principal" | "horarios" | "alimentacao" | "remedios" | "videos" | "avancado";
 
 interface DoshaNavPillsProps {
   dosha: "vata" | "pitta" | "kapha";
@@ -41,6 +41,7 @@ const pills = [
   { id: "horarios" as DoshaTab, label: "Horários", icon: Clock },
   { id: "alimentacao" as DoshaTab, label: "Alimentação", icon: UtensilsCrossed },
   { id: "remedios" as DoshaTab, label: "Remédios", icon: Pill },
+  { id: "videos" as DoshaTab, label: "Vídeos", icon: Video },
   { id: "avancado" as DoshaTab, label: "Avançado", icon: Bird },
 ];
 

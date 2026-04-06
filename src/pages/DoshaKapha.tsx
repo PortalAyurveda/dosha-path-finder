@@ -4,6 +4,7 @@ import { Helmet } from "react-helmet-async";
 import DoshaRoutineContent from "@/components/dosha/DoshaRoutineContent";
 import DoshaFoodContent from "@/components/dosha/DoshaFoodContent";
 import DoshaRemediesContent from "@/components/dosha/DoshaRemediesContent";
+import DoshaVideosContent from "@/components/dosha/DoshaVideosContent";
 import { kaphaRoutineData } from "@/data/routineData";
 import { kaphaFoodData } from "@/data/foodData";
 import { kaphaRemediesData } from "@/data/remediesData";
@@ -54,6 +55,8 @@ const DoshaKapha = ({ defaultTab = "principal" }: DoshaKaphaProps) => {
         <DoshaFoodContent dosha="kapha" {...kaphaFoodData} />
       ) : activeTab === "remedios" ? (
         <DoshaRemediesContent dosha="kapha" {...kaphaRemediesData} />
+      ) : activeTab === "videos" ? (
+        <DoshaVideosContent dosha="kapha" />
       ) : activeTab === "principal" ? (
         <>
           <AgravamentosSection

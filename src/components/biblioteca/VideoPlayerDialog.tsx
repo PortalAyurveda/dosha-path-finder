@@ -80,8 +80,8 @@ const VideoPlayerDialog = ({ open, onOpenChange, videoId, title, description, te
             </DialogTitle>
           </DialogHeader>
 
-          {timestamps.length > 0 ? (
-            <div className="mt-4 rounded-xl border border-border bg-surface-sun p-4">
+          {timestamps.length > 0 && (
+            <div className="mt-3 rounded-xl border border-border bg-surface-sun p-3">
               <h3 className="font-sans text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 flex items-center gap-2">
                 <Clock className="h-3.5 w-3.5" />
                 Índice de Minutos
@@ -109,13 +109,15 @@ const VideoPlayerDialog = ({ open, onOpenChange, videoId, title, description, te
                 </div>
               </ScrollArea>
             </div>
-          ) : description ? (
-            <ScrollArea className="max-h-40 mt-3">
-              <DialogDescription className="text-sm text-muted-foreground font-sans whitespace-pre-line">
-                {description}
+          )}
+
+          {(textoParaEmbedding || description) && (
+            <ScrollArea className="max-h-60 mt-3">
+              <DialogDescription className="text-xs text-muted-foreground font-sans whitespace-pre-line leading-relaxed">
+                {textoParaEmbedding || description}
               </DialogDescription>
             </ScrollArea>
-          ) : null}
+          )}
         </div>
       </DialogContent>
     </Dialog>
