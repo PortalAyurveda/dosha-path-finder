@@ -131,22 +131,23 @@ const Hero = () => {
             </div>
           </div>
 
-          {/* Right: Heading + Form */}
-          <div className="lg:col-span-5 flex flex-col space-y-6">
-            <div className="text-center lg:text-left">
-              <h1 className="animate-fade-in mb-3 text-3xl md:text-4xl lg:text-[44px]">
-                Seu guia completo para saúde e longevidade.
-              </h1>
-              <p className="text-base md:text-lg text-muted-foreground animate-fade-in" style={{ animationDelay: "0.15s" }}>
-                Descubra e cuide dos seus Doshas por meio da medicina milenar.
-              </p>
-            </div>
-
-            {/* Form */}
+          {/* Right: Heading + Form — same height as preview */}
+          <div className="lg:col-span-5 flex flex-col">
             <div
-              className="animate-fade-in bg-card/80 backdrop-blur-sm rounded-2xl p-6 border border-border shadow-lg space-y-4"
+              className="animate-fade-in bg-card/80 backdrop-blur-sm rounded-3xl p-6 xl:p-8 border border-border shadow-lg flex flex-col justify-center space-y-5 h-full"
               style={{ animationDelay: "0.25s" }}
             >
+              <div className="text-center">
+                <h1 className="mb-2 text-2xl md:text-3xl lg:text-[36px]">
+                  Seu guia completo para saúde e longevidade.
+                </h1>
+                <p className="text-sm md:text-base text-muted-foreground">
+                  Descubra e cuide dos seus Doshas por meio da medicina milenar.
+                </p>
+              </div>
+
+              <hr className="border-border" />
+
               <p className="font-serif font-semibold text-foreground text-base text-center">
                 Comece seu Teste de Dosha Gratuito
               </p>
