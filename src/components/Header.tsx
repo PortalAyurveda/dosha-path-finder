@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 
 const navLinks = [
   { label: "Início", to: "/" },
-  { label: "Teste de Dosha", to: "/teste-de-dosha" },
   { label: "Biblioteca", to: "/biblioteca" },
   { label: "Cursos", to: "/cursos" },
   { label: "Terapeutas", to: "/terapeutas-do-brasil" },
