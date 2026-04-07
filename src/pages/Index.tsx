@@ -1,7 +1,6 @@
 import { Helmet } from "react-helmet-async";
 import Hero from "@/components/home/Hero";
-import DoshaSection from "@/components/home/DoshaSection";
-import ContentHub from "@/components/home/ContentHub";
+import QuickAccessCards from "@/components/home/QuickAccessCards";
 import SamkhyaBanner from "@/components/home/SamkhyaBanner";
 
 const jsonLd = {
@@ -46,8 +45,7 @@ const Index = () => {
       </Helmet>
 
       <Hero />
-      <DoshaSection />
-      <ContentHub />
+      <QuickAccessCards />
       <SamkhyaBanner />
     </>
   );
