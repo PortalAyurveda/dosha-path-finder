@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import PageContainer from "@/components/PageContainer";
 import { Button } from "@/components/ui/button";
@@ -29,11 +29,11 @@ const QUESTIONS_BY_STEP: Record<string, Question[]> = {
 };
 
 const INTERESSE_OPTIONS = [
-  { id: 'aliment', label: '🥗 Nutrição Ayurvédica' },
-  { id: 'remedios', label: '🌿 Herbologia / Remédios' },
-  { id: 'mentoria', label: '📚 Estudos / Mentoria' },
-  { id: 'espiritual', label: '🕉️ Espiritualidade' },
-  { id: 'produtos', label: '🧴 Produtos Naturais' },
+  { id: 'aliment', label: '🥗 Nutrição, Alimentação e Culinária' },
+  { id: 'remedios', label: '🌿 Dravya Guna - Alquimia e Herbologia' },
+  { id: 'mentoria', label: '📚 Estudos, mentoria e aprofundamento' },
+  { id: 'espiritual', label: '🕉️ Espiritualidade e Existência' },
+  { id: 'produtos', label: '🧴 Produtos Ayurvédicos e naturais' },
 ];
 
 const TesteDeDosha = () => {
@@ -42,11 +42,21 @@ const TesteDeDosha = () => {
   const [step, setStep] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Personal info
-  const [info, setInfo] = useState({ nome: '', email: '', idade: '', altura: '', peso: '', nivel: '' });
+  // Info from Hero (localStorage)
+  const [info, setInfo] = useState({ nome: '', idade: '', nivel: 'Iniciante', email: '', altura: '', peso: '' });
 
-  // Answers for radio questions
-  const [answers, setAnswers] = useState<Record<string, number>>({});
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem('dosha_test_info');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        setInfo(prev => ({ ...prev, nome: parsed.nome || '', idade: parsed.idade || '', nivel: parsed.nivel || 'Iniciante' }));
+      }
+    } catch {}
+  }, []);
+
+  // Multi-select answers: each question can have multiple selected option indices
+  const [answers, setAnswers] = useState<Record<string, number[]>>({});
 
   // Food tags (multi-select)
   const [selectedFoods, setSelectedFoods] = useState<string[]>([]);
@@ -64,8 +74,14 @@ const TesteDeDosha = () => {
   const progress = ((step + 1) / totalSteps) * 100;
   const currentStep = STEP_CONFIG[step];
 
-  const setAnswer = (questionId: string, optionIndex: number) => {
-    setAnswers(prev => ({ ...prev, [questionId]: optionIndex }));
+  const toggleAnswer = (questionId: string, optionIndex: number) => {
+    setAnswers(prev => {
+      const current = prev[questionId] || [];
+      if (current.includes(optionIndex)) {
+        return { ...prev, [questionId]: current.filter(i => i !== optionIndex) };
+      }
+      return { ...prev, [questionId]: [...current, optionIndex] };
+    });
   };
 
   const toggleFood = (label: string) => {
@@ -84,15 +100,15 @@ const TesteDeDosha = () => {
   };
 
   const canAdvance = (): boolean => {
-    if (currentStep.part === 'info') {
-      return !!(info.nome && info.email && info.idade && info.altura && info.peso && info.nivel);
+    if (currentStep.part === 'interests') {
+      return !!(info.email && info.altura && info.peso);
     }
-    return true; // all question steps are optional now
+    return true;
   };
 
   const handleNext = () => {
     if (!canAdvance()) {
-      toast({ title: "Preencha os dados básicos", description: "Nome, e-mail, idade, altura, peso e nível são obrigatórios.", variant: "destructive" });
+      toast({ title: "Preencha os dados", description: "E-mail, altura e peso são obrigatórios.", variant: "destructive" });
       return;
     }
     if (step < totalSteps - 1) setStep(step + 1);
@@ -106,23 +122,25 @@ const TesteDeDosha = () => {
     let v = 0, p = 0, k = 0;
     let agni_irregular = 0, agni_forte = 0, agni_fraco = 0;
 
-    // Sum from radio answers
-    for (const [qId, optIdx] of Object.entries(answers)) {
+    // Sum from multi-select answers
+    for (const [qId, optIndices] of Object.entries(answers)) {
       const question = ALL_QUESTIONS.find(q => q.id === qId);
       if (question) {
-        const opt = question.options[optIdx];
-        if (opt) {
-          v += opt.scores.v || 0;
-          p += opt.scores.p || 0;
-          k += opt.scores.k || 0;
-          agni_irregular += opt.scores.agni_irregular || 0;
-          agni_forte += opt.scores.agni_forte || 0;
-          agni_fraco += opt.scores.agni_fraco || 0;
+        for (const optIdx of optIndices) {
+          const opt = question.options[optIdx];
+          if (opt) {
+            v += opt.scores.v || 0;
+            p += opt.scores.p || 0;
+            k += opt.scores.k || 0;
+            agni_irregular += opt.scores.agni_irregular || 0;
+            agni_forte += opt.scores.agni_forte || 0;
+            agni_fraco += opt.scores.agni_fraco || 0;
+          }
         }
       }
     }
 
-    // Food tags
+    // Food tags: each adds 1 to its dosha
     selectedFoods.forEach(label => {
       const food = FOOD_TAGS.find(f => f.label === label);
       if (food) {
@@ -132,30 +150,30 @@ const TesteDeDosha = () => {
       }
     });
 
-    // Agravamentos
-    v += agravVata.length;
-    p += agravPitta.length;
-    k += agravKapha.length;
+    // Agravamentos: each adds 2 to its dosha
+    v += agravVata.length * 2;
+    p += agravPitta.length * 2;
+    k += agravKapha.length * 2;
 
-    // Age scoring
+    // Age modifier
     const idade = parseInt(info.idade);
     if (idade > 50) v += 2;
     else if (idade >= 13) p += 2;
-    else k += 2;
+    else if (idade >= 1) k += 2;
 
-    // IMC scoring
+    // IMC modifier
     let altura = parseFloat(info.altura);
     const peso = parseFloat(info.peso);
     if (altura > 3) altura = altura / 100; // cm to m
     const imc = peso / (altura * altura);
 
     if (imc < 18.5) v += 3;
-    else if (imc < 23) v += 2;
-    else if (imc < 27) { p += 1; k += 1; }
-    else if (imc < 30) { p += 2; k += 2; }
+    else if (imc <= 22.9) v += 2;
+    else if (imc <= 26.9) { p += 1; k += 1; }
+    else if (imc <= 29.9) { p += 2; k += 2; }
     else k += 3;
 
-    // Dosha principal
+    // Dosha principal determination
     const scores = [
       { name: 'Vata', score: v },
       { name: 'Pitta', score: p },
@@ -171,37 +189,45 @@ const TesteDeDosha = () => {
       doshaPrincipal = ordered.join('-');
     }
 
-    // Agni calculation
+    // Agni calculation with irregularity override
     const agniMap: Record<string, number> = { irregular: agni_irregular, forte: agni_forte, fraco: agni_fraco };
     const agniEntries = Object.entries(agniMap).sort(([, a], [, b]) => b - a);
     let agniWinner = agniEntries[0][0];
     const agniMaxScore = agniEntries[0][1];
 
+    // Irregularity override: if winner is forte/fraco but irregular is within 2 pts, irregular wins
     if ((agniWinner === 'forte' || agniWinner === 'fraco') && agniMaxScore - agniMap.irregular <= 2) {
       agniWinner = 'irregular';
     }
 
     const agniNames: Record<string, string> = {
-      irregular: 'Agni Irregular (Vishama)',
-      forte: 'Agni Intenso (Tikshna)',
-      fraco: 'Agni Fraco (Manda)',
+      irregular: 'Digestão inconstante ou irregular',
+      forte: 'Digestão forte e intensa',
+      fraco: 'Digestão fraca ou lenta',
     };
 
+    // Use the winner's actual score for severity classification
+    const agniWinnerScore = agniMap[agniWinner];
+
     let agniPrincipal: string;
-    if (agniMaxScore <= 2) {
+    if (agniWinnerScore <= 2) {
       agniPrincipal = 'Digestão constante - boa';
-    } else if (agniMaxScore <= 6) {
-      agniPrincipal = `${agniNames[agniWinner]} (nível 1 Iniciando)`;
-    } else if (agniMaxScore <= 10) {
-      agniPrincipal = `${agniNames[agniWinner]} (nível 2 Moderado)`;
+    } else if (agniWinnerScore <= 6) {
+      agniPrincipal = `${agniNames[agniWinner]} (nivel 1 Iniciando)`;
+    } else if (agniWinnerScore <= 10) {
+      agniPrincipal = `${agniNames[agniWinner]} (nivel 2 Moderado)`;
     } else {
-      agniPrincipal = `${agniNames[agniWinner]} (nível 3 Agravado)`;
+      agniPrincipal = `${agniNames[agniWinner]} (nivel 3 Agravado)`;
     }
 
     return { v, p, k, doshaPrincipal, agniPrincipal, agni_irregular, agni_forte, agni_fraco, imc: parseFloat(imc.toFixed(2)) };
   };
 
   const handleSubmit = async () => {
+    if (!canAdvance()) {
+      toast({ title: "Preencha os dados", description: "E-mail, altura e peso são obrigatórios.", variant: "destructive" });
+      return;
+    }
     setIsSubmitting(true);
     try {
       const idPublico = Math.random().toString(36).substring(2, 10).toUpperCase();
@@ -211,13 +237,16 @@ const TesteDeDosha = () => {
       const pittaTags = selectedFoods.filter(f => FOOD_TAGS.find(ft => ft.label === f)?.dosha === 'p');
       const kaphaTags = selectedFoods.filter(f => FOOD_TAGS.find(ft => ft.label === f)?.dosha === 'k');
 
-      const payload = {
+      // Visitor ID from browser
+      const visitorIdBrowser = `${navigator.userAgent.slice(0, 20)}_${Date.now()}`;
+
+      const dbPayload = {
         id: crypto.randomUUID(),
         idPublico,
         email: info.email.toLowerCase(),
         nome: info.nome,
         idade: parseInt(info.idade),
-        conhecimentoAyurveda: info.nivel,
+        conhecimentoAyurveda: info.nivel || 'Iniciante',
         altura: info.altura,
         peso: info.peso,
         imc: results.imc,
@@ -245,14 +274,49 @@ const TesteDeDosha = () => {
         created_at: new Date().toISOString(),
       };
 
-      const { error } = await supabase.from('doshas_registros2').insert(payload);
+      const { error } = await supabase.from('doshas_registros2').insert(dbPayload);
       if (error) throw error;
 
-      // Webhook in background
+      // Webhook n8n in background
+      const webhookPayload = {
+        email: info.email.toLowerCase(),
+        idPublico,
+        visitorIdBrowser,
+        title: info.nome,
+        nome: info.nome,
+        idade: parseInt(info.idade),
+        'conhecimento ayurveda': info.nivel || 'Iniciante',
+        altura: info.altura,
+        peso: info.peso,
+        imc: results.imc,
+        datateste: new Date().toISOString(),
+        vatascore: results.v,
+        pittascore: results.p,
+        kaphascore: results.k,
+        doshaprincipal: results.doshaPrincipal,
+        agniPrincipal: results.agniPrincipal,
+        agniirregular: results.agni_irregular,
+        agniforte: results.agni_forte,
+        agnifraco: results.agni_fraco,
+        relato_aberto: relatoAberto || '',
+        agravVataTags: agravVata.join(', '),
+        agravPittaTags: agravPitta.join(', '),
+        agravKaphaTags: agravKapha.join(', '),
+        alimVata: vataTags.join(', '),
+        alimPitta: pittaTags.join(', '),
+        alimKapha: kaphaTags.join(', '),
+        aliment: interesses.includes('aliment') ? 'sim' : '',
+        remedios: interesses.includes('remedios') ? 'sim' : '',
+        mentoria: interesses.includes('mentoria') ? 'sim' : '',
+        diagn: interesses.includes('mentoria') ? 'sim' : '',
+        espiritual: interesses.includes('espiritual') ? 'sim' : '',
+        produtos: interesses.includes('produtos') ? 'sim' : '',
+      };
+
       fetch('https://n8n.portalayurveda.com/webhook/teste-dosha-ayurveda', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(webhookPayload),
       }).catch(() => {});
 
       navigate(`/meu-dosha?id=${idPublico}`);
@@ -264,73 +328,32 @@ const TesteDeDosha = () => {
     }
   };
 
-  const renderQuestionCard = (q: Question) => (
-    <div key={q.id} className="space-y-3">
-      <p className="font-serif font-semibold text-foreground text-base leading-snug">{q.text}</p>
-      <div className="space-y-2">
-        {q.options.map((opt, idx) => (
-          <button
-            key={idx}
-            type="button"
-            onClick={() => setAnswer(q.id, idx)}
-            className={cn(
-              "w-full text-left p-3.5 rounded-xl border-2 transition-all text-sm leading-snug",
-              answers[q.id] === idx
-                ? "border-primary bg-primary/10 font-medium"
-                : "border-border bg-card hover:border-primary/40"
-            )}
-          >
-            {opt.label}
-          </button>
-        ))}
-      </div>
-    </div>
-  );
-
-  const renderInfoStep = () => (
-    <div className="space-y-4">
-      <div>
-        <Label htmlFor="nome">Nome</Label>
-        <Input id="nome" placeholder="Seu nome" value={info.nome} onChange={e => setInfo({ ...info, nome: e.target.value })} />
-      </div>
-      <div>
-        <Label htmlFor="email">E-mail</Label>
-        <Input id="email" type="email" placeholder="seu@email.com" value={info.email} onChange={e => setInfo({ ...info, email: e.target.value })} />
-      </div>
-      <div className="grid grid-cols-3 gap-3">
-        <div>
-          <Label htmlFor="idade">Idade</Label>
-          <Input id="idade" type="number" placeholder="30" value={info.idade} onChange={e => setInfo({ ...info, idade: e.target.value })} />
-        </div>
-        <div>
-          <Label htmlFor="altura">Altura (m)</Label>
-          <Input id="altura" placeholder="1.70" value={info.altura} onChange={e => setInfo({ ...info, altura: e.target.value })} />
-        </div>
-        <div>
-          <Label htmlFor="peso">Peso (kg)</Label>
-          <Input id="peso" placeholder="70" value={info.peso} onChange={e => setInfo({ ...info, peso: e.target.value })} />
-        </div>
-      </div>
-      <div>
-        <Label>Nível de Ayurveda</Label>
-        <div className="grid grid-cols-3 gap-2 mt-1">
-          {['Iniciante', 'Intermediário', 'Avançado'].map(n => (
+  const renderQuestionCard = (q: Question) => {
+    const selected = answers[q.id] || [];
+    return (
+      <div key={q.id} className="space-y-3">
+        <p className="font-serif font-semibold text-foreground text-base leading-snug">{q.text}</p>
+        <p className="text-[10px] text-muted-foreground/60 italic">Pode marcar mais de uma opção</p>
+        <div className="space-y-2">
+          {q.options.map((opt, idx) => (
             <button
-              key={n}
+              key={idx}
               type="button"
-              onClick={() => setInfo({ ...info, nivel: n })}
+              onClick={() => toggleAnswer(q.id, idx)}
               className={cn(
-                "p-3 rounded-xl border-2 text-sm font-medium transition-all",
-                info.nivel === n ? "border-primary bg-primary/10" : "border-border hover:border-primary/40"
+                "w-full text-left p-3.5 rounded-xl border-2 transition-all text-sm leading-snug",
+                selected.includes(idx)
+                  ? "border-primary bg-primary/10 font-medium"
+                  : "border-border bg-card hover:border-primary/40"
               )}
             >
-              {n}
+              {opt.label}
             </button>
           ))}
         </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   const renderFoodStep = () => (
     <div className="space-y-4 mt-4">
@@ -390,6 +413,26 @@ const TesteDeDosha = () => {
 
   const renderInterestsStep = () => (
     <div className="space-y-5">
+      {/* Email, Altura, Peso */}
+      <div className="space-y-3 p-4 rounded-xl bg-muted/30 border border-border">
+        <p className="font-serif font-semibold text-foreground text-sm">Dados complementares</p>
+        <div>
+          <Label htmlFor="email" className="text-xs">E-mail</Label>
+          <Input id="email" type="email" placeholder="seu@email.com" value={info.email} onChange={e => setInfo({ ...info, email: e.target.value })} className="mt-1" />
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <Label htmlFor="altura" className="text-xs">Altura (m)</Label>
+            <Input id="altura" placeholder="1.70" value={info.altura} onChange={e => setInfo({ ...info, altura: e.target.value })} className="mt-1" />
+          </div>
+          <div>
+            <Label htmlFor="peso" className="text-xs">Peso (kg)</Label>
+            <Input id="peso" placeholder="70" value={info.peso} onChange={e => setInfo({ ...info, peso: e.target.value })} className="mt-1" />
+          </div>
+        </div>
+      </div>
+
+      {/* Interests */}
       <div>
         <p className="font-serif font-semibold text-foreground text-base mb-3">Quais áreas te interessam mais?</p>
         <div className="space-y-2">
@@ -410,6 +453,8 @@ const TesteDeDosha = () => {
           ))}
         </div>
       </div>
+
+      {/* Relato */}
       <div>
         <Label htmlFor="relato">Relato aberto (opcional)</Label>
         <Textarea
@@ -425,7 +470,6 @@ const TesteDeDosha = () => {
 
   const renderStepContent = () => {
     const part = currentStep.part;
-    if (part === 'info') return renderInfoStep();
     if (part === 'part8') return renderAgravamentosStep();
     if (part === 'interests') return renderInterestsStep();
 
@@ -458,7 +502,7 @@ const TesteDeDosha = () => {
         <div className="mb-6 mt-4">
           <h1 className="font-serif text-2xl font-bold text-foreground">{currentStep.title}</h1>
           <p className="text-muted-foreground text-sm mt-1">{currentStep.subtitle}</p>
-          {currentStep.part !== 'info' && currentStep.part !== 'interests' && (
+          {currentStep.part !== 'interests' && (
             <p className="text-xs text-muted-foreground/70 mt-2 italic">💡 Se não se encontrar em alguma pergunta, pode deixar em branco.</p>
           )}
         </div>
