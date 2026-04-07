@@ -33,13 +33,13 @@ const DoshaPreview = () => (
           Quadro Clínico
         </p>
         <div className="flex gap-2">
-          {/* Labels */}
+          {/* Labels — progressive pitta intensity from bottom (faint) to top (sharp) */}
           <div className="flex flex-col justify-between text-[10px] font-bold py-1 pr-1 uppercase text-right leading-none">
             <span style={{ filter: "blur(1.5px)", opacity: 0.85 }} className="text-pitta">Fixado</span>
-            <span style={{ filter: "blur(8px)", opacity: 0.5 }} className="text-muted-foreground">Adoecido</span>
-            <span style={{ filter: "blur(8px)", opacity: 0.5 }} className="text-muted-foreground">Acúmulo</span>
-            <span style={{ filter: "blur(8px)", opacity: 0.5 }} className="text-muted-foreground">Normal</span>
-            <span style={{ filter: "blur(8px)", opacity: 0.5 }} className="text-muted-foreground">Pouco</span>
+            <span style={{ filter: "blur(3px)", opacity: 0.7, color: "hsl(0 100% 68%)" }}>Adoecido</span>
+            <span style={{ filter: "blur(4.5px)", opacity: 0.55, color: "hsl(0 100% 76%)" }}>Acúmulo</span>
+            <span style={{ filter: "blur(6px)", opacity: 0.45, color: "hsl(0 100% 84%)" }}>Normal</span>
+            <span style={{ filter: "blur(7.5px)", opacity: 0.35, color: "hsl(0 100% 90%)" }}>Pouco</span>
           </div>
 
           {/* Grid columns: Vata / Pitta / Kapha */}
@@ -70,11 +70,14 @@ const DoshaPreview = () => (
             </div>
           </div>
         </div>
-        {/* Column labels */}
-        <div className="grid grid-cols-3 gap-1.5 ml-8 text-center">
-          <span className="text-[10px] font-bold text-muted-foreground" style={{ filter: "blur(8px)", opacity: 0.5 }}>Vata</span>
-          <span className="text-[10px] font-bold text-pitta" style={{ filter: "blur(1.5px)", opacity: 0.85 }}>Pitta</span>
-          <span className="text-[10px] font-bold text-muted-foreground" style={{ filter: "blur(8px)", opacity: 0.5 }}>Kapha</span>
+        {/* Column labels — use same left offset as the grid (label width ~32px + gap) */}
+        <div className="flex gap-2">
+          <div className="w-8 shrink-0" />
+          <div className="grid grid-cols-3 gap-1.5 flex-1 text-center">
+            <span className="text-[10px] font-bold text-muted-foreground" style={{ filter: "blur(8px)", opacity: 0.5 }}>Vata</span>
+            <span className="text-[10px] font-bold text-pitta" style={{ filter: "blur(1.5px)", opacity: 0.85 }}>Pitta</span>
+            <span className="text-[10px] font-bold text-muted-foreground" style={{ filter: "blur(8px)", opacity: 0.5 }}>Kapha</span>
+          </div>
         </div>
       </div>
     </div>
