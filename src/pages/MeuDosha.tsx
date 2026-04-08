@@ -411,7 +411,7 @@ const MeuDosha = () => {
         const { data: glossData } = await supabase
           .from('portal_glossario')
           .select('*')
-          .eq('doshaNome', registro.doshaprincipal)
+          .eq('doshanome', registro.doshaprincipal)
           .maybeSingle();
         if (glossData) setGlossario(glossData as unknown as PortalGlossario);
       }
