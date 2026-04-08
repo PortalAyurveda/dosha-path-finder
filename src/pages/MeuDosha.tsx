@@ -407,7 +407,6 @@ const MeuDosha = () => {
       setResult(registro);
 
       if (registro.doshaprincipal) {
-        const doshaName = registro.doshaprincipal.split('-')[0];
         const { data: glossData } = await supabase
           .from('portal_glossario')
           .select('*')
@@ -419,6 +418,53 @@ const MeuDosha = () => {
     };
 
     fetchData();
+
+    // Realtime: listen for updates to this specific row
+    const channel = supabase
+      .channel(`meu-dosha-${id}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'doshas_registros2',
+          filter: `idPublico=eq.${id}`,
+        },
+        (payload) => {
+          const updated = payload.new as any;
+          setResult({
+            nome: updated.nome,
+            doshaprincipal: updated.doshaprincipal,
+            vatascore: updated.vatascore,
+            pittascore: updated.pittascore,
+            kaphascore: updated.kaphascore,
+            agniPrincipal: updated.agniPrincipal,
+            agravVataTags: updated.agravVataTags,
+            agravPittaTags: updated.agravPittaTags,
+            agravKaphaTags: updated.agravKaphaTags,
+            imc: updated.imc,
+            idade: updated.idade,
+            conhecimentoAyurveda: updated.conhecimentoAyurveda,
+          });
+
+          // Re-fetch glossario if dosha changed
+          if (updated.doshaprincipal) {
+            supabase
+              .from('portal_glossario')
+              .select('*')
+              .eq('doshanome', updated.doshaprincipal)
+              .maybeSingle()
+              .then(({ data: glossData }) => {
+                if (glossData) setGlossario(glossData as unknown as PortalGlossario);
+              });
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [id]);
 
   const copyLink = () => {
