@@ -371,6 +371,7 @@ export type Database = {
           relato_aberto: string | null
           remedios: string | null
           texto_ia: string | null
+          user_id: string | null
           vatascore: number | null
         }
         Insert: {
@@ -405,6 +406,7 @@ export type Database = {
           relato_aberto?: string | null
           remedios?: string | null
           texto_ia?: string | null
+          user_id?: string | null
           vatascore?: number | null
         }
         Update: {
@@ -439,9 +441,18 @@ export type Database = {
           relato_aberto?: string | null
           remedios?: string | null
           texto_ia?: string | null
+          user_id?: string | null
           vatascore?: number | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "doshas_registros2_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       feed_resultados: {
         Row: {
@@ -1366,6 +1377,39 @@ export type Database = {
           pergunta_texto?: string | null
           profundidade?: string | null
           tag?: string | null
+        }
+        Relationships: []
+      }
+      user_profiles: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          nivel_evolucao: string
+          nome: string | null
+          pontos_ojas: number
+          tokens_akasha: number
+          visitor_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id: string
+          nivel_evolucao?: string
+          nome?: string | null
+          pontos_ojas?: number
+          tokens_akasha?: number
+          visitor_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          nivel_evolucao?: string
+          nome?: string | null
+          pontos_ojas?: number
+          tokens_akasha?: number
+          visitor_id?: string | null
         }
         Relationships: []
       }
