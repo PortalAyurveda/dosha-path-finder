@@ -1453,6 +1453,48 @@ export type Database = {
         }
         Relationships: []
       }
+      videos_seo3: {
+        Row: {
+          criado_em: string | null
+          legenda: string | null
+          mini_resumo: string | null
+          nova_descricao: string | null
+          novo_titulo: string | null
+          status: string | null
+          tags: string | null
+          texto_para_embedding: string | null
+          titulo_original: string | null
+          url: string | null
+          video_id: string
+        }
+        Insert: {
+          criado_em?: string | null
+          legenda?: string | null
+          mini_resumo?: string | null
+          nova_descricao?: string | null
+          novo_titulo?: string | null
+          status?: string | null
+          tags?: string | null
+          texto_para_embedding?: string | null
+          titulo_original?: string | null
+          url?: string | null
+          video_id: string
+        }
+        Update: {
+          criado_em?: string | null
+          legenda?: string | null
+          mini_resumo?: string | null
+          nova_descricao?: string | null
+          novo_titulo?: string | null
+          status?: string | null
+          tags?: string | null
+          texto_para_embedding?: string | null
+          titulo_original?: string | null
+          url?: string | null
+          video_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
