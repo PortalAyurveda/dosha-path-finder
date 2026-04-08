@@ -93,7 +93,7 @@ const Auth = () => {
   };
 
   return (
-    <PageContainer>
+    <PageContainer title="Entrar" description="Acesse sua conta no Portal Ayurveda para acompanhar seus doshas e evolução.">
       <Helmet>
         <title>Entrar | Portal Ayurveda</title>
         <meta name="description" content="Acesse sua conta no Portal Ayurveda para acompanhar seus doshas e evolução." />
