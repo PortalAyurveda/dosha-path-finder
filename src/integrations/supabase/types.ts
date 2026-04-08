@@ -984,11 +984,11 @@ export type Database = {
           desequilibrio: string | null
           dicasGeraisFazer: string | null
           dicasGeraisNaoFazer: string | null
-          doshaNome: string | null
+          doshanome: string | null
           equilibrio: string | null
           id: number
           oque: string | null
-          principaisCausas: string | null
+          principaiscausas: string | null
           principaisDoencas: string | null
           rotinasEquilibrar: string | null
           rotinasInadequadas: string | null
@@ -1002,11 +1002,11 @@ export type Database = {
           desequilibrio?: string | null
           dicasGeraisFazer?: string | null
           dicasGeraisNaoFazer?: string | null
-          doshaNome?: string | null
+          doshanome?: string | null
           equilibrio?: string | null
           id: number
           oque?: string | null
-          principaisCausas?: string | null
+          principaiscausas?: string | null
           principaisDoencas?: string | null
           rotinasEquilibrar?: string | null
           rotinasInadequadas?: string | null
@@ -1020,11 +1020,11 @@ export type Database = {
           desequilibrio?: string | null
           dicasGeraisFazer?: string | null
           dicasGeraisNaoFazer?: string | null
-          doshaNome?: string | null
+          doshanome?: string | null
           equilibrio?: string | null
           id?: number
           oque?: string | null
-          principaisCausas?: string | null
+          principaiscausas?: string | null
           principaisDoencas?: string | null
           rotinasEquilibrar?: string | null
           rotinasInadequadas?: string | null
