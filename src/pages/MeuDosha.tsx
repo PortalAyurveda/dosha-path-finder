@@ -411,7 +411,7 @@ const MeuDosha = () => {
         const { data: glossData } = await supabase
           .from('portal_glossario')
           .select('*')
-          .eq('doshaNome', registro.doshaprincipal)
+          .eq('doshanome', registro.doshaprincipal)
           .maybeSingle();
         if (glossData) setGlossario(glossData as unknown as PortalGlossario);
       }
@@ -597,9 +597,6 @@ const MeuDosha = () => {
             <ExpandableSection title="Caminhos de Equilíbrio" content={glossario.caminhosEquilibrio} icon="🌿" />
             <ExpandableSection title="Alimentos a Priorizar" content={glossario.alimentosPriorizar} icon="✅" />
             <ExpandableSection title="Alimentos a Evitar" content={glossario.alimentosEvitar} icon="🚫" />
-            <ExpandableSection title="Rotinas de Equilíbrio" content={glossario.rotinasEquilibrar} icon="🌅" />
-            <ExpandableSection title="Dicas: O que Fazer" content={glossario.dicasGeraisFazer} icon="👍" />
-            <ExpandableSection title="Dicas: Não Fazer" content={glossario.dicasGeraisNaoFazer} icon="👎" />
           </div>
         )}
 

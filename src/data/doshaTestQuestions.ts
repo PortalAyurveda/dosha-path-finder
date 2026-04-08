@@ -271,26 +271,26 @@ export const PART7_QUESTIONS: Question[] = [
 ];
 
 export const FOOD_TAGS: FoodTag[] = [
-  // Vata
+  // Vata (6)
   { label: 'Saladas', dosha: 'v' },
   { label: 'Frutas', dosha: 'v' },
   { label: 'Chás', dosha: 'v' },
   { label: 'Integrais', dosha: 'v' },
   { label: 'Torradas', dosha: 'v' },
   { label: 'Germinados', dosha: 'v' },
-  // Pitta
+  // Pitta (6)
   { label: 'Conservas', dosha: 'p' },
   { label: 'Molhos', dosha: 'p' },
   { label: 'Bebidas Alcoólicas', dosha: 'p' },
   { label: 'Pimentas', dosha: 'p' },
   { label: 'Especiarias', dosha: 'p' },
   { label: 'Fermentados', dosha: 'p' },
-  { label: 'Queijos', dosha: 'p' },
-  { label: 'Sementes', dosha: 'p' },
-  // Kapha
+  // Kapha (6)
   { label: 'Beliscos/Petiscos', dosha: 'k' },
   { label: 'Doces', dosha: 'k' },
   { label: 'Massas', dosha: 'k' },
+  { label: 'Queijos', dosha: 'k' },
+  { label: 'Sementes', dosha: 'k' },
   { label: 'Frituras/Salgados', dosha: 'k' },
 ];
 
