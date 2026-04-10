@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 
 interface VideoResultCardProps {
@@ -5,7 +6,7 @@ interface VideoResultCardProps {
   title: string;
   summary: string;
   tags: string | null;
-  onClick: () => void;
+  onClick?: () => void;
 }
 
 const doshaColors: Record<string, string> = {

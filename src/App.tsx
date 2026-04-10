@@ -12,6 +12,7 @@ import Biblioteca from "./pages/Biblioteca";
 import Cursos from "./pages/Cursos";
 import TerapeutasDoBrasil from "./pages/TerapeutasDoBrasil";
 import Akasha from "./pages/Akasha";
+import Video from "./pages/Video";
 import DoshaVata from "./pages/DoshaVata";
 import DoshaPitta from "./pages/DoshaPitta";
 import DoshaKapha from "./pages/DoshaKapha";
