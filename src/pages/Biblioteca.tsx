@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import PageContainer from "@/components/PageContainer";
 import DoshaSelector from "@/components/dosha/DoshaSelector";
 import SearchHeader, { type VideoCategory } from "@/components/biblioteca/SearchHeader";
 import VideoResultCard from "@/components/biblioteca/VideoResultCard";
-import VideoPlayerDialog from "@/components/biblioteca/VideoPlayerDialog";
 import AdvancedVideoCard from "@/components/biblioteca/AdvancedVideoCard";
 import AdvancedVideoResult from "@/components/biblioteca/AdvancedVideoResult";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -28,6 +28,7 @@ const TABLE_MAP: Record<VideoCategory, "portal_oficial" | "portal_receitas" | "p
 const ALL_TABLES = ["portal_oficial", "portal_receitas", "portal_lives"] as const;
 
 const Biblioteca = () => {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [isAdvanced, setIsAdvanced] = useState(false);
   const [category, setCategory] = useState<VideoCategory>("selecao");
