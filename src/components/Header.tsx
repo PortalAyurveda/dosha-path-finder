@@ -4,12 +4,12 @@ import { Menu, LogIn, User } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { useUser } from "@/contexts/UserContext";
-import { PieChart, Pie, Cell } from "recharts";
 
-const DOSHA_COLORS = {
-  vata: "#93C5FD",
-  pitta: "#FCA5A5",
-  kapha: "#86EFAC",
+
+const DOSHA_EMOJI: Record<string, string> = {
+  vata: "🌬️",
+  pitta: "🔥",
+  kapha: "⛰️",
 };
 
 const Header = () => {
@@ -33,14 +33,10 @@ const Header = () => {
     ...(showAkasha ? [{ label: "✨ Akasha IA", to: akashaLink }] : []),
   ];
 
-  // Mini pie chart data
-  const pieData = doshaResult
-    ? [
-        { name: "Vata", value: doshaResult.vatascore || 0 },
-        { name: "Pitta", value: doshaResult.pittascore || 0 },
-        { name: "Kapha", value: doshaResult.kaphascore || 0 },
-      ]
-    : [];
+  const doshaEmoji = doshaResult?.doshaprincipal
+    ? DOSHA_EMOJI[doshaResult.doshaprincipal.toLowerCase().split("-")[0]] || "🕉️"
+    : "";
+  const displayName = profile?.nome?.split(" ")[0] || user?.email?.split("@")[0] || "";
 
   const profileLink = doshaResult?.idPublico
     ? `/meu-dosha?id=${doshaResult.idPublico}`
@@ -96,25 +92,10 @@ const Header = () => {
           {doshaResult ? (
             <Link
               to={profileLink}
-              className="flex items-center gap-2 px-2 py-1 rounded-lg hover:bg-white/10 transition-colors"
+              className="flex items-center gap-1.5 px-2 py-1 rounded-lg hover:bg-white/10 transition-colors"
             >
-              <PieChart width={32} height={32}>
-                <Pie
-                  data={pieData}
-                  dataKey="value"
-                  cx={16}
-                  cy={16}
-                  innerRadius={6}
-                  outerRadius={14}
-                  strokeWidth={0}
-                >
-                  <Cell fill={DOSHA_COLORS.vata} />
-                  <Cell fill={DOSHA_COLORS.pitta} />
-                  <Cell fill={DOSHA_COLORS.kapha} />
-                </Pie>
-              </PieChart>
-              <span className="hidden sm:inline text-sm font-semibold text-white">
-                {doshaResult.doshaprincipal || "Dosha"}
+              <span className="text-sm font-semibold text-white truncate max-w-[140px]">
+                {displayName} {doshaResult.doshaprincipal || ""} {doshaEmoji}
               </span>
             </Link>
           ) : user ? (
