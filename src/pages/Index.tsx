@@ -1,7 +1,10 @@
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import Hero from "@/components/home/Hero";
 import QuickAccessCards from "@/components/home/QuickAccessCards";
 import SamkhyaBanner from "@/components/home/SamkhyaBanner";
+import { useUser } from "@/contexts/UserContext";
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -32,6 +35,15 @@ const jsonLd = {
 };
 
 const Index = () => {
+  const { doshaResult, loading } = useUser();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!loading && doshaResult?.idPublico) {
+      navigate(`/meu-dosha?id=${doshaResult.idPublico}`, { replace: true });
+    }
+  }, [loading, doshaResult, navigate]);
+
   return (
     <>
       <Helmet>

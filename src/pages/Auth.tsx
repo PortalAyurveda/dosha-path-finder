@@ -52,9 +52,14 @@ const Auth = () => {
     e.preventDefault();
     setLoading(true);
 
+    const storedDoshaId = localStorage.getItem("activeDoshaId");
+    const redirectUrl = storedDoshaId
+      ? `${window.location.origin}/meu-dosha?id=${storedDoshaId}`
+      : window.location.origin;
+
     const { error } = await supabase.auth.signInWithOtp({
       email,
-      options: { emailRedirectTo: window.location.origin },
+      options: { emailRedirectTo: redirectUrl },
     });
 
     if (error) {
@@ -66,9 +71,14 @@ const Auth = () => {
   };
 
   const handleOAuth = async (provider: "google" | "facebook") => {
+    const storedDoshaId = localStorage.getItem("activeDoshaId");
+    const redirectUrl = storedDoshaId
+      ? `${window.location.origin}/meu-dosha?id=${storedDoshaId}`
+      : window.location.origin;
+
     const { error } = await supabase.auth.signInWithOAuth({
       provider,
-      options: { redirectTo: window.location.origin },
+      options: { redirectTo: redirectUrl },
     });
     if (error) {
       toast({ title: "Erro", description: error.message, variant: "destructive" });
