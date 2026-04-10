@@ -3,7 +3,6 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import PageContainer from "@/components/PageContainer";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/contexts/UserContext";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
@@ -17,15 +16,17 @@ const Auth = () => {
 
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { user } = useUser();
+  const { user, doshaResult } = useUser();
   const { toast } = useToast();
 
   useEffect(() => {
     if (user) {
-      const redirectTo = searchParams.get("redirect") || "/meu-dosha";
-      navigate(redirectTo, { replace: true });
+      if (doshaResult?.idPublico) {
+        navigate(`/meu-dosha?id=${doshaResult.idPublico}`, { replace: true });
+      }
+      // Wait for doshaResult to load before redirecting
     }
-  }, [user, navigate, searchParams]);
+  }, [user, doshaResult, navigate]);
 
   useEffect(() => {
     const idPublico = searchParams.get("claim");
