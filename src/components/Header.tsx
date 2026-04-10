@@ -50,9 +50,9 @@ const Header = () => {
         {/* LEFT — Hamburger menu */}
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger asChild>
-            <Button variant="ghost" size="icon" className="text-white hover:bg-white/10">
-              <Menu className="h-6 w-6" />
-              <span className="sr-only">Menu</span>
+            <Button variant="ghost" size="sm" className="text-white hover:bg-white/10 gap-1.5">
+              <Menu className="h-5 w-5" />
+              <span className="text-sm font-medium">Menu</span>
             </Button>
           </SheetTrigger>
           <SheetContent side="left" className="w-72 pt-12 bg-primary text-primary-foreground border-primary">
@@ -113,7 +113,7 @@ const Header = () => {
                 className="text-white hover:bg-white/10 gap-1.5"
               >
                 <LogIn className="h-4 w-4" />
-                <span className="hidden sm:inline">Entrar</span>
+                <span>Entrar</span>
               </Button>
             </Link>
           )}
