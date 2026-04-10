@@ -35,6 +35,15 @@ const jsonLd = {
 };
 
 const Index = () => {
+  const { doshaResult, loading } = useUser();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!loading && doshaResult?.idPublico) {
+      navigate(`/meu-dosha?id=${doshaResult.idPublico}`, { replace: true });
+    }
+  }, [loading, doshaResult, navigate]);
+
   return (
     <>
       <Helmet>
