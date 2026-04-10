@@ -34,13 +34,6 @@ const Biblioteca = () => {
   const [category, setCategory] = useState<VideoCategory>("selecao");
   const debouncedSearch = useDebounce(searchTerm, 300);
 
-  const [selectedVideo, setSelectedVideo] = useState<{
-    video_id: string;
-    novo_titulo: string;
-    nova_descricao: string;
-    texto_para_embedding: string;
-  } | null>(null);
-
   const [selectedAdvancedVideo, setSelectedAdvancedVideo] = useState<{
     video_id: string;
     novo_titulo: string;
@@ -194,14 +187,6 @@ const Biblioteca = () => {
                 title={v.novo_titulo || "Sem título"}
                 summary={v.mini_resumo || ""}
                 tags={v.tags}
-                onClick={() =>
-                  setSelectedVideo({
-                    video_id: v.video_id,
-                    novo_titulo: v.novo_titulo || "Sem título",
-                    nova_descricao: v.nova_descricao || "",
-                    texto_para_embedding: v.texto_para_embedding || "",
-                  })
-                }
               />
             ))}
           </div>
@@ -216,14 +201,6 @@ const Biblioteca = () => {
         )
       )}
 
-      <VideoPlayerDialog
-        open={!!selectedVideo}
-        onOpenChange={(open) => !open && setSelectedVideo(null)}
-        videoId={selectedVideo?.video_id ?? null}
-        title={selectedVideo?.novo_titulo ?? ""}
-        description={selectedVideo?.nova_descricao ?? ""}
-        textoParaEmbedding={selectedVideo?.texto_para_embedding}
-      />
       </PageContainer>
     </>
   );
