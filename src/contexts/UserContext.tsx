@@ -13,14 +13,24 @@ interface UserProfile {
   created_at: string;
 }
 
+export interface DoshaResult {
+  idPublico: string;
+  doshaprincipal: string | null;
+  vatascore: number | null;
+  pittascore: number | null;
+  kaphascore: number | null;
+}
+
 interface UserContextType {
   user: User | null;
   session: Session | null;
   profile: UserProfile | null;
+  doshaResult: DoshaResult | null;
   loading: boolean;
   signOut: () => Promise<void>;
   refreshProfile: () => Promise<void>;
   claimTest: (idPublico: string) => Promise<boolean>;
+  setDoshaResultFromId: (idPublico: string) => Promise<void>;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -29,6 +39,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [doshaResult, setDoshaResult] = useState<DoshaResult | null>(null);
   const [loading, setLoading] = useState(true);
 
   const fetchProfile = async (userId: string) => {
@@ -40,6 +51,48 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
     if (!error && data) {
       setProfile(data as UserProfile);
+    }
+  };
+
+  const fetchDoshaByEmail = async (email: string) => {
+    const { data, error } = await supabase
+      .from("doshas_registros2")
+      .select("idPublico, doshaprincipal, vatascore, pittascore, kaphascore")
+      .eq("email", email)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .single();
+
+    if (!error && data && data.idPublico) {
+      const result: DoshaResult = {
+        idPublico: data.idPublico,
+        doshaprincipal: data.doshaprincipal,
+        vatascore: data.vatascore,
+        pittascore: data.pittascore,
+        kaphascore: data.kaphascore,
+      };
+      setDoshaResult(result);
+      localStorage.setItem("activeDoshaId", data.idPublico);
+    }
+  };
+
+  const setDoshaResultFromId = async (idPublico: string) => {
+    const { data, error } = await supabase
+      .from("doshas_registros2")
+      .select("idPublico, doshaprincipal, vatascore, pittascore, kaphascore")
+      .eq("idPublico", idPublico)
+      .limit(1)
+      .single();
+
+    if (!error && data && data.idPublico) {
+      setDoshaResult({
+        idPublico: data.idPublico,
+        doshaprincipal: data.doshaprincipal,
+        vatascore: data.vatascore,
+        pittascore: data.pittascore,
+        kaphascore: data.kaphascore,
+      });
+      localStorage.setItem("activeDoshaId", data.idPublico);
     }
   };
 
@@ -66,20 +119,23 @@ export function UserProvider({ children }: { children: ReactNode }) {
     setUser(null);
     setSession(null);
     setProfile(null);
+    setDoshaResult(null);
+    localStorage.removeItem("activeDoshaId");
   };
 
   useEffect(() => {
-    // Listen for auth changes FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, newSession) => {
         setSession(newSession);
         setUser(newSession?.user ?? null);
 
         if (newSession?.user) {
-          // Defer profile fetch to avoid deadlocks
           setTimeout(() => fetchProfile(newSession.user.id), 0);
 
-          // Auto-claim: check localStorage for pending idPublico
+          if (newSession.user.email) {
+            setTimeout(() => fetchDoshaByEmail(newSession.user.email!), 0);
+          }
+
           if (event === "SIGNED_IN") {
             const pendingId = localStorage.getItem("pendingClaimIdPublico");
             const visitorId = localStorage.getItem("visitorId");
@@ -91,7 +147,6 @@ export function UserProvider({ children }: { children: ReactNode }) {
               }, 500);
             }
 
-            // Update visitor_id on profile if available
             if (visitorId) {
               setTimeout(async () => {
                 await supabase
@@ -103,18 +158,27 @@ export function UserProvider({ children }: { children: ReactNode }) {
           }
         } else {
           setProfile(null);
+          // Keep doshaResult from localStorage if exists
         }
 
         setLoading(false);
       }
     );
 
-    // THEN check existing session
     supabase.auth.getSession().then(({ data: { session: existingSession } }) => {
       if (existingSession) {
         setSession(existingSession);
         setUser(existingSession.user);
         fetchProfile(existingSession.user.id);
+        if (existingSession.user.email) {
+          fetchDoshaByEmail(existingSession.user.email);
+        }
+      } else {
+        // No auth session — try loading from localStorage
+        const storedId = localStorage.getItem("activeDoshaId");
+        if (storedId) {
+          setDoshaResultFromId(storedId);
+        }
       }
       setLoading(false);
     });
@@ -124,7 +188,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
   return (
     <UserContext.Provider
-      value={{ user, session, profile, loading, signOut, refreshProfile, claimTest }}
+      value={{ user, session, profile, doshaResult, loading, signOut, refreshProfile, claimTest, setDoshaResultFromId }}
     >
       {children}
     </UserContext.Provider>
