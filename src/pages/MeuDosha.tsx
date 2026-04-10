@@ -382,11 +382,9 @@ const CustomPieLabel = ({ cx, cy, midAngle, outerRadius, name, value }: any) => 
 const MeuDosha = () => {
   const [searchParams] = useSearchParams();
   const id = searchParams.get('id');
-  const { toast } = useToast();
   const [loading, setLoading] = useState(true);
   const [result, setResult] = useState<DoshaResult | null>(null);
   const [glossario, setGlossario] = useState<PortalGlossario | null>(null);
-  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     if (!id) { setLoading(false); return; }
@@ -465,13 +463,6 @@ const MeuDosha = () => {
       supabase.removeChannel(channel);
     };
   }, [id]);
-
-  const copyLink = () => {
-    navigator.clipboard.writeText(window.location.href);
-    setCopied(true);
-    toast({ title: "Link copiado!" });
-    setTimeout(() => setCopied(false), 2000);
-  };
 
   if (loading) {
     return (
