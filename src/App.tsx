@@ -12,6 +12,7 @@ import Biblioteca from "./pages/Biblioteca";
 import Cursos from "./pages/Cursos";
 import TerapeutasDoBrasil from "./pages/TerapeutasDoBrasil";
 import Akasha from "./pages/Akasha";
+import Video from "./pages/Video";
 import DoshaVata from "./pages/DoshaVata";
 import DoshaPitta from "./pages/DoshaPitta";
 import DoshaKapha from "./pages/DoshaKapha";
@@ -40,6 +41,7 @@ const App = () => (
               <Route path="/cursos" element={<Cursos />} />
               <Route path="/terapeutas-do-brasil" element={<TerapeutasDoBrasil />} />
               <Route path="/akasha" element={<Akasha />} />
+              <Route path="/video/:videoId" element={<Video />} />
               <Route path="/biblioteca/vata" element={<DoshaVata />} />
               <Route path="/biblioteca/vata/adoecimento" element={<DoshaVataAdoecimento />} />
               <Route path="/biblioteca/pitta" element={<DoshaPitta />} />

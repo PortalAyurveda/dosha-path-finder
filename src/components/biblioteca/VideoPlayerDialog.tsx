@@ -73,20 +73,20 @@ const VideoPlayerDialog = ({ open, onOpenChange, videoId, title, description, te
             allowFullScreen
           />
         </div>
-        <div className="p-6 overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="font-serif text-xl md:text-2xl text-primary">
-              {title}
-            </DialogTitle>
-          </DialogHeader>
+        <ScrollArea className="flex-1 min-h-0">
+          <div className="p-6 space-y-3">
+            <DialogHeader>
+              <DialogTitle className="font-serif text-xl md:text-2xl text-primary">
+                {title}
+              </DialogTitle>
+            </DialogHeader>
 
-          {timestamps.length > 0 && (
-            <div className="mt-3 rounded-xl border border-border bg-surface-sun p-3">
-              <h3 className="font-sans text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 flex items-center gap-2">
-                <Clock className="h-3.5 w-3.5" />
-                Índice de Minutos
-              </h3>
-              <ScrollArea className="max-h-48">
+            {timestamps.length > 0 && (
+              <div className="rounded-xl border border-border bg-surface-sun p-3">
+                <h3 className="font-sans text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 flex items-center gap-2">
+                  <Clock className="h-3.5 w-3.5" />
+                  Índice de Minutos
+                </h3>
                 <div className="space-y-0.5">
                   {timestamps.map((entry) => {
                     const highlighted = isHighlighted(entry.label);
@@ -107,18 +107,16 @@ const VideoPlayerDialog = ({ open, onOpenChange, videoId, title, description, te
                     );
                   })}
                 </div>
-              </ScrollArea>
-            </div>
-          )}
+              </div>
+            )}
 
-          {(textoParaEmbedding || description) && (
-            <ScrollArea className="max-h-60 mt-3">
+            {description && (
               <DialogDescription className="text-xs text-muted-foreground font-sans whitespace-pre-line leading-relaxed">
-                {textoParaEmbedding || description}
+                {description}
               </DialogDescription>
-            </ScrollArea>
-          )}
-        </div>
+            )}
+          </div>
+        </ScrollArea>
       </DialogContent>
     </Dialog>
   );

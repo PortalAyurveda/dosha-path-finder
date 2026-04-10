@@ -1,8 +1,6 @@
-import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import VideoResultCard from "@/components/biblioteca/VideoResultCard";
-import VideoPlayerDialog from "@/components/biblioteca/VideoPlayerDialog";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const TABLE_MAP = {
@@ -17,13 +15,6 @@ interface DoshaVideosContentProps {
 
 const DoshaVideosContent = ({ dosha }: DoshaVideosContentProps) => {
   const table = TABLE_MAP[dosha];
-
-  const [selectedVideo, setSelectedVideo] = useState<{
-    video_id: string;
-    novo_titulo: string;
-    nova_descricao: string;
-    texto_para_embedding: string;
-  } | null>(null);
 
   const { data: videos, isLoading } = useQuery({
     queryKey: ["dosha-videos", dosha],
@@ -72,14 +63,6 @@ const DoshaVideosContent = ({ dosha }: DoshaVideosContentProps) => {
               title={v.novo_titulo || "Sem título"}
               summary={v.mini_resumo || ""}
               tags={v.tags}
-              onClick={() =>
-                setSelectedVideo({
-                  video_id: v.video_id,
-                  novo_titulo: v.novo_titulo || "Sem título",
-                  nova_descricao: v.nova_descricao || "",
-                  texto_para_embedding: v.texto_para_embedding || "",
-                })
-              }
             />
           ))}
         </div>
@@ -90,15 +73,6 @@ const DoshaVideosContent = ({ dosha }: DoshaVideosContentProps) => {
           </div>
         </div>
       )}
-
-      <VideoPlayerDialog
-        open={!!selectedVideo}
-        onOpenChange={(open) => !open && setSelectedVideo(null)}
-        videoId={selectedVideo?.video_id ?? null}
-        title={selectedVideo?.novo_titulo ?? ""}
-        description={selectedVideo?.nova_descricao ?? ""}
-        textoParaEmbedding={selectedVideo?.texto_para_embedding}
-      />
     </section>
   );
 };
