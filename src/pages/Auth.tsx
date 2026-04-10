@@ -14,20 +14,32 @@ const Auth = () => {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [magicSent, setMagicSent] = useState(false);
+  const [waitingForDosha, setWaitingForDosha] = useState(false);
 
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { user, doshaResult } = useUser();
   const { toast } = useToast();
 
+  // When user logs in, wait briefly for doshaResult then redirect
   useEffect(() => {
-    if (user) {
-      if (doshaResult?.idPublico) {
-        navigate(`/meu-dosha?id=${doshaResult.idPublico}`, { replace: true });
-      }
-      // Wait for doshaResult to load before redirecting
+    if (user && !waitingForDosha) {
+      setWaitingForDosha(true);
     }
-  }, [user, doshaResult, navigate]);
+  }, [user]);
+
+  useEffect(() => {
+    if (!waitingForDosha) return;
+    if (doshaResult?.idPublico) {
+      navigate(`/meu-dosha?id=${doshaResult.idPublico}`, { replace: true });
+      return;
+    }
+    // Fallback: if no dosha result after 3s, go to home
+    const timer = setTimeout(() => {
+      navigate("/", { replace: true });
+    }, 3000);
+    return () => clearTimeout(timer);
+  }, [waitingForDosha, doshaResult, navigate]);
 
   useEffect(() => {
     const idPublico = searchParams.get("claim");
