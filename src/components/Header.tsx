@@ -108,12 +108,11 @@ const Header = () => {
           ) : (
             <Link to="/entrar">
               <Button
-                variant="ghost"
                 size="sm"
-                className="text-white hover:bg-white/10 gap-1.5"
+                className="bg-white text-primary font-semibold hover:bg-white/90 gap-1.5"
               >
                 <LogIn className="h-4 w-4" />
-                <span>Entrar</span>
+                Entrar
               </Button>
             </Link>
           )}
