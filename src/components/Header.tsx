@@ -1,22 +1,35 @@
 import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useSearchParams } from "react-router-dom";
 import { Menu } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 
-const navLinks = [
+const baseLinks = [
   { label: "Início", to: "/" },
   { label: "Biblioteca", to: "/biblioteca" },
   { label: "Cursos", to: "/cursos" },
   { label: "Terapeutas", to: "/terapeutas-do-brasil" },
-  { label: "Akasha IA", to: "/akasha" },
 ];
 
 const Header = () => {
   const [open, setOpen] = useState(false);
   const location = useLocation();
+  const [searchParams] = useSearchParams();
 
   const isActive = (path: string) => location.pathname === path;
+
+  // Show Akasha link if user is on meu-dosha with id or on /akasha itself
+  const doshaId = searchParams.get("id");
+  const isOnDoshaPage = location.pathname === "/meu-dosha" && !!doshaId;
+  const isOnAkasha = location.pathname === "/akasha";
+  const showAkasha = isOnDoshaPage || isOnAkasha;
+
+  const navLinks = [
+    ...baseLinks,
+    ...(showAkasha
+      ? [{ label: "✨ Akasha IA", to: `/akasha${doshaId ? `?id=${doshaId}` : ""}` }]
+      : []),
+  ];
 
   return (
     <header className="sticky top-0 z-50 w-full bg-primary text-primary-foreground shadow-md">
@@ -37,9 +50,11 @@ const Header = () => {
               key={link.to}
               to={link.to}
               className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                isActive(link.to)
-                  ? "bg-white/20 text-white font-bold"
-                  : "text-white/75 hover:text-white hover:bg-white/10"
+                link.label.includes("Akasha")
+                  ? "bg-akasha/30 text-white font-bold border border-akasha/40 hover:bg-akasha/40"
+                  : isActive(link.to)
+                    ? "bg-white/20 text-white font-bold"
+                    : "text-white/75 hover:text-white hover:bg-white/10"
               }`}
             >
               {link.label}
@@ -64,9 +79,11 @@ const Header = () => {
                   to={link.to}
                   onClick={() => setOpen(false)}
                   className={`px-4 py-3 rounded-xl text-base font-medium transition-colors ${
-                    isActive(link.to)
-                      ? "bg-white/20 text-white font-bold"
-                      : "text-white/70 hover:text-white hover:bg-white/10"
+                    link.label.includes("Akasha")
+                      ? "bg-akasha/30 text-white font-bold border border-akasha/40"
+                      : isActive(link.to)
+                        ? "bg-white/20 text-white font-bold"
+                        : "text-white/70 hover:text-white hover:bg-white/10"
                   }`}
                 >
                   {link.label}

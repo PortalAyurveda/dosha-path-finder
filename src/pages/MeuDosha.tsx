@@ -648,26 +648,24 @@ const MeuDosha = () => {
 
         {/* ===== LINKS ===== */}
         <div className="space-y-3 pb-8">
-          <h2 className="font-serif font-bold text-foreground text-lg text-center">Aprofunde-se</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-            {doshaScores.map(d => (
-              <Button key={d.name} variant="outline" asChild className="w-full">
-                <Link to={DOSHA_ROUTES[d.name]}>
-                  Biblioteca {d.name} <ExternalLink className="w-3 h-3 ml-1" />
-                </Link>
-              </Button>
-            ))}
-          </div>
+          <h2 className="font-serif font-bold text-foreground text-lg text-center">O que deseja fazer?</h2>
 
-          <div className="flex gap-2">
-            <Button variant="outline" onClick={copyLink} className="flex-1">
-              {copied ? <Check className="w-4 h-4 mr-1" /> : <Copy className="w-4 h-4 mr-1" />}
-              {copied ? 'Copiado!' : 'Compartilhar Resultado'}
-            </Button>
-            <Button asChild className="flex-1">
-              <Link to="/teste-de-dosha">Refazer Teste</Link>
-            </Button>
-          </div>
+          {/* Akasha CTA - destaque */}
+          <Link
+            to={`/akasha?id=${id}`}
+            className="flex items-center justify-center gap-3 w-full rounded-2xl bg-akasha text-white py-4 px-6 font-bold text-base shadow-lg hover:opacity-90 transition-opacity"
+          >
+            <img
+              src="https://static.wixstatic.com/media/b8f47f_105371e1ade24ccd9bd3406b83bd925e~mv2.png"
+              alt="Akasha IA"
+              className="w-8 h-8 object-contain"
+            />
+            Falar com a Akasha IA
+          </Link>
+
+          <Button variant="outline" asChild className="w-full">
+            <Link to="/teste-de-dosha">Refazer Teste</Link>
+          </Button>
         </div>
       </div>
     </PageContainer>
