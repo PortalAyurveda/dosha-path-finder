@@ -29,11 +29,20 @@ function getTagColor(tag: string): string {
 }
 
 const VideoResultCard = ({ videoId, title, summary, tags, onClick }: VideoResultCardProps) => {
+  const navigate = useNavigate();
   const tagList = parseTags(tags);
+
+  const handleClick = () => {
+    if (onClick) {
+      onClick();
+    } else {
+      navigate(`/video/${videoId}`);
+    }
+  };
 
   return (
     <button
-      onClick={onClick}
+      onClick={handleClick}
       className="group text-left w-full rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm border border-border bg-card overflow-hidden shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
     >
       <div className="aspect-video w-full overflow-hidden">
