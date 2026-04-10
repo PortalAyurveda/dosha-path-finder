@@ -1,56 +1,65 @@
 
 
-## Problemas Identificados
+# Redesign do Header + Sistema de Login Integrado
 
-1. **Timestamps duplicados**: O `VideoPlayerDialog` mostra os timestamps clicáveis E depois renderiza o `textoParaEmbedding` bruto (que contém os mesmos timestamps como texto). Resultado: tudo aparece duas vezes.
+## Resumo
 
-2. **Scroll quebrado**: O conteúdo longo fica cortado porque o dialog tem `max-h-[90vh]` mas a área interna não tem scroll adequado — há dois `ScrollArea` separados (um para timestamps, outro para descrição) em vez de um único scroll para todo o conteúdo abaixo do vídeo.
+Reestruturar o header em 3 zonas (menu hamburguer | logo central | login/perfil), adicionar `doshaResult` ao UserContext, e redesenhar a página de login com Magic Link + Google OAuth (sem senha).
 
-3. **Conteúdo rico sem SEO**: O `textoParaEmbedding` tem conteúdo rico e detalhado, mas está preso dentro de um dialog (modal) que não é indexável por buscadores.
+## 1. UserContext — adicionar `doshaResult`
 
-## Plano
+**Arquivo**: `src/contexts/UserContext.tsx`
 
-### 1. Corrigir VideoPlayerDialog — timestamps e scroll
+- Nova interface `DoshaResult` com `idPublico`, `doshaprincipal`, `vatascore`, `pittascore`, `kaphascore`
+- Novo estado `doshaResult` no provider
+- Função `fetchDoshaResult(email)` que faz query em `doshas_registros2` pelo email, `ORDER BY created_at DESC LIMIT 1`
+- Chamar automaticamente após login real (quando `user.email` estiver disponível)
+- Também popular via `activeDoshaId` do localStorage (para "sessão por idPublico" sem auth real) — buscar por `idPublico` na `doshas_registros2`
+- Expor `doshaResult` no contexto
 
-**Arquivo**: `src/components/biblioteca/VideoPlayerDialog.tsx`
+## 2. Header — redesign 3 zonas
 
-- Remover o bloco que renderiza `textoParaEmbedding` bruto abaixo dos timestamps (linhas 114-119). Mostrar apenas `description` (`nova_descricao`) como texto descritivo, SEM o `textoParaEmbedding`.
-- Envolver título + timestamps + descrição em um único `ScrollArea` com `max-h` adequado para que todo o conteúdo seja rolável.
-- Manter os timestamps clicáveis como estão (funcionam bem).
+**Arquivo**: `src/components/Header.tsx`
 
-### 2. Páginas CMS para SEO — criar rota `/video/:videoId`
+```text
+┌──────────────────────────────────────────────────┐
+│  [☰]        [Logo Portal Ayurveda]    [Entrar/👤] │
+└──────────────────────────────────────────────────┘
+```
 
-Sim, gerar páginas dedicadas por vídeo é a melhor abordagem para SEO. Cada vídeo terá uma URL própria (`/video/ABC123`) indexável pelo Google.
+- **Esquerda**: Ícone hamburguer (sempre visível, desktop e mobile). Abre Sheet/dropdown com: Início, Biblioteca, Cursos, Terapeutas, Akasha IA (se `doshaResult` ou `user` existe)
+- **Centro**: Logo centralizado, link para `/`
+- **Direita**:
+  - Se não logado E sem `doshaResult`: botão "Entrar" (link para `/entrar`)
+  - Se tem `doshaResult` (logado real OU sessão por idPublico): mini pie chart (32x32px, Recharts `PieChart`) + texto do dosha principal (ex: "Vata-Pitta"). Clicável, leva a `/meu-dosha?id={idPublico}`
+  - Se logado real sem teste: avatar com inicial do nome/email
 
-**Novo arquivo**: `src/pages/Video.tsx`
+Mini pie chart: componente inline usando `PieChart` + `Pie` + `Cell` do Recharts com cores vata (#93C5FD), pitta (#FCA5A5), kapha (#86EFAC).
 
-- Rota `/video/:videoId` que recebe o ID do vídeo na URL.
-- Faz fetch em `portal_oficial`, `portal_receitas` e `portal_lives` pelo `video_id`.
-- Renderiza uma página completa com:
-  - `<Helmet>` com título, descrição e meta tags OpenGraph/Twitter para compartilhamento.
-  - Player do YouTube embedado.
-  - Timestamps clicáveis (reaproveitando a lógica existente).
-  - `nova_descricao` como conteúdo textual formatado.
-  - Tags renderizadas como badges.
-  - Schema.org `VideoObject` JSON-LD para rich snippets no Google.
-- Botão "Voltar à Biblioteca".
+## 3. Auth page — simplificar
 
-**Arquivo**: `src/App.tsx` — adicionar rota `/video/:videoId`.
+**Arquivo**: `src/pages/Auth.tsx`
 
-**Arquivos**: `VideoResultCard.tsx`, `DoshaVideosContent.tsx`, `Biblioteca.tsx` — ao clicar num vídeo, navegar para `/video/:videoId` em vez de abrir o dialog (ou oferecer ambos: clique abre a página, um botão de play rápido abre o dialog).
+- Remover modo "login" (email+senha) e "signup" (email+senha+nome)
+- Manter apenas 2 opções:
+  1. **Magic Link**: campo de email + botão "Enviar link de acesso"
+  2. **Google OAuth**: botão "Entrar com Google" usando `supabase.auth.signInWithOAuth({ provider: 'google' })`
+  3. **Facebook OAuth**: botão "Entrar com Facebook" (funciona apenas se configurado no Supabase Dashboard)
+- Layout limpo, sem tabs — os 3 botões empilhados
 
-### 3. Atualizar navegação
+## 4. Nenhuma mudança de rotas
 
-- No `VideoResultCard`, o clique principal leva a `/video/${videoId}`.
-- O `VideoPlayerDialog` continua existindo para uso em contextos onde faz sentido (busca avançada, páginas de dosha).
+`src/App.tsx` permanece inalterado.
 
-### Resumo de arquivos
+## Arquivos modificados
 
-| Arquivo | Ação |
+| Arquivo | Mudança |
 |---|---|
-| `VideoPlayerDialog.tsx` | Remover texto duplicado, unificar scroll |
-| `src/pages/Video.tsx` | **Novo** — página CMS por vídeo com SEO |
-| `src/App.tsx` | Adicionar rota `/video/:videoId` |
-| `Biblioteca.tsx` | Navegar para página em vez de dialog |
-| `DoshaVideosContent.tsx` | Idem |
+| `src/contexts/UserContext.tsx` | Adicionar `doshaResult`, fetch por email e por idPublico |
+| `src/components/Header.tsx` | Redesign completo: 3 zonas, menu hamburguer, mini pie chart |
+| `src/pages/Auth.tsx` | Simplificar para Magic Link + Google + Facebook |
+
+## Nota sobre Google/Facebook OAuth
+
+Os botões serão adicionados no código. Para funcionarem, o usuário precisa configurar os providers no Supabase Dashboard (Authentication > Providers). Instruções serão fornecidas após implementação.
 
