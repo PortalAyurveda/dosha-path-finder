@@ -43,7 +43,7 @@ const App = () => (
               <Route path="/cursos" element={<Cursos />} />
               <Route path="/terapeutas-do-brasil" element={<TerapeutasDoBrasil />} />
               <Route path="/akasha" element={<Akasha />} />
-              <Route path="/video/:videoId" element={<Video />} />
+              <Route path="/video/:slug" element={<Video />} />
               <Route path="/biblioteca/vata" element={<DoshaVata />} />
               <Route path="/biblioteca/vata/adoecimento" element={<DoshaVataAdoecimento />} />
               <Route path="/biblioteca/pitta" element={<DoshaPitta />} />
