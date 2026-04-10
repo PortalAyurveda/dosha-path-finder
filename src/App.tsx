@@ -21,6 +21,8 @@ import DoshaPittaAdoecimento from "./pages/DoshaPittaAdoecimento";
 import DoshaKaphaAdoecimento from "./pages/DoshaKaphaAdoecimento";
 import Horarios from "./pages/Horarios";
 import Auth from "./pages/Auth";
+import PoliticaDePrivacidade from "./pages/PoliticaDePrivacidade";
+import TermosDeUso from "./pages/TermosDeUso";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -50,6 +52,8 @@ const App = () => (
               <Route path="/biblioteca/kapha/adoecimento" element={<DoshaKaphaAdoecimento />} />
               <Route path="/biblioteca/horarios" element={<Horarios />} />
               <Route path="/entrar" element={<Auth />} />
+              <Route path="/politica-de-privacidade" element={<PoliticaDePrivacidade />} />
+              <Route path="/termos-de-uso" element={<TermosDeUso />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Layout>
