@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useLocation, useSearchParams } from "react-router-dom";
 import { Menu } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
+import { useUser } from "@/contexts/UserContext";
 
 const baseLinks = [
   { label: "Início", to: "/" },
@@ -13,28 +14,43 @@ const baseLinks = [
 
 const Header = () => {
   const [open, setOpen] = useState(false);
+  const [persistedDoshaId, setPersistedDoshaId] = useState<string | null>(null);
   const location = useLocation();
   const [searchParams] = useSearchParams();
+  const { user } = useUser();
 
   const isActive = (path: string) => location.pathname === path;
 
-  // Show Akasha link if user is on meu-dosha with id or on /akasha itself
   const doshaId = searchParams.get("id");
   const isOnDoshaPage = location.pathname === "/meu-dosha" && !!doshaId;
   const isOnAkasha = location.pathname === "/akasha";
-  const showAkasha = isOnDoshaPage || isOnAkasha;
+
+  useEffect(() => {
+    const currentId = doshaId && (isOnDoshaPage || isOnAkasha) ? doshaId : null;
+
+    if (currentId) {
+      localStorage.setItem("activeDoshaId", currentId);
+      setPersistedDoshaId(currentId);
+      return;
+    }
+
+    setPersistedDoshaId(localStorage.getItem("activeDoshaId"));
+  }, [doshaId, isOnAkasha, isOnDoshaPage, location.pathname]);
+
+  const akashaId = doshaId || persistedDoshaId;
+  const showAkasha = Boolean(isOnAkasha || akashaId || user);
+  const akashaLink = akashaId ? `/akasha?id=${akashaId}` : "/akasha";
 
   const navLinks = [
     ...baseLinks,
     ...(showAkasha
-      ? [{ label: "✨ Akasha IA", to: `/akasha${doshaId ? `?id=${doshaId}` : ""}` }]
+      ? [{ label: "✨ Akasha IA", to: akashaLink }]
       : []),
   ];
 
   return (
     <header className="sticky top-0 z-50 w-full bg-primary text-primary-foreground shadow-md">
       <div className="max-w-6xl mx-auto flex h-16 items-center justify-between px-4 sm:px-6">
-        {/* Logo */}
         <Link to="/" className="flex items-center gap-2">
           <img
             src="https://static.wixstatic.com/media/b8f47f_6144676c30ec476dbc1f8c5c8812eb1d~mv2.png"
@@ -43,7 +59,6 @@ const Header = () => {
           />
         </Link>
 
-        {/* Desktop nav */}
         <nav className="hidden md:flex items-center gap-1">
           {navLinks.map((link) => (
             <Link
@@ -62,7 +77,6 @@ const Header = () => {
           ))}
         </nav>
 
-        {/* Mobile nav */}
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger asChild className="md:hidden">
             <Button variant="ghost" size="icon" className="text-white hover:bg-white/10">
