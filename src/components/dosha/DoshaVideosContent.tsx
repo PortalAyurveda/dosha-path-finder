@@ -1,8 +1,6 @@
-import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import VideoResultCard from "@/components/biblioteca/VideoResultCard";
-import VideoPlayerDialog from "@/components/biblioteca/VideoPlayerDialog";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const TABLE_MAP = {
