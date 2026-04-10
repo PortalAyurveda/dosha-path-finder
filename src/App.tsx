@@ -52,6 +52,8 @@ const App = () => (
               <Route path="/biblioteca/kapha/adoecimento" element={<DoshaKaphaAdoecimento />} />
               <Route path="/biblioteca/horarios" element={<Horarios />} />
               <Route path="/entrar" element={<Auth />} />
+              <Route path="/politica-de-privacidade" element={<PoliticaDePrivacidade />} />
+              <Route path="/termos-de-uso" element={<TermosDeUso />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Layout>
