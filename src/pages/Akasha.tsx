@@ -493,7 +493,7 @@ const MessageBubble = ({ msg }: { msg: ChatMessage }) => {
       <div
         className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${
           isUser
-            ? "bg-primary text-primary-foreground rounded-tr-sm"
+            ? "bg-primary/20 text-foreground rounded-tr-sm"
             : "bg-akasha/10 text-foreground rounded-tl-sm"
         }`}
       >
