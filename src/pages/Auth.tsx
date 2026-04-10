@@ -52,9 +52,14 @@ const Auth = () => {
     e.preventDefault();
     setLoading(true);
 
+    const storedDoshaId = localStorage.getItem("activeDoshaId");
+    const redirectUrl = storedDoshaId
+      ? `${window.location.origin}/meu-dosha?id=${storedDoshaId}`
+      : window.location.origin;
+
     const { error } = await supabase.auth.signInWithOtp({
       email,
-      options: { emailRedirectTo: window.location.origin },
+      options: { emailRedirectTo: redirectUrl },
     });
 
     if (error) {
