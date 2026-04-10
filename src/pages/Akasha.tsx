@@ -36,12 +36,15 @@ const Akasha = () => {
   const [userCtx, setUserCtx] = useState<UserContext | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const shouldScrollRef = useRef(false);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
-  useEffect(() => { scrollToBottom(); }, [messages]);
+  // Only scroll when we explicitly want to (new bot reply)
+  useEffect(() => {
+    if (shouldScrollRef.current) {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+      shouldScrollRef.current = false;
+    }
+  }, [messages]);
 
   // 1. Load user context
   useEffect(() => {
@@ -54,9 +57,10 @@ const Akasha = () => {
           .maybeSingle();
 
         if (data) {
+          // Use idPublico as session_id always — email field may contain template strings
           setUserCtx({
             nome: data.nome || "Visitante",
-            email: data.email || `${idPublico}@visitante.com`,
+            email: data.email && !data.email.includes("{{") ? data.email : `${idPublico}@visitante.com`,
             doshaprincipal: data.doshaprincipal || "Não informado",
             imc: data.imc,
             vatascore: data.vatascore,
@@ -92,15 +96,15 @@ const Akasha = () => {
     loadContext();
   }, [idPublico]);
 
-  // 2. Load history once we have context
+  // 2. Load history ONLY after userCtx is ready
   useEffect(() => {
-    if (!userCtx) return;
+    if (!userCtx || !userCtx.contactId) return;
 
     const loadHistory = async () => {
+      setLoadingHistory(true);
       try {
-        const sessionId = userCtx.email !== `${userCtx.contactId}@visitante.com`
-          ? userCtx.email
-          : userCtx.contactId;
+        // Always use contactId (idPublico) as session_id for consistency
+        const sessionId = userCtx.contactId;
 
         const res = await fetch(WEBHOOK_URL, {
           method: "POST",
@@ -108,7 +112,7 @@ const Akasha = () => {
           body: JSON.stringify({ action: "get_history", session_id: sessionId }),
         });
         const data = await res.json();
-        if (data?.history && Array.isArray(data.history)) {
+        if (data?.history && Array.isArray(data.history) && data.history.length > 0) {
           const hist: ChatMessage[] = data.history.map((m: any) => ({
             role: m.type === "human" ? "user" as const : "assistant" as const,
             content: m.content,
@@ -156,8 +160,10 @@ const Akasha = () => {
       });
       const data = await res.json();
       const botReply = data?.resposta || data?.output || data?.text || "Desculpe, não consegui processar sua mensagem.";
+      shouldScrollRef.current = true;
       setMessages(prev => [...prev, { role: "assistant", content: botReply }]);
     } catch (e) {
+      shouldScrollRef.current = true;
       setMessages(prev => [...prev, { role: "assistant", content: "Erro ao conectar com a Akasha. Tente novamente." }]);
     } finally {
       setSending(false);
@@ -176,40 +182,47 @@ const Akasha = () => {
 
   return (
     <PageContainer title="Akasha IA — Ayurveda" description="Sua assistente pessoal de Ayurveda com inteligência artificial.">
-      <div className="max-w-2xl mx-auto flex flex-col" style={{ minHeight: "calc(100vh - 200px)" }}>
+      <div className="max-w-2xl mx-auto flex flex-col relative" style={{ minHeight: "calc(100vh - 200px)" }}>
+
+        {/* Background watermark logo */}
+        <div
+          className="pointer-events-none fixed inset-0 flex items-center justify-center z-0"
+          style={{ opacity: 0.06 }}
+        >
+          <img src={AKASHA_LOGO} alt="" className="w-72 h-72 md:w-96 md:h-96 object-contain" />
+        </div>
 
         {/* Chat messages area */}
-        <div className="flex-1 overflow-y-auto space-y-3 pb-4 px-1">
+        <div className="flex-1 overflow-y-auto space-y-3 pb-4 px-1 relative z-10">
 
-          {/* Welcome */}
-          {!loadingHistory && messages.length === 0 && (
-            <div className="flex flex-col items-center justify-center py-12 gap-4 text-center">
-              <img src={AKASHA_LOGO} alt="Akasha IA" className="w-16 h-16 object-contain" />
-              <h2 className="font-serif text-xl font-bold text-akasha">Akasha IA</h2>
-              <p className="text-muted-foreground text-sm max-w-sm">
-                Olá{userCtx?.nome && userCtx.nome !== "Visitante" ? `, ${userCtx.nome}` : ""}! Sou a Akasha, sua guia de Ayurveda. Pergunte-me sobre alimentação, rotinas, doshas e mais.
-              </p>
-            </div>
-          )}
+          {/* Welcome — always visible at top */}
+          <div className="flex flex-col items-center justify-center py-8 gap-3 text-center">
+            <img src={AKASHA_LOGO} alt="Akasha IA" className="w-14 h-14 object-contain" />
+            <h2 className="font-serif text-xl font-bold text-akasha">Akasha IA</h2>
+            <p className="text-muted-foreground text-sm max-w-sm">
+              Olá{userCtx?.nome && userCtx.nome !== "Visitante" ? `, ${userCtx.nome}` : ""}! Sou a Akasha, sua guia de Ayurveda. Pergunte-me sobre alimentação, rotinas, doshas e mais.
+            </p>
+          </div>
 
+          {/* Loading history */}
           {loadingHistory && (
-            <div className="flex items-center justify-center py-12">
-              <Loader2 className="w-6 h-6 animate-spin text-akasha" />
+            <div className="flex items-center justify-center py-6">
+              <Loader2 className="w-5 h-5 animate-spin text-akasha" />
               <span className="ml-2 text-sm text-muted-foreground">Carregando histórico...</span>
             </div>
           )}
 
-          {/* History divider */}
+          {/* History divider + messages */}
           {hasHistory && (
             <>
-              {messages.map((msg, i) => (
-                <MessageBubble key={`hist-${i}`} msg={msg} />
-              ))}
               <div className="flex items-center gap-3 py-2">
                 <div className="flex-1 h-px bg-border" />
                 <span className="text-xs text-muted-foreground font-medium whitespace-nowrap">Histórico Recente</span>
                 <div className="flex-1 h-px bg-border" />
               </div>
+              {messages.map((msg, i) => (
+                <MessageBubble key={`msg-${i}`} msg={msg} />
+              ))}
             </>
           )}
 
@@ -231,7 +244,7 @@ const Akasha = () => {
         </div>
 
         {/* Input capsule */}
-        <div className="sticky bottom-0 bg-background pt-2" style={{ paddingBottom: "max(12px, env(safe-area-inset-bottom))" }}>
+        <div className="sticky bottom-0 bg-background/80 backdrop-blur-sm pt-2 z-10" style={{ paddingBottom: "max(12px, env(safe-area-inset-bottom))" }}>
           <div className="flex items-center gap-2 bg-card border border-border rounded-full px-4 py-2 shadow-lg shadow-akasha/5">
             <input
               ref={inputRef}
