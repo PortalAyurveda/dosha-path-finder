@@ -43,7 +43,7 @@ Criar todas as rotas com páginas placeholder estilizadas:
 
 - `/terapeutas-do-brasil` — Placeholder do diretório
 
-- `/akasha` — Placeholder do dashboard IA
+- `/akasha` — Akasha IA: chatbot ayurvédico conectado ao n8n (webhook POST). Recebe `?id=` do idPublico para contexto do usuário. Tom roxo #9b73ad. Acessível apenas via meu-dosha ou diretamente com ID.
 
 ### 5. Componentes base reutilizáveis
 
