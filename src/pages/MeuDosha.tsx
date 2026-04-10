@@ -4,7 +4,6 @@ import PageContainer from "@/components/PageContainer";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2, ChevronDown, ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 
