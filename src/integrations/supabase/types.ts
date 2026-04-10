@@ -975,6 +975,72 @@ export type Database = {
         }
         Relationships: []
       }
+      portal_conteudo: {
+        Row: {
+          created_at: string
+          id: string
+          image_url: string | null
+          status: string | null
+          summary: string | null
+          timestamps: Json | null
+          title: string
+          video_url: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          status?: string | null
+          summary?: string | null
+          timestamps?: Json | null
+          title: string
+          video_url: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          status?: string | null
+          summary?: string | null
+          timestamps?: Json | null
+          title?: string
+          video_url?: string
+        }
+        Relationships: []
+      }
+      portal_dicas: {
+        Row: {
+          Acao_Pratica: string
+          Categoria: string
+          created_at: string
+          Dificuldade: string
+          Explicacao: string
+          id: number
+          Pilar: string
+          Tags_de_Agravamento: string
+        }
+        Insert: {
+          Acao_Pratica: string
+          Categoria: string
+          created_at?: string
+          Dificuldade: string
+          Explicacao: string
+          id?: number
+          Pilar: string
+          Tags_de_Agravamento: string
+        }
+        Update: {
+          Acao_Pratica?: string
+          Categoria?: string
+          created_at?: string
+          Dificuldade?: string
+          Explicacao?: string
+          id?: number
+          Pilar?: string
+          Tags_de_Agravamento?: string
+        }
+        Relationships: []
+      }
       portal_glossario: {
         Row: {
           alimentosEvitar: string | null
