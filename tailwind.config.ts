@@ -85,6 +85,9 @@ export default {
           4: "#22C55E",
           5: "#15803D",
         },
+        akasha: {
+          DEFAULT: "hsl(var(--akasha))",
+        },
         "bg-soft": "hsl(var(--bg-soft))",
         "surface-sun": "hsl(var(--surface-sun))",
         "surface-sky": "hsl(var(--surface-sky))",
