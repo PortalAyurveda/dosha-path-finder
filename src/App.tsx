@@ -21,6 +21,8 @@ import DoshaPittaAdoecimento from "./pages/DoshaPittaAdoecimento";
 import DoshaKaphaAdoecimento from "./pages/DoshaKaphaAdoecimento";
 import Horarios from "./pages/Horarios";
 import Auth from "./pages/Auth";
+import PoliticaDePrivacidade from "./pages/PoliticaDePrivacidade";
+import TermosDeUso from "./pages/TermosDeUso";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
