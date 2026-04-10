@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
+import { slugify } from "@/lib/slugify";
 
 interface VideoResultCardProps {
   videoId: string;
@@ -36,7 +37,7 @@ const VideoResultCard = ({ videoId, title, summary, tags, onClick }: VideoResult
     if (onClick) {
       onClick();
     } else {
-      navigate(`/video/${videoId}`);
+      navigate(`/video/${slugify(title)}`, { state: { videoId } });
     }
   };
 

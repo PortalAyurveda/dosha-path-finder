@@ -1,8 +1,9 @@
 import { useState, useMemo } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { Helmet } from "react-helmet-async";
 import { supabase } from "@/integrations/supabase/client";
+import { slugify } from "@/lib/slugify";
 import PageContainer from "@/components/PageContainer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -31,26 +32,46 @@ function parseTags(tags: string | null): string[] {
 }
 
 const Video = () => {
-  const { videoId } = useParams<{ videoId: string }>();
+  const { slug } = useParams<{ slug: string }>();
+  const location = useLocation();
   const navigate = useNavigate();
   const [startSeconds, setStartSeconds] = useState<number | null>(null);
 
+  // videoId can come from router state (internal nav) or we resolve from slug
+  const stateVideoId = (location.state as { videoId?: string })?.videoId;
+
   const { data: video, isLoading } = useQuery({
-    queryKey: ["video-page", videoId],
+    queryKey: ["video-page", slug, stateVideoId],
     queryFn: async () => {
       for (const table of ALL_TABLES) {
-        const { data, error } = await supabase
-          .from(table)
-          .select("video_id, novo_titulo, nova_descricao, mini_resumo, tags, texto_para_embedding, criado_em")
-          .eq("video_id", videoId!)
-          .maybeSingle();
-        if (error) continue;
-        if (data) return data;
+        // If we have the videoId from state, use it directly
+        if (stateVideoId) {
+          const { data, error } = await supabase
+            .from(table)
+            .select("video_id, novo_titulo, nova_descricao, mini_resumo, tags, texto_para_embedding, criado_em")
+            .eq("video_id", stateVideoId)
+            .maybeSingle();
+          if (error) continue;
+          if (data) return data;
+        } else {
+          // Direct URL access: fetch all and match by slug
+          const { data, error } = await supabase
+            .from(table)
+            .select("video_id, novo_titulo, nova_descricao, mini_resumo, tags, texto_para_embedding, criado_em")
+            .limit(200);
+          if (error) continue;
+          if (data) {
+            const match = data.find((v) => slugify(v.novo_titulo || "") === slug);
+            if (match) return match;
+          }
+        }
       }
       return null;
     },
-    enabled: !!videoId,
+    enabled: !!slug,
   });
+
+  const videoId = video?.video_id;
 
   const timestamps = useMemo(() => {
     if (!video?.texto_para_embedding) return [];
@@ -59,9 +80,11 @@ const Video = () => {
 
   const tagList = parseTags(video?.tags ?? null);
 
-  const iframeSrc = startSeconds !== null
-    ? `https://www.youtube.com/embed/${videoId}?autoplay=1&start=${startSeconds}`
-    : `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+  const iframeSrc = videoId
+    ? startSeconds !== null
+      ? `https://www.youtube.com/embed/${videoId}?autoplay=1&start=${startSeconds}`
+      : `https://www.youtube.com/embed/${videoId}?autoplay=1`
+    : "";
 
   if (isLoading) {
     return (
@@ -91,6 +114,7 @@ const Video = () => {
 
   const title = video.novo_titulo || "Sem título";
   const description = video.nova_descricao || video.mini_resumo || "";
+  const canonicalSlug = slugify(title);
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -112,7 +136,7 @@ const Video = () => {
         <meta property="og:image" content={`https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`} />
         <meta property="og:type" content="video.other" />
         <meta name="twitter:card" content="summary_large_image" />
-        <link rel="canonical" href={`https://dosha-path-finder.lovable.app/video/${videoId}`} />
+        <link rel="canonical" href={`https://dosha-path-finder.lovable.app/video/${canonicalSlug}`} />
         <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
       </Helmet>
 
@@ -123,16 +147,18 @@ const Video = () => {
           </Button>
 
           {/* Player */}
-          <div className="aspect-video w-full rounded-2xl overflow-hidden border border-border shadow-lg">
-            <iframe
-              key={startSeconds ?? "init"}
-              src={iframeSrc}
-              title={title}
-              className="w-full h-full"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-            />
-          </div>
+          {videoId && (
+            <div className="aspect-video w-full rounded-2xl overflow-hidden border border-border shadow-lg">
+              <iframe
+                key={startSeconds ?? "init"}
+                src={iframeSrc}
+                title={title}
+                className="w-full h-full"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            </div>
+          )}
 
           {/* Title & Tags */}
           <div className="space-y-3">
