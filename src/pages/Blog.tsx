@@ -42,7 +42,6 @@ const Blog = () => {
       let query = supabase
         .from("portal_conteudo")
         .select("id, title, summary, status, link_do_artigo, meta_description, tags, image_url, created_at")
-        .eq("status", "published")
         .order("created_at", { ascending: false });
 
       if (debouncedSearch) {

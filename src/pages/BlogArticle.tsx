@@ -15,7 +15,6 @@ const BlogArticle = () => {
         .from("portal_conteudo")
         .select("*")
         .eq("link_do_artigo", slug!)
-        .eq("status", "published")
         .maybeSingle();
 
       if (error) throw error;
