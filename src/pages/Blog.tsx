@@ -2,18 +2,19 @@ import { useState, useMemo, useEffect } from "react";
 import { Helmet } from "react-helmet-async";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
-import { Search, Sparkles, X } from "lucide-react";
+import { Search, Sparkles, X, ChevronDown } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { BLOG_TAGS } from "@/data/blogTags";
+import { TAG_CATEGORIES } from "@/data/blogTags";
 
 const Blog = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isAdvanced, setIsAdvanced] = useState(false);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [openCategories, setOpenCategories] = useState<string[]>([]);
   const [debouncedSearch, setDebouncedSearch] = useState("");
 
   useEffect(() => {
@@ -59,6 +60,15 @@ const Blog = () => {
     );
   };
 
+  const toggleCategory = (name: string) => {
+    setOpenCategories((prev) =>
+      prev.includes(name) ? prev.filter((c) => c !== name) : [...prev, name]
+    );
+  };
+
+  const countSelectedInCategory = (tags: string[]) =>
+    tags.filter((t) => selectedTags.includes(t)).length;
+
   return (
     <>
       <Helmet>
@@ -76,6 +86,7 @@ const Blog = () => {
             Artigos práticos sobre doshas, alimentação, rotinas e terapias ayurvédicas.
           </p>
 
+          {/* Search */}
           <div className="relative max-w-xl mx-auto mb-4">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
             <Input
@@ -87,7 +98,7 @@ const Blog = () => {
             />
           </div>
 
-          <div className="flex items-center justify-center gap-2 mb-6">
+          <div className="flex items-center justify-center gap-2 mb-4">
             <Switch id="blog-advanced" checked={isAdvanced} onCheckedChange={setIsAdvanced} />
             <Label htmlFor="blog-advanced" className="text-sm font-sans text-muted-foreground cursor-pointer flex items-center gap-1.5">
               <Sparkles className="h-3.5 w-3.5" />
@@ -95,30 +106,82 @@ const Blog = () => {
             </Label>
           </div>
 
-          {/* Tags */}
-          <div className="flex flex-wrap justify-center gap-2 max-w-3xl mx-auto">
-            {BLOG_TAGS.map((tag) => (
-              <button
-                key={tag}
-                onClick={() => toggleTag(tag)}
-                className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all border ${
-                  selectedTags.includes(tag)
-                    ? "bg-primary text-primary-foreground border-primary shadow-md"
-                    : "bg-background text-muted-foreground border-border hover:border-primary/40 hover:text-primary"
-                }`}
-              >
-                {tag}
-              </button>
-            ))}
-          </div>
+          {/* Tag categories - only when advanced */}
+          {isAdvanced && (
+            <div className="mt-4 max-w-3xl mx-auto">
+              <p className="text-xs font-medium text-muted-foreground mb-3">Filtrar por tag:</p>
 
+              {/* Category buttons */}
+              <div className="flex flex-wrap justify-center gap-2 mb-3">
+                {TAG_CATEGORIES.map((cat) => {
+                  const count = countSelectedInCategory(cat.tags);
+                  const isOpen = openCategories.includes(cat.name);
+                  return (
+                    <button
+                      key={cat.name}
+                      onClick={() => toggleCategory(cat.name)}
+                      className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all border flex items-center gap-1.5 ${
+                        isOpen
+                          ? "bg-primary text-primary-foreground border-primary"
+                          : "bg-background text-muted-foreground border-border hover:border-primary/40 hover:text-primary"
+                      }`}
+                    >
+                      {cat.name}
+                      {count > 0 && (
+                        <span className="bg-secondary text-secondary-foreground rounded-full px-1.5 py-0.5 text-[10px] leading-none font-bold">
+                          {count}
+                        </span>
+                      )}
+                      <ChevronDown className={`h-3 w-3 transition-transform ${isOpen ? "rotate-180" : ""}`} />
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Expanded categories */}
+              {TAG_CATEGORIES.filter((cat) => openCategories.includes(cat.name)).map((cat) => (
+                <div key={cat.name} className="mb-3 bg-background/60 rounded-xl p-3 border border-border/50">
+                  <p className="text-[11px] font-semibold text-muted-foreground mb-2">{cat.name}</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {cat.tags.map((tag) => (
+                      <button
+                        key={tag}
+                        onClick={() => toggleTag(tag)}
+                        className={`px-2.5 py-1 rounded-full text-xs font-medium transition-all border ${
+                          selectedTags.includes(tag)
+                            ? "bg-primary text-primary-foreground border-primary shadow-md"
+                            : "bg-background text-muted-foreground border-border hover:border-primary/40 hover:text-primary"
+                        }`}
+                      >
+                        {tag}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Selected tags summary */}
           {selectedTags.length > 0 && (
-            <button
-              onClick={() => setSelectedTags([])}
-              className="mt-3 text-xs text-muted-foreground hover:text-primary flex items-center gap-1 mx-auto"
-            >
-              <X className="h-3 w-3" /> Limpar filtros
-            </button>
+            <div className="mt-3 flex flex-wrap justify-center gap-1.5 items-center">
+              {selectedTags.map((tag) => (
+                <Badge
+                  key={tag}
+                  variant="default"
+                  className="cursor-pointer text-[11px]"
+                  onClick={() => toggleTag(tag)}
+                >
+                  {tag} <X className="h-3 w-3 ml-1" />
+                </Badge>
+              ))}
+              <button
+                onClick={() => setSelectedTags([])}
+                className="text-xs text-muted-foreground hover:text-primary flex items-center gap-1 ml-2"
+              >
+                Limpar todos
+              </button>
+            </div>
           )}
         </div>
 
