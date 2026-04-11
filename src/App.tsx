@@ -24,6 +24,8 @@ import Auth from "./pages/Auth";
 import PoliticaDePrivacidade from "./pages/PoliticaDePrivacidade";
 import TermosDeUso from "./pages/TermosDeUso";
 import NotFound from "./pages/NotFound";
+import Blog from "./pages/Blog";
+import BlogArticle from "./pages/BlogArticle";
 
 const queryClient = new QueryClient();
 
@@ -51,6 +53,8 @@ const App = () => (
               <Route path="/biblioteca/kapha" element={<DoshaKapha />} />
               <Route path="/biblioteca/kapha/adoecimento" element={<DoshaKaphaAdoecimento />} />
               <Route path="/biblioteca/horarios" element={<Horarios />} />
+              <Route path="/blog" element={<Blog />} />
+              <Route path="/blog/:slug" element={<BlogArticle />} />
               <Route path="/entrar" element={<Auth />} />
               <Route path="/politica-de-privacidade" element={<PoliticaDePrivacidade />} />
               <Route path="/termos-de-uso" element={<TermosDeUso />} />

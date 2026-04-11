@@ -28,6 +28,7 @@ const Header = () => {
   const navLinks = [
     { label: "Início", to: "/" },
     { label: "Biblioteca", to: "/biblioteca" },
+    { label: "Blog", to: "/blog" },
     { label: "Cursos", to: "/cursos" },
     { label: "Terapeutas", to: "/terapeutas-do-brasil" },
     ...(showAkasha ? [{ label: "✨ Akasha IA", to: akashaLink }] : []),
@@ -50,7 +51,7 @@ const Header = () => {
         {/* LEFT — Hamburger menu */}
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger asChild>
-            <Button variant="ghost" size="sm" className="text-white hover:bg-white/10 gap-1.5">
+            <Button size="sm" className="bg-white text-primary font-semibold hover:bg-white/90 gap-1.5">
               <Menu className="h-5 w-5" />
               <span className="text-sm font-medium">Menu</span>
             </Button>
