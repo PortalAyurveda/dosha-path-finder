@@ -1,65 +1,47 @@
 
 
-# Redesign do Header + Sistema de Login Integrado
+# Reorganização das Tags do Blog por Categorias
 
-## Resumo
+## Problema
+25 tags exibidas de uma vez poluem a área de busca. Precisamos organizar sem esconder demais.
 
-Reestruturar o header em 3 zonas (menu hamburguer | logo central | login/perfil), adicionar `doshaResult` ao UserContext, e redesenhar a página de login com Magic Link + Google OAuth (sem senha).
+## Proposta: Categorias como Accordion/Collapsible
 
-## 1. UserContext — adicionar `doshaResult`
-
-**Arquivo**: `src/contexts/UserContext.tsx`
-
-- Nova interface `DoshaResult` com `idPublico`, `doshaprincipal`, `vatascore`, `pittascore`, `kaphascore`
-- Novo estado `doshaResult` no provider
-- Função `fetchDoshaResult(email)` que faz query em `doshas_registros2` pelo email, `ORDER BY created_at DESC LIMIT 1`
-- Chamar automaticamente após login real (quando `user.email` estiver disponível)
-- Também popular via `activeDoshaId` do localStorage (para "sessão por idPublico" sem auth real) — buscar por `idPublico` na `doshas_registros2`
-- Expor `doshaResult` no contexto
-
-## 2. Header — redesign 3 zonas
-
-**Arquivo**: `src/components/Header.tsx`
+Quando o usuário ativa "Busca Avançada", aparece uma nova seção **"Filtrar por tag"** com **6 categorias** em formato de botões/chips de categoria. Ao clicar numa categoria, ela expande inline mostrando só as tags daquela categoria. Várias categorias podem estar abertas ao mesmo tempo.
 
 ```text
-┌──────────────────────────────────────────────────┐
-│  [☰]        [Logo Portal Ayurveda]    [Entrar/👤] │
-└──────────────────────────────────────────────────┘
+┌─────────────────────────────────────────┐
+│  [🔍 Buscar por texto................] │
+│  ☑ Busca Avançada                       │
+│                                         │
+│  Filtrar por tag:                       │
+│  [Doshas] [Corpo & Fisiologia]          │
+│  [Mente & Energia] [Alimentação]        │
+│  [Terapias & Rotina] [Saúde & Peso]     │
+│                                         │
+│  ▼ Doshas (expandido)                   │
+│  [🌬️Vata] [🔥Pitta] [🪵Kapha]          │
+│                                         │
+│  ▼ Alimentação (expandido)              │
+│  [🥘Alimentação] [💊Antídotos] [🏗️Detox]│
+└─────────────────────────────────────────┘
 ```
 
-- **Esquerda**: Ícone hamburguer (sempre visível, desktop e mobile). Abre Sheet/dropdown com: Início, Biblioteca, Cursos, Terapeutas, Akasha IA (se `doshaResult` ou `user` existe)
-- **Centro**: Logo centralizado, link para `/`
-- **Direita**:
-  - Se não logado E sem `doshaResult`: botão "Entrar" (link para `/entrar`)
-  - Se tem `doshaResult` (logado real OU sessão por idPublico): mini pie chart (32x32px, Recharts `PieChart`) + texto do dosha principal (ex: "Vata-Pitta"). Clicável, leva a `/meu-dosha?id={idPublico}`
-  - Se logado real sem teste: avatar com inicial do nome/email
+### Categorias propostas (6 grupos):
 
-Mini pie chart: componente inline usando `PieChart` + `Pie` + `Cell` do Recharts com cores vata (#93C5FD), pitta (#FCA5A5), kapha (#86EFAC).
+| Categoria | Tags |
+|-----------|------|
+| **Doshas** | Vata, Pitta, Kapha, Fisiologia e Doshas |
+| **Corpo & Metabolismo** | Metabolismo e digestão, Ama e biotoxinas, Excreção e dejetos, Vitalidade & Ojas |
+| **Mente & Energia** | Prana e espiritualidade, Mente e consciência, Sono e descanso, Sattva, Rajas, Tamas |
+| **Alimentação** | Alimentação & Receitas, Dravyaguna & Herbologia, Antídotos & Incompatíveis |
+| **Terapias & Rotina** | Terapias Ayurveda, Rotina & Horários, Detox e restrições, Indicações e dicas |
+| **Saúde & Peso** | Emagrecimento, Ganho de Peso, Diagnóstico, Doenças Avançadas |
 
-## 3. Auth page — simplificar
+## Implementação
 
-**Arquivo**: `src/pages/Auth.tsx`
+1. **`src/data/blogTags.ts`** — Reestruturar como um mapa `{ categoria: string, tags: BlogTag[] }[]`
+2. **`src/pages/Blog.tsx`** — Tags só aparecem quando "Busca Avançada" está ativo. Categorias como botões toggle que expandem/colapsam as tags de cada grupo. Tags selecionadas ficam visíveis como badges acima dos resultados mesmo com categoria fechada.
 
-- Remover modo "login" (email+senha) e "signup" (email+senha+nome)
-- Manter apenas 2 opções:
-  1. **Magic Link**: campo de email + botão "Enviar link de acesso"
-  2. **Google OAuth**: botão "Entrar com Google" usando `supabase.auth.signInWithOAuth({ provider: 'google' })`
-  3. **Facebook OAuth**: botão "Entrar com Facebook" (funciona apenas se configurado no Supabase Dashboard)
-- Layout limpo, sem tabs — os 3 botões empilhados
-
-## 4. Nenhuma mudança de rotas
-
-`src/App.tsx` permanece inalterado.
-
-## Arquivos modificados
-
-| Arquivo | Mudança |
-|---|---|
-| `src/contexts/UserContext.tsx` | Adicionar `doshaResult`, fetch por email e por idPublico |
-| `src/components/Header.tsx` | Redesign completo: 3 zonas, menu hamburguer, mini pie chart |
-| `src/pages/Auth.tsx` | Simplificar para Magic Link + Google + Facebook |
-
-## Nota sobre Google/Facebook OAuth
-
-Os botões serão adicionados no código. Para funcionarem, o usuário precisa configurar os providers no Supabase Dashboard (Authentication > Providers). Instruções serão fornecidas após implementação.
+Componentes usados: Collapsible do shadcn (já existe no projeto). Sem novas dependências.
 
