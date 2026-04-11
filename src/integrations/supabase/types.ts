@@ -980,31 +980,40 @@ export type Database = {
           created_at: string
           id: string
           image_url: string | null
+          link_do_artigo: string | null
+          meta_description: string | null
           status: string | null
           summary: string | null
+          tags: string | null
           timestamps: Json | null
           title: string
-          video_url: string
+          video_url: string | null
         }
         Insert: {
           created_at?: string
           id?: string
           image_url?: string | null
+          link_do_artigo?: string | null
+          meta_description?: string | null
           status?: string | null
           summary?: string | null
+          tags?: string | null
           timestamps?: Json | null
           title: string
-          video_url: string
+          video_url?: string | null
         }
         Update: {
           created_at?: string
           id?: string
           image_url?: string | null
+          link_do_artigo?: string | null
+          meta_description?: string | null
           status?: string | null
           summary?: string | null
+          tags?: string | null
           timestamps?: Json | null
           title?: string
-          video_url?: string
+          video_url?: string | null
         }
         Relationships: []
       }
