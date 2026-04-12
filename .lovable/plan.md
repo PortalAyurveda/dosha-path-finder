@@ -1,47 +1,52 @@
 
 
-# Reorganização das Tags do Blog por Categorias
+# Plano de Implementação — 4 frentes
 
-## Problema
-25 tags exibidas de uma vez poluem a área de busca. Precisamos organizar sem esconder demais.
+## 1. Blog: Tags listadas diretas + multi-seleção
 
-## Proposta: Categorias como Accordion/Collapsible
+**`src/pages/Blog.tsx`**: Remover o sistema de categorias colapsáveis. Quando "Busca Avançada" está ativo, mostrar todas as 25 tags como chips numa lista corrida (como estava antes). Multi-seleção já funciona (o `toggleTag` já suporta). Manter o resumo de tags selecionadas com "Limpar todos".
 
-Quando o usuário ativa "Busca Avançada", aparece uma nova seção **"Filtrar por tag"** com **6 categorias** em formato de botões/chips de categoria. Ao clicar numa categoria, ela expande inline mostrando só as tags daquela categoria. Várias categorias podem estar abertas ao mesmo tempo.
+## 2. Tags clicáveis nos artigos do blog
 
-```text
-┌─────────────────────────────────────────┐
-│  [🔍 Buscar por texto................] │
-│  ☑ Busca Avançada                       │
-│                                         │
-│  Filtrar por tag:                       │
-│  [Doshas] [Corpo & Fisiologia]          │
-│  [Mente & Energia] [Alimentação]        │
-│  [Terapias & Rotina] [Saúde & Peso]     │
-│                                         │
-│  ▼ Doshas (expandido)                   │
-│  [🌬️Vata] [🔥Pitta] [🪵Kapha]          │
-│                                         │
-│  ▼ Alimentação (expandido)              │
-│  [🥘Alimentação] [💊Antídotos] [🏗️Detox]│
-└─────────────────────────────────────────┘
-```
+**`src/pages/BlogArticle.tsx`**: Trocar as `Badge` de tags por `Link` que navega para `/blog?tag=NomeDaTag`. Multi-tag: cada tag clicada leva à página do blog com aquela tag pré-selecionada.
 
-### Categorias propostas (6 grupos):
+**`src/pages/Blog.tsx`**: Ler query param `tag` da URL ao montar o componente e pré-popular `selectedTags` + ativar `isAdvanced` automaticamente.
 
-| Categoria | Tags |
-|-----------|------|
-| **Doshas** | Vata, Pitta, Kapha, Fisiologia e Doshas |
-| **Corpo & Metabolismo** | Metabolismo e digestão, Ama e biotoxinas, Excreção e dejetos, Vitalidade & Ojas |
-| **Mente & Energia** | Prana e espiritualidade, Mente e consciência, Sono e descanso, Sattva, Rajas, Tamas |
-| **Alimentação** | Alimentação & Receitas, Dravyaguna & Herbologia, Antídotos & Incompatíveis |
-| **Terapias & Rotina** | Terapias Ayurveda, Rotina & Horários, Detox e restrições, Indicações e dicas |
-| **Saúde & Peso** | Emagrecimento, Ganho de Peso, Diagnóstico, Doenças Avançadas |
+## 3. Header: nome + scores V:X P:X K:X estilizados
 
-## Implementação
+**`src/components/Header.tsx`**: No bloco onde `doshaResult` existe, trocar o texto atual por:
+- Primeiro nome (`profile.nome.split(" ")[0]`) — já faz isso mas pode estar caindo no email
+- Scores: `V:X P:X K:X` onde cada par usa a cor do dosha (vata=#93C5FD, pitta=#FCA5A5, kapha=#86EFAC)
+- Fundo semitransparente branco (`bg-white/15`) com `backdrop-blur` para dar destaque visual
+- Área inteira clicável levando ao `/meu-dosha?id=...`
 
-1. **`src/data/blogTags.ts`** — Reestruturar como um mapa `{ categoria: string, tags: BlogTag[] }[]`
-2. **`src/pages/Blog.tsx`** — Tags só aparecem quando "Busca Avançada" está ativo. Categorias como botões toggle que expandem/colapsam as tags de cada grupo. Tags selecionadas ficam visíveis como badges acima dos resultados mesmo com categoria fechada.
+O problema do nome vs email: o `displayName` já tenta `profile?.nome`, mas se o profile não carregou ou o campo `nome` está null, cai no email. Vou garantir que o fallback seja mais robusto.
 
-Componentes usados: Collapsible do shadcn (já existe no projeto). Sem novas dependências.
+## 4. Biblioteca: rotas SEO por subpágina dos doshas
+
+Hoje as rotas são `/biblioteca/vata` e `/biblioteca/vata/adoecimento`. Precisa adicionar rotas individuais para cada tab:
+
+**Novas rotas em `App.tsx`**:
+- `/biblioteca/vata/horarios` → `<DoshaVata defaultTab="horarios" />`
+- `/biblioteca/vata/alimentacao` → `<DoshaVata defaultTab="alimentacao" />`
+- `/biblioteca/vata/remedios` → `<DoshaVata defaultTab="remedios" />`
+- `/biblioteca/vata/avancado` → `<DoshaVata defaultTab="avancado" />` (substituindo `/adoecimento`)
+- Mesma lógica para pitta e kapha (total: 12 novas rotas, removendo 3 de `/adoecimento`)
+
+**`src/components/dosha/DoshaNavPills.tsx`**: Atualizar `handleClick` para navegar para a rota real de cada tab (`/biblioteca/{dosha}/{tab}`), não só trocar state. Manter `replace: false` para que o botão "Voltar" do browser funcione.
+
+**Páginas wrapper de adoecimento** (`DoshaVataAdoecimento.tsx`, etc.): Manter como redirect ou remover, substituídas pelas novas rotas `/avancado`.
+
+---
+
+### Detalhes Técnicos
+
+| Arquivo | Mudança |
+|---------|---------|
+| `src/pages/Blog.tsx` | Remover `openCategories`, `toggleCategory`, `countSelectedInCategory`. Tags como lista corrida. Ler `?tag=` da URL. |
+| `src/pages/BlogArticle.tsx` | Tags como `<Link to={/blog?tag=${tag}}>` |
+| `src/components/Header.tsx` | Scores V:P:K com cores, fundo destacado, nome robusto |
+| `src/App.tsx` | +12 rotas de subtabs, renomear `/adoecimento` → `/avancado` |
+| `src/components/dosha/DoshaNavPills.tsx` | Cada pill navega para `/biblioteca/{dosha}/{tab}` |
+| `src/pages/DoshaVata.tsx` (e Pitta, Kapha) | Canonical URLs atualizados para novas rotas |
 
