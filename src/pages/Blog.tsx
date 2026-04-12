@@ -1,21 +1,30 @@
 import { useState, useMemo, useEffect } from "react";
 import { Helmet } from "react-helmet-async";
 import { useQuery } from "@tanstack/react-query";
-import { Link } from "react-router-dom";
-import { Search, Sparkles, X, ChevronDown } from "lucide-react";
+import { Link, useSearchParams } from "react-router-dom";
+import { Search, Sparkles, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { TAG_CATEGORIES } from "@/data/blogTags";
+import { BLOG_TAGS } from "@/data/blogTags";
 
 const Blog = () => {
+  const [searchParams] = useSearchParams();
   const [searchTerm, setSearchTerm] = useState("");
   const [isAdvanced, setIsAdvanced] = useState(false);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
-  const [openCategories, setOpenCategories] = useState<string[]>([]);
   const [debouncedSearch, setDebouncedSearch] = useState("");
+
+  // Read ?tag= from URL on mount
+  useEffect(() => {
+    const tagFromUrl = searchParams.get("tag");
+    if (tagFromUrl) {
+      setSelectedTags([tagFromUrl]);
+      setIsAdvanced(true);
+    }
+  }, []);
 
   useEffect(() => {
     const t = setTimeout(() => setDebouncedSearch(searchTerm), 300);
@@ -50,7 +59,7 @@ const Blog = () => {
     if (selectedTags.length === 0) return articles;
     return articles.filter((a) => {
       if (!a.tags) return false;
-      return selectedTags.some((tag) => a.tags!.includes(tag));
+      return selectedTags.every((tag) => a.tags!.includes(tag));
     });
   }, [articles, selectedTags]);
 
@@ -59,15 +68,6 @@ const Blog = () => {
       prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
     );
   };
-
-  const toggleCategory = (name: string) => {
-    setOpenCategories((prev) =>
-      prev.includes(name) ? prev.filter((c) => c !== name) : [...prev, name]
-    );
-  };
-
-  const countSelectedInCategory = (tags: string[]) =>
-    tags.filter((t) => selectedTags.includes(t)).length;
 
   return (
     <>
@@ -106,59 +106,25 @@ const Blog = () => {
             </Label>
           </div>
 
-          {/* Tag categories - only when advanced */}
+          {/* Flat tag list - only when advanced */}
           {isAdvanced && (
             <div className="mt-4 max-w-3xl mx-auto">
               <p className="text-xs font-medium text-muted-foreground mb-3">Filtrar por tag:</p>
-
-              {/* Category buttons */}
-              <div className="flex flex-wrap justify-center gap-2 mb-3">
-                {TAG_CATEGORIES.map((cat) => {
-                  const count = countSelectedInCategory(cat.tags);
-                  const isOpen = openCategories.includes(cat.name);
-                  return (
-                    <button
-                      key={cat.name}
-                      onClick={() => toggleCategory(cat.name)}
-                      className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all border flex items-center gap-1.5 ${
-                        isOpen
-                          ? "bg-primary text-primary-foreground border-primary"
-                          : "bg-background text-muted-foreground border-border hover:border-primary/40 hover:text-primary"
-                      }`}
-                    >
-                      {cat.name}
-                      {count > 0 && (
-                        <span className="bg-secondary text-secondary-foreground rounded-full px-1.5 py-0.5 text-[10px] leading-none font-bold">
-                          {count}
-                        </span>
-                      )}
-                      <ChevronDown className={`h-3 w-3 transition-transform ${isOpen ? "rotate-180" : ""}`} />
-                    </button>
-                  );
-                })}
+              <div className="flex flex-wrap justify-center gap-1.5">
+                {BLOG_TAGS.map((tag) => (
+                  <button
+                    key={tag}
+                    onClick={() => toggleTag(tag)}
+                    className={`px-2.5 py-1 rounded-full text-xs font-medium transition-all border ${
+                      selectedTags.includes(tag)
+                        ? "bg-primary text-primary-foreground border-primary shadow-md"
+                        : "bg-background text-muted-foreground border-border hover:border-primary/40 hover:text-primary"
+                    }`}
+                  >
+                    {tag}
+                  </button>
+                ))}
               </div>
-
-              {/* Expanded categories */}
-              {TAG_CATEGORIES.filter((cat) => openCategories.includes(cat.name)).map((cat) => (
-                <div key={cat.name} className="mb-3 bg-background/60 rounded-xl p-3 border border-border/50">
-                  <p className="text-[11px] font-semibold text-muted-foreground mb-2">{cat.name}</p>
-                  <div className="flex flex-wrap gap-1.5">
-                    {cat.tags.map((tag) => (
-                      <button
-                        key={tag}
-                        onClick={() => toggleTag(tag)}
-                        className={`px-2.5 py-1 rounded-full text-xs font-medium transition-all border ${
-                          selectedTags.includes(tag)
-                            ? "bg-primary text-primary-foreground border-primary shadow-md"
-                            : "bg-background text-muted-foreground border-border hover:border-primary/40 hover:text-primary"
-                        }`}
-                      >
-                        {tag}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              ))}
             </div>
           )}
 

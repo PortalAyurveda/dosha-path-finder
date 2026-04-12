@@ -74,9 +74,17 @@ const BlogArticle = () => {
         {article.tags && (
           <div className="flex flex-wrap gap-2 mb-6">
             {article.tags.split(",").map((tag) => (
-              <Badge key={tag.trim()} variant="outline" className="text-xs">
-                {tag.trim()}
-              </Badge>
+              <Link
+                key={tag.trim()}
+                to={`/blog?tag=${encodeURIComponent(tag.trim())}`}
+              >
+                <Badge
+                  variant="outline"
+                  className="text-xs cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors"
+                >
+                  {tag.trim()}
+                </Badge>
+              </Link>
             ))}
           </div>
         )}
