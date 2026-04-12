@@ -88,6 +88,12 @@ export default {
         akasha: {
           DEFAULT: "hsl(var(--akasha))",
         },
+        therapist: {
+          DEFAULT: "hsl(var(--therapist-accent) / <alpha-value>)",
+          foreground: "hsl(var(--therapist-accent-foreground) / <alpha-value>)",
+          soft: "hsl(var(--therapist-accent-soft) / <alpha-value>)",
+          ink: "hsl(var(--therapist-accent-ink) / <alpha-value>)",
+        },
         "bg-soft": "hsl(var(--bg-soft))",
         "surface-sun": "hsl(var(--surface-sun))",
         "surface-sky": "hsl(var(--surface-sky))",
@@ -96,6 +102,9 @@ export default {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+      },
+      boxShadow: {
+        therapist: "var(--shadow-therapist)",
       },
       keyframes: {
         "accordion-down": {

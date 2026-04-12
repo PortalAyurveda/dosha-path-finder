@@ -59,6 +59,37 @@ html, body {
     --surface-sun: 33 100% 97%;
     --surface-sky: 214 100% 97%;
 
+    /* Therapist palettes */
+    --therapist-yellow: 44 100% 49%;
+    --therapist-yellow-soft: 45 100% 96%;
+    --therapist-yellow-ink: 38 56% 26%;
+
+    --therapist-green: 96 42% 69%;
+    --therapist-green-soft: 96 34% 95%;
+    --therapist-green-ink: 98 24% 29%;
+
+    --therapist-salmon: 0 100% 80%;
+    --therapist-salmon-soft: 0 100% 96%;
+    --therapist-salmon-ink: 8 34% 33%;
+
+    --therapist-orange: 30 89% 55%;
+    --therapist-orange-soft: 31 100% 96%;
+    --therapist-orange-ink: 26 52% 30%;
+
+    --therapist-navy: 250 28% 26%;
+    --therapist-navy-soft: 250 25% 95%;
+    --therapist-navy-ink: 250 24% 25%;
+
+    --therapist-purple: 267 33% 62%;
+    --therapist-purple-soft: 268 36% 95%;
+    --therapist-purple-ink: 269 21% 31%;
+
+    --therapist-accent: var(--therapist-green);
+    --therapist-accent-soft: var(--therapist-green-soft);
+    --therapist-accent-ink: var(--therapist-green-ink);
+    --therapist-accent-foreground: 252 29% 20%;
+    --shadow-therapist: 0 18px 40px -24px hsl(var(--therapist-accent) / 0.48);
+
     /* Header */
     --header-bg: 252 29% 26%;
     --header-foreground: 0 0% 100%;
@@ -71,6 +102,60 @@ html, body {
     --sidebar-accent-foreground: 252 29% 26%;
     --sidebar-border: 220 20% 88%;
     --sidebar-ring: 0 100% 73%;
+  }
+}
+
+@layer components {
+  .therapist-theme-yellow {
+    --therapist-accent: var(--therapist-yellow);
+    --therapist-accent-soft: var(--therapist-yellow-soft);
+    --therapist-accent-ink: var(--therapist-yellow-ink);
+    --therapist-accent-foreground: 38 70% 18%;
+    --shadow-therapist: 0 18px 40px -24px hsl(var(--therapist-yellow) / 0.45);
+  }
+
+  .therapist-theme-green {
+    --therapist-accent: var(--therapist-green);
+    --therapist-accent-soft: var(--therapist-green-soft);
+    --therapist-accent-ink: var(--therapist-green-ink);
+    --therapist-accent-foreground: 98 34% 20%;
+    --shadow-therapist: 0 18px 40px -24px hsl(var(--therapist-green) / 0.45);
+  }
+
+  .therapist-theme-salmon {
+    --therapist-accent: var(--therapist-salmon);
+    --therapist-accent-soft: var(--therapist-salmon-soft);
+    --therapist-accent-ink: var(--therapist-salmon-ink);
+    --therapist-accent-foreground: 8 42% 22%;
+    --shadow-therapist: 0 18px 40px -24px hsl(var(--therapist-salmon) / 0.46);
+  }
+
+  .therapist-theme-orange {
+    --therapist-accent: var(--therapist-orange);
+    --therapist-accent-soft: var(--therapist-orange-soft);
+    --therapist-accent-ink: var(--therapist-orange-ink);
+    --therapist-accent-foreground: 28 78% 16%;
+    --shadow-therapist: 0 18px 40px -24px hsl(var(--therapist-orange) / 0.45);
+  }
+
+  .therapist-theme-navy {
+    --therapist-accent: var(--therapist-navy);
+    --therapist-accent-soft: var(--therapist-navy-soft);
+    --therapist-accent-ink: var(--therapist-navy-ink);
+    --therapist-accent-foreground: 0 0% 100%;
+    --shadow-therapist: 0 18px 40px -24px hsl(var(--therapist-navy) / 0.55);
+  }
+
+  .therapist-theme-purple {
+    --therapist-accent: var(--therapist-purple);
+    --therapist-accent-soft: var(--therapist-purple-soft);
+    --therapist-accent-ink: var(--therapist-purple-ink);
+    --therapist-accent-foreground: 0 0% 100%;
+    --shadow-therapist: 0 18px 40px -24px hsl(var(--therapist-purple) / 0.48);
+  }
+
+  .therapist-portal-arch {
+    clip-path: polygon(0% 100%, 0% 36%, 23% 36%, 50% 8%, 77% 36%, 100% 36%, 100% 100%);
   }
 }
 
