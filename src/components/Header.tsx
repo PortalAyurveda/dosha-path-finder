@@ -1,16 +1,9 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation, useSearchParams } from "react-router-dom";
-import { Menu, LogIn, User } from "lucide-react";
+import { Menu, LogIn } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { useUser } from "@/contexts/UserContext";
-
-
-const DOSHA_EMOJI: Record<string, string> = {
-  vata: "🌬️",
-  pitta: "🔥",
-  kapha: "⛰️",
-};
 
 const Header = () => {
   const [open, setOpen] = useState(false);
@@ -34,10 +27,10 @@ const Header = () => {
     ...(showAkasha ? [{ label: "✨ Akasha IA", to: akashaLink }] : []),
   ];
 
-  const doshaEmoji = doshaResult?.doshaprincipal
-    ? DOSHA_EMOJI[doshaResult.doshaprincipal.toLowerCase().split("-")[0]] || "🕉️"
-    : "";
-  const displayName = profile?.nome?.split(" ")[0] || user?.email?.split("@")[0] || "";
+  const firstName = doshaResult?.nome?.split(" ")[0] 
+    || profile?.nome?.split(" ")[0] 
+    || user?.email?.split("@")[0] 
+    || "";
 
   const profileLink = doshaResult?.idPublico
     ? `/meu-dosha?id=${doshaResult.idPublico}`
@@ -93,10 +86,15 @@ const Header = () => {
           {doshaResult ? (
             <Link
               to={profileLink}
-              className="flex items-center gap-1.5 px-2 py-1 rounded-lg hover:bg-white/10 transition-colors"
+              className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/15 backdrop-blur-sm hover:bg-white/25 transition-colors border border-white/20"
             >
-              <span className="text-sm font-semibold text-white truncate max-w-[140px]">
-                {displayName} {doshaResult.doshaprincipal || ""} {doshaEmoji}
+              <span className="text-sm font-semibold text-white truncate max-w-[100px]">
+                {firstName}
+              </span>
+              <span className="flex items-center gap-1 text-[11px] font-bold">
+                <span style={{ color: "#93C5FD" }}>V:{doshaResult.vatascore ?? 0}</span>
+                <span style={{ color: "#FCA5A5" }}>P:{doshaResult.pittascore ?? 0}</span>
+                <span style={{ color: "#86EFAC" }}>K:{doshaResult.kaphascore ?? 0}</span>
               </span>
             </Link>
           ) : user ? (

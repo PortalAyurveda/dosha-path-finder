@@ -24,16 +24,13 @@ const doshaColors = {
   },
 };
 
-const doshaAdvancedRoutes = {
-  vata: "/biblioteca/vata/adoecimento",
-  pitta: "/biblioteca/pitta/adoecimento",
-  kapha: "/biblioteca/kapha/adoecimento",
-};
-
-const doshaMainRoutes = {
-  vata: "/biblioteca/vata",
-  pitta: "/biblioteca/pitta",
-  kapha: "/biblioteca/kapha",
+const tabRoutes: Record<DoshaTab, string> = {
+  principal: "",
+  horarios: "/horarios",
+  alimentacao: "/alimentacao",
+  remedios: "/remedios",
+  videos: "/videos",
+  avancado: "/avancado",
 };
 
 const pills = [
@@ -48,16 +45,10 @@ const pills = [
 const DoshaNavPills = ({ dosha, activeTab, onTabChange }: DoshaNavPillsProps) => {
   const navigate = useNavigate();
 
-  const handleClick = (id: string) => {
-    if (id === "principal") {
-      onTabChange("principal");
-      navigate(doshaMainRoutes[dosha], { replace: true });
-    } else if (id === "avancado") {
-      onTabChange("avancado");
-      navigate(doshaAdvancedRoutes[dosha], { replace: true });
-    } else {
-      onTabChange(id as DoshaTab);
-    }
+  const handleClick = (id: DoshaTab) => {
+    onTabChange(id);
+    const path = `/biblioteca/${dosha}${tabRoutes[id]}`;
+    navigate(path);
   };
 
   const colors = doshaColors[dosha];

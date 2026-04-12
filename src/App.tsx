@@ -16,9 +16,6 @@ import Video from "./pages/Video";
 import DoshaVata from "./pages/DoshaVata";
 import DoshaPitta from "./pages/DoshaPitta";
 import DoshaKapha from "./pages/DoshaKapha";
-import DoshaVataAdoecimento from "./pages/DoshaVataAdoecimento";
-import DoshaPittaAdoecimento from "./pages/DoshaPittaAdoecimento";
-import DoshaKaphaAdoecimento from "./pages/DoshaKaphaAdoecimento";
 import Horarios from "./pages/Horarios";
 import Auth from "./pages/Auth";
 import PoliticaDePrivacidade from "./pages/PoliticaDePrivacidade";
@@ -46,12 +43,35 @@ const App = () => (
               <Route path="/terapeutas-do-brasil" element={<TerapeutasDoBrasil />} />
               <Route path="/akasha" element={<Akasha />} />
               <Route path="/video/:slug" element={<Video />} />
+
+              {/* Vata */}
               <Route path="/biblioteca/vata" element={<DoshaVata />} />
-              <Route path="/biblioteca/vata/adoecimento" element={<DoshaVataAdoecimento />} />
+              <Route path="/biblioteca/vata/horarios" element={<DoshaVata defaultTab="horarios" />} />
+              <Route path="/biblioteca/vata/alimentacao" element={<DoshaVata defaultTab="alimentacao" />} />
+              <Route path="/biblioteca/vata/remedios" element={<DoshaVata defaultTab="remedios" />} />
+              <Route path="/biblioteca/vata/videos" element={<DoshaVata defaultTab="videos" />} />
+              <Route path="/biblioteca/vata/avancado" element={<DoshaVata defaultTab="avancado" />} />
+              {/* Legacy redirect */}
+              <Route path="/biblioteca/vata/adoecimento" element={<DoshaVata defaultTab="avancado" />} />
+
+              {/* Pitta */}
               <Route path="/biblioteca/pitta" element={<DoshaPitta />} />
-              <Route path="/biblioteca/pitta/adoecimento" element={<DoshaPittaAdoecimento />} />
+              <Route path="/biblioteca/pitta/horarios" element={<DoshaPitta defaultTab="horarios" />} />
+              <Route path="/biblioteca/pitta/alimentacao" element={<DoshaPitta defaultTab="alimentacao" />} />
+              <Route path="/biblioteca/pitta/remedios" element={<DoshaPitta defaultTab="remedios" />} />
+              <Route path="/biblioteca/pitta/videos" element={<DoshaPitta defaultTab="videos" />} />
+              <Route path="/biblioteca/pitta/avancado" element={<DoshaPitta defaultTab="avancado" />} />
+              <Route path="/biblioteca/pitta/adoecimento" element={<DoshaPitta defaultTab="avancado" />} />
+
+              {/* Kapha */}
               <Route path="/biblioteca/kapha" element={<DoshaKapha />} />
-              <Route path="/biblioteca/kapha/adoecimento" element={<DoshaKaphaAdoecimento />} />
+              <Route path="/biblioteca/kapha/horarios" element={<DoshaKapha defaultTab="horarios" />} />
+              <Route path="/biblioteca/kapha/alimentacao" element={<DoshaKapha defaultTab="alimentacao" />} />
+              <Route path="/biblioteca/kapha/remedios" element={<DoshaKapha defaultTab="remedios" />} />
+              <Route path="/biblioteca/kapha/videos" element={<DoshaKapha defaultTab="videos" />} />
+              <Route path="/biblioteca/kapha/avancado" element={<DoshaKapha defaultTab="avancado" />} />
+              <Route path="/biblioteca/kapha/adoecimento" element={<DoshaKapha defaultTab="avancado" />} />
+
               <Route path="/biblioteca/horarios" element={<Horarios />} />
               <Route path="/blog" element={<Blog />} />
               <Route path="/blog/:slug" element={<BlogArticle />} />

@@ -36,7 +36,7 @@ const DoshaPitta = ({ defaultTab = "principal" }: DoshaPittaProps) => {
       <Helmet>
         <title>{activeTab === "avancado" ? "Dosha Pitta e Subdoshas — Avançado" : "Guia do Dosha Pitta"} — Portal Ayurveda</title>
         <meta name="description" content="Tudo sobre o dosha Pitta: corpo físico, órgãos sede, os 5 fogos, sabores, nutrição e hábitos de ouro para equilibrar Fogo e Água." />
-        <link rel="canonical" href={activeTab === "avancado" ? "https://portalayurveda.com.br/biblioteca/pitta/adoecimento" : "https://portalayurveda.com.br/biblioteca/pitta"} />
+        <link rel="canonical" href={`https://portalayurveda.com.br/biblioteca/pitta${activeTab === "principal" ? "" : "/" + activeTab}`} />
       </Helmet>
 
       <DoshaHeroBanner

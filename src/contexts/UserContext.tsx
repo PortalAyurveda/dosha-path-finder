@@ -15,6 +15,7 @@ interface UserProfile {
 
 export interface DoshaResult {
   idPublico: string;
+  nome: string | null;
   doshaprincipal: string | null;
   vatascore: number | null;
   pittascore: number | null;
@@ -57,7 +58,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const fetchDoshaByEmail = async (email: string) => {
     const { data, error } = await supabase
       .from("doshas_registros2")
-      .select("idPublico, doshaprincipal, vatascore, pittascore, kaphascore")
+      .select("idPublico, nome, doshaprincipal, vatascore, pittascore, kaphascore")
       .eq("email", email)
       .order("created_at", { ascending: false })
       .limit(1)
@@ -66,6 +67,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
     if (!error && data && data.idPublico) {
       const result: DoshaResult = {
         idPublico: data.idPublico,
+        nome: data.nome,
         doshaprincipal: data.doshaprincipal,
         vatascore: data.vatascore,
         pittascore: data.pittascore,
@@ -79,7 +81,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const setDoshaResultFromId = async (idPublico: string) => {
     const { data, error } = await supabase
       .from("doshas_registros2")
-      .select("idPublico, doshaprincipal, vatascore, pittascore, kaphascore")
+      .select("idPublico, nome, doshaprincipal, vatascore, pittascore, kaphascore")
       .eq("idPublico", idPublico)
       .limit(1)
       .single();
@@ -87,6 +89,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
     if (!error && data && data.idPublico) {
       setDoshaResult({
         idPublico: data.idPublico,
+        nome: data.nome,
         doshaprincipal: data.doshaprincipal,
         vatascore: data.vatascore,
         pittascore: data.pittascore,
