@@ -18,7 +18,7 @@ const TerapeutaCard = ({ nome, cidade, estado, especialidade, resumo, imagem, sl
     ? especialidade.split(",").map((s) => s.trim()).filter(Boolean)
     : [];
 
-  const profilePath = slug || `/terapeutas-do-brasil`;
+  const profilePath = slug ? `/terapeutas/${slug}` : `/terapeutas-do-brasil`;
 
   return (
     <div className="group relative rounded-2xl border border-border bg-card shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden flex flex-col">
