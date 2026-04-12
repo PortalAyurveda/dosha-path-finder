@@ -15,6 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { cn } from "@/lib/utils";
 
 const TerapeutasDoBrasil = () => {
   const [search, setSearch] = useState("");
@@ -100,11 +101,12 @@ const TerapeutasDoBrasil = () => {
               setLocationMode(!locationMode);
               setSearch("");
             }}
-            className={`gap-1.5 shrink-0 ${
+            className={cn(
+              "gap-1.5 shrink-0",
               locationMode
-                ? "bg-emerald-600 hover:bg-emerald-700 text-white"
-                : "border-emerald-300 text-emerald-700 hover:bg-emerald-50"
-            }`}
+                ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                : "border-border bg-card text-primary hover:bg-muted",
+            )}
           >
             <MapPin className="h-4 w-4" />
             <span className="hidden sm:inline">Localização</span>
@@ -154,7 +156,7 @@ const TerapeutasDoBrasil = () => {
               estado={t.estado}
               especialidade={t.especialidade}
               resumo={t.resumo}
-              imagem={t.imagem}
+              imagem={t.imagem ?? t["imagem.1"]}
               slug={t["terapeutas(dinamica)"]}
             />
           ))}
