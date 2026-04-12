@@ -28,7 +28,7 @@ const TerapeutaPerfil = () => {
       const { data, error } = await supabase
         .from("portal_terapeutas")
         .select("*")
-        .eq("terapeutas(dinamica)", `/terapeutas/${slug}`)
+        .eq("terapeutas(dinamica)", slug!)
         .eq("status", "aprovado")
         .maybeSingle();
 
