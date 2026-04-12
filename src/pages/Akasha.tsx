@@ -174,7 +174,7 @@ const buildUserContext = (
 const fetchUserRecordsById = async (publicId: string) => {
   const [currentResponse, legacyResponse] = await Promise.all([
     supabase
-      .from("doshas_registros2")
+      .from("doshas_registros")
       .select(USER_CONTEXT_SELECT)
       .eq("idPublico", publicId)
       .maybeSingle(),
@@ -194,7 +194,7 @@ const fetchUserRecordsById = async (publicId: string) => {
 const fetchLatestUserRecordsByEmail = async (email: string) => {
   const [currentResponse, legacyResponse] = await Promise.all([
     supabase
-      .from("doshas_registros2")
+      .from("doshas_registros")
       .select(USER_CONTEXT_SELECT)
       .eq("email", email)
       .order("created_at", { ascending: false })

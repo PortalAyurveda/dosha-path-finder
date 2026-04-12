@@ -391,7 +391,7 @@ const MeuDosha = () => {
 
     const fetchData = async () => {
       const { data: registro, error } = await supabase
-        .from('doshas_registros2')
+        .from('doshas_registros')
         .select('nome, doshaprincipal, vatascore, pittascore, kaphascore, agniPrincipal, agravVataTags, agravPittaTags, agravKaphaTags, imc, idade, conhecimentoAyurveda')
         .eq('idPublico', id)
         .maybeSingle();
@@ -424,7 +424,7 @@ const MeuDosha = () => {
         {
           event: 'UPDATE',
           schema: 'public',
-          table: 'doshas_registros2',
+          table: 'doshas_registros',
           filter: `idPublico=eq.${id}`,
         },
         (payload) => {
