@@ -11,6 +11,7 @@ import MeuDosha from "./pages/MeuDosha";
 import Biblioteca from "./pages/Biblioteca";
 import Cursos from "./pages/Cursos";
 import TerapeutasDoBrasil from "./pages/TerapeutasDoBrasil";
+import TerapeutaPerfil from "./pages/TerapeutaPerfil";
 import Akasha from "./pages/Akasha";
 import Video from "./pages/Video";
 import DoshaVata from "./pages/DoshaVata";
@@ -41,6 +42,7 @@ const App = () => (
               <Route path="/biblioteca" element={<Biblioteca />} />
               <Route path="/cursos" element={<Cursos />} />
               <Route path="/terapeutas-do-brasil" element={<TerapeutasDoBrasil />} />
+              <Route path="/terapeutas/:slug" element={<TerapeutaPerfil />} />
               <Route path="/akasha" element={<Akasha />} />
               <Route path="/video/:slug" element={<Video />} />
 

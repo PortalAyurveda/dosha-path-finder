@@ -1332,6 +1332,69 @@ export type Database = {
         }
         Relationships: []
       }
+      portal_terapeutas: {
+        Row: {
+          cidade: string | null
+          "created date": string | null
+          email: string | null
+          especialidade: string | null
+          estado: string | null
+          formado_desde: number | null
+          id: string
+          imagem: string | null
+          "imagem.1": string | null
+          instagram: string | null
+          nome: string | null
+          owner: string | null
+          resumo: string | null
+          status: string | null
+          "terapeutas(dinamica)": string | null
+          title: string | null
+          "updated date": string | null
+          whatsapp: string | null
+        }
+        Insert: {
+          cidade?: string | null
+          "created date"?: string | null
+          email?: string | null
+          especialidade?: string | null
+          estado?: string | null
+          formado_desde?: number | null
+          id: string
+          imagem?: string | null
+          "imagem.1"?: string | null
+          instagram?: string | null
+          nome?: string | null
+          owner?: string | null
+          resumo?: string | null
+          status?: string | null
+          "terapeutas(dinamica)"?: string | null
+          title?: string | null
+          "updated date"?: string | null
+          whatsapp?: string | null
+        }
+        Update: {
+          cidade?: string | null
+          "created date"?: string | null
+          email?: string | null
+          especialidade?: string | null
+          estado?: string | null
+          formado_desde?: number | null
+          id?: string
+          imagem?: string | null
+          "imagem.1"?: string | null
+          instagram?: string | null
+          nome?: string | null
+          owner?: string | null
+          resumo?: string | null
+          status?: string | null
+          "terapeutas(dinamica)"?: string | null
+          title?: string | null
+          "updated date"?: string | null
+          whatsapp?: string | null
+        }
+        Relationships: []
+      }
       portal_vata: {
         Row: {
           criado_em: string | null
