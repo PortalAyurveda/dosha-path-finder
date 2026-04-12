@@ -2,7 +2,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 const TerapeutaCardSkeleton = () => (
   <div className="rounded-2xl border border-border bg-card p-5 pt-6 flex flex-col items-center">
-    <div className="w-28 aspect-[4/5] shadow-therapist mb-4">
+    <div className="w-28 aspect-[3/4] shadow-therapist mb-4">
       <div className="therapist-portal-arch h-full w-full bg-muted/60 p-[3px]">
         <Skeleton className="therapist-portal-arch h-full w-full" />
       </div>

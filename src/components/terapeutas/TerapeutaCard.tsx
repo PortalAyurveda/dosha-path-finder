@@ -41,7 +41,7 @@ const TerapeutaCard = ({ nome, cidade, estado, especialidade, resumo, imagem, sl
 
       <div className="p-5 pt-6 flex flex-col items-center text-center flex-1">
         <div className="relative mb-4">
-          <div className="w-28 aspect-[4/5] shadow-therapist">
+          <div className="w-28 aspect-[3/4] shadow-therapist">
             <div className="therapist-portal-arch h-full w-full bg-therapist/30 p-[3px]">
               <div className="therapist-portal-arch h-full w-full overflow-hidden bg-muted">
                 {imagem ? (

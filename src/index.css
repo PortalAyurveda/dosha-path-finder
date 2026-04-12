@@ -155,7 +155,7 @@ html, body {
   }
 
   .therapist-portal-arch {
-    clip-path: polygon(0% 100%, 0% 36%, 23% 36%, 50% 8%, 77% 36%, 100% 36%, 100% 100%);
+    clip-path: url(#therapist-arch-clip);
   }
 }
 

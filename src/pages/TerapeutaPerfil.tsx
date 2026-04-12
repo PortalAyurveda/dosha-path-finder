@@ -53,7 +53,7 @@ const TerapeutaPerfil = () => {
       <main className="max-w-3xl mx-auto px-4 py-12 space-y-6">
         <Skeleton className="h-6 w-32" />
         <div className="flex flex-col items-center gap-4">
-          <div className="w-36 aspect-[4/5] shadow-therapist">
+          <div className="w-36 aspect-[3/4] shadow-therapist">
             <div className="therapist-portal-arch h-full w-full bg-muted/60 p-[4px]">
               <Skeleton className="therapist-portal-arch h-full w-full" />
             </div>
@@ -117,7 +117,7 @@ const TerapeutaPerfil = () => {
 
         <div className="flex flex-col items-center text-center mb-10">
           <div className="relative mb-5">
-            <div className="w-40 md:w-48 aspect-[4/5] shadow-therapist">
+            <div className="w-40 md:w-48 aspect-[3/4] shadow-therapist">
               <div className="therapist-portal-arch h-full w-full bg-therapist/30 p-[4px]">
                 <div className="therapist-portal-arch h-full w-full overflow-hidden bg-muted">
                   {imageUrl ? (
