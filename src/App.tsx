@@ -11,6 +11,7 @@ import MeuDosha from "./pages/MeuDosha";
 import Biblioteca from "./pages/Biblioteca";
 import Cursos from "./pages/Cursos";
 import TerapeutasDoBrasil from "./pages/TerapeutasDoBrasil";
+import TerapeutaPerfil from "./pages/TerapeutaPerfil";
 import Akasha from "./pages/Akasha";
 import Video from "./pages/Video";
 import DoshaVata from "./pages/DoshaVata";
