@@ -241,7 +241,6 @@ const TesteDeDosha = () => {
       const visitorIdBrowser = `${navigator.userAgent.slice(0, 20)}_${Date.now()}`;
 
       const dbPayload = {
-        id: crypto.randomUUID(),
         idPublico,
         email: info.email.toLowerCase(),
         nome: info.nome,
@@ -274,7 +273,7 @@ const TesteDeDosha = () => {
         created_at: new Date().toISOString(),
       };
 
-      const { error } = await supabase.from('doshas_registros2').insert(dbPayload);
+      const { error } = await supabase.from('doshas_registros').insert(dbPayload);
       if (error) throw error;
 
       // Webhook n8n in background

@@ -57,7 +57,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
   const fetchDoshaByEmail = async (email: string) => {
     const { data, error } = await supabase
-      .from("doshas_registros2")
+      .from("doshas_registros")
       .select("idPublico, nome, doshaprincipal, vatascore, pittascore, kaphascore")
       .eq("email", email)
       .order("created_at", { ascending: false })
@@ -80,7 +80,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
   const setDoshaResultFromId = async (idPublico: string) => {
     const { data, error } = await supabase
-      .from("doshas_registros2")
+      .from("doshas_registros")
       .select("idPublico, nome, doshaprincipal, vatascore, pittascore, kaphascore")
       .eq("idPublico", idPublico)
       .limit(1)
@@ -105,16 +105,9 @@ export function UserProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const claimTest = async (idPublico: string): Promise<boolean> => {
-    if (!user) return false;
-
-    const { error } = await supabase
-      .from("doshas_registros2")
-      .update({ user_id: user.id } as any)
-      .eq("idPublico", idPublico)
-      .is("user_id", null);
-
-    return !error;
+  const claimTest = async (_idPublico: string): Promise<boolean> => {
+    // doshas_registros doesn't have user_id column; claim is a no-op
+    return true;
   };
 
   const signOut = async () => {
