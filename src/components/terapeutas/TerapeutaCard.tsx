@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
-import { MapPin } from "lucide-react";
+import { MapPin, ChevronRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import {
   cleanTherapistText,
   getTherapistDisplayName,
@@ -31,17 +30,18 @@ const TerapeutaCard = ({ nome, cidade, estado, especialidade, resumo, imagem, sl
   const themeClass = getTherapistThemeClass(slug ?? nome);
 
   return (
-    <div
+    <Link
+      to={profilePath}
       className={cn(
-        "group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg",
+        "group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg cursor-pointer",
         themeClass,
       )}
     >
       <div className="absolute top-0 left-0 right-0 h-1 bg-therapist opacity-70" />
 
-      <div className="p-5 pt-6 flex flex-col items-center text-center flex-1">
-        <div className="relative mb-4">
-          <div className="w-28 aspect-[3/4] shadow-therapist">
+      <div className="p-4 pt-5 flex flex-col items-center text-center flex-1">
+        <div className="relative mb-3">
+          <div className="w-24 aspect-[3/4] shadow-therapist">
             <div className="therapist-portal-arch h-full w-full bg-therapist/30 p-[3px]">
               <div className="therapist-portal-arch h-full w-full overflow-hidden bg-muted">
                 {imagem ? (
@@ -61,28 +61,30 @@ const TerapeutaCard = ({ nome, cidade, estado, especialidade, resumo, imagem, sl
           </div>
         </div>
 
-        <h3 className="text-lg font-bold text-foreground mb-1 font-serif">{displayName}</h3>
+        <h3 className="text-base font-bold text-foreground mb-0.5 font-serif leading-tight">{displayName}</h3>
 
         {location && (
-          <p className="text-sm text-muted-foreground flex items-center gap-1 mb-3">
-            <MapPin className="h-3.5 w-3.5" />
+          <p className="text-xs text-muted-foreground flex items-center gap-1 mb-2">
+            <MapPin className="h-3 w-3 shrink-0" />
             {location}
           </p>
         )}
 
         {especialidades.length > 0 && (
-          <div className="flex flex-wrap justify-center gap-1.5 mb-3">
-            {especialidades.slice(0, 3).map((esp) => (
-              <Badge
-                key={esp}
-                variant="outline"
-                className="border-therapist/30 bg-therapist-soft/80 px-2 py-0.5 text-[10px] text-therapist-ink"
-              >
-                {esp}
-              </Badge>
-            ))}
+          <div className="flex items-center gap-1 mb-2 w-full overflow-hidden">
+            <div className="flex gap-1 overflow-x-auto scrollbar-hide whitespace-nowrap max-w-full">
+              {especialidades.slice(0, 3).map((esp) => (
+                <Badge
+                  key={esp}
+                  variant="outline"
+                  className="border-therapist/30 bg-therapist-soft/80 px-2 py-0 text-[10px] text-therapist-ink shrink-0"
+                >
+                  {esp}
+                </Badge>
+              ))}
+            </div>
             {especialidades.length > 3 && (
-              <Badge variant="outline" className="text-[10px] px-2 py-0.5 border-muted text-muted-foreground">
+              <Badge variant="outline" className="text-[10px] px-1.5 py-0 border-muted text-muted-foreground shrink-0">
                 +{especialidades.length - 3}
               </Badge>
             )}
@@ -90,23 +92,17 @@ const TerapeutaCard = ({ nome, cidade, estado, especialidade, resumo, imagem, sl
         )}
 
         {summary && (
-          <p className="text-sm text-muted-foreground line-clamp-3 mb-4 leading-relaxed">
+          <p className="text-xs text-muted-foreground line-clamp-3 leading-relaxed mb-2">
             {summary}
           </p>
         )}
 
-        <div className="mt-auto pt-2 w-full">
-          <Link to={profilePath}>
-            <Button
-              variant="outline"
-              className="w-full border-therapist/30 bg-therapist-soft/40 text-therapist-ink transition-colors hover:bg-therapist-soft hover:text-therapist-ink"
-            >
-              Ver Perfil Completo
-            </Button>
-          </Link>
+        {/* Spacer + arrow anchor */}
+        <div className="mt-auto w-full flex justify-end pt-1">
+          <ChevronRight className="h-4 w-4 text-therapist-ink/40 transition-all duration-300 group-hover:text-therapist-ink group-hover:translate-x-0.5" />
         </div>
       </div>
-    </div>
+    </Link>
   );
 };
 
