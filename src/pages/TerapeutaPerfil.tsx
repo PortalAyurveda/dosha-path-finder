@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { Helmet } from "react-helmet-async";
 import {
@@ -11,6 +11,8 @@ import {
   Phone,
   MessageCircle,
   X,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
@@ -20,6 +22,7 @@ import {
   getInstagramHandle,
   getTherapistDisplayName,
   getTherapistLocation,
+  getTherapistProfilePath,
   getTherapistThemeClass,
   normalizeTherapistSlug,
   splitTherapistSpecialties,
@@ -30,23 +33,38 @@ import { whatsappLink } from "@/lib/whatsapp";
 
 const TerapeutaPerfil = () => {
   const { slug } = useParams<{ slug: string }>();
+  const navigate = useNavigate();
   const [showContact, setShowContact] = useState(false);
   const requestedSlug = normalizeTherapistSlug(slug);
 
-  const { data: terapeuta, isLoading } = useQuery({
-    queryKey: ["terapeuta", requestedSlug],
+  // Fetch all approved therapists for prev/next navigation
+  const { data: allTerapeutas } = useQuery({
+    queryKey: ["terapeutas-all"],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("portal_terapeutas")
         .select("*")
         .eq("status", "aprovado")
         .order("created date", { ascending: false });
-
       if (error) throw error;
-      return data?.find((item) => therapistMatchesSlug(requestedSlug, item)) ?? null;
+      return data;
     },
-    enabled: Boolean(requestedSlug),
   });
+
+  const terapeuta = allTerapeutas?.find((item) => therapistMatchesSlug(requestedSlug, item)) ?? null;
+  const isLoading = !allTerapeutas;
+
+  // Prev/next navigation
+  const currentIndex = allTerapeutas?.findIndex((item) => therapistMatchesSlug(requestedSlug, item)) ?? -1;
+  const prevTerapeuta = currentIndex > 0 ? allTerapeutas![currentIndex - 1] : null;
+  const nextTerapeuta = currentIndex >= 0 && currentIndex < (allTerapeutas?.length ?? 0) - 1
+    ? allTerapeutas![currentIndex + 1]
+    : null;
+
+  const getPrevPath = () =>
+    prevTerapeuta ? getTherapistProfilePath(prevTerapeuta["terapeutas(dinamica)"] ?? prevTerapeuta.nome ?? "") : null;
+  const getNextPath = () =>
+    nextTerapeuta ? getTherapistProfilePath(nextTerapeuta["terapeutas(dinamica)"] ?? nextTerapeuta.nome ?? "") : null;
 
   if (isLoading) {
     return (
@@ -95,6 +113,11 @@ const TerapeutaPerfil = () => {
   const hasEmail = !!emailAddress;
   const hasInstagram = !!instagramHandle;
   const hasAnyContact = hasWhatsapp || hasEmail || hasInstagram;
+
+  const prevPath = getPrevPath();
+  const nextPath = getNextPath();
+  const prevName = prevTerapeuta ? getTherapistDisplayName(prevTerapeuta.nome ?? prevTerapeuta.title) : null;
+  const nextName = nextTerapeuta ? getTherapistDisplayName(nextTerapeuta.nome ?? nextTerapeuta.title) : null;
 
   return (
     <>
@@ -246,6 +269,39 @@ const TerapeutaPerfil = () => {
             )}
           </section>
         )}
+
+        {/* Prev / Next navigation */}
+        <nav className="flex items-center justify-between border-t border-border pt-6 mt-4">
+          {prevPath ? (
+            <Link
+              to={prevPath}
+              className="group flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <ChevronLeft className="h-5 w-5 transition-transform group-hover:-translate-x-0.5" />
+              <div className="text-left">
+                <span className="block text-[10px] uppercase tracking-wider text-muted-foreground/70">Anterior</span>
+                <span className="block font-medium truncate max-w-[140px]">{prevName}</span>
+              </div>
+            </Link>
+          ) : (
+            <div />
+          )}
+
+          {nextPath ? (
+            <Link
+              to={nextPath}
+              className="group flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors text-right"
+            >
+              <div className="text-right">
+                <span className="block text-[10px] uppercase tracking-wider text-muted-foreground/70">Próximo</span>
+                <span className="block font-medium truncate max-w-[140px]">{nextName}</span>
+              </div>
+              <ChevronRight className="h-5 w-5 transition-transform group-hover:translate-x-0.5" />
+            </Link>
+          ) : (
+            <div />
+          )}
+        </nav>
       </main>
     </>
   );
