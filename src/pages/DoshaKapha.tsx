@@ -36,7 +36,7 @@ const DoshaKapha = ({ defaultTab = "principal" }: DoshaKaphaProps) => {
       <Helmet>
         <title>{activeTab === "avancado" ? "Dosha Kapha e Subdoshas — Avançado" : "Guia do Dosha Kapha"} — Portal Ayurveda</title>
         <meta name="description" content="Tudo sobre o dosha Kapha: corpo físico, órgãos sede, as 5 mucosas do corpo, sabores, nutrição e hábitos de ouro para equilibrar Terra e Água." />
-        <link rel="canonical" href={activeTab === "avancado" ? "https://portalayurveda.com.br/biblioteca/kapha/adoecimento" : "https://portalayurveda.com.br/biblioteca/kapha"} />
+        <link rel="canonical" href={`https://portalayurveda.com.br/biblioteca/kapha${activeTab === "principal" ? "" : "/" + activeTab}`} />
       </Helmet>
 
       <DoshaHeroBanner
