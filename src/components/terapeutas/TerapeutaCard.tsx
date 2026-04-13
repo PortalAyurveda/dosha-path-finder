@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { MapPin, ChevronRight } from "lucide-react";
+import { MapPin } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import {
   cleanTherapistText,
