@@ -1,15 +1,16 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation, useSearchParams } from "react-router-dom";
-import { Menu, LogIn } from "lucide-react";
+import { Menu, LogIn, LogOut } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { useUser } from "@/contexts/UserContext";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const Header = () => {
   const [open, setOpen] = useState(false);
   const location = useLocation();
   const [searchParams] = useSearchParams();
-  const { user, doshaResult, profile } = useUser();
+  const { user, doshaResult, profile, signOut } = useUser();
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -82,40 +83,70 @@ const Header = () => {
         </Link>
 
         {/* RIGHT — Login or Profile */}
-        <div className="flex items-center gap-2">
-          {doshaResult ? (
-            <Link
-              to={profileLink}
-              className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/15 backdrop-blur-sm hover:bg-white/25 transition-colors border border-white/20"
-            >
-              <span className="text-sm font-semibold text-white truncate max-w-[100px]">
-                {firstName}
-              </span>
-              <span className="flex items-center gap-1 text-[11px] font-bold">
-                <span style={{ color: "#93C5FD" }}>V:{doshaResult.vatascore ?? 0}</span>
-                <span style={{ color: "#FCA5A5" }}>P:{doshaResult.pittascore ?? 0}</span>
-                <span style={{ color: "#86EFAC" }}>K:{doshaResult.kaphascore ?? 0}</span>
-              </span>
-            </Link>
-          ) : user ? (
-            <Link
-              to="/meu-dosha"
-              className="flex items-center justify-center w-9 h-9 rounded-full bg-white/20 text-white font-bold text-sm hover:bg-white/30 transition-colors"
-            >
-              {userInitial.toUpperCase()}
-            </Link>
-          ) : (
-            <Link to="/entrar">
-              <Button
-                size="sm"
-                className="bg-white text-primary font-semibold hover:bg-white/90 gap-1.5"
-              >
-                <LogIn className="h-4 w-4" />
-                Entrar
-              </Button>
-            </Link>
-          )}
-        </div>
+        <TooltipProvider delayDuration={300}>
+          <div className="flex items-center gap-1.5">
+            {doshaResult ? (
+              <>
+                <Link
+                  to={profileLink}
+                  className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/15 backdrop-blur-sm hover:bg-white/25 transition-colors border border-white/20"
+                >
+                  <span className="text-sm font-semibold text-white truncate max-w-[100px]">
+                    {firstName}
+                  </span>
+                  <span className="flex items-center gap-1 text-[11px] font-bold">
+                    <span style={{ color: "#93C5FD" }}>V:{doshaResult.vatascore ?? 0}</span>
+                    <span style={{ color: "#FCA5A5" }}>P:{doshaResult.pittascore ?? 0}</span>
+                    <span style={{ color: "#86EFAC" }}>K:{doshaResult.kaphascore ?? 0}</span>
+                  </span>
+                </Link>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      onClick={signOut}
+                      className="flex items-center justify-center w-8 h-8 rounded-full bg-white/10 hover:bg-white/25 transition-colors"
+                      aria-label="Sair"
+                    >
+                      <LogOut className="h-4 w-4 text-white/70" />
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom" className="text-xs">Sair</TooltipContent>
+                </Tooltip>
+              </>
+            ) : user ? (
+              <>
+                <Link
+                  to="/meu-dosha"
+                  className="flex items-center justify-center w-9 h-9 rounded-full bg-white/20 text-white font-bold text-sm hover:bg-white/30 transition-colors"
+                >
+                  {userInitial.toUpperCase()}
+                </Link>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      onClick={signOut}
+                      className="flex items-center justify-center w-8 h-8 rounded-full bg-white/10 hover:bg-white/25 transition-colors"
+                      aria-label="Sair"
+                    >
+                      <LogOut className="h-4 w-4 text-white/70" />
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom" className="text-xs">Sair</TooltipContent>
+                </Tooltip>
+              </>
+            ) : (
+              <Link to="/entrar">
+                <Button
+                  size="sm"
+                  className="bg-white text-primary font-semibold hover:bg-white/90 gap-1.5"
+                >
+                  <LogIn className="h-4 w-4" />
+                  Entrar
+                </Button>
+              </Link>
+            )}
+          </div>
+        </TooltipProvider>
       </div>
     </header>
   );
