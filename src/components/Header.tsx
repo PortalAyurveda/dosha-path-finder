@@ -10,7 +10,7 @@ const Header = () => {
   const [open, setOpen] = useState(false);
   const location = useLocation();
   const [searchParams] = useSearchParams();
-  const { user, doshaResult, profile } = useUser();
+  const { user, doshaResult, profile, signOut } = useUser();
 
   const isActive = (path: string) => location.pathname === path;
 
