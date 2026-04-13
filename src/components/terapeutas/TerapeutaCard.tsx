@@ -33,7 +33,7 @@ const TerapeutaCard = ({ nome, cidade, estado, especialidade, resumo, imagem, sl
     <Link
       to={profilePath}
       className={cn(
-        "group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg cursor-pointer",
+        "group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-therapist-soft/20 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg cursor-pointer",
         themeClass,
       )}
     >
