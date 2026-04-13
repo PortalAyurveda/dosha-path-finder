@@ -97,10 +97,6 @@ const TerapeutaCard = ({ nome, cidade, estado, especialidade, resumo, imagem, sl
           </p>
         )}
 
-        {/* Spacer + arrow anchor */}
-        <div className="mt-auto w-full flex justify-end pt-1">
-          <ChevronRight className="h-4 w-4 text-therapist-ink/40 transition-all duration-300 group-hover:text-therapist-ink group-hover:translate-x-0.5" />
-        </div>
       </div>
     </Link>
   );
