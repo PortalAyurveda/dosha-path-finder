@@ -14,7 +14,7 @@ export default defineConfig(({ mode }) => ({
   },
   plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
   optimizeDeps: {
-    exclude: ["@radix-ui/react-tooltip"],
+    include: ["react-dom", "react-dom/client", "@radix-ui/react-tooltip", "@radix-ui/react-portal"],
   },
   resolve: {
     alias: {
