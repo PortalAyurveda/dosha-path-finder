@@ -454,6 +454,144 @@ export type Database = {
           },
         ]
       }
+      doshasbkp: {
+        Row: {
+          agniforte: number | null
+          agnifraco: number | null
+          agniirregular: number | null
+          agniPrincipal: string | null
+          agravKaphaTags: string | null
+          agravPittaTags: string | null
+          agravVataTags: string | null
+          alimKapha: string | null
+          alimPitta: string | null
+          alimVata: string | null
+          altura: string | null
+          "conhecimento ayurveda": string | null
+          "Created Date": string | null
+          "curso-aliment": string | null
+          "curso-diagno": string | null
+          "curso-dravyaguna": string | null
+          datateste: string | null
+          diagnostico_lingua: string | null
+          dicas_alimentares: string | null
+          doshaprincipal: string | null
+          Email: string | null
+          espiritual: string | null
+          ID: string | null
+          idade: number | null
+          idPublico: string | null
+          imc: number | null
+          kaphascore: number | null
+          leitura_lingua: string | null
+          lingua: string | null
+          Local: string | null
+          "mentoria-ayurveda": string | null
+          nome: string | null
+          'nome"_1,"produtos': string | null
+          Owner: string | null
+          peso: string | null
+          pittascore: number | null
+          produtos_samkhya: string | null
+          relato_aberto: string | null
+          status_analise: string | null
+          "Updated Date": string | null
+          vatascore: number | null
+          visitorIdBrowser: string | null
+          whatsapp: string | null
+        }
+        Insert: {
+          agniforte?: number | null
+          agnifraco?: number | null
+          agniirregular?: number | null
+          agniPrincipal?: string | null
+          agravKaphaTags?: string | null
+          agravPittaTags?: string | null
+          agravVataTags?: string | null
+          alimKapha?: string | null
+          alimPitta?: string | null
+          alimVata?: string | null
+          altura?: string | null
+          "conhecimento ayurveda"?: string | null
+          "Created Date"?: string | null
+          "curso-aliment"?: string | null
+          "curso-diagno"?: string | null
+          "curso-dravyaguna"?: string | null
+          datateste?: string | null
+          diagnostico_lingua?: string | null
+          dicas_alimentares?: string | null
+          doshaprincipal?: string | null
+          Email?: string | null
+          espiritual?: string | null
+          ID?: string | null
+          idade?: number | null
+          idPublico?: string | null
+          imc?: number | null
+          kaphascore?: number | null
+          leitura_lingua?: string | null
+          lingua?: string | null
+          Local?: string | null
+          "mentoria-ayurveda"?: string | null
+          nome?: string | null
+          'nome"_1,"produtos'?: string | null
+          Owner?: string | null
+          peso?: string | null
+          pittascore?: number | null
+          produtos_samkhya?: string | null
+          relato_aberto?: string | null
+          status_analise?: string | null
+          "Updated Date"?: string | null
+          vatascore?: number | null
+          visitorIdBrowser?: string | null
+          whatsapp?: string | null
+        }
+        Update: {
+          agniforte?: number | null
+          agnifraco?: number | null
+          agniirregular?: number | null
+          agniPrincipal?: string | null
+          agravKaphaTags?: string | null
+          agravPittaTags?: string | null
+          agravVataTags?: string | null
+          alimKapha?: string | null
+          alimPitta?: string | null
+          alimVata?: string | null
+          altura?: string | null
+          "conhecimento ayurveda"?: string | null
+          "Created Date"?: string | null
+          "curso-aliment"?: string | null
+          "curso-diagno"?: string | null
+          "curso-dravyaguna"?: string | null
+          datateste?: string | null
+          diagnostico_lingua?: string | null
+          dicas_alimentares?: string | null
+          doshaprincipal?: string | null
+          Email?: string | null
+          espiritual?: string | null
+          ID?: string | null
+          idade?: number | null
+          idPublico?: string | null
+          imc?: number | null
+          kaphascore?: number | null
+          leitura_lingua?: string | null
+          lingua?: string | null
+          Local?: string | null
+          "mentoria-ayurveda"?: string | null
+          nome?: string | null
+          'nome"_1,"produtos'?: string | null
+          Owner?: string | null
+          peso?: string | null
+          pittascore?: number | null
+          produtos_samkhya?: string | null
+          relato_aberto?: string | null
+          status_analise?: string | null
+          "Updated Date"?: string | null
+          vatascore?: number | null
+          visitorIdBrowser?: string | null
+          whatsapp?: string | null
+        }
+        Relationships: []
+      }
       feed_resultados: {
         Row: {
           created_at: string | null
