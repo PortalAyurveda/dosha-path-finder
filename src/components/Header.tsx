@@ -76,7 +76,7 @@ const Header = () => {
         {/* CENTER — Logo */}
         <Link to="/" className="absolute left-1/2 -translate-x-1/2 flex items-center">
           <img
-            src="https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/logo-positivo-png-certo.png"
+            src="https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/logo-negativo.png"
             alt="Portal Ayurveda"
             className="h-10 w-auto hidden sm:block"
           />
