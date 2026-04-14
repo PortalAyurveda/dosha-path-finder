@@ -76,9 +76,14 @@ const Header = () => {
         {/* CENTER — Logo */}
         <Link to="/" className="absolute left-1/2 -translate-x-1/2 flex items-center">
           <img
-            src="https://static.wixstatic.com/media/b8f47f_6144676c30ec476dbc1f8c5c8812eb1d~mv2.png"
+            src="https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/logo-positivo-png-certo.png"
             alt="Portal Ayurveda"
-            className="h-10 w-auto brightness-0 invert"
+            className="h-10 w-auto hidden sm:block"
+          />
+          <img
+            src="https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/simbolo-positivo.png"
+            alt="Portal Ayurveda"
+            className="h-9 w-auto block sm:hidden"
           />
         </Link>
 
@@ -91,10 +96,10 @@ const Header = () => {
                   to={profileLink}
                   className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/15 backdrop-blur-sm hover:bg-white/25 transition-colors border border-white/20"
                 >
-                  <span className="text-sm font-semibold text-white truncate max-w-[100px]">
+                  <span className="text-xs sm:text-sm font-semibold text-white truncate max-w-[60px] sm:max-w-[100px]">
                     {firstName}
                   </span>
-                  <span className="flex items-center gap-1 text-[11px] font-bold">
+                  <span className="flex items-center gap-0.5 sm:gap-1 text-[9px] sm:text-[11px] font-bold">
                     <span style={{ color: "#93C5FD" }}>V:{doshaResult.vatascore ?? 0}</span>
                     <span style={{ color: "#FCA5A5" }}>P:{doshaResult.pittascore ?? 0}</span>
                     <span style={{ color: "#86EFAC" }}>K:{doshaResult.kaphascore ?? 0}</span>
