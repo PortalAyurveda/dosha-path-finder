@@ -185,6 +185,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
         setSession(existingSession);
         setUser(existingSession.user);
         fetchProfile(existingSession.user.id);
+        fetchRole(existingSession.user.id);
         if (existingSession.user.email) {
           fetchDoshaByEmail(existingSession.user.email);
         }
@@ -203,7 +204,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
   return (
     <UserContext.Provider
-      value={{ user, session, profile, doshaResult, loading, signOut, refreshProfile, claimTest, setDoshaResultFromId }}
+      value={{ user, session, profile, doshaResult, role, loading, signOut, refreshProfile, claimTest, setDoshaResultFromId }}
     >
       {children}
     </UserContext.Provider>
