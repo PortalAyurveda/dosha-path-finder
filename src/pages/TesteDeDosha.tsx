@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import InterstitialLoading from "@/components/dosha/InterstitialLoading";
 import { useNavigate } from "react-router-dom";
 import PageContainer from "@/components/PageContainer";
 import { Button } from "@/components/ui/button";
@@ -319,7 +320,7 @@ const [step, setStep] = useState(0);
         body: JSON.stringify(webhookPayload),
       }).catch(() => {});
 
-      navigate(`/meu-dosha?id=${idPublico}`);
+      setInterstitialTarget(`/meu-dosha?id=${idPublico}`);
     } catch (err: any) {
       console.error(err);
       toast({ title: "Erro ao salvar", description: err.message || "Tente novamente.", variant: "destructive" });
