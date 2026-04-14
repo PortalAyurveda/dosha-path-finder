@@ -29,6 +29,7 @@ interface UserContextType {
   session: Session | null;
   profile: UserProfile | null;
   doshaResult: DoshaResult | null;
+  role: UserRole;
   loading: boolean;
   signOut: () => Promise<void>;
   refreshProfile: () => Promise<void>;
