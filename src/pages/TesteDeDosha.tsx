@@ -487,6 +487,10 @@ const [step, setStep] = useState(0);
 
   const isLastStep = step === totalSteps - 1;
 
+  if (interstitialTarget) {
+    return <InterstitialLoading redirectTo={interstitialTarget} />;
+  }
+
   return (
     <PageContainer title="Teste de Dosha" description="Descubra seu dosha predominante com nosso teste personalizado baseado no Ayurveda.">
       <div className="max-w-2xl mx-auto">
