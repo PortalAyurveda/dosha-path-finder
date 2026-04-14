@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import InterstitialLoading from "@/components/dosha/InterstitialLoading";
 import { useNavigate } from "react-router-dom";
 import PageContainer from "@/components/PageContainer";
 import { Button } from "@/components/ui/button";
@@ -39,8 +40,9 @@ const INTERESSE_OPTIONS = [
 const TesteDeDosha = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [step, setStep] = useState(0);
+const [step, setStep] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [interstitialTarget, setInterstitialTarget] = useState<string | null>(null);
 
   // Info from Hero (localStorage)
   const [info, setInfo] = useState({ nome: '', idade: '', nivel: 'Iniciante', email: '', altura: '', peso: '' });
@@ -318,7 +320,7 @@ const TesteDeDosha = () => {
         body: JSON.stringify(webhookPayload),
       }).catch(() => {});
 
-      navigate(`/meu-dosha?id=${idPublico}`);
+      setInterstitialTarget(`/meu-dosha?id=${idPublico}`);
     } catch (err: any) {
       console.error(err);
       toast({ title: "Erro ao salvar", description: err.message || "Tente novamente.", variant: "destructive" });
@@ -484,6 +486,10 @@ const TesteDeDosha = () => {
   };
 
   const isLastStep = step === totalSteps - 1;
+
+  if (interstitialTarget) {
+    return <InterstitialLoading redirectTo={interstitialTarget} />;
+  }
 
   return (
     <PageContainer title="Teste de Dosha" description="Descubra seu dosha predominante com nosso teste personalizado baseado no Ayurveda.">
