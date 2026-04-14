@@ -13,6 +13,8 @@ interface UserProfile {
   created_at: string;
 }
 
+type UserRole = 'admin' | 'user' | null;
+
 export interface DoshaResult {
   idPublico: string;
   nome: string | null;
