@@ -104,6 +104,87 @@ export type Database = {
         }
         Relationships: []
       }
+      bkp: {
+        Row: {
+          agniforte: number | null
+          agnifraco: number | null
+          agniirregular: number | null
+          agniPrincipal: string | null
+          agravKaphaTags: string | null
+          agravPittaTags: string | null
+          agravVataTags: string | null
+          alimKapha: string | null
+          alimPitta: string | null
+          alimVata: string | null
+          altura: string | null
+          conhecimentoAyurveda: string | null
+          created_at: string | null
+          doshaprincipal: string | null
+          idade: number | null
+          imc: number | null
+          kaphascore: number | null
+          nivelkapha: string | null
+          nivelpitta: string | null
+          nivelvata: string | null
+          peso: number | null
+          pittascore: number | null
+          relato_aberto: string | null
+          vatascore: number | null
+        }
+        Insert: {
+          agniforte?: number | null
+          agnifraco?: number | null
+          agniirregular?: number | null
+          agniPrincipal?: string | null
+          agravKaphaTags?: string | null
+          agravPittaTags?: string | null
+          agravVataTags?: string | null
+          alimKapha?: string | null
+          alimPitta?: string | null
+          alimVata?: string | null
+          altura?: string | null
+          conhecimentoAyurveda?: string | null
+          created_at?: string | null
+          doshaprincipal?: string | null
+          idade?: number | null
+          imc?: number | null
+          kaphascore?: number | null
+          nivelkapha?: string | null
+          nivelpitta?: string | null
+          nivelvata?: string | null
+          peso?: number | null
+          pittascore?: number | null
+          relato_aberto?: string | null
+          vatascore?: number | null
+        }
+        Update: {
+          agniforte?: number | null
+          agnifraco?: number | null
+          agniirregular?: number | null
+          agniPrincipal?: string | null
+          agravKaphaTags?: string | null
+          agravPittaTags?: string | null
+          agravVataTags?: string | null
+          alimKapha?: string | null
+          alimPitta?: string | null
+          alimVata?: string | null
+          altura?: string | null
+          conhecimentoAyurveda?: string | null
+          created_at?: string | null
+          doshaprincipal?: string | null
+          idade?: number | null
+          imc?: number | null
+          kaphascore?: number | null
+          nivelkapha?: string | null
+          nivelpitta?: string | null
+          nivelvata?: string | null
+          peso?: number | null
+          pittascore?: number | null
+          relato_aberto?: string | null
+          vatascore?: number | null
+        }
+        Relationships: []
+      }
       book_structure: {
         Row: {
           content: string | null
@@ -140,6 +221,33 @@ export type Database = {
           tags?: string | null
           title?: string
           type?: string
+        }
+        Relationships: []
+      }
+      calculos: {
+        Row: {
+          GRUPO: string | null
+          ITEM: string | null
+          KAPHA: string | null
+          ORDEM: number | null
+          PITTA: string | null
+          VATA: string | null
+        }
+        Insert: {
+          GRUPO?: string | null
+          ITEM?: string | null
+          KAPHA?: string | null
+          ORDEM?: number | null
+          PITTA?: string | null
+          VATA?: string | null
+        }
+        Update: {
+          GRUPO?: string | null
+          ITEM?: string | null
+          KAPHA?: string | null
+          ORDEM?: number | null
+          PITTA?: string | null
+          VATA?: string | null
         }
         Relationships: []
       }
@@ -1821,6 +1929,10 @@ export type Database = {
     }
     Functions: {
       bytea_to_text: { Args: { data: string }; Returns: string }
+      gerar_insights_ayurvedicos: {
+        Args: { p_registro_id: string }
+        Returns: Json
+      }
       http: {
         Args: { request: Database["public"]["CompositeTypes"]["http_request"] }
         Returns: Database["public"]["CompositeTypes"]["http_response"]
