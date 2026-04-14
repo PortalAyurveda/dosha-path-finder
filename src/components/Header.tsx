@@ -69,6 +69,18 @@ const Header = () => {
                   {link.label}
                 </Link>
               ))}
+              {user && (
+                <>
+                  <div className="border-t border-white/20 my-2" />
+                  <button
+                    onClick={() => { setOpen(false); signOut(); }}
+                    className="px-4 py-3 rounded-xl text-base font-medium text-white/70 hover:text-white hover:bg-white/10 transition-colors flex items-center gap-2 text-left"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    Sair
+                  </button>
+                </>
+              )}
             </nav>
           </SheetContent>
         </Sheet>
@@ -84,6 +96,7 @@ const Header = () => {
             src="https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/simbolo-positivo.png"
             alt="Portal Ayurveda"
             className="h-9 w-auto block sm:hidden"
+
           />
         </Link>
 
