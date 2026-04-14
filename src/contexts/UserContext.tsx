@@ -146,7 +146,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
         if (newSession?.user) {
           setTimeout(() => fetchProfile(newSession.user.id), 0);
-
+          setTimeout(() => fetchRole(newSession.user.id), 0);
           if (newSession.user.email) {
             setTimeout(() => fetchDoshaByEmail(newSession.user.email!), 0);
           }
