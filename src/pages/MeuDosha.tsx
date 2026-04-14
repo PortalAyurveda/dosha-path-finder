@@ -390,6 +390,18 @@ const MeuDosha = () => {
   const [loading, setLoading] = useState(true);
   const [result, setResult] = useState<DoshaResult | null>(null);
   const [glossario, setGlossario] = useState<PortalGlossario | null>(null);
+  const [registroUuid, setRegistroUuid] = useState<string | null>(null);
+
+  // Pre-fetch insights RPC (fires on mount, cached for tab switch)
+  const { data: insights, isLoading: insightsLoading } = useQuery({
+    queryKey: ['insights-ayurvedicos', registroUuid],
+    queryFn: async () => {
+      const { data } = await supabase.rpc('gerar_insights_ayurvedicos', { p_registro_id: registroUuid! });
+      return (data as InsightAyurvedico[]) || [];
+    },
+    enabled: !!registroUuid,
+    staleTime: 5 * 60 * 1000,
+  });
 
   useEffect(() => {
     if (!id) { setLoading(false); return; }
@@ -397,7 +409,7 @@ const MeuDosha = () => {
     const fetchData = async () => {
       const { data: registro, error } = await supabase
         .from('doshas_registros')
-        .select('nome, doshaprincipal, vatascore, pittascore, kaphascore, agniPrincipal, agravVataTags, agravPittaTags, agravKaphaTags, imc, idade, conhecimentoAyurveda')
+        .select('id, nome, doshaprincipal, vatascore, pittascore, kaphascore, agniPrincipal, agravVataTags, agravPittaTags, agravKaphaTags, imc, idade, conhecimentoAyurveda')
         .eq('idPublico', id)
         .maybeSingle();
 
