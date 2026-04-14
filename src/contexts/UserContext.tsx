@@ -130,10 +130,11 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
   const signOut = async () => {
     await supabase.auth.signOut();
-    setUser(null);
+          setUser(null);
     setSession(null);
     setProfile(null);
     setDoshaResult(null);
+    setRole(null);
     localStorage.removeItem("activeDoshaId");
   };
 
