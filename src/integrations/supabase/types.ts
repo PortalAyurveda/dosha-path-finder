@@ -1242,6 +1242,27 @@ export type Database = {
         }
         Relationships: []
       }
+      perfis: {
+        Row: {
+          created_at: string | null
+          email: string
+          id: string
+          role: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          email: string
+          id: string
+          role?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          email?: string
+          id?: string
+          role?: string | null
+        }
+        Relationships: []
+      }
       portal_conteudo: {
         Row: {
           created_at: string
