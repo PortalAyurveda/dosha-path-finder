@@ -1,10 +1,15 @@
 import { useEffect, useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import PageContainer from "@/components/PageContainer";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2, ChevronDown, ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
+import MetricasTab from "@/components/meudosha/MetricasTab";
+import type { InsightAyurvedico } from "@/components/meudosha/MetricasTab";
+import EmBreveTab from "@/components/meudosha/EmBreveTab";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 
 interface DoshaResult {
