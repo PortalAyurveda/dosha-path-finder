@@ -1,14 +1,18 @@
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { AlertTriangle, ShieldCheck } from "lucide-react";
+import { AlertOctagon, AlertTriangle, Info, ShieldCheck } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface InsightAyurvedico {
-  tipo: 'alerta' | 'sucesso';
+  tipo: 'vermelho' | 'laranja' | 'amarelo';
   titulo: string;
   porcentagem: number;
   mensagem: string;
 }
+
+const TIPO_CONFIG = {
+  vermelho: { color: '#DC2626', border: 'border-red-200', bg: 'bg-red-50', text: 'text-red-800', label: 'Crítico', Icon: AlertOctagon },
+  laranja: { color: '#EA580C', border: 'border-orange-200', bg: 'bg-orange-50', text: 'text-orange-800', label: 'Alerta', Icon: AlertTriangle },
+  amarelo: { color: '#CA8A04', border: 'border-yellow-200', bg: 'bg-yellow-50', text: 'text-yellow-800', label: 'Atenção', Icon: Info },
+} as const;
 
 const CircularProgress = ({ value, color }: { value: number; color: string }) => {
   const radius = 36;
@@ -33,24 +37,21 @@ const CircularProgress = ({ value, color }: { value: number; color: string }) =>
 };
 
 const InsightCard = ({ insight }: { insight: InsightAyurvedico }) => {
-  const isAlerta = insight.tipo === 'alerta';
-  const color = isAlerta ? '#F97316' : '#22C55E';
-  const borderClass = isAlerta ? 'border-orange-400/50' : 'border-emerald-400/50';
-  const bgClass = isAlerta ? 'bg-orange-500/5' : 'bg-emerald-500/5';
-  const Icon = isAlerta ? AlertTriangle : ShieldCheck;
+  const config = TIPO_CONFIG[insight.tipo] || TIPO_CONFIG.laranja;
+  const { color, border, bg, text, label, Icon } = config;
 
   return (
-    <div className={`rounded-xl border-2 ${borderClass} ${bgClass} p-5 space-y-3`}>
+    <div className={`rounded-xl border-2 ${border} ${bg} p-5 space-y-3`}>
       <div className="flex items-center gap-4">
         <CircularProgress value={insight.porcentagem} color={color} />
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
-            <Icon className="w-4 h-4 shrink-0" style={{ color }} />
-            <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color }}>
-              {isAlerta ? 'Alerta' : 'Positivo'}
+            <Icon className={`w-4 h-4 shrink-0 ${text}`} />
+            <span className={`text-[10px] font-bold uppercase tracking-wider ${text}`}>
+              {label}
             </span>
           </div>
-          <h3 className="font-serif font-bold text-foreground text-sm leading-snug">
+          <h3 className={`font-serif font-bold ${text} text-sm leading-snug`}>
             {insight.titulo}
           </h3>
         </div>
@@ -101,8 +102,15 @@ const MetricasTab = ({ insights, isLoading }: MetricasTabProps) => {
     );
   }
 
-  const alertas = insights.filter(i => i.tipo === 'alerta');
-  const sucessos = insights.filter(i => i.tipo === 'sucesso');
+  const vermelhos = insights.filter(i => i.tipo === 'vermelho');
+  const laranjas = insights.filter(i => i.tipo === 'laranja');
+  const amarelos = insights.filter(i => i.tipo === 'amarelo');
+
+  const sections = [
+    { items: vermelhos, label: 'Críticos', Icon: AlertOctagon, textClass: 'text-red-600' },
+    { items: laranjas, label: 'Alertas', Icon: AlertTriangle, textClass: 'text-orange-600' },
+    { items: amarelos, label: 'Atenção', Icon: Info, textClass: 'text-yellow-600' },
+  ];
 
   return (
     <div className="space-y-6 py-4">
@@ -113,26 +121,17 @@ const MetricasTab = ({ insights, isLoading }: MetricasTabProps) => {
         </p>
       </div>
 
-      {alertas.length > 0 && (
-        <div className="space-y-3">
-          <h3 className="text-xs font-bold uppercase tracking-wider text-orange-500 flex items-center gap-1.5">
-            <AlertTriangle className="w-3.5 h-3.5" /> Alertas ({alertas.length})
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {alertas.map((insight, i) => <InsightCard key={i} insight={insight} />)}
+      {sections.map(({ items, label, Icon, textClass }) =>
+        items.length > 0 ? (
+          <div key={label} className="space-y-3">
+            <h3 className={`text-xs font-bold uppercase tracking-wider ${textClass} flex items-center gap-1.5`}>
+              <Icon className="w-3.5 h-3.5" /> {label} ({items.length})
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {items.map((insight, i) => <InsightCard key={i} insight={insight} />)}
+            </div>
           </div>
-        </div>
-      )}
-
-      {sucessos.length > 0 && (
-        <div className="space-y-3">
-          <h3 className="text-xs font-bold uppercase tracking-wider text-emerald-500 flex items-center gap-1.5">
-            <ShieldCheck className="w-3.5 h-3.5" /> Pontos Positivos ({sucessos.length})
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {sucessos.map((insight, i) => <InsightCard key={i} insight={insight} />)}
-          </div>
-        </div>
+        ) : null
       )}
     </div>
   );

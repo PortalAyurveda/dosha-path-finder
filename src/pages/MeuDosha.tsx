@@ -396,7 +396,8 @@ const MeuDosha = () => {
   const { data: insights, isLoading: insightsLoading } = useQuery({
     queryKey: ['insights-ayurvedicos', registroUuid],
     queryFn: async () => {
-      const { data } = await supabase.rpc('gerar_insights_ayurvedicos', { p_registro_id: registroUuid! });
+      const { data, error } = await supabase.rpc('gerar_insights_ayurvedicos', { p_registro_id: registroUuid! });
+      console.log("Insights retornados:", data, "Erro:", error);
       return (data as unknown as InsightAyurvedico[]) || [];
     },
     enabled: !!registroUuid,
