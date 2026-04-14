@@ -530,151 +530,135 @@ const MeuDosha = () => {
           <p className="text-muted-foreground text-sm">O que isso significa, {result.nome}?</p>
         </div>
 
-        {/* ===== CLINICAL DASHBOARD ===== */}
-        <div className="bg-card rounded-xl border border-border p-4 space-y-4">
+        {/* ===== TABS ===== */}
+        <Tabs defaultValue="perfil" className="w-full">
+          <TabsList className="w-full grid grid-cols-5 h-auto">
+            <TabsTrigger value="perfil" className="text-xs sm:text-sm py-2">Perfil</TabsTrigger>
+            <TabsTrigger value="metricas" className="text-xs sm:text-sm py-2">Métricas</TabsTrigger>
+            <TabsTrigger value="artigos" className="text-xs sm:text-sm py-2">Artigos</TabsTrigger>
+            <TabsTrigger value="videos" className="text-xs sm:text-sm py-2">Vídeos</TabsTrigger>
+            <TabsTrigger value="akasha" className="text-xs sm:text-sm py-2">Akasha</TabsTrigger>
+          </TabsList>
 
-          {/* Row 1: Pie Chart + Thermometer */}
-          <div className="grid grid-cols-1 sm:grid-cols-[1.2fr_1fr] gap-4">
-
-            {/* Pie Chart + Fogo Digestivo */}
-            <div className="flex flex-col items-center">
-              <h2 className="font-serif font-bold text-foreground text-base mb-2 text-center">Pontuação dos Doshas</h2>
-              <ResponsiveContainer width="100%" height={240}>
-                <PieChart>
-                  <Pie
-                    data={pieData}
-                    cx="50%"
-                    cy="50%"
-                    outerRadius={85}
-                    innerRadius={40}
-                    dataKey="value"
-                    label={CustomPieLabel}
-                    strokeWidth={2}
-                    stroke="hsl(var(--card))"
-                  >
-                    {pieData.map((entry) => (
-                      <Cell key={entry.name} fill={PIE_COLORS[entry.name]} />
-                    ))}
-                  </Pie>
-                  <Tooltip
-                    formatter={(value: number, name: string) => [`${value} pts (${totalScore > 0 ? Math.round((value / totalScore) * 100) : 0}%)`, name]}
-                    contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '8px', fontSize: '12px' }}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
-
-              {/* Fogo Digestivo below pie */}
-              {result.agniPrincipal && (
-                <div className="w-full bg-surface-sun rounded-lg border border-border p-3 mt-3">
-                  <h3 className="font-serif font-bold text-foreground text-sm mb-1">Fogo Digestivo (Agni)</h3>
-                  <p className="text-xs text-muted-foreground">{result.agniPrincipal}</p>
+          {/* ===== TAB: PERFIL ===== */}
+          <TabsContent value="perfil" className="space-y-6 mt-4">
+            {/* Clinical Dashboard */}
+            <div className="bg-card rounded-xl border border-border p-4 space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-[1.2fr_1fr] gap-4">
+                <div className="flex flex-col items-center">
+                  <h2 className="font-serif font-bold text-foreground text-base mb-2 text-center">Pontuação dos Doshas</h2>
+                  <ResponsiveContainer width="100%" height={240}>
+                    <PieChart>
+                      <Pie data={pieData} cx="50%" cy="50%" outerRadius={85} innerRadius={40} dataKey="value" label={CustomPieLabel} strokeWidth={2} stroke="hsl(var(--card))">
+                        {pieData.map((entry) => (
+                          <Cell key={entry.name} fill={PIE_COLORS[entry.name]} />
+                        ))}
+                      </Pie>
+                      <Tooltip
+                        formatter={(value: number, name: string) => [`${value} pts (${totalScore > 0 ? Math.round((value / totalScore) * 100) : 0}%)`, name]}
+                        contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '8px', fontSize: '12px' }}
+                      />
+                    </PieChart>
+                  </ResponsiveContainer>
+                  {result.agniPrincipal && (
+                    <div className="w-full bg-surface-sun rounded-lg border border-border p-3 mt-3">
+                      <h3 className="font-serif font-bold text-foreground text-sm mb-1">Fogo Digestivo (Agni)</h3>
+                      <p className="text-xs text-muted-foreground">{result.agniPrincipal}</p>
+                    </div>
+                  )}
+                </div>
+                <ClinicalThermometer doshaScores={doshaScores} />
+              </div>
+              <div className="border-t border-border pt-4">
+                <DoshaLevelBullets doshaScores={doshaScores} />
+              </div>
+              {hasAgrav && (
+                <div className="border-t border-border pt-4">
+                  <h3 className="font-serif font-bold text-foreground text-sm mb-3">Agravamentos Detectados</h3>
+                  <div className="grid grid-cols-3 gap-3">
+                    <div className="space-y-1">
+                      <p className="text-[10px] font-bold text-vata uppercase text-center">Vata</p>
+                      {result.agravVataTags ? (
+                        <div className="flex flex-col gap-1">
+                          {result.agravVataTags.split(',').map(t => (
+                            <span key={t} className="text-[10px] px-1.5 py-1 rounded-md bg-vata/10 text-vata border border-vata/30 text-center">{t.trim()}</span>
+                          ))}
+                        </div>
+                      ) : <p className="text-[10px] text-muted-foreground text-center">—</p>}
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-[10px] font-bold text-pitta uppercase text-center">Pitta</p>
+                      {result.agravPittaTags ? (
+                        <div className="flex flex-col gap-1">
+                          {result.agravPittaTags.split(',').map(t => (
+                            <span key={t} className="text-[10px] px-1.5 py-1 rounded-md bg-pitta/10 text-pitta border border-pitta/30 text-center">{t.trim()}</span>
+                          ))}
+                        </div>
+                      ) : <p className="text-[10px] text-muted-foreground text-center">—</p>}
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-[10px] font-bold text-kapha uppercase text-center">Kapha</p>
+                      {result.agravKaphaTags ? (
+                        <div className="flex flex-col gap-1">
+                          {result.agravKaphaTags.split(',').map(t => (
+                            <span key={t} className="text-[10px] px-1.5 py-1 rounded-md bg-kapha/10 text-kapha border border-kapha/30 text-center">{t.trim()}</span>
+                          ))}
+                        </div>
+                      ) : <p className="text-[10px] text-muted-foreground text-center">—</p>}
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
 
-            {/* Thermometer */}
-            <ClinicalThermometer doshaScores={doshaScores} />
-          </div>
-
-          {/* Level Interpretation Bullets — inside dashboard */}
-          <div className="border-t border-border pt-4">
-            <DoshaLevelBullets doshaScores={doshaScores} />
-          </div>
-
-          {/* Agravamentos in 3 vertical columns below */}
-          {hasAgrav && (
-            <div className="border-t border-border pt-4">
-              <h3 className="font-serif font-bold text-foreground text-sm mb-3">Agravamentos Detectados</h3>
-              <div className="grid grid-cols-3 gap-3">
-                {/* Vata */}
-                <div className="space-y-1">
-                  <p className="text-[10px] font-bold text-vata uppercase text-center">Vata</p>
-                  {result.agravVataTags ? (
-                    <div className="flex flex-col gap-1">
-                      {result.agravVataTags.split(',').map(t => (
-                        <span key={t} className="text-[10px] px-1.5 py-1 rounded-md bg-vata/10 text-vata border border-vata/30 text-center">{t.trim()}</span>
-                      ))}
-                    </div>
-                  ) : (
-                    <p className="text-[10px] text-muted-foreground text-center">—</p>
-                  )}
-                </div>
-                {/* Pitta */}
-                <div className="space-y-1">
-                  <p className="text-[10px] font-bold text-pitta uppercase text-center">Pitta</p>
-                  {result.agravPittaTags ? (
-                    <div className="flex flex-col gap-1">
-                      {result.agravPittaTags.split(',').map(t => (
-                        <span key={t} className="text-[10px] px-1.5 py-1 rounded-md bg-pitta/10 text-pitta border border-pitta/30 text-center">{t.trim()}</span>
-                      ))}
-                    </div>
-                  ) : (
-                    <p className="text-[10px] text-muted-foreground text-center">—</p>
-                  )}
-                </div>
-                {/* Kapha */}
-                <div className="space-y-1">
-                  <p className="text-[10px] font-bold text-kapha uppercase text-center">Kapha</p>
-                  {result.agravKaphaTags ? (
-                    <div className="flex flex-col gap-1">
-                      {result.agravKaphaTags.split(',').map(t => (
-                        <span key={t} className="text-[10px] px-1.5 py-1 rounded-md bg-kapha/10 text-kapha border border-kapha/30 text-center">{t.trim()}</span>
-                      ))}
-                    </div>
-                  ) : (
-                    <p className="text-[10px] text-muted-foreground text-center">—</p>
-                  )}
-                </div>
+            {/* Glossary */}
+            {glossario && (
+              <div className="space-y-4">
+                <h2 className="font-serif font-bold text-foreground text-xl text-center">
+                  Sobre o Dosha {glossario.doshaNome || glossario.Title}
+                </h2>
+                <ExpandableSection title="O que é?" content={glossario.oque} icon="🧬" />
+                <ThreeColumnTable atributos={glossario.atributos} equilibrio={glossario.equilibrio} desequilibrio={glossario.desequilibrio} />
+                <ExpandableSection title="Principais Causas" content={glossario.principaisCausas} icon="⚡" />
+                <ExpandableSection title="Principais Enfermidades" content={glossario.principaisDoencas} icon="🩺" />
+                <ExpandableSection title="Caminhos de Equilíbrio" content={glossario.caminhosEquilibrio} icon="🌿" />
+                <ExpandableSection title="Alimentos a Priorizar" content={glossario.alimentosPriorizar} icon="✅" />
+                <ExpandableSection title="Alimentos a Evitar" content={glossario.alimentosEvitar} icon="🚫" />
               </div>
+            )}
+
+            {/* Links */}
+            <div className="space-y-3 pb-8">
+              <h2 className="font-serif font-bold text-foreground text-lg text-center">O que deseja fazer?</h2>
+              <Link
+                to={`/akasha?id=${id}`}
+                className="flex items-center justify-center gap-3 w-full rounded-2xl bg-akasha text-white py-4 px-6 font-bold text-base shadow-lg hover:opacity-90 transition-opacity"
+              >
+                <img src="https://static.wixstatic.com/media/b8f47f_105371e1ade24ccd9bd3406b83bd925e~mv2.png" alt="Akasha IA" className="w-8 h-8 object-contain" />
+                Falar com a Akasha IA
+              </Link>
+              <Button variant="outline" asChild className="w-full">
+                <Link to="/teste-de-dosha">Refazer Teste</Link>
+              </Button>
             </div>
-          )}
-        </div>
+          </TabsContent>
 
-        {/* ===== GLOSSARY INFO PACK ===== */}
-        {glossario && (
-          <div className="space-y-4">
-            <h2 className="font-serif font-bold text-foreground text-xl text-center">
-              Sobre o Dosha {glossario.doshaNome || glossario.Title}
-            </h2>
+          {/* ===== TAB: MÉTRICAS ===== */}
+          <TabsContent value="metricas">
+            <MetricasTab registroUuid={registroUuid} insights={insights} isLoading={insightsLoading} />
+          </TabsContent>
 
-            <ExpandableSection title="O que é?" content={glossario.oque} icon="🧬" />
-
-            {/* 3-column table */}
-            <ThreeColumnTable
-              atributos={glossario.atributos}
-              equilibrio={glossario.equilibrio}
-              desequilibrio={glossario.desequilibrio}
-            />
-
-            <ExpandableSection title="Principais Causas" content={glossario.principaisCausas} icon="⚡" />
-            <ExpandableSection title="Principais Enfermidades" content={glossario.principaisDoencas} icon="🩺" />
-            <ExpandableSection title="Caminhos de Equilíbrio" content={glossario.caminhosEquilibrio} icon="🌿" />
-            <ExpandableSection title="Alimentos a Priorizar" content={glossario.alimentosPriorizar} icon="✅" />
-            <ExpandableSection title="Alimentos a Evitar" content={glossario.alimentosEvitar} icon="🚫" />
-          </div>
-        )}
-
-        {/* ===== LINKS ===== */}
-        <div className="space-y-3 pb-8">
-          <h2 className="font-serif font-bold text-foreground text-lg text-center">O que deseja fazer?</h2>
-
-          {/* Akasha CTA - destaque */}
-          <Link
-            to={`/akasha?id=${id}`}
-            className="flex items-center justify-center gap-3 w-full rounded-2xl bg-akasha text-white py-4 px-6 font-bold text-base shadow-lg hover:opacity-90 transition-opacity"
-          >
-            <img
-              src="https://static.wixstatic.com/media/b8f47f_105371e1ade24ccd9bd3406b83bd925e~mv2.png"
-              alt="Akasha IA"
-              className="w-8 h-8 object-contain"
-            />
-            Falar com a Akasha IA
-          </Link>
-
-          <Button variant="outline" asChild className="w-full">
-            <Link to="/teste-de-dosha">Refazer Teste</Link>
-          </Button>
-        </div>
+          {/* ===== TABS EM BREVE ===== */}
+          <TabsContent value="artigos">
+            <EmBreveTab label="Artigos Personalizados" />
+          </TabsContent>
+          <TabsContent value="videos">
+            <EmBreveTab label="Vídeos Recomendados" />
+          </TabsContent>
+          <TabsContent value="akasha">
+            <EmBreveTab label="Akasha IA" />
+          </TabsContent>
+        </Tabs>
       </div>
     </PageContainer>
   );
