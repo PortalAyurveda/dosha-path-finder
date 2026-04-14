@@ -39,8 +39,9 @@ const INTERESSE_OPTIONS = [
 const TesteDeDosha = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [step, setStep] = useState(0);
+const [step, setStep] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [interstitialTarget, setInterstitialTarget] = useState<string | null>(null);
 
   // Info from Hero (localStorage)
   const [info, setInfo] = useState({ nome: '', idade: '', nivel: 'Iniciante', email: '', altura: '', peso: '' });
