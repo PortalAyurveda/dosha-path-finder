@@ -22,6 +22,7 @@ import Auth from "./pages/Auth";
 import PoliticaDePrivacidade from "./pages/PoliticaDePrivacidade";
 import TermosDeUso from "./pages/TermosDeUso";
 import NotFound from "./pages/NotFound";
+import Admin from "./pages/Admin";
 import Blog from "./pages/Blog";
 import BlogArticle from "./pages/BlogArticle";
 
