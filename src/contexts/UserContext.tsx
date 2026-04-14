@@ -44,6 +44,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [doshaResult, setDoshaResult] = useState<DoshaResult | null>(null);
+  const [role, setRole] = useState<UserRole>(null);
   const [loading, setLoading] = useState(true);
 
   const fetchProfile = async (userId: string) => {
@@ -55,6 +56,20 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
     if (!error && data) {
       setProfile(data as UserProfile);
+    }
+  };
+
+  const fetchRole = async (userId: string) => {
+    const { data, error } = await supabase
+      .from("perfis")
+      .select("role")
+      .eq("id", userId)
+      .single();
+
+    if (!error && data) {
+      setRole((data.role as UserRole) ?? 'user');
+    } else {
+      setRole('user');
     }
   };
 
