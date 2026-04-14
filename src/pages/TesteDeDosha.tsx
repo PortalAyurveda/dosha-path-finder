@@ -113,11 +113,17 @@ const [step, setStep] = useState(0);
       toast({ title: "Preencha os dados", description: "E-mail, altura e peso são obrigatórios.", variant: "destructive" });
       return;
     }
-    if (step < totalSteps - 1) setStep(step + 1);
+    if (step < totalSteps - 1) {
+      setStep(step + 1);
+      window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+    }
   };
 
   const handlePrev = () => {
-    if (step > 0) setStep(step - 1);
+    if (step > 0) {
+      setStep(step - 1);
+      window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+    }
   };
 
   const calculateResults = () => {
