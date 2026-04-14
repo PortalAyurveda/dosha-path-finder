@@ -13,6 +13,8 @@ interface UserProfile {
   created_at: string;
 }
 
+type UserRole = 'admin' | 'user' | null;
+
 export interface DoshaResult {
   idPublico: string;
   nome: string | null;
@@ -27,6 +29,7 @@ interface UserContextType {
   session: Session | null;
   profile: UserProfile | null;
   doshaResult: DoshaResult | null;
+  role: UserRole;
   loading: boolean;
   signOut: () => Promise<void>;
   refreshProfile: () => Promise<void>;
@@ -41,6 +44,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [doshaResult, setDoshaResult] = useState<DoshaResult | null>(null);
+  const [role, setRole] = useState<UserRole>(null);
   const [loading, setLoading] = useState(true);
 
   const fetchProfile = async (userId: string) => {
@@ -52,6 +56,20 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
     if (!error && data) {
       setProfile(data as UserProfile);
+    }
+  };
+
+  const fetchRole = async (userId: string) => {
+    const { data, error } = await supabase
+      .from("perfis")
+      .select("role")
+      .eq("id", userId)
+      .single();
+
+    if (!error && data) {
+      setRole((data.role as UserRole) ?? 'user');
+    } else {
+      setRole('user');
     }
   };
 
@@ -112,10 +130,11 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
   const signOut = async () => {
     await supabase.auth.signOut();
-    setUser(null);
+          setUser(null);
     setSession(null);
     setProfile(null);
     setDoshaResult(null);
+    setRole(null);
     localStorage.removeItem("activeDoshaId");
   };
 
@@ -127,7 +146,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
         if (newSession?.user) {
           setTimeout(() => fetchProfile(newSession.user.id), 0);
-
+          setTimeout(() => fetchRole(newSession.user.id), 0);
           if (newSession.user.email) {
             setTimeout(() => fetchDoshaByEmail(newSession.user.email!), 0);
           }
@@ -166,6 +185,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
         setSession(existingSession);
         setUser(existingSession.user);
         fetchProfile(existingSession.user.id);
+        fetchRole(existingSession.user.id);
         if (existingSession.user.email) {
           fetchDoshaByEmail(existingSession.user.email);
         }
@@ -184,7 +204,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
   return (
     <UserContext.Provider
-      value={{ user, session, profile, doshaResult, loading, signOut, refreshProfile, claimTest, setDoshaResultFromId }}
+      value={{ user, session, profile, doshaResult, role, loading, signOut, refreshProfile, claimTest, setDoshaResultFromId }}
     >
       {children}
     </UserContext.Provider>
