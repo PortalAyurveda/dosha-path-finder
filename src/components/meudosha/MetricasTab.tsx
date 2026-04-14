@@ -94,9 +94,9 @@ const MetricasTab = ({ insights, isLoading }: MetricasTabProps) => {
     return (
       <div className="flex flex-col items-center justify-center py-16 text-center space-y-3">
         <ShieldCheck className="w-12 h-12 text-muted-foreground/40" />
-        <p className="text-foreground font-serif font-bold">Nenhum cruzamento extremo encontrado</p>
+        <p className="text-foreground font-serif font-bold text-lg">Perfil em Equilíbrio</p>
         <p className="text-sm text-muted-foreground max-w-md">
-          Seu perfil não ativou nenhuma das regras preditivas. Isso pode significar um equilíbrio moderado ou dados insuficientes para análise avançada.
+          Sua análise estatística não apresenta desequilíbrios críticos ou acúmulos expressivos neste momento. Continue mantendo seus hábitos saudáveis!
         </p>
       </div>
     );
