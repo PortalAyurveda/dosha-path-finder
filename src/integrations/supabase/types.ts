@@ -700,6 +700,27 @@ export type Database = {
         }
         Relationships: []
       }
+      estatisticas_ayurvedicas: {
+        Row: {
+          atualizado_em: string
+          codigo_regra: string
+          n_amostra: number
+          porcentagem: number
+        }
+        Insert: {
+          atualizado_em?: string
+          codigo_regra: string
+          n_amostra?: number
+          porcentagem?: number
+        }
+        Update: {
+          atualizado_em?: string
+          codigo_regra?: string
+          n_amostra?: number
+          porcentagem?: number
+        }
+        Relationships: []
+      }
       feed_resultados: {
         Row: {
           created_at: string | null
@@ -1928,6 +1949,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      atualizar_estatisticas_globais: { Args: never; Returns: undefined }
       bytea_to_text: { Args: { data: string }; Returns: string }
       gerar_insights_ayurvedicos: {
         Args: { p_registro_id: string }
