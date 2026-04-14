@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Progress } from "@/components/ui/progress";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -17,7 +18,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Upload, Copy, Trash2, Image as ImageIcon, Loader2, ShieldCheck } from "lucide-react";
+import { Upload, Copy, Trash2, Image as ImageIcon, Loader2, ShieldCheck, X } from "lucide-react";
 import { Helmet } from "react-helmet-async";
 
 const BUCKET = "portal_images";
@@ -25,6 +26,11 @@ const BUCKET = "portal_images";
 interface StorageFile {
   name: string;
   publicUrl: string;
+}
+
+interface PendingFile {
+  file: File;
+  slugName: string;
 }
 
 const Admin = () => {
@@ -35,10 +41,10 @@ const Admin = () => {
   const [files, setFiles] = useState<StorageFile[]>([]);
   const [loadingFiles, setLoadingFiles] = useState(true);
   const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
 
-  // Upload state
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [slugName, setSlugName] = useState("");
+  // Multi-upload state
+  const [pendingFiles, setPendingFiles] = useState<PendingFile[]>([]);
   const [dragOver, setDragOver] = useState(false);
 
   // Delete state
@@ -79,44 +85,82 @@ const Admin = () => {
     if (!accessLoading && role === "admin") fetchFiles();
   }, [accessLoading, role, fetchFiles]);
 
-  // File selection
-  const handleFileSelect = (file: File) => {
-    setSelectedFile(file);
-    setSlugName(sanitizeSlug(file.name));
+  // Add files to pending list
+  const addFiles = (fileList: FileList | File[]) => {
+    const newFiles: PendingFile[] = Array.from(fileList)
+      .filter((f) => f.type.startsWith("image/"))
+      .map((f) => ({ file: f, slugName: sanitizeSlug(f.name) }));
+
+    if (newFiles.length === 0) {
+      toast.error("Nenhuma imagem válida selecionada");
+      return;
+    }
+
+    setPendingFiles((prev) => [...prev, ...newFiles]);
   };
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setDragOver(false);
-    const file = e.dataTransfer.files?.[0];
-    if (file && file.type.startsWith("image/")) handleFileSelect(file);
+    if (e.dataTransfer.files?.length) addFiles(e.dataTransfer.files);
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) handleFileSelect(file);
+    if (e.target.files?.length) addFiles(e.target.files);
+    e.target.value = "";
   };
 
-  // Upload
-  const handleUpload = async () => {
-    if (!selectedFile || !slugName.trim()) return;
+  const updateSlug = (index: number, newSlug: string) => {
+    setPendingFiles((prev) =>
+      prev.map((p, i) => (i === index ? { ...p, slugName: newSlug } : p))
+    );
+  };
+
+  const removePending = (index: number) => {
+    setPendingFiles((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  // Upload all pending files
+  const handleUploadAll = async () => {
+    const valid = pendingFiles.filter((p) => p.slugName.trim());
+    if (valid.length === 0) return;
+
     setUploading(true);
+    setUploadProgress(0);
 
-    const finalName = sanitizeSlug(slugName);
-    const { error } = await supabase.storage.from(BUCKET).upload(finalName, selectedFile, {
-      upsert: true,
-      contentType: selectedFile.type,
-    });
+    let successCount = 0;
+    let errorCount = 0;
 
-    if (error) {
-      toast.error("Erro no upload: " + error.message);
-    } else {
-      toast.success("Imagem enviada com sucesso!");
-      setSelectedFile(null);
-      setSlugName("");
+    for (let i = 0; i < valid.length; i++) {
+      const { file, slugName } = valid[i];
+      const finalName = sanitizeSlug(slugName);
+
+      const { error } = await supabase.storage.from(BUCKET).upload(finalName, file, {
+        upsert: true,
+        contentType: file.type,
+      });
+
+      if (error) {
+        toast.error(`Erro: ${finalName} — ${error.message}`);
+        errorCount++;
+      } else {
+        successCount++;
+      }
+
+      setUploadProgress(Math.round(((i + 1) / valid.length) * 100));
+    }
+
+    if (successCount > 0) {
+      toast.success(`${successCount} imagem(ns) enviada(s) com sucesso!`);
       fetchFiles();
     }
+    if (errorCount > 0) {
+      toast.error(`${errorCount} arquivo(s) falharam no upload.`);
+    }
+
+    setPendingFiles([]);
     setUploading(false);
+    setUploadProgress(0);
   };
 
   // Copy link
@@ -138,7 +182,6 @@ const Admin = () => {
     setDeleteTarget(null);
   };
 
-  // Loading / auth guard skeleton
   if (accessLoading) {
     return (
       <div className="min-h-screen bg-background p-8">
@@ -155,9 +198,7 @@ const Admin = () => {
     );
   }
 
-  if (!user || role !== "admin") {
-    return null;
-  }
+  if (!user || role !== "admin") return null;
 
   return (
     <>
@@ -195,45 +236,74 @@ const Admin = () => {
                 id="file-input"
                 type="file"
                 accept="image/*"
+                multiple
                 className="hidden"
                 onChange={handleInputChange}
               />
               <ImageIcon className="w-10 h-10 mx-auto text-muted-foreground mb-2" />
               <p className="text-muted-foreground text-sm">
-                Arraste uma imagem ou clique para selecionar
+                Arraste imagens ou clique para selecionar (múltiplos arquivos)
               </p>
-              {selectedFile && (
-                <p className="text-foreground text-sm mt-2 font-medium">
-                  Selecionado: {selectedFile.name}
-                </p>
-              )}
             </div>
 
-            {/* Slug + Upload button */}
-            {selectedFile && (
-              <div className="flex flex-col sm:flex-row gap-3">
-                <div className="flex-1">
-                  <label className="text-xs text-muted-foreground mb-1 block">
-                    Nome do arquivo (slug)
-                  </label>
-                  <Input
-                    value={slugName}
-                    onChange={(e) => setSlugName(e.target.value)}
-                    placeholder="nome-do-arquivo.jpg"
-                  />
+            {/* Pending files list */}
+            {pendingFiles.length > 0 && (
+              <div className="space-y-3">
+                <p className="text-sm text-muted-foreground">
+                  {pendingFiles.length} arquivo(s) selecionado(s)
+                </p>
+
+                <div className="space-y-2 max-h-64 overflow-y-auto">
+                  {pendingFiles.map((pf, index) => (
+                    <div key={index} className="flex items-center gap-2 bg-muted/50 rounded-lg p-2">
+                      <img
+                        src={URL.createObjectURL(pf.file)}
+                        alt={pf.file.name}
+                        className="w-10 h-10 rounded object-cover shrink-0"
+                      />
+                      <Input
+                        value={pf.slugName}
+                        onChange={(e) => updateSlug(index, e.target.value)}
+                        className="flex-1 h-8 text-xs"
+                        placeholder="nome-do-arquivo.jpg"
+                      />
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-8 w-8 p-0 text-muted-foreground hover:text-destructive"
+                        onClick={() => removePending(index)}
+                      >
+                        <X className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  ))}
                 </div>
-                <Button
-                  onClick={handleUpload}
-                  disabled={uploading || !slugName.trim()}
-                  className="self-end gap-2"
-                >
-                  {uploading ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <Upload className="w-4 h-4" />
-                  )}
-                  Fazer Upload
-                </Button>
+
+                {uploading && (
+                  <Progress value={uploadProgress} className="h-2" />
+                )}
+
+                <div className="flex gap-2">
+                  <Button
+                    onClick={handleUploadAll}
+                    disabled={uploading || pendingFiles.every((p) => !p.slugName.trim())}
+                    className="gap-2"
+                  >
+                    {uploading ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <Upload className="w-4 h-4" />
+                    )}
+                    Enviar {pendingFiles.length} arquivo(s)
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => setPendingFiles([])}
+                    disabled={uploading}
+                  >
+                    Limpar
+                  </Button>
+                </div>
               </div>
             )}
           </section>
