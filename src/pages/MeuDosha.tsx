@@ -638,8 +638,21 @@ const MeuDosha = () => {
                 <img src="https://static.wixstatic.com/media/b8f47f_105371e1ade24ccd9bd3406b83bd925e~mv2.png" alt="Akasha IA" className="w-8 h-8 object-contain" />
                 Falar com a Akasha IA
               </Link>
-              <Button variant="outline" asChild className="w-full">
-                <Link to="/teste-de-dosha">Refazer Teste</Link>
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={() => {
+                  if (result) {
+                    localStorage.setItem('dosha_test_info', JSON.stringify({
+                      nome: result.nome || '',
+                      idade: result.idade?.toString() || '',
+                      nivel: result.conhecimentoAyurveda || 'Iniciante',
+                    }));
+                  }
+                  window.location.href = '/teste-de-dosha';
+                }}
+              >
+                Refazer Teste
               </Button>
             </div>
           </TabsContent>
