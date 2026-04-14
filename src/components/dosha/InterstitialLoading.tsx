@@ -2,8 +2,6 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Mail, Video, BarChart, LayoutGrid } from "lucide-react";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 
 const LOGO_URL = "https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/logo-positivo-png-certo.png";
 const IMG1_URL = "https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/1.jpeg";
@@ -45,7 +43,7 @@ const scenes = [
         <img
           src={IMG2_URL}
           alt="Agravamento"
-          className="max-w-[280px] md:max-w-md rounded-2xl"
+          className="max-w-[224px] md:max-w-[320px] rounded-2xl"
         />
       </div>
     ),
@@ -117,9 +115,7 @@ const InterstitialLoading = ({ redirectTo }: Props) => {
   const scene = scenes[sceneIndex];
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <Header />
-      <main className="flex-1 flex flex-col items-center justify-center px-6 py-16">
+    <div className="flex flex-col items-center justify-center px-6 py-16 min-h-[60vh]">
         {/* Progress dots */}
         <div className="flex gap-2 mb-8">
           {scenes.map((_, i) => (
@@ -147,8 +143,6 @@ const InterstitialLoading = ({ redirectTo }: Props) => {
             </p>
           </motion.div>
         </AnimatePresence>
-      </main>
-      <Footer />
     </div>
   );
 };
