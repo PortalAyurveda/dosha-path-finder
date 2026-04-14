@@ -100,8 +100,7 @@ const Header = () => {
         </Link>
 
         {/* RIGHT — Login or Profile */}
-        <TooltipProvider delayDuration={300}>
-          <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1.5">
             {doshaResult ? (
               <Link
                 to={profileLink}
@@ -135,7 +134,6 @@ const Header = () => {
               </Link>
             )}
           </div>
-        </TooltipProvider>
       </div>
     </header>
   );
