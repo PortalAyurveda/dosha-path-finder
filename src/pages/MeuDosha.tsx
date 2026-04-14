@@ -419,6 +419,7 @@ const MeuDosha = () => {
       }
 
       setResult(registro);
+      setRegistroUuid(registro.id);
 
       if (registro.doshaprincipal) {
         const { data: glossData } = await supabase
