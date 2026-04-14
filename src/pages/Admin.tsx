@@ -28,8 +28,9 @@ interface StorageFile {
 }
 
 const Admin = () => {
-  const { user, role, loading: authLoading } = useUser();
+  const { user, role, loading: authLoading, roleLoading } = useUser();
   const navigate = useNavigate();
+  const accessLoading = authLoading || (!!user && roleLoading);
 
   const [files, setFiles] = useState<StorageFile[]>([]);
   const [loadingFiles, setLoadingFiles] = useState(true);
@@ -45,10 +46,10 @@ const Admin = () => {
 
   // Auth guard
   useEffect(() => {
-    if (!authLoading && (!user || role !== "admin")) {
+    if (!accessLoading && (!user || role !== "admin")) {
       navigate("/", { replace: true });
     }
-  }, [authLoading, user, role, navigate]);
+  }, [accessLoading, user, role, navigate]);
 
   const fetchFiles = useCallback(async () => {
     setLoadingFiles(true);
@@ -75,8 +76,8 @@ const Admin = () => {
   }, []);
 
   useEffect(() => {
-    if (role === "admin") fetchFiles();
-  }, [role, fetchFiles]);
+    if (!accessLoading && role === "admin") fetchFiles();
+  }, [accessLoading, role, fetchFiles]);
 
   // File selection
   const handleFileSelect = (file: File) => {
@@ -138,7 +139,7 @@ const Admin = () => {
   };
 
   // Loading / auth guard skeleton
-  if (authLoading || (!user || role !== "admin")) {
+  if (accessLoading) {
     return (
       <div className="min-h-screen bg-background p-8">
         <div className="max-w-5xl mx-auto space-y-6">
@@ -152,6 +153,10 @@ const Admin = () => {
         </div>
       </div>
     );
+  }
+
+  if (!user || role !== "admin") {
+    return null;
   }
 
   return (

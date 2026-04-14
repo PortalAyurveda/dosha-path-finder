@@ -31,6 +31,7 @@ interface UserContextType {
   doshaResult: DoshaResult | null;
   role: UserRole;
   loading: boolean;
+  roleLoading: boolean;
   signOut: () => Promise<void>;
   refreshProfile: () => Promise<void>;
   claimTest: (idPublico: string) => Promise<boolean>;
@@ -46,6 +47,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const [doshaResult, setDoshaResult] = useState<DoshaResult | null>(null);
   const [role, setRole] = useState<UserRole>(null);
   const [loading, setLoading] = useState(true);
+  const [roleLoading, setRoleLoading] = useState(true);
 
   const fetchProfile = async (userId: string) => {
     const { data, error } = await supabase
@@ -60,17 +62,25 @@ export function UserProvider({ children }: { children: ReactNode }) {
   };
 
   const fetchRole = async (userId: string) => {
+    setRoleLoading(true);
+
     const { data, error } = await supabase
       .from("perfis")
       .select("role")
       .eq("id", userId)
-      .single();
+      .maybeSingle();
 
     if (!error && data) {
       setRole((data.role as UserRole) ?? 'user');
     } else {
+      if (error) {
+        console.error("[UserContext] Erro ao buscar role do usuário", error);
+      }
+
       setRole('user');
     }
+
+    setRoleLoading(false);
   };
 
   const fetchDoshaByEmail = async (email: string) => {
@@ -139,72 +149,88 @@ export function UserProvider({ children }: { children: ReactNode }) {
   };
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, newSession) => {
-        setSession(newSession);
-        setUser(newSession?.user ?? null);
+    let isMounted = true;
 
-        if (newSession?.user) {
-          setTimeout(() => fetchProfile(newSession.user.id), 0);
-          setTimeout(() => fetchRole(newSession.user.id), 0);
-          if (newSession.user.email) {
-            setTimeout(() => fetchDoshaByEmail(newSession.user.email!), 0);
+    const defer = (task: () => Promise<void>) =>
+      new Promise<void>((resolve) => {
+        setTimeout(() => {
+          void task().finally(resolve);
+        }, 0);
+      });
+
+    const hydrateAuthenticatedUser = async (currentUser: User) => {
+      await Promise.allSettled([
+        defer(() => fetchProfile(currentUser.id)),
+        defer(() => fetchRole(currentUser.id)),
+        currentUser.email ? defer(() => fetchDoshaByEmail(currentUser.email)) : Promise.resolve(),
+      ]);
+    };
+
+    const syncAuthState = async (event: string | null, nextSession: Session | null) => {
+      if (!isMounted) return;
+
+      setLoading(true);
+      setSession(nextSession);
+      setUser(nextSession?.user ?? null);
+
+      if (nextSession?.user) {
+        await hydrateAuthenticatedUser(nextSession.user);
+
+        if (event === "SIGNED_IN") {
+          const pendingId = localStorage.getItem("pendingClaimIdPublico");
+          const visitorId = localStorage.getItem("visitorId");
+
+          if (pendingId) {
+            setTimeout(async () => {
+              await claimTest(pendingId);
+              localStorage.removeItem("pendingClaimIdPublico");
+            }, 500);
           }
 
-          if (event === "SIGNED_IN") {
-            const pendingId = localStorage.getItem("pendingClaimIdPublico");
-            const visitorId = localStorage.getItem("visitorId");
-
-            if (pendingId) {
-              setTimeout(async () => {
-                await claimTest(pendingId);
-                localStorage.removeItem("pendingClaimIdPublico");
-              }, 500);
-            }
-
-            if (visitorId) {
-              setTimeout(async () => {
-                await supabase
-                  .from("user_profiles")
-                  .update({ visitor_id: visitorId } as any)
-                  .eq("id", newSession.user.id);
-              }, 500);
-            }
+          if (visitorId) {
+            setTimeout(async () => {
+              await supabase
+                .from("user_profiles")
+                .update({ visitor_id: visitorId } as any)
+                .eq("id", nextSession.user.id);
+            }, 500);
           }
-        } else {
-          setProfile(null);
-          // Keep doshaResult from localStorage if exists
-        }
-
-        setLoading(false);
-      }
-    );
-
-    supabase.auth.getSession().then(({ data: { session: existingSession } }) => {
-      if (existingSession) {
-        setSession(existingSession);
-        setUser(existingSession.user);
-        fetchProfile(existingSession.user.id);
-        fetchRole(existingSession.user.id);
-        if (existingSession.user.email) {
-          fetchDoshaByEmail(existingSession.user.email);
         }
       } else {
-        // No auth session — try loading from localStorage
+        setProfile(null);
+        setRole(null);
+        setRoleLoading(false);
+
         const storedId = localStorage.getItem("activeDoshaId");
         if (storedId) {
-          setDoshaResultFromId(storedId);
+          await setDoshaResultFromId(storedId);
+        } else {
+          setDoshaResult(null);
         }
       }
-      setLoading(false);
+
+      if (isMounted) {
+        setLoading(false);
+      }
+    };
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, newSession) => {
+      void syncAuthState(event, newSession);
     });
 
-    return () => subscription.unsubscribe();
+    void supabase.auth.getSession().then(({ data: { session: existingSession } }) => {
+      void syncAuthState(null, existingSession);
+    });
+
+    return () => {
+      isMounted = false;
+      subscription.unsubscribe();
+    };
   }, []);
 
   return (
     <UserContext.Provider
-      value={{ user, session, profile, doshaResult, role, loading, signOut, refreshProfile, claimTest, setDoshaResultFromId }}
+      value={{ user, session, profile, doshaResult, role, loading, roleLoading, signOut, refreshProfile, claimTest, setDoshaResultFromId }}
     >
       {children}
     </UserContext.Provider>
