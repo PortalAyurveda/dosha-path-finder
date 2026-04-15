@@ -45,7 +45,11 @@ const [step, setStep] = useState(0);
   const [interstitialTarget, setInterstitialTarget] = useState<string | null>(null);
 
   // Info from Hero (localStorage)
-  const [info, setInfo] = useState({ nome: '', idade: '', nivel: 'Iniciante', email: '', altura: '', peso: '' });
+  const [info, setInfo] = useState({ nome: '', idade: '', nivel: 'Iniciante', email: '', altura: '', peso: '', estado: '', cidade: '', paisCidade: '' });
+  const [moraFora, setMoraFora] = useState(false);
+  const [estados, setEstados] = useState<{ sigla: string; nome: string }[]>([]);
+  const [cidades, setCidades] = useState<{ nome: string }[]>([]);
+  const [loadingCidades, setLoadingCidades] = useState(false);
 
   useEffect(() => {
     try {
@@ -55,7 +59,12 @@ const [step, setStep] = useState(0);
         setInfo(prev => ({ ...prev, nome: parsed.nome || '', idade: parsed.idade || '', nivel: parsed.nivel || 'Iniciante' }));
       }
     } catch {}
-  }, []);
+
+    // Fetch estados from IBGE
+    fetch('https://servicodados.ibge.gov.br/api/v1/localidades/estados?orderBy=nome')
+      .then(r => r.json())
+      .then(data => setEstados(data.map((e: any) => ({ sigla: e.sigla, nome: e.nome }))))
+      .catch(() => {});
 
   // Multi-select answers: each question can have multiple selected option indices
   const [answers, setAnswers] = useState<Record<string, number[]>>({});
