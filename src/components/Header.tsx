@@ -99,7 +99,7 @@ const Header = () => {
 
         {/* RIGHT — Akasha + Login/Profile */}
         <div className="flex items-center gap-1.5">
-            {doshaResult && (
+            {doshaResult ? (
               <>
                 <Link
                   to={akashaLink}
