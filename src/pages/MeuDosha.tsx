@@ -59,6 +59,31 @@ const PIE_COLORS: Record<string, string> = {
   Kapha: '#22C55E',
 };
 
+const DoshaMiniPie = ({ vata, pitta, kapha, size = 18 }: { vata: number; pitta: number; kapha: number; size?: number }) => {
+  const total = (vata || 0) + (pitta || 0) + (kapha || 0);
+  if (total === 0) return null;
+  const r = size / 2;
+  const slices = [
+    { pct: (vata || 0) / total, color: PIE_COLORS.Vata },
+    { pct: (pitta || 0) / total, color: PIE_COLORS.Pitta },
+    { pct: (kapha || 0) / total, color: PIE_COLORS.Kapha },
+  ];
+  let cumAngle = -90;
+  const paths = slices.map((s, i) => {
+    const angle = s.pct * 360;
+    const startRad = (cumAngle * Math.PI) / 180;
+    const endRad = ((cumAngle + angle) * Math.PI) / 180;
+    cumAngle += angle;
+    const x1 = r + r * Math.cos(startRad);
+    const y1 = r + r * Math.sin(startRad);
+    const x2 = r + r * Math.cos(endRad);
+    const y2 = r + r * Math.sin(endRad);
+    const large = angle > 180 ? 1 : 0;
+    return <path key={i} d={`M${r},${r} L${x1},${y1} A${r},${r} 0 ${large} 1 ${x2},${y2} Z`} fill={s.color} />;
+  });
+  return <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="shrink-0 rounded-full">{paths}</svg>;
+};
+
 const DOSHA_ROUTES: Record<string, string> = {
   Vata: '/biblioteca/vata',
   Pitta: '/biblioteca/pitta',
@@ -542,13 +567,16 @@ const MeuDosha = () => {
           });
         }}>
           <TabsList className="w-full grid grid-cols-5 h-auto">
-            <TabsTrigger value="perfil" className="text-xs sm:text-sm py-2">Perfil</TabsTrigger>
+            <TabsTrigger value="perfil" className="text-xs sm:text-sm py-2 flex items-center gap-1">
+              <DoshaMiniPie vata={result.vatascore ?? 0} pitta={result.pittascore ?? 0} kapha={result.kaphascore ?? 0} />
+              Perfil
+            </TabsTrigger>
             <TabsTrigger value="metricas" className="text-xs sm:text-sm py-2">Métricas</TabsTrigger>
             <TabsTrigger value="artigos" className="text-xs sm:text-sm py-2">Artigos</TabsTrigger>
             <TabsTrigger value="videos" className="text-xs sm:text-sm py-2">Vídeos</TabsTrigger>
-            <TabsTrigger value="akasha" className="text-xs sm:text-sm py-2 flex items-center gap-1.5">
-              <img src="https://static.wixstatic.com/media/b8f47f_105371e1ade24ccd9bd3406b83bd925e~mv2.png" alt="" className="w-4 h-4 object-contain" />
+            <TabsTrigger value="akasha" className="text-xs sm:text-sm py-2 flex items-center gap-1">
               Akasha
+              <img src="https://static.wixstatic.com/media/b8f47f_105371e1ade24ccd9bd3406b83bd925e~mv2.png" alt="" className="w-4 h-4 object-contain" />
             </TabsTrigger>
           </TabsList>
 
