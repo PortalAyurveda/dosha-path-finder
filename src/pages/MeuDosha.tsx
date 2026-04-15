@@ -559,12 +559,12 @@ const MeuDosha = () => {
         </div>
 
         {/* ===== TABS ===== */}
-        <Tabs defaultValue="perfil" className="w-full" onValueChange={(val) => {
-          // Prevent scroll jump when switching tabs (especially on desktop)
+        <Tabs defaultValue="perfil" className="w-full" onValueChange={() => {
           const scrollY = window.scrollY;
-          requestAnimationFrame(() => {
-            window.scrollTo({ top: scrollY, behavior: "instant" as ScrollBehavior });
-          });
+          const restore = () => window.scrollTo({ top: scrollY, behavior: "instant" as ScrollBehavior });
+          requestAnimationFrame(restore);
+          setTimeout(restore, 0);
+          setTimeout(restore, 50);
         }}>
           <TabsList className="w-full grid grid-cols-5 h-auto">
             <TabsTrigger value="perfil" className="text-xs sm:text-sm py-2 flex items-center gap-1">
