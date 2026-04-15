@@ -690,7 +690,7 @@ const MeuDosha = () => {
           </TabsContent>
 
           {/* ===== TAB: MÉTRICAS ===== */}
-          <TabsContent value="metricas">
+          <TabsContent value="metricas" tabIndex={-1}>
             <MetricasTab registroUuid={registroUuid} insights={insights} isLoading={insightsLoading} />
           </TabsContent>
 
