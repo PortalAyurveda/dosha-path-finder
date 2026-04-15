@@ -22,6 +22,9 @@ export function getTransformedImageUrl(
   const bucket = rest.slice(0, slashIdx);
   const filePath = rest.slice(slashIdx + 1);
 
+  // Only apply transforms to portal_capas bucket
+  if (bucket !== "portal_capas") return url;
+
   const { data } = supabase.storage
     .from(bucket)
     .getPublicUrl(filePath, { transform: { width, quality } });
