@@ -132,7 +132,7 @@ const Header = () => {
                 to={profileLink}
                 className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white backdrop-blur-sm hover:bg-white/90 transition-colors border border-border/30"
               >
-                <span className="text-xs sm:text-sm font-semibold text-gray-700 truncate max-w-[60px] sm:max-w-[100px]">
+                <span className="text-xs sm:text-sm font-semibold text-foreground truncate max-w-[60px] sm:max-w-[100px]">
                   {firstName}
                 </span>
                 <HeaderDoshaPie
