@@ -59,6 +59,7 @@ const PIE_COLORS: Record<string, string> = {
   Kapha: '#22C55E',
 };
 
+// Matches Recharts default: starts at 0° (3 o'clock), counterclockwise, order Vata→Pitta→Kapha
 const DoshaMiniPie = ({ vata, pitta, kapha, size = 18 }: { vata: number; pitta: number; kapha: number; size?: number }) => {
   const total = (vata || 0) + (pitta || 0) + (kapha || 0);
   if (total === 0) return null;
@@ -68,18 +69,19 @@ const DoshaMiniPie = ({ vata, pitta, kapha, size = 18 }: { vata: number; pitta: 
     { pct: (pitta || 0) / total, color: PIE_COLORS.Pitta },
     { pct: (kapha || 0) / total, color: PIE_COLORS.Kapha },
   ];
-  let cumAngle = -90;
+  // Start at 0° (3 o'clock), go counterclockwise (negative direction) to match Recharts
+  let cumAngle = 0;
   const paths = slices.map((s, i) => {
     const angle = s.pct * 360;
     const startRad = (cumAngle * Math.PI) / 180;
-    const endRad = ((cumAngle + angle) * Math.PI) / 180;
-    cumAngle += angle;
+    const endRad = ((cumAngle - angle) * Math.PI) / 180;
+    cumAngle -= angle;
     const x1 = r + r * Math.cos(startRad);
-    const y1 = r + r * Math.sin(startRad);
+    const y1 = r - r * Math.sin(startRad);
     const x2 = r + r * Math.cos(endRad);
-    const y2 = r + r * Math.sin(endRad);
+    const y2 = r - r * Math.sin(endRad);
     const large = angle > 180 ? 1 : 0;
-    return <path key={i} d={`M${r},${r} L${x1},${y1} A${r},${r} 0 ${large} 1 ${x2},${y2} Z`} fill={s.color} />;
+    return <path key={i} d={`M${r},${r} L${x1},${y1} A${r},${r} 0 ${large} 0 ${x2},${y2} Z`} fill={s.color} />;
   });
   return <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="shrink-0 rounded-full">{paths}</svg>;
 };

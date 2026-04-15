@@ -1,3 +1,4 @@
+import { getTransformedImageUrl } from "@/lib/imageTransform";
 import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { Helmet } from "react-helmet-async";
@@ -96,7 +97,7 @@ const BlogArticle = () => {
         {article.image_url && (
           <div className="aspect-video rounded-xl overflow-hidden mb-8">
             <img
-              src={article.image_url}
+              src={getTransformedImageUrl(article.image_url)}
               alt={article.title}
               className="w-full h-full object-cover"
             />

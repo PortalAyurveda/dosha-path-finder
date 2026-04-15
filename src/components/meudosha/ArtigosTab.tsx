@@ -1,3 +1,4 @@
+import { getTransformedImageUrl } from "@/lib/imageTransform";
 import { useState, useMemo, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
@@ -212,7 +213,7 @@ const ArtigosTab = ({ agravVataTags, agravPittaTags, agravKaphaTags, doshaprinci
                 {article.image_url && (
                   <div className="aspect-video overflow-hidden">
                     <img
-                      src={article.image_url}
+                      src={getTransformedImageUrl(article.image_url)}
                       alt={article.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       loading="lazy"
