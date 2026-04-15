@@ -534,7 +534,7 @@ const MeuDosha = () => {
         </div>
 
         {/* ===== TABS ===== */}
-        <Tabs defaultValue="perfil" className="w-full">
+        <Tabs defaultValue="perfil" className="w-full" onValueChange={() => { /* no scroll */ }}>
           <TabsList className="w-full grid grid-cols-5 h-auto">
             <TabsTrigger value="perfil" className="text-xs sm:text-sm py-2">Perfil</TabsTrigger>
             <TabsTrigger value="metricas" className="text-xs sm:text-sm py-2">Métricas</TabsTrigger>

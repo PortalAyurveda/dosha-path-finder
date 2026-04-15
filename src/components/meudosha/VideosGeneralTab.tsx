@@ -1,7 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
+import { slugify } from "@/lib/slugify";
 import VideoResultCard from "@/components/biblioteca/VideoResultCard";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface VideosGeneralTabProps {
   doshaprincipal: string | null;
@@ -22,6 +25,8 @@ function parseDoshas(doshaprincipal: string | null): string[] {
 const VideosGeneralTab = ({ doshaprincipal }: VideosGeneralTabProps) => {
   const doshas = parseDoshas(doshaprincipal);
   const videosPerDosha = doshas.length > 1 ? 3 : 3;
+  const navigate = useNavigate();
+  const isMobile = useIsMobile();
 
   const { data: videos, isLoading } = useQuery({
     queryKey: ["meudosha-videos-general", doshaprincipal],
