@@ -65,6 +65,20 @@ const [step, setStep] = useState(0);
       .then(r => r.json())
       .then(data => setEstados(data.map((e: any) => ({ sigla: e.sigla, nome: e.nome }))))
       .catch(() => {});
+  }, []);
+
+  // Fetch cidades when estado changes
+  useEffect(() => {
+    if (!info.estado || moraFora) return;
+    setLoadingCidades(true);
+    setCidades([]);
+    setInfo(prev => ({ ...prev, cidade: '' }));
+    fetch(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${info.estado}/municipios?orderBy=nome`)
+      .then(r => r.json())
+      .then(data => setCidades(data.map((c: any) => ({ nome: c.nome }))))
+      .catch(() => {})
+      .finally(() => setLoadingCidades(false));
+  }, [info.estado, moraFora]);
 
   // Multi-select answers: each question can have multiple selected option indices
   const [answers, setAnswers] = useState<Record<string, number[]>>({});
