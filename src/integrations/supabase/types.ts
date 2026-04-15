@@ -1806,6 +1806,30 @@ export type Database = {
         }
         Relationships: []
       }
+      user_content_views: {
+        Row: {
+          content_id: string
+          content_type: string
+          id: string
+          user_id: string
+          viewed_at: string
+        }
+        Insert: {
+          content_id: string
+          content_type: string
+          id?: string
+          user_id: string
+          viewed_at?: string
+        }
+        Update: {
+          content_id?: string
+          content_type?: string
+          id?: string
+          user_id?: string
+          viewed_at?: string
+        }
+        Relationships: []
+      }
       user_profiles: {
         Row: {
           created_at: string
