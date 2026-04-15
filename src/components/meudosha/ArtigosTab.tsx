@@ -67,6 +67,9 @@ const ArtigosTab = ({ agravVataTags, agravPittaTags, agravKaphaTags, doshaprinci
       if (error) throw error;
       return data || [];
     },
+    staleTime: 15 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+    refetchOnWindowFocus: false,
   });
 
   const allSymptoms = useMemo(() => [

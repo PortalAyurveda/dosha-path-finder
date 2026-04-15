@@ -88,6 +88,9 @@ const VideosPersonalizadoTab = ({
       return new Set((data as any[]).map((r: any) => r.content_id));
     },
     enabled: !!user,
+    staleTime: 15 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+    refetchOnWindowFocus: false,
   });
 
   const { data: matchedVideos, isLoading } = useQuery({
@@ -193,6 +196,9 @@ const VideosPersonalizadoTab = ({
       return result;
     },
     enabled: allSymptoms.length > 0,
+    staleTime: 15 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+    refetchOnWindowFocus: false,
   });
 
   const markAsViewed = async (videoId: string) => {

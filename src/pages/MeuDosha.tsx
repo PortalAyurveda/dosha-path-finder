@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import PageContainer from "@/components/PageContainer";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2, ChevronDown, ChevronUp } from "lucide-react";
@@ -411,106 +411,99 @@ const CustomPieLabel = ({ cx, cy, midAngle, outerRadius, name, value }: any) => 
   );
 };
 
+const CACHE_STALE = 30 * 60 * 1000;
+const CACHE_GC = 60 * 60 * 1000;
+
 const MeuDosha = () => {
   const [searchParams] = useSearchParams();
   const id = searchParams.get('id');
-  const [loading, setLoading] = useState(true);
-  const [result, setResult] = useState<DoshaResult | null>(null);
-  const [glossario, setGlossario] = useState<PortalGlossario | null>(null);
-  const [registroUuid, setRegistroUuid] = useState<string | null>(null);
+  const queryClient = useQueryClient();
 
-  // Pre-fetch insights RPC (fires on mount, cached for tab switch)
+  // ── Registro (doshas_registros) ──
+  const { data: registroRaw, isLoading: registroLoading } = useQuery({
+    queryKey: ['meudosha-registro', id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('doshas_registros')
+        .select('id, nome, doshaprincipal, vatascore, pittascore, kaphascore, agniPrincipal, agravVataTags, agravPittaTags, agravKaphaTags, imc, idade, conhecimentoAyurveda')
+        .eq('idPublico', id!)
+        .maybeSingle();
+      if (error || !data) return null;
+      return data;
+    },
+    enabled: !!id,
+    staleTime: CACHE_STALE,
+    gcTime: CACHE_GC,
+    refetchOnWindowFocus: false,
+  });
+
+  const result: DoshaResult | null = registroRaw ? {
+    nome: registroRaw.nome,
+    doshaprincipal: registroRaw.doshaprincipal,
+    vatascore: registroRaw.vatascore,
+    pittascore: registroRaw.pittascore,
+    kaphascore: registroRaw.kaphascore,
+    agniPrincipal: registroRaw.agniPrincipal,
+    agravVataTags: registroRaw.agravVataTags,
+    agravPittaTags: registroRaw.agravPittaTags,
+    agravKaphaTags: registroRaw.agravKaphaTags,
+    imc: registroRaw.imc,
+    idade: registroRaw.idade,
+    conhecimentoAyurveda: registroRaw.conhecimentoAyurveda,
+  } : null;
+  const registroUuid = registroRaw?.id || null;
+
+  // ── Glossário (portal_glossario) ──
+  const { data: glossario } = useQuery({
+    queryKey: ['meudosha-glossario', result?.doshaprincipal],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('portal_glossario')
+        .select('*')
+        .eq('doshanome', result!.doshaprincipal!)
+        .maybeSingle();
+      return (data as unknown as PortalGlossario) || null;
+    },
+    enabled: !!result?.doshaprincipal,
+    staleTime: CACHE_STALE,
+    gcTime: CACHE_GC,
+    refetchOnWindowFocus: false,
+  });
+
+  // ── Insights RPC ──
   const { data: insights, isLoading: insightsLoading } = useQuery({
     queryKey: ['insights-ayurvedicos', registroUuid],
     queryFn: async () => {
       const { data, error } = await supabase.rpc('gerar_insights_ayurvedicos', { p_registro_id: registroUuid! });
-      console.log("Insights retornados:", data, "Erro:", error);
       return (data as unknown as InsightAyurvedico[]) || [];
     },
     enabled: !!registroUuid,
-    staleTime: 5 * 60 * 1000,
+    staleTime: CACHE_STALE,
+    gcTime: CACHE_GC,
+    refetchOnWindowFocus: false,
   });
 
+  // Realtime: update query cache on row changes
   useEffect(() => {
-    if (!id) { setLoading(false); return; }
-
-    const fetchData = async () => {
-      const { data: registro, error } = await supabase
-        .from('doshas_registros')
-        .select('id, nome, doshaprincipal, vatascore, pittascore, kaphascore, agniPrincipal, agravVataTags, agravPittaTags, agravKaphaTags, imc, idade, conhecimentoAyurveda')
-        .eq('idPublico', id)
-        .maybeSingle();
-
-      if (error || !registro) {
-        setLoading(false);
-        return;
-      }
-
-      setResult(registro);
-      setRegistroUuid(registro.id);
-
-      if (registro.doshaprincipal) {
-        const { data: glossData } = await supabase
-          .from('portal_glossario')
-          .select('*')
-          .eq('doshanome', registro.doshaprincipal)
-          .maybeSingle();
-        if (glossData) setGlossario(glossData as unknown as PortalGlossario);
-      }
-      setLoading(false);
-    };
-
-    fetchData();
-
-    // Realtime: listen for updates to this specific row
+    if (!id) return;
     const channel = supabase
       .channel(`meu-dosha-${id}`)
-      .on(
-        'postgres_changes',
-        {
-          event: 'UPDATE',
-          schema: 'public',
-          table: 'doshas_registros',
-          filter: `idPublico=eq.${id}`,
-        },
-        (payload) => {
-          const updated = payload.new as any;
-          setResult({
-            nome: updated.nome,
-            doshaprincipal: updated.doshaprincipal,
-            vatascore: updated.vatascore,
-            pittascore: updated.pittascore,
-            kaphascore: updated.kaphascore,
-            agniPrincipal: updated.agniPrincipal,
-            agravVataTags: updated.agravVataTags,
-            agravPittaTags: updated.agravPittaTags,
-            agravKaphaTags: updated.agravKaphaTags,
-            imc: updated.imc,
-            idade: updated.idade,
-            conhecimentoAyurveda: updated.conhecimentoAyurveda,
-          });
-
-          // Re-fetch glossario if dosha changed
-          if (updated.doshaprincipal) {
-            supabase
-              .from('portal_glossario')
-              .select('*')
-              .eq('doshanome', updated.doshaprincipal)
-              .maybeSingle()
-              .then(({ data: glossData }) => {
-                if (glossData) setGlossario(glossData as unknown as PortalGlossario);
-              });
-          }
-        }
-      )
+      .on('postgres_changes', {
+        event: 'UPDATE',
+        schema: 'public',
+        table: 'doshas_registros',
+        filter: `idPublico=eq.${id}`,
+      }, (payload) => {
+        queryClient.setQueryData(['meudosha-registro', id], (old: any) => ({
+          ...(old || {}),
+          ...payload.new,
+        }));
+      })
       .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [id, queryClient]);
 
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [id]);
-
-  if (loading) {
+  if (registroLoading) {
     return (
       <PageContainer title="Meu Dosha" description="Carregando resultado...">
         <div className="flex items-center justify-center min-h-[60vh]">
@@ -559,13 +552,7 @@ const MeuDosha = () => {
         </div>
 
         {/* ===== TABS ===== */}
-        <Tabs defaultValue="perfil" className="w-full" onValueChange={() => {
-          const scrollY = window.scrollY;
-          const restore = () => window.scrollTo({ top: scrollY, behavior: "instant" as ScrollBehavior });
-          requestAnimationFrame(restore);
-          setTimeout(restore, 0);
-          setTimeout(restore, 50);
-        }}>
+        <Tabs defaultValue="perfil" className="w-full">
           <TabsList className="w-full grid grid-cols-5 h-auto">
             <TabsTrigger value="perfil" className="text-xs sm:text-sm py-2 flex items-center gap-1">
               <DoshaMiniPie vata={result.vatascore ?? 0} pitta={result.pittascore ?? 0} kapha={result.kaphascore ?? 0} />

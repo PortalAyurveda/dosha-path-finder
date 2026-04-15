@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Heart } from "lucide-react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/contexts/UserContext";
 import { cn } from "@/lib/utils";
@@ -12,38 +13,48 @@ interface HeartButtonProps {
 
 const HeartButton = ({ contentType, contentId, className }: HeartButtonProps) => {
   const { user } = useUser();
-  const [liked, setLiked] = useState(false);
+  const queryClient = useQueryClient();
   const [animating, setAnimating] = useState(false);
-  const [likeCount, setLikeCount] = useState(0);
 
-  useEffect(() => {
-    // Get count
-    supabase
-      .from("content_likes" as any)
-      .select("id", { count: "exact", head: true })
-      .eq("content_type", contentType)
-      .eq("content_id", contentId)
-      .then(({ count }) => setLikeCount(count || 0));
-
-    // Check if user liked
-    if (user) {
-      supabase
+  const { data: likeData } = useQuery({
+    queryKey: ["content-like", contentType, contentId, user?.id || "anon"],
+    queryFn: async () => {
+      const { count } = await supabase
         .from("content_likes" as any)
-        .select("id")
-        .eq("user_id", user.id)
+        .select("id", { count: "exact", head: true })
         .eq("content_type", contentType)
-        .eq("content_id", contentId)
-        .maybeSingle()
-        .then(({ data }) => setLiked(!!data));
-    }
-  }, [user, contentType, contentId]);
+        .eq("content_id", contentId);
+
+      let liked = false;
+      if (user) {
+        const { data } = await supabase
+          .from("content_likes" as any)
+          .select("id")
+          .eq("user_id", user.id)
+          .eq("content_type", contentType)
+          .eq("content_id", contentId)
+          .maybeSingle();
+        liked = !!data;
+      }
+
+      return { count: count || 0, liked };
+    },
+    staleTime: 15 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+    refetchOnWindowFocus: false,
+  });
+
+  const liked = likeData?.liked ?? false;
+  const likeCount = likeData?.count ?? 0;
 
   const toggle = async () => {
     if (!user) return;
 
+    const cacheKey = ["content-like", contentType, contentId, user.id];
+
     if (liked) {
-      setLiked(false);
-      setLikeCount((c) => Math.max(0, c - 1));
+      // Optimistic update
+      queryClient.setQueryData(cacheKey, { count: Math.max(0, likeCount - 1), liked: false });
       await supabase
         .from("content_likes" as any)
         .delete()
@@ -51,8 +62,7 @@ const HeartButton = ({ contentType, contentId, className }: HeartButtonProps) =>
         .eq("content_type", contentType)
         .eq("content_id", contentId);
     } else {
-      setLiked(true);
-      setLikeCount((c) => c + 1);
+      queryClient.setQueryData(cacheKey, { count: likeCount + 1, liked: true });
       setAnimating(true);
       setTimeout(() => setAnimating(false), 600);
       await supabase
@@ -82,11 +92,9 @@ const HeartButton = ({ contentType, contentId, className }: HeartButtonProps) =>
           )}
         />
         {animating && (
-          <>
-            <span className="absolute inset-0 animate-ping">
-              <Heart className="h-5 w-5 fill-red-500 text-red-500 opacity-40" />
-            </span>
-          </>
+          <span className="absolute inset-0 animate-ping">
+            <Heart className="h-5 w-5 fill-red-500 text-red-500 opacity-40" />
+          </span>
         )}
       </span>
       {likeCount > 0 && (
