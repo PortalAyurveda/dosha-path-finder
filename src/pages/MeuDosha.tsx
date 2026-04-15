@@ -10,6 +10,8 @@ import { cn } from "@/lib/utils";
 import MetricasTab from "@/components/meudosha/MetricasTab";
 import type { InsightAyurvedico } from "@/components/meudosha/MetricasTab";
 import EmBreveTab from "@/components/meudosha/EmBreveTab";
+import VideosTab from "@/components/meudosha/VideosTab";
+import AkashaTab from "@/components/meudosha/AkashaTab";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 
 interface DoshaResult {
@@ -538,7 +540,7 @@ const MeuDosha = () => {
             <TabsTrigger value="metricas" className="text-xs sm:text-sm py-2">Métricas</TabsTrigger>
             <TabsTrigger value="artigos" className="text-xs sm:text-sm py-2">Artigos</TabsTrigger>
             <TabsTrigger value="videos" className="text-xs sm:text-sm py-2">Vídeos</TabsTrigger>
-            <TabsTrigger value="akasha" className="text-xs sm:text-sm py-2">Akasha</TabsTrigger>
+            <TabsTrigger value="akasha" className="text-xs sm:text-sm py-2">Akasha ✨</TabsTrigger>
           </TabsList>
 
           {/* ===== TAB: PERFIL ===== */}
@@ -631,13 +633,6 @@ const MeuDosha = () => {
             {/* Links */}
             <div className="space-y-3 pb-8">
               <h2 className="font-serif font-bold text-foreground text-lg text-center">O que deseja fazer?</h2>
-              <Link
-                to={`/akasha?id=${id}`}
-                className="flex items-center justify-center gap-3 w-full rounded-2xl bg-akasha text-white py-4 px-6 font-bold text-base shadow-lg hover:opacity-90 transition-opacity"
-              >
-                <img src="https://static.wixstatic.com/media/b8f47f_105371e1ade24ccd9bd3406b83bd925e~mv2.png" alt="Akasha IA" className="w-8 h-8 object-contain" />
-                Falar com a Akasha IA
-              </Link>
               <Button
                 variant="outline"
                 className="w-full"
@@ -662,15 +657,35 @@ const MeuDosha = () => {
             <MetricasTab registroUuid={registroUuid} insights={insights} isLoading={insightsLoading} />
           </TabsContent>
 
-          {/* ===== TABS EM BREVE ===== */}
+          {/* ===== TAB: ARTIGOS ===== */}
           <TabsContent value="artigos">
             <EmBreveTab label="Artigos Personalizados" />
           </TabsContent>
+
+          {/* ===== TAB: VÍDEOS ===== */}
           <TabsContent value="videos">
-            <EmBreveTab label="Vídeos Recomendados" />
+            <VideosTab
+              doshaprincipal={result.doshaprincipal}
+              agravVataTags={result.agravVataTags}
+              agravPittaTags={result.agravPittaTags}
+              agravKaphaTags={result.agravKaphaTags}
+            />
           </TabsContent>
+
+          {/* ===== TAB: AKASHA ===== */}
           <TabsContent value="akasha">
-            <EmBreveTab label="Akasha IA" />
+            <AkashaTab
+              idPublico={id}
+              nome={result.nome}
+              doshaprincipal={result.doshaprincipal}
+              imc={result.imc}
+              idade={result.idade}
+              vatascore={result.vatascore}
+              pittascore={result.pittascore}
+              kaphascore={result.kaphascore}
+              agniPrincipal={result.agniPrincipal}
+              conhecimentoAyurveda={result.conhecimentoAyurveda}
+            />
           </TabsContent>
         </Tabs>
       </div>

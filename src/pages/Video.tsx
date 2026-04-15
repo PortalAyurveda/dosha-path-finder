@@ -35,7 +35,9 @@ const Video = () => {
   const { slug } = useParams<{ slug: string }>();
   const location = useLocation();
   const navigate = useNavigate();
-  const [startSeconds, setStartSeconds] = useState<number | null>(null);
+  const searchParams = new URLSearchParams(location.search);
+  const initialTime = searchParams.get("t");
+  const [startSeconds, setStartSeconds] = useState<number | null>(initialTime ? parseInt(initialTime, 10) : null);
 
   // videoId can come from router state (internal nav) or we resolve from slug
   const stateVideoId = (location.state as { videoId?: string })?.videoId;

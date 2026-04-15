@@ -15,7 +15,6 @@ const Header = () => {
   const isActive = (path: string) => location.pathname === path;
 
   const doshaId = searchParams.get("id");
-  const showAkasha = Boolean(doshaResult || user);
   const akashaId = doshaResult?.idPublico || doshaId || localStorage.getItem("activeDoshaId");
   const akashaLink = akashaId ? `/akasha?id=${akashaId}` : "/akasha";
 
@@ -25,7 +24,6 @@ const Header = () => {
     { label: "Blog", to: "/blog" },
     { label: "Cursos", to: "/cursos" },
     { label: "Terapeutas", to: "/terapeutas-do-brasil" },
-    ...(showAkasha ? [{ label: "✨ Akasha IA", to: akashaLink }] : []),
   ];
 
   const firstName = doshaResult?.nome?.split(" ")[0] 
@@ -59,11 +57,9 @@ const Header = () => {
                   to={link.to}
                   onClick={() => setOpen(false)}
                   className={`px-4 py-3 rounded-xl text-base font-medium transition-colors ${
-                    link.label.includes("Akasha")
-                      ? "bg-akasha/30 text-white font-bold border border-akasha/40"
-                      : isActive(link.to)
-                        ? "bg-white/20 text-white font-bold"
-                        : "text-white/70 hover:text-white hover:bg-white/10"
+                    isActive(link.to)
+                      ? "bg-white/20 text-white font-bold"
+                      : "text-white/70 hover:text-white hover:bg-white/10"
                   }`}
                 >
                   {link.label}
@@ -99,29 +95,47 @@ const Header = () => {
           />
         </Link>
 
-        {/* RIGHT — Login or Profile */}
+        {/* RIGHT — Akasha + Login/Profile */}
         <div className="flex items-center gap-1.5">
             {doshaResult ? (
-              <Link
-                to={profileLink}
-                className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/15 backdrop-blur-sm hover:bg-white/25 transition-colors border border-white/20"
-              >
-                <span className="text-xs sm:text-sm font-semibold text-white truncate max-w-[60px] sm:max-w-[100px]">
-                  {firstName}
-                </span>
-                <span className="flex items-center gap-0.5 sm:gap-1 text-[9px] sm:text-[11px] font-bold">
-                  <span style={{ color: "#93C5FD" }}>V:{doshaResult.vatascore ?? 0}</span>
-                  <span style={{ color: "#FCA5A5" }}>P:{doshaResult.pittascore ?? 0}</span>
-                  <span style={{ color: "#86EFAC" }}>K:{doshaResult.kaphascore ?? 0}</span>
-                </span>
-              </Link>
+              <>
+                <Link
+                  to={akashaLink}
+                  className="flex items-center justify-center w-9 h-9 rounded-full bg-akasha/20 text-akasha hover:bg-akasha/30 transition-colors"
+                  title="Akasha IA"
+                >
+                  <span className="text-sm">✨</span>
+                </Link>
+                <Link
+                  to={profileLink}
+                  className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/15 backdrop-blur-sm hover:bg-white/25 transition-colors border border-white/20"
+                >
+                  <span className="text-xs sm:text-sm font-semibold text-white truncate max-w-[60px] sm:max-w-[100px]">
+                    {firstName}
+                  </span>
+                  <span className="flex items-center gap-0.5 sm:gap-1 text-[9px] sm:text-[11px] font-bold">
+                    <span style={{ color: "#93C5FD" }}>V:{doshaResult.vatascore ?? 0}</span>
+                    <span style={{ color: "#FCA5A5" }}>P:{doshaResult.pittascore ?? 0}</span>
+                    <span style={{ color: "#86EFAC" }}>K:{doshaResult.kaphascore ?? 0}</span>
+                  </span>
+                </Link>
+              </>
             ) : user ? (
-              <Link
-                to="/meu-dosha"
-                className="flex items-center justify-center w-9 h-9 rounded-full bg-white/20 text-white font-bold text-sm hover:bg-white/30 transition-colors"
-              >
-                {userInitial.toUpperCase()}
-              </Link>
+              <>
+                <Link
+                  to={akashaLink}
+                  className="flex items-center justify-center w-9 h-9 rounded-full bg-akasha/20 text-akasha hover:bg-akasha/30 transition-colors"
+                  title="Akasha IA"
+                >
+                  <span className="text-sm">✨</span>
+                </Link>
+                <Link
+                  to="/meu-dosha"
+                  className="flex items-center justify-center w-9 h-9 rounded-full bg-white/20 text-white font-bold text-sm hover:bg-white/30 transition-colors"
+                >
+                  {userInitial.toUpperCase()}
+                </Link>
+              </>
             ) : (
               <Link to="/entrar">
                 <Button
