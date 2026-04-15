@@ -355,12 +355,14 @@ export type Database = {
           alimPitta: string | null
           alimVata: string | null
           altura: string | null
+          cidade: string | null
           conhecimentoAyurveda: string | null
           created_at: string
           diagn: string | null
           doshaprincipal: string | null
           email: string | null
           espiritual: string | null
+          estado: string | null
           id: string
           idade: number | null
           idPublico: string
@@ -368,6 +370,7 @@ export type Database = {
           kaphascore: number | null
           mentoria: string | null
           nome: string | null
+          pais: string | null
           peso: string | null
           pittascore: number | null
           produtos: string | null
@@ -389,12 +392,14 @@ export type Database = {
           alimPitta?: string | null
           alimVata?: string | null
           altura?: string | null
+          cidade?: string | null
           conhecimentoAyurveda?: string | null
           created_at?: string
           diagn?: string | null
           doshaprincipal?: string | null
           email?: string | null
           espiritual?: string | null
+          estado?: string | null
           id?: string
           idade?: number | null
           idPublico: string
@@ -402,6 +407,7 @@ export type Database = {
           kaphascore?: number | null
           mentoria?: string | null
           nome?: string | null
+          pais?: string | null
           peso?: string | null
           pittascore?: number | null
           produtos?: string | null
@@ -423,12 +429,14 @@ export type Database = {
           alimPitta?: string | null
           alimVata?: string | null
           altura?: string | null
+          cidade?: string | null
           conhecimentoAyurveda?: string | null
           created_at?: string
           diagn?: string | null
           doshaprincipal?: string | null
           email?: string | null
           espiritual?: string | null
+          estado?: string | null
           id?: string
           idade?: number | null
           idPublico?: string
@@ -436,6 +444,7 @@ export type Database = {
           kaphascore?: number | null
           mentoria?: string | null
           nome?: string | null
+          pais?: string | null
           peso?: string | null
           pittascore?: number | null
           produtos?: string | null
