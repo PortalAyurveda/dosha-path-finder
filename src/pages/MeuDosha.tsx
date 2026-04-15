@@ -540,7 +540,10 @@ const MeuDosha = () => {
             <TabsTrigger value="metricas" className="text-xs sm:text-sm py-2">Métricas</TabsTrigger>
             <TabsTrigger value="artigos" className="text-xs sm:text-sm py-2">Artigos</TabsTrigger>
             <TabsTrigger value="videos" className="text-xs sm:text-sm py-2">Vídeos</TabsTrigger>
-            <TabsTrigger value="akasha" className="text-xs sm:text-sm py-2">Akasha ✨</TabsTrigger>
+            <TabsTrigger value="akasha" className="text-xs sm:text-sm py-2 flex items-center gap-1.5">
+              <img src="https://static.wixstatic.com/media/b8f47f_105371e1ade24ccd9bd3406b83bd925e~mv2.png" alt="" className="w-4 h-4 object-contain" />
+              Akasha
+            </TabsTrigger>
           </TabsList>
 
           {/* ===== TAB: PERFIL ===== */}
