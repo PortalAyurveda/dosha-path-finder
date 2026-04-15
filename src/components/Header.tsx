@@ -15,7 +15,6 @@ const Header = () => {
   const isActive = (path: string) => location.pathname === path;
 
   const doshaId = searchParams.get("id");
-  const showAkasha = Boolean(doshaResult || user);
   const akashaId = doshaResult?.idPublico || doshaId || localStorage.getItem("activeDoshaId");
   const akashaLink = akashaId ? `/akasha?id=${akashaId}` : "/akasha";
 
@@ -25,7 +24,6 @@ const Header = () => {
     { label: "Blog", to: "/blog" },
     { label: "Cursos", to: "/cursos" },
     { label: "Terapeutas", to: "/terapeutas-do-brasil" },
-    ...(showAkasha ? [{ label: "✨ Akasha IA", to: akashaLink }] : []),
   ];
 
   const firstName = doshaResult?.nome?.split(" ")[0] 

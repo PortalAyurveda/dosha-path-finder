@@ -540,7 +540,7 @@ const MeuDosha = () => {
             <TabsTrigger value="metricas" className="text-xs sm:text-sm py-2">Métricas</TabsTrigger>
             <TabsTrigger value="artigos" className="text-xs sm:text-sm py-2">Artigos</TabsTrigger>
             <TabsTrigger value="videos" className="text-xs sm:text-sm py-2">Vídeos</TabsTrigger>
-            <TabsTrigger value="akasha" className="text-xs sm:text-sm py-2">Akasha</TabsTrigger>
+            <TabsTrigger value="akasha" className="text-xs sm:text-sm py-2">Akasha ✨</TabsTrigger>
           </TabsList>
 
           {/* ===== TAB: PERFIL ===== */}
