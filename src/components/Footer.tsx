@@ -1,4 +1,3 @@
-import { Link } from "react-router-dom";
 import { Youtube } from "lucide-react";
 
 const Footer = () => {
