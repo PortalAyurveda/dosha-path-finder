@@ -182,7 +182,7 @@ const ArtigosTab = ({ agravVataTags, agravPittaTags, agravKaphaTags, doshaprinci
 
       {/* Content */}
       {isLoading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           {[1, 2, 3, 4].map((i) => (
             <div key={i} className="rounded-xl overflow-hidden border border-border">
               <Skeleton className="aspect-video w-full" />
@@ -202,7 +202,7 @@ const ArtigosTab = ({ agravVataTags, agravPittaTags, agravKaphaTags, doshaprinci
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           {filteredArticles.map((article) => (
             <div key={article.id} className="group bg-card rounded-xl overflow-hidden border border-border hover:shadow-md transition-all">
               <Link to={`/blog/${article.link_do_artigo || article.id}`}>

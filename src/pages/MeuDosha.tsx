@@ -559,12 +559,12 @@ const MeuDosha = () => {
         </div>
 
         {/* ===== TABS ===== */}
-        <Tabs defaultValue="perfil" className="w-full" onValueChange={(val) => {
-          // Prevent scroll jump when switching tabs (especially on desktop)
+        <Tabs defaultValue="perfil" className="w-full" onValueChange={() => {
           const scrollY = window.scrollY;
-          requestAnimationFrame(() => {
-            window.scrollTo({ top: scrollY, behavior: "instant" as ScrollBehavior });
-          });
+          const restore = () => window.scrollTo({ top: scrollY, behavior: "instant" as ScrollBehavior });
+          requestAnimationFrame(restore);
+          setTimeout(restore, 0);
+          setTimeout(restore, 50);
         }}>
           <TabsList className="w-full grid grid-cols-5 h-auto">
             <TabsTrigger value="perfil" className="text-xs sm:text-sm py-2 flex items-center gap-1">
@@ -581,7 +581,7 @@ const MeuDosha = () => {
           </TabsList>
 
           {/* ===== TAB: PERFIL ===== */}
-          <TabsContent value="perfil" className="space-y-6 mt-4">
+          <TabsContent value="perfil" className="space-y-6 mt-4" tabIndex={-1}>
             {/* Clinical Dashboard */}
             <div className="bg-card rounded-xl border border-border p-4 space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-[1.2fr_1fr] gap-4">
@@ -690,12 +690,12 @@ const MeuDosha = () => {
           </TabsContent>
 
           {/* ===== TAB: MÉTRICAS ===== */}
-          <TabsContent value="metricas">
+          <TabsContent value="metricas" tabIndex={-1}>
             <MetricasTab registroUuid={registroUuid} insights={insights} isLoading={insightsLoading} />
           </TabsContent>
 
           {/* ===== TAB: ARTIGOS ===== */}
-          <TabsContent value="artigos">
+          <TabsContent value="artigos" tabIndex={-1}>
             <ArtigosTab
               doshaprincipal={result.doshaprincipal}
               agravVataTags={result.agravVataTags}
@@ -705,7 +705,7 @@ const MeuDosha = () => {
           </TabsContent>
 
           {/* ===== TAB: VÍDEOS ===== */}
-          <TabsContent value="videos">
+          <TabsContent value="videos" tabIndex={-1}>
             <VideosTab
               doshaprincipal={result.doshaprincipal}
               agravVataTags={result.agravVataTags}
@@ -715,7 +715,7 @@ const MeuDosha = () => {
           </TabsContent>
 
           {/* ===== TAB: AKASHA ===== */}
-          <TabsContent value="akasha">
+          <TabsContent value="akasha" tabIndex={-1}>
             <AkashaTab
               idPublico={id}
               nome={result.nome}

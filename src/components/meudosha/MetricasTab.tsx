@@ -127,7 +127,7 @@ const MetricasTab = ({ insights, isLoading }: MetricasTabProps) => {
             <h3 className={`text-xs font-bold uppercase tracking-wider ${textClass} flex items-center gap-1.5`}>
               <Icon className="w-3.5 h-3.5" /> {label} ({items.length})
             </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {items.map((insight, i) => <InsightCard key={i} insight={insight} />)}
             </div>
           </div>
