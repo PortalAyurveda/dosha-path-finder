@@ -96,7 +96,7 @@ const BlogArticle = () => {
         {article.image_url && (
           <div className="aspect-video rounded-xl overflow-hidden mb-8">
             <img
-              src={article.image_url}
+              src={getTransformedImageUrl(article.image_url)}
               alt={article.title}
               className="w-full h-full object-cover"
             />

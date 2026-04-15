@@ -1,10 +1,40 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link, useLocation, useSearchParams } from "react-router-dom";
 import { Menu, LogIn, LogOut } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { useUser } from "@/contexts/UserContext";
 
+const PIE_COLORS: Record<string, string> = {
+  Vata: '#4F75FF',
+  Pitta: '#FF5C5C',
+  Kapha: '#22C55E',
+};
+
+const HeaderDoshaPie = ({ vata, pitta, kapha, size = 18 }: { vata: number; pitta: number; kapha: number; size?: number }) => {
+  const total = (vata || 0) + (pitta || 0) + (kapha || 0);
+  if (total === 0) return null;
+  const r = size / 2;
+  const slices = [
+    { pct: (vata || 0) / total, color: PIE_COLORS.Vata },
+    { pct: (pitta || 0) / total, color: PIE_COLORS.Pitta },
+    { pct: (kapha || 0) / total, color: PIE_COLORS.Kapha },
+  ];
+  let cumAngle = 0;
+  const paths = slices.map((s, i) => {
+    const angle = s.pct * 360;
+    const startRad = (cumAngle * Math.PI) / 180;
+    const endRad = ((cumAngle - angle) * Math.PI) / 180;
+    cumAngle -= angle;
+    const x1 = r + r * Math.cos(startRad);
+    const y1 = r - r * Math.sin(startRad);
+    const x2 = r + r * Math.cos(endRad);
+    const y2 = r - r * Math.sin(endRad);
+    const large = angle > 180 ? 1 : 0;
+    return <path key={i} d={`M${r},${r} L${x1},${y1} A${r},${r} 0 ${large} 0 ${x2},${y2} Z`} fill={s.color} />;
+  });
+  return <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="shrink-0 rounded-full">{paths}</svg>;
+};
 
 const Header = () => {
   const [open, setOpen] = useState(false);
@@ -95,33 +125,30 @@ const Header = () => {
           />
         </Link>
 
-        {/* RIGHT — Akasha + Login/Profile */}
+        {/* RIGHT — Profile with pie favicon */}
         <div className="flex items-center gap-1.5">
             {doshaResult ? (
-              <>
-                <Link
-                  to={profileLink}
-                  className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/15 backdrop-blur-sm hover:bg-white/25 transition-colors border border-white/20"
-                >
-                  <span className="text-xs sm:text-sm font-semibold text-white truncate max-w-[60px] sm:max-w-[100px]">
-                    {firstName}
-                  </span>
-                  <span className="flex items-center gap-0.5 sm:gap-1 text-[9px] sm:text-[11px] font-bold">
-                    <span style={{ color: "#93C5FD" }}>V:{doshaResult.vatascore ?? 0}</span>
-                    <span style={{ color: "#FCA5A5" }}>P:{doshaResult.pittascore ?? 0}</span>
-                    <span style={{ color: "#86EFAC" }}>K:{doshaResult.kaphascore ?? 0}</span>
-                  </span>
-                </Link>
-              </>
+              <Link
+                to={profileLink}
+                className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white backdrop-blur-sm hover:bg-white/90 transition-colors border border-border/30"
+              >
+                <span className="text-xs sm:text-sm font-semibold text-gray-700 truncate max-w-[60px] sm:max-w-[100px]">
+                  {firstName}
+                </span>
+                <HeaderDoshaPie
+                  vata={doshaResult.vatascore ?? 0}
+                  pitta={doshaResult.pittascore ?? 0}
+                  kapha={doshaResult.kaphascore ?? 0}
+                  size={20}
+                />
+              </Link>
             ) : user ? (
-              <>
-                <Link
-                  to="/meu-dosha"
-                  className="flex items-center justify-center w-9 h-9 rounded-full bg-white/20 text-white font-bold text-sm hover:bg-white/30 transition-colors"
-                >
-                  {userInitial.toUpperCase()}
-                </Link>
-              </>
+              <Link
+                to="/meu-dosha"
+                className="flex items-center justify-center w-9 h-9 rounded-full bg-white text-primary font-bold text-sm hover:bg-white/90 transition-colors"
+              >
+                {userInitial.toUpperCase()}
+              </Link>
             ) : (
               <Link to="/entrar">
                 <Button
