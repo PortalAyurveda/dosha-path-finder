@@ -253,17 +253,17 @@ const AkashaTab = ({
 
   return (
     <div className="flex flex-col mt-4" style={{ minHeight: "50vh" }}>
-      {/* Header */}
-      <div className="flex flex-col items-center gap-2 pb-4">
-        <img src={AKASHA_LOGO} alt="Akasha IA" className="w-12 h-12 object-contain" />
-        <h2 className="font-serif text-lg font-bold text-akasha">Akasha IA</h2>
-        <p className="text-xs text-muted-foreground">
-          {tokens > 0 ? `${tokens} conversas restantes` : "Tokens esgotados"}
-        </p>
-      </div>
+      {/* Messages - header scrolls with content */}
+      <div className="flex-1 overflow-y-auto space-y-3 pb-4 px-1 max-h-[60vh]">
+        {/* Akasha Header - scrolls away */}
+        <div className="flex flex-col items-center gap-2 pb-4 pt-2">
+          <img src={AKASHA_LOGO} alt="Akasha IA" className="w-12 h-12 object-contain" />
+          <h2 className="font-serif text-lg font-bold text-akasha">Akasha IA</h2>
+          <p className="text-xs text-muted-foreground">
+            {tokens > 0 ? `${tokens} conversas restantes` : "Tokens esgotados"}
+          </p>
+        </div>
 
-      {/* Messages */}
-      <div className="flex-1 overflow-y-auto space-y-3 pb-4 px-1 max-h-[50vh]">
         {loadingHistory && (
           <div className="flex items-center justify-center py-6">
             <Loader2 className="w-5 h-5 animate-spin text-akasha" />
