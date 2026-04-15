@@ -100,13 +100,6 @@ const Header = () => {
             {doshaResult ? (
               <>
                 <Link
-                  to={akashaLink}
-                  className="flex items-center justify-center w-9 h-9 rounded-full bg-akasha/20 text-akasha hover:bg-akasha/30 transition-colors"
-                  title="Akasha IA"
-                >
-                  <span className="text-sm">✨</span>
-                </Link>
-                <Link
                   to={profileLink}
                   className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/15 backdrop-blur-sm hover:bg-white/25 transition-colors border border-white/20"
                 >
@@ -122,13 +115,6 @@ const Header = () => {
               </>
             ) : user ? (
               <>
-                <Link
-                  to={akashaLink}
-                  className="flex items-center justify-center w-9 h-9 rounded-full bg-akasha/20 text-akasha hover:bg-akasha/30 transition-colors"
-                  title="Akasha IA"
-                >
-                  <span className="text-sm">✨</span>
-                </Link>
                 <Link
                   to="/meu-dosha"
                   className="flex items-center justify-center w-9 h-9 rounded-full bg-white/20 text-white font-bold text-sm hover:bg-white/30 transition-colors"
