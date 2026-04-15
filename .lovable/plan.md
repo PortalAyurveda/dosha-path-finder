@@ -1,66 +1,37 @@
 
 
-## Plan: Sistema de Abas na página /meu-dosha + Aba Métricas Preditivas
+## Plan: Dosha Favicon + Akasha Logo Positioning
 
-### Overview
-Reestruturar a página `/meu-dosha` com 5 abas no topo. A aba "Perfil" conterá o conteúdo atual. A aba "Métricas" será implementada por completo com fetch RPC + cards de insights. As abas 3-5 ficam como "Em breve".
+### What you asked for
+1. A mini dosha pie chart icon ("favicon") next to "Perfil" on the left side of the tab bar
+2. Move the Akasha logo closer to the text, on the right side of "Akasha"
+3. The pie chart uses the user's actual V/P/K scores proportionally
 
-### Architecture
+### Approach
 
-```text
-/meu-dosha?id=XXX
-┌─────────────────────────────────────────────┐
-│  Header (nome, dosha principal)             │
-├──────┬──────────┬─────────┬────────┬────────┤
-│Perfil│ Métricas │ Artigos │ Vídeos │ Akasha │
-├──────┴──────────┴─────────┴────────┴────────┤
-│  Conteúdo da aba selecionada                │
-└─────────────────────────────────────────────┘
-```
+**Mini Dosha Pie (SVG)** — Instead of using Recharts (heavy for a 20px icon), I'll create a tiny inline SVG component (`DoshaMiniPie`) that draws 3 arc segments using the user's actual `vatascore`, `pittascore`, `kaphascore` proportions. This is lightweight and renders the real distribution. No need for a generic 1/3 split.
 
-### Changes
+**Changes to `src/pages/MeuDosha.tsx`:**
 
-**1. New file: `src/components/meudosha/MetricasTab.tsx`**
-- Interface `InsightAyurvedico` with `tipo`, `titulo`, `porcentagem`, `mensagem`
-- `useQuery` calling `supabase.rpc('gerar_insights_ayurvedicos', { p_registro_id })` where `p_registro_id` is the **UUID `id`** from `doshas_registros` (not the `idPublico`)
-- Loading state: skeleton with pulsing text "O algoritmo está cruzando seus dados..."
-- Empty state: minimal message for no insights
-- Card grid: responsive `grid-cols-1 md:grid-cols-2`
-  - Header: circular progress (SVG circle) showing `porcentagem` + `titulo` bold
-  - `tipo === 'alerta'`: orange/red border, `AlertTriangle` icon
-  - `tipo === 'sucesso'`: green border, `ShieldCheck` icon
-  - Body: `mensagem` in muted text
+1. **Create `DoshaMiniPie` component** — A ~20px SVG pie chart using conic gradient math to draw 3 colored arcs (Vata blue, Pitta red, Kapha green) based on the user's actual scores.
 
-**2. New file: `src/components/meudosha/EmBreveTab.tsx`**
-- Simple placeholder with lock icon and "Em breve" message
+2. **Update "Perfil" tab trigger** — Add `DoshaMiniPie` to the left of the text:
+   ```
+   [🥧 Perfil]  [Métricas]  [Artigos]  [Vídeos]  [Akasha 🔮]
+   ```
 
-**3. Modified: `src/pages/MeuDosha.tsx`**
-- Import `Tabs, TabsList, TabsTrigger, TabsContent` from shadcn
-- Import `useQuery` from TanStack Query
-- After fetching `doshas_registros` by `idPublico`, store the **UUID `id`** field too (needed for RPC call)
-- Add `useQuery` for insights RPC at page level (pre-fetch, `enabled` when UUID is available)
-- Wrap existing content in `TabsContent value="perfil"`
-- Add tabs for Métricas, Artigos, Vídeos, Akasha
-- The header (dosha name) stays above tabs
-- Move "Falar com Akasha" and "Refazer Teste" buttons to stay visible regardless of tab (below tabs area or in Perfil only)
+3. **Fix Akasha tab trigger** — Move the logo image to the right of "Akasha" text and reduce the gap from `gap-1.5` to `gap-1`:
+   ```tsx
+   <TabsTrigger value="akasha" className="... flex items-center gap-1">
+     Akasha
+     <img src="..." className="w-4 h-4" />
+   </TabsTrigger>
+   ```
 
-### Technical Detail: Getting the UUID
+### Technical detail: Mini SVG Pie
 
-The RPC `gerar_insights_ayurvedicos` requires the **UUID `id`** from `doshas_registros`, but the URL uses `idPublico`. The existing fetch already queries by `idPublico` -- we just need to also select the `id` column and pass it to the RPC.
+A pure SVG with 3 `<circle>` elements using `stroke-dasharray`/`stroke-dashoffset` to simulate pie slices — same technique as `CircularProgress` in `MetricasTab.tsx`. Radius ~8px, total size ~18x18. Uses the `PIE_COLORS` already defined in the file.
 
-### Pre-fetch Strategy
-
-```typescript
-const { data: insights } = useQuery({
-  queryKey: ['insights-ayurvedicos', registroUuid],
-  queryFn: async () => {
-    const { data } = await supabase.rpc('gerar_insights_ayurvedicos', { p_registro_id: registroUuid });
-    return (data as InsightAyurvedico[]) || [];
-  },
-  enabled: !!registroUuid,
-  staleTime: 5 * 60 * 1000,
-});
-```
-
-This fires on mount, so data is cached before the user clicks the tab.
+### Files changed
+- `src/pages/MeuDosha.tsx` — Add `DoshaMiniPie` component, update both tab triggers
 
