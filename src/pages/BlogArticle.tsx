@@ -114,6 +114,12 @@ const BlogArticle = () => {
             dangerouslySetInnerHTML={{ __html: article.summary }}
           />
         )}
+
+        {/* Bottom heart for readers who finish the article */}
+        <div className="flex items-center justify-center gap-2 py-8 border-t border-border mt-8">
+          <span className="text-sm text-muted-foreground">Gostou do artigo?</span>
+          <HeartButton contentType="artigo" contentId={article.id} />
+        </div>
       </article>
     </>
   );
