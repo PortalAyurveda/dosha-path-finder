@@ -157,13 +157,8 @@ const AkashaTab = ({
     setMessages([{ role: "user", content: autoMessage, time: getNowBrazilTime() }]);
 
     try {
-      // Decrement token
-      if (user?.id) {
-        await supabase
-          .from("user_profiles")
-          .update({ tokens_akasha: Math.max((profile?.tokens_akasha ?? 10) - 1, 0) } as any)
-          .eq("id", user.id);
-      }
+      // NOTE: Do NOT decrement tokens for the auto-intro message.
+      // Tokens are only decremented when the user manually sends a message.
 
       const payload = {
         message: autoMessage,

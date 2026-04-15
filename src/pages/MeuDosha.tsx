@@ -9,7 +9,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import MetricasTab from "@/components/meudosha/MetricasTab";
 import type { InsightAyurvedico } from "@/components/meudosha/MetricasTab";
-import EmBreveTab from "@/components/meudosha/EmBreveTab";
+import ArtigosTab from "@/components/meudosha/ArtigosTab";
 import VideosTab from "@/components/meudosha/VideosTab";
 import AkashaTab from "@/components/meudosha/AkashaTab";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
@@ -659,7 +659,12 @@ const MeuDosha = () => {
 
           {/* ===== TAB: ARTIGOS ===== */}
           <TabsContent value="artigos">
-            <EmBreveTab label="Artigos Personalizados" />
+            <ArtigosTab
+              doshaprincipal={result.doshaprincipal}
+              agravVataTags={result.agravVataTags}
+              agravPittaTags={result.agravPittaTags}
+              agravKaphaTags={result.agravKaphaTags}
+            />
           </TabsContent>
 
           {/* ===== TAB: VÍDEOS ===== */}

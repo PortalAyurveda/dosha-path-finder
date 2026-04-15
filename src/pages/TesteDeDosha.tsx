@@ -45,7 +45,11 @@ const [step, setStep] = useState(0);
   const [interstitialTarget, setInterstitialTarget] = useState<string | null>(null);
 
   // Info from Hero (localStorage)
-  const [info, setInfo] = useState({ nome: '', idade: '', nivel: 'Iniciante', email: '', altura: '', peso: '' });
+  const [info, setInfo] = useState({ nome: '', idade: '', nivel: 'Iniciante', email: '', altura: '', peso: '', estado: '', cidade: '', paisCidade: '' });
+  const [moraFora, setMoraFora] = useState(false);
+  const [estados, setEstados] = useState<{ sigla: string; nome: string }[]>([]);
+  const [cidades, setCidades] = useState<{ nome: string }[]>([]);
+  const [loadingCidades, setLoadingCidades] = useState(false);
 
   useEffect(() => {
     try {
@@ -55,7 +59,26 @@ const [step, setStep] = useState(0);
         setInfo(prev => ({ ...prev, nome: parsed.nome || '', idade: parsed.idade || '', nivel: parsed.nivel || 'Iniciante' }));
       }
     } catch {}
+
+    // Fetch estados from IBGE
+    fetch('https://servicodados.ibge.gov.br/api/v1/localidades/estados?orderBy=nome')
+      .then(r => r.json())
+      .then(data => setEstados(data.map((e: any) => ({ sigla: e.sigla, nome: e.nome }))))
+      .catch(() => {});
   }, []);
+
+  // Fetch cidades when estado changes
+  useEffect(() => {
+    if (!info.estado || moraFora) return;
+    setLoadingCidades(true);
+    setCidades([]);
+    setInfo(prev => ({ ...prev, cidade: '' }));
+    fetch(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${info.estado}/municipios?orderBy=nome`)
+      .then(r => r.json())
+      .then(data => setCidades(data.map((c: any) => ({ nome: c.nome }))))
+      .catch(() => {})
+      .finally(() => setLoadingCidades(false));
+  }, [info.estado, moraFora]);
 
   // Multi-select answers: each question can have multiple selected option indices
   const [answers, setAnswers] = useState<Record<string, number[]>>({});
@@ -103,7 +126,9 @@ const [step, setStep] = useState(0);
 
   const canAdvance = (): boolean => {
     if (currentStep.part === 'interests') {
-      return !!(info.email && info.altura && info.peso);
+      if (!info.email || !info.altura || !info.peso) return false;
+      if (moraFora) return !!info.paisCidade.trim();
+      return !!(info.estado && info.cidade);
     }
     return true;
   };
@@ -278,6 +303,9 @@ const [step, setStep] = useState(0);
         diagn: interesses.includes('mentoria') ? 'sim' : null,
         espiritual: interesses.includes('espiritual') ? 'sim' : null,
         produtos: interesses.includes('produtos') ? 'sim' : null,
+        pais: moraFora ? 'Exterior' : 'Brasil',
+        estado: moraFora ? null : info.estado,
+        cidade: moraFora ? info.paisCidade.trim() : info.cidade,
         created_at: new Date().toISOString(),
       };
 
@@ -420,21 +448,90 @@ const [step, setStep] = useState(0);
 
   const renderInterestsStep = () => (
     <div className="space-y-5">
-      {/* Email, Altura, Peso */}
+      {/* Email + Location */}
       <div className="space-y-3 p-4 rounded-xl bg-muted/30 border border-border">
         <p className="font-serif font-semibold text-foreground text-sm">Dados complementares</p>
-        <div>
-          <Label htmlFor="email" className="text-xs">E-mail</Label>
-          <Input id="email" type="email" placeholder="seu@email.com" value={info.email} onChange={e => setInfo({ ...info, email: e.target.value })} className="mt-1" />
-        </div>
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <Label htmlFor="altura" className="text-xs">Altura (m)</Label>
-            <Input id="altura" placeholder="1.70" value={info.altura} onChange={e => setInfo({ ...info, altura: e.target.value })} className="mt-1" />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div className="space-y-3">
+            <div>
+              <Label htmlFor="email" className="text-xs">E-mail</Label>
+              <Input id="email" type="email" placeholder="seu@email.com" value={info.email} onChange={e => setInfo({ ...info, email: e.target.value })} className="mt-1" />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label htmlFor="altura" className="text-xs">Altura (m)</Label>
+                <Input id="altura" placeholder="1.70" value={info.altura} onChange={e => setInfo({ ...info, altura: e.target.value })} className="mt-1" />
+              </div>
+              <div>
+                <Label htmlFor="peso" className="text-xs">Peso (kg)</Label>
+                <Input id="peso" placeholder="70" value={info.peso} onChange={e => setInfo({ ...info, peso: e.target.value })} className="mt-1" />
+              </div>
+            </div>
           </div>
-          <div>
-            <Label htmlFor="peso" className="text-xs">Peso (kg)</Label>
-            <Input id="peso" placeholder="70" value={info.peso} onChange={e => setInfo({ ...info, peso: e.target.value })} className="mt-1" />
+
+          <div className="space-y-3">
+            {moraFora ? (
+              <div>
+                <Label htmlFor="paisCidade" className="text-xs">País e Cidade</Label>
+                <Input
+                  id="paisCidade"
+                  placeholder="Lisboa, Portugal"
+                  value={info.paisCidade}
+                  onChange={e => setInfo({ ...info, paisCidade: e.target.value })}
+                  className="mt-1"
+                />
+              </div>
+            ) : (
+              <>
+                <div>
+                  <Label htmlFor="estado" className="text-xs">Estado</Label>
+                  <select
+                    id="estado"
+                    value={info.estado}
+                    onChange={e => setInfo({ ...info, estado: e.target.value })}
+                    className={cn(
+                      "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm mt-1",
+                      "ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+                      !info.estado && "text-muted-foreground"
+                    )}
+                  >
+                    <option value="" disabled>Selecione o estado</option>
+                    {estados.map(e => (
+                      <option key={e.sigla} value={e.sigla}>{e.nome}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="relative">
+                  <Label htmlFor="cidade" className="text-xs">Cidade</Label>
+                  <Input
+                    id="cidade"
+                    placeholder={loadingCidades ? "Carregando cidades..." : info.estado ? "Digite sua cidade..." : "Selecione o estado primeiro"}
+                    value={info.cidade}
+                    onChange={e => setInfo({ ...info, cidade: e.target.value })}
+                    disabled={!info.estado || loadingCidades}
+                    className="mt-1"
+                    list="cidades-list"
+                  />
+                  {info.estado && cidades.length > 0 && (
+                    <datalist id="cidades-list">
+                      {cidades.map(c => (
+                        <option key={c.nome} value={c.nome} />
+                      ))}
+                    </datalist>
+                  )}
+                  {loadingCidades && (
+                    <Loader2 className="absolute right-3 top-8 h-4 w-4 animate-spin text-muted-foreground" />
+                  )}
+                </div>
+              </>
+            )}
+            <button
+              type="button"
+              onClick={() => setMoraFora(!moraFora)}
+              className="text-xs text-muted-foreground hover:text-primary underline transition-colors"
+            >
+              {moraFora ? "Moro no Brasil" : "Moro fora do Brasil"}
+            </button>
           </div>
         </div>
       </div>

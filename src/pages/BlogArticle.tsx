@@ -4,6 +4,7 @@ import { Helmet } from "react-helmet-async";
 import { ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
+import HeartButton from "@/components/HeartButton";
 
 const BlogArticle = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -61,9 +62,12 @@ const BlogArticle = () => {
           <ArrowLeft className="h-4 w-4" /> Voltar ao Blog
         </Link>
 
-        <h1 className="font-serif text-3xl md:text-4xl font-bold text-foreground mb-4">
-          {article.title}
-        </h1>
+        <div className="flex items-start justify-between gap-3">
+          <h1 className="font-serif text-3xl md:text-4xl font-bold text-foreground mb-4">
+            {article.title}
+          </h1>
+          <HeartButton contentType="artigo" contentId={article.id} className="mt-2 shrink-0" />
+        </div>
 
         {article.meta_description && (
           <p className="text-lg text-muted-foreground mb-6 italic">
@@ -110,6 +114,12 @@ const BlogArticle = () => {
             dangerouslySetInnerHTML={{ __html: article.summary }}
           />
         )}
+
+        {/* Bottom heart for readers who finish the article */}
+        <div className="flex items-center justify-center gap-2 py-8 border-t border-border mt-8">
+          <span className="text-sm text-muted-foreground">Gostou do artigo?</span>
+          <HeartButton contentType="artigo" contentId={article.id} />
+        </div>
       </article>
     </>
   );
