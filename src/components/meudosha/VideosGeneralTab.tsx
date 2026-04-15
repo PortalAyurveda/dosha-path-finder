@@ -44,6 +44,9 @@ const VideosGeneralTab = ({ doshaprincipal }: VideosGeneralTabProps) => {
       return results;
     },
     enabled: !!doshaprincipal,
+    staleTime: 15 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+    refetchOnWindowFocus: false,
   });
 
   if (isLoading) {

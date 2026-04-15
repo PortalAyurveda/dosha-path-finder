@@ -1,4 +1,5 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/contexts/UserContext";
 import { Send, Loader2 } from "lucide-react";
@@ -69,33 +70,35 @@ const AkashaTab = ({
   conhecimentoAyurveda, email,
 }: AkashaTabProps) => {
   const { user, profile } = useUser();
+  const queryClient = useQueryClient();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
-  const [loadingHistory, setLoadingHistory] = useState(true);
   const [initialSent, setInitialSent] = useState(false);
-  const chatEndRef = useRef<HTMLDivElement>(null);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
+  const hasHydratedRef = useRef(false);
 
   const resolvedEmail = email || user?.email || `${idPublico}@visitante.com`;
   const resolvedNome = nome || profile?.nome || "Visitante";
 
-  // Scroll to bottom on new messages
+  const cacheKey = ['akasha-history', resolvedEmail] as const;
+
+  // Scroll only the chat container, never the page
+  const scrollChatToBottom = useCallback(() => {
+    const el = chatContainerRef.current;
+    if (el) el.scrollTop = el.scrollHeight;
+  }, []);
+
   useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, sending]);
+    scrollChatToBottom();
+  }, [messages, sending, scrollChatToBottom]);
 
-  // Load history and check if first time
-  useEffect(() => {
-    let isMounted = true;
-
-    const loadHistory = async () => {
-      setLoadingHistory(true);
-      setMessages([]);
-
+  // Load history via React Query — cached across tab switches
+  const { data: cachedHistory, isLoading: loadingHistory } = useQuery({
+    queryKey: cacheKey,
+    queryFn: async () => {
       const sessionId = resolvedEmail;
-
       try {
-        // Try webhook history first
         const response = await fetch(WEBHOOK_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -105,14 +108,8 @@ const AkashaTab = ({
         const history = Array.isArray(data?.history)
           ? data.history.map(mapN8nHistoryMessage).filter((m: any): m is ChatMessage => Boolean(m))
           : [];
+        if (history.length > 0) return history;
 
-        if (history.length > 0) {
-          if (isMounted) setMessages(history);
-          if (isMounted) setLoadingHistory(false);
-          return;
-        }
-
-        // Fallback: check chat_histories table
         const { data: dbHistory } = await supabase
           .from("chat_histories")
           .select("message, data_hora")
@@ -122,28 +119,38 @@ const AkashaTab = ({
 
         if (dbHistory && dbHistory.length > 0) {
           const parsed = [...dbHistory].reverse().map(mapDbHistoryMessage).filter((m): m is ChatMessage => Boolean(m));
-          if (isMounted && parsed.length > 0) {
-            setMessages(parsed);
-            setLoadingHistory(false);
-            return;
-          }
+          if (parsed.length > 0) return parsed;
         }
-
-        // No history found — send initial message
-        if (isMounted && !initialSent) {
-          setInitialSent(true);
-          await sendInitialMessage();
-        }
+        return [] as ChatMessage[];
       } catch (err) {
         console.error("Failed to load Akasha history:", err);
-      } finally {
-        if (isMounted) setLoadingHistory(false);
+        return [] as ChatMessage[];
       }
-    };
+    },
+    staleTime: 30 * 60 * 1000,
+    gcTime: 60 * 60 * 1000,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+  });
 
-    loadHistory();
-    return () => { isMounted = false; };
-  }, [resolvedEmail]);
+  // Sync messages to query cache so they survive tab switches
+  const updateCache = useCallback((msgs: ChatMessage[]) => {
+    queryClient.setQueryData(cacheKey, msgs);
+  }, [queryClient, resolvedEmail]);
+
+  // Hydrate from cache on mount (instant if cached)
+  useEffect(() => {
+    if (cachedHistory === undefined) return;
+    if (hasHydratedRef.current) return;
+    hasHydratedRef.current = true;
+
+    if (cachedHistory.length > 0) {
+      setMessages(cachedHistory);
+    } else if (!initialSent) {
+      setInitialSent(true);
+      sendInitialMessage();
+    }
+  }, [cachedHistory]);
 
   const sendInitialMessage = async () => {
     const doshaAgravado = doshaprincipal || "não identificado";
@@ -154,12 +161,11 @@ const AkashaTab = ({
     const autoMessage = `Olá meu nome é ${nomeDisplay}. Acabei de chegar aqui e vim conhecer você. Meu dosha agravado é ${doshaAgravado}. Estou com ${idadeText} e ${imcText}. Vamos conversar??`;
 
     setSending(true);
-    setMessages([{ role: "user", content: autoMessage, time: getNowBrazilTime() }]);
+    const userMsg: ChatMessage = { role: "user", content: autoMessage, time: getNowBrazilTime() };
+    setMessages([userMsg]);
+    updateCache([userMsg]);
 
     try {
-      // NOTE: Do NOT decrement tokens for the auto-intro message.
-      // Tokens are only decremented when the user manually sends a message.
-
       const payload = {
         message: autoMessage,
         email: resolvedEmail,
@@ -179,9 +185,19 @@ const AkashaTab = ({
       const data = await response.json();
       const botReply = data?.resposta || data?.output || data?.text || "Olá! Bem-vindo(a). Como posso te ajudar?";
 
-      setMessages(prev => [...prev, { role: "assistant", content: botReply, time: getNowBrazilTime() }]);
+      const botMsg: ChatMessage = { role: "assistant", content: botReply, time: getNowBrazilTime() };
+      setMessages(prev => {
+        const next = [...prev, botMsg];
+        updateCache(next);
+        return next;
+      });
     } catch {
-      setMessages(prev => [...prev, { role: "assistant", content: "Erro ao conectar com a Akasha. Tente novamente.", time: getNowBrazilTime() }]);
+      const errMsg: ChatMessage = { role: "assistant", content: "Erro ao conectar com a Akasha. Tente novamente.", time: getNowBrazilTime() };
+      setMessages(prev => {
+        const next = [...prev, errMsg];
+        updateCache(next);
+        return next;
+      });
     } finally {
       setSending(false);
     }
@@ -190,24 +206,32 @@ const AkashaTab = ({
   const sendMessage = async () => {
     if (!input.trim() || sending) return;
 
-    // Check tokens
     const tokens = profile?.tokens_akasha ?? 10;
     if (tokens <= 0) {
-      setMessages(prev => [...prev, {
+      const noTokenMsg: ChatMessage = {
         role: "assistant",
         content: "Seus tokens Akasha acabaram. Em breve esta funcionalidade estará disponível como serviço premium. 🙏",
         time: getNowBrazilTime(),
-      }]);
+      };
+      setMessages(prev => {
+        const next = [...prev, noTokenMsg];
+        updateCache(next);
+        return next;
+      });
       return;
     }
 
     const userMsg = input.trim();
     setInput("");
-    setMessages(prev => [...prev, { role: "user", content: userMsg, time: getNowBrazilTime() }]);
+    const userChatMsg: ChatMessage = { role: "user", content: userMsg, time: getNowBrazilTime() };
+    setMessages(prev => {
+      const next = [...prev, userChatMsg];
+      updateCache(next);
+      return next;
+    });
     setSending(true);
 
     try {
-      // Decrement token
       if (user?.id) {
         await supabase
           .from("user_profiles")
@@ -234,9 +258,19 @@ const AkashaTab = ({
       const data = await response.json();
       const botReply = data?.resposta || data?.output || data?.text || "Desculpe, não consegui processar sua mensagem.";
 
-      setMessages(prev => [...prev, { role: "assistant", content: botReply, time: getNowBrazilTime() }]);
+      const botMsg: ChatMessage = { role: "assistant", content: botReply, time: getNowBrazilTime() };
+      setMessages(prev => {
+        const next = [...prev, botMsg];
+        updateCache(next);
+        return next;
+      });
     } catch {
-      setMessages(prev => [...prev, { role: "assistant", content: "Erro ao conectar com a Akasha. Tente novamente.", time: getNowBrazilTime() }]);
+      const errMsg: ChatMessage = { role: "assistant", content: "Erro ao conectar com a Akasha. Tente novamente.", time: getNowBrazilTime() };
+      setMessages(prev => {
+        const next = [...prev, errMsg];
+        updateCache(next);
+        return next;
+      });
     } finally {
       setSending(false);
     }
@@ -253,9 +287,9 @@ const AkashaTab = ({
 
   return (
     <div className="flex flex-col mt-4" style={{ minHeight: "50vh" }}>
-      {/* Messages - header scrolls with content */}
-      <div className="flex-1 overflow-y-auto space-y-3 pb-4 px-1 max-h-[60vh]">
-        {/* Akasha Header - scrolls away */}
+      {/* Messages - scrolls only inside this container */}
+      <div ref={chatContainerRef} className="flex-1 overflow-y-auto space-y-3 pb-4 px-1 max-h-[60vh]">
+        {/* Akasha Header */}
         <div className="flex flex-col items-center gap-2 pb-4 pt-2">
           <img src={AKASHA_LOGO} alt="Akasha IA" className="w-12 h-12 object-contain" />
           <h2 className="font-serif text-lg font-bold text-akasha">Akasha IA</h2>
@@ -309,7 +343,6 @@ const AkashaTab = ({
             </div>
           </div>
         )}
-        <div ref={chatEndRef} />
       </div>
 
       {/* Input */}
