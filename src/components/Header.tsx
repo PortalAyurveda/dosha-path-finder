@@ -57,11 +57,9 @@ const Header = () => {
                   to={link.to}
                   onClick={() => setOpen(false)}
                   className={`px-4 py-3 rounded-xl text-base font-medium transition-colors ${
-                    link.label.includes("Akasha")
-                      ? "bg-akasha/30 text-white font-bold border border-akasha/40"
-                      : isActive(link.to)
-                        ? "bg-white/20 text-white font-bold"
-                        : "text-white/70 hover:text-white hover:bg-white/10"
+                    isActive(link.to)
+                      ? "bg-white/20 text-white font-bold"
+                      : "text-white/70 hover:text-white hover:bg-white/10"
                   }`}
                 >
                   {link.label}
