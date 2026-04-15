@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ArrowLeft, Clock, Play } from "lucide-react";
+import HeartButton from "@/components/HeartButton";
 
 const ALL_TABLES = ["portal_oficial", "portal_receitas", "portal_lives", "portal_vata", "portal_pitta", "portal_kapha"] as const;
 
@@ -162,9 +163,12 @@ const Video = () => {
             </div>
           )}
 
-          {/* Title & Tags */}
+          {/* Title & Tags & Heart */}
           <div className="space-y-3">
-            <h1 className="font-serif text-2xl md:text-3xl font-bold text-primary">{title}</h1>
+            <div className="flex items-start justify-between gap-3">
+              <h1 className="font-serif text-2xl md:text-3xl font-bold text-primary">{title}</h1>
+              {videoId && <HeartButton contentType="video" contentId={videoId} className="mt-1 shrink-0" />}
+            </div>
             {tagList.length > 0 && (
               <div className="flex flex-wrap gap-2">
                 {tagList.map((tag) => (
