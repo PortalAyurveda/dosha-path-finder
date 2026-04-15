@@ -10,6 +10,8 @@ import { cn } from "@/lib/utils";
 import MetricasTab from "@/components/meudosha/MetricasTab";
 import type { InsightAyurvedico } from "@/components/meudosha/MetricasTab";
 import EmBreveTab from "@/components/meudosha/EmBreveTab";
+import VideosTab from "@/components/meudosha/VideosTab";
+import AkashaTab from "@/components/meudosha/AkashaTab";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 
 interface DoshaResult {
@@ -662,15 +664,35 @@ const MeuDosha = () => {
             <MetricasTab registroUuid={registroUuid} insights={insights} isLoading={insightsLoading} />
           </TabsContent>
 
-          {/* ===== TABS EM BREVE ===== */}
+          {/* ===== TAB: ARTIGOS ===== */}
           <TabsContent value="artigos">
             <EmBreveTab label="Artigos Personalizados" />
           </TabsContent>
+
+          {/* ===== TAB: VÍDEOS ===== */}
           <TabsContent value="videos">
-            <EmBreveTab label="Vídeos Recomendados" />
+            <VideosTab
+              doshaprincipal={result.doshaprincipal}
+              agravVataTags={result.agravVataTags}
+              agravPittaTags={result.agravPittaTags}
+              agravKaphaTags={result.agravKaphaTags}
+            />
           </TabsContent>
+
+          {/* ===== TAB: AKASHA ===== */}
           <TabsContent value="akasha">
-            <EmBreveTab label="Akasha IA" />
+            <AkashaTab
+              idPublico={id}
+              nome={result.nome}
+              doshaprincipal={result.doshaprincipal}
+              imc={result.imc}
+              idade={result.idade}
+              vatascore={result.vatascore}
+              pittascore={result.pittascore}
+              kaphascore={result.kaphascore}
+              agniPrincipal={result.agniPrincipal}
+              conhecimentoAyurveda={result.conhecimentoAyurveda}
+            />
           </TabsContent>
         </Tabs>
       </div>
