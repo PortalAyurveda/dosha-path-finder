@@ -1,10 +1,11 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { slugify } from "@/lib/slugify";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Sparkles } from "lucide-react";
+import { useUser } from "@/contexts/UserContext";
 
 interface VideosPersonalizadoTabProps {
   agravVataTags: string | null;
@@ -55,6 +56,7 @@ function normalizeForSearch(text: string): string {
 }
 
 const TABLES = ["portal_lives", "portal_oficial", "portal_receitas"] as const;
+const MAX_VIDEOS = 12;
 
 const VideosPersonalizadoTab = ({
   agravVataTags,
@@ -63,6 +65,8 @@ const VideosPersonalizadoTab = ({
   doshaprincipal,
 }: VideosPersonalizadoTabProps) => {
   const navigate = useNavigate();
+  const { user } = useUser();
+  const queryClient = useQueryClient();
 
   const allSymptoms: { symptom: string; dosha: string }[] = [
     ...parseSymptoms(agravVataTags).map(s => ({ symptom: s, dosha: "Vata" })),
@@ -70,10 +74,28 @@ const VideosPersonalizadoTab = ({
     ...parseSymptoms(agravKaphaTags).map(s => ({ symptom: s, dosha: "Kapha" })),
   ];
 
+  // Fetch viewed video IDs for the current user
+  const { data: viewedVideoIds } = useQuery({
+    queryKey: ["user-content-views", user?.id],
+    queryFn: async () => {
+      if (!user) return new Set<string>();
+      const { data, error } = await supabase
+        .from("user_content_views" as any)
+        .select("content_id")
+        .eq("user_id", user.id)
+        .eq("content_type", "video");
+      if (error || !data) return new Set<string>();
+      return new Set((data as any[]).map((r: any) => r.content_id));
+    },
+    enabled: !!user,
+  });
+
   const { data: matchedVideos, isLoading } = useQuery({
-    queryKey: ["meudosha-videos-personalizado", agravVataTags, agravPittaTags, agravKaphaTags],
+    queryKey: ["meudosha-videos-personalizado", agravVataTags, agravPittaTags, agravKaphaTags, Array.from(viewedVideoIds || []).join(",")],
     queryFn: async () => {
       if (allSymptoms.length === 0) return [];
+
+      const viewedSet = viewedVideoIds || new Set<string>();
 
       // Fetch all videos from the 3 tables
       const allVideos: any[] = [];
@@ -85,24 +107,26 @@ const VideosPersonalizadoTab = ({
         if (!error && data) allVideos.push(...data);
       }
 
-      // Match videos against symptoms
-      const matches: MatchedVideo[] = [];
-      const seenVideoIds = new Set<string>();
+      // Build matches per symptom (not deduped yet)
+      const matchesBySymptom: Map<string, MatchedVideo[]> = new Map();
+      const globalSeen = new Set<string>();
 
       for (const { symptom, dosha } of allSymptoms) {
         const normalizedSymptom = normalizeForSearch(symptom);
         const symptomWords = normalizedSymptom.split(/\s+/).filter(w => w.length > 2);
+        const symptomKey = `${symptom}|${dosha}`;
+        const symptomMatches: MatchedVideo[] = [];
 
         for (const video of allVideos) {
-          if (seenVideoIds.has(video.video_id)) continue;
+          // Skip already viewed videos
+          if (viewedSet.has(video.video_id)) continue;
 
           // Priority 1: Match in title
           const normalizedTitle = normalizeForSearch(video.novo_titulo || "");
           const titleMatch = symptomWords.some(w => normalizedTitle.includes(w));
 
           if (titleMatch) {
-            seenVideoIds.add(video.video_id);
-            matches.push({
+            symptomMatches.push({
               ...video,
               matchedSymptom: symptom,
               matchedDosha: dosha,
@@ -119,8 +143,7 @@ const VideosPersonalizadoTab = ({
             const normalizedLabel = normalizeForSearch(ts.label);
             const tsMatch = symptomWords.some(w => normalizedLabel.includes(w));
             if (tsMatch) {
-              seenVideoIds.add(video.video_id);
-              matches.push({
+              symptomMatches.push({
                 ...video,
                 matchedSymptom: symptom,
                 matchedDosha: dosha,
@@ -132,12 +155,57 @@ const VideosPersonalizadoTab = ({
             }
           }
         }
+
+        matchesBySymptom.set(symptomKey, symptomMatches);
       }
 
-      return matches.slice(0, 9);
+      // Round-robin: 1 per symptom, then 2, then 3... until 12
+      const result: MatchedVideo[] = [];
+      const symptomKeys = Array.from(matchesBySymptom.keys());
+      const symptomIndexes = new Map<string, number>();
+      symptomKeys.forEach(k => symptomIndexes.set(k, 0));
+
+      let round = 0;
+      while (result.length < MAX_VIDEOS) {
+        let addedThisRound = false;
+        for (const key of symptomKeys) {
+          if (result.length >= MAX_VIDEOS) break;
+          const matches = matchesBySymptom.get(key)!;
+          let idx = symptomIndexes.get(key)!;
+
+          // Find next non-duplicate video for this symptom
+          while (idx < matches.length && globalSeen.has(matches[idx].video_id)) {
+            idx++;
+          }
+
+          if (idx < matches.length) {
+            const video = matches[idx];
+            globalSeen.add(video.video_id);
+            result.push(video);
+            symptomIndexes.set(key, idx + 1);
+            addedThisRound = true;
+          }
+        }
+        if (!addedThisRound) break;
+        round++;
+      }
+
+      return result;
     },
     enabled: allSymptoms.length > 0,
   });
+
+  const markAsViewed = async (videoId: string) => {
+    if (!user) return;
+    await supabase
+      .from("user_content_views" as any)
+      .upsert(
+        { user_id: user.id, content_type: "video", content_id: videoId } as any,
+        { onConflict: "user_id,content_type,content_id" }
+      );
+    // Invalidate the viewed videos cache so they disappear on next visit
+    queryClient.invalidateQueries({ queryKey: ["user-content-views", user.id] });
+  };
 
   if (allSymptoms.length === 0) {
     return (
@@ -191,6 +259,9 @@ const VideosPersonalizadoTab = ({
         const doshaColor = video.matchedDosha === "Vata" ? "text-vata" : video.matchedDosha === "Pitta" ? "text-pitta" : "text-kapha";
 
         const handleClick = () => {
+          // Mark as viewed
+          markAsViewed(video.video_id);
+
           const slug = slugify(video.novo_titulo || "video");
           const state: any = { videoId: video.video_id };
           if (video.matchType === "timestamp" && video.timestampSeconds) {
