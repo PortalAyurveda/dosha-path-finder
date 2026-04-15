@@ -633,13 +633,6 @@ const MeuDosha = () => {
             {/* Links */}
             <div className="space-y-3 pb-8">
               <h2 className="font-serif font-bold text-foreground text-lg text-center">O que deseja fazer?</h2>
-              <Link
-                to={`/akasha?id=${id}`}
-                className="flex items-center justify-center gap-3 w-full rounded-2xl bg-akasha text-white py-4 px-6 font-bold text-base shadow-lg hover:opacity-90 transition-opacity"
-              >
-                <img src="https://static.wixstatic.com/media/b8f47f_105371e1ade24ccd9bd3406b83bd925e~mv2.png" alt="Akasha IA" className="w-8 h-8 object-contain" />
-                Falar com a Akasha IA
-              </Link>
               <Button
                 variant="outline"
                 className="w-full"
