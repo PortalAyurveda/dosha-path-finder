@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useLocation, useSearchParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { Menu, LogIn, LogOut } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
@@ -39,8 +39,14 @@ const HeaderDoshaPie = ({ vata, pitta, kapha, size = 18 }: { vata: number; pitta
 const Header = () => {
   const [open, setOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { user, doshaResult, profile, signOut } = useUser();
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate("/", { replace: true });
+  };
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -99,7 +105,7 @@ const Header = () => {
                 <>
                   <div className="border-t border-white/20 my-2" />
                   <button
-                    onClick={() => { setOpen(false); signOut(); }}
+                    onClick={() => { setOpen(false); handleSignOut(); }}
                     className="px-4 py-3 rounded-xl text-base font-medium text-white/70 hover:text-white hover:bg-white/10 transition-colors flex items-center gap-2 text-left"
                   >
                     <LogOut className="h-4 w-4" />
