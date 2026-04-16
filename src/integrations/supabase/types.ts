@@ -1275,6 +1275,42 @@ export type Database = {
         }
         Relationships: []
       }
+      metricas_snapshot: {
+        Row: {
+          categoria: string
+          data_calculo: string
+          descricao: string
+          familia: string
+          id: number
+          metrica_id: string
+          n_base: number | null
+          percentual: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          categoria: string
+          data_calculo: string
+          descricao: string
+          familia: string
+          id?: number
+          metrica_id: string
+          n_base?: number | null
+          percentual?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          categoria?: string
+          data_calculo?: string
+          descricao?: string
+          familia?: string
+          id?: number
+          metrica_id?: string
+          n_base?: number | null
+          percentual?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       perfis: {
         Row: {
           created_at: string | null
