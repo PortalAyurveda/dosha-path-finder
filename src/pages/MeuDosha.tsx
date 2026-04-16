@@ -505,6 +505,64 @@ const MeuDosha = () => {
     return () => { supabase.removeChannel(channel); };
   }, [id, queryClient]);
 
+  // ── Prefetch tab data after registro loads (idle, low-priority) ──
+  useEffect(() => {
+    if (!result) return;
+
+    const TABLE_MAP: Record<string, "portal_vata" | "portal_pitta" | "portal_kapha"> = {
+      Vata: "portal_vata",
+      Pitta: "portal_pitta",
+      Kapha: "portal_kapha",
+    };
+
+    const run = () => {
+      // Articles (no search filters)
+      queryClient.prefetchQuery({
+        queryKey: ["meudosha-artigos", "", false],
+        queryFn: async () => {
+          const { data } = await supabase
+            .from("portal_conteudo")
+            .select("id, title, summary, link_do_artigo, meta_description, tags, image_url, created_at")
+            .order("created_at", { ascending: false });
+          return data || [];
+        },
+        staleTime: 15 * 60 * 1000,
+      });
+
+      // General videos for the user's primary dosha(s)
+      const doshas = (result.doshaprincipal || "Vata")
+        .split("-")
+        .map((d) => d.trim())
+        .filter((d) => TABLE_MAP[d]);
+      queryClient.prefetchQuery({
+        queryKey: ["meudosha-videos-general", result.doshaprincipal],
+        queryFn: async () => {
+          const results: any[] = [];
+          for (const dosha of doshas) {
+            const table = TABLE_MAP[dosha];
+            const { data } = await supabase
+              .from(table)
+              .select("video_id, novo_titulo, mini_resumo, tags")
+              .order("criado_em", { ascending: false })
+              .limit(3);
+            if (data) results.push(...data);
+          }
+          return results;
+        },
+        staleTime: 15 * 60 * 1000,
+      });
+    };
+
+    const w = window as any;
+    if (typeof w.requestIdleCallback === "function") {
+      const handle = w.requestIdleCallback(run, { timeout: 2000 });
+      return () => w.cancelIdleCallback?.(handle);
+    } else {
+      const t = setTimeout(run, 600);
+      return () => clearTimeout(t);
+    }
+  }, [result, queryClient]);
+
   if (registroLoading) {
     return (
       <PageContainer title="Meu Dosha" description="Carregando resultado...">
