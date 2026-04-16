@@ -576,19 +576,21 @@ const MeuDosha = () => {
               <div className="grid grid-cols-1 sm:grid-cols-[1.2fr_1fr] gap-4">
                 <div className="flex flex-col items-center">
                   <h2 className="font-serif font-bold text-foreground text-base mb-2 text-center">Pontuação dos Doshas</h2>
-                  <ResponsiveContainer width="100%" height={240}>
-                    <PieChart>
-                      <Pie data={pieData} cx="50%" cy="50%" outerRadius={85} innerRadius={40} dataKey="value" label={CustomPieLabel} strokeWidth={2} stroke="hsl(var(--card))">
-                        {pieData.map((entry) => (
-                          <Cell key={entry.name} fill={PIE_COLORS[entry.name]} />
-                        ))}
-                      </Pie>
-                      <Tooltip
-                        formatter={(value: number, name: string) => [`${value} pts (${totalScore > 0 ? Math.round((value / totalScore) * 100) : 0}%)`, name]}
-                        contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '8px', fontSize: '12px' }}
-                      />
-                    </PieChart>
-                  </ResponsiveContainer>
+                  <div className="w-full" style={{ height: 240 }}>
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart margin={{ top: 20, right: 60, bottom: 20, left: 60 }}>
+                        <Pie data={pieData} cx="50%" cy="50%" outerRadius={70} innerRadius={32} dataKey="value" label={CustomPieLabel} labelLine={false} strokeWidth={2} stroke="hsl(var(--card))">
+                          {pieData.map((entry) => (
+                            <Cell key={entry.name} fill={PIE_COLORS[entry.name]} />
+                          ))}
+                        </Pie>
+                        <Tooltip
+                          formatter={(value: number, name: string) => [`${value} pts (${totalScore > 0 ? Math.round((value / totalScore) * 100) : 0}%)`, name]}
+                          contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '8px', fontSize: '12px' }}
+                        />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </div>
                   {result.agniPrincipal && (
                     <div className="w-full bg-surface-sun rounded-lg border border-border p-3 mt-3">
                       <h3 className="font-serif font-bold text-foreground text-sm mb-1">Fogo Digestivo (Agni)</h3>
