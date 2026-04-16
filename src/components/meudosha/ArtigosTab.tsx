@@ -21,6 +21,18 @@ interface ArtigosTabProps {
 
 type SubTab = "geral" | "personalizado";
 
+interface MatchedArticle {
+  id: string;
+  title: string;
+  summary: string | null;
+  link_do_artigo: string | null;
+  meta_description: string | null;
+  tags: string | null;
+  image_url: string | null;
+  matchedSymptom: string;
+  matchedDosha: string;
+}
+
 function parseSymptoms(tags: string | null): string[] {
   if (!tags) return [];
   return tags.split(",").map((t) => t.trim()).filter(Boolean);
@@ -33,6 +45,8 @@ function normalizeForSearch(text: string): string {
     .replace(/[\u0300-\u036f]/g, "")
     .replace(/[^a-z0-9\s]/g, " ");
 }
+
+const MAX_PERSONALIZED = 12;
 
 const ArtigosTab = ({ agravVataTags, agravPittaTags, agravKaphaTags, doshaprincipal }: ArtigosTabProps) => {
   const [subTab, setSubTab] = useState<SubTab>("geral");
@@ -74,33 +88,64 @@ const ArtigosTab = ({ agravVataTags, agravPittaTags, agravKaphaTags, doshaprinci
   });
 
   const allSymptoms = useMemo(() => [
-    ...parseSymptoms(agravVataTags),
-    ...parseSymptoms(agravPittaTags),
-    ...parseSymptoms(agravKaphaTags),
+    ...parseSymptoms(agravVataTags).map((s) => ({ symptom: s, dosha: "Vata" })),
+    ...parseSymptoms(agravPittaTags).map((s) => ({ symptom: s, dosha: "Pitta" })),
+    ...parseSymptoms(agravKaphaTags).map((s) => ({ symptom: s, dosha: "Kapha" })),
   ], [agravVataTags, agravPittaTags, agravKaphaTags]);
 
-  const personalizedArticles = useMemo(() => {
+  // Build personalized list with explanation labels (round-robin per symptom)
+  const personalizedArticles = useMemo<MatchedArticle[]>(() => {
     if (allSymptoms.length === 0) return [];
-    const normalizedSymptoms = allSymptoms.map(normalizeForSearch);
-    return articles.filter((a) => {
-      const searchable = normalizeForSearch(
-        `${a.title} ${a.tags || ""} ${a.meta_description || ""}`
-      );
-      return normalizedSymptoms.some((s) => {
-        const words = s.split(/\s+/).filter((w) => w.length > 2);
-        return words.some((w) => searchable.includes(w));
-      });
-    }).slice(0, 12);
+
+    const matchesBySymptom = new Map<string, MatchedArticle[]>();
+    const globalSeen = new Set<string>();
+
+    for (const { symptom, dosha } of allSymptoms) {
+      const normSymptom = normalizeForSearch(symptom);
+      const words = normSymptom.split(/\s+/).filter((w) => w.length > 2);
+      const key = `${symptom}|${dosha}`;
+      const list: MatchedArticle[] = [];
+
+      for (const a of articles) {
+        const searchable = normalizeForSearch(`${a.title} ${a.tags || ""} ${a.meta_description || ""} ${a.summary || ""}`);
+        if (words.some((w) => searchable.includes(w))) {
+          list.push({ ...a, matchedSymptom: symptom, matchedDosha: dosha });
+        }
+      }
+      matchesBySymptom.set(key, list);
+    }
+
+    // Round-robin
+    const result: MatchedArticle[] = [];
+    const keys = Array.from(matchesBySymptom.keys());
+    const idxMap = new Map<string, number>(keys.map((k) => [k, 0]));
+
+    while (result.length < MAX_PERSONALIZED) {
+      let added = false;
+      for (const key of keys) {
+        if (result.length >= MAX_PERSONALIZED) break;
+        const matches = matchesBySymptom.get(key)!;
+        let idx = idxMap.get(key)!;
+        while (idx < matches.length && globalSeen.has(matches[idx].id)) idx++;
+        if (idx < matches.length) {
+          globalSeen.add(matches[idx].id);
+          result.push(matches[idx]);
+          idxMap.set(key, idx + 1);
+          added = true;
+        }
+      }
+      if (!added) break;
+    }
+    return result;
   }, [articles, allSymptoms]);
 
-  const filteredArticles = useMemo(() => {
-    const base = subTab === "personalizado" ? personalizedArticles : articles;
-    if (selectedTags.length === 0) return base;
-    return base.filter((a) => {
+  const filteredGeneralArticles = useMemo(() => {
+    if (selectedTags.length === 0) return articles;
+    return articles.filter((a) => {
       if (!a.tags) return false;
       return selectedTags.every((tag) => a.tags!.includes(tag));
     });
-  }, [articles, personalizedArticles, selectedTags, subTab]);
+  }, [articles, selectedTags]);
 
   const toggleTag = (tag: string) => {
     setSelectedTags((prev) =>
@@ -197,17 +242,69 @@ const ArtigosTab = ({ agravVataTags, agravPittaTags, agravKaphaTags, doshaprinci
             </div>
           ))}
         </div>
-      ) : filteredArticles.length === 0 ? (
+      ) : subTab === "personalizado" ? (
+        personalizedArticles.length === 0 ? (
+          <div className="text-center p-8 rounded-2xl bg-surface-sun border border-border">
+            <p className="text-muted-foreground">
+              {allSymptoms.length === 0
+                ? "Nenhum agravamento registrado para personalizar artigos."
+                : "Não encontramos artigos específicos para seus agravamentos."}
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {personalizedArticles.map((article) => {
+              const doshaColor =
+                article.matchedDosha === "Vata" ? "text-vata" :
+                article.matchedDosha === "Pitta" ? "text-pitta" : "text-kapha";
+
+              return (
+                <div key={article.id} className="rounded-xl border border-border bg-card overflow-hidden">
+                  {/* Context label */}
+                  <div className="px-4 py-2 bg-akasha/10 border-b border-border flex items-center gap-2">
+                    <Sparkles className="h-4 w-4 text-akasha shrink-0" />
+                    <p className="text-xs text-foreground">
+                      Como você relatou <strong className={doshaColor}>{article.matchedSymptom}</strong> e possui agravamento em <strong className={doshaColor}>{article.matchedDosha}</strong>, selecionamos este artigo:
+                    </p>
+                  </div>
+
+                  <div className="flex flex-col sm:flex-row gap-4 p-4">
+                    {article.image_url && (
+                      <Link to={`/blog/${article.link_do_artigo || article.id}`} className="shrink-0">
+                        <img
+                          src={getTransformedImageUrl(article.image_url)}
+                          alt={article.title}
+                          className="w-full sm:w-48 aspect-video object-cover rounded-lg"
+                          loading="lazy"
+                        />
+                      </Link>
+                    )}
+                    <div className="flex-1 space-y-2">
+                      <div className="flex items-start justify-between gap-2">
+                        <Link to={`/blog/${article.link_do_artigo || article.id}`} className="flex-1">
+                          <h3 className="font-serif text-base font-semibold text-primary line-clamp-2 hover:underline">
+                            {article.title}
+                          </h3>
+                        </Link>
+                        <HeartButton contentType="artigo" contentId={article.id} />
+                      </div>
+                      <p className="text-sm text-muted-foreground line-clamp-3">
+                        {article.meta_description || article.summary || ""}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )
+      ) : filteredGeneralArticles.length === 0 ? (
         <div className="text-center p-8 rounded-2xl bg-surface-sun border border-border">
-          <p className="text-muted-foreground">
-            {subTab === "personalizado"
-              ? "Não encontramos artigos específicos para seus agravamentos."
-              : "Nenhum artigo encontrado."}
-          </p>
+          <p className="text-muted-foreground">Nenhum artigo encontrado.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-          {filteredArticles.map((article) => (
+          {filteredGeneralArticles.map((article) => (
             <div key={article.id} className="group bg-card rounded-xl overflow-hidden border border-border hover:shadow-md transition-all">
               <Link to={`/blog/${article.link_do_artigo || article.id}`}>
                 {article.image_url && (
