@@ -8,40 +8,42 @@ import { cn } from "@/lib/utils";
 
 const DoshaPreview = () => (
   <div className="relative select-none pointer-events-none">
-    <div className="grid grid-cols-2 gap-7 items-center">
-      <div className="flex flex-col items-center justify-center space-y-3" style={{ filter: "blur(8px)", opacity: 0.46 }}>
-        <p className="font-serif font-bold text-primary text-base">Pontuação</p>
+    <div className="grid grid-cols-2 gap-6 items-center">
+      {/* Left: donut chart, blurred/faded */}
+      <div className="flex flex-col items-center justify-center space-y-2" style={{ filter: "blur(6px)", opacity: 0.55 }}>
+        <p className="font-serif font-bold text-primary text-sm">Pontuação</p>
         <div
-          className="relative flex h-40 w-40 items-center justify-center rounded-full shadow-inner"
+          className="relative flex h-32 w-32 items-center justify-center rounded-full shadow-inner"
           style={{
             background: "conic-gradient(hsl(0 100% 78%) 0% 59.7%, hsl(228 92% 78%) 59.7% 92.3%, hsl(142 70% 76%) 92.3% 100%)",
           }}
         >
-          <div className="h-24 w-24 rounded-full bg-card" />
+          <div className="h-20 w-20 rounded-full bg-card" />
         </div>
-        <div className="space-y-0.5 text-center text-xs font-bold text-muted-foreground">
+        <div className="space-y-0.5 text-center text-[11px] font-bold text-muted-foreground">
           <p>Vata: 30 pts</p>
           <p>Pitta: 55 pts</p>
           <p>Kapha: 7 pts</p>
         </div>
       </div>
 
-      <div className="flex flex-col space-y-3">
-        <p className="text-center font-serif text-base font-bold text-primary" style={{ filter: "blur(8px)", opacity: 0.5 }}>
+      {/* Right: clinical chart, mostly faded but Pitta column highlighted */}
+      <div className="flex flex-col space-y-2">
+        <p className="text-center font-serif text-sm font-bold text-primary" style={{ filter: "blur(6px)", opacity: 0.55 }}>
           Quadro Clínico
         </p>
 
-        <div className="flex gap-2.5">
-          <div className="flex w-20 shrink-0 flex-col justify-between py-1 pr-1 text-right text-[11px] font-bold uppercase leading-tight">
-            <span style={{ filter: "blur(1px)", opacity: 0.95, color: "hsl(0 85% 48%)" }}>Fixado</span>
-            <span style={{ filter: "blur(1.5px)", opacity: 0.88, color: "hsl(0 92% 60%)" }}>Adoecido</span>
-            <span style={{ filter: "blur(2px)", opacity: 0.8, color: "hsl(0 98% 72%)" }}>Acúmulo</span>
-            <span style={{ filter: "blur(2.5px)", opacity: 0.68, color: "hsl(0 100% 84%)" }}>Normal</span>
-            <span style={{ filter: "blur(3px)", opacity: 0.56, color: "hsl(0 100% 92%)" }}>Pouco</span>
+        <div className="flex gap-2">
+          <div className="flex w-16 shrink-0 flex-col justify-between py-0.5 pr-1 text-right text-[10px] font-bold uppercase leading-tight">
+            <span style={{ filter: "blur(0.5px)", opacity: 0.95, color: "hsl(0 85% 50%)" }}>Fixado</span>
+            <span style={{ filter: "blur(1px)", opacity: 0.85, color: "hsl(0 92% 62%)" }}>Adoecido</span>
+            <span style={{ filter: "blur(1.5px)", opacity: 0.7, color: "hsl(0 98% 74%)" }}>Acúmulo</span>
+            <span style={{ filter: "blur(2px)", opacity: 0.55, color: "hsl(0 100% 84%)" }}>Normal</span>
+            <span style={{ filter: "blur(2.5px)", opacity: 0.4, color: "hsl(0 100% 92%)" }}>Pouco</span>
           </div>
 
-          <div className="grid h-[228px] flex-1 grid-cols-3 gap-2">
-            <div className="flex flex-col gap-1.5" style={{ filter: "blur(7px)", opacity: 0.52 }}>
+          <div className="grid h-[180px] flex-1 grid-cols-3 gap-1.5">
+            <div className="flex flex-col gap-1" style={{ filter: "blur(6px)", opacity: 0.5 }}>
               <div className="flex-1 rounded-md bg-transparent" />
               <div className="flex-1 rounded-md bg-transparent" />
               <div className="flex-1 rounded-md" style={{ background: "hsl(228 88% 82%)" }} />
@@ -49,7 +51,7 @@ const DoshaPreview = () => (
               <div className="flex-1 rounded-md bg-transparent" />
             </div>
 
-            <div className="flex flex-col gap-1.5" style={{ filter: "blur(1px)", opacity: 0.96 }}>
+            <div className="flex flex-col gap-1" style={{ filter: "blur(0.5px)", opacity: 0.95 }}>
               <div className="flex-1 rounded-md shadow-sm" style={{ background: "hsl(0 88% 54%)" }} />
               <div className="flex-1 rounded-md shadow-sm" style={{ background: "hsl(0 95% 68%)" }} />
               <div className="flex-1 rounded-md shadow-sm" style={{ background: "hsl(0 100% 78%)" }} />
@@ -57,7 +59,7 @@ const DoshaPreview = () => (
               <div className="flex-1 rounded-md shadow-sm" style={{ background: "hsl(0 100% 92%)" }} />
             </div>
 
-            <div className="flex flex-col gap-1.5" style={{ filter: "blur(7px)", opacity: 0.5 }}>
+            <div className="flex flex-col gap-1" style={{ filter: "blur(6px)", opacity: 0.5 }}>
               <div className="flex-1 rounded-md bg-transparent" />
               <div className="flex-1 rounded-md bg-transparent" />
               <div className="flex-1 rounded-md bg-transparent" />
@@ -67,25 +69,26 @@ const DoshaPreview = () => (
           </div>
         </div>
 
-        <div className="flex gap-2.5">
-          <div className="w-20 shrink-0" />
-          <div className="grid flex-1 grid-cols-3 gap-2 text-center">
-            <span className="text-[11px] font-bold text-muted-foreground" style={{ filter: "blur(7px)", opacity: 0.55 }}>Vata</span>
-            <span className="text-[11px] font-bold" style={{ filter: "blur(1px)", opacity: 0.95, color: "hsl(0 85% 50%)" }}>Pitta</span>
-            <span className="text-[11px] font-bold text-muted-foreground" style={{ filter: "blur(7px)", opacity: 0.55 }}>Kapha</span>
+        <div className="flex gap-2">
+          <div className="w-16 shrink-0" />
+          <div className="grid flex-1 grid-cols-3 gap-1.5 text-center">
+            <span className="text-[10px] font-bold text-muted-foreground" style={{ filter: "blur(6px)", opacity: 0.55 }}>Vata</span>
+            <span className="text-[10px] font-bold" style={{ filter: "blur(0.5px)", opacity: 0.95, color: "hsl(0 85% 50%)" }}>Pitta</span>
+            <span className="text-[10px] font-bold text-muted-foreground" style={{ filter: "blur(6px)", opacity: 0.55 }}>Kapha</span>
           </div>
         </div>
       </div>
     </div>
 
+    {/* Lock overlay centered */}
     <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-      <div className="mb-4 rounded-full border border-border bg-card/95 p-3 shadow-lg">
-        <Lock className="h-6 w-6 text-primary" />
+      <div className="mb-3 rounded-full border border-border bg-card/95 p-2.5 shadow-lg">
+        <Lock className="h-5 w-5 text-primary" />
       </div>
-      <p className="px-4 text-center font-serif text-[28px] font-bold leading-tight text-primary drop-shadow-sm md:text-[34px]">
+      <p className="px-4 text-center font-serif text-[20px] font-bold leading-tight text-primary drop-shadow-sm md:text-[24px]">
         Faça o teste para desbloquear seu mapa biológico
       </p>
-      <p className="mt-2 px-4 text-center text-sm text-foreground/70 drop-shadow-sm md:text-base">
+      <p className="mt-1.5 px-4 text-center text-xs text-foreground/70 drop-shadow-sm md:text-sm">
         Identifique seu Agni e nível de agravamento hoje.
       </p>
     </div>
