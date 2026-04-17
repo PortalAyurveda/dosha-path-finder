@@ -564,7 +564,7 @@ const BibliotecaSection = () => {
             badge="Receita do dia"
             image={`https://img.youtube.com/vi/${receitaQ.data.video_id}/mqdefault.jpg`}
             title={receitaQ.data.novo_titulo ?? ""}
-            summary={receitaQ.data.mini_resumo}
+            summary={receitaQ.data.nova_descricao || receitaQ.data.mini_resumo}
             href={`/video/${slugify(receitaQ.data.novo_titulo || "receita")}`}
             videoId={receitaQ.data.video_id}
             external={false}
