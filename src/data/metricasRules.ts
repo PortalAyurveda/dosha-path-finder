@@ -244,7 +244,7 @@ export const RULES: RuleDefinition[] = [
       titulo: "Digestão caótica sem o fogo que a ancoraria",
       subtitulo: "Crítico · {pct}%",
       descricao:
-        "{pct}% das {n} pessoas com digestão irregular consomem poucos alimentos de Pitta. Especiarias, fermentados, o que aquece e dá ritmo à digestão — justamente o que está faltando.",
+        "{pct}% das pessoas com digestão irregular consomem poucos alimentos de Pitta. Especiarias, fermentados, o que aquece e dá ritmo à digestão — justamente o que está faltando.",
     },
   },
   {
@@ -255,7 +255,7 @@ export const RULES: RuleDefinition[] = [
       titulo: "Seus sintomas pedem fogo — e ele está ausente",
       subtitulo: "Crítico · {pct}%",
       descricao:
-        "{pct}% das {n} pessoas com 6 ou mais sintomas de Vata também consomem poucos alimentos de Pitta. O calor digestivo é o que ancora o movimento excessivo. Sem ele, o ciclo se mantém.",
+        "{pct}% das pessoas com 6 ou mais sintomas de Vata também consomem poucos alimentos de Pitta. O calor digestivo é o que ancora o movimento excessivo. Sem ele, o ciclo se mantém.",
     },
   },
   {
@@ -266,7 +266,7 @@ export const RULES: RuleDefinition[] = [
       titulo: "Vata fixado sem o contrapeso do fogo",
       subtitulo: "Crítico · {pct}%",
       descricao:
-        "{pct}% das {n} pessoas com Vata fixado consomem poucos alimentos de Pitta. No estado mais grave de Vata, o fogo que equilibraria o excesso de vento está ausente da dieta.",
+        "{pct}% das pessoas com Vata fixado consomem poucos alimentos de Pitta. No estado mais grave de Vata, o fogo que equilibraria o excesso de vento está ausente da dieta.",
     },
   },
   {
@@ -277,7 +277,7 @@ export const RULES: RuleDefinition[] = [
       titulo: "Fogo apagado — e sem o que o acenderia",
       subtitulo: "Crítico · {pct}%",
       descricao:
-        "{pct}% das {n} pessoas com digestão fraca ou lenta também não consomem os alimentos de Pitta que acenderiam esse fogo. Uma espiral que se fecha sobre si mesma.",
+        "{pct}% das pessoas com digestão fraca ou lenta também não consomem os alimentos de Pitta que acenderiam esse fogo. Uma espiral que se fecha sobre si mesma.",
     },
   },
   {
@@ -288,7 +288,7 @@ export const RULES: RuleDefinition[] = [
       titulo: "Estagnação sem o fogo que dissolve",
       subtitulo: "Crítico · {pct}%",
       descricao:
-        "{pct}% das {n} pessoas com 6 ou mais sintomas de Kapha também não consomem alimentos de Pitta. O fogo é o principal antídoto à estagnação — e está ausente da dieta da maioria.",
+        "{pct}% das pessoas com 6 ou mais sintomas de Kapha também não consomem alimentos de Pitta. O fogo é o principal antídoto à estagnação — e está ausente da dieta da maioria.",
     },
   },
   {
@@ -299,7 +299,7 @@ export const RULES: RuleDefinition[] = [
       titulo: "Kapha fixado sem o fogo que dissolve",
       subtitulo: "Crítico · {pct}%",
       descricao:
-        "{pct}% das {n} pessoas com Kapha no estado mais grave também não consomem alimentos de Pitta. Quando a montanha cai, ela cai sem o calor que a teria dissolvido antes.",
+        "{pct}% das pessoas com Kapha no estado mais grave também não consomem alimentos de Pitta. Quando a montanha cai, ela cai sem o calor que a teria dissolvido antes.",
     },
   },
 
@@ -312,7 +312,7 @@ export const RULES: RuleDefinition[] = [
       titulo: "Vata acumulando sem o fogo que o direciona",
       subtitulo: "Alerta · {pct}%",
       descricao:
-        "Com Vata em Acúmulo, {pct}% das {n} pessoas também consomem poucos alimentos de Pitta. O fogo regula o vento — e está ausente da dieta da maioria que chega nesse estado.",
+        "Com Vata em Acúmulo, {pct}% das pessoas também consomem poucos alimentos de Pitta. O fogo regula o vento — e está ausente da dieta da maioria que chega nesse estado.",
     },
   },
   {
@@ -323,7 +323,7 @@ export const RULES: RuleDefinition[] = [
       titulo: "A fase Vata da vida com digestão errática",
       subtitulo: "Alerta · {pct}%",
       descricao:
-        "A partir dos 50 anos, o Ayurveda descreve uma fase naturalmente mais Vata. Os dados confirmam: {pct}% das {n} pessoas nessa faixa têm digestão irregular — a assinatura do Vata dominando com a idade.",
+        "A partir dos 50 anos, o Ayurveda descreve uma fase naturalmente mais Vata. Os dados confirmam: {pct}% das pessoas nessa faixa têm digestão irregular — a assinatura do Vata dominando com a idade.",
     },
   },
   {
@@ -334,7 +334,7 @@ export const RULES: RuleDefinition[] = [
       titulo: "Kapha acumulando sem o que o moveria",
       subtitulo: "Alerta · {pct}%",
       descricao:
-        "{pct}% das {n} pessoas com Kapha em Acúmulo consomem poucos alimentos de Pitta. O fogo é o antídoto natural da estagnação — e a maioria nesse estado não o consome.",
+        "{pct}% das pessoas com Kapha em Acúmulo consomem poucos alimentos de Pitta. O fogo é o antídoto natural da estagnação — e a maioria nesse estado não o consome.",
     },
   },
   {
@@ -348,7 +348,7 @@ export const RULES: RuleDefinition[] = [
       titulo: "Digestão lenta e Kapha acumulando juntos",
       subtitulo: "Alerta · {pct}%",
       descricao:
-        "{pct}% das {n} pessoas com digestão fraca ou lenta em nível moderado também têm Kapha em Acúmulo. Quando o fogo é insuficiente para transformar, a matéria se acumula.",
+        "{pct}% das pessoas com digestão fraca ou lenta em nível moderado também têm Kapha em Acúmulo. Quando o fogo é insuficiente para transformar, a matéria se acumula.",
     },
   },
   {
@@ -363,7 +363,7 @@ export const RULES: RuleDefinition[] = [
       titulo: "Três marcadores de Kapha alinhados",
       subtitulo: "Alerta · {pct}%",
       descricao:
-        "{pct}% das {n} pessoas com IMC acima de 26, digestão lenta e 4 ou mais sintomas de Kapha têm os três marcadores confirmados. Quando o corpo, a digestão e os sintomas concordam, o caminho fica claro.",
+        "{pct}% das pessoas com IMC acima de 26, digestão lenta e 4 ou mais sintomas de Kapha têm os três marcadores confirmados. Quando o corpo, a digestão e os sintomas concordam, o caminho fica claro.",
     },
   },
   {
@@ -378,7 +378,7 @@ export const RULES: RuleDefinition[] = [
       titulo: "Fogo intenso com Pitta adoecido quase sempre tem Vata por baixo",
       subtitulo: "Alerta · {pct}%",
       descricao:
-        "Em {pct}% das {n} pessoas com fogo digestivo muito intenso e Pitta adoecido, Vata também está em Acúmulo. Fogo acelerado sem movimento equilibrado gera turbulência — e Vata aparece.",
+        "Em {pct}% das pessoas com fogo digestivo muito intenso e Pitta adoecido, Vata também está em Acúmulo. Fogo acelerado sem movimento equilibrado gera turbulência — e Vata aparece.",
     },
   },
   {
@@ -393,7 +393,7 @@ export const RULES: RuleDefinition[] = [
       titulo: "Digestão lenta com Kapha alto quase sempre apaga o Pitta",
       subtitulo: "Alerta · {pct}%",
       descricao:
-        "Em {pct}% das {n} pessoas com digestão fraca e Kapha em Acúmulo, o Pitta está normal ou em déficit. Sem fogo digestivo, o peso acumula — e o metabolismo se ausenta.",
+        "Em {pct}% das pessoas com digestão fraca e Kapha em Acúmulo, o Pitta está normal ou em déficit. Sem fogo digestivo, o peso acumula — e o metabolismo se ausenta.",
     },
   },
   {
@@ -408,7 +408,7 @@ export const RULES: RuleDefinition[] = [
       titulo: "Corpo denso sem movimento na dieta",
       subtitulo: "Alerta · {pct}%",
       descricao:
-        "{pct}% das {n} pessoas com IMC alto e digestão lenta consomem poucos alimentos de Vata. Leveza, movimento, o que circula — justamente o que o corpo mais precisaria nesse estado.",
+        "{pct}% das pessoas com IMC alto e digestão lenta consomem poucos alimentos de Vata. Leveza, movimento, o que circula — justamente o que o corpo mais precisaria nesse estado.",
     },
   },
   {
@@ -419,7 +419,7 @@ export const RULES: RuleDefinition[] = [
       titulo: "Fogo alto sem a leveza que o refresca",
       subtitulo: "Alerta · {pct}%",
       descricao:
-        "{pct}% das {n} pessoas com digestão forte e intensa consomem poucos alimentos de Vata. Sem leveza e frescor na dieta, o fogo não encontra alívio e acumula ainda mais.",
+        "{pct}% das pessoas com digestão forte e intensa consomem poucos alimentos de Vata. Sem leveza e frescor na dieta, o fogo não encontra alívio e acumula ainda mais.",
     },
   },
   {
@@ -441,7 +441,7 @@ export const RULES: RuleDefinition[] = [
       titulo: "Estagnação sem o movimento que dissolve",
       subtitulo: "Alerta · {pct}%",
       descricao:
-        "{pct}% das {n} pessoas com 6 ou mais sintomas de Kapha também não consomem alimentos de Vata. O movimento é o antídoto natural da letargia — e está ausente da dieta da maioria.",
+        "{pct}% das pessoas com 6 ou mais sintomas de Kapha também não consomem alimentos de Vata. O movimento é o antídoto natural da letargia — e está ausente da dieta da maioria.",
     },
   },
   {
@@ -476,7 +476,7 @@ export const RULES: RuleDefinition[] = [
       titulo: "Apagando o próprio fogo",
       subtitulo: "Atenção · {pct}%",
       descricao:
-        "{pct}% das {n} pessoas com Pitta em déficit e digestão sem intensidade também não consomem alimentos de Pitta. Falta de fogo mais falta do que acende — um ciclo de apagamento que precisa ser quebrado.",
+        "{pct}% das pessoas com Pitta em déficit e digestão sem intensidade também não consomem alimentos de Pitta. Falta de fogo mais falta do que acende — um ciclo de apagamento que precisa ser quebrado.",
     },
   },
   {
@@ -487,7 +487,7 @@ export const RULES: RuleDefinition[] = [
       titulo: "Pitta baixo — a fase Vata chegou",
       subtitulo: "Atenção · {pct}%",
       descricao:
-        "{pct}% das {n} pessoas com Pitta em déficit têm 50 anos ou mais. O Ayurveda descreve isso como natural: após os 50, o fogo da maturidade começa a dar lugar à fase Vata da vida.",
+        "{pct}% das pessoas com Pitta em déficit têm 50 anos ou mais. O Ayurveda descreve isso como natural: após os 50, o fogo da maturidade começa a dar lugar à fase Vata da vida.",
     },
   },
   {
@@ -498,7 +498,7 @@ export const RULES: RuleDefinition[] = [
       titulo: "Vata baixo sem estímulo de movimento",
       subtitulo: "Atenção · {pct}%",
       descricao:
-        "{pct}% das {n} pessoas com Vata em déficit e sem irregularidade digestiva também consomem poucos alimentos de Vata. Quando falta movimento, ele precisa ser estimulado — e não está vindo da dieta.",
+        "{pct}% das pessoas com Vata em déficit e sem irregularidade digestiva também consomem poucos alimentos de Vata. Quando falta movimento, ele precisa ser estimulado — e não está vindo da dieta.",
     },
   },
   {
@@ -531,7 +531,7 @@ export const RULES: RuleDefinition[] = [
       titulo: "O vento pegou fogo",
       subtitulo: "Atenção · {pct}%",
       descricao:
-        "Em {pct}% das {n} pessoas com Vata fixado, também aparecem 5 ou mais sintomas de Pitta. Quando Vata está no nível mais grave, ele começa a agitar o fogo de Pitta — e os dois ardem juntos.",
+        "Em {pct}% das pessoas com Vata fixado, também aparecem 5 ou mais sintomas de Pitta. Quando Vata está no nível mais grave, ele começa a agitar o fogo de Pitta — e os dois ardem juntos.",
     },
   },
   {
@@ -553,7 +553,7 @@ export const RULES: RuleDefinition[] = [
       titulo: "Vata arrastando Pitta",
       subtitulo: "Atenção · {pct}%",
       descricao:
-        "Com Vata adoecido, {pct}% das {n} pessoas também têm Pitta em Acúmulo. O desequilíbrio primário de Vata vai contaminando o fogo de Pitta — a progressão natural quando o vento não é tratado.",
+        "Com Vata adoecido, {pct}% das pessoas também têm Pitta em Acúmulo. O desequilíbrio primário de Vata vai contaminando o fogo de Pitta — a progressão natural quando o vento não é tratado.",
     },
   },
   {
@@ -564,7 +564,7 @@ export const RULES: RuleDefinition[] = [
       titulo: "Vata no topo arrasta Pitta junto",
       subtitulo: "Atenção · {pct}%",
       descricao:
-        "{pct}% das {n} pessoas com Vata fixado também têm Pitta em Acúmulo. O colapso do vento não fica isolado — ele contamina o fogo digestivo e emocional.",
+        "{pct}% das pessoas com Vata fixado também têm Pitta em Acúmulo. O colapso do vento não fica isolado — ele contamina o fogo digestivo e emocional.",
     },
   },
   {
@@ -575,7 +575,7 @@ export const RULES: RuleDefinition[] = [
       titulo: "Pitta fixado sem o que o aliviaria",
       subtitulo: "Atenção · {pct}%",
       descricao:
-        "{pct}% das {n} pessoas com Pitta fixado consomem poucos alimentos de Vata. A leveza e o movimento que resfriariam o excesso de fogo estão ausentes da dieta de quem está no nível mais grave.",
+        "{pct}% das pessoas com Pitta fixado consomem poucos alimentos de Vata. A leveza e o movimento que resfriariam o excesso de fogo estão ausentes da dieta de quem está no nível mais grave.",
     },
   },
   {
@@ -586,7 +586,7 @@ export const RULES: RuleDefinition[] = [
       titulo: "Sinal precoce: digestão irregular antes do score subir",
       subtitulo: "Atenção · {pct}%",
       descricao:
-        "Com Vata ainda em Normal, {pct}% das {n} pessoas já têm digestão irregular. É um sinal antes do sinal — o Agni aparece como alerta antes que o score reflita o desequilíbrio.",
+        "Com Vata ainda em Normal, {pct}% das pessoas já têm digestão irregular. É um sinal antes do sinal — o Agni aparece como alerta antes que o score reflita o desequilíbrio.",
     },
   },
   {
@@ -597,7 +597,7 @@ export const RULES: RuleDefinition[] = [
       titulo: "Os sintomas chegam antes do score",
       subtitulo: "Atenção · {pct}%",
       descricao:
-        "Com Vata aparentemente normal, {pct}% das {n} pessoas já relatam 4 ou mais sintomas de Vata. O corpo sente antes que o teste reflita — vale prestar atenção ao que está se manifestando.",
+        "Com Vata aparentemente normal, {pct}% das pessoas já relatam 4 ou mais sintomas de Vata. O corpo sente antes que o teste reflita — vale prestar atenção ao que está se manifestando.",
     },
   },
   {
@@ -608,7 +608,7 @@ export const RULES: RuleDefinition[] = [
       titulo: "Pitta oculto: sintomas além do score",
       subtitulo: "Atenção · {pct}%",
       descricao:
-        "Com Pitta em nível normal ou pouco, {pct}% das {n} pessoas ainda relatam 4 ou mais sintomas de Pitta. O fogo pode estar se manifestando além do que a pontuação captura — refluxo, irritação, inflamação.",
+        "Com Pitta em nível normal ou pouco, {pct}% das pessoas ainda relatam 4 ou mais sintomas de Pitta. O fogo pode estar se manifestando além do que a pontuação captura — refluxo, irritação, inflamação.",
     },
   },
 
@@ -621,7 +621,7 @@ export const RULES: RuleDefinition[] = [
       titulo: "Paradoxo: Vata e fogo intenso quase não coexistem",
       subtitulo: "Paradoxo · {pct}%",
       descricao:
-        "Apenas {pct}% das {n} pessoas com Vata fixado também têm digestão forte. Vata e fogo intenso são quase incompatíveis — o vento quase sempre apaga o fogo, não o intensifica.",
+        "Apenas {pct}% das pessoas com Vata fixado também têm digestão forte. Vata e fogo intenso são quase incompatíveis — o vento quase sempre apaga o fogo, não o intensifica.",
     },
   },
   {
@@ -633,7 +633,7 @@ export const RULES: RuleDefinition[] = [
       titulo: "Paradoxo: ser magro raramente é Kapha",
       subtitulo: "Paradoxo · {pct}%",
       descricao:
-        "Apenas {pct}% das {n} pessoas com IMC abaixo de 18.5 têm digestão fraca ou lenta. Ser magro quase nunca é Kapha — o corpo leve é quase sempre uma expressão de Vata, não de inércia.",
+        "Apenas {pct}% das pessoas com IMC abaixo de 18.5 têm digestão fraca ou lenta. Ser magro quase nunca é Kapha — o corpo leve é quase sempre uma expressão de Vata, não de inércia.",
     },
   },
 
