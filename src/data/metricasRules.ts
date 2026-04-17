@@ -178,7 +178,7 @@ export const RULES: RuleDefinition[] = [
       titulo: "Sobrecarga sistêmica com digestão irregular",
       subtitulo: "Crítico · {pct}%",
       descricao:
-        "Com score total acima de 100, {pct}% das {n} pessoas também têm digestão irregular. Quando tudo está alto, o Agni Irregular é o denominador comum — sinal de que o sistema inteiro está sobrecarregado.",
+        "{pct}% das pessoas com score total acima de 100 também têm digestão irregular. Quando tudo está alto, o Agni Irregular é o denominador comum — sinal de que o sistema inteiro está sobrecarregado.",
     },
   },
   {
