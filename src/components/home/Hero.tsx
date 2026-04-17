@@ -140,10 +140,10 @@ const Hero = () => {
               style={{ animationDelay: "0.25s" }}
             >
               <div className="text-center not-italic">
-                <h1 className="mb-2 text-2xl md:text-3xl font-semibold lg:text-2xl not-italic">
+                <h1 className="mb-2 text-2xl md:text-3xl font-semibold lg:text-[22px] leading-snug not-italic">
                   Seu guia completo para saúde e longevidade.
                 </h1>
-                <p className="text-sm md:text-base lg:text-sm text-muted-foreground not-italic">
+                <p className="text-sm md:text-base lg:text-[15px] leading-snug text-muted-foreground not-italic">
                   Descubra e cuide dos seus Doshas por meio da medicina milenar.
                 </p>
               </div>
