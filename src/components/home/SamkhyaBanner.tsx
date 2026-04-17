@@ -24,10 +24,10 @@ const SamkhyaCTA = ({ className = "" }: { className?: string }) => (
 const SamkhyaBanner = () => {
   return (
     <section className="relative overflow-hidden border-t border-secondary/20">
-      {/* Background image — mobile */}
+      {/* Background image — mobile (positioned to reveal the drawing) */}
       <div
-        className="absolute inset-0 bg-no-repeat bg-cover bg-center md:hidden"
-        style={{ backgroundImage: `url(${BANNER_URL_MOBILE})` }}
+        className="absolute inset-0 bg-no-repeat bg-cover md:hidden"
+        style={{ backgroundImage: `url(${BANNER_URL_MOBILE})`, backgroundPosition: "center 30%" }}
         aria-hidden
       />
       {/* Background image — desktop */}
