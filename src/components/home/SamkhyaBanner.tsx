@@ -37,10 +37,13 @@ const SamkhyaBanner = () => {
         }}
         aria-hidden
       />
-      {/* Mobile wash for legibility */}
+      {/* Mobile wash for legibility — lighter so the artwork shows through */}
       <div
         className="absolute inset-0 md:hidden"
-        style={{ background: "rgba(255,247,232,0.75)" }}
+        style={{
+          background:
+            "linear-gradient(180deg, rgba(255,247,232,0.85) 0%, rgba(255,247,232,0.6) 55%, rgba(255,247,232,0.25) 100%)",
+        }}
         aria-hidden
       />
 
