@@ -99,7 +99,7 @@ export const RULES: RuleDefinition[] = [
       titulo: "Pitta alto sem fogo digestivo próprio",
       subtitulo: "Diagnóstico · {pct}%",
       descricao:
-        "Quando Pitta está fixado mas a digestão não é forte, quase sempre é Vata que está dirigindo o desequilíbrio por baixo. Confirmado em {pct}% dos {n} casos: a inflamação não vem do fogo próprio — vem do vento que esquenta.",
+        "{pct}% das pessoas com Pitta fixado mas sem digestão forte também têm digestão irregular. A inflamação não vem do fogo próprio — vem do vento que esquenta por baixo.",
     },
   },
   {
