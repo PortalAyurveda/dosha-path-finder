@@ -188,43 +188,53 @@ const Blog = () => {
         ) : filteredArticles.length === 0 ? (
           <p className="text-center text-muted-foreground py-12">Nenhum artigo encontrado.</p>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredArticles.map((article) => (
-              <Link
-                key={article.id}
-                to={`/blog/${article.link_do_artigo || article.id}`}
-                className="group bg-card rounded-xl overflow-hidden border border-border hover:shadow-lg transition-all hover:-translate-y-1"
-              >
-                {article.image_url && (
-                  <div className="aspect-video overflow-hidden">
-                    <img
-                      src={getTransformedImageUrl(article.image_url)}
-                      alt={article.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      loading="lazy"
-                    />
-                  </div>
-                )}
-                <div className="p-5">
-                  <h2 className="font-serif text-lg font-bold text-foreground mb-2 line-clamp-2 group-hover:text-primary transition-colors">
-                    {article.title}
-                  </h2>
-                  <p className="text-sm text-muted-foreground line-clamp-3 mb-3">
-                    {article.meta_description || ""}
-                  </p>
-                  {article.tags && (
-                    <div className="flex flex-wrap gap-1.5">
-                      {article.tags.split(",").slice(0, 3).map((tag) => (
-                        <Badge key={tag.trim()} variant="secondary" className="text-[10px] bg-muted text-muted-foreground">
-                          {tag.trim()}
-                        </Badge>
-                      ))}
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {paginatedArticles.map((article) => (
+                <Link
+                  key={article.id}
+                  to={`/blog/${article.link_do_artigo || article.id}`}
+                  className="group bg-card rounded-xl overflow-hidden border border-border hover:shadow-lg transition-all hover:-translate-y-1"
+                >
+                  {article.image_url && (
+                    <div className="aspect-video overflow-hidden">
+                      <img
+                        src={getTransformedImageUrl(article.image_url)}
+                        alt={article.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        loading="lazy"
+                      />
                     </div>
                   )}
-                </div>
-              </Link>
-            ))}
-          </div>
+                  <div className="p-5">
+                    <h2 className="font-serif text-lg font-bold text-foreground mb-2 line-clamp-2 group-hover:text-primary transition-colors">
+                      {article.title}
+                    </h2>
+                    <p className="text-sm text-muted-foreground line-clamp-3 mb-3">
+                      {article.meta_description || ""}
+                    </p>
+                    {article.tags && (
+                      <div className="flex flex-wrap gap-1.5">
+                        {article.tags.split(",").slice(0, 3).map((tag) => (
+                          <Badge key={tag.trim()} variant="secondary" className="text-[10px] bg-muted text-muted-foreground">
+                            {tag.trim()}
+                          </Badge>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </Link>
+              ))}
+            </div>
+
+            {totalPages > 1 && (
+              <PaginationControls
+                page={page}
+                totalPages={totalPages}
+                onPageChange={goToPage}
+              />
+            )}
+          </>
         )}
       </div>
     </>
