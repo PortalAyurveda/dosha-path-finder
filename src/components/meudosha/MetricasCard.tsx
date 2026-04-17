@@ -163,11 +163,6 @@ const MetricasCard = ({ card, index = 0 }: MetricasCardProps) => {
       >
         {card.descricao}
       </p>
-      {card.n_base > 0 && card.categoria !== "Estrutural" && (
-        <p className="text-[11px] text-[#9CA3AF] pt-1">
-          entre {card.n_base.toLocaleString("pt-BR")} pessoas com perfil similar
-        </p>
-      )}
     </div>
   );
 };
