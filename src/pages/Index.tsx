@@ -252,26 +252,25 @@ type FeedItem = {
   frase_akasha: string | null;
   status_visual: string | null;
   dosha_nome: string | null;
-  vatascore?: number | null;
-  pittascore?: number | null;
-  kaphascore?: number | null;
 };
 
-// Returns alert color if a single dosha dominates and is >= 35
+// Highlight when dosha_nome indicates a strong/aggravated single dosha
+// (status_visual or dosha_nome contains "alerta", "agrav", or single-dosha name)
 const getAlertColor = (it: FeedItem): string | null => {
-  const v = it.vatascore ?? 0;
-  const p = it.pittascore ?? 0;
-  const k = it.kaphascore ?? 0;
-  const max = Math.max(v, p, k);
-  if (max < 35) return null;
-  if (max === p && p > v && p > k) return C.pitta;
-  if (max === v && v > p && v > k) return C.vata;
-  if (max === k && k > v && k > p) return C.kapha;
-  // fallback by dosha_nome string if scores are tied/missing
-  const name = (it.dosha_nome || "").toLowerCase();
-  if (name.includes("pitta")) return C.pitta;
-  if (name.includes("vata")) return C.vata;
-  if (name.includes("kapha")) return C.kapha;
+  const name = (it.dosha_nome || "").toLowerCase().trim();
+  const status = (it.status_visual || "").toLowerCase();
+  const aggravated =
+    status.includes("agrav") ||
+    status.includes("alerta") ||
+    status.includes("desequil") ||
+    status.includes("crítico") ||
+    status.includes("critico");
+  // Only highlight when single dominant dosha (no "/" or "+")
+  const isSingle = name && !/[\/+&]/.test(name) && !name.includes(" e ");
+  if (!aggravated && !isSingle) return null;
+  if (name.includes("pitta") && !name.includes("vata") && !name.includes("kapha")) return C.pitta;
+  if (name.includes("vata") && !name.includes("pitta") && !name.includes("kapha")) return C.vata;
+  if (name.includes("kapha") && !name.includes("vata") && !name.includes("pitta")) return C.kapha;
   return null;
 };
 
