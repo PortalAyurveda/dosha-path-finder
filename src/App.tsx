@@ -26,6 +26,8 @@ import NotFound from "./pages/NotFound";
 import Admin from "./pages/Admin";
 import Blog from "./pages/Blog";
 import BlogArticle from "./pages/BlogArticle";
+import Metricas from "./pages/Metricas";
+import RegistroAkashico from "./pages/RegistroAkashico";
 
 const queryClient = new QueryClient();
 
@@ -77,6 +79,8 @@ const RoutedApp = () => {
               <Route path="/biblioteca/horarios" element={<Horarios />} />
               <Route path="/blog" element={<Blog />} />
               <Route path="/blog/:slug" element={<BlogArticle />} />
+              <Route path="/metricas" element={<Metricas />} />
+              <Route path="/registros/:id" element={<RegistroAkashico />} />
               <Route path="/entrar" element={<Auth />} />
               <Route path="/politica-de-privacidade" element={<PoliticaDePrivacidade />} />
               <Route path="/termos-de-uso" element={<TermosDeUso />} />

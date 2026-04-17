@@ -1,0 +1,178 @@
+import { Link } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { ArrowRight, Sparkles } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+
+const PRIMARY = "#352F54";
+const AKASHA = "#9b73ad";
+const AKASHA_LOGO =
+  "https://static.wixstatic.com/media/b8f47f_105371e1ade24ccd9bd3406b83bd925e~mv2.png";
+const LEAF = "24px 4px 24px 4px";
+
+type Row = {
+  id: number;
+  titulo: string | null;
+  texto_inicio: string | null;
+  tags: string | null;
+  data_postagem: string | null;
+};
+
+const formatHour = (iso: string | null) => {
+  if (!iso) return "--:--";
+  try {
+    const d = new Date(iso);
+    return d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+  } catch {
+    return "--:--";
+  }
+};
+
+// Extract just the emojis from tag string for display chip (right side)
+const extractEmojis = (tags: string | null) => {
+  if (!tags) return "";
+  // Match emoji-like chars (rough)
+  const emojis = tags.match(/\p{Extended_Pictographic}/gu);
+  return emojis ? emojis.slice(0, 4).join("") : "";
+};
+
+const RegistrosAkashikos = () => {
+  const { data, isLoading } = useQuery({
+    queryKey: ["index_registros_akashikos"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("akasha_memory")
+        .select("id, titulo, texto_inicio, tags, data_postagem")
+        .not("titulo", "is", null)
+        .order("data_postagem", { ascending: false })
+        .limit(6);
+      if (error) throw error;
+      return (data ?? []) as Row[];
+    },
+    staleTime: 5 * 60 * 1000,
+  });
+
+  return (
+    <section className="bg-card">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-16 md:py-20 grid grid-cols-1 lg:grid-cols-12 gap-10">
+        {/* Left: copy */}
+        <div className="lg:col-span-5">
+          <div className="flex items-center gap-3 mb-5">
+            <img
+              src={AKASHA_LOGO}
+              alt="Akasha IA"
+              width={56}
+              height={56}
+              className="w-14 h-14 object-contain"
+              loading="lazy"
+            />
+            <span
+              className="text-[11px] font-semibold uppercase tracking-wider px-2.5 py-1 rounded-full inline-flex items-center gap-1"
+              style={{ background: `${AKASHA}18`, color: AKASHA }}
+            >
+              <Sparkles className="h-3 w-3" /> Atualizado agora
+            </span>
+          </div>
+          <h2
+            className="font-serif italic font-bold text-3xl md:text-4xl mb-4 leading-tight"
+            style={{ color: PRIMARY }}
+          >
+            Registros de Akasha,
+            <br />
+            <span style={{ color: AKASHA }}>nossa I.A.</span>
+          </h2>
+          <p className="text-muted-foreground text-base mb-4 leading-relaxed">
+            Memória viva das perguntas da comunidade. Cada linha é um momento real de busca por
+            equilíbrio — anônimo, poético, verdadeiro.
+          </p>
+          <p className="text-muted-foreground text-sm leading-relaxed">
+            A Akasha aprende com cada conversa e guarda o essencial em forma de título e reflexão.
+            <span className="block mt-2 text-xs italic" style={{ color: AKASHA }}>
+              Disponível após fazer o teste de dosha.
+            </span>
+          </p>
+        </div>
+
+        {/* Right: live feed */}
+        <div className="lg:col-span-7">
+          <div
+            className="border border-border bg-background overflow-hidden"
+            style={{ borderRadius: LEAF }}
+          >
+            <div
+              className="px-5 py-3 flex items-center justify-between border-b border-border"
+              style={{ background: `${AKASHA}08` }}
+            >
+              <p className="font-sans text-xs font-bold uppercase tracking-wider" style={{ color: AKASHA }}>
+                Registros Akashikos — ao vivo
+              </p>
+              <span className="relative flex h-2 w-2">
+                <span
+                  className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75"
+                  style={{ background: AKASHA }}
+                />
+                <span className="relative inline-flex rounded-full h-2 w-2" style={{ background: AKASHA }} />
+              </span>
+            </div>
+
+            <ul className="divide-y divide-border">
+              {isLoading
+                ? Array.from({ length: 6 }).map((_, i) => (
+                    <li key={i} className="px-5 py-3 flex items-start gap-4 animate-pulse">
+                      <div className="w-12 h-4 bg-muted rounded" />
+                      <div className="flex-1 space-y-2">
+                        <div className="h-4 bg-muted rounded w-4/5" />
+                        <div className="h-3 bg-muted rounded w-3/5" />
+                      </div>
+                      <div className="w-12 h-5 bg-muted rounded" />
+                    </li>
+                  ))
+                : (data ?? []).map((r) => (
+                    <li key={r.id}>
+                      <Link
+                        to={`/registros/${r.id}`}
+                        className="px-5 py-3 flex items-start gap-4 transition-colors hover:bg-muted/40 group"
+                      >
+                        <span
+                          className="font-mono text-xs font-bold tabular-nums pt-1 w-12 shrink-0"
+                          style={{ color: AKASHA }}
+                        >
+                          {formatHour(r.data_postagem)}
+                        </span>
+                        <div className="flex-1 min-w-0">
+                          <p
+                            className="font-serif font-bold text-[14px] leading-snug line-clamp-1 group-hover:underline"
+                            style={{ color: PRIMARY }}
+                          >
+                            {r.titulo}
+                          </p>
+                          {r.texto_inicio && (
+                            <p className="text-xs text-muted-foreground line-clamp-1 mt-0.5">
+                              {r.texto_inicio.slice(0, 90)}…
+                            </p>
+                          )}
+                        </div>
+                        <span className="text-base shrink-0 pt-0.5" aria-hidden="true">
+                          {extractEmojis(r.tags)}
+                        </span>
+                      </Link>
+                    </li>
+                  ))}
+            </ul>
+
+            <div className="px-5 py-3 border-t border-border text-right">
+              <Link
+                to="/metricas"
+                className="inline-flex items-center gap-1 text-xs font-semibold transition-colors hover:opacity-80"
+                style={{ color: AKASHA }}
+              >
+                Ver todos os registros <ArrowRight className="h-3.5 w-3.5" />
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default RegistrosAkashikos;
