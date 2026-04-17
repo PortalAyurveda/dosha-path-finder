@@ -28,59 +28,177 @@ const STORAGE = "https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/publ
 /* ============================================================
    Hero
 ============================================================ */
-const Hero = () => (
-  <section
-    className="relative overflow-hidden"
-    style={{
-      background: `linear-gradient(180deg, ${C.surface} 0%, #ffffff 100%)`,
-      minHeight: "88vh",
-    }}
-  >
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-16 md:py-24 flex flex-col items-center text-center justify-center min-h-[88vh]">
-      <img
-        src="https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/simbolo-positivo.svg"
-        alt="Portal Ayurveda"
-        width={96}
-        height={96}
-        className="mb-8 animate-fade-in"
-      />
+const Hero = () => {
+  const navigate = useNavigate();
+  const [nome, setNome] = useState("");
+  const [idade, setIdade] = useState("");
+  const [nivel, setNivel] = useState("");
 
-      <h1
-        className="font-serif italic font-bold leading-[1.05] mb-6 text-[40px] sm:text-[52px] md:text-[64px]"
-        style={{ color: C.primary }}
-      >
-        Aprenda Ayurveda com
-        <br />
-        quem <span style={{ color: C.pitta, fontStyle: "normal" }}>vive a prática.</span>
-      </h1>
+  const canStart = !!(nome.trim() && idade.trim() && nivel);
 
-      <p className="font-sans text-base md:text-[17px] text-muted-foreground max-w-2xl mb-10 leading-relaxed">
-        Mais de 1.600 pessoas já descobriram seu dosha com o nosso teste gratuito.
-        <br />
-        Aulas ao vivo toda semana.
-      </p>
+  const handleStart = () => {
+    if (!canStart) return;
+    localStorage.setItem(
+      "dosha_test_info",
+      JSON.stringify({ nome: nome.trim(), idade, nivel })
+    );
+    navigate("/teste-de-dosha");
+  };
 
-      <Link
-        to="/teste-de-dosha"
-        className="inline-flex items-center gap-2 font-sans font-semibold text-white text-base md:text-lg px-8 py-4 transition-transform hover:-translate-y-0.5"
-        style={{
-          background: C.pitta,
-          borderRadius: LEAF,
-          boxShadow: "0 8px 24px rgba(255,118,118,.3)",
-        }}
-      >
-        Faça o Teste de Dosha
-        <ArrowRight className="h-5 w-5" />
-      </Link>
+  return (
+    <section
+      className="relative overflow-hidden"
+      style={{
+        background: `linear-gradient(180deg, ${C.surface} 0%, #ffffff 100%)`,
+      }}
+    >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12 md:py-20">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+          {/* Left: blurred preview teaser */}
+          <div className="hidden lg:block lg:col-span-7">
+            <div
+              className="bg-card/80 backdrop-blur-sm rounded-3xl p-6 xl:p-8 border border-border shadow-lg relative overflow-hidden"
+              style={{
+                maskImage: "linear-gradient(to right, black 80%, transparent 100%)",
+                WebkitMaskImage: "linear-gradient(to right, black 80%, transparent 100%)",
+                minHeight: 420,
+              }}
+            >
+              <div className="select-none pointer-events-none" style={{ filter: "blur(6px)", opacity: 0.55 }}>
+                <div className="grid grid-cols-2 gap-6">
+                  <div className="flex flex-col items-center justify-center space-y-3">
+                    <p className="font-serif font-bold text-base" style={{ color: C.primary }}>Pontuação</p>
+                    <div
+                      className="w-40 h-40 rounded-full relative shadow-inner flex items-center justify-center"
+                      style={{
+                        background: `conic-gradient(${C.pitta} 0% 59.7%, ${C.vata} 59.7% 92.3%, ${C.kapha} 92.3% 100%)`,
+                      }}
+                    >
+                      <div className="w-24 h-24 bg-card rounded-full" />
+                    </div>
+                    <div className="text-xs font-bold text-muted-foreground space-y-0.5 text-center">
+                      <p>Vata: 30 pts</p>
+                      <p>Pitta: 55 pts</p>
+                      <p>Kapha: 7 pts</p>
+                    </div>
+                  </div>
+                  <div className="flex flex-col space-y-3">
+                    <p className="font-serif font-bold text-base text-center" style={{ color: C.primary }}>Quadro Clínico</p>
+                    <div className="grid grid-cols-3 gap-1.5 flex-1 h-[220px]">
+                      <div className="flex flex-col gap-1">
+                        <div className="flex-1 bg-muted/50 rounded-sm" />
+                        <div className="flex-1 bg-muted/50 rounded-sm" />
+                        <div className="flex-1 rounded-sm" style={{ background: C.vata }} />
+                        <div className="flex-1 rounded-sm" style={{ background: C.vata, opacity: 0.7 }} />
+                        <div className="flex-1 rounded-sm" style={{ background: C.vata, opacity: 0.4 }} />
+                      </div>
+                      <div className="flex flex-col gap-1">
+                        <div className="flex-1 rounded-sm" style={{ background: C.pitta }} />
+                        <div className="flex-1 rounded-sm" style={{ background: C.pitta, opacity: 0.85 }} />
+                        <div className="flex-1 rounded-sm" style={{ background: C.pitta, opacity: 0.65 }} />
+                        <div className="flex-1 rounded-sm" style={{ background: C.pitta, opacity: 0.45 }} />
+                        <div className="flex-1 rounded-sm" style={{ background: C.pitta, opacity: 0.25 }} />
+                      </div>
+                      <div className="flex flex-col gap-1">
+                        <div className="flex-1 bg-muted/50 rounded-sm" />
+                        <div className="flex-1 bg-muted/50 rounded-sm" />
+                        <div className="flex-1 bg-muted/50 rounded-sm" />
+                        <div className="flex-1 bg-muted/50 rounded-sm" />
+                        <div className="flex-1 rounded-sm" style={{ background: C.kapha, opacity: 0.6 }} />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
 
-      <p className="mt-6 text-[13px] text-muted-foreground flex flex-wrap justify-center gap-x-5 gap-y-1">
-        <span>✓ Gratuito</span>
-        <span>✓ Resultado imediato</span>
-        <span>✓ Sem cadastro</span>
-      </p>
-    </div>
-  </section>
-);
+          {/* Right: form */}
+          <div className="lg:col-span-5 flex flex-col">
+            <div
+              className="animate-fade-in bg-card/80 backdrop-blur-sm rounded-3xl p-6 xl:p-8 border border-border shadow-lg flex flex-col justify-center space-y-5"
+              style={{ animationDelay: "0.25s" }}
+            >
+              <div className="text-center">
+                <h1
+                  className="mb-2 font-serif font-bold text-2xl md:text-3xl lg:text-[36px] leading-tight"
+                  style={{ color: C.primary, fontStyle: "normal" }}
+                >
+                  Seu guia completo para saúde e longevidade.
+                </h1>
+                <p className="text-sm md:text-base text-muted-foreground">
+                  Descubra e cuide dos seus Doshas por meio da medicina milenar.
+                </p>
+              </div>
+
+              <hr className="border-border" />
+
+              <p className="font-serif font-semibold text-base text-center" style={{ color: C.primary }}>
+                Comece seu Teste de Dosha Gratuito
+              </p>
+
+              <div className="text-left space-y-3">
+                <div>
+                  <Label htmlFor="hero-nome" className="text-xs">Seu nome</Label>
+                  <Input
+                    id="hero-nome"
+                    placeholder="Nome"
+                    value={nome}
+                    onChange={(e) => setNome(e.target.value)}
+                    className="mt-1"
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <Label htmlFor="hero-idade" className="text-xs">Idade</Label>
+                    <Input
+                      id="hero-idade"
+                      type="number"
+                      placeholder="30"
+                      value={idade}
+                      onChange={(e) => setIdade(e.target.value)}
+                      className="mt-1"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-xs">Nível de Ayurveda</Label>
+                    <select
+                      value={nivel}
+                      onChange={(e) => setNivel(e.target.value)}
+                      className={cn(
+                        "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm mt-1",
+                        "ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+                        !nivel && "text-muted-foreground"
+                      )}
+                    >
+                      <option value="" disabled>Selecione</option>
+                      <option value="Iniciante">Iniciante</option>
+                      <option value="Intermediário">Intermediário</option>
+                      <option value="Avançado">Avançado</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <Button
+                onClick={handleStart}
+                disabled={!canStart}
+                className="w-full text-white"
+                size="lg"
+                style={{
+                  background: C.pitta,
+                  borderRadius: LEAF,
+                }}
+              >
+                Começar <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
 
 /* ============================================================
    Feed Social (marquee)
