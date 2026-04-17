@@ -110,14 +110,16 @@ const FeedSocial = () => {
   const loop = [...items, ...items];
 
   return (
-    <section
-      className="overflow-hidden py-3"
+    <Link
+      to="/metricas"
+      className="block overflow-hidden py-3 group cursor-pointer transition-colors hover:bg-[color:var(--marquee-hover)]"
       style={{
         background: `${C.primary}0F`,
         borderTop: `1px solid ${C.primary}1A`,
         borderBottom: `1px solid ${C.primary}1A`,
+        ['--marquee-hover' as any]: `${C.primary}1F`,
       }}
-      aria-label="Métricas em tempo real do Portal Ayurveda"
+      aria-label="Ver todas as métricas do Portal Ayurveda"
     >
       <div className="marquee-track flex gap-8 whitespace-nowrap">
         {loop.map((it, i) => (
@@ -132,7 +134,7 @@ const FeedSocial = () => {
             <span style={{ color: it.tone, fontWeight: 700 }}>
               {it.text.split(" ")[0]}
             </span>
-            <span>{it.text.split(" ").slice(1).join(" ")}</span>
+            <span className="group-hover:underline underline-offset-2">{it.text.split(" ").slice(1).join(" ")}</span>
             <span className="mx-2 opacity-40">·</span>
           </span>
         ))}
@@ -148,7 +150,7 @@ const FeedSocial = () => {
         }
         .marquee-track:hover { animation-play-state: paused; }
       `}</style>
-    </section>
+    </Link>
   );
 };
 

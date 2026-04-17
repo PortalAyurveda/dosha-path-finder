@@ -11,40 +11,59 @@ const PIE_COLORS: Record<string, string> = {
   Kapha: '#22C55E',
 };
 
-const HeaderDoshaPie = ({ vata, pitta, kapha, size = 18 }: { vata: number; pitta: number; kapha: number; size?: number }) => {
+const HeaderDoshaPie = ({ vata, pitta, kapha, size = 22 }: { vata: number; pitta: number; kapha: number; size?: number }) => {
   const total = (vata || 0) + (pitta || 0) + (kapha || 0);
   if (total === 0) return null;
+  const cx = size / 2;
+  const cy = size / 2;
   const r = size / 2;
+  const innerR = r * 0.45; // donut hole, mirrors LoggedHero/MeuDosha style
   const slices = [
     { pct: (vata || 0) / total, color: PIE_COLORS.Vata },
     { pct: (pitta || 0) / total, color: PIE_COLORS.Pitta },
     { pct: (kapha || 0) / total, color: PIE_COLORS.Kapha },
-  ].filter(s => s.pct > 0);
+  ].filter((s) => s.pct > 0);
 
-  // Single dosha covers 100% — render full circle (SVG arc can't draw 360°)
+  // Single dosha = 100% → full donut ring (SVG arc can't draw 360° in one path)
   if (slices.length === 1) {
     return (
-      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="shrink-0 rounded-full">
-        <circle cx={r} cy={r} r={r} fill={slices[0].color} />
+      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="block shrink-0 overflow-visible">
+        <circle cx={cx} cy={cy} r={r} fill={slices[0].color} />
+        <circle cx={cx} cy={cy} r={innerR} fill="#FFFFFF" />
       </svg>
     );
   }
 
-  // Start at 0° (3 o'clock), go counterclockwise to match Recharts
-  let cumAngle = 0;
+  // Multiple slices: start at 12 o'clock (-90°), go clockwise — matches Recharts default
+  let cumAngle = -90;
   const paths = slices.map((s, i) => {
     const angle = s.pct * 360;
     const startRad = (cumAngle * Math.PI) / 180;
-    const endRad = ((cumAngle - angle) * Math.PI) / 180;
-    cumAngle -= angle;
-    const x1 = r + r * Math.cos(startRad);
-    const y1 = r - r * Math.sin(startRad);
-    const x2 = r + r * Math.cos(endRad);
-    const y2 = r - r * Math.sin(endRad);
+    const endRad = ((cumAngle + angle) * Math.PI) / 180;
+    const x1Outer = cx + r * Math.cos(startRad);
+    const y1Outer = cy + r * Math.sin(startRad);
+    const x2Outer = cx + r * Math.cos(endRad);
+    const y2Outer = cy + r * Math.sin(endRad);
+    const x1Inner = cx + innerR * Math.cos(endRad);
+    const y1Inner = cy + innerR * Math.sin(endRad);
+    const x2Inner = cx + innerR * Math.cos(startRad);
+    const y2Inner = cy + innerR * Math.sin(startRad);
     const large = angle > 180 ? 1 : 0;
-    return <path key={i} d={`M${r},${r} L${x1},${y1} A${r},${r} 0 ${large} 0 ${x2},${y2} Z`} fill={s.color} />;
+    const d = [
+      `M ${x1Outer} ${y1Outer}`,
+      `A ${r} ${r} 0 ${large} 1 ${x2Outer} ${y2Outer}`,
+      `L ${x1Inner} ${y1Inner}`,
+      `A ${innerR} ${innerR} 0 ${large} 0 ${x2Inner} ${y2Inner}`,
+      "Z",
+    ].join(" ");
+    cumAngle += angle;
+    return <path key={i} d={d} fill={s.color} />;
   });
-  return <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="shrink-0 rounded-full">{paths}</svg>;
+  return (
+    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="block shrink-0 overflow-visible">
+      {paths}
+    </svg>
+  );
 };
 
 const Header = () => {
@@ -71,6 +90,7 @@ const Header = () => {
     { label: "Blog", to: "/blog" },
     { label: "Cursos", to: "/cursos" },
     { label: "Terapeutas", to: "/terapeutas-do-brasil" },
+    { label: "Métricas", to: "/metricas" },
   ];
 
   const firstName = doshaResult?.nome?.split(" ")[0] 
@@ -147,16 +167,16 @@ const Header = () => {
             {doshaResult ? (
               <Link
                 to={profileLink}
-                className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white backdrop-blur-sm hover:bg-white/90 transition-colors border border-border/30"
+                className="flex items-center gap-2 pl-3 pr-2 py-1 rounded-full bg-white hover:bg-white/90 transition-colors border border-border/30 shadow-sm"
               >
-                <span className="text-xs sm:text-sm font-semibold text-foreground truncate max-w-[60px] sm:max-w-[100px]">
+                <span className="text-xs sm:text-sm font-semibold text-foreground truncate max-w-[80px] sm:max-w-[120px] leading-none">
                   {firstName}
                 </span>
                 <HeaderDoshaPie
                   vata={doshaResult.vatascore ?? 0}
                   pitta={doshaResult.pittascore ?? 0}
                   kapha={doshaResult.kaphascore ?? 0}
-                  size={20}
+                  size={22}
                 />
               </Link>
             ) : user ? (
