@@ -608,7 +608,7 @@ export const RULES: RuleDefinition[] = [
       titulo: "Pitta oculto: sintomas além do score",
       subtitulo: "Atenção · {pct}%",
       descricao:
-        "Com Pitta em nível normal ou pouco, {pct}% das pessoas ainda relatam 4 ou mais sintomas de Pitta. O fogo pode estar se manifestando além do que a pontuação captura — refluxo, irritação, inflamação.",
+        "{pct}% das pessoas com Pitta em nível normal ou baixo ainda relatam 4 ou mais sintomas de Pitta. O fogo pode estar se manifestando além do que a pontuação captura — refluxo, irritação, inflamação.",
     },
   },
 
