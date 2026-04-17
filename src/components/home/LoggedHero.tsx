@@ -171,6 +171,8 @@ const LoggedHero = () => {
                       outerRadius={52}
                       innerRadius={22}
                       dataKey="value"
+                      startAngle={90}
+                      endAngle={-270}
                       stroke="hsl(var(--card))"
                       strokeWidth={2}
                       label={({ name, value }: any) => `${name} ${value}`}
