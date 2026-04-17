@@ -251,15 +251,36 @@ const Hero = () => {
 type FeedItem = {
   frase_akasha: string | null;
   status_visual: string | null;
+  dosha_nome: string | null;
+};
+
+// Highlight when dosha_nome indicates a strong/aggravated single dosha
+// (status_visual or dosha_nome contains "alerta", "agrav", or single-dosha name)
+const getAlertColor = (it: FeedItem): string | null => {
+  const name = (it.dosha_nome || "").toLowerCase().trim();
+  const status = (it.status_visual || "").toLowerCase();
+  const aggravated =
+    status.includes("agrav") ||
+    status.includes("alerta") ||
+    status.includes("desequil") ||
+    status.includes("crítico") ||
+    status.includes("critico");
+  // Only highlight when single dominant dosha (no "/" or "+")
+  const isSingle = name && !/[\/+&]/.test(name) && !name.includes(" e ");
+  if (!aggravated && !isSingle) return null;
+  if (name.includes("pitta") && !name.includes("vata") && !name.includes("kapha")) return C.pitta;
+  if (name.includes("vata") && !name.includes("pitta") && !name.includes("kapha")) return C.vata;
+  if (name.includes("kapha") && !name.includes("vata") && !name.includes("pitta")) return C.kapha;
+  return null;
 };
 
 const FeedSocial = () => {
   const { data } = useQuery({
-    queryKey: ["feed_resultados_index_v2"],
+    queryKey: ["feed_resultados_index_v3"],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("feed_resultados")
-        .select("frase_akasha,status_visual")
+        .select("frase_akasha,status_visual,dosha_nome")
         .not("frase_akasha", "is", null)
         .order("created_at", { ascending: false })
         .limit(30);
@@ -282,19 +303,41 @@ const FeedSocial = () => {
       aria-label="Feed de resultados recentes"
     >
       <div className="marquee-track flex gap-12 whitespace-nowrap">
-        {loop.map((it, i) => (
-          <span key={i} className="text-white/90 text-sm font-sans inline-flex items-center gap-3">
-            <span className="text-white/85">"{it.frase_akasha}"</span>
-            {it.status_visual && (
+        {loop.map((it, i) => {
+          const alert = getAlertColor(it);
+          return (
+            <span key={i} className="text-white/90 text-sm font-sans inline-flex items-center gap-3">
+              {alert && (
+                <span
+                  className="inline-flex items-center justify-center h-5 w-5 rounded-full text-[11px] font-bold shrink-0"
+                  style={{ background: alert, color: "white" }}
+                  aria-label="Dosha agravado"
+                  title="Dosha agravado"
+                >
+                  !
+                </span>
+              )}
               <span
-                className="text-[11px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded"
-                style={{ background: `${C.accent}25`, color: C.accent }}
+                className="text-white/85"
+                style={alert ? { color: alert, fontWeight: 600 } : undefined}
               >
-                {it.status_visual}
+                "{it.frase_akasha}"
               </span>
-            )}
-          </span>
-        ))}
+              {it.status_visual && (
+                <span
+                  className="text-[11px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded"
+                  style={
+                    alert
+                      ? { background: `${alert}33`, color: "white", border: `1px solid ${alert}` }
+                      : { background: `${C.accent}25`, color: C.accent }
+                  }
+                >
+                  {it.status_visual}
+                </span>
+              )}
+            </span>
+          );
+        })}
       </div>
       <style>{`
         @keyframes marqueeX {
@@ -325,6 +368,7 @@ type LiveRow = {
 type RecipeRow = {
   novo_titulo: string | null;
   mini_resumo: string | null;
+  nova_descricao: string | null;
   url: string | null;
   tags: string | null;
   video_id: string;
@@ -402,19 +446,18 @@ const ColumnCard = ({
           {badge}
         </span>
       </div>
-      <div className="p-5">
+      <div className="p-4">
         <h3
-          className="font-serif font-bold text-[15px] leading-snug mb-2 line-clamp-2"
+          className="font-serif font-bold text-[15px] leading-snug mb-1.5 line-clamp-2"
           style={{ color: C.primary, fontStyle: "normal" }}
         >
           {title}
         </h3>
         {summary && (
-          <p className="font-sans text-[13px] text-muted-foreground line-clamp-2 mb-3">{summary}</p>
+          <p className="font-sans text-[13px] leading-snug text-muted-foreground line-clamp-4">
+            {summary}
+          </p>
         )}
-        <span className="font-sans text-[13px] font-semibold inline-flex items-center gap-1" style={{ color: C.pitta }}>
-          {cta} {external ? <ExternalLink className="h-3.5 w-3.5" /> : <ArrowRight className="h-3.5 w-3.5" />}
-        </span>
       </div>
     </Wrap>
   );
@@ -522,7 +565,7 @@ const BibliotecaSection = () => {
             badge="Receita do dia"
             image={`https://img.youtube.com/vi/${receitaQ.data.video_id}/mqdefault.jpg`}
             title={receitaQ.data.novo_titulo ?? ""}
-            summary={receitaQ.data.mini_resumo}
+            summary={receitaQ.data.nova_descricao || receitaQ.data.mini_resumo}
             href={`/video/${slugify(receitaQ.data.novo_titulo || "receita")}`}
             videoId={receitaQ.data.video_id}
             external={false}

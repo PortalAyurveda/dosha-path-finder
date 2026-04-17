@@ -171,28 +171,21 @@ const Metricas = () => {
                     <li key={r.id}>
                       <Link
                         to={`/registros/${r.id}`}
-                        className="px-5 py-4 flex items-start gap-4 transition-colors hover:bg-muted/40 group"
+                        className="px-5 py-3 flex items-center gap-4 transition-colors hover:bg-muted/40 group"
                       >
                         <span
-                          className="font-mono text-[11px] font-bold tabular-nums pt-1 w-20 shrink-0"
+                          className="font-mono text-[11px] font-bold tabular-nums w-20 shrink-0"
                           style={{ color: AKASHA }}
                         >
                           {formatDateTime(r.data_postagem)}
                         </span>
-                        <div className="flex-1 min-w-0">
-                          <p
-                            className="font-serif font-bold text-[15px] leading-snug line-clamp-1 group-hover:underline"
-                            style={{ color: PRIMARY }}
-                          >
-                            {r.titulo}
-                          </p>
-                          {r.texto_inicio && (
-                            <p className="text-xs text-muted-foreground line-clamp-1 mt-0.5">
-                              {r.texto_inicio.slice(0, 130)}…
-                            </p>
-                          )}
-                        </div>
-                        <span className="text-base shrink-0 pt-0.5" aria-hidden="true">
+                        <p
+                          className="flex-1 min-w-0 font-serif font-bold text-[15px] leading-snug line-clamp-1 group-hover:underline"
+                          style={{ color: PRIMARY }}
+                        >
+                          {r.titulo}
+                        </p>
+                        <span className="text-base shrink-0" aria-hidden="true">
                           {extractEmojis(r.tags)}
                         </span>
                       </Link>
