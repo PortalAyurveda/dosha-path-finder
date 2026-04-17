@@ -200,7 +200,7 @@ export const RULES: RuleDefinition[] = [
       titulo: "O fogo virou ansiedade",
       subtitulo: "Crítico · {pct}%",
       descricao:
-        "Das {n} pessoas com Pitta fixado, {pct}% também relatam 5 ou mais sintomas de Vata — ansiedade, insônia, dispersão. Quando o fogo fica sem direção, ele converte em vento. O padrão clássico do burnout.",
+        "{pct}% das pessoas com Pitta fixado também relatam 5 ou mais sintomas de Vata — ansiedade, insônia, dispersão. Quando o fogo fica sem direção, ele converte em vento. O padrão clássico do burnout.",
     },
   },
   {
