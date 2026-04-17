@@ -139,11 +139,11 @@ const Hero = () => {
               className="animate-fade-in bg-card/80 backdrop-blur-sm rounded-3xl p-6 xl:p-8 border border-border shadow-lg flex flex-col justify-center space-y-5 h-full"
               style={{ animationDelay: "0.25s" }}
             >
-              <div className="text-center">
-                <h1 className="mb-2 text-2xl md:text-3xl font-semibold lg:text-xl">
+              <div className="text-center not-italic">
+                <h1 className="mb-2 text-2xl md:text-3xl font-semibold lg:text-2xl not-italic">
                   Seu guia completo para saúde e longevidade.
                 </h1>
-                <p className="text-sm md:text-base text-muted-foreground">
+                <p className="text-sm md:text-base lg:text-base text-muted-foreground not-italic">
                   Descubra e cuide dos seus Doshas por meio da medicina milenar.
                 </p>
               </div>
