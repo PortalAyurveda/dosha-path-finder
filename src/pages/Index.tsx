@@ -512,42 +512,13 @@ const BibliotecaSection = () => {
 
   return (
     <section className="max-w-6xl mx-auto px-4 sm:px-6 py-16 md:py-20">
-      <div className="flex flex-col items-center text-center gap-5 mb-10">
-        <div>
-          <h2
-            className="font-serif italic font-bold text-3xl md:text-4xl mb-2"
-            style={{ color: C.primary }}
-          >
-            Biblioteca
-          </h2>
-          <p className="text-muted-foreground text-base">
-            Conteúdo selecionado todo dia para você.
-          </p>
-        </div>
-        {/* 3 dosha buttons centered under title */}
-        <div className="flex gap-2 flex-wrap justify-center">
-          <Link
-            to="/biblioteca/vata"
-            className="px-4 py-2 text-sm font-semibold text-white transition-all hover:-translate-y-0.5"
-            style={{ background: C.vata, borderRadius: LEAF }}
-          >
-            🌬️ Vata
-          </Link>
-          <Link
-            to="/biblioteca/pitta"
-            className="px-4 py-2 text-sm font-semibold text-white transition-all hover:-translate-y-0.5"
-            style={{ background: C.pitta, borderRadius: LEAF }}
-          >
-            🔥 Pitta
-          </Link>
-          <Link
-            to="/biblioteca/kapha"
-            className="px-4 py-2 text-sm font-semibold text-white transition-all hover:-translate-y-0.5"
-            style={{ background: C.kapha, borderRadius: LEAF }}
-          >
-            🪵 Kapha
-          </Link>
-        </div>
+      <div className="flex flex-col items-center text-center gap-2 mb-10">
+        <h2
+          className="font-serif italic font-bold text-3xl md:text-4xl"
+          style={{ color: C.primary }}
+        >
+          Feed do dia
+        </h2>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
