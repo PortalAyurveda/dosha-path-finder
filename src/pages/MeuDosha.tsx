@@ -728,6 +728,12 @@ const MeuDosha = () => {
                       nome: result.nome || '',
                       idade: result.idade?.toString() || '',
                       nivel: result.conhecimentoAyurveda || 'Iniciante',
+                      email: result.email || '',
+                      altura: result.altura || '',
+                      peso: result.peso || '',
+                      estado: result.estado || '',
+                      cidade: result.cidade || '',
+                      paisCidade: result.pais || '',
                     }));
                   }
                   window.location.href = '/teste-de-dosha';
