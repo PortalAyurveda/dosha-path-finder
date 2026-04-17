@@ -116,14 +116,14 @@ const Hero = () => {
       className="relative overflow-hidden"
       style={{
         background:
-          "linear-gradient(110deg, hsl(228 82% 94%) 0%, hsl(0 78% 94%) 52%, hsl(48 92% 90%) 100%)",
+          "linear-gradient(100deg, hsl(228 85% 88%) 0%, hsl(0 80% 90%) 50%, hsl(48 92% 85%) 100%)",
       }}
     >
-      {/* Soft decorative shapes */}
-      <div className="absolute inset-0 opacity-30 pointer-events-none">
-        <div className="absolute top-10 left-[8%] w-72 h-72 rounded-full blur-3xl" style={{ background: "#6B7FF2" }} />
-        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-80 h-80 rounded-full blur-3xl" style={{ background: "#F28888" }} />
-        <div className="absolute bottom-10 right-[10%] w-64 h-64 rounded-full blur-3xl" style={{ background: "#F2CB05" }} />
+      {/* Soft decorative shapes — reinforce the 3 portal tones */}
+      <div className="absolute inset-0 opacity-50 pointer-events-none">
+        <div className="absolute -top-10 -left-20 w-[28rem] h-[28rem] rounded-full blur-3xl" style={{ background: "#6B7FF2" }} />
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[26rem] h-[26rem] rounded-full blur-3xl" style={{ background: "#F28888" }} />
+        <div className="absolute -bottom-16 -right-20 w-[28rem] h-[28rem] rounded-full blur-3xl" style={{ background: "#F2CB05" }} />
       </div>
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-12 md:py-16">
