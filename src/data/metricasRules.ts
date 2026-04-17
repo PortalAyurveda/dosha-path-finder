@@ -378,7 +378,7 @@ export const RULES: RuleDefinition[] = [
       titulo: "Fogo intenso com Pitta adoecido quase sempre tem Vata por baixo",
       subtitulo: "Alerta · {pct}%",
       descricao:
-        "Em {pct}% das pessoas com fogo digestivo muito intenso e Pitta adoecido, Vata também está em Acúmulo. Fogo acelerado sem movimento equilibrado gera turbulência — e Vata aparece.",
+        "{pct}% das pessoas com fogo digestivo muito intenso e Pitta adoecido também têm Vata em Acúmulo. Fogo acelerado sem movimento equilibrado gera turbulência — e Vata aparece.",
     },
   },
   {
