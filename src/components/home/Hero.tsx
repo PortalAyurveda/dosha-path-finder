@@ -143,7 +143,7 @@ const Hero = () => {
                 <h1 className="mb-2 text-2xl md:text-3xl font-semibold lg:text-2xl not-italic">
                   Seu guia completo para saúde e longevidade.
                 </h1>
-                <p className="text-sm md:text-base lg:text-base text-muted-foreground not-italic">
+                <p className="text-sm md:text-base lg:text-sm text-muted-foreground not-italic">
                   Descubra e cuide dos seus Doshas por meio da medicina milenar.
                 </p>
               </div>
