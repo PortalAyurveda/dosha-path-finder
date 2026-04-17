@@ -222,7 +222,7 @@ export const RULES: RuleDefinition[] = [
       titulo: "Digestão irregular significa Vata no comando",
       subtitulo: "Crítico · {pct}%",
       descricao:
-        "Em {pct}% das {n} pessoas com digestão irregular, Vata é o dosha mais alto. O Agni Irregular é a assinatura digestiva do Vata — quando a digestão oscila, o vento está no comando.",
+        "{pct}% das pessoas com digestão irregular têm Vata como o dosha mais alto. O Agni Irregular é a assinatura digestiva do Vata — quando a digestão oscila, o vento está no comando.",
     },
   },
   {
