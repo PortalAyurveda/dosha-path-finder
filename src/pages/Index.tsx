@@ -599,7 +599,15 @@ const Index = () => {
         <script type="application/ld+json">{JSON.stringify(orgSchema)}</script>
       </Helmet>
 
-      {isLoggedWithDosha ? <LoggedHero /> : <Hero />}
+      {shouldWait ? (
+        <div className="min-h-[420px] flex items-center justify-center">
+          <div className="h-8 w-8 rounded-full border-2 border-primary/20 border-t-primary animate-spin" />
+        </div>
+      ) : isLoggedWithDosha ? (
+        <LoggedHero />
+      ) : (
+        <Hero />
+      )}
       <FeedSocial />
       <BibliotecaSection />
       <RegistrosAkashikos />
