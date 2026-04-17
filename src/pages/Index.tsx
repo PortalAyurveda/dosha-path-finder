@@ -88,14 +88,13 @@ const Hero = () => {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12 md:py-16">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
-          {/* Left: blurred preview + social proof */}
-          <div className="hidden lg:flex lg:col-span-7 flex-col gap-4">
-            {/* Blurred preview — natural sized, not stretched */}
-            <div
-              className="bg-card/80 backdrop-blur-sm rounded-3xl p-6 xl:p-7 border border-border shadow-lg relative overflow-hidden"
-            >
-              <div className="select-none pointer-events-none" style={{ filter: "blur(5px)", opacity: 0.6 }}>
+          {/* Left: blurred preview + subtle social proof */}
+          <div className="hidden lg:flex lg:col-span-7 flex-col gap-3">
+            {/* Blurred preview — pie + Quadro Clínico thermometer */}
+            <div className="bg-card/80 backdrop-blur-sm rounded-3xl p-6 xl:p-7 border border-border shadow-lg relative overflow-hidden">
+              <div className="select-none pointer-events-none" style={{ filter: "blur(5px)", opacity: 0.65 }}>
                 <div className="grid grid-cols-2 gap-6">
+                  {/* Left: Pontuação (pie) */}
                   <div className="flex flex-col items-center justify-center space-y-3">
                     <p className="font-serif font-bold text-base" style={{ color: C.primary }}>Pontuação</p>
                     <div
@@ -112,48 +111,63 @@ const Hero = () => {
                       <p>Kapha: 7 pts</p>
                     </div>
                   </div>
-                  <div className="flex flex-col space-y-3">
+                  {/* Right: Quadro Clínico thermometer (5 levels, intensity rises to Fixado) */}
+                  <div className="flex flex-col space-y-2">
                     <p className="font-serif font-bold text-base text-center" style={{ color: C.primary }}>Quadro Clínico</p>
-                    <div className="grid grid-cols-3 gap-1.5 flex-1 h-[180px]">
-                      <div className="flex flex-col gap-1">
-                        <div className="flex-1 bg-muted/50 rounded-sm" />
-                        <div className="flex-1 bg-muted/50 rounded-sm" />
-                        <div className="flex-1 rounded-sm" style={{ background: C.vata }} />
-                        <div className="flex-1 rounded-sm" style={{ background: C.vata, opacity: 0.7 }} />
-                        <div className="flex-1 rounded-sm" style={{ background: C.vata, opacity: 0.4 }} />
-                      </div>
-                      <div className="flex flex-col gap-1">
-                        <div className="flex-1 rounded-sm" style={{ background: C.pitta }} />
-                        <div className="flex-1 rounded-sm" style={{ background: C.pitta, opacity: 0.85 }} />
-                        <div className="flex-1 rounded-sm" style={{ background: C.pitta, opacity: 0.65 }} />
-                        <div className="flex-1 rounded-sm" style={{ background: C.pitta, opacity: 0.45 }} />
-                        <div className="flex-1 rounded-sm" style={{ background: C.pitta, opacity: 0.25 }} />
-                      </div>
-                      <div className="flex flex-col gap-1">
-                        <div className="flex-1 bg-muted/50 rounded-sm" />
-                        <div className="flex-1 bg-muted/50 rounded-sm" />
-                        <div className="flex-1 bg-muted/50 rounded-sm" />
-                        <div className="flex-1 bg-muted/50 rounded-sm" />
-                        <div className="flex-1 rounded-sm" style={{ background: C.kapha, opacity: 0.6 }} />
-                      </div>
+                    <div className="grid grid-cols-[auto_1fr_1fr_1fr] gap-x-1 gap-y-[3px]">
+                      {["Fixado", "Adoecido", "Acúmulo", "Normal", "Pouco"].map((label, rowIdx) => {
+                        // levelNum: 5=Fixado (top), 1=Pouco (bottom)
+                        const levelNum = 5 - rowIdx;
+                        // Mock active levels per dosha: Vata=Normal(2), Pitta=Fixado(5), Kapha=Pouco(1)
+                        const actives = { v: 2, p: 5, k: 1 };
+                        // Color scales (mirror MeuDosha)
+                        const scales = {
+                          v: ['#D6E0FF', '#A3C1FF', '#709AFF', '#4F75FF', '#2A4BCC'],
+                          p: ['#FFE0E0', '#FFB3B3', '#FF8585', '#FF5C5C', '#CC3333'],
+                          k: ['#D1F4E0', '#9AE6B8', '#5ED58F', '#22C55E', '#15803D'],
+                        };
+                        const cell = (active: number, scale: string[]) => {
+                          const filled = levelNum <= active;
+                          return (
+                            <div
+                              className="h-7 rounded-sm"
+                              style={filled ? { background: scale[levelNum - 1] } : { background: "hsl(var(--muted) / 0.3)" }}
+                            />
+                          );
+                        };
+                        return (
+                          <div key={label} className="contents">
+                            <span className="text-[10px] font-semibold text-muted-foreground pr-1 flex items-center justify-end h-7 leading-none">
+                              {label}
+                            </span>
+                            {cell(actives.v, scales.v)}
+                            {cell(actives.p, scales.p)}
+                            {cell(actives.k, scales.k)}
+                          </div>
+                        );
+                      })}
+                    </div>
+                    <div className="grid grid-cols-[auto_1fr_1fr_1fr] gap-x-1 mt-1">
+                      <div />
+                      <p className="text-[10px] font-bold text-center" style={{ color: C.vata }}>Vata</p>
+                      <p className="text-[10px] font-bold text-center" style={{ color: C.pitta }}>Pitta</p>
+                      <p className="text-[10px] font-bold text-center" style={{ color: C.kapha }}>Kapha</p>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Social proof — fills the empty space below the preview */}
+            {/* Subtle social proof — just a small breath of text below the preview */}
             {typeof weeklyCount === "number" && weeklyCount > 0 && (
-              <div
-                className="flex-1 bg-card/80 backdrop-blur-sm rounded-3xl p-6 border border-border shadow-lg flex items-center justify-center gap-3"
+              <p
+                className="text-xs text-muted-foreground text-center inline-flex items-center justify-center gap-1.5"
                 aria-live="polite"
               >
-                <Users className="h-6 w-6 shrink-0" style={{ color: C.kapha }} />
-                <p className="text-base text-muted-foreground text-center">
-                  <strong className="text-2xl font-serif" style={{ color: C.primary }}>{weeklyCount}</strong>{" "}
-                  {weeklyCount === 1 ? "pessoa descobriu" : "pessoas descobriram"} seu Dosha essa semana
-                </p>
-              </div>
+                <Users className="h-3.5 w-3.5" style={{ color: C.kapha }} />
+                <strong className="font-semibold" style={{ color: C.primary }}>{weeklyCount}</strong>{" "}
+                {weeklyCount === 1 ? "pessoa descobriu" : "pessoas descobriram"} seu Dosha essa semana
+              </p>
             )}
           </div>
 

@@ -1,0 +1,1 @@
+CREATE POLICY "Public read access" ON public.akasha_memory FOR SELECT TO anon, authenticated USING (true);
