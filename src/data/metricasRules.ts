@@ -132,7 +132,7 @@ export const RULES: RuleDefinition[] = [
       titulo: "Sua digestão está boa — e os dados confirmam",
       subtitulo: "Diagnóstico · {pct}%",
       descricao:
-        "Das {n} pessoas com digestão constante e boa, {pct}% têm scores baixos nos três doshas. A digestão saudável é o principal indicador de equilíbrio no Ayurveda — e você está nesse grupo.",
+        "{pct}% das pessoas com digestão constante e boa têm scores baixos nos três doshas. A digestão saudável é o principal indicador de equilíbrio no Ayurveda — e você está nesse grupo.",
     },
   },
 
