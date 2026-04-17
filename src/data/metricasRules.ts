@@ -233,7 +233,7 @@ export const RULES: RuleDefinition[] = [
       titulo: "Vata consome tudo",
       subtitulo: "Crítico · {pct}%",
       descricao:
-        "Em {pct}% dos {n} casos com Vata fixado, ele supera Pitta e Kapha somados. O vento não está apenas alto — ele domina o sistema inteiro, secando e dispersando cada aspecto da fisiologia.",
+        "{pct}% das pessoas com Vata fixado têm ele maior que Pitta e Kapha somados. O vento não está apenas alto — ele domina o sistema inteiro, secando e dispersando cada aspecto da fisiologia.",
     },
   },
   {
