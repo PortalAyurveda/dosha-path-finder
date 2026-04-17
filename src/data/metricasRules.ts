@@ -531,7 +531,7 @@ export const RULES: RuleDefinition[] = [
       titulo: "O vento pegou fogo",
       subtitulo: "Atenção · {pct}%",
       descricao:
-        "Em {pct}% das pessoas com Vata fixado, também aparecem 5 ou mais sintomas de Pitta. Quando Vata está no nível mais grave, ele começa a agitar o fogo de Pitta — e os dois ardem juntos.",
+        "{pct}% das pessoas com Vata fixado também têm 5 ou mais sintomas de Pitta. Quando Vata está no nível mais grave, ele começa a agitar o fogo de Pitta — e os dois ardem juntos.",
     },
   },
   {
