@@ -6,15 +6,6 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-// Progressive red scale — most intense at top (FIXADO) fading down (POUCO)
-const LEVELS = [
-  { label: "Fixado",  ranges: ["50+",   "50+",   "60+"  ], red: "hsl(0 85% 45%)", textBlur: 1,   textOpacity: 1 },
-  { label: "Adoecido",ranges: ["36-49", "41-49", "51-59"], red: "hsl(0 90% 58%)", textBlur: 1.5, textOpacity: 0.9 },
-  { label: "Acúmulo", ranges: ["25-35", "31-40", "36-50"], red: "hsl(0 95% 70%)", textBlur: 2,   textOpacity: 0.78 },
-  { label: "Normal",  ranges: ["15-24", "15-30", "15-35"], red: "hsl(0 100% 82%)",textBlur: 2.5, textOpacity: 0.65 },
-  { label: "Pouco",   ranges: ["0-14",  "0-14",  "0-14" ], red: "hsl(0 100% 92%)",textBlur: 3,   textOpacity: 0.5 },
-];
-
 const DoshaPreview = () => (
   <div className="relative select-none pointer-events-none">
     <div className="grid grid-cols-2 gap-6">
@@ -42,64 +33,46 @@ const DoshaPreview = () => (
           Quadro Clínico
         </p>
         <div className="flex gap-2">
-          {/* Labels column — wider so labels + numbers fit */}
-          <div className="flex flex-col justify-between w-20 shrink-0 text-[11px] font-bold py-1 pr-1 uppercase text-right leading-tight">
-            {LEVELS.map((lvl) => (
-              <span
-                key={lvl.label}
-                style={{ filter: `blur(${lvl.textBlur}px)`, opacity: lvl.textOpacity, color: lvl.red }}
-              >
-                {lvl.label}
-              </span>
-            ))}
+          {/* Labels */}
+          <div className="flex flex-col justify-between text-[10px] font-bold text-muted-foreground py-1 uppercase" style={{ filter: "blur(7px)", opacity: 0.55 }}>
+            <span>Fixado</span>
+            <span>Adoecido</span>
+            <span>Acúmulo</span>
+            <span>Normal</span>
+            <span>Pouco</span>
           </div>
 
-          {/* 3 columns × 5 rows of intensity bars (taller for vertical emphasis) */}
-          <div className="grid grid-cols-3 gap-1.5 flex-1 h-[280px]">
-            {/* Vata column */}
+          {/* Grid columns: Vata / Pitta / Kapha */}
+          <div className="grid grid-cols-3 gap-1.5 flex-1 h-[200px]">
+            {/* Vata - blurred, level 3 */}
             <div className="flex flex-col gap-1" style={{ filter: "blur(7px)", opacity: 0.55 }}>
-              {LEVELS.map((lvl, i) => (
-                <div
-                  key={`v-${i}`}
-                  className="flex-1 rounded-sm flex items-center justify-center text-[9px] font-bold text-white/90"
-                  style={{ background: i >= 3 ? `hsl(228 ${85 - i*5}% ${72 + i*6}%)` : "hsl(228 30% 88%)" }}
-                >
-                  {lvl.ranges[0]}
-                </div>
-              ))}
+              <div className="flex-1 rounded-sm bg-muted" />
+              <div className="flex-1 rounded-sm bg-muted" />
+              <div className="flex-1 rounded-sm" style={{ background: "hsl(228 80% 75%)" }} />
+              <div className="flex-1 rounded-sm" style={{ background: "hsl(228 80% 80%)" }} />
+              <div className="flex-1 rounded-sm" style={{ background: "hsl(228 80% 85%)" }} />
             </div>
-            {/* Pitta column — focal: progressive red from top */}
+            {/* Pitta - highlighted, level 5 */}
             <div className="flex flex-col gap-1" style={{ filter: "blur(1px)", opacity: 0.95 }}>
-              {LEVELS.map((lvl, i) => (
-                <div
-                  key={`p-${i}`}
-                  className="flex-1 rounded-sm flex items-center justify-center text-[10px] font-bold shadow-sm"
-                  style={{
-                    background: lvl.red,
-                    color: i < 2 ? "white" : "hsl(0 60% 30%)",
-                  }}
-                >
-                  {lvl.ranges[1]}
-                </div>
-              ))}
+              <div className="flex-1 rounded-sm shadow-sm" style={{ background: "hsl(0 85% 45%)" }} />
+              <div className="flex-1 rounded-sm shadow-sm" style={{ background: "hsl(0 90% 58%)" }} />
+              <div className="flex-1 rounded-sm shadow-sm" style={{ background: "hsl(0 95% 70%)" }} />
+              <div className="flex-1 rounded-sm shadow-sm" style={{ background: "hsl(0 100% 82%)" }} />
+              <div className="flex-1 rounded-sm shadow-sm" style={{ background: "hsl(0 100% 92%)" }} />
             </div>
-            {/* Kapha column */}
+            {/* Kapha - blurred, level 1 */}
             <div className="flex flex-col gap-1" style={{ filter: "blur(7px)", opacity: 0.55 }}>
-              {LEVELS.map((lvl, i) => (
-                <div
-                  key={`k-${i}`}
-                  className="flex-1 rounded-sm flex items-center justify-center text-[9px] font-bold text-white/90"
-                  style={{ background: i === 4 ? "hsl(142 55% 78%)" : "hsl(142 25% 90%)" }}
-                >
-                  {lvl.ranges[2]}
-                </div>
-              ))}
+              <div className="flex-1 rounded-sm bg-muted" />
+              <div className="flex-1 rounded-sm bg-muted" />
+              <div className="flex-1 rounded-sm bg-muted" />
+              <div className="flex-1 rounded-sm bg-muted" />
+              <div className="flex-1 rounded-sm" style={{ background: "hsl(142 55% 80%)" }} />
             </div>
           </div>
         </div>
         {/* Column labels */}
         <div className="flex gap-2">
-          <div className="w-20 shrink-0" />
+          <div className="w-[52px] shrink-0" />
           <div className="grid grid-cols-3 gap-1.5 flex-1 text-center">
             <span className="text-[11px] font-bold text-muted-foreground" style={{ filter: "blur(7px)", opacity: 0.55 }}>Vata</span>
             <span className="text-[11px] font-bold" style={{ filter: "blur(1px)", opacity: 0.95, color: "hsl(0 85% 50%)" }}>Pitta</span>
