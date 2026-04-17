@@ -312,7 +312,7 @@ export const RULES: RuleDefinition[] = [
       titulo: "Vata acumulando sem o fogo que o direciona",
       subtitulo: "Alerta · {pct}%",
       descricao:
-        "Com Vata em Acúmulo, {pct}% das pessoas também consomem poucos alimentos de Pitta. O fogo regula o vento — e está ausente da dieta da maioria que chega nesse estado.",
+        "{pct}% das pessoas com Vata em Acúmulo também consomem poucos alimentos de Pitta. O fogo regula o vento — e está ausente da dieta da maioria que chega nesse estado.",
     },
   },
   {
