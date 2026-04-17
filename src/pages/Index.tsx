@@ -236,9 +236,8 @@ const Hero = () => {
               >
                 Começar <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
-
-              {/* Social proof */}
-              {typeof weeklyCount === "number" && weeklyCount > 0 && (
+            </div>
+          </div>
                 <div
                   className="flex items-center justify-center gap-2 pt-2 border-t border-border"
                   aria-live="polite"
