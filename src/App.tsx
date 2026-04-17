@@ -4,6 +4,7 @@ import { HelmetProvider } from "react-helmet-async";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { UserProvider } from "@/contexts/UserContext";
+import { useCanonical } from "@/hooks/useCanonical";
 import Layout from "@/components/Layout";
 import Index from "./pages/Index";
 import TesteDeDosha from "./pages/TesteDeDosha";
@@ -28,14 +29,11 @@ import BlogArticle from "./pages/BlogArticle";
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <HelmetProvider>
-    <QueryClientProvider client={queryClient}>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <UserProvider>
-          <Layout>
+const RoutedApp = () => {
+  useCanonical();
+  return (
+    <UserProvider>
+      <Layout>
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/teste-de-dosha" element={<TesteDeDosha />} />
