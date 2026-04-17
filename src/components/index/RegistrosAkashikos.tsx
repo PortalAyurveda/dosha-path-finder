@@ -20,8 +20,10 @@ type Row = {
 const formatHour = (iso: string | null) => {
   if (!iso) return "--:--";
   try {
-    const d = new Date(iso);
-    return d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+    // DB column is "timestamp without time zone" storing UTC — append Z so JS parses as UTC
+    const normalized = iso.includes("T") && !iso.endsWith("Z") && !/[+-]\d{2}:?\d{2}$/.test(iso) ? iso + "Z" : iso;
+    const d = new Date(normalized);
+    return d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", timeZone: "America/Sao_Paulo" });
   } catch {
     return "--:--";
   }
