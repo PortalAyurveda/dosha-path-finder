@@ -542,7 +542,7 @@ export const RULES: RuleDefinition[] = [
       titulo: "A fase Vata chegou com força",
       subtitulo: "Atenção · {pct}%",
       descricao:
-        "Quase metade das {n} pessoas com 50 anos ou mais já está com Vata adoecido. A fase da vida pede mais aterramento, calor e nutrição — e o corpo sinaliza quando não está recebendo.",
+        "{pct}% das pessoas com 50 anos ou mais já está com Vata adoecido. A fase da vida pede mais aterramento, calor e nutrição — e o corpo sinaliza quando não está recebendo.",
     },
   },
   {
