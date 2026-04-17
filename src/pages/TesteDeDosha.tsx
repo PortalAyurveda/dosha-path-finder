@@ -56,7 +56,19 @@ const [step, setStep] = useState(0);
       const stored = localStorage.getItem('dosha_test_info');
       if (stored) {
         const parsed = JSON.parse(stored);
-        setInfo(prev => ({ ...prev, nome: parsed.nome || '', idade: parsed.idade || '', nivel: parsed.nivel || 'Iniciante' }));
+        setInfo(prev => ({
+          ...prev,
+          nome: parsed.nome || '',
+          idade: parsed.idade || '',
+          nivel: parsed.nivel || 'Iniciante',
+          email: parsed.email || '',
+          altura: parsed.altura || '',
+          peso: parsed.peso || '',
+          estado: parsed.estado || '',
+          cidade: parsed.cidade || '',
+          paisCidade: parsed.paisCidade || '',
+        }));
+        if (parsed.paisCidade && !parsed.estado) setMoraFora(true);
       }
     } catch {}
 
@@ -67,12 +79,16 @@ const [step, setStep] = useState(0);
       .catch(() => {});
   }, []);
 
-  // Fetch cidades when estado changes
+  // Fetch cidades when estado changes — preserve pre-filled cidade on first load
+  const isFirstCidadesFetch = useRef(true);
   useEffect(() => {
     if (!info.estado || moraFora) return;
     setLoadingCidades(true);
     setCidades([]);
-    setInfo(prev => ({ ...prev, cidade: '' }));
+    if (!isFirstCidadesFetch.current) {
+      setInfo(prev => ({ ...prev, cidade: '' }));
+    }
+    isFirstCidadesFetch.current = false;
     fetch(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${info.estado}/municipios?orderBy=nome`)
       .then(r => r.json())
       .then(data => setCidades(data.map((c: any) => ({ nome: c.nome }))))
