@@ -63,7 +63,7 @@ const Biblioteca = () => {
         .from(table)
         .select("video_id, novo_titulo, mini_resumo, nova_descricao, tags, texto_para_embedding, criado_em")
         .order("criado_em", { ascending: false })
-        .limit(20);
+        .limit(120);
 
       if (debouncedSearch.trim()) {
         query = query.ilike("novo_titulo", `%${debouncedSearch.trim()}%`);
