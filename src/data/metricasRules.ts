@@ -393,7 +393,7 @@ export const RULES: RuleDefinition[] = [
       titulo: "Digestão lenta com Kapha alto quase sempre apaga o Pitta",
       subtitulo: "Alerta · {pct}%",
       descricao:
-        "Em {pct}% das pessoas com digestão fraca e Kapha em Acúmulo, o Pitta está normal ou em déficit. Sem fogo digestivo, o peso acumula — e o metabolismo se ausenta.",
+        "{pct}% das pessoas com digestão fraca e Kapha em Acúmulo têm Pitta normal ou em déficit. Sem fogo digestivo, o peso acumula — e o metabolismo se ausenta.",
     },
   },
   {
