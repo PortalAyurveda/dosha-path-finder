@@ -156,7 +156,7 @@ export const RULES: RuleDefinition[] = [
       titulo: "Pitta em colapso quase sempre carrega Vata por baixo",
       subtitulo: "Crítico · {pct}%",
       descricao:
-        "Das {n} pessoas com Pitta fixado, {pct}% também têm Vata em Acúmulo ou pior. É o padrão do burnout: fogo alto sem movimento equilibrado gera colapso sistêmico.",
+        "{pct}% das pessoas com Pitta fixado também têm Vata em Acúmulo ou pior. É o padrão do burnout: fogo alto sem movimento equilibrado gera colapso sistêmico.",
     },
   },
   {
