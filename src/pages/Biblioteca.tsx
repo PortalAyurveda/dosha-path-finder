@@ -168,25 +168,30 @@ const Biblioteca = () => {
             </div>
           </div>
         ) : advancedResults && advancedResults.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {advancedResults.map((v) => (
-              <AdvancedVideoCard
-                key={v.video_id}
-                videoId={v.video_id}
-                title={v.novo_titulo || "Sem título"}
-                textoParaEmbedding={v.texto_para_embedding || ""}
-                searchTerm={debouncedSearch}
-                onClick={(initialSeconds) =>
-                  setSelectedAdvancedVideo({
-                    video_id: v.video_id,
-                    novo_titulo: v.novo_titulo || "Sem título",
-                    texto_para_embedding: v.texto_para_embedding || "",
-                    initialSeconds,
-                  })
-                }
-              />
-            ))}
-          </div>
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {pagedAdvanced.map((v) => (
+                <AdvancedVideoCard
+                  key={v.video_id}
+                  videoId={v.video_id}
+                  title={v.novo_titulo || "Sem título"}
+                  textoParaEmbedding={v.texto_para_embedding || ""}
+                  searchTerm={debouncedSearch}
+                  onClick={(initialSeconds) =>
+                    setSelectedAdvancedVideo({
+                      video_id: v.video_id,
+                      novo_titulo: v.novo_titulo || "Sem título",
+                      texto_para_embedding: v.texto_para_embedding || "",
+                      initialSeconds,
+                    })
+                  }
+                />
+              ))}
+            </div>
+            {totalPages > 1 && (
+              <PaginationControls page={page} totalPages={totalPages} onPageChange={goToPage} />
+            )}
+          </>
         ) : (
           <div className="flex items-center justify-center min-h-[30vh]">
             <div className="text-center p-12 rounded-2xl bg-surface-sun border border-border">
