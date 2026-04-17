@@ -323,7 +323,7 @@ export const RULES: RuleDefinition[] = [
       titulo: "A fase Vata da vida com digestão errática",
       subtitulo: "Alerta · {pct}%",
       descricao:
-        "A partir dos 50 anos, o Ayurveda descreve uma fase naturalmente mais Vata. Os dados confirmam: {pct}% das pessoas nessa faixa têm digestão irregular — a assinatura do Vata dominando com a idade.",
+        "{pct}% das pessoas com 50 anos ou mais têm digestão irregular. A partir dos 50, o Ayurveda descreve uma fase naturalmente mais Vata — os dados confirmam.",
     },
   },
   {
