@@ -111,6 +111,16 @@ const Biblioteca = () => {
 
   const loading = isAdvanced ? isAdvancedLoading : isLoading;
 
+  const sourceList = isAdvanced ? advancedResults ?? [] : videos ?? [];
+  const totalPages = Math.max(1, Math.ceil(sourceList.length / PAGE_SIZE));
+  const pagedVideos = (videos ?? []).slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const pagedAdvanced = (advancedResults ?? []).slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+
+  const goToPage = (p: number) => {
+    setPage(Math.min(Math.max(1, p), totalPages));
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   return (
     <>
       <DoshaSelector />
