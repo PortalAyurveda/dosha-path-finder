@@ -121,7 +121,7 @@ export const RULES: RuleDefinition[] = [
       titulo: "Fogo digestivo intenso confirma Pitta em colapso",
       subtitulo: "Diagnóstico · {pct}%",
       descricao:
-        "Uma digestão muito intensa e acelerada quase sempre significa Pitta adoecido — {pct}% dos {n} casos confirmam. Queimar tudo rápido demais é o fogo fora de controle.",
+        "{pct}% das pessoas com digestão muito intensa também têm Pitta adoecido. Queimar tudo rápido demais é o fogo fora de controle.",
     },
   },
   {
