@@ -45,96 +45,97 @@ const AKASHA_LOGO =
   "https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/logo-akasha.png";
 
 /* ============================================================
-   Feed Social (marquee — frase_akasha + status_visual)
+   Feed Social — marquee dinâmico de métricas R##
 ============================================================ */
-type FeedItem = {
-  frase_akasha: string | null;
-  status_visual: string | null;
-  dosha_nome: string | null;
+type MetricaRow = {
+  metrica_id: string;
+  percentual: number | null;
 };
 
-// Highlight when dosha_nome indicates a strong/aggravated single dosha
-// (status_visual or dosha_nome contains "alerta", "agrav", or single-dosha name)
-const getAlertColor = (it: FeedItem): string | null => {
-  const name = (it.dosha_nome || "").toLowerCase().trim();
-  const status = (it.status_visual || "").toLowerCase();
-  const aggravated =
-    status.includes("agrav") ||
-    status.includes("alerta") ||
-    status.includes("desequil") ||
-    status.includes("crítico") ||
-    status.includes("critico");
-  // Only highlight when single dominant dosha (no "/" or "+")
-  const isSingle = name && !/[\/+&]/.test(name) && !name.includes(" e ");
-  if (!aggravated && !isSingle) return null;
-  if (name.includes("pitta") && !name.includes("vata") && !name.includes("kapha")) return C.pitta;
-  if (name.includes("vata") && !name.includes("pitta") && !name.includes("kapha")) return C.vata;
-  if (name.includes("kapha") && !name.includes("vata") && !name.includes("pitta")) return C.kapha;
-  return null;
-};
+// Mapa fixo: id → (emoji, frase com placeholder {pct})
+const MARQUEE_TEMPLATE: { id: string; emoji: string; tone: string; tpl: (pct: string) => string }[] = [
+  { id: "R03", emoji: "🌬️", tone: C.vata, tpl: (p) => `${p} com Agni Irregular desenvolvem Vata Adoecido` },
+  { id: "R04", emoji: "🔥", tone: C.pitta, tpl: (p) => `${p} com Agni Forte no limite chegam ao Pitta Adoecido` },
+  { id: "R02", emoji: "🔥", tone: C.pitta, tpl: (p) => `${p} dos Pittas Fixados têm digestão irregular — não fogo` },
+  { id: "R09", emoji: "⚡", tone: C.accent, tpl: (p) => `${p} da base com score crítico tem Agni Irregular junto` },
+  { id: "R07", emoji: "🌬️", tone: C.vata, tpl: (p) => `${p} dos Pittas Fixados já têm Vata comprometido` },
+  { id: "R11", emoji: "🔥", tone: C.pitta, tpl: (p) => `${p} dos Pittas Fixados têm 5+ sintomas Vata: padrão burnout` },
+  { id: "R12", emoji: "🪵", tone: C.kapha, tpl: (p) => `${p} dos Kaphas pesados têm mente dispersa simultaneamente` },
+  { id: "R21", emoji: "🌬️", tone: C.vata, tpl: (p) => `${p} do Vata em acúmulo come menos de 2 alimentos quentes` },
+  { id: "R37", emoji: "⚡", tone: C.accent, tpl: (p) => `${p} têm Vata adoecido com Pitta só em acúmulo: Vata adoece primeiro` },
+  { id: "R22", emoji: "🌬️", tone: C.vata, tpl: (p) => `${p} das pessoas acima de 50 anos já têm digestão irregular` },
+  { id: "R46", emoji: "🔥", tone: C.pitta, tpl: (p) => `${p} têm Pitta oculto — score normal, mas sintomas gritando` },
+  { id: "R24", emoji: "🪵", tone: C.kapha, tpl: (p) => `${p} com Agni Fraco acumulam Kapha: fogo baixo, corpo estagna` },
+];
+
+const MARQUEE_IDS = MARQUEE_TEMPLATE.map((m) => m.id);
 
 const FeedSocial = () => {
   const { data } = useQuery({
-    queryKey: ["feed_resultados_index_v3"],
+    queryKey: ["marquee_metricas_v1"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("feed_resultados")
-        .select("frase_akasha,status_visual,dosha_nome")
-        .not("frase_akasha", "is", null)
-        .order("created_at", { ascending: false })
-        .limit(30);
-      if (error) throw error;
-      return (data ?? []) as FeedItem[];
+      // 1) data mais recente
+      const { data: latest } = await supabase
+        .from("metricas_snapshot")
+        .select("data_calculo")
+        .order("data_calculo", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (!latest?.data_calculo) return [] as MetricaRow[];
+      // 2) métricas
+      const { data: rows } = await supabase
+        .from("metricas_snapshot")
+        .select("metrica_id, percentual")
+        .eq("data_calculo", latest.data_calculo)
+        .in("metrica_id", MARQUEE_IDS);
+      return (rows ?? []) as MetricaRow[];
     },
+    staleTime: 30 * 60 * 1000,
   });
 
-  const items = data ?? [];
+  const map = useMemo(() => new Map((data ?? []).map((r) => [r.metrica_id, r])), [data]);
+
+  const items = useMemo(
+    () =>
+      MARQUEE_TEMPLATE.map((m) => {
+        const pct = map.get(m.id)?.percentual;
+        if (pct == null) return null;
+        const formatted = `${pct.toFixed(1).replace(".", ",")}%`;
+        return { ...m, text: m.tpl(formatted) };
+      }).filter(Boolean) as { id: string; emoji: string; tone: string; text: string }[],
+    [map]
+  );
+
   if (items.length === 0) return null;
   const loop = [...items, ...items];
 
   return (
     <section
-      className="overflow-hidden py-2.5"
+      className="overflow-hidden py-3"
       style={{
-        background: `${C.primary}0F`, // very soft tint of primary
+        background: `${C.primary}0F`,
         borderTop: `1px solid ${C.primary}1A`,
         borderBottom: `1px solid ${C.primary}1A`,
       }}
-      aria-label="Feed de resultados recentes"
+      aria-label="Métricas em tempo real do Portal Ayurveda"
     >
-      <div className="marquee-track flex gap-10 whitespace-nowrap">
-        {loop.map((it, i) => {
-          const alert = getAlertColor(it);
-          return (
-            <span key={i} className="text-sm font-sans inline-flex items-center gap-2.5" style={{ color: `${C.primary}CC` }}>
-              {alert && (
-                <span
-                  className="inline-flex items-center justify-center h-4 w-4 rounded-full text-[10px] font-bold shrink-0"
-                  style={{ background: alert, color: "white" }}
-                  aria-label="Dosha agravado"
-                  title="Dosha agravado"
-                >
-                  !
-                </span>
-              )}
-              <span style={alert ? { color: alert, fontWeight: 600 } : undefined}>
-                "{it.frase_akasha}"
-              </span>
-              {it.status_visual && (
-                <span
-                  className="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded"
-                  style={
-                    alert
-                      ? { background: `${alert}1A`, color: alert, border: `1px solid ${alert}40` }
-                      : { background: `${C.primary}14`, color: `${C.primary}B3` }
-                  }
-                >
-                  {it.status_visual}
-                </span>
-              )}
+      <div className="marquee-track flex gap-8 whitespace-nowrap">
+        {loop.map((it, i) => (
+          <span
+            key={i}
+            className="text-sm font-sans inline-flex items-center gap-2"
+            style={{ color: `${C.primary}CC` }}
+          >
+            <span aria-hidden="true" className="text-base">
+              {it.emoji}
             </span>
-          );
-        })}
+            <span style={{ color: it.tone, fontWeight: 700 }}>
+              {it.text.split(" ")[0]}
+            </span>
+            <span>{it.text.split(" ").slice(1).join(" ")}</span>
+            <span className="mx-2 opacity-40">·</span>
+          </span>
+        ))}
       </div>
       <style>{`
         @keyframes marqueeX {
@@ -142,7 +143,7 @@ const FeedSocial = () => {
           to   { transform: translateX(-50%); }
         }
         .marquee-track {
-          animation: marqueeX 180s linear infinite;
+          animation: marqueeX 120s linear infinite;
           width: max-content;
         }
         .marquee-track:hover { animation-play-state: paused; }
