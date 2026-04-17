@@ -430,7 +430,7 @@ export const RULES: RuleDefinition[] = [
       titulo: "Pitta acumulando sem a leveza de Vata",
       subtitulo: "Alerta · {pct}%",
       descricao:
-        "Metade das {n} pessoas com Pitta em Acúmulo consomem poucos alimentos de Vata. Sem leveza e movimento na dieta, o fogo não encontra saída e acumula ainda mais.",
+        "{pct}% das pessoas com Pitta em Acúmulo consomem poucos alimentos de Vata. Sem leveza e movimento na dieta, o fogo não encontra saída e acumula ainda mais.",
     },
   },
   {
