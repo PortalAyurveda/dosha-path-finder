@@ -597,7 +597,7 @@ export const RULES: RuleDefinition[] = [
       titulo: "Os sintomas chegam antes do score",
       subtitulo: "Atenção · {pct}%",
       descricao:
-        "Com Vata aparentemente normal, {pct}% das pessoas já relatam 4 ou mais sintomas de Vata. O corpo sente antes que o teste reflita — vale prestar atenção ao que está se manifestando.",
+        "{pct}% das pessoas com Vata aparentemente normal já relatam 4 ou mais sintomas de Vata. O corpo sente antes que o teste reflita — vale prestar atenção ao que está se manifestando.",
     },
   },
   {
