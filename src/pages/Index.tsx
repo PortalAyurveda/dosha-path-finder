@@ -351,6 +351,7 @@ const ColumnCard = ({
   external,
   cta,
   accentColor,
+  videoId,
 }: {
   badge: string;
   image: string | null;
@@ -360,11 +361,12 @@ const ColumnCard = ({
   external: boolean;
   cta: string;
   accentColor: string;
+  videoId?: string;
 }) => {
   const Wrap: any = external ? "a" : Link;
   const wrapProps = external
     ? { href, target: "_blank", rel: "noopener noreferrer" }
-    : { to: href };
+    : { to: href, state: videoId ? { videoId } : undefined };
 
   return (
     <Wrap
@@ -373,7 +375,7 @@ const ColumnCard = ({
       style={{ borderRadius: LEAF }}
     >
       <div
-        className="relative w-full aspect-video overflow-hidden flex items-center justify-center"
+        className="relative w-full aspect-video overflow-hidden flex items-center justify-center bg-muted"
         style={!image ? { background: `linear-gradient(135deg, ${C.primary}, #1f1a3a)` } : undefined}
       >
         {image ? (
