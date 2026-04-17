@@ -167,17 +167,19 @@ const Header = () => {
             {doshaResult ? (
               <Link
                 to={profileLink}
-                className="flex items-center gap-2 pl-3 pr-2 py-1 rounded-full bg-white hover:bg-white/90 transition-colors border border-border/30 shadow-sm"
+                className="flex items-center gap-2 pl-3 pr-2.5 py-1 rounded-full bg-white hover:bg-white/90 transition-colors border border-border/30 shadow-sm"
               >
                 <span className="text-xs sm:text-sm font-semibold text-foreground truncate max-w-[80px] sm:max-w-[120px] leading-none">
                   {firstName}
                 </span>
-                <HeaderDoshaPie
-                  vata={doshaResult.vatascore ?? 0}
-                  pitta={doshaResult.pittascore ?? 0}
-                  kapha={doshaResult.kaphascore ?? 0}
-                  size={22}
-                />
+                <span className="shrink-0 inline-flex items-center justify-center">
+                  <HeaderDoshaPie
+                    vata={doshaResult.vatascore ?? 0}
+                    pitta={doshaResult.pittascore ?? 0}
+                    kapha={doshaResult.kaphascore ?? 0}
+                    size={20}
+                  />
+                </span>
               </Link>
             ) : user ? (
               <Link

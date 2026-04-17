@@ -65,31 +65,58 @@ const PIE_COLORS: Record<string, string> = {
   Kapha: '#22C55E',
 };
 
-// Matches Recharts default: starts at 0° (3 o'clock), counterclockwise, order Vata→Pitta→Kapha
+// Fixed orientation: Vata at 12h → clockwise → Pitta → Kapha. Donut shape, same in all sizes.
 const DoshaMiniPie = ({ vata, pitta, kapha, size = 18 }: { vata: number; pitta: number; kapha: number; size?: number }) => {
   const total = (vata || 0) + (pitta || 0) + (kapha || 0);
   if (total === 0) return null;
+  const cx = size / 2;
+  const cy = size / 2;
   const r = size / 2;
+  const innerR = r * 0.45;
   const slices = [
     { pct: (vata || 0) / total, color: PIE_COLORS.Vata },
     { pct: (pitta || 0) / total, color: PIE_COLORS.Pitta },
     { pct: (kapha || 0) / total, color: PIE_COLORS.Kapha },
-  ];
-  // Start at 0° (3 o'clock), go counterclockwise (negative direction) to match Recharts
-  let cumAngle = 0;
+  ].filter((s) => s.pct > 0);
+
+  if (slices.length === 1) {
+    return (
+      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="block shrink-0 overflow-visible">
+        <circle cx={cx} cy={cy} r={r} fill={slices[0].color} />
+        <circle cx={cx} cy={cy} r={innerR} fill="hsl(var(--card))" />
+      </svg>
+    );
+  }
+
+  let cumAngle = -90; // 12 o'clock
   const paths = slices.map((s, i) => {
     const angle = s.pct * 360;
     const startRad = (cumAngle * Math.PI) / 180;
-    const endRad = ((cumAngle - angle) * Math.PI) / 180;
-    cumAngle -= angle;
-    const x1 = r + r * Math.cos(startRad);
-    const y1 = r - r * Math.sin(startRad);
-    const x2 = r + r * Math.cos(endRad);
-    const y2 = r - r * Math.sin(endRad);
+    const endRad = ((cumAngle + angle) * Math.PI) / 180;
+    const x1Outer = cx + r * Math.cos(startRad);
+    const y1Outer = cy + r * Math.sin(startRad);
+    const x2Outer = cx + r * Math.cos(endRad);
+    const y2Outer = cy + r * Math.sin(endRad);
+    const x1Inner = cx + innerR * Math.cos(endRad);
+    const y1Inner = cy + innerR * Math.sin(endRad);
+    const x2Inner = cx + innerR * Math.cos(startRad);
+    const y2Inner = cy + innerR * Math.sin(startRad);
     const large = angle > 180 ? 1 : 0;
-    return <path key={i} d={`M${r},${r} L${x1},${y1} A${r},${r} 0 ${large} 0 ${x2},${y2} Z`} fill={s.color} />;
+    const d = [
+      `M ${x1Outer} ${y1Outer}`,
+      `A ${r} ${r} 0 ${large} 1 ${x2Outer} ${y2Outer}`,
+      `L ${x1Inner} ${y1Inner}`,
+      `A ${innerR} ${innerR} 0 ${large} 0 ${x2Inner} ${y2Inner}`,
+      "Z",
+    ].join(" ");
+    cumAngle += angle;
+    return <path key={i} d={d} fill={s.color} />;
   });
-  return <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="shrink-0 rounded-full">{paths}</svg>;
+  return (
+    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="block shrink-0 overflow-visible">
+      {paths}
+    </svg>
+  );
 };
 
 const DOSHA_ROUTES: Record<string, string> = {
@@ -655,7 +682,7 @@ const MeuDosha = () => {
                   <div className="w-full" style={{ height: 240 }}>
                     <ResponsiveContainer width="100%" height="100%">
                       <PieChart margin={{ top: 20, right: 60, bottom: 20, left: 60 }}>
-                        <Pie data={pieData} cx="50%" cy="50%" outerRadius={70} innerRadius={32} dataKey="value" label={CustomPieLabel} labelLine={false} strokeWidth={2} stroke="hsl(var(--card))">
+                        <Pie data={pieData} cx="50%" cy="50%" outerRadius={70} innerRadius={32} dataKey="value" startAngle={90} endAngle={-270} label={CustomPieLabel} labelLine={false} strokeWidth={2} stroke="hsl(var(--card))">
                           {pieData.map((entry) => (
                             <Cell key={entry.name} fill={PIE_COLORS[entry.name]} />
                           ))}
