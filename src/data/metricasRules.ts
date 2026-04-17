@@ -509,7 +509,7 @@ export const RULES: RuleDefinition[] = [
       titulo: "Vata adoece primeiro — Pitta ainda está chegando lá",
       subtitulo: "Atenção · {pct}%",
       descricao:
-        "Em quase metade das {n} pessoas com Vata adoecido, Pitta ainda está em Acúmulo — não adoeceu. Isso confirma a sequência: Vata vai primeiro, e arrasta Pitta depois. Você está vendo a progressão em tempo real.",
+        "{pct}% das pessoas com Vata adoecido ainda têm Pitta apenas em Acúmulo — não adoeceu. Isso confirma a sequência: Vata vai primeiro, e arrasta Pitta depois. Você está vendo a progressão em tempo real.",
     },
   },
   {
