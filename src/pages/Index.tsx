@@ -674,14 +674,16 @@ const orgSchema = {
 };
 
 const Index = () => {
-  const { doshaResult, loading } = useUser();
+  const { doshaResult, loading, user } = useUser();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!loading && doshaResult?.idPublico) {
+    // Only auto-redirect logged-in users with a dosha result.
+    // Logged-out users (incl. just-signed-out) stay on the index.
+    if (!loading && user && doshaResult?.idPublico) {
       navigate(`/meu-dosha?id=${doshaResult.idPublico}`, { replace: true });
     }
-  }, [loading, doshaResult, navigate]);
+  }, [loading, user, doshaResult, navigate]);
 
   return (
     <>

@@ -139,13 +139,16 @@ export function UserProvider({ children }: { children: ReactNode }) {
   };
 
   const signOut = async () => {
-    await supabase.auth.signOut();
-          setUser(null);
+    // Clear local state BEFORE auth signOut so the onAuthStateChange listener
+    // doesn't re-hydrate doshaResult from localStorage and re-trigger the
+    // index → /meu-dosha auto-redirect.
+    localStorage.removeItem("activeDoshaId");
+    setUser(null);
     setSession(null);
     setProfile(null);
     setDoshaResult(null);
     setRole(null);
-    localStorage.removeItem("activeDoshaId");
+    await supabase.auth.signOut();
   };
 
   useEffect(() => {
