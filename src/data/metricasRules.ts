@@ -189,7 +189,7 @@ export const RULES: RuleDefinition[] = [
       titulo: "Fogo, vento e caos digestivo simultâneos",
       subtitulo: "Crítico · {pct}%",
       descricao:
-        "Essa combinação — Pitta fixado, Vata adoecido e digestão irregular — aparece em {pct}% das {n} pessoas com esses dois doshas comprometidos. Cada desequilíbrio alimenta o outro.",
+        "{pct}% das pessoas com Pitta fixado e Vata adoecido também têm digestão irregular. Cada desequilíbrio alimenta o outro.",
     },
   },
   {
