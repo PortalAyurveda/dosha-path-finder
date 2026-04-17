@@ -632,22 +632,24 @@ const Metricas = () => {
         </header>
 
         {/* Tabs principais */}
-        <nav className="flex gap-3 max-w-md mx-auto">
-          <MainTab
-            active={aba === "metricas"}
-            onClick={() => setAba("metricas")}
-            icon={<BarChart3 className="w-4 h-4" />}
-            label="Métricas"
-            color={C.primary}
-          />
-          <MainTab
-            active={aba === "akasha"}
-            onClick={() => setAba("akasha")}
-            icon={<MessageCircle className="w-4 h-4" />}
-            label="Akasha"
-            color={C.akasha}
-          />
-        </nav>
+        <div className="sticky top-0 z-[60] -mx-4 sm:-mx-6 px-4 sm:px-6 py-2.5 backdrop-blur-sm border-b" style={{ background: `${C.bg}f2`, borderColor: C.border }}>
+          <nav className="flex gap-3 max-w-md mx-auto">
+            <MainTab
+              active={aba === "metricas"}
+              onClick={() => setAba("metricas")}
+              icon={<BarChart3 className="w-4 h-4" />}
+              label="Métricas"
+              color={C.primary}
+            />
+            <MainTab
+              active={aba === "akasha"}
+              onClick={() => setAba("akasha")}
+              icon={<MessageCircle className="w-4 h-4" />}
+              label="Akasha"
+              color={C.akasha}
+            />
+          </nav>
+        </div>
 
         {/* Conteúdo */}
         {aba === "metricas" ? <MetricasContent date={date ?? null} /> : <AkashaContent date={date ?? null} />}
