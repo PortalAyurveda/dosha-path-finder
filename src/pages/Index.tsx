@@ -238,19 +238,6 @@ const Hero = () => {
               </Button>
             </div>
           </div>
-                <div
-                  className="flex items-center justify-center gap-2 pt-2 border-t border-border"
-                  aria-live="polite"
-                >
-                  <Users className="h-4 w-4" style={{ color: C.kapha }} />
-                  <p className="text-xs text-muted-foreground">
-                    <strong style={{ color: C.primary }}>{weeklyCount}</strong>{" "}
-                    {weeklyCount === 1 ? "pessoa descobriu" : "pessoas descobriram"} seu Dosha essa semana
-                  </p>
-                </div>
-              )}
-            </div>
-          </div>
         </div>
       </div>
     </section>
