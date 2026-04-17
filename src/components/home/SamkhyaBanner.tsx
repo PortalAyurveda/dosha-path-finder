@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 const BANNER_URL =
   "https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/banner-samkhya-portal.jpg";
 const BANNER_URL_MOBILE =
-  "https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/bananer-smk-portal-mobile.jpg";
+  "https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/bananer-smk-portal-mobile.jpg?v=2";
 
 const PURPLE = "#352F54";
 
