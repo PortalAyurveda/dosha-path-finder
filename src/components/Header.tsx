@@ -19,7 +19,18 @@ const HeaderDoshaPie = ({ vata, pitta, kapha, size = 18 }: { vata: number; pitta
     { pct: (vata || 0) / total, color: PIE_COLORS.Vata },
     { pct: (pitta || 0) / total, color: PIE_COLORS.Pitta },
     { pct: (kapha || 0) / total, color: PIE_COLORS.Kapha },
-  ];
+  ].filter(s => s.pct > 0);
+
+  // Single dosha covers 100% — render full circle (SVG arc can't draw 360°)
+  if (slices.length === 1) {
+    return (
+      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="shrink-0 rounded-full">
+        <circle cx={r} cy={r} r={r} fill={slices[0].color} />
+      </svg>
+    );
+  }
+
+  // Start at 0° (3 o'clock), go counterclockwise to match Recharts
   let cumAngle = 0;
   const paths = slices.map((s, i) => {
     const angle = s.pct * 360;
