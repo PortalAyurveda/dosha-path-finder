@@ -140,7 +140,7 @@ const Hero = () => {
               style={{ animationDelay: "0.25s" }}
             >
               <div className="text-center not-italic">
-                <h1 className="mb-2 text-2xl md:text-3xl font-semibold lg:text-[22px] leading-snug not-italic">
+                <h1 className="mb-2 text-2xl md:text-3xl font-semibold leading-snug not-italic lg:text-xs">
                   Seu guia completo para saúde e longevidade.
                 </h1>
                 <p className="text-sm md:text-base lg:text-[15px] leading-snug text-muted-foreground not-italic">
