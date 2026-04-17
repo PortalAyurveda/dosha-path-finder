@@ -2063,6 +2063,28 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      artigo_do_dia: {
+        Args: never
+        Returns: {
+          created_at: string
+          id: string
+          image_url: string | null
+          link_do_artigo: string | null
+          meta_description: string | null
+          status: string | null
+          summary: string | null
+          tags: string | null
+          timestamps: Json | null
+          title: string
+          video_url: string | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "portal_conteudo"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       atualizar_estatisticas_globais: { Args: never; Returns: undefined }
       bytea_to_text: { Args: { data: string }; Returns: string }
       gerar_insights_ayurvedicos: {
@@ -2235,6 +2257,29 @@ export type Database = {
           similarity: number
           tag: string
         }[]
+      }
+      receita_do_dia: {
+        Args: never
+        Returns: {
+          criado_em: string | null
+          embedding: string | null
+          legenda: string | null
+          mini_resumo: string | null
+          nova_descricao: string | null
+          novo_titulo: string | null
+          status: string | null
+          tags: string | null
+          texto_para_embedding: string | null
+          titulo_original: string | null
+          url: string | null
+          video_id: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "portal_receitas"
+          isOneToOne: false
+          isSetofReturn: true
+        }
       }
       text_to_bytea: { Args: { data: string }; Returns: string }
       urlencode:
