@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowRight, Sparkles } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 const PRIMARY = "#352F54";
@@ -56,29 +56,23 @@ const RegistrosAkashikos = () => {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-16 md:py-20 grid grid-cols-1 lg:grid-cols-12 gap-10">
         {/* Left: copy */}
         <div className="lg:col-span-5">
-          <div className="flex items-center gap-3 mb-5">
+          <h2
+            className="font-serif italic font-bold text-3xl md:text-4xl mb-4 leading-tight flex items-start gap-3 flex-wrap"
+            style={{ color: PRIMARY }}
+          >
             <img
               src={AKASHA_LOGO}
               alt="Akasha IA"
-              width={56}
-              height={56}
-              className="w-14 h-14 object-contain"
+              width={48}
+              height={48}
+              className="w-12 h-12 md:w-14 md:h-14 object-contain shrink-0 mt-1"
               loading="lazy"
             />
-            <span
-              className="text-[11px] font-semibold uppercase tracking-wider px-2.5 py-1 rounded-full inline-flex items-center gap-1"
-              style={{ background: `${AKASHA}18`, color: AKASHA }}
-            >
-              <Sparkles className="h-3 w-3" /> Atualizado agora
+            <span>
+              Registros de Akasha,
+              <br />
+              <span style={{ color: AKASHA }}>nossa I.A.</span>
             </span>
-          </div>
-          <h2
-            className="font-serif italic font-bold text-3xl md:text-4xl mb-4 leading-tight"
-            style={{ color: PRIMARY }}
-          >
-            Registros de Akasha,
-            <br />
-            <span style={{ color: AKASHA }}>nossa I.A.</span>
           </h2>
           <p className="text-muted-foreground text-base mb-4 leading-relaxed">
             Memória viva das perguntas da comunidade. Cada linha é um momento real de busca por
@@ -92,26 +86,19 @@ const RegistrosAkashikos = () => {
           </p>
         </div>
 
-        {/* Right: live feed */}
+        {/* Right: feed */}
         <div className="lg:col-span-7">
           <div
             className="border border-border bg-background overflow-hidden"
             style={{ borderRadius: LEAF }}
           >
             <div
-              className="px-5 py-3 flex items-center justify-between border-b border-border"
+              className="px-5 py-3 border-b border-border"
               style={{ background: `${AKASHA}08` }}
             >
               <p className="font-sans text-xs font-bold uppercase tracking-wider" style={{ color: AKASHA }}>
-                Registros Akashikos — ao vivo
+                Registros Akashikos
               </p>
-              <span className="relative flex h-2 w-2">
-                <span
-                  className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75"
-                  style={{ background: AKASHA }}
-                />
-                <span className="relative inline-flex rounded-full h-2 w-2" style={{ background: AKASHA }} />
-              </span>
             </div>
 
             <ul className="divide-y divide-border">

@@ -1,10 +1,9 @@
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { TrendingUp, FileText, Play, AlertTriangle } from "lucide-react";
+import { TrendingUp, FileText, Play, AlertTriangle, ChevronRight } from "lucide-react";
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/contexts/UserContext";
-import { slugify } from "@/lib/slugify";
 
 const C = {
   primary: "#352F54",
@@ -83,7 +82,8 @@ const LoggedHero = () => {
   const pieData = doshaScores.map((d) => ({ name: d.name, value: d.score }));
 
   const primaryDosha = doshaResult?.doshaprincipal?.split("-")[0] || "Vata";
-  const topInfo = getLevelInfo(primaryDosha, doshaScores.find((d) => d.name === primaryDosha)?.score ?? 0);
+  const primaryScore = doshaScores.find((d) => d.name === primaryDosha)?.score ?? 0;
+  const topInfo = getLevelInfo(primaryDosha, primaryScore);
 
   // Personalized article (latest)
   const { data: artigo } = useQuery({
@@ -97,7 +97,6 @@ const LoggedHero = () => {
         .limit(1)
         .maybeSingle();
       if (data) return data;
-      // fallback
       const { data: fb } = await supabase
         .from("portal_conteudo")
         .select("id, title, link_do_artigo, image_url, tags")
@@ -137,46 +136,46 @@ const LoggedHero = () => {
       className="relative overflow-hidden"
       style={{ background: `linear-gradient(180deg, ${C.surface} 0%, #ffffff 100%)` }}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10 md:py-14">
-        <div className="text-center mb-6">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 md:py-10">
+        <div className="text-center mb-5">
           <h1
-            className="font-serif font-bold text-2xl md:text-3xl lg:text-[32px] leading-tight"
+            className="font-serif font-bold text-xl md:text-2xl lg:text-[26px] leading-tight"
             style={{ color: C.primary }}
           >
             Bem-vindo de volta{firstName ? `, ${firstName}` : ""}.
           </h1>
-          <p className="text-sm md:text-base text-muted-foreground mt-1">
+          <p className="text-xs md:text-sm text-muted-foreground mt-1">
             Seu mapa biológico, em tempo real.
           </p>
         </div>
 
-        {/* Top: Pie + Quadro Clínico (clickable → /meu-dosha) */}
+        {/* Top: Pie + Quadro Clínico + Lateral arrow button */}
         <Link
           to={meuDoshaBase}
-          className="block bg-card rounded-3xl p-5 md:p-7 border border-border shadow-lg transition-all hover:-translate-y-0.5 hover:shadow-xl"
-          aria-label="Ver meu perfil completo"
+          className="group relative block bg-card rounded-3xl p-4 md:p-5 pr-12 md:pr-14 border border-border shadow-md transition-all hover:-translate-y-0.5 hover:shadow-lg"
+          aria-label="Continuar para meu perfil"
         >
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
             {/* Pie */}
             <div className="flex flex-col items-center">
-              <h2 className="font-serif font-bold text-base mb-2" style={{ color: C.primary }}>
+              <h2 className="font-serif font-bold text-sm mb-1" style={{ color: C.primary }}>
                 Pontuação dos Doshas
               </h2>
-              <div className="w-full" style={{ height: 200 }}>
+              <div className="w-full" style={{ height: 160 }}>
                 <ResponsiveContainer width="100%" height="100%">
-                  <PieChart margin={{ top: 10, right: 50, bottom: 10, left: 50 }}>
+                  <PieChart margin={{ top: 8, right: 40, bottom: 8, left: 40 }}>
                     <Pie
                       data={pieData}
                       cx="50%"
                       cy="50%"
-                      outerRadius={62}
-                      innerRadius={28}
+                      outerRadius={52}
+                      innerRadius={22}
                       dataKey="value"
                       stroke="hsl(var(--card))"
                       strokeWidth={2}
                       label={({ name, value }: any) => `${name} ${value}`}
                       labelLine={false}
-                      style={{ fontSize: 11, fontWeight: 600 }}
+                      style={{ fontSize: 10, fontWeight: 600 }}
                     >
                       {pieData.map((entry) => (
                         <Cell key={entry.name} fill={PIE_COLORS[entry.name]} />
@@ -189,7 +188,7 @@ const LoggedHero = () => {
 
             {/* Quadro Clínico */}
             <div>
-              <h2 className="font-serif font-bold text-base mb-3 text-center" style={{ color: C.primary }}>
+              <h2 className="font-serif font-bold text-sm mb-2 text-center" style={{ color: C.primary }}>
                 Quadro Clínico
               </h2>
               <div className="grid grid-cols-[auto_1fr_1fr_1fr] gap-x-1.5 gap-y-[3px]">
@@ -197,7 +196,7 @@ const LoggedHero = () => {
                   const levelNum = 5 - rowIdx;
                   return (
                     <div key={label} className="contents">
-                      <span className="text-[10px] font-semibold text-muted-foreground pr-1 flex items-center justify-end h-7 leading-none">
+                      <span className="text-[9px] font-semibold text-muted-foreground pr-1 flex items-center justify-end h-6 leading-none">
                         {label}
                       </span>
                       {doshaScores.map((d) => {
@@ -206,7 +205,7 @@ const LoggedHero = () => {
                         return (
                           <div
                             key={d.name}
-                            className="h-7 rounded-sm"
+                            className="h-6 rounded-sm"
                             style={
                               filled
                                 ? { background: SCALE[d.name][levelNum - 1] }
@@ -229,52 +228,92 @@ const LoggedHero = () => {
               </div>
             </div>
           </div>
+
+          {/* Lateral arrow — "continue para seu perfil" */}
+          <div
+            className="absolute right-0 top-0 bottom-0 flex items-center justify-center w-10 md:w-12 rounded-r-3xl transition-colors group-hover:bg-primary/5"
+            style={{ background: `${C.primary}08` }}
+            aria-hidden="true"
+          >
+            <ChevronRight
+              className="h-6 w-6 transition-transform group-hover:translate-x-0.5"
+              style={{ color: C.primary }}
+            />
+          </div>
+          <span className="sr-only">Continue para seu perfil</span>
         </Link>
 
-        {/* Bottom: 3 columns — métrica / artigo / vídeo personalizados */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4 mt-4">
-          {/* Métrica destaque */}
+        {/* Bottom: 3 enriched cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-3">
+          {/* Métrica destaque — mini barras */}
           <Link
             to={`${meuDoshaBase}&tab=metricas`}
-            className="group bg-card rounded-2xl p-4 border border-border shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md flex items-start gap-3"
+            className="group bg-card rounded-2xl p-3 border border-border shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md flex gap-3"
           >
-            <div
-              className="shrink-0 w-10 h-10 rounded-xl flex items-center justify-center"
-              style={{ background: `${PIE_COLORS[primaryDosha]}1A`, color: PIE_COLORS[primaryDosha] }}
+            {/* mini bars preview */}
+            <div className="shrink-0 w-16 h-16 rounded-xl flex items-end justify-center gap-1 p-1.5"
+              style={{ background: `${PIE_COLORS[primaryDosha]}14` }}
             >
-              {topInfo.label === "Fixado" || topInfo.label === "Adoecido" ? (
-                <AlertTriangle className="h-5 w-5" />
-              ) : (
-                <TrendingUp className="h-5 w-5" />
-              )}
+              {doshaScores.map((d) => {
+                const info = getLevelInfo(d.name, d.score);
+                const heightPct = (info.levelNum / 5) * 100;
+                return (
+                  <div
+                    key={d.name}
+                    className="w-2.5 rounded-t-sm flex items-end"
+                    style={{
+                      height: `${heightPct}%`,
+                      background: PIE_COLORS[d.name],
+                      minHeight: 4,
+                    }}
+                  />
+                );
+              })}
             </div>
             <div className="min-w-0 flex-1">
-              <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1">
+                {topInfo.label === "Fixado" || topInfo.label === "Adoecido" ? (
+                  <AlertTriangle className="h-3 w-3" style={{ color: PIE_COLORS[primaryDosha] }} />
+                ) : (
+                  <TrendingUp className="h-3 w-3" style={{ color: PIE_COLORS[primaryDosha] }} />
+                )}
                 Métrica em destaque
               </p>
               <p className="font-serif font-bold text-sm leading-tight mt-0.5" style={{ color: C.primary }}>
                 {primaryDosha} — {topInfo.label}
               </p>
               <p className="text-xs text-muted-foreground mt-0.5">
-                {doshaScores.find((d) => d.name === primaryDosha)?.score ?? 0} pts
-                {total > 0 ? ` (${Math.round(((doshaScores.find((d) => d.name === primaryDosha)?.score ?? 0) / total) * 100)}%)` : ""}
+                {primaryScore} pts
+                {total > 0 ? ` (${Math.round((primaryScore / total) * 100)}%)` : ""}
               </p>
             </div>
           </Link>
 
-          {/* Artigo personalizado */}
+          {/* Artigo personalizado — com mini foto */}
           <Link
             to={`${meuDoshaBase}&tab=artigos&mode=personalizado`}
-            className="group bg-card rounded-2xl p-4 border border-border shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md flex items-start gap-3"
+            className="group bg-card rounded-2xl p-3 border border-border shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md flex gap-3"
           >
-            <div
-              className="shrink-0 w-10 h-10 rounded-xl flex items-center justify-center"
-              style={{ background: `${C.primary}14`, color: C.primary }}
+            <div className="shrink-0 w-16 h-16 rounded-xl overflow-hidden bg-muted flex items-center justify-center"
+              style={{ background: `${C.primary}14` }}
             >
-              <FileText className="h-5 w-5" />
+              {artigo?.image_url ? (
+                <img
+                  src={artigo.image_url}
+                  alt={artigo.title || "Artigo"}
+                  className="w-full h-full object-cover"
+                  loading="lazy"
+                  onError={(e) => {
+                    (e.currentTarget as HTMLImageElement).style.display = "none";
+                  }}
+                />
+              ) : (
+                <FileText className="h-6 w-6" style={{ color: C.primary }} />
+              )}
             </div>
             <div className="min-w-0 flex-1">
-              <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1">
+                <FileText className="h-3 w-3" style={{ color: C.primary }} />
                 Artigo pra você
               </p>
               <p
@@ -287,19 +326,36 @@ const LoggedHero = () => {
             </div>
           </Link>
 
-          {/* Vídeo personalizado */}
+          {/* Vídeo personalizado — com thumbnail YouTube */}
           <Link
             to={`${meuDoshaBase}&tab=videos&mode=personalizado`}
-            className="group bg-card rounded-2xl p-4 border border-border shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md flex items-start gap-3"
+            className="group bg-card rounded-2xl p-3 border border-border shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md flex gap-3"
           >
-            <div
-              className="shrink-0 w-10 h-10 rounded-xl flex items-center justify-center"
-              style={{ background: `${C.pitta}1A`, color: C.pitta }}
+            <div className="shrink-0 relative w-16 h-16 rounded-xl overflow-hidden bg-muted flex items-center justify-center"
+              style={{ background: `${C.pitta}14` }}
             >
-              <Play className="h-5 w-5" fill="currentColor" />
+              {video?.video_id ? (
+                <>
+                  <img
+                    src={`https://img.youtube.com/vi/${video.video_id}/mqdefault.jpg`}
+                    alt={video.novo_titulo || "Vídeo"}
+                    className="w-full h-full object-cover"
+                    loading="lazy"
+                    onError={(e) => {
+                      (e.currentTarget as HTMLImageElement).style.display = "none";
+                    }}
+                  />
+                  <span className="absolute inset-0 flex items-center justify-center bg-black/20">
+                    <Play className="h-5 w-5 text-white drop-shadow" fill="white" />
+                  </span>
+                </>
+              ) : (
+                <Play className="h-6 w-6" style={{ color: C.pitta }} fill="currentColor" />
+              )}
             </div>
             <div className="min-w-0 flex-1">
-              <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1">
+                <Play className="h-3 w-3" style={{ color: C.pitta }} fill="currentColor" />
                 Vídeo pra você
               </p>
               <p

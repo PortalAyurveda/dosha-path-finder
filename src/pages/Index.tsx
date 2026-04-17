@@ -570,8 +570,16 @@ const orgSchema = {
 };
 
 const Index = () => {
-  const { doshaResult, user } = useUser();
+  const { doshaResult, user, loading } = useUser();
   const isLoggedWithDosha = !!(user && doshaResult?.idPublico);
+  // While auth is still resolving AND we have a session token in storage,
+  // hold off rendering the public Hero so it doesn't flash before LoggedHero.
+  const hasStoredSession =
+    typeof window !== "undefined" &&
+    (!!localStorage.getItem("activeDoshaId") ||
+      document.cookie.includes("sb-") ||
+      Object.keys(localStorage).some((k) => k.startsWith("sb-")));
+  const shouldWait = loading && hasStoredSession && !isLoggedWithDosha;
 
   return (
     <>
@@ -591,7 +599,15 @@ const Index = () => {
         <script type="application/ld+json">{JSON.stringify(orgSchema)}</script>
       </Helmet>
 
-      {isLoggedWithDosha ? <LoggedHero /> : <Hero />}
+      {shouldWait ? (
+        <div className="min-h-[420px] flex items-center justify-center">
+          <div className="h-8 w-8 rounded-full border-2 border-primary/20 border-t-primary animate-spin" />
+        </div>
+      ) : isLoggedWithDosha ? (
+        <LoggedHero />
+      ) : (
+        <Hero />
+      )}
       <FeedSocial />
       <BibliotecaSection />
       <RegistrosAkashikos />
