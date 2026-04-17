@@ -8,10 +8,11 @@ interface VideosTabProps {
   agravVataTags: string | null;
   agravPittaTags: string | null;
   agravKaphaTags: string | null;
+  initialMode?: "gerais" | "personalizado";
 }
 
-const VideosTab = ({ doshaprincipal, agravVataTags, agravPittaTags, agravKaphaTags }: VideosTabProps) => {
-  const [mode, setMode] = useState<"gerais" | "personalizado">("gerais");
+const VideosTab = ({ doshaprincipal, agravVataTags, agravPittaTags, agravKaphaTags, initialMode = "gerais" }: VideosTabProps) => {
+  const [mode, setMode] = useState<"gerais" | "personalizado">(initialMode);
 
   return (
     <div className="space-y-4 mt-4">

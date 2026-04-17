@@ -425,6 +425,12 @@ const CACHE_GC = 60 * 60 * 1000;
 const MeuDosha = () => {
   const [searchParams] = useSearchParams();
   const id = searchParams.get('id');
+  const tabParam = searchParams.get('tab');
+  const modeParam = searchParams.get('mode');
+  const initialTab = ['perfil', 'metricas', 'artigos', 'videos', 'akasha'].includes(tabParam || '')
+    ? (tabParam as string)
+    : 'perfil';
+  const initialMode = modeParam === 'personalizado' ? 'personalizado' : 'gerais';
   const queryClient = useQueryClient();
 
   // ── Registro (doshas_registros) ──
@@ -624,7 +630,7 @@ const MeuDosha = () => {
         </div>
 
         {/* ===== TABS ===== */}
-        <Tabs defaultValue="perfil" className="w-full">
+        <Tabs defaultValue={initialTab} className="w-full">
           <TabsList className="w-full grid grid-cols-5 h-auto">
             <TabsTrigger value="perfil" className="text-xs sm:text-sm py-2 flex items-center gap-1">
               <DoshaMiniPie vata={result.vatascore ?? 0} pitta={result.pittascore ?? 0} kapha={result.kaphascore ?? 0} />
@@ -768,6 +774,7 @@ const MeuDosha = () => {
               agravVataTags={result.agravVataTags}
               agravPittaTags={result.agravPittaTags}
               agravKaphaTags={result.agravKaphaTags}
+              initialMode={initialMode === 'personalizado' ? 'personalizado' : 'geral'}
             />
           </TabsContent>
 
@@ -778,6 +785,7 @@ const MeuDosha = () => {
               agravVataTags={result.agravVataTags}
               agravPittaTags={result.agravPittaTags}
               agravKaphaTags={result.agravKaphaTags}
+              initialMode={initialMode}
             />
           </TabsContent>
 

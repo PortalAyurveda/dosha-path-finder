@@ -25,6 +25,7 @@ import { BLOG_TAGS } from "@/data/blogTags";
 import { cn } from "@/lib/utils";
 import { slugify } from "@/lib/slugify";
 import RegistrosAkashikos from "@/components/index/RegistrosAkashikos";
+import LoggedHero from "@/components/home/LoggedHero";
 
 /* ---------- Design tokens (scoped to this page) ---------- */
 const C = {
@@ -811,14 +812,8 @@ const orgSchema = {
 };
 
 const Index = () => {
-  const { doshaResult, loading, user } = useUser();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (!loading && user && doshaResult?.idPublico) {
-      navigate(`/meu-dosha?id=${doshaResult.idPublico}`, { replace: true });
-    }
-  }, [loading, user, doshaResult, navigate]);
+  const { doshaResult, user } = useUser();
+  const isLoggedWithDosha = !!(user && doshaResult?.idPublico);
 
   return (
     <>
@@ -838,7 +833,7 @@ const Index = () => {
         <script type="application/ld+json">{JSON.stringify(orgSchema)}</script>
       </Helmet>
 
-      <Hero />
+      {isLoggedWithDosha ? <LoggedHero /> : <Hero />}
       <FeedSocial />
       <BibliotecaSection />
       <RegistrosAkashikos />
