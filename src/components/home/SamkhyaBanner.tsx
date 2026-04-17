@@ -47,25 +47,28 @@ const SamkhyaBanner = () => {
       />
 
       {/* DESKTOP layout */}
-      <div className="relative hidden md:block max-w-6xl mx-auto px-4 sm:px-6 py-16 md:py-24 min-h-[320px]">
+      <div className="relative hidden md:block max-w-6xl mx-auto px-4 sm:px-6 py-16 md:py-24 min-h-[360px]">
         <div className="grid grid-cols-12 gap-6 items-center">
-          {/* Left: text only */}
-          <div className="col-span-6 lg:col-span-5">
+          {/* Left: text shifted toward center */}
+          <div className="col-span-7 lg:col-span-6 lg:pl-24 xl:pl-32">
             <h3 className="mb-3">Leve o Ayurveda para a sua rotina</h3>
             <p className="text-foreground/80">
               Conheça as fórmulas e produtos exclusivos da Samkhya — desenvolvidos com base nos textos clássicos do Ayurveda.
             </p>
           </div>
 
-          {/* Right: CTA positioned above the elephant */}
-          <div className="col-span-6 lg:col-span-7 flex justify-center lg:justify-end lg:pr-24 -mt-8">
+          {/* Right: CTA floats above the elephant (without covering it) */}
+          <div className="col-span-5 lg:col-span-6 flex justify-center lg:justify-end lg:pr-32 -mt-24 lg:-mt-32">
             <SamkhyaCTA />
           </div>
         </div>
       </div>
 
       {/* MOBILE layout */}
-      <div className="relative md:hidden px-4 sm:px-6 py-16 flex flex-col justify-between min-h-[460px] gap-6">
+      <div
+        className="relative md:hidden px-4 sm:px-6 pt-10 pb-8 flex flex-col justify-between min-h-[520px] gap-6"
+        style={{ backgroundPosition: "center 20%" }}
+      >
         <div>
           <h3 className="mb-3">Leve o Ayurveda para a sua rotina</h3>
           <p className="text-foreground/80">
