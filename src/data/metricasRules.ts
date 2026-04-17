@@ -586,7 +586,7 @@ export const RULES: RuleDefinition[] = [
       titulo: "Sinal precoce: digestão irregular antes do score subir",
       subtitulo: "Atenção · {pct}%",
       descricao:
-        "Com Vata ainda em Normal, {pct}% das pessoas já têm digestão irregular. É um sinal antes do sinal — o Agni aparece como alerta antes que o score reflita o desequilíbrio.",
+        "{pct}% das pessoas com Vata ainda em Normal já têm digestão irregular. É um sinal antes do sinal — o Agni aparece como alerta antes que o score reflita o desequilíbrio.",
     },
   },
   {
