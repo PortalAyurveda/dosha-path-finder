@@ -88,12 +88,11 @@ const Hero = () => {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12 md:py-16">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
-          {/* Left: blurred preview + 3 mini boxes */}
+          {/* Left: blurred preview + social proof */}
           <div className="hidden lg:flex lg:col-span-7 flex-col gap-4">
-            {/* Blurred preview */}
+            {/* Blurred preview — natural sized, not stretched */}
             <div
-              className="bg-card/80 backdrop-blur-sm rounded-3xl p-6 xl:p-7 border border-border shadow-lg relative overflow-hidden flex-1"
-              style={{ minHeight: 320 }}
+              className="bg-card/80 backdrop-blur-sm rounded-3xl p-6 xl:p-7 border border-border shadow-lg relative overflow-hidden"
             >
               <div className="select-none pointer-events-none" style={{ filter: "blur(5px)", opacity: 0.6 }}>
                 <div className="grid grid-cols-2 gap-6">
@@ -142,6 +141,20 @@ const Hero = () => {
                 </div>
               </div>
             </div>
+
+            {/* Social proof — fills the empty space below the preview */}
+            {typeof weeklyCount === "number" && weeklyCount > 0 && (
+              <div
+                className="flex-1 bg-card/80 backdrop-blur-sm rounded-3xl p-6 border border-border shadow-lg flex items-center justify-center gap-3"
+                aria-live="polite"
+              >
+                <Users className="h-6 w-6 shrink-0" style={{ color: C.kapha }} />
+                <p className="text-base text-muted-foreground text-center">
+                  <strong className="text-2xl font-serif" style={{ color: C.primary }}>{weeklyCount}</strong>{" "}
+                  {weeklyCount === 1 ? "pessoa descobriu" : "pessoas descobriram"} seu Dosha essa semana
+                </p>
+              </div>
+            )}
           </div>
 
           {/* Right: form */}
@@ -223,20 +236,6 @@ const Hero = () => {
               >
                 Começar <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
-
-              {/* Social proof */}
-              {typeof weeklyCount === "number" && weeklyCount > 0 && (
-                <div
-                  className="flex items-center justify-center gap-2 pt-2 border-t border-border"
-                  aria-live="polite"
-                >
-                  <Users className="h-4 w-4" style={{ color: C.kapha }} />
-                  <p className="text-xs text-muted-foreground">
-                    <strong style={{ color: C.primary }}>{weeklyCount}</strong>{" "}
-                    {weeklyCount === 1 ? "pessoa descobriu" : "pessoas descobriram"} seu Dosha essa semana
-                  </p>
-                </div>
-              )}
             </div>
           </div>
         </div>
