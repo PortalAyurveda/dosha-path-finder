@@ -23,6 +23,7 @@ import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { BLOG_TAGS } from "@/data/blogTags";
 import { cn } from "@/lib/utils";
+import { slugify } from "@/lib/slugify";
 
 /* ---------- Design tokens (scoped to this page) ---------- */
 const C = {
@@ -136,83 +137,6 @@ const Hero = () => {
                         <div className="flex-1 rounded-sm" style={{ background: C.kapha, opacity: 0.6 }} />
                       </div>
                     </div>
-                  </div>
-                </div>
-              </div>
-              <div className="absolute inset-0 flex items-end justify-center pb-4 pointer-events-none">
-                <span
-                  className="text-[11px] font-semibold uppercase tracking-wider px-3 py-1 rounded-full"
-                  style={{ background: `${C.accent}30`, color: C.primary }}
-                >
-                  Preview
-                </span>
-              </div>
-            </div>
-
-            {/* Title for the 3 mini-boxes */}
-            <p
-              className="font-serif font-semibold text-sm uppercase tracking-wide text-center"
-              style={{ color: C.primary, letterSpacing: "0.08em" }}
-            >
-              No resultado você encontra
-            </p>
-
-            {/* 3 mini preview boxes */}
-            <div className="grid grid-cols-3 gap-3">
-              {/* Métricas */}
-              <div
-                className="p-4 border border-border bg-card flex flex-col items-center text-center gap-2"
-                style={{ borderRadius: LEAF_ALT }}
-              >
-                <BarChart3 className="h-6 w-6" style={{ color: C.pitta }} />
-                <p className="font-serif font-bold text-[13px] leading-tight" style={{ color: C.primary }}>
-                  Métricas personalizadas
-                </p>
-                {/* mini bar chart */}
-                <div className="flex items-end gap-1 h-10 mt-1">
-                  <div className="w-2 rounded-sm" style={{ height: "40%", background: C.vata }} />
-                  <div className="w-2 rounded-sm" style={{ height: "75%", background: C.pitta }} />
-                  <div className="w-2 rounded-sm" style={{ height: "25%", background: C.kapha }} />
-                  <div className="w-2 rounded-sm" style={{ height: "60%", background: C.vata, opacity: 0.6 }} />
-                  <div className="w-2 rounded-sm" style={{ height: "90%", background: C.pitta, opacity: 0.7 }} />
-                </div>
-              </div>
-
-              {/* Akasha IA */}
-              <div
-                className="p-4 border border-border bg-card flex flex-col items-center text-center gap-2"
-                style={{ borderRadius: LEAF_ALT }}
-              >
-                <img src={AKASHA_LOGO} alt="Akasha IA" width={28} height={28} className="h-7 w-7 object-contain" />
-                <p className="font-serif font-bold text-[13px] leading-tight" style={{ color: C.primary }}>
-                  Akasha
-                </p>
-                <p className="text-[10px] text-muted-foreground leading-tight">
-                  Nossa IA Ayurveda<br />tira suas dúvidas
-                </p>
-              </div>
-
-              {/* Planner */}
-              <div
-                className="p-4 border border-border bg-card flex flex-col items-center text-center gap-2"
-                style={{ borderRadius: LEAF_ALT }}
-              >
-                <Target className="h-6 w-6" style={{ color: C.kapha }} />
-                <p className="font-serif font-bold text-[13px] leading-tight" style={{ color: C.primary }}>
-                  Planner de tratamento
-                </p>
-                <div className="space-y-1 text-left w-full">
-                  <div className="flex items-center gap-1 text-[10px]">
-                    <CheckCircle2 className="h-2.5 w-2.5 shrink-0" style={{ color: C.kapha }} />
-                    <span className="text-muted-foreground line-through truncate">Chá matinal</span>
-                  </div>
-                  <div className="flex items-center gap-1 text-[10px]">
-                    <CheckCircle2 className="h-2.5 w-2.5 shrink-0" style={{ color: C.kapha }} />
-                    <span className="text-muted-foreground line-through truncate">Yoga 15 min</span>
-                  </div>
-                  <div className="flex items-center gap-1 text-[10px]">
-                    <div className="h-2.5 w-2.5 rounded-full border border-border shrink-0" />
-                    <span className="text-foreground/80 truncate">Auto-massagem</span>
                   </div>
                 </div>
               </div>
@@ -428,6 +352,7 @@ const ColumnCard = ({
   external,
   cta,
   accentColor,
+  videoId,
 }: {
   badge: string;
   image: string | null;
@@ -437,11 +362,12 @@ const ColumnCard = ({
   external: boolean;
   cta: string;
   accentColor: string;
+  videoId?: string;
 }) => {
   const Wrap: any = external ? "a" : Link;
   const wrapProps = external
     ? { href, target: "_blank", rel: "noopener noreferrer" }
-    : { to: href };
+    : { to: href, state: videoId ? { videoId } : undefined };
 
   return (
     <Wrap
@@ -450,7 +376,7 @@ const ColumnCard = ({
       style={{ borderRadius: LEAF }}
     >
       <div
-        className="relative w-full aspect-video overflow-hidden flex items-center justify-center"
+        className="relative w-full aspect-video overflow-hidden flex items-center justify-center bg-muted"
         style={!image ? { background: `linear-gradient(135deg, ${C.primary}, #1f1a3a)` } : undefined}
       >
         {image ? (
@@ -531,7 +457,7 @@ const BibliotecaSection = () => {
 
   return (
     <section className="max-w-6xl mx-auto px-4 sm:px-6 py-16 md:py-20">
-      <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-10">
+      <div className="flex flex-col items-center text-center gap-5 mb-10">
         <div>
           <h2
             className="font-serif italic font-bold text-3xl md:text-4xl mb-2"
@@ -543,8 +469,8 @@ const BibliotecaSection = () => {
             Conteúdo selecionado todo dia para você.
           </p>
         </div>
-        {/* 3 dosha buttons */}
-        <div className="flex gap-2 flex-wrap">
+        {/* 3 dosha buttons centered under title */}
+        <div className="flex gap-2 flex-wrap justify-center">
           <Link
             to="/biblioteca/vata"
             className="px-4 py-2 text-sm font-semibold text-white transition-all hover:-translate-y-0.5"
@@ -576,12 +502,13 @@ const BibliotecaSection = () => {
         ) : liveQ.data ? (
           <ColumnCard
             badge="Live do dia"
-            image={`${STORAGE}/${liveQ.data.video_id}.webp`}
+            image={`https://img.youtube.com/vi/${liveQ.data.video_id}/mqdefault.jpg`}
             title={liveQ.data.novo_titulo ?? ""}
             summary={liveQ.data.mini_resumo}
-            href={liveQ.data.url ?? "#"}
-            external
-            cta="Assistir no YouTube"
+            href={`/video/${slugify(liveQ.data.novo_titulo || "live")}`}
+            videoId={liveQ.data.video_id}
+            external={false}
+            cta="Assistir agora"
             accentColor={C.pitta}
           />
         ) : null}
@@ -592,11 +519,12 @@ const BibliotecaSection = () => {
         ) : receitaQ.data ? (
           <ColumnCard
             badge="Receita do dia"
-            image={`${STORAGE}/${receitaQ.data.video_id}.webp`}
+            image={`https://img.youtube.com/vi/${receitaQ.data.video_id}/mqdefault.jpg`}
             title={receitaQ.data.novo_titulo ?? ""}
             summary={receitaQ.data.mini_resumo}
-            href={receitaQ.data.url ?? "#"}
-            external
+            href={`/video/${slugify(receitaQ.data.novo_titulo || "receita")}`}
+            videoId={receitaQ.data.video_id}
+            external={false}
             cta="Ver receita"
             accentColor={C.kapha}
           />
