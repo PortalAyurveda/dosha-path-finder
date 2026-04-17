@@ -82,15 +82,15 @@ const DoshaPreview = () => (
       </div>
     </div>
 
-    {/* Overlay CTA */}
-    <div className="absolute inset-0 flex flex-col items-center justify-center">
+    {/* Overlay CTA — sits in front of the blurred chart/grid */}
+    <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
       <div className="bg-card/95 p-3 rounded-full shadow-lg mb-3 border border-border">
         <Lock className="w-6 h-6 text-primary" />
       </div>
-      <p className="text-primary font-serif font-bold text-base md:text-lg text-center px-4 leading-tight">
+      <p className="text-primary font-serif font-bold text-base md:text-lg text-center px-4 leading-tight drop-shadow-sm">
         Faça o teste para desbloquear seu mapa biológico
       </p>
-      <p className="text-xs md:text-sm text-muted-foreground mt-1.5 text-center px-4">
+      <p className="text-xs md:text-sm text-foreground/70 mt-1.5 text-center px-4 drop-shadow-sm">
         Identifique seu Agni e nível de agravamento hoje.
       </p>
     </div>
@@ -112,11 +112,18 @@ const Hero = () => {
   };
 
   return (
-    <section className="relative overflow-hidden bg-surface-sun">
-      {/* Warm decorative shapes */}
-      <div className="absolute inset-0 opacity-10 pointer-events-none">
-        <div className="absolute top-10 left-[10%] w-64 h-64 rounded-full bg-secondary blur-3xl" />
-        <div className="absolute bottom-10 right-[15%] w-48 h-48 rounded-full bg-accent blur-3xl" />
+    <section
+      className="relative overflow-hidden"
+      style={{
+        background:
+          "linear-gradient(110deg, hsl(228 82% 94%) 0%, hsl(0 78% 94%) 52%, hsl(48 92% 90%) 100%)",
+      }}
+    >
+      {/* Soft decorative shapes */}
+      <div className="absolute inset-0 opacity-30 pointer-events-none">
+        <div className="absolute top-10 left-[8%] w-72 h-72 rounded-full blur-3xl" style={{ background: "#6B7FF2" }} />
+        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-80 h-80 rounded-full blur-3xl" style={{ background: "#F28888" }} />
+        <div className="absolute bottom-10 right-[10%] w-64 h-64 rounded-full blur-3xl" style={{ background: "#F2CB05" }} />
       </div>
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-12 md:py-16">
