@@ -82,9 +82,19 @@ const RoutedApp = () => {
               <Route path="/termos-de-uso" element={<TermosDeUso />} />
               <Route path="/admin" element={<Admin />} />
               <Route path="*" element={<NotFound />} />
-            </Routes>
-          </Layout>
-        </UserProvider>
+      </Routes>
+      </Layout>
+    </UserProvider>
+  );
+};
+
+const App = () => (
+  <HelmetProvider>
+    <QueryClientProvider client={queryClient}>
+      <Toaster />
+      <Sonner />
+      <BrowserRouter>
+        <RoutedApp />
       </BrowserRouter>
     </QueryClientProvider>
   </HelmetProvider>
