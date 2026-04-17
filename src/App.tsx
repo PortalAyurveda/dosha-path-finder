@@ -26,6 +26,8 @@ import NotFound from "./pages/NotFound";
 import Admin from "./pages/Admin";
 import Blog from "./pages/Blog";
 import BlogArticle from "./pages/BlogArticle";
+import Metricas from "./pages/Metricas";
+import RegistroAkashico from "./pages/RegistroAkashico";
 
 const queryClient = new QueryClient();
 
