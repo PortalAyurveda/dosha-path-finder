@@ -11,12 +11,15 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { BLOG_TAGS } from "@/data/blogTags";
 
+const PAGE_SIZE = 12;
+
 const Blog = () => {
   const [searchParams] = useSearchParams();
   const [searchTerm, setSearchTerm] = useState("");
   const [isAdvanced, setIsAdvanced] = useState(false);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [page, setPage] = useState(1);
 
   // Read ?tag= from URL on mount
   useEffect(() => {
