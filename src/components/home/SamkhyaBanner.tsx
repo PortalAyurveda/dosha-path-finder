@@ -6,6 +6,21 @@ const BANNER_URL =
 const BANNER_URL_MOBILE =
   "https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/bananer-smk-portal-mobile.jpg";
 
+const PURPLE = "#352F54";
+
+const SamkhyaCTA = ({ className = "" }: { className?: string }) => (
+  <Button
+    asChild
+    className={`rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm px-8 py-6 text-base font-bold text-white shadow-lg transition-all hover:opacity-90 ${className}`}
+    style={{ backgroundColor: PURPLE }}
+  >
+    <a href="https://lojasamkhya.com.br" target="_blank" rel="noopener noreferrer">
+      Acessar Loja Samkhya
+      <ExternalLink className="ml-2 h-4 w-4" />
+    </a>
+  </Button>
+);
+
 const SamkhyaBanner = () => {
   return (
     <section className="relative overflow-hidden border-t border-secondary/20">
@@ -31,49 +46,34 @@ const SamkhyaBanner = () => {
         aria-hidden
       />
 
-      <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-16 md:py-24 min-h-[260px] md:min-h-[320px]">
-        {/* Desktop layout: text + CTA stacked on the left */}
-        <div className="hidden md:flex max-w-md md:max-w-lg flex-col gap-5">
-          <div>
+      {/* DESKTOP layout */}
+      <div className="relative hidden md:block max-w-6xl mx-auto px-4 sm:px-6 py-16 md:py-24 min-h-[320px]">
+        <div className="grid grid-cols-12 gap-6 items-center">
+          {/* Left: text only */}
+          <div className="col-span-6 lg:col-span-5">
             <h3 className="mb-3">Leve o Ayurveda para a sua rotina</h3>
             <p className="text-foreground/80">
               Conheça as fórmulas e produtos exclusivos da Samkhya — desenvolvidos com base nos textos clássicos do Ayurveda.
             </p>
           </div>
-          <div>
-            <Button
-              variant="outline"
-              className="rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm px-8 py-6 text-base font-bold border-2 border-secondary text-secondary bg-card/80 backdrop-blur-sm hover:bg-secondary hover:text-white transition-all"
-              asChild
-            >
-              <a href="https://lojasamkhya.com.br" target="_blank" rel="noopener noreferrer">
-                Acessar Loja Samkhya
-                <ExternalLink className="ml-2 h-4 w-4" />
-              </a>
-            </Button>
+
+          {/* Right: CTA positioned above the elephant */}
+          <div className="col-span-6 lg:col-span-7 flex justify-center lg:justify-end lg:pr-24 -mt-8">
+            <SamkhyaCTA />
           </div>
         </div>
+      </div>
 
-        {/* Mobile layout: text on top (empty space area), CTA pushed to bottom (above the elephant) */}
-        <div className="md:hidden flex flex-col justify-between min-h-[420px] gap-6">
-          <div>
-            <h3 className="mb-3">Leve o Ayurveda para a sua rotina</h3>
-            <p className="text-foreground/80">
-              Conheça as fórmulas e produtos exclusivos da Samkhya — desenvolvidos com base nos textos clássicos do Ayurveda.
-            </p>
-          </div>
-          <div className="flex justify-center">
-            <Button
-              variant="outline"
-              className="rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm px-8 py-6 text-base font-bold border-2 border-secondary text-secondary bg-card/90 backdrop-blur-sm hover:bg-secondary hover:text-white transition-all shadow-lg"
-              asChild
-            >
-              <a href="https://lojasamkhya.com.br" target="_blank" rel="noopener noreferrer">
-                Acessar Loja Samkhya
-                <ExternalLink className="ml-2 h-4 w-4" />
-              </a>
-            </Button>
-          </div>
+      {/* MOBILE layout */}
+      <div className="relative md:hidden px-4 sm:px-6 py-16 flex flex-col justify-between min-h-[460px] gap-6">
+        <div>
+          <h3 className="mb-3">Leve o Ayurveda para a sua rotina</h3>
+          <p className="text-foreground/80">
+            Conheça as fórmulas e produtos exclusivos da Samkhya — desenvolvidos com base nos textos clássicos do Ayurveda.
+          </p>
+        </div>
+        <div className="flex justify-center">
+          <SamkhyaCTA />
         </div>
       </div>
     </section>
