@@ -816,6 +816,7 @@ const Index = () => {
       <Hero />
       <FeedSocial />
       <BibliotecaSection />
+      <RegistrosAkashikos />
       <SommelierArtigos />
       <SamkhyaBanner />
     </>
