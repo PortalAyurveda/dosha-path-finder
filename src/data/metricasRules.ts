@@ -463,7 +463,7 @@ export const RULES: RuleDefinition[] = [
       titulo: "A fase Pitta sobrecarregada",
       subtitulo: "Alerta · {pct}%",
       descricao:
-        "Entre os 13 e 49 anos — a fase naturalmente Pitta da vida —, metade das {n} pessoas nessa faixa já está com Pitta em Acúmulo. O fogo da vida está sendo acelerado além do que o corpo sustenta.",
+        "{pct}% das pessoas entre 13 e 49 anos — a fase naturalmente Pitta da vida — já está com Pitta em Acúmulo. O fogo da vida está sendo acelerado além do que o corpo sustenta.",
     },
   },
 
