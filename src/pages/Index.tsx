@@ -570,8 +570,16 @@ const orgSchema = {
 };
 
 const Index = () => {
-  const { doshaResult, user } = useUser();
+  const { doshaResult, user, loading } = useUser();
   const isLoggedWithDosha = !!(user && doshaResult?.idPublico);
+  // While auth is still resolving AND we have a session token in storage,
+  // hold off rendering the public Hero so it doesn't flash before LoggedHero.
+  const hasStoredSession =
+    typeof window !== "undefined" &&
+    (!!localStorage.getItem("activeDoshaId") ||
+      document.cookie.includes("sb-") ||
+      Object.keys(localStorage).some((k) => k.startsWith("sb-")));
+  const shouldWait = loading && hasStoredSession && !isLoggedWithDosha;
 
   return (
     <>
