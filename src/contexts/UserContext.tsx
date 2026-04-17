@@ -203,13 +203,13 @@ export function UserProvider({ children }: { children: ReactNode }) {
         setProfile(null);
         setRole(null);
         setRoleLoading(false);
-
-        const storedId = localStorage.getItem("activeDoshaId");
-        if (storedId) {
-          await setDoshaResultFromId(storedId);
-        } else {
-          setDoshaResult(null);
-        }
+        // When there is no authenticated session, do NOT auto-restore the
+        // dosha result from localStorage. This was making the header show the
+        // user's name + pie chart even after sign out / on a fresh visit,
+        // without offering a "Sair" button. The dosha result is only shown
+        // for authenticated users now.
+        localStorage.removeItem("activeDoshaId");
+        setDoshaResult(null);
       }
 
       if (isMounted) {
