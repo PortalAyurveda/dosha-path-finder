@@ -316,7 +316,9 @@ const AkashaTab = ({
                 : "bg-akasha/10 text-foreground rounded-tl-sm"
             }`}>
               {msg.role === "user" ? (
-                <p className="whitespace-pre-wrap">{msg.content}</p>
+                <div className="prose prose-sm max-w-none [&_p]:text-sm [&_p]:leading-relaxed [&_p]:text-foreground [&_p]:my-0">
+                  <p className="whitespace-pre-wrap">{msg.content}</p>
+                </div>
               ) : (
                 <div className="prose prose-sm max-w-none [&_p]:text-sm [&_p]:leading-relaxed [&_p]:text-foreground [&_li]:text-sm [&_li]:text-foreground [&_strong]:text-foreground">
                   <ReactMarkdown skipHtml>{msg.content}</ReactMarkdown>
