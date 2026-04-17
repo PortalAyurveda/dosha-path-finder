@@ -67,6 +67,22 @@ const Blog = () => {
     });
   }, [articles, selectedTags]);
 
+  // Reset page when filters/search change
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedSearch, isAdvanced, selectedTags]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredArticles.length / PAGE_SIZE));
+  const paginatedArticles = useMemo(
+    () => filteredArticles.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE),
+    [filteredArticles, page]
+  );
+
+  const goToPage = (p: number) => {
+    setPage(Math.min(Math.max(1, p), totalPages));
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   const toggleTag = (tag: string) => {
     setSelectedTags((prev) =>
       prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
