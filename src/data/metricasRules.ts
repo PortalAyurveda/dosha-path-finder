@@ -167,7 +167,7 @@ export const RULES: RuleDefinition[] = [
       titulo: "Três doshas, um colapso",
       subtitulo: "Crítico · {pct}%",
       descricao:
-        "Vata fixado, Pitta adoecido e digestão irregular ao mesmo tempo: {pct}% das {n} pessoas nessa combinação têm os três marcadores confirmados. É o desequilíbrio mais complexo — mas também o mais reconhecível.",
+        "{pct}% das pessoas com Vata fixado e Pitta adoecido também têm digestão irregular. É o desequilíbrio mais complexo — mas também o mais reconhecível.",
     },
   },
   {
