@@ -89,7 +89,7 @@ const Biblioteca = () => {
             .select("video_id, novo_titulo, texto_para_embedding, criado_em")
             .ilike("texto_para_embedding", `%${debouncedSearch.trim()}%`)
             .order("criado_em", { ascending: false })
-            .limit(10);
+            .limit(60);
           if (error) throw error;
           return data ?? [];
         })
