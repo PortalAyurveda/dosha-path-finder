@@ -26,6 +26,7 @@ import { cn } from "@/lib/utils";
 import { slugify } from "@/lib/slugify";
 import RegistrosAkashikos from "@/components/index/RegistrosAkashikos";
 import LoggedHero from "@/components/home/LoggedHero";
+import SamkhyaBanner from "@/components/home/SamkhyaBanner";
 
 /* ---------- Design tokens (scoped to this page) ---------- */
 const C = {
@@ -765,34 +766,7 @@ const SommelierArtigos = () => {
   );
 };
 
-/* ============================================================
-   Banner Samkhya
-============================================================ */
-const SamkhyaBanner = () => (
-  <section style={{ background: C.primary }}>
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-14 md:py-20 flex flex-col md:flex-row items-center justify-between gap-8 text-center md:text-left">
-      <div className="max-w-2xl">
-        <h2 className="font-serif italic font-bold text-white text-2xl md:text-[32px] leading-tight mb-3">
-          Óleos, massalas e fórmulas Ayurveda.
-        </h2>
-        <p className="text-[15px]" style={{ color: "rgba(255,255,255,.6)" }}>
-          Fabricados com rigor técnico pela Samkhya Ayurveda.
-        </p>
-      </div>
-      <a
-        href="https://samkhya.com.br"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="inline-flex items-center gap-2 font-sans font-semibold border-2 border-white text-white px-7 py-3.5 transition-colors hover:text-[#352F54]"
-        style={{ borderRadius: LEAF }}
-        onMouseEnter={(e) => (e.currentTarget.style.background = C.accent)}
-        onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
-      >
-        Conhecer a Loja Samkhya <ArrowRight className="h-5 w-5" />
-      </a>
-    </div>
-  </section>
-);
+/* Banner Samkhya — usa componente compartilhado em src/components/home/SamkhyaBanner.tsx */
 
 /* ============================================================
    Page
