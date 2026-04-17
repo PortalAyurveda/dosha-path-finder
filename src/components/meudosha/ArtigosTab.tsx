@@ -11,6 +11,9 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { BLOG_TAGS } from "@/data/blogTags";
 import HeartButton from "@/components/HeartButton";
+import PaginationControls from "@/components/PaginationControls";
+
+const ITEMS_PER_PAGE = 12;
 
 interface ArtigosTabProps {
   agravVataTags: string | null;
