@@ -110,7 +110,7 @@ export const RULES: RuleDefinition[] = [
       titulo: "Digestão caótica confirma Vata em colapso",
       subtitulo: "Diagnóstico · {pct}%",
       descricao:
-        "Com digestão inconstante no nível mais grave, {pct}% das {n} pessoas também têm Vata adoecido. Vata é o dosha do movimento e da irregularidade — quando ele colapsa, a digestão vai junto.",
+        "{pct}% das pessoas com digestão inconstante no nível mais grave também têm Vata adoecido. Vata é o dosha do movimento e da irregularidade — quando ele colapsa, a digestão vai junto.",
     },
   },
   {
