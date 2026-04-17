@@ -368,6 +368,7 @@ type LiveRow = {
 type RecipeRow = {
   novo_titulo: string | null;
   mini_resumo: string | null;
+  nova_descricao: string | null;
   url: string | null;
   tags: string | null;
   video_id: string;
