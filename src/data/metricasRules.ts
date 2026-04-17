@@ -145,7 +145,7 @@ export const RULES: RuleDefinition[] = [
       titulo: "A inflamação tem raiz em Vata, não em Pitta",
       subtitulo: "Crítico · {pct}%",
       descricao:
-        "Quando Pitta está fixado mas o fogo digestivo não é forte, {pct}% das {n} pessoas também têm Vata adoecido. A causa do desequilíbrio não é o fogo em si — é o vento que esquentou sem direção.",
+        "{pct}% das pessoas com Pitta fixado mas sem fogo digestivo forte também têm Vata adoecido. A causa do desequilíbrio não é o fogo em si — é o vento que esquentou sem direção.",
     },
   },
   {
