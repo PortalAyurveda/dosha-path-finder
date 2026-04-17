@@ -1,9 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { useQuery } from "@tanstack/react-query";
 import {
-  ArrowRight,
   Play,
   ExternalLink,
   Search,
@@ -12,19 +11,18 @@ import {
   BarChart3,
   Target,
   CheckCircle2,
-  Users,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/contexts/UserContext";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { BLOG_TAGS } from "@/data/blogTags";
 import { cn } from "@/lib/utils";
 import { slugify } from "@/lib/slugify";
 import RegistrosAkashikos from "@/components/index/RegistrosAkashikos";
+import Hero from "@/components/home/Hero";
 import LoggedHero from "@/components/home/LoggedHero";
 import SamkhyaBanner from "@/components/home/SamkhyaBanner";
 
@@ -44,221 +42,6 @@ const LEAF_ALT = "4px 24px 4px 24px";
 const STORAGE = "https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_capas";
 const AKASHA_LOGO =
   "https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/logo-akasha.png";
-
-/* ============================================================
-   Hero
-============================================================ */
-const Hero = () => {
-  const navigate = useNavigate();
-  const [nome, setNome] = useState("");
-  const [idade, setIdade] = useState("");
-  const [nivel, setNivel] = useState("");
-
-  const canStart = !!(nome.trim() && idade.trim() && nivel);
-
-  const handleStart = () => {
-    if (!canStart) return;
-    localStorage.setItem(
-      "dosha_test_info",
-      JSON.stringify({ nome: nome.trim(), idade, nivel })
-    );
-    navigate("/teste-de-dosha");
-  };
-
-  // Quantas pessoas fizeram o teste nos últimos 7 dias
-  const { data: weeklyCount } = useQuery({
-    queryKey: ["feed_weekly_count"],
-    queryFn: async () => {
-      const sevenDaysAgo = new Date();
-      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-      const { count, error } = await supabase
-        .from("feed_resultados")
-        .select("*", { count: "exact", head: true })
-        .gte("created_at", sevenDaysAgo.toISOString());
-      if (error) throw error;
-      return count ?? 0;
-    },
-    staleTime: 5 * 60 * 1000,
-  });
-
-  return (
-    <section
-      className="relative overflow-hidden"
-      style={{
-        background: `linear-gradient(180deg, ${C.surface} 0%, #ffffff 100%)`,
-      }}
-    >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12 md:py-16">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
-          {/* Left: blurred preview + subtle social proof */}
-          <div className="hidden lg:flex lg:col-span-7 flex-col gap-3">
-            {/* Blurred preview — pie + Quadro Clínico thermometer */}
-            <div className="bg-card/80 backdrop-blur-sm rounded-3xl p-6 xl:p-7 border border-border shadow-lg relative overflow-hidden">
-              <div className="select-none pointer-events-none" style={{ filter: "blur(5px)", opacity: 0.65 }}>
-                <div className="grid grid-cols-2 gap-6">
-                  {/* Left: Pontuação (pie) */}
-                  <div className="flex flex-col items-center justify-center space-y-3">
-                    <p className="font-serif font-bold text-base" style={{ color: C.primary }}>Pontuação</p>
-                    <div
-                      className="w-32 h-32 rounded-full relative shadow-inner flex items-center justify-center"
-                      style={{
-                        background: `conic-gradient(${C.pitta} 0% 59.7%, ${C.vata} 59.7% 92.3%, ${C.kapha} 92.3% 100%)`,
-                      }}
-                    >
-                      <div className="w-20 h-20 bg-card rounded-full" />
-                    </div>
-                    <div className="text-xs font-bold text-muted-foreground space-y-0.5 text-center">
-                      <p>Vata: 30 pts</p>
-                      <p>Pitta: 55 pts</p>
-                      <p>Kapha: 7 pts</p>
-                    </div>
-                  </div>
-                  {/* Right: Quadro Clínico thermometer (5 levels, intensity rises to Fixado) */}
-                  <div className="flex flex-col space-y-2">
-                    <p className="font-serif font-bold text-base text-center" style={{ color: C.primary }}>Quadro Clínico</p>
-                    <div className="grid grid-cols-[auto_1fr_1fr_1fr] gap-x-1 gap-y-[3px]">
-                      {["Fixado", "Adoecido", "Acúmulo", "Normal", "Pouco"].map((label, rowIdx) => {
-                        // levelNum: 5=Fixado (top), 1=Pouco (bottom)
-                        const levelNum = 5 - rowIdx;
-                        // Mock active levels per dosha: Vata=Normal(2), Pitta=Fixado(5), Kapha=Pouco(1)
-                        const actives = { v: 2, p: 5, k: 1 };
-                        // Color scales (mirror MeuDosha)
-                        const scales = {
-                          v: ['#D6E0FF', '#A3C1FF', '#709AFF', '#4F75FF', '#2A4BCC'],
-                          p: ['#FFE0E0', '#FFB3B3', '#FF8585', '#FF5C5C', '#CC3333'],
-                          k: ['#D1F4E0', '#9AE6B8', '#5ED58F', '#22C55E', '#15803D'],
-                        };
-                        const cell = (active: number, scale: string[]) => {
-                          const filled = levelNum <= active;
-                          return (
-                            <div
-                              className="h-7 rounded-sm"
-                              style={filled ? { background: scale[levelNum - 1] } : { background: "hsl(var(--muted) / 0.3)" }}
-                            />
-                          );
-                        };
-                        return (
-                          <div key={label} className="contents">
-                            <span className="text-[10px] font-semibold text-muted-foreground pr-1 flex items-center justify-end h-7 leading-none">
-                              {label}
-                            </span>
-                            {cell(actives.v, scales.v)}
-                            {cell(actives.p, scales.p)}
-                            {cell(actives.k, scales.k)}
-                          </div>
-                        );
-                      })}
-                    </div>
-                    <div className="grid grid-cols-[auto_1fr_1fr_1fr] gap-x-1 mt-1">
-                      <div />
-                      <p className="text-[10px] font-bold text-center" style={{ color: C.vata }}>Vata</p>
-                      <p className="text-[10px] font-bold text-center" style={{ color: C.pitta }}>Pitta</p>
-                      <p className="text-[10px] font-bold text-center" style={{ color: C.kapha }}>Kapha</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Subtle social proof — just a small breath of text below the preview */}
-            {typeof weeklyCount === "number" && weeklyCount > 0 && (
-              <p
-                className="text-xs text-muted-foreground text-center inline-flex items-center justify-center gap-1.5"
-                aria-live="polite"
-              >
-                <Users className="h-3.5 w-3.5" style={{ color: C.kapha }} />
-                <strong className="font-semibold" style={{ color: C.primary }}>{weeklyCount}</strong>{" "}
-                {weeklyCount === 1 ? "pessoa descobriu" : "pessoas descobriram"} seu Dosha essa semana
-              </p>
-            )}
-          </div>
-
-          {/* Right: form */}
-          <div className="lg:col-span-5 flex flex-col gap-4">
-            <div
-              className="animate-fade-in bg-card/80 backdrop-blur-sm rounded-3xl p-6 xl:p-8 border border-border shadow-lg flex flex-col justify-center space-y-5 flex-1"
-              style={{ animationDelay: "0.25s" }}
-            >
-              <div className="text-center">
-                <h1
-                  className="mb-2 font-serif font-bold text-2xl md:text-3xl lg:text-[34px] leading-tight"
-                  style={{ color: C.primary, fontStyle: "normal" }}
-                >
-                  Seu guia completo para saúde e longevidade.
-                </h1>
-                <p className="text-sm md:text-base text-muted-foreground">
-                  Descubra e cuide dos seus Doshas por meio da medicina milenar.
-                </p>
-              </div>
-
-              <hr className="border-border" />
-
-              <p className="font-serif font-semibold text-base text-center" style={{ color: C.primary }}>
-                Comece seu Teste de Dosha Gratuito
-              </p>
-
-              <div className="text-left space-y-3">
-                <div>
-                  <Label htmlFor="hero-nome" className="text-xs">Seu nome</Label>
-                  <Input
-                    id="hero-nome"
-                    placeholder="Nome"
-                    value={nome}
-                    onChange={(e) => setNome(e.target.value)}
-                    className="mt-1"
-                  />
-                </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <Label htmlFor="hero-idade" className="text-xs">Idade</Label>
-                    <Input
-                      id="hero-idade"
-                      type="number"
-                      placeholder="30"
-                      value={idade}
-                      onChange={(e) => setIdade(e.target.value)}
-                      className="mt-1"
-                    />
-                  </div>
-                  <div>
-                    <Label className="text-xs">Nível de Ayurveda</Label>
-                    <select
-                      value={nivel}
-                      onChange={(e) => setNivel(e.target.value)}
-                      className={cn(
-                        "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm mt-1",
-                        "ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-                        !nivel && "text-muted-foreground"
-                      )}
-                    >
-                      <option value="" disabled>Selecione</option>
-                      <option value="Iniciante">Iniciante</option>
-                      <option value="Intermediário">Intermediário</option>
-                      <option value="Avançado">Avançado</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-
-              <Button
-                onClick={handleStart}
-                disabled={!canStart}
-                className="w-full text-white"
-                size="lg"
-                style={{
-                  background: C.pitta,
-                  borderRadius: LEAF,
-                }}
-              >
-                Começar <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-};
 
 /* ============================================================
    Feed Social (marquee — frase_akasha + status_visual)
