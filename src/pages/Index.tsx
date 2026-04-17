@@ -23,6 +23,7 @@ import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { BLOG_TAGS } from "@/data/blogTags";
 import { cn } from "@/lib/utils";
+import { slugify } from "@/lib/slugify";
 
 /* ---------- Design tokens (scoped to this page) ---------- */
 const C = {
@@ -456,7 +457,7 @@ const BibliotecaSection = () => {
 
   return (
     <section className="max-w-6xl mx-auto px-4 sm:px-6 py-16 md:py-20">
-      <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-10">
+      <div className="flex flex-col items-center text-center gap-5 mb-10">
         <div>
           <h2
             className="font-serif italic font-bold text-3xl md:text-4xl mb-2"
@@ -468,8 +469,8 @@ const BibliotecaSection = () => {
             Conteúdo selecionado todo dia para você.
           </p>
         </div>
-        {/* 3 dosha buttons */}
-        <div className="flex gap-2 flex-wrap">
+        {/* 3 dosha buttons centered under title */}
+        <div className="flex gap-2 flex-wrap justify-center">
           <Link
             to="/biblioteca/vata"
             className="px-4 py-2 text-sm font-semibold text-white transition-all hover:-translate-y-0.5"
@@ -501,12 +502,13 @@ const BibliotecaSection = () => {
         ) : liveQ.data ? (
           <ColumnCard
             badge="Live do dia"
-            image={`${STORAGE}/${liveQ.data.video_id}.webp`}
+            image={`https://img.youtube.com/vi/${liveQ.data.video_id}/mqdefault.jpg`}
             title={liveQ.data.novo_titulo ?? ""}
             summary={liveQ.data.mini_resumo}
-            href={liveQ.data.url ?? "#"}
-            external
-            cta="Assistir no YouTube"
+            href={`/video/${slugify(liveQ.data.novo_titulo || "live")}`}
+            videoId={liveQ.data.video_id}
+            external={false}
+            cta="Assistir agora"
             accentColor={C.pitta}
           />
         ) : null}
@@ -517,11 +519,12 @@ const BibliotecaSection = () => {
         ) : receitaQ.data ? (
           <ColumnCard
             badge="Receita do dia"
-            image={`${STORAGE}/${receitaQ.data.video_id}.webp`}
+            image={`https://img.youtube.com/vi/${receitaQ.data.video_id}/mqdefault.jpg`}
             title={receitaQ.data.novo_titulo ?? ""}
             summary={receitaQ.data.mini_resumo}
-            href={receitaQ.data.url ?? "#"}
-            external
+            href={`/video/${slugify(receitaQ.data.novo_titulo || "receita")}`}
+            videoId={receitaQ.data.video_id}
+            external={false}
             cta="Ver receita"
             accentColor={C.kapha}
           />
