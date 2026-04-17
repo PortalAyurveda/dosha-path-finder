@@ -9,6 +9,9 @@ import VideoResultCard from "@/components/biblioteca/VideoResultCard";
 import AdvancedVideoCard from "@/components/biblioteca/AdvancedVideoCard";
 import AdvancedVideoResult from "@/components/biblioteca/AdvancedVideoResult";
 import { Skeleton } from "@/components/ui/skeleton";
+import PaginationControls from "@/components/PaginationControls";
+
+const PAGE_SIZE = 12;
 
 function useDebounce(value: string, delay: number) {
   const [debounced, setDebounced] = useState(value);
@@ -33,6 +36,7 @@ const Biblioteca = () => {
   const [isAdvanced, setIsAdvanced] = useState(false);
   const [category, setCategory] = useState<VideoCategory>("selecao");
   const debouncedSearch = useDebounce(searchTerm, 300);
+  const [page, setPage] = useState(1);
 
   const [selectedAdvancedVideo, setSelectedAdvancedVideo] = useState<{
     video_id: string;
@@ -45,6 +49,11 @@ const Biblioteca = () => {
     setSelectedAdvancedVideo(null);
   }, [debouncedSearch]);
 
+  // Reset pagination when filters change
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedSearch, category, isAdvanced]);
+
   // Common search — single table based on category
   const { data: videos, isLoading } = useQuery({
     queryKey: ["biblioteca-videos", debouncedSearch, category],
@@ -54,7 +63,7 @@ const Biblioteca = () => {
         .from(table)
         .select("video_id, novo_titulo, mini_resumo, nova_descricao, tags, texto_para_embedding, criado_em")
         .order("criado_em", { ascending: false })
-        .limit(20);
+        .limit(120);
 
       if (debouncedSearch.trim()) {
         query = query.ilike("novo_titulo", `%${debouncedSearch.trim()}%`);
@@ -80,7 +89,7 @@ const Biblioteca = () => {
             .select("video_id, novo_titulo, texto_para_embedding, criado_em")
             .ilike("texto_para_embedding", `%${debouncedSearch.trim()}%`)
             .order("criado_em", { ascending: false })
-            .limit(10);
+            .limit(60);
           if (error) throw error;
           return data ?? [];
         })
@@ -101,6 +110,16 @@ const Biblioteca = () => {
   });
 
   const loading = isAdvanced ? isAdvancedLoading : isLoading;
+
+  const sourceList = isAdvanced ? advancedResults ?? [] : videos ?? [];
+  const totalPages = Math.max(1, Math.ceil(sourceList.length / PAGE_SIZE));
+  const pagedVideos = (videos ?? []).slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const pagedAdvanced = (advancedResults ?? []).slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+
+  const goToPage = (p: number) => {
+    setPage(Math.min(Math.max(1, p), totalPages));
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   return (
     <>
@@ -149,25 +168,30 @@ const Biblioteca = () => {
             </div>
           </div>
         ) : advancedResults && advancedResults.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {advancedResults.map((v) => (
-              <AdvancedVideoCard
-                key={v.video_id}
-                videoId={v.video_id}
-                title={v.novo_titulo || "Sem título"}
-                textoParaEmbedding={v.texto_para_embedding || ""}
-                searchTerm={debouncedSearch}
-                onClick={(initialSeconds) =>
-                  setSelectedAdvancedVideo({
-                    video_id: v.video_id,
-                    novo_titulo: v.novo_titulo || "Sem título",
-                    texto_para_embedding: v.texto_para_embedding || "",
-                    initialSeconds,
-                  })
-                }
-              />
-            ))}
-          </div>
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {pagedAdvanced.map((v) => (
+                <AdvancedVideoCard
+                  key={v.video_id}
+                  videoId={v.video_id}
+                  title={v.novo_titulo || "Sem título"}
+                  textoParaEmbedding={v.texto_para_embedding || ""}
+                  searchTerm={debouncedSearch}
+                  onClick={(initialSeconds) =>
+                    setSelectedAdvancedVideo({
+                      video_id: v.video_id,
+                      novo_titulo: v.novo_titulo || "Sem título",
+                      texto_para_embedding: v.texto_para_embedding || "",
+                      initialSeconds,
+                    })
+                  }
+                />
+              ))}
+            </div>
+            {totalPages > 1 && (
+              <PaginationControls page={page} totalPages={totalPages} onPageChange={goToPage} />
+            )}
+          </>
         ) : (
           <div className="flex items-center justify-center min-h-[30vh]">
             <div className="text-center p-12 rounded-2xl bg-surface-sun border border-border">
@@ -179,17 +203,22 @@ const Biblioteca = () => {
         )
       ) : (
         videos && videos.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {videos.map((v) => (
-              <VideoResultCard
-                key={v.video_id}
-                videoId={v.video_id}
-                title={v.novo_titulo || "Sem título"}
-                summary={v.mini_resumo || ""}
-                tags={v.tags}
-              />
-            ))}
-          </div>
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {pagedVideos.map((v) => (
+                <VideoResultCard
+                  key={v.video_id}
+                  videoId={v.video_id}
+                  title={v.novo_titulo || "Sem título"}
+                  summary={v.mini_resumo || ""}
+                  tags={v.tags}
+                />
+              ))}
+            </div>
+            {totalPages > 1 && (
+              <PaginationControls page={page} totalPages={totalPages} onPageChange={goToPage} />
+            )}
+          </>
         ) : (
           <div className="flex items-center justify-center min-h-[30vh]">
             <div className="text-center p-12 rounded-2xl bg-surface-sun border border-border">
