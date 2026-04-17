@@ -126,32 +126,25 @@ const RegistrosAkashikos = () => {
                       <div className="w-12 h-5 bg-muted rounded" />
                     </li>
                   ))
-                : (data ?? []).map((r) => (
+              : (data ?? []).map((r) => (
                     <li key={r.id}>
                       <Link
                         to={`/registros/${r.id}`}
-                        className="px-5 py-3 flex items-start gap-4 transition-colors hover:bg-muted/40 group"
+                        className="px-5 py-2.5 flex items-center gap-4 transition-colors hover:bg-muted/40 group"
                       >
                         <span
-                          className="font-mono text-xs font-bold tabular-nums pt-1 w-12 shrink-0"
+                          className="font-mono text-xs font-bold tabular-nums w-12 shrink-0"
                           style={{ color: AKASHA }}
                         >
                           {formatHour(r.data_postagem)}
                         </span>
-                        <div className="flex-1 min-w-0">
-                          <p
-                            className="font-serif font-bold text-[14px] leading-snug line-clamp-1 group-hover:underline"
-                            style={{ color: PRIMARY }}
-                          >
-                            {r.titulo}
-                          </p>
-                          {r.texto_inicio && (
-                            <p className="text-xs text-muted-foreground line-clamp-1 mt-0.5">
-                              {r.texto_inicio.slice(0, 90)}…
-                            </p>
-                          )}
-                        </div>
-                        <span className="text-base shrink-0 pt-0.5" aria-hidden="true">
+                        <p
+                          className="flex-1 min-w-0 font-serif font-bold text-[14px] leading-snug line-clamp-1 group-hover:underline"
+                          style={{ color: PRIMARY }}
+                        >
+                          {r.titulo}
+                        </p>
+                        <span className="text-base shrink-0" aria-hidden="true">
                           {extractEmojis(r.tags)}
                         </span>
                       </Link>
