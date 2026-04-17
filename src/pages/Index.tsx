@@ -251,15 +251,37 @@ const Hero = () => {
 type FeedItem = {
   frase_akasha: string | null;
   status_visual: string | null;
+  dosha_nome: string | null;
+  vatascore?: number | null;
+  pittascore?: number | null;
+  kaphascore?: number | null;
+};
+
+// Returns alert color if a single dosha dominates and is >= 35
+const getAlertColor = (it: FeedItem): string | null => {
+  const v = it.vatascore ?? 0;
+  const p = it.pittascore ?? 0;
+  const k = it.kaphascore ?? 0;
+  const max = Math.max(v, p, k);
+  if (max < 35) return null;
+  if (max === p && p > v && p > k) return C.pitta;
+  if (max === v && v > p && v > k) return C.vata;
+  if (max === k && k > v && k > p) return C.kapha;
+  // fallback by dosha_nome string if scores are tied/missing
+  const name = (it.dosha_nome || "").toLowerCase();
+  if (name.includes("pitta")) return C.pitta;
+  if (name.includes("vata")) return C.vata;
+  if (name.includes("kapha")) return C.kapha;
+  return null;
 };
 
 const FeedSocial = () => {
   const { data } = useQuery({
-    queryKey: ["feed_resultados_index_v2"],
+    queryKey: ["feed_resultados_index_v3"],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("feed_resultados")
-        .select("frase_akasha,status_visual")
+        .select("frase_akasha,status_visual,dosha_nome")
         .not("frase_akasha", "is", null)
         .order("created_at", { ascending: false })
         .limit(30);
@@ -282,19 +304,41 @@ const FeedSocial = () => {
       aria-label="Feed de resultados recentes"
     >
       <div className="marquee-track flex gap-12 whitespace-nowrap">
-        {loop.map((it, i) => (
-          <span key={i} className="text-white/90 text-sm font-sans inline-flex items-center gap-3">
-            <span className="text-white/85">"{it.frase_akasha}"</span>
-            {it.status_visual && (
+        {loop.map((it, i) => {
+          const alert = getAlertColor(it);
+          return (
+            <span key={i} className="text-white/90 text-sm font-sans inline-flex items-center gap-3">
+              {alert && (
+                <span
+                  className="inline-flex items-center justify-center h-5 w-5 rounded-full text-[11px] font-bold shrink-0"
+                  style={{ background: alert, color: "white" }}
+                  aria-label="Dosha agravado"
+                  title="Dosha agravado"
+                >
+                  !
+                </span>
+              )}
               <span
-                className="text-[11px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded"
-                style={{ background: `${C.accent}25`, color: C.accent }}
+                className="text-white/85"
+                style={alert ? { color: alert, fontWeight: 600 } : undefined}
               >
-                {it.status_visual}
+                "{it.frase_akasha}"
               </span>
-            )}
-          </span>
-        ))}
+              {it.status_visual && (
+                <span
+                  className="text-[11px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded"
+                  style={
+                    alert
+                      ? { background: `${alert}33`, color: "white", border: `1px solid ${alert}` }
+                      : { background: `${C.accent}25`, color: C.accent }
+                  }
+                >
+                  {it.status_visual}
+                </span>
+              )}
+            </span>
+          );
+        })}
       </div>
       <style>{`
         @keyframes marqueeX {
