@@ -313,46 +313,66 @@ const ArtigosTab = ({ agravVataTags, agravPittaTags, agravKaphaTags, doshaprinci
           <p className="text-muted-foreground">Nenhum artigo encontrado.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-          {filteredGeneralArticles.map((article) => (
-            <div key={article.id} className="group bg-card rounded-xl overflow-hidden border border-border hover:shadow-md transition-all">
-              <Link to={`/blog/${article.link_do_artigo || article.id}`}>
-                {article.image_url && (
-                  <div className="aspect-video overflow-hidden">
-                    <img
-                      src={getTransformedImageUrl(article.image_url)}
-                      alt={article.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      loading="lazy"
-                    />
+        (() => {
+          const totalPages = Math.max(1, Math.ceil(filteredGeneralArticles.length / ITEMS_PER_PAGE));
+          const safePage = Math.min(page, totalPages);
+          const start = (safePage - 1) * ITEMS_PER_PAGE;
+          const pageItems = filteredGeneralArticles.slice(start, start + ITEMS_PER_PAGE);
+          return (
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {pageItems.map((article) => (
+                  <div key={article.id} className="group bg-card rounded-xl overflow-hidden border border-border hover:shadow-md transition-all">
+                    <Link to={`/blog/${article.link_do_artigo || article.id}`}>
+                      {article.image_url && (
+                        <div className="aspect-video overflow-hidden">
+                          <img
+                            src={getTransformedImageUrl(article.image_url)}
+                            alt={article.title}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                            loading="lazy"
+                          />
+                        </div>
+                      )}
+                    </Link>
+                    <div className="p-4 space-y-2">
+                      <div className="flex items-start justify-between gap-2">
+                        <Link to={`/blog/${article.link_do_artigo || article.id}`} className="flex-1">
+                          <h3 className="font-serif text-sm font-bold text-foreground line-clamp-2 group-hover:text-primary transition-colors">
+                            {article.title}
+                          </h3>
+                        </Link>
+                        <HeartButton contentType="artigo" contentId={article.id} />
+                      </div>
+                      <p className="text-xs text-muted-foreground line-clamp-2">
+                        {article.meta_description || ""}
+                      </p>
+                      {article.tags && (
+                        <div className="flex flex-wrap gap-1">
+                          {article.tags.split(",").slice(0, 3).map((tag) => (
+                            <Badge key={tag.trim()} variant="secondary" className="text-[9px] bg-muted text-muted-foreground">
+                              {tag.trim()}
+                            </Badge>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   </div>
-                )}
-              </Link>
-              <div className="p-4 space-y-2">
-                <div className="flex items-start justify-between gap-2">
-                  <Link to={`/blog/${article.link_do_artigo || article.id}`} className="flex-1">
-                    <h3 className="font-serif text-sm font-bold text-foreground line-clamp-2 group-hover:text-primary transition-colors">
-                      {article.title}
-                    </h3>
-                  </Link>
-                  <HeartButton contentType="artigo" contentId={article.id} />
-                </div>
-                <p className="text-xs text-muted-foreground line-clamp-2">
-                  {article.meta_description || ""}
-                </p>
-                {article.tags && (
-                  <div className="flex flex-wrap gap-1">
-                    {article.tags.split(",").slice(0, 3).map((tag) => (
-                      <Badge key={tag.trim()} variant="secondary" className="text-[9px] bg-muted text-muted-foreground">
-                        {tag.trim()}
-                      </Badge>
-                    ))}
-                  </div>
-                )}
+                ))}
               </div>
-            </div>
-          ))}
-        </div>
+              {totalPages > 1 && (
+                <PaginationControls
+                  page={safePage}
+                  totalPages={totalPages}
+                  onPageChange={(p) => {
+                    setPage(p);
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                  }}
+                />
+              )}
+            </>
+          );
+        })()
       )}
     </div>
   );
