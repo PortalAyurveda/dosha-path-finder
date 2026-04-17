@@ -520,7 +520,7 @@ export const RULES: RuleDefinition[] = [
       titulo: "Sintomas de fogo sem o que o resfriaria",
       subtitulo: "Atenção · {pct}%",
       descricao:
-        "Quase metade das {n} pessoas com 6 ou mais sintomas de Pitta consomem poucos alimentos de Vata. A leveza, o frescor, o que dissipa o calor — está ausente da dieta de quem mais precisa.",
+        "{pct}% das pessoas com 6 ou mais sintomas de Pitta consomem poucos alimentos de Vata. A leveza, o frescor, o que dissipa o calor — está ausente da dieta de quem mais precisa.",
     },
   },
   {
