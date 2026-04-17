@@ -452,7 +452,7 @@ export const RULES: RuleDefinition[] = [
       titulo: "Kapha pesado sem o vento que o moveria",
       subtitulo: "Alerta · {pct}%",
       descricao:
-        "Metade das {n} pessoas com Kapha em Acúmulo consomem poucos alimentos de Vata. A leveza e o movimento que dissolveriam a estagnação estão ausentes da dieta.",
+        "{pct}% das pessoas com Kapha em Acúmulo consomem poucos alimentos de Vata. A leveza e o movimento que dissolveriam a estagnação estão ausentes da dieta.",
     },
   },
   {
