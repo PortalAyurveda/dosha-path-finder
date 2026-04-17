@@ -36,6 +36,7 @@ const Biblioteca = () => {
   const [isAdvanced, setIsAdvanced] = useState(false);
   const [category, setCategory] = useState<VideoCategory>("selecao");
   const debouncedSearch = useDebounce(searchTerm, 300);
+  const [page, setPage] = useState(1);
 
   const [selectedAdvancedVideo, setSelectedAdvancedVideo] = useState<{
     video_id: string;
@@ -47,6 +48,11 @@ const Biblioteca = () => {
   useEffect(() => {
     setSelectedAdvancedVideo(null);
   }, [debouncedSearch]);
+
+  // Reset pagination when filters change
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedSearch, category, isAdvanced]);
 
   // Common search — single table based on category
   const { data: videos, isLoading } = useQuery({
