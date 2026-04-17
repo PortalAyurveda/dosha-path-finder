@@ -672,6 +672,7 @@ const MeuDosha = () => {
               <img src="https://static.wixstatic.com/media/b8f47f_105371e1ade24ccd9bd3406b83bd925e~mv2.png" alt="" className="w-4 h-4 object-contain" />
             </TabsTrigger>
           </TabsList>
+          </div>
 
           {/* ===== TAB: PERFIL ===== */}
           <TabsContent value="perfil" className="space-y-6 mt-4" tabIndex={-1}>
