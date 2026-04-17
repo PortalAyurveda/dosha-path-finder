@@ -264,7 +264,7 @@ const FeedSocial = () => {
           to   { transform: translateX(-50%); }
         }
         .marquee-track {
-          animation: marqueeX 60s linear infinite;
+          animation: marqueeX 120s linear infinite;
           width: max-content;
         }
         .marquee-track:hover { animation-play-state: paused; }
