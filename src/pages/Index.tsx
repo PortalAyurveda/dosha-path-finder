@@ -788,7 +788,7 @@ const orgSchema = {
   url: "https://www.portalayurveda.com",
   logo: "https://www.portalayurveda.com/logo.png",
   description:
-    "Portal de conhecimento para aprender Ayurveda no Brasil de forma clara, prática e acessível.",
+    "Portal Ayurveda Brasil: Descubra seu Dosha, entenda seu metabolismo e restaure sua saúde com nutrição e rotinas práticas de Medicina Ayurveda",
   sameAs: [
     "https://www.youtube.com/@portalayurveda",
     "https://www.instagram.com/edson_ayurveda",
