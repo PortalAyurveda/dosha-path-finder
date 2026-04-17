@@ -1,13 +1,27 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowRight, Play, ExternalLink } from "lucide-react";
+import {
+  ArrowRight,
+  Play,
+  ExternalLink,
+  Search,
+  Sparkles,
+  X,
+  BarChart3,
+  Target,
+  CheckCircle2,
+  Users,
+} from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/contexts/UserContext";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
+import { Badge } from "@/components/ui/badge";
+import { BLOG_TAGS } from "@/data/blogTags";
 import { cn } from "@/lib/utils";
 
 /* ---------- Design tokens (scoped to this page) ---------- */
@@ -24,6 +38,8 @@ const LEAF = "24px 4px 24px 4px";
 const LEAF_ALT = "4px 24px 4px 24px";
 
 const STORAGE = "https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_capas";
+const AKASHA_LOGO =
+  "https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/logo-akasha.png";
 
 /* ============================================================
    Hero
@@ -45,6 +61,22 @@ const Hero = () => {
     navigate("/teste-de-dosha");
   };
 
+  // Quantas pessoas fizeram o teste nos últimos 7 dias
+  const { data: weeklyCount } = useQuery({
+    queryKey: ["feed_weekly_count"],
+    queryFn: async () => {
+      const sevenDaysAgo = new Date();
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+      const { count, error } = await supabase
+        .from("feed_resultados")
+        .select("*", { count: "exact", head: true })
+        .gte("created_at", sevenDaysAgo.toISOString());
+      if (error) throw error;
+      return count ?? 0;
+    },
+    staleTime: 5 * 60 * 1000,
+  });
+
   return (
     <section
       className="relative overflow-hidden"
@@ -52,29 +84,26 @@ const Hero = () => {
         background: `linear-gradient(180deg, ${C.surface} 0%, #ffffff 100%)`,
       }}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12 md:py-20">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-          {/* Left: blurred preview teaser */}
-          <div className="hidden lg:block lg:col-span-7">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12 md:py-16">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+          {/* Left: blurred preview + 3 mini boxes */}
+          <div className="hidden lg:flex lg:col-span-7 flex-col gap-4">
+            {/* Blurred preview */}
             <div
-              className="bg-card/80 backdrop-blur-sm rounded-3xl p-6 xl:p-8 border border-border shadow-lg relative overflow-hidden"
-              style={{
-                maskImage: "linear-gradient(to right, black 80%, transparent 100%)",
-                WebkitMaskImage: "linear-gradient(to right, black 80%, transparent 100%)",
-                minHeight: 420,
-              }}
+              className="bg-card/80 backdrop-blur-sm rounded-3xl p-6 xl:p-7 border border-border shadow-lg relative overflow-hidden flex-1"
+              style={{ minHeight: 320 }}
             >
-              <div className="select-none pointer-events-none" style={{ filter: "blur(6px)", opacity: 0.55 }}>
+              <div className="select-none pointer-events-none" style={{ filter: "blur(5px)", opacity: 0.6 }}>
                 <div className="grid grid-cols-2 gap-6">
                   <div className="flex flex-col items-center justify-center space-y-3">
                     <p className="font-serif font-bold text-base" style={{ color: C.primary }}>Pontuação</p>
                     <div
-                      className="w-40 h-40 rounded-full relative shadow-inner flex items-center justify-center"
+                      className="w-32 h-32 rounded-full relative shadow-inner flex items-center justify-center"
                       style={{
                         background: `conic-gradient(${C.pitta} 0% 59.7%, ${C.vata} 59.7% 92.3%, ${C.kapha} 92.3% 100%)`,
                       }}
                     >
-                      <div className="w-24 h-24 bg-card rounded-full" />
+                      <div className="w-20 h-20 bg-card rounded-full" />
                     </div>
                     <div className="text-xs font-bold text-muted-foreground space-y-0.5 text-center">
                       <p>Vata: 30 pts</p>
@@ -84,7 +113,7 @@ const Hero = () => {
                   </div>
                   <div className="flex flex-col space-y-3">
                     <p className="font-serif font-bold text-base text-center" style={{ color: C.primary }}>Quadro Clínico</p>
-                    <div className="grid grid-cols-3 gap-1.5 flex-1 h-[220px]">
+                    <div className="grid grid-cols-3 gap-1.5 flex-1 h-[180px]">
                       <div className="flex flex-col gap-1">
                         <div className="flex-1 bg-muted/50 rounded-sm" />
                         <div className="flex-1 bg-muted/50 rounded-sm" />
@@ -110,18 +139,95 @@ const Hero = () => {
                   </div>
                 </div>
               </div>
+              <div className="absolute inset-0 flex items-end justify-center pb-4 pointer-events-none">
+                <span
+                  className="text-[11px] font-semibold uppercase tracking-wider px-3 py-1 rounded-full"
+                  style={{ background: `${C.accent}30`, color: C.primary }}
+                >
+                  Preview
+                </span>
+              </div>
+            </div>
+
+            {/* Title for the 3 mini-boxes */}
+            <p
+              className="font-serif font-semibold text-sm uppercase tracking-wide text-center"
+              style={{ color: C.primary, letterSpacing: "0.08em" }}
+            >
+              No resultado você encontra
+            </p>
+
+            {/* 3 mini preview boxes */}
+            <div className="grid grid-cols-3 gap-3">
+              {/* Métricas */}
+              <div
+                className="p-4 border border-border bg-card flex flex-col items-center text-center gap-2"
+                style={{ borderRadius: LEAF_ALT }}
+              >
+                <BarChart3 className="h-6 w-6" style={{ color: C.pitta }} />
+                <p className="font-serif font-bold text-[13px] leading-tight" style={{ color: C.primary }}>
+                  Métricas personalizadas
+                </p>
+                {/* mini bar chart */}
+                <div className="flex items-end gap-1 h-10 mt-1">
+                  <div className="w-2 rounded-sm" style={{ height: "40%", background: C.vata }} />
+                  <div className="w-2 rounded-sm" style={{ height: "75%", background: C.pitta }} />
+                  <div className="w-2 rounded-sm" style={{ height: "25%", background: C.kapha }} />
+                  <div className="w-2 rounded-sm" style={{ height: "60%", background: C.vata, opacity: 0.6 }} />
+                  <div className="w-2 rounded-sm" style={{ height: "90%", background: C.pitta, opacity: 0.7 }} />
+                </div>
+              </div>
+
+              {/* Akasha IA */}
+              <div
+                className="p-4 border border-border bg-card flex flex-col items-center text-center gap-2"
+                style={{ borderRadius: LEAF_ALT }}
+              >
+                <img src={AKASHA_LOGO} alt="Akasha IA" width={28} height={28} className="h-7 w-7 object-contain" />
+                <p className="font-serif font-bold text-[13px] leading-tight" style={{ color: C.primary }}>
+                  Akasha
+                </p>
+                <p className="text-[10px] text-muted-foreground leading-tight">
+                  Nossa IA Ayurveda<br />tira suas dúvidas
+                </p>
+              </div>
+
+              {/* Planner */}
+              <div
+                className="p-4 border border-border bg-card flex flex-col items-center text-center gap-2"
+                style={{ borderRadius: LEAF_ALT }}
+              >
+                <Target className="h-6 w-6" style={{ color: C.kapha }} />
+                <p className="font-serif font-bold text-[13px] leading-tight" style={{ color: C.primary }}>
+                  Planner de tratamento
+                </p>
+                <div className="space-y-1 text-left w-full">
+                  <div className="flex items-center gap-1 text-[10px]">
+                    <CheckCircle2 className="h-2.5 w-2.5 shrink-0" style={{ color: C.kapha }} />
+                    <span className="text-muted-foreground line-through truncate">Chá matinal</span>
+                  </div>
+                  <div className="flex items-center gap-1 text-[10px]">
+                    <CheckCircle2 className="h-2.5 w-2.5 shrink-0" style={{ color: C.kapha }} />
+                    <span className="text-muted-foreground line-through truncate">Yoga 15 min</span>
+                  </div>
+                  <div className="flex items-center gap-1 text-[10px]">
+                    <div className="h-2.5 w-2.5 rounded-full border border-border shrink-0" />
+                    <span className="text-foreground/80 truncate">Auto-massagem</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
           {/* Right: form */}
-          <div className="lg:col-span-5 flex flex-col">
+          <div className="lg:col-span-5 flex flex-col gap-4">
             <div
-              className="animate-fade-in bg-card/80 backdrop-blur-sm rounded-3xl p-6 xl:p-8 border border-border shadow-lg flex flex-col justify-center space-y-5"
+              className="animate-fade-in bg-card/80 backdrop-blur-sm rounded-3xl p-6 xl:p-8 border border-border shadow-lg flex flex-col justify-center space-y-5 flex-1"
               style={{ animationDelay: "0.25s" }}
             >
               <div className="text-center">
                 <h1
-                  className="mb-2 font-serif font-bold text-2xl md:text-3xl lg:text-[36px] leading-tight"
+                  className="mb-2 font-serif font-bold text-2xl md:text-3xl lg:text-[34px] leading-tight"
                   style={{ color: C.primary, fontStyle: "normal" }}
                 >
                   Seu guia completo para saúde e longevidade.
@@ -192,6 +298,20 @@ const Hero = () => {
               >
                 Começar <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
+
+              {/* Social proof */}
+              {typeof weeklyCount === "number" && weeklyCount > 0 && (
+                <div
+                  className="flex items-center justify-center gap-2 pt-2 border-t border-border"
+                  aria-live="polite"
+                >
+                  <Users className="h-4 w-4" style={{ color: C.kapha }} />
+                  <p className="text-xs text-muted-foreground">
+                    <strong style={{ color: C.primary }}>{weeklyCount}</strong>{" "}
+                    {weeklyCount === 1 ? "pessoa descobriu" : "pessoas descobriram"} seu Dosha essa semana
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -201,32 +321,23 @@ const Hero = () => {
 };
 
 /* ============================================================
-   Feed Social (marquee)
+   Feed Social (marquee — frase_akasha + status_visual)
 ============================================================ */
 type FeedItem = {
-  nome_abreviado: string | null;
-  dosha_nome: string | null;
   frase_akasha: string | null;
-};
-
-const dotColor = (dosha: string | null | undefined) => {
-  const d = (dosha || "").toLowerCase();
-  if (d.includes("-") || d.includes(" ")) return C.accent; // bidosha
-  if (d.startsWith("vata")) return C.vata;
-  if (d.startsWith("pitta")) return C.pitta;
-  if (d.startsWith("kapha")) return C.kapha;
-  return C.accent;
+  status_visual: string | null;
 };
 
 const FeedSocial = () => {
   const { data } = useQuery({
-    queryKey: ["feed_resultados_index"],
+    queryKey: ["feed_resultados_index_v2"],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("feed_resultados")
-        .select("nome_abreviado,dosha_nome,frase_akasha")
+        .select("frase_akasha,status_visual")
+        .not("frase_akasha", "is", null)
         .order("created_at", { ascending: false })
-        .limit(20);
+        .limit(30);
       if (error) throw error;
       return (data ?? []) as FeedItem[];
     },
@@ -243,18 +354,20 @@ const FeedSocial = () => {
         background: C.primary,
         borderTop: `3px solid ${C.accent}`,
       }}
+      aria-label="Feed de resultados recentes"
     >
-      <div className="marquee-track flex gap-10 whitespace-nowrap">
+      <div className="marquee-track flex gap-12 whitespace-nowrap">
         {loop.map((it, i) => (
-          <span key={i} className="text-white/90 text-sm font-sans inline-flex items-center gap-2">
-            <span
-              className="inline-block h-2 w-2 rounded-full shrink-0"
-              style={{ background: dotColor(it.dosha_nome) }}
-            />
-            <strong className="text-white">{it.nome_abreviado}</strong>
-            <span className="text-white/70">descobriu:</span>
-            <span style={{ color: dotColor(it.dosha_nome) }}>{it.dosha_nome}</span>
-            <span className="text-white/60">— "{it.frase_akasha}"</span>
+          <span key={i} className="text-white/90 text-sm font-sans inline-flex items-center gap-3">
+            <span className="text-white/85">"{it.frase_akasha}"</span>
+            {it.status_visual && (
+              <span
+                className="text-[11px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded"
+                style={{ background: `${C.accent}25`, color: C.accent }}
+              >
+                {it.status_visual}
+              </span>
+            )}
           </span>
         ))}
       </div>
@@ -264,7 +377,7 @@ const FeedSocial = () => {
           to   { transform: translateX(-50%); }
         }
         .marquee-track {
-          animation: marqueeX 120s linear infinite;
+          animation: marqueeX 180s linear infinite;
           width: max-content;
         }
         .marquee-track:hover { animation-play-state: paused; }
@@ -274,30 +387,61 @@ const FeedSocial = () => {
 };
 
 /* ============================================================
-   Generic content card (lives + artigos)
+   Biblioteca Section — 3 colunas: Live, Receita, Artigo do dia
 ============================================================ */
-const ContentCard = ({
-  image,
+type LiveRow = {
+  novo_titulo: string | null;
+  mini_resumo: string | null;
+  url: string | null;
+  tags: string | null;
+  video_id: string;
+};
+
+type RecipeRow = {
+  novo_titulo: string | null;
+  mini_resumo: string | null;
+  url: string | null;
+  tags: string | null;
+  video_id: string;
+};
+
+type ArticleRow = {
+  id: string;
+  title: string;
+  meta_description: string | null;
+  image_url: string | null;
+  link_do_artigo: string | null;
+  tags: string | null;
+};
+
+const firstTag = (tags: string | null | undefined, sep: string | RegExp = /[\n,]/) => {
+  if (!tags) return null;
+  return tags.split(sep)[0]?.trim() || null;
+};
+
+const ColumnCard = ({
   badge,
+  image,
   title,
   summary,
   href,
   external,
-  fallbackBg,
+  cta,
+  accentColor,
 }: {
+  badge: string;
   image: string | null;
-  badge: string | null;
   title: string;
   summary: string | null;
   href: string;
   external: boolean;
-  fallbackBg: boolean;
+  cta: string;
+  accentColor: string;
 }) => {
-  const linkProps = external
-    ? { href, target: "_blank", rel: "noopener noreferrer" }
-    : { href };
   const Wrap: any = external ? "a" : Link;
-  const wrapProps = external ? linkProps : { to: href };
+  const wrapProps = external
+    ? { href, target: "_blank", rel: "noopener noreferrer" }
+    : { to: href };
 
   return (
     <Wrap
@@ -307,11 +451,7 @@ const ContentCard = ({
     >
       <div
         className="relative w-full aspect-video overflow-hidden flex items-center justify-center"
-        style={
-          !image || fallbackBg
-            ? { background: `linear-gradient(135deg, ${C.primary}, #1f1a3a)` }
-            : undefined
-        }
+        style={!image ? { background: `linear-gradient(135deg, ${C.primary}, #1f1a3a)` } : undefined}
       >
         {image ? (
           <img
@@ -328,16 +468,14 @@ const ContentCard = ({
         ) : (
           <Play className="h-12 w-12 text-white/90" fill="white" />
         )}
+        <span
+          className="absolute top-3 left-3 text-[11px] font-semibold uppercase tracking-wider px-2.5 py-1 rounded"
+          style={{ background: accentColor, color: "white" }}
+        >
+          {badge}
+        </span>
       </div>
       <div className="p-5">
-        {badge && (
-          <span
-            className="inline-block text-[11px] font-semibold uppercase tracking-wide mb-2 px-2 py-1 rounded"
-            style={{ background: `${C.accent}20`, color: C.primary }}
-          >
-            {badge}
-          </span>
-        )}
         <h3
           className="font-serif font-bold text-[15px] leading-snug mb-2 line-clamp-2"
           style={{ color: C.primary, fontStyle: "normal" }}
@@ -348,18 +486,144 @@ const ContentCard = ({
           <p className="font-sans text-[13px] text-muted-foreground line-clamp-2 mb-3">{summary}</p>
         )}
         <span className="font-sans text-[13px] font-semibold inline-flex items-center gap-1" style={{ color: C.pitta }}>
-          {external ? "Assistir no YouTube" : "Ler artigo"} <ArrowRight className="h-3.5 w-3.5" />
+          {cta} {external ? <ExternalLink className="h-3.5 w-3.5" /> : <ArrowRight className="h-3.5 w-3.5" />}
         </span>
       </div>
     </Wrap>
   );
 };
 
+const BibliotecaSection = () => {
+  const liveQ = useQuery({
+    queryKey: ["index_live_do_dia"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("portal_lives")
+        .select("novo_titulo,mini_resumo,url,tags,video_id")
+        .not("novo_titulo", "is", null)
+        .not("url", "is", null)
+        .order("criado_em", { ascending: false })
+        .limit(1);
+      if (error) throw error;
+      return ((data ?? []) as LiveRow[])[0] ?? null;
+    },
+  });
+
+  const receitaQ = useQuery({
+    queryKey: ["index_receita_do_dia"],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("receita_do_dia");
+      if (error) throw error;
+      return ((data ?? []) as RecipeRow[])[0] ?? null;
+    },
+    staleTime: 60 * 60 * 1000,
+  });
+
+  const artigoQ = useQuery({
+    queryKey: ["index_artigo_do_dia"],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("artigo_do_dia");
+      if (error) throw error;
+      return ((data ?? []) as ArticleRow[])[0] ?? null;
+    },
+    staleTime: 60 * 60 * 1000,
+  });
+
+  return (
+    <section className="max-w-6xl mx-auto px-4 sm:px-6 py-16 md:py-20">
+      <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-10">
+        <div>
+          <h2
+            className="font-serif italic font-bold text-3xl md:text-4xl mb-2"
+            style={{ color: C.primary }}
+          >
+            Biblioteca
+          </h2>
+          <p className="text-muted-foreground text-base">
+            Conteúdo selecionado todo dia para você.
+          </p>
+        </div>
+        {/* 3 dosha buttons */}
+        <div className="flex gap-2 flex-wrap">
+          <Link
+            to="/biblioteca/vata"
+            className="px-4 py-2 text-sm font-semibold text-white transition-all hover:-translate-y-0.5"
+            style={{ background: C.vata, borderRadius: LEAF }}
+          >
+            🌬️ Vata
+          </Link>
+          <Link
+            to="/biblioteca/pitta"
+            className="px-4 py-2 text-sm font-semibold text-white transition-all hover:-translate-y-0.5"
+            style={{ background: C.pitta, borderRadius: LEAF }}
+          >
+            🔥 Pitta
+          </Link>
+          <Link
+            to="/biblioteca/kapha"
+            className="px-4 py-2 text-sm font-semibold text-white transition-all hover:-translate-y-0.5"
+            style={{ background: C.kapha, borderRadius: LEAF }}
+          >
+            🪵 Kapha
+          </Link>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* Live do dia */}
+        {liveQ.isLoading ? (
+          <CardSkeleton />
+        ) : liveQ.data ? (
+          <ColumnCard
+            badge="Live do dia"
+            image={`${STORAGE}/${liveQ.data.video_id}.webp`}
+            title={liveQ.data.novo_titulo ?? ""}
+            summary={liveQ.data.mini_resumo}
+            href={liveQ.data.url ?? "#"}
+            external
+            cta="Assistir no YouTube"
+            accentColor={C.pitta}
+          />
+        ) : null}
+
+        {/* Receita do dia */}
+        {receitaQ.isLoading ? (
+          <CardSkeleton />
+        ) : receitaQ.data ? (
+          <ColumnCard
+            badge="Receita do dia"
+            image={`${STORAGE}/${receitaQ.data.video_id}.webp`}
+            title={receitaQ.data.novo_titulo ?? ""}
+            summary={receitaQ.data.mini_resumo}
+            href={receitaQ.data.url ?? "#"}
+            external
+            cta="Ver receita"
+            accentColor={C.kapha}
+          />
+        ) : null}
+
+        {/* Artigo do dia */}
+        {artigoQ.isLoading ? (
+          <CardSkeleton />
+        ) : artigoQ.data ? (
+          <ColumnCard
+            badge="Artigo do dia"
+            image={artigoQ.data.image_url}
+            title={artigoQ.data.title}
+            summary={artigoQ.data.meta_description}
+            href={`/blog/${artigoQ.data.link_do_artigo || artigoQ.data.id}`}
+            external={false}
+            cta="Ler artigo"
+            accentColor={C.primary}
+          />
+        ) : null}
+      </div>
+    </section>
+  );
+};
+
 const CardSkeleton = () => (
-  <div
-    className="bg-card border border-border overflow-hidden"
-    style={{ borderRadius: LEAF }}
-  >
+  <div className="bg-card border border-border overflow-hidden" style={{ borderRadius: LEAF }}>
     <div className="w-full aspect-video bg-muted animate-pulse" />
     <div className="p-5 space-y-2">
       <div className="h-3 w-20 bg-muted animate-pulse rounded" />
@@ -370,326 +634,177 @@ const CardSkeleton = () => (
 );
 
 /* ============================================================
-   Lives
+   Sommelier de Artigos (busca por título / busca avançada)
 ============================================================ */
-type LiveRow = {
-  novo_titulo: string | null;
-  mini_resumo: string | null;
-  url: string | null;
-  tags: string | null;
-  criado_em: string | null;
-  video_id: string;
-};
-
-const firstTag = (tags: string | null | undefined, sep: string | RegExp = /[\n,]/) => {
-  if (!tags) return null;
-  return tags.split(sep)[0]?.trim() || null;
-};
-
-const LivesSection = () => {
-  const { data, isLoading } = useQuery({
-    queryKey: ["index_lives"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("portal_lives")
-        .select("novo_titulo,mini_resumo,url,tags,criado_em,video_id")
-        .not("novo_titulo", "is", null)
-        .not("url", "is", null)
-        .order("criado_em", { ascending: false })
-        .limit(60);
-      if (error) throw error;
-      // dedupe by url
-      const seen = new Set<string>();
-      const unique: LiveRow[] = [];
-      for (const row of (data ?? []) as LiveRow[]) {
-        if (row.url && !seen.has(row.url)) {
-          seen.add(row.url);
-          unique.push(row);
-        }
-      }
-      return unique.slice(0, 6);
-    },
-  });
-
-  return (
-    <section className="max-w-6xl mx-auto px-4 sm:px-6 py-16 md:py-20">
-      <div className="text-center mb-10">
-        <h2
-          className="font-serif italic font-bold text-3xl md:text-4xl mb-3"
-          style={{ color: C.primary }}
-        >
-          Ao vivo toda semana
-        </h2>
-        <p className="text-muted-foreground text-base">
-          373 lives transmitidas. Uma nova toda semana às 12h40 no Instagram.
-        </p>
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {isLoading
-          ? Array.from({ length: 6 }).map((_, i) => <CardSkeleton key={i} />)
-          : (data ?? []).map((live) => (
-              <ContentCard
-                key={live.video_id}
-                image={`${STORAGE}/${live.video_id}.webp`}
-                badge={firstTag(live.tags)}
-                title={live.novo_titulo ?? ""}
-                summary={live.mini_resumo}
-                href={live.url ?? "#"}
-                external
-                fallbackBg={false}
-              />
-            ))}
-      </div>
-    </section>
-  );
-};
-
-/* ============================================================
-   Artigos
-============================================================ */
-type ArticleRow = {
+type ArticleSearchRow = {
+  id: string;
   title: string;
   meta_description: string | null;
+  summary: string | null;
   image_url: string | null;
   link_do_artigo: string | null;
   tags: string | null;
-  created_at: string | null;
 };
 
-const ArtigosSection = () => {
-  const { data, isLoading } = useQuery({
-    queryKey: ["index_artigos"],
+const SommelierArtigos = () => {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [isAdvanced, setIsAdvanced] = useState(false);
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedSearch(searchTerm), 300);
+    return () => clearTimeout(t);
+  }, [searchTerm]);
+
+  const { data: articles = [], isLoading } = useQuery({
+    queryKey: ["index_sommelier_artigos", debouncedSearch, isAdvanced],
     queryFn: async () => {
-      const { data, error } = await supabase
+      let query = supabase
         .from("portal_conteudo")
-        .select("title,meta_description,image_url,link_do_artigo,tags,created_at")
-        .not("image_url", "is", null)
+        .select("id,title,meta_description,summary,image_url,link_do_artigo,tags,created_at")
         .not("link_do_artigo", "is", null)
         .order("created_at", { ascending: false })
-        .limit(6);
+        .limit(24);
+
+      if (debouncedSearch) {
+        if (isAdvanced) {
+          query = query.or(
+            `title.ilike.%${debouncedSearch}%,summary.ilike.%${debouncedSearch}%,tags.ilike.%${debouncedSearch}%,meta_description.ilike.%${debouncedSearch}%`
+          );
+        } else {
+          query = query.ilike("title", `%${debouncedSearch}%`);
+        }
+      }
+      const { data, error } = await query;
       if (error) throw error;
-      return (data ?? []) as ArticleRow[];
+      return (data ?? []) as ArticleSearchRow[];
     },
+    staleTime: 5 * 60 * 1000,
   });
+
+  const filtered = useMemo(() => {
+    if (selectedTags.length === 0) return articles;
+    return articles.filter((a) => {
+      if (!a.tags) return false;
+      return selectedTags.every((tag) => a.tags!.includes(tag));
+    });
+  }, [articles, selectedTags]);
+
+  const toggleTag = (tag: string) => {
+    setSelectedTags((prev) =>
+      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
+    );
+  };
 
   return (
     <section style={{ background: C.bgSoft }}>
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-16 md:py-20">
-        <div className="text-center mb-10">
+        <div className="text-center mb-8">
           <h2
             className="font-serif italic font-bold text-3xl md:text-4xl mb-3"
             style={{ color: C.primary }}
           >
-            Ayurveda explicado na prática
+            Sommelier
           </h2>
-          <p className="text-muted-foreground text-base">
-            Artigos escritos a partir das aulas ao vivo.
+          <p className="text-muted-foreground text-base max-w-2xl mx-auto">
+            Encontre artigos sobre Ayurveda: busque por sintomas, doshas, alimentos e muito mais.
           </p>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {isLoading
-            ? Array.from({ length: 6 }).map((_, i) => <CardSkeleton key={i} />)
-            : (data ?? []).map((art) => (
-                <ContentCard
-                  key={art.link_do_artigo}
-                  image={art.image_url}
-                  badge={firstTag(art.tags, ",")}
-                  title={art.title}
-                  summary={art.meta_description}
-                  href={`/blog/${art.link_do_artigo}`}
-                  external={false}
-                  fallbackBg={false}
-                />
+
+        {/* Search */}
+        <div className="max-w-xl mx-auto space-y-3 mb-8">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              type="text"
+              placeholder={isAdvanced ? "Busca em conteúdo e tags..." : "Buscar por título..."}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 h-11 bg-card"
+            />
+          </div>
+          <div className="flex items-center justify-center gap-2">
+            <Switch id="sommelier-advanced" checked={isAdvanced} onCheckedChange={setIsAdvanced} />
+            <Label htmlFor="sommelier-advanced" className="text-xs text-muted-foreground cursor-pointer flex items-center gap-1">
+              <Sparkles className="h-3 w-3" /> Busca Avançada
+            </Label>
+          </div>
+
+          {isAdvanced && (
+            <div className="flex flex-wrap justify-center gap-1">
+              {BLOG_TAGS.slice(0, 18).map((tag) => (
+                <button
+                  key={tag}
+                  onClick={() => toggleTag(tag)}
+                  className={cn(
+                    "px-2 py-0.5 rounded-full text-[10px] font-medium transition-all border",
+                    selectedTags.includes(tag)
+                      ? "bg-primary text-primary-foreground border-primary"
+                      : "bg-card text-muted-foreground border-border hover:border-primary/40"
+                  )}
+                >
+                  {tag}
+                </button>
               ))}
+            </div>
+          )}
+
+          {selectedTags.length > 0 && (
+            <div className="flex flex-wrap justify-center gap-1 items-center">
+              {selectedTags.map((tag) => (
+                <Badge key={tag} variant="default" className="cursor-pointer text-[10px]" onClick={() => toggleTag(tag)}>
+                  {tag} <X className="h-2.5 w-2.5 ml-1" />
+                </Badge>
+              ))}
+              <button onClick={() => setSelectedTags([])} className="text-[10px] text-muted-foreground hover:text-primary ml-1">
+                Limpar
+              </button>
+            </div>
+          )}
         </div>
-      </div>
-    </section>
-  );
-};
 
-/* ============================================================
-   Três Doshas (estático)
-============================================================ */
-const doshaCards = [
-  {
-    name: "Vata",
-    bg: "#EEF1FF",
-    border: C.vata,
-    badgeBg: C.vata,
-    title: "🌬️ Ar + Éter",
-    attrs: "Leve · Seco · Rápido · Móvel",
-    text: "A energia do movimento e da criatividade. Quando equilibrado, traz leveza e inspiração. É o dosha mais comum em desequilíbrio no mundo moderno.",
-    warn: "ansiedade, insônia, gases, pele seca",
-  },
-  {
-    name: "Pitta",
-    bg: "#FFF1F0",
-    border: C.pitta,
-    badgeBg: C.pitta,
-    title: "🔥 Fogo + Água",
-    attrs: "Quente · Preciso · Intenso · Transformador",
-    text: "A energia da transformação e do discernimento. Quando equilibrado, traz foco, liderança e digestão forte. Governa a fase produtiva da vida.",
-    warn: "irritação, azia, inflamação, refluxo",
-  },
-  {
-    name: "Kapha",
-    bg: "#F0FDF4",
-    border: C.kapha,
-    badgeBg: C.kapha,
-    title: "🪵 Terra + Água",
-    attrs: "Denso · Estável · Calmo · Nutritivo",
-    text: "A energia da estrutura e da sustentação. Quando equilibrado, traz força, paciência e memória. É a base da construção dos tecidos corporais.",
-    warn: "peso excessivo, lentidão, congestionamento",
-  },
-];
-
-const TresDoshas = () => (
-  <section className="max-w-6xl mx-auto px-4 sm:px-6 py-16 md:py-20">
-    <div className="text-center mb-10">
-      <h2
-        className="font-serif italic font-bold text-3xl md:text-4xl mb-3"
-        style={{ color: C.primary }}
-      >
-        Qual é o seu tipo?
-      </h2>
-      <p className="text-muted-foreground text-base">
-        Ayurveda descreve três forças que compõem tudo — inclusive você.
-      </p>
-    </div>
-
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-      {doshaCards.map((d) => (
-        <div
-          key={d.name}
-          className="p-6 flex flex-col"
-          style={{
-            background: d.bg,
-            borderLeft: `4px solid ${d.border}`,
-            borderRadius: LEAF_ALT,
-          }}
-        >
-          <span
-            className="inline-block self-start text-xs font-semibold text-white px-3 py-1 rounded-full mb-4"
-            style={{ background: d.badgeBg }}
-          >
-            {d.name}
-          </span>
-          <h3
-            className="font-serif font-bold text-xl mb-2"
-            style={{ color: C.primary, fontStyle: "normal" }}
-          >
-            {d.title}
-          </h3>
-          <p className="text-[13px] font-semibold mb-4" style={{ color: d.border }}>
-            {d.attrs}
-          </p>
-          <p className="text-sm text-foreground/80 leading-relaxed mb-4 flex-1">{d.text}</p>
-          <p className="text-xs text-muted-foreground border-t border-black/5 pt-3">
-            ⚠ Desequilíbrio: {d.warn}
-          </p>
-        </div>
-      ))}
-    </div>
-
-    <div className="text-center mt-10">
-      <Link
-        to="/teste-de-dosha"
-        className="inline-flex items-center gap-2 font-sans font-semibold text-white text-base px-8 py-4 transition-transform hover:-translate-y-0.5"
-        style={{
-          background: C.pitta,
-          borderRadius: LEAF,
-          boxShadow: "0 8px 24px rgba(255,118,118,.3)",
-        }}
-      >
-        Descubra o seu Dosha <ArrowRight className="h-5 w-5" />
-      </Link>
-    </div>
-  </section>
-);
-
-/* ============================================================
-   Receitas
-============================================================ */
-type RecipeRow = {
-  novo_titulo: string | null;
-  mini_resumo: string | null;
-  url: string | null;
-  tags: string | null;
-  video_id: string;
-};
-
-const extractEmoji = (s: string | null | undefined) => {
-  if (!s) return "🍲";
-  const m = s.match(/\p{Extended_Pictographic}/u);
-  return m ? m[0] : "🍲";
-};
-
-const ReceitasSection = () => {
-  const { data, isLoading } = useQuery({
-    queryKey: ["index_receitas"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("portal_receitas")
-        .select("novo_titulo,mini_resumo,url,tags,video_id")
-        .not("novo_titulo", "is", null)
-        .order("criado_em", { ascending: false })
-        .limit(4);
-      if (error) throw error;
-      return (data ?? []) as RecipeRow[];
-    },
-  });
-
-  return (
-    <section className="max-w-6xl mx-auto px-4 sm:px-6 py-16 md:py-20">
-      <div className="text-center mb-10">
-        <h2
-          className="font-serif italic font-bold text-3xl md:text-4xl mb-3"
-          style={{ color: C.primary }}
-        >
-          Receitas da cozinha ayurvédica
-        </h2>
-        <p className="text-muted-foreground text-base">
-          Fórmulas práticas para o dia a dia.
-        </p>
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {isLoading
-          ? Array.from({ length: 4 }).map((_, i) => (
-              <div
-                key={i}
-                className="p-6 animate-pulse h-32"
-                style={{ background: C.surface, borderRadius: LEAF }}
+        {/* Results */}
+        {isLoading ? (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {Array.from({ length: 6 }).map((_, i) => <CardSkeleton key={i} />)}
+          </div>
+        ) : filtered.length === 0 ? (
+          <p className="text-center text-muted-foreground py-12">Nenhum artigo encontrado.</p>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {filtered.slice(0, 6).map((art) => (
+              <ColumnCard
+                key={art.id}
+                badge={firstTag(art.tags, ",") || "Artigo"}
+                image={art.image_url}
+                title={art.title}
+                summary={art.meta_description || art.summary}
+                href={`/blog/${art.link_do_artigo || art.id}`}
+                external={false}
+                cta="Ler artigo"
+                accentColor={C.primary}
               />
-            ))
-          : (data ?? []).map((r) => (
-              <a
-                key={r.video_id}
-                href={r.url ?? "#"}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group flex gap-4 p-6 transition-all hover:-translate-y-1 hover:shadow-lg"
-                style={{ background: C.surface, borderRadius: LEAF }}
-              >
-                <div className="text-4xl shrink-0">{extractEmoji(r.tags)}</div>
-                <div className="flex-1 min-w-0">
-                  <h3
-                    className="font-serif font-bold text-base mb-1 line-clamp-2"
-                    style={{ color: C.primary, fontStyle: "normal" }}
-                  >
-                    {r.novo_titulo}
-                  </h3>
-                  <p className="text-[13px] text-muted-foreground line-clamp-2 mb-2">
-                    {r.mini_resumo}
-                  </p>
-                  <span
-                    className="text-[13px] font-semibold inline-flex items-center gap-1"
-                    style={{ color: C.pitta }}
-                  >
-                    Ver receita <ExternalLink className="h-3 w-3" />
-                  </span>
-                </div>
-              </a>
             ))}
+          </div>
+        )}
+
+        {filtered.length > 6 && (
+          <div className="text-center mt-8">
+            <Link
+              to="/blog"
+              className="inline-flex items-center gap-2 font-sans font-semibold text-sm px-6 py-3 transition-all hover:-translate-y-0.5"
+              style={{
+                background: "transparent",
+                border: `2px solid ${C.primary}`,
+                color: C.primary,
+                borderRadius: LEAF,
+              }}
+            >
+              Ver todos os artigos <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
+        )}
       </div>
     </section>
   );
@@ -725,60 +840,6 @@ const SamkhyaBanner = () => (
 );
 
 /* ============================================================
-   Diretório de Terapeutas
-============================================================ */
-const TerapeutasSection = () => {
-  const { data } = useQuery({
-    queryKey: ["index_terapeutas_count"],
-    queryFn: async () => {
-      const { count, error } = await supabase
-        .from("portal_terapeutas")
-        .select("*", { count: "exact", head: true })
-        .eq("status", "aprovado");
-      if (error) throw error;
-      return count ?? 0;
-    },
-  });
-
-  return (
-    <section className="max-w-6xl mx-auto px-4 sm:px-6 py-16 md:py-20">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
-        <div>
-          <h2
-            className="font-serif font-bold text-2xl md:text-[26px] leading-snug mb-2"
-            style={{ color: C.primary, fontStyle: "normal" }}
-          >
-            Encontre um terapeuta formado pelo Portal Ayurveda
-          </h2>
-          <p className="text-sm text-muted-foreground mb-6">Profissionais em todo o Brasil.</p>
-          <Link
-            to="/terapeutas-do-brasil"
-            className="inline-flex items-center gap-2 font-sans font-semibold px-6 py-3 transition-all hover:-translate-y-0.5"
-            style={{
-              background: "transparent",
-              border: `2px solid ${C.primary}`,
-              color: C.primary,
-              borderRadius: LEAF,
-            }}
-          >
-            Ver diretório <ArrowRight className="h-4 w-4" />
-          </Link>
-        </div>
-        <div className="text-center md:text-right">
-          <div
-            className="font-serif font-bold leading-none"
-            style={{ color: C.kapha, fontSize: "clamp(56px, 9vw, 96px)", fontStyle: "normal" }}
-          >
-            {data ?? "—"}
-          </div>
-          <p className="text-[13px] text-muted-foreground mt-2">terapeutas no Brasil</p>
-        </div>
-      </div>
-    </section>
-  );
-};
-
-/* ============================================================
    Page
 ============================================================ */
 const orgSchema = {
@@ -800,8 +861,6 @@ const Index = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Only auto-redirect logged-in users with a dosha result.
-    // Logged-out users (incl. just-signed-out) stay on the index.
     if (!loading && user && doshaResult?.idPublico) {
       navigate(`/meu-dosha?id=${doshaResult.idPublico}`, { replace: true });
     }
@@ -813,12 +872,12 @@ const Index = () => {
         <title>Portal Ayurveda — Aprenda Ayurveda no Brasil</title>
         <meta
           name="description"
-          content="O maior portal de Ayurveda do Brasil. Aprenda na prática com aulas ao vivo, artigos, receitas ayurvédicas e o teste de dosha gratuito."
+          content="Portal Ayurveda Brasil: Descubra seu Dosha, entenda seu metabolismo e restaure sua saúde com nutrição e rotinas práticas de Medicina Ayurveda"
         />
         <meta property="og:title" content="Portal Ayurveda — Aprenda Ayurveda no Brasil" />
         <meta
           property="og:description"
-          content="Mais de 1.600 pessoas já descobriram seu dosha. Teste gratuito, aulas ao vivo toda semana e conteúdo prático."
+          content="Descubra seu Dosha, entenda seu metabolismo e restaure sua saúde com nutrição e rotinas práticas de Medicina Ayurveda."
         />
         <meta property="og:type" content="website" />
         <meta name="twitter:card" content="summary_large_image" />
@@ -827,12 +886,9 @@ const Index = () => {
 
       <Hero />
       <FeedSocial />
-      <LivesSection />
-      <ArtigosSection />
-      <TresDoshas />
-      <ReceitasSection />
+      <BibliotecaSection />
+      <SommelierArtigos />
       <SamkhyaBanner />
-      <TerapeutasSection />
     </>
   );
 };
