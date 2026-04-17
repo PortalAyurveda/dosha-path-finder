@@ -150,7 +150,7 @@ const FeedSocial = () => {
         }
         .marquee-track:hover { animation-play-state: paused; }
       `}</style>
-    </section>
+    </Link>
   );
 };
 
