@@ -27,6 +27,12 @@ interface DoshaResult {
   imc: number | null;
   idade: number | null;
   conhecimentoAyurveda: string | null;
+  email: string | null;
+  altura: string | null;
+  peso: string | null;
+  estado: string | null;
+  cidade: string | null;
+  pais: string | null;
 }
 
 interface PortalGlossario {
@@ -427,7 +433,7 @@ const MeuDosha = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('doshas_registros')
-        .select('id, nome, doshaprincipal, vatascore, pittascore, kaphascore, agniPrincipal, agravVataTags, agravPittaTags, agravKaphaTags, imc, idade, conhecimentoAyurveda')
+        .select('id, nome, doshaprincipal, vatascore, pittascore, kaphascore, agniPrincipal, agravVataTags, agravPittaTags, agravKaphaTags, imc, idade, conhecimentoAyurveda, email, altura, peso, estado, cidade, pais')
         .eq('idPublico', id!)
         .maybeSingle();
       if (error || !data) return null;
@@ -452,6 +458,12 @@ const MeuDosha = () => {
     imc: registroRaw.imc,
     idade: registroRaw.idade,
     conhecimentoAyurveda: registroRaw.conhecimentoAyurveda,
+    email: registroRaw.email,
+    altura: registroRaw.altura,
+    peso: registroRaw.peso,
+    estado: registroRaw.estado,
+    cidade: registroRaw.cidade,
+    pais: registroRaw.pais,
   } : null;
   const registroUuid = registroRaw?.id || null;
 
@@ -728,6 +740,12 @@ const MeuDosha = () => {
                       nome: result.nome || '',
                       idade: result.idade?.toString() || '',
                       nivel: result.conhecimentoAyurveda || 'Iniciante',
+                      email: result.email || '',
+                      altura: result.altura || '',
+                      peso: result.peso || '',
+                      estado: result.estado || '',
+                      cidade: result.cidade || '',
+                      paisCidade: result.pais || '',
                     }));
                   }
                   window.location.href = '/teste-de-dosha';
