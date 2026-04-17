@@ -553,7 +553,7 @@ export const RULES: RuleDefinition[] = [
       titulo: "Vata arrastando Pitta",
       subtitulo: "Atenção · {pct}%",
       descricao:
-        "Com Vata adoecido, {pct}% das pessoas também têm Pitta em Acúmulo. O desequilíbrio primário de Vata vai contaminando o fogo de Pitta — a progressão natural quando o vento não é tratado.",
+        "{pct}% das pessoas com Vata adoecido também têm Pitta em Acúmulo. O desequilíbrio primário de Vata vai contaminando o fogo de Pitta — a progressão natural quando o vento não é tratado.",
     },
   },
   {
