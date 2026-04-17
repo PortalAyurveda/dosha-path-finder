@@ -88,7 +88,7 @@ export const RULES: RuleDefinition[] = [
       titulo: "A tríade do esgotamento seco",
       subtitulo: "Diagnóstico · 100%",
       descricao:
-        "Vata fixado, Kapha em déficit e digestão irregular — esse é o padrão mais grave que encontramos na base. Das {n} pessoas nessa combinação, todas têm digestão irregular. O corpo secou, perdeu estrutura, e a digestão colapsou junto.",
+        "Vata fixado, Kapha em déficit e digestão irregular — esse é o padrão mais grave que encontramos na base. 100% das pessoas nessa combinação têm digestão irregular. O corpo secou, perdeu estrutura, e a digestão colapsou junto.",
     },
   },
   {
