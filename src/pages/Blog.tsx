@@ -10,6 +10,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { BLOG_TAGS } from "@/data/blogTags";
+import PaginationControls from "@/components/PaginationControls";
 
 const PAGE_SIZE = 12;
 
