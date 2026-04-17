@@ -308,21 +308,22 @@ const FeedSocial = () => {
 
   return (
     <section
-      className="overflow-hidden py-3"
+      className="overflow-hidden py-2.5"
       style={{
-        background: C.primary,
-        borderTop: `3px solid ${C.accent}`,
+        background: `${C.primary}0F`, // very soft tint of primary
+        borderTop: `1px solid ${C.primary}1A`,
+        borderBottom: `1px solid ${C.primary}1A`,
       }}
       aria-label="Feed de resultados recentes"
     >
-      <div className="marquee-track flex gap-12 whitespace-nowrap">
+      <div className="marquee-track flex gap-10 whitespace-nowrap">
         {loop.map((it, i) => {
           const alert = getAlertColor(it);
           return (
-            <span key={i} className="text-white/90 text-sm font-sans inline-flex items-center gap-3">
+            <span key={i} className="text-sm font-sans inline-flex items-center gap-2.5" style={{ color: `${C.primary}CC` }}>
               {alert && (
                 <span
-                  className="inline-flex items-center justify-center h-5 w-5 rounded-full text-[11px] font-bold shrink-0"
+                  className="inline-flex items-center justify-center h-4 w-4 rounded-full text-[10px] font-bold shrink-0"
                   style={{ background: alert, color: "white" }}
                   aria-label="Dosha agravado"
                   title="Dosha agravado"
@@ -330,19 +331,16 @@ const FeedSocial = () => {
                   !
                 </span>
               )}
-              <span
-                className="text-white/85"
-                style={alert ? { color: alert, fontWeight: 600 } : undefined}
-              >
+              <span style={alert ? { color: alert, fontWeight: 600 } : undefined}>
                 "{it.frase_akasha}"
               </span>
               {it.status_visual && (
                 <span
-                  className="text-[11px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded"
+                  className="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded"
                   style={
                     alert
-                      ? { background: `${alert}33`, color: "white", border: `1px solid ${alert}` }
-                      : { background: `${C.accent}25`, color: C.accent }
+                      ? { background: `${alert}1A`, color: alert, border: `1px solid ${alert}40` }
+                      : { background: `${C.primary}14`, color: `${C.primary}B3` }
                   }
                 >
                   {it.status_visual}
