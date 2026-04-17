@@ -24,6 +24,7 @@ import { Badge } from "@/components/ui/badge";
 import { BLOG_TAGS } from "@/data/blogTags";
 import { cn } from "@/lib/utils";
 import { slugify } from "@/lib/slugify";
+import RegistrosAkashikos from "@/components/index/RegistrosAkashikos";
 
 /* ---------- Design tokens (scoped to this page) ---------- */
 const C = {
