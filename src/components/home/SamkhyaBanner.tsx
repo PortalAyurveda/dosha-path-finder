@@ -22,9 +22,9 @@ const SamkhyaCTA = ({ className = "" }: { className?: string }) => (
 const SamkhyaBanner = () => {
   return (
     <section className="relative overflow-hidden border-t border-secondary/20">
-      {/* Background image — same for desktop and mobile */}
+      {/* Background image — same for desktop and mobile, repositioned on mobile to reveal the artwork */}
       <div
-        className="absolute inset-0 bg-no-repeat bg-cover bg-center"
+        className="absolute inset-0 bg-no-repeat bg-cover bg-[position:75%_center] md:bg-center"
         style={{ backgroundImage: `url(${BANNER_URL})` }}
         aria-hidden
       />
