@@ -17,6 +17,7 @@ interface ArtigosTabProps {
   agravPittaTags: string | null;
   agravKaphaTags: string | null;
   doshaprincipal: string | null;
+  initialMode?: "geral" | "personalizado";
 }
 
 type SubTab = "geral" | "personalizado";
@@ -48,8 +49,8 @@ function normalizeForSearch(text: string): string {
 
 const MAX_PERSONALIZED = 12;
 
-const ArtigosTab = ({ agravVataTags, agravPittaTags, agravKaphaTags, doshaprincipal }: ArtigosTabProps) => {
-  const [subTab, setSubTab] = useState<SubTab>("geral");
+const ArtigosTab = ({ agravVataTags, agravPittaTags, agravKaphaTags, doshaprincipal, initialMode = "geral" }: ArtigosTabProps) => {
+  const [subTab, setSubTab] = useState<SubTab>(initialMode);
   const [searchTerm, setSearchTerm] = useState("");
   const [isAdvanced, setIsAdvanced] = useState(false);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
