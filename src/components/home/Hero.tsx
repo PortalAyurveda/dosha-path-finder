@@ -8,72 +8,68 @@ import { cn } from "@/lib/utils";
 
 const DoshaPreview = () => (
   <div className="relative select-none pointer-events-none">
-    <div className="grid grid-cols-2 gap-6">
-      {/* Donut chart - blurred */}
-      <div className="flex flex-col items-center justify-center space-y-3" style={{ filter: "blur(8px)", opacity: 0.5 }}>
+    <div className="grid grid-cols-2 gap-7 items-center">
+      <div className="flex flex-col items-center justify-center space-y-3" style={{ filter: "blur(8px)", opacity: 0.46 }}>
         <p className="font-serif font-bold text-primary text-base">Pontuação</p>
         <div
-          className="w-40 h-40 rounded-full relative shadow-inner flex items-center justify-center"
+          className="relative flex h-40 w-40 items-center justify-center rounded-full shadow-inner"
           style={{
-            background: "conic-gradient(hsl(0 100% 68%) 0% 59.7%, hsl(228 100% 71%) 59.7% 92.3%, hsl(142 69% 58%) 92.3% 100%)",
+            background: "conic-gradient(hsl(0 100% 78%) 0% 59.7%, hsl(228 92% 78%) 59.7% 92.3%, hsl(142 70% 76%) 92.3% 100%)",
           }}
         >
-          <div className="w-24 h-24 bg-card rounded-full" />
+          <div className="h-24 w-24 rounded-full bg-card" />
         </div>
-        <div className="text-xs font-bold text-muted-foreground space-y-0.5 text-center">
+        <div className="space-y-0.5 text-center text-xs font-bold text-muted-foreground">
           <p>Vata: 30 pts</p>
           <p>Pitta: 55 pts</p>
           <p>Kapha: 7 pts</p>
         </div>
       </div>
 
-      {/* Clinical grid */}
       <div className="flex flex-col space-y-3">
-        <p className="font-serif font-bold text-primary text-base text-center" style={{ filter: "blur(8px)", opacity: 0.5 }}>
+        <p className="text-center font-serif text-base font-bold text-primary" style={{ filter: "blur(8px)", opacity: 0.5 }}>
           Quadro Clínico
         </p>
-        <div className="flex gap-2">
-          {/* Labels */}
-          <div className="flex flex-col justify-between text-[10px] font-bold text-muted-foreground py-1 uppercase" style={{ filter: "blur(7px)", opacity: 0.55 }}>
-            <span>Fixado</span>
-            <span>Adoecido</span>
-            <span>Acúmulo</span>
-            <span>Normal</span>
-            <span>Pouco</span>
+
+        <div className="flex gap-2.5">
+          <div className="flex w-20 shrink-0 flex-col justify-between py-1 pr-1 text-right text-[11px] font-bold uppercase leading-tight">
+            <span style={{ filter: "blur(1px)", opacity: 0.95, color: "hsl(0 85% 48%)" }}>Fixado</span>
+            <span style={{ filter: "blur(1.5px)", opacity: 0.88, color: "hsl(0 92% 60%)" }}>Adoecido</span>
+            <span style={{ filter: "blur(2px)", opacity: 0.8, color: "hsl(0 98% 72%)" }}>Acúmulo</span>
+            <span style={{ filter: "blur(2.5px)", opacity: 0.68, color: "hsl(0 100% 84%)" }}>Normal</span>
+            <span style={{ filter: "blur(3px)", opacity: 0.56, color: "hsl(0 100% 92%)" }}>Pouco</span>
           </div>
 
-          {/* Grid columns: Vata / Pitta / Kapha */}
-          <div className="grid grid-cols-3 gap-1.5 flex-1 h-[200px]">
-            {/* Vata - blurred, level 3 */}
-            <div className="flex flex-col gap-1" style={{ filter: "blur(7px)", opacity: 0.55 }}>
-              <div className="flex-1 rounded-sm bg-muted" />
-              <div className="flex-1 rounded-sm bg-muted" />
-              <div className="flex-1 rounded-sm" style={{ background: "hsl(228 80% 75%)" }} />
-              <div className="flex-1 rounded-sm" style={{ background: "hsl(228 80% 80%)" }} />
-              <div className="flex-1 rounded-sm" style={{ background: "hsl(228 80% 85%)" }} />
+          <div className="grid h-[228px] flex-1 grid-cols-3 gap-2">
+            <div className="flex flex-col gap-1.5" style={{ filter: "blur(7px)", opacity: 0.52 }}>
+              <div className="flex-1 rounded-md bg-transparent" />
+              <div className="flex-1 rounded-md bg-transparent" />
+              <div className="flex-1 rounded-md" style={{ background: "hsl(228 88% 82%)" }} />
+              <div className="flex-1 rounded-md" style={{ background: "hsl(228 90% 86%)" }} />
+              <div className="flex-1 rounded-md bg-transparent" />
             </div>
-            {/* Pitta - highlighted, level 5 */}
-            <div className="flex flex-col gap-1" style={{ filter: "blur(1px)", opacity: 0.95 }}>
-              <div className="flex-1 rounded-sm shadow-sm" style={{ background: "hsl(0 85% 45%)" }} />
-              <div className="flex-1 rounded-sm shadow-sm" style={{ background: "hsl(0 90% 58%)" }} />
-              <div className="flex-1 rounded-sm shadow-sm" style={{ background: "hsl(0 95% 70%)" }} />
-              <div className="flex-1 rounded-sm shadow-sm" style={{ background: "hsl(0 100% 82%)" }} />
-              <div className="flex-1 rounded-sm shadow-sm" style={{ background: "hsl(0 100% 92%)" }} />
+
+            <div className="flex flex-col gap-1.5" style={{ filter: "blur(1px)", opacity: 0.96 }}>
+              <div className="flex-1 rounded-md shadow-sm" style={{ background: "hsl(0 88% 54%)" }} />
+              <div className="flex-1 rounded-md shadow-sm" style={{ background: "hsl(0 95% 68%)" }} />
+              <div className="flex-1 rounded-md shadow-sm" style={{ background: "hsl(0 100% 78%)" }} />
+              <div className="flex-1 rounded-md shadow-sm" style={{ background: "hsl(0 100% 86%)" }} />
+              <div className="flex-1 rounded-md shadow-sm" style={{ background: "hsl(0 100% 92%)" }} />
             </div>
-            {/* Kapha - blurred, level 1 */}
-            <div className="flex flex-col gap-1" style={{ filter: "blur(7px)", opacity: 0.55 }}>
-              <div className="flex-1 rounded-sm bg-muted" />
-              <div className="flex-1 rounded-sm bg-muted" />
-              <div className="flex-1 rounded-sm bg-muted" />
-              <div className="flex-1 rounded-sm bg-muted" />
-              <div className="flex-1 rounded-sm" style={{ background: "hsl(142 55% 80%)" }} />
+
+            <div className="flex flex-col gap-1.5" style={{ filter: "blur(7px)", opacity: 0.5 }}>
+              <div className="flex-1 rounded-md bg-transparent" />
+              <div className="flex-1 rounded-md bg-transparent" />
+              <div className="flex-1 rounded-md bg-transparent" />
+              <div className="flex-1 rounded-md bg-transparent" />
+              <div className="flex-1 rounded-md" style={{ background: "hsl(142 62% 84%)" }} />
             </div>
           </div>
         </div>
-        {/* Column labels */}
-        <div className="flex gap-2">
-          <div className="w-[52px] shrink-0" />
-          <div className="grid grid-cols-3 gap-1.5 flex-1 text-center">
+
+        <div className="flex gap-2.5">
+          <div className="w-20 shrink-0" />
+          <div className="grid flex-1 grid-cols-3 gap-2 text-center">
             <span className="text-[11px] font-bold text-muted-foreground" style={{ filter: "blur(7px)", opacity: 0.55 }}>Vata</span>
             <span className="text-[11px] font-bold" style={{ filter: "blur(1px)", opacity: 0.95, color: "hsl(0 85% 50%)" }}>Pitta</span>
             <span className="text-[11px] font-bold text-muted-foreground" style={{ filter: "blur(7px)", opacity: 0.55 }}>Kapha</span>
@@ -82,15 +78,14 @@ const DoshaPreview = () => (
       </div>
     </div>
 
-    {/* Overlay CTA — sits in front of the blurred chart/grid */}
     <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-      <div className="bg-card/95 p-3 rounded-full shadow-lg mb-3 border border-border">
-        <Lock className="w-6 h-6 text-primary" />
+      <div className="mb-4 rounded-full border border-border bg-card/95 p-3 shadow-lg">
+        <Lock className="h-6 w-6 text-primary" />
       </div>
-      <p className="text-primary font-serif font-bold text-base md:text-lg text-center px-4 leading-tight drop-shadow-sm">
+      <p className="px-4 text-center font-serif text-[28px] font-bold leading-tight text-primary drop-shadow-sm md:text-[34px]">
         Faça o teste para desbloquear seu mapa biológico
       </p>
-      <p className="text-xs md:text-sm text-foreground/70 mt-1.5 text-center px-4 drop-shadow-sm">
+      <p className="mt-2 px-4 text-center text-sm text-foreground/70 drop-shadow-sm md:text-base">
         Identifique seu Agni e nível de agravamento hoje.
       </p>
     </div>
