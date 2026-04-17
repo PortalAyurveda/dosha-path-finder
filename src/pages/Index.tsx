@@ -445,19 +445,18 @@ const ColumnCard = ({
           {badge}
         </span>
       </div>
-      <div className="p-5">
+      <div className="p-4">
         <h3
-          className="font-serif font-bold text-[15px] leading-snug mb-2 line-clamp-2"
+          className="font-serif font-bold text-[15px] leading-snug mb-1.5 line-clamp-2"
           style={{ color: C.primary, fontStyle: "normal" }}
         >
           {title}
         </h3>
         {summary && (
-          <p className="font-sans text-[13px] text-muted-foreground line-clamp-2 mb-3">{summary}</p>
+          <p className="font-sans text-[13px] leading-snug text-muted-foreground line-clamp-4">
+            {summary}
+          </p>
         )}
-        <span className="font-sans text-[13px] font-semibold inline-flex items-center gap-1" style={{ color: C.pitta }}>
-          {cta} {external ? <ExternalLink className="h-3.5 w-3.5" /> : <ArrowRight className="h-3.5 w-3.5" />}
-        </span>
       </div>
     </Wrap>
   );
