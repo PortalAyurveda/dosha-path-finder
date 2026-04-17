@@ -27,6 +27,12 @@ interface DoshaResult {
   imc: number | null;
   idade: number | null;
   conhecimentoAyurveda: string | null;
+  email: string | null;
+  altura: string | null;
+  peso: string | null;
+  estado: string | null;
+  cidade: string | null;
+  pais: string | null;
 }
 
 interface PortalGlossario {
@@ -452,6 +458,12 @@ const MeuDosha = () => {
     imc: registroRaw.imc,
     idade: registroRaw.idade,
     conhecimentoAyurveda: registroRaw.conhecimentoAyurveda,
+    email: registroRaw.email,
+    altura: registroRaw.altura,
+    peso: registroRaw.peso,
+    estado: registroRaw.estado,
+    cidade: registroRaw.cidade,
+    pais: registroRaw.pais,
   } : null;
   const registroUuid = registroRaw?.id || null;
 
