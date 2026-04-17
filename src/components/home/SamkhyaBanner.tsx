@@ -3,8 +3,6 @@ import { Button } from "@/components/ui/button";
 
 const BANNER_URL =
   "https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/banner-samkhya-portal.jpg";
-const BANNER_URL_MOBILE =
-  `https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/bananer-smk-portal-mobile.jpg?v=${Date.now()}`;
 
 const PURPLE = "#352F54";
 
@@ -24,15 +22,9 @@ const SamkhyaCTA = ({ className = "" }: { className?: string }) => (
 const SamkhyaBanner = () => {
   return (
     <section className="relative overflow-hidden border-t border-secondary/20">
-      {/* Background image — mobile (positioned to reveal the drawing) */}
+      {/* Background image — same for desktop and mobile */}
       <div
-        className="absolute inset-0 bg-no-repeat bg-cover md:hidden"
-        style={{ backgroundImage: `url(${BANNER_URL_MOBILE})`, backgroundPosition: "center 30%" }}
-        aria-hidden
-      />
-      {/* Background image — desktop */}
-      <div
-        className="absolute inset-0 bg-no-repeat bg-cover bg-center hidden md:block"
+        className="absolute inset-0 bg-no-repeat bg-cover bg-center"
         style={{ backgroundImage: `url(${BANNER_URL})` }}
         aria-hidden
       />
@@ -43,6 +35,12 @@ const SamkhyaBanner = () => {
           background:
             "linear-gradient(90deg, rgba(255,247,232,0.85) 0%, rgba(255,247,232,0.55) 38%, rgba(255,247,232,0) 60%)",
         }}
+        aria-hidden
+      />
+      {/* Mobile wash for legibility */}
+      <div
+        className="absolute inset-0 md:hidden"
+        style={{ background: "rgba(255,247,232,0.75)" }}
         aria-hidden
       />
 
@@ -65,10 +63,7 @@ const SamkhyaBanner = () => {
       </div>
 
       {/* MOBILE layout */}
-      <div
-        className="relative md:hidden px-4 sm:px-6 pt-10 pb-8 flex flex-col justify-between min-h-[520px] gap-6"
-        style={{ backgroundPosition: "center 20%" }}
-      >
+      <div className="relative md:hidden px-4 sm:px-6 pt-10 pb-8 flex flex-col justify-between min-h-[420px] gap-6">
         <div>
           <h3 className="mb-3">Leve o Ayurveda para a sua rotina</h3>
           <p className="text-foreground/80">
