@@ -211,7 +211,7 @@ export const RULES: RuleDefinition[] = [
       titulo: "Corpo pesado, mente dispersa",
       subtitulo: "Crítico · {pct}%",
       descricao:
-        "Das {n} pessoas com Kapha em Acúmulo, {pct}% também relatam 5 ou mais sintomas de Vata. Corpo estagnado e mente agitada ao mesmo tempo — dois opostos que se encontram com mais frequência do que se imagina.",
+        "{pct}% das pessoas com Kapha em Acúmulo também relatam 5 ou mais sintomas de Vata. Corpo estagnado e mente agitada ao mesmo tempo — dois opostos que se encontram com mais frequência do que se imagina.",
     },
   },
   {
