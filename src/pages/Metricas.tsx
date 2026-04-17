@@ -626,7 +626,7 @@ const Metricas = () => {
             O que os dados revelam
           </h1>
           <p className="text-sm md:text-base" style={{ color: C.muted, fontFamily: SANS }}>
-            Padrões reais cruzados a partir de mais de 1.700 diagnósticos da nossa base. Cada número é uma regra clínica
+            Padrões reais cruzados a partir de milhares de diagnósticos da nossa base. Cada número é uma regra clínica
             observada na prática.
           </p>
         </header>
