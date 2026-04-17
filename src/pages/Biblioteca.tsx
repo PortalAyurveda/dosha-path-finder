@@ -203,17 +203,22 @@ const Biblioteca = () => {
         )
       ) : (
         videos && videos.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {videos.map((v) => (
-              <VideoResultCard
-                key={v.video_id}
-                videoId={v.video_id}
-                title={v.novo_titulo || "Sem título"}
-                summary={v.mini_resumo || ""}
-                tags={v.tags}
-              />
-            ))}
-          </div>
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {pagedVideos.map((v) => (
+                <VideoResultCard
+                  key={v.video_id}
+                  videoId={v.video_id}
+                  title={v.novo_titulo || "Sem título"}
+                  summary={v.mini_resumo || ""}
+                  tags={v.tags}
+                />
+              ))}
+            </div>
+            {totalPages > 1 && (
+              <PaginationControls page={page} totalPages={totalPages} onPageChange={goToPage} />
+            )}
+          </>
         ) : (
           <div className="flex items-center justify-center min-h-[30vh]">
             <div className="text-center p-12 rounded-2xl bg-surface-sun border border-border">
