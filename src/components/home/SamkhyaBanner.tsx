@@ -22,9 +22,9 @@ const SamkhyaCTA = ({ className = "" }: { className?: string }) => (
 const SamkhyaBanner = () => {
   return (
     <section className="relative overflow-hidden border-t border-secondary/20">
-      {/* Background image — same for desktop and mobile */}
+      {/* Background image — same for desktop and mobile, repositioned on mobile to reveal the artwork */}
       <div
-        className="absolute inset-0 bg-no-repeat bg-cover bg-center"
+        className="absolute inset-0 bg-no-repeat bg-cover bg-[position:75%_center] md:bg-center"
         style={{ backgroundImage: `url(${BANNER_URL})` }}
         aria-hidden
       />
@@ -37,10 +37,13 @@ const SamkhyaBanner = () => {
         }}
         aria-hidden
       />
-      {/* Mobile wash for legibility */}
+      {/* Mobile wash for legibility — lighter so the artwork shows through */}
       <div
         className="absolute inset-0 md:hidden"
-        style={{ background: "rgba(255,247,232,0.75)" }}
+        style={{
+          background:
+            "linear-gradient(180deg, rgba(255,247,232,0.85) 0%, rgba(255,247,232,0.6) 55%, rgba(255,247,232,0.25) 100%)",
+        }}
         aria-hidden
       />
 
