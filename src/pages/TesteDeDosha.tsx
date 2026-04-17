@@ -41,6 +41,7 @@ const INTERESSE_OPTIONS = [
 const TesteDeDosha = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { setDoshaResultFromId } = useUser();
 const [step, setStep] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [interstitialTarget, setInterstitialTarget] = useState<string | null>(null);
@@ -328,6 +329,17 @@ const [step, setStep] = useState(0);
 
       const { error } = await supabase.from('doshas_registros').insert(dbPayload);
       if (error) throw error;
+
+      // Make this NEW test the active one immediately, so Header pie + name,
+      // /meu-dosha, /metricas references and Akasha context all point to the
+      // most recent test. Akasha can still fall back to email when no id is
+      // in the URL.
+      localStorage.setItem("activeDoshaId", idPublico);
+      try {
+        await setDoshaResultFromId(idPublico);
+      } catch (e) {
+        console.warn("[TesteDeDosha] setDoshaResultFromId failed", e);
+      }
 
       // Webhook n8n in background
       const webhookPayload = {
