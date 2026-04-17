@@ -9,6 +9,9 @@ import VideoResultCard from "@/components/biblioteca/VideoResultCard";
 import AdvancedVideoCard from "@/components/biblioteca/AdvancedVideoCard";
 import AdvancedVideoResult from "@/components/biblioteca/AdvancedVideoResult";
 import { Skeleton } from "@/components/ui/skeleton";
+import PaginationControls from "@/components/PaginationControls";
+
+const PAGE_SIZE = 12;
 
 function useDebounce(value: string, delay: number) {
   const [debounced, setDebounced] = useState(value);
