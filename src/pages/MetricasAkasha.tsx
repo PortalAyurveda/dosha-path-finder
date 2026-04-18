@@ -240,8 +240,8 @@ const MetricasAkasha = () => {
 
         {/* Bloco 2: Evolução diária */}
         <ChartShell
-          title="Evolução Diária — Últimos 30 dias"
-          subtitle="Mensagens processadas e usuários ativos por dia"
+          title="Evolução Diária — Histórico Completo"
+          subtitle="Mensagens humanas e usuários únicos por dia, desde o início"
         >
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={dias} margin={{ top: 8, right: 16, left: -10, bottom: 0 }}>
