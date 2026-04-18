@@ -16,8 +16,8 @@ interface SearchHeaderProps {
 
 const categories: { key: VideoCategory; label: string; icon: React.ReactNode }[] = [
   { key: "selecao", label: "Seleção", icon: <Star className="h-4 w-4" /> },
-  { key: "receitas", label: "Receitas", icon: <UtensilsCrossed className="h-4 w-4" /> },
   { key: "lives", label: "Lives do Almoço", icon: <Radio className="h-4 w-4" /> },
+  { key: "receitas", label: "Receitas", icon: <UtensilsCrossed className="h-4 w-4" /> },
 ];
 
 const SearchHeader = ({ searchTerm, onSearchChange, isAdvanced, onAdvancedChange, category, onCategoryChange }: SearchHeaderProps) => {
