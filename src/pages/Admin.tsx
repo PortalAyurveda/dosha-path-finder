@@ -194,12 +194,12 @@ const Admin = () => {
   // Delete
   const handleDelete = async () => {
     if (!deleteTarget) return;
-    const { error } = await supabase.storage.from(BUCKET).remove([deleteTarget]);
+    const { error } = await supabase.storage.from(bucket).remove([deleteTarget]);
     if (error) {
       toast.error("Erro ao deletar: " + error.message);
     } else {
       toast.success("Imagem removida!");
-      fetchFiles();
+      fetchFiles(bucket);
     }
     setDeleteTarget(null);
   };
