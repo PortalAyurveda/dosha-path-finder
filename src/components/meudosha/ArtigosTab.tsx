@@ -320,7 +320,7 @@ const ArtigosTab = ({ agravVataTags, agravPittaTags, agravKaphaTags, doshaprinci
           const pageItems = filteredGeneralArticles.slice(start, start + ITEMS_PER_PAGE);
           return (
             <>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {pageItems.map((article) => (
                   <div key={article.id} className="group bg-card rounded-xl overflow-hidden border border-border hover:shadow-md transition-all">
                     <Link to={`/blog/${article.link_do_artigo || article.id}`}>

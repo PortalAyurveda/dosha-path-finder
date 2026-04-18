@@ -56,8 +56,8 @@ const VideosGeneralTab = ({ doshaprincipal }: VideosGeneralTabProps) => {
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {Array.from({ length: 8 }).map((_, i) => (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {Array.from({ length: 6 }).map((_, i) => (
           <div key={i} className="rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm overflow-hidden border border-border">
             <Skeleton className="aspect-video w-full" />
             <div className="p-4 space-y-2">
@@ -85,7 +85,7 @@ const VideosGeneralTab = ({ doshaprincipal }: VideosGeneralTabProps) => {
 
   return (
     <>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {pageItems.map((v: any) => (
           <VideoResultCard
             key={v.video_id}
