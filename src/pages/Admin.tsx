@@ -18,10 +18,12 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Upload, Copy, Trash2, Image as ImageIcon, Loader2, ShieldCheck, X } from "lucide-react";
+import { Upload, Copy, Trash2, Image as ImageIcon, Loader2, ShieldCheck, X, FileText } from "lucide-react";
 import { Helmet } from "react-helmet-async";
+import { Link } from "react-router-dom";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-const BUCKET = "portal_images";
+const FALLBACK_BUCKETS = ["portal_images", "portal_capas", "samkhya", "fotos-lingua"];
 
 interface StorageFile {
   name: string;
@@ -43,6 +45,10 @@ const Admin = () => {
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
 
+  // Bucket selector
+  const [buckets, setBuckets] = useState<string[]>(FALLBACK_BUCKETS);
+  const [bucket, setBucket] = useState<string>(FALLBACK_BUCKETS[0]);
+
   // Multi-upload state
   const [pendingFiles, setPendingFiles] = useState<PendingFile[]>([]);
   const [dragOver, setDragOver] = useState(false);
@@ -57,9 +63,19 @@ const Admin = () => {
     }
   }, [accessLoading, user, role, navigate]);
 
-  const fetchFiles = useCallback(async () => {
+  const fetchBuckets = useCallback(async () => {
+    const { data, error } = await supabase.storage.listBuckets();
+    if (error || !data) return;
+    const names = data.map((b) => b.name);
+    if (names.length) {
+      setBuckets(names);
+      setBucket((prev) => (names.includes(prev) ? prev : names[0]));
+    }
+  }, []);
+
+  const fetchFiles = useCallback(async (bucketName: string) => {
     setLoadingFiles(true);
-    const { data, error } = await supabase.storage.from(BUCKET).list("", {
+    const { data, error } = await supabase.storage.from(bucketName).list("", {
       limit: 500,
       sortBy: { column: "created_at", order: "desc" },
     });
@@ -73,7 +89,7 @@ const Admin = () => {
     const items: StorageFile[] = (data || [])
       .filter((f) => f.name !== ".emptyFolderPlaceholder")
       .map((f) => {
-        const { data: urlData } = supabase.storage.from(BUCKET).getPublicUrl(f.name);
+        const { data: urlData } = supabase.storage.from(bucketName).getPublicUrl(f.name);
         return { name: f.name, publicUrl: urlData.publicUrl };
       });
 
@@ -82,8 +98,14 @@ const Admin = () => {
   }, []);
 
   useEffect(() => {
-    if (!accessLoading && role === "admin") fetchFiles();
-  }, [accessLoading, role, fetchFiles]);
+    if (!accessLoading && role === "admin") {
+      fetchBuckets();
+    }
+  }, [accessLoading, role, fetchBuckets]);
+
+  useEffect(() => {
+    if (!accessLoading && role === "admin") fetchFiles(bucket);
+  }, [accessLoading, role, bucket, fetchFiles]);
 
   // Add files to pending list
   const addFiles = (fileList: FileList | File[]) => {
@@ -135,7 +157,7 @@ const Admin = () => {
       const { file, slugName } = valid[i];
       const finalName = sanitizeSlug(slugName);
 
-      const { error } = await supabase.storage.from(BUCKET).upload(finalName, file, {
+      const { error } = await supabase.storage.from(bucket).upload(finalName, file, {
         upsert: true,
         contentType: file.type,
       });
@@ -152,7 +174,7 @@ const Admin = () => {
 
     if (successCount > 0) {
       toast.success(`${successCount} imagem(ns) enviada(s) com sucesso!`);
-      fetchFiles();
+      fetchFiles(bucket);
     }
     if (errorCount > 0) {
       toast.error(`${errorCount} arquivo(s) falharam no upload.`);
@@ -172,12 +194,12 @@ const Admin = () => {
   // Delete
   const handleDelete = async () => {
     if (!deleteTarget) return;
-    const { error } = await supabase.storage.from(BUCKET).remove([deleteTarget]);
+    const { error } = await supabase.storage.from(bucket).remove([deleteTarget]);
     if (error) {
       toast.error("Erro ao deletar: " + error.message);
     } else {
       toast.success("Imagem removida!");
-      fetchFiles();
+      fetchFiles(bucket);
     }
     setDeleteTarget(null);
   };
@@ -210,16 +232,39 @@ const Admin = () => {
       <div className="min-h-screen bg-background">
         <div className="max-w-5xl mx-auto px-4 py-8 space-y-8">
           {/* Header */}
-          <div className="flex items-center gap-3">
-            <ShieldCheck className="w-7 h-7 text-primary" />
-            <h1 className="text-2xl font-heading font-bold text-foreground">
-              Painel Administrativo
-            </h1>
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <ShieldCheck className="w-7 h-7 text-primary" />
+              <h1 className="text-2xl font-heading font-bold text-foreground">
+                Painel Administrativo
+              </h1>
+            </div>
+            <Button asChild variant="outline" className="gap-2">
+              <Link to="/admin/blog">
+                <FileText className="w-4 h-4" />
+                Acessar Artigos
+              </Link>
+            </Button>
           </div>
 
           {/* Upload Section */}
           <section className="bg-card border border-border rounded-xl p-6 space-y-4">
-            <h2 className="text-lg font-semibold text-foreground">Upload de Imagens</h2>
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <h2 className="text-lg font-semibold text-foreground">Upload de Imagens</h2>
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-muted-foreground">Bucket:</span>
+                <Select value={bucket} onValueChange={setBucket}>
+                  <SelectTrigger className="h-9 w-[200px]">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {buckets.map((b) => (
+                      <SelectItem key={b} value={b}>{b}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
 
             {/* Drop zone */}
             <div
