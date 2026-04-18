@@ -129,7 +129,8 @@ const LoggedHero = () => {
     staleTime: 30 * 60 * 1000,
   });
 
-  const firstName = (doshaResult?.nome?.split(" ")[0] || profile?.nome?.split(" ")[0] || "").toUpperCase();
+  const rawFirst = doshaResult?.nome?.split(" ")[0] || profile?.nome?.split(" ")[0] || "";
+  const firstName = rawFirst ? rawFirst.charAt(0).toUpperCase() + rawFirst.slice(1).toLowerCase() : "";
 
   return (
     <section
