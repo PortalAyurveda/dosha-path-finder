@@ -232,16 +232,39 @@ const Admin = () => {
       <div className="min-h-screen bg-background">
         <div className="max-w-5xl mx-auto px-4 py-8 space-y-8">
           {/* Header */}
-          <div className="flex items-center gap-3">
-            <ShieldCheck className="w-7 h-7 text-primary" />
-            <h1 className="text-2xl font-heading font-bold text-foreground">
-              Painel Administrativo
-            </h1>
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <ShieldCheck className="w-7 h-7 text-primary" />
+              <h1 className="text-2xl font-heading font-bold text-foreground">
+                Painel Administrativo
+              </h1>
+            </div>
+            <Button asChild variant="outline" className="gap-2">
+              <Link to="/admin/blog">
+                <FileText className="w-4 h-4" />
+                Acessar Artigos
+              </Link>
+            </Button>
           </div>
 
           {/* Upload Section */}
           <section className="bg-card border border-border rounded-xl p-6 space-y-4">
-            <h2 className="text-lg font-semibold text-foreground">Upload de Imagens</h2>
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <h2 className="text-lg font-semibold text-foreground">Upload de Imagens</h2>
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-muted-foreground">Bucket:</span>
+                <Select value={bucket} onValueChange={setBucket}>
+                  <SelectTrigger className="h-9 w-[200px]">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {buckets.map((b) => (
+                      <SelectItem key={b} value={b}>{b}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
 
             {/* Drop zone */}
             <div
