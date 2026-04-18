@@ -174,7 +174,7 @@ const Admin = () => {
 
     if (successCount > 0) {
       toast.success(`${successCount} imagem(ns) enviada(s) com sucesso!`);
-      fetchFiles();
+      fetchFiles(bucket);
     }
     if (errorCount > 0) {
       toast.error(`${errorCount} arquivo(s) falharam no upload.`);
