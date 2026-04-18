@@ -45,6 +45,10 @@ const Admin = () => {
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
 
+  // Bucket selector
+  const [buckets, setBuckets] = useState<string[]>(FALLBACK_BUCKETS);
+  const [bucket, setBucket] = useState<string>(FALLBACK_BUCKETS[0]);
+
   // Multi-upload state
   const [pendingFiles, setPendingFiles] = useState<PendingFile[]>([]);
   const [dragOver, setDragOver] = useState(false);
