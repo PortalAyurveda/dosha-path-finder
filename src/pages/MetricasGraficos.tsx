@@ -89,7 +89,13 @@ const BarCard = ({ row }: { row: GraficoRow }) => {
         <XAxis dataKey="x" tick={{ fontSize: 11, fill: C.muted, fontFamily: SANS }} />
         <YAxis
           tick={{ fontSize: 11, fill: C.muted, fontFamily: SANS }}
-          domain={row.grafico_id === "imc_por_dosha" ? [18, "auto"] : [0, "auto"]}
+          domain={
+            row.grafico_id === "imc_por_dosha"
+              ? [18, "auto"]
+              : ["agni_vata", "agni_pitta", "agni_kapha"].includes(row.grafico_id)
+                ? [0, 60]
+                : [0, "auto"]
+          }
         />
         <Tooltip contentStyle={tooltipStyle} cursor={{ fill: `${C.border}80` }} />
         <Bar dataKey={ds.label} radius={[8, 8, 0, 0]} fill={typeof ds.backgroundColor === "string" ? ds.backgroundColor : C.primary}>
