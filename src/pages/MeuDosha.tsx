@@ -664,9 +664,18 @@ const MeuDosha = () => {
               <DoshaMiniPie vata={result.vatascore ?? 0} pitta={result.pittascore ?? 0} kapha={result.kaphascore ?? 0} />
               Perfil
             </TabsTrigger>
-            <TabsTrigger value="metricas" className="text-xs sm:text-sm py-2">Métricas</TabsTrigger>
-            <TabsTrigger value="artigos" className="text-xs sm:text-sm py-2">Artigos</TabsTrigger>
-            <TabsTrigger value="videos" className="text-xs sm:text-sm py-2">Vídeos</TabsTrigger>
+            <TabsTrigger value="metricas" className="text-xs sm:text-sm py-2 flex items-center gap-1">
+              <span aria-hidden="true">📊</span>
+              Métricas
+            </TabsTrigger>
+            <TabsTrigger value="artigos" className="text-xs sm:text-sm py-2 flex items-center gap-1">
+              <span aria-hidden="true">📖</span>
+              Artigos
+            </TabsTrigger>
+            <TabsTrigger value="videos" className="text-xs sm:text-sm py-2 flex items-center gap-1">
+              <span aria-hidden="true">▶️</span>
+              Vídeos
+            </TabsTrigger>
             <TabsTrigger value="akasha" className="text-xs sm:text-sm py-2 flex items-center gap-1">
               Akasha
               <img src="https://static.wixstatic.com/media/b8f47f_105371e1ade24ccd9bd3406b83bd925e~mv2.png" alt="" className="w-4 h-4 object-contain" />
