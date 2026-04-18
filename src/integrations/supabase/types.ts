@@ -2099,6 +2099,22 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      akasha_distribuicao_horas: {
+        Args: never
+        Returns: {
+          hora: number
+          msgs: number
+          percentual: number
+        }[]
+      }
+      akasha_evolucao_diaria: {
+        Args: never
+        Returns: {
+          dia: string
+          msgs: number
+          usuarios: number
+        }[]
+      }
       artigo_do_dia: {
         Args: never
         Returns: {

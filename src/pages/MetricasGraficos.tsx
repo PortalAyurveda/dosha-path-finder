@@ -55,7 +55,10 @@ const LineCard = ({ row }: { row: GraficoRow }) => {
       <LineChart data={rows} margin={{ top: 8, right: 8, left: -16, bottom: 0 }}>
         <CartesianGrid strokeDasharray="3 3" stroke={C.border} />
         <XAxis dataKey="x" tick={{ fontSize: 11, fill: C.muted, fontFamily: SANS }} />
-        <YAxis tick={{ fontSize: 11, fill: C.muted, fontFamily: SANS }} />
+        <YAxis
+          tick={{ fontSize: 11, fill: C.muted, fontFamily: SANS }}
+          domain={[0, "auto"]}
+        />
         <Tooltip contentStyle={tooltipStyle} />
         {d.datasets.map((ds) => (
           <Line

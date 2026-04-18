@@ -13,7 +13,13 @@ import {
 } from "recharts";
 import { MessageCircle, Users, Repeat, BarChart3, Trophy } from "lucide-react";
 import { C, SERIF, SANS, LEAF, fmtN } from "@/components/metricas/theme";
-import { useLatestDate, useSnapshot, type Snapshot } from "@/components/metricas/useMetricasData";
+import {
+  useLatestDate,
+  useSnapshot,
+  useAkashaEvolucaoDiaria,
+  useAkashaDistribuicaoHoras,
+  type Snapshot,
+} from "@/components/metricas/useMetricasData";
 import MetricasShell from "@/components/metricas/MetricasShell";
 
 const tooltipStyle: React.CSSProperties = {
@@ -104,46 +110,36 @@ const ChartShell = ({
   </section>
 );
 
-type DiaPoint = { dia: string; msgs: number; usuarios: number };
-type HoraPoint = { hora: number; msgs: number; percentual: number };
 
-function parseJson<T>(s?: string | null): T[] {
-  if (!s) return [];
-  try {
-    const arr = JSON.parse(s);
-    return Array.isArray(arr) ? (arr as T[]) : [];
-  } catch {
-    return [];
-  }
-}
 
 const MetricasAkasha = () => {
   const { data: date } = useLatestDate();
   const { data: snaps, isLoading } = useSnapshot(date ?? null, "akasha");
+  const { data: diasFull, isLoading: loadingDias } = useAkashaEvolucaoDiaria();
+  const { data: horasFull, isLoading: loadingHoras } = useAkashaDistribuicaoHoras();
 
   const get = (id: string): Snapshot | undefined =>
     snaps?.find((s) => s.metrica_id === id);
 
-  const diasRaw = useMemo(() => parseJson<DiaPoint>(get("TEMPORAL_AKASHA")?.descricao), [snaps]);
-  const horasRaw = useMemo(() => parseJson<HoraPoint>(get("TEMPORAL_AKASHA_HORAS")?.descricao), [snaps]);
-
   // Formata dias em "DD/MM"
   const dias = useMemo(
     () =>
-      diasRaw.map((d) => ({
-        ...d,
-        diaLabel: d.dia.slice(5).split("-").reverse().join("/"),
-      })),
-    [diasRaw],
+      (diasFull ?? []).map((d) => {
+        // d.dia vem como "YYYY-MM-DD"
+        const parts = d.dia.split("-");
+        const diaLabel = parts.length === 3 ? `${parts[2]}/${parts[1]}` : d.dia;
+        return { ...d, diaLabel };
+      }),
+    [diasFull],
   );
 
   const horas = useMemo(
     () =>
-      horasRaw.map((h) => ({
+      (horasFull ?? []).map((h) => ({
         ...h,
         horaLabel: `${h.hora}h`,
       })),
-    [horasRaw],
+    [horasFull],
   );
 
   const horaPico = useMemo(() => {
@@ -151,7 +147,7 @@ const MetricasAkasha = () => {
     return horas.reduce((a, b) => (b.percentual > a.percentual ? b : a));
   }, [horas]);
 
-  const horaPicoText = get("AKASHA_HORA_PICO")?.descricao ?? null;
+  const horaPicoText = horaPico ? `${horaPico.hora}h` : (get("AKASHA_HORA_PICO")?.descricao ?? null);
   const totalMsgs = get("AKASHA_TOTAL_MSGS")?.descricao ?? null;
   const totalUsers = get("AKASHA_USUARIOS_UNICOS")?.descricao ?? null;
   const retencao = get("AKASHA_RETENCAO_PCT");
@@ -244,8 +240,8 @@ const MetricasAkasha = () => {
 
         {/* Bloco 2: Evolução diária */}
         <ChartShell
-          title="Evolução Diária — Últimos 30 dias"
-          subtitle="Mensagens processadas e usuários ativos por dia"
+          title="Evolução Diária — Histórico Completo"
+          subtitle="Mensagens humanas e usuários únicos por dia, desde o início"
         >
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={dias} margin={{ top: 8, right: 16, left: -10, bottom: 0 }}>
