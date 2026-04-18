@@ -24,6 +24,7 @@ import PoliticaDePrivacidade from "./pages/PoliticaDePrivacidade";
 import TermosDeUso from "./pages/TermosDeUso";
 import NotFound from "./pages/NotFound";
 import Admin from "./pages/Admin";
+import AdminBlog from "./pages/AdminBlog";
 import Blog from "./pages/Blog";
 import BlogArticle from "./pages/BlogArticle";
 import Metricas from "./pages/Metricas";
