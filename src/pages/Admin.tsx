@@ -157,7 +157,7 @@ const Admin = () => {
       const { file, slugName } = valid[i];
       const finalName = sanitizeSlug(slugName);
 
-      const { error } = await supabase.storage.from(BUCKET).upload(finalName, file, {
+      const { error } = await supabase.storage.from(bucket).upload(finalName, file, {
         upsert: true,
         contentType: file.type,
       });
