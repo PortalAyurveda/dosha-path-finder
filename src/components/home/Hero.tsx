@@ -87,7 +87,7 @@ const DoshaPreview = () => (
             </span>
             <span
               className="text-[10px] font-bold"
-              style={{ filter: "blur(0.5px)", opacity: 0.8, color: "hsl(0 85% 50%)" }}
+              style={{ filter: "blur(0.5px)", opacity: 0.9, color: "hsl(0 85% 50%)" }}
             >
               Pitta
             </span>
