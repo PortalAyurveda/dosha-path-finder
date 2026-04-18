@@ -135,7 +135,9 @@ const LoggedHero = () => {
   return (
     <section
       className="relative overflow-hidden"
-      style={{ background: `linear-gradient(180deg, ${C.surface} 0%, #ffffff 100%)` }}
+      style={{
+        background: "linear-gradient(100deg, hsl(228 70% 96%) 0%, hsl(0 70% 97%) 50%, hsl(48 80% 95%) 100%)",
+      }}
     >
       <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8 md:py-10">
         <div className="text-center mb-5">
