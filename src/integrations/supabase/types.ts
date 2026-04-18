@@ -1464,6 +1464,42 @@ export type Database = {
         }
         Relationships: []
       }
+      portal_graficos: {
+        Row: {
+          atualizado_em: string | null
+          dados: Json
+          grafico_id: string
+          grupo: string | null
+          id: number
+          ordem: number | null
+          subtitulo: string | null
+          tipo_grafico: string
+          titulo: string
+        }
+        Insert: {
+          atualizado_em?: string | null
+          dados: Json
+          grafico_id: string
+          grupo?: string | null
+          id?: number
+          ordem?: number | null
+          subtitulo?: string | null
+          tipo_grafico: string
+          titulo: string
+        }
+        Update: {
+          atualizado_em?: string | null
+          dados?: Json
+          grafico_id?: string
+          grupo?: string | null
+          id?: number
+          ordem?: number | null
+          subtitulo?: string | null
+          tipo_grafico?: string
+          titulo?: string
+        }
+        Relationships: []
+      }
       portal_kapha: {
         Row: {
           criado_em: string | null
