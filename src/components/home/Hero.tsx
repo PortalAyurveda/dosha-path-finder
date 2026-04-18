@@ -42,11 +42,11 @@ const DoshaPreview = () => (
 
         <div className="flex gap-2">
           <div className="flex w-16 shrink-0 flex-col justify-between py-0.5 pr-1 text-right text-[10px] font-bold uppercase leading-tight">
-            <span style={{ filter: "blur(0.5px)", opacity: 0.8, color: "hsl(0 85% 50%)" }}>Fixado</span>
-            <span style={{ filter: "blur(1px)", opacity: 0.75, color: "hsl(0 92% 62%)" }}>Adoecido</span>
-            <span style={{ filter: "blur(1.5px)", opacity: 0.7, color: "hsl(0 98% 74%)" }}>Acúmulo</span>
-            <span style={{ filter: "blur(2px)", opacity: 0.55, color: "hsl(0 100% 84%)" }}>Normal</span>
-            <span style={{ filter: "blur(2.5px)", opacity: 0.4, color: "hsl(0 100% 92%)" }}>Pouco</span>
+            <span style={{ filter: "blur(0.5px)", opacity: 0.9, color: "hsl(0 85% 50%)" }}>Fixado</span>
+            <span style={{ filter: "blur(1px)", opacity: 0.85, color: "hsl(0 92% 62%)" }}>Adoecido</span>
+            <span style={{ filter: "blur(1.5px)", opacity: 0.8, color: "hsl(0 98% 74%)" }}>Acúmulo</span>
+            <span style={{ filter: "blur(2px)", opacity: 0.65, color: "hsl(0 100% 84%)" }}>Normal</span>
+            <span style={{ filter: "blur(2.5px)", opacity: 0.5, color: "hsl(0 100% 92%)" }}>Pouco</span>
           </div>
 
           <div className="grid h-[180px] flex-1 grid-cols-3 gap-1.5">
@@ -58,7 +58,7 @@ const DoshaPreview = () => (
               <div className="flex-1 rounded-md bg-transparent" />
             </div>
 
-            <div className="flex flex-col gap-1" style={{ filter: "blur(0.5px)", opacity: 0.95 }}>
+            <div className="flex flex-col gap-1" style={{ filter: "blur(0.5px)", opacity: 1 }}>
               <div className="flex-1 rounded-md shadow-sm" style={{ background: "hsl(0 88% 54%)" }} />
               <div className="flex-1 rounded-md shadow-sm" style={{ background: "hsl(0 95% 68%)" }} />
               <div className="flex-1 rounded-md shadow-sm" style={{ background: "hsl(0 100% 78%)" }} />
@@ -87,7 +87,7 @@ const DoshaPreview = () => (
             </span>
             <span
               className="text-[10px] font-bold"
-              style={{ filter: "blur(0.5px)", opacity: 0.8, color: "hsl(0 85% 50%)" }}
+              style={{ filter: "blur(0.5px)", opacity: 0.9, color: "hsl(0 85% 50%)" }}
             >
               Pitta
             </span>
