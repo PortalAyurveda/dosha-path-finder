@@ -13,7 +13,13 @@ import {
 } from "recharts";
 import { MessageCircle, Users, Repeat, BarChart3, Trophy } from "lucide-react";
 import { C, SERIF, SANS, LEAF, fmtN } from "@/components/metricas/theme";
-import { useLatestDate, useSnapshot, type Snapshot } from "@/components/metricas/useMetricasData";
+import {
+  useLatestDate,
+  useSnapshot,
+  useAkashaEvolucaoDiaria,
+  useAkashaDistribuicaoHoras,
+  type Snapshot,
+} from "@/components/metricas/useMetricasData";
 import MetricasShell from "@/components/metricas/MetricasShell";
 
 const tooltipStyle: React.CSSProperties = {
