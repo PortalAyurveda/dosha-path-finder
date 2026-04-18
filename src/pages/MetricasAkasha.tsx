@@ -110,18 +110,7 @@ const ChartShell = ({
   </section>
 );
 
-type DiaPoint = { dia: string; msgs: number; usuarios: number };
-type HoraPoint = { hora: number; msgs: number; percentual: number };
 
-function parseJson<T>(s?: string | null): T[] {
-  if (!s) return [];
-  try {
-    const arr = JSON.parse(s);
-    return Array.isArray(arr) ? (arr as T[]) : [];
-  } catch {
-    return [];
-  }
-}
 
 const MetricasAkasha = () => {
   const { data: date } = useLatestDate();
