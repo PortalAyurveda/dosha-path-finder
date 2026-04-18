@@ -18,10 +18,12 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Upload, Copy, Trash2, Image as ImageIcon, Loader2, ShieldCheck, X } from "lucide-react";
+import { Upload, Copy, Trash2, Image as ImageIcon, Loader2, ShieldCheck, X, FileText } from "lucide-react";
 import { Helmet } from "react-helmet-async";
+import { Link } from "react-router-dom";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-const BUCKET = "portal_images";
+const FALLBACK_BUCKETS = ["portal_images", "portal_capas", "samkhya", "fotos-lingua"];
 
 interface StorageFile {
   name: string;
