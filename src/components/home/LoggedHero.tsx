@@ -136,7 +136,7 @@ const LoggedHero = () => {
       className="relative overflow-hidden"
       style={{ background: `linear-gradient(180deg, ${C.surface} 0%, #ffffff 100%)` }}
     >
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 md:py-10">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8 md:py-10">
         <div className="text-center mb-5">
           <h1
             className="font-serif font-bold text-xl md:text-2xl lg:text-[26px] leading-tight"
@@ -149,27 +149,27 @@ const LoggedHero = () => {
           </p>
         </div>
 
-        {/* Top: Pie + Quadro Clínico + Lateral arrow button */}
+        {/* Clinical Dashboard — espelha estrutura do /meu-dosha */}
         <Link
           to={meuDoshaBase}
-          className="group relative block bg-card rounded-3xl p-4 md:p-5 pr-12 md:pr-14 border border-border shadow-md transition-all hover:-translate-y-0.5 hover:shadow-lg"
+          className="group relative block bg-card rounded-2xl p-4 md:p-5 pr-10 md:pr-12 border border-border shadow-md transition-all hover:-translate-y-0.5 hover:shadow-lg"
           aria-label="Continuar para meu perfil"
         >
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
+          <div className="grid grid-cols-1 sm:grid-cols-[1.2fr_1fr] gap-4 items-center">
             {/* Pie */}
             <div className="flex flex-col items-center">
-              <h2 className="font-serif font-bold text-sm mb-1" style={{ color: C.primary }}>
+              <h2 className="font-serif font-bold text-foreground text-sm mb-1 text-center">
                 Pontuação dos Doshas
               </h2>
-              <div className="w-full" style={{ height: 160 }}>
+              <div className="w-full" style={{ height: 180 }}>
                 <ResponsiveContainer width="100%" height="100%">
-                  <PieChart margin={{ top: 8, right: 40, bottom: 8, left: 40 }}>
+                  <PieChart margin={{ top: 12, right: 40, bottom: 12, left: 40 }}>
                     <Pie
                       data={pieData}
                       cx="50%"
                       cy="50%"
-                      outerRadius={52}
-                      innerRadius={22}
+                      outerRadius={58}
+                      innerRadius={26}
                       dataKey="value"
                       startAngle={90}
                       endAngle={-270}
@@ -190,7 +190,7 @@ const LoggedHero = () => {
 
             {/* Quadro Clínico */}
             <div>
-              <h2 className="font-serif font-bold text-sm mb-2 text-center" style={{ color: C.primary }}>
+              <h2 className="font-serif font-bold text-foreground text-sm mb-2 text-center">
                 Quadro Clínico
               </h2>
               <div className="grid grid-cols-[auto_1fr_1fr_1fr] gap-x-1.5 gap-y-[3px]">
@@ -198,7 +198,7 @@ const LoggedHero = () => {
                   const levelNum = 5 - rowIdx;
                   return (
                     <div key={label} className="contents">
-                      <span className="text-[9px] font-semibold text-muted-foreground pr-1 flex items-center justify-end h-6 leading-none">
+                      <span className="text-[9px] font-semibold text-muted-foreground pr-1 flex items-center justify-end h-7 leading-none">
                         {label}
                       </span>
                       {doshaScores.map((d) => {
@@ -207,7 +207,7 @@ const LoggedHero = () => {
                         return (
                           <div
                             key={d.name}
-                            className="h-6 rounded-sm"
+                            className="h-7 rounded-sm"
                             style={
                               filled
                                 ? { background: SCALE[d.name][levelNum - 1] }
@@ -233,20 +233,20 @@ const LoggedHero = () => {
 
           {/* Lateral arrow — "continue para seu perfil" */}
           <div
-            className="absolute right-0 top-0 bottom-0 flex items-center justify-center w-10 md:w-12 rounded-r-3xl transition-colors group-hover:bg-primary/5"
+            className="absolute right-0 top-0 bottom-0 flex items-center justify-center w-8 md:w-10 rounded-r-2xl transition-colors group-hover:bg-primary/5"
             style={{ background: `${C.primary}08` }}
             aria-hidden="true"
           >
             <ChevronRight
-              className="h-6 w-6 transition-transform group-hover:translate-x-0.5"
+              className="h-5 w-5 transition-transform group-hover:translate-x-0.5"
               style={{ color: C.primary }}
             />
           </div>
           <span className="sr-only">Continue para seu perfil</span>
         </Link>
 
-        {/* Bottom: 3 enriched cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-3">
+        {/* Bottom: 3 dados personalizados — métrica, artigo, vídeo */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-4">
           {/* Métrica destaque — mini barras */}
           <Link
             to={`${meuDoshaBase}&tab=metricas`}
