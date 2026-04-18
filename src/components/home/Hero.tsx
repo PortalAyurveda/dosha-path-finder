@@ -58,7 +58,7 @@ const DoshaPreview = () => (
               <div className="flex-1 rounded-md bg-transparent" />
             </div>
 
-            <div className="flex flex-col gap-1" style={{ filter: "blur(0.5px)", opacity: 0.95 }}>
+            <div className="flex flex-col gap-1" style={{ filter: "blur(0.5px)", opacity: 1 }}>
               <div className="flex-1 rounded-md shadow-sm" style={{ background: "hsl(0 88% 54%)" }} />
               <div className="flex-1 rounded-md shadow-sm" style={{ background: "hsl(0 95% 68%)" }} />
               <div className="flex-1 rounded-md shadow-sm" style={{ background: "hsl(0 100% 78%)" }} />
