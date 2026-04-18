@@ -90,6 +90,7 @@ const RoutedApp = () => {
               <Route path="/politica-de-privacidade" element={<PoliticaDePrivacidade />} />
               <Route path="/termos-de-uso" element={<TermosDeUso />} />
               <Route path="/admin" element={<Admin />} />
+              <Route path="/admin/blog" element={<AdminBlog />} />
               <Route path="*" element={<NotFound />} />
       </Routes>
       </Layout>
