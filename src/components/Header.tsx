@@ -87,7 +87,7 @@ const Header = () => {
   const navLinks = [
     { label: "Início", to: "/" },
     { label: "Biblioteca", to: "/biblioteca" },
-    { label: "Blog", to: "/blog" },
+    { label: "Artigos", to: "/blog" },
     { label: "Cursos", to: "/cursos" },
     { label: "Terapeutas", to: "/terapeutas-do-brasil" },
     { label: "Métricas", to: "/metricas" },

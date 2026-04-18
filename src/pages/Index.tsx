@@ -448,7 +448,7 @@ const SommelierArtigos = () => {
             className="font-serif italic font-bold text-3xl md:text-4xl mb-3"
             style={{ color: C.primary }}
           >
-            Sommelier
+            Sommelier de Artigos
           </h2>
           <p className="text-muted-foreground text-base max-w-2xl mx-auto">
             Encontre artigos sobre Ayurveda: busque por sintomas, doshas, alimentos e muito mais.
