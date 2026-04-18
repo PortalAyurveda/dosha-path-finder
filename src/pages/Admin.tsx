@@ -63,9 +63,19 @@ const Admin = () => {
     }
   }, [accessLoading, user, role, navigate]);
 
-  const fetchFiles = useCallback(async () => {
+  const fetchBuckets = useCallback(async () => {
+    const { data, error } = await supabase.storage.listBuckets();
+    if (error || !data) return;
+    const names = data.map((b) => b.name);
+    if (names.length) {
+      setBuckets(names);
+      setBucket((prev) => (names.includes(prev) ? prev : names[0]));
+    }
+  }, []);
+
+  const fetchFiles = useCallback(async (bucketName: string) => {
     setLoadingFiles(true);
-    const { data, error } = await supabase.storage.from(BUCKET).list("", {
+    const { data, error } = await supabase.storage.from(bucketName).list("", {
       limit: 500,
       sortBy: { column: "created_at", order: "desc" },
     });
@@ -79,7 +89,7 @@ const Admin = () => {
     const items: StorageFile[] = (data || [])
       .filter((f) => f.name !== ".emptyFolderPlaceholder")
       .map((f) => {
-        const { data: urlData } = supabase.storage.from(BUCKET).getPublicUrl(f.name);
+        const { data: urlData } = supabase.storage.from(bucketName).getPublicUrl(f.name);
         return { name: f.name, publicUrl: urlData.publicUrl };
       });
 
@@ -88,8 +98,14 @@ const Admin = () => {
   }, []);
 
   useEffect(() => {
-    if (!accessLoading && role === "admin") fetchFiles();
-  }, [accessLoading, role, fetchFiles]);
+    if (!accessLoading && role === "admin") {
+      fetchBuckets();
+    }
+  }, [accessLoading, role, fetchBuckets]);
+
+  useEffect(() => {
+    if (!accessLoading && role === "admin") fetchFiles(bucket);
+  }, [accessLoading, role, bucket, fetchFiles]);
 
   // Add files to pending list
   const addFiles = (fileList: FileList | File[]) => {
