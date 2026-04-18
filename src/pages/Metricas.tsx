@@ -187,7 +187,7 @@ const Metricas = () => {
       canonicalPath="/metricas"
     >
       <div className="space-y-6 animate-fade-in">
-        <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1">
+        <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1 justify-center">
           {(["geral", "vata", "pitta", "kapha"] as AbaDosha[]).map((k) => (
             <SubTab key={k} active={aba === k} onClick={() => setAba(k)} label={TAB_LABEL[k]} color={TAB_COLOR[k]} />
           ))}
