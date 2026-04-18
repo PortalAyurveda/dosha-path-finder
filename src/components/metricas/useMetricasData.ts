@@ -63,8 +63,43 @@ export const useGraficos = () =>
       const { data } = await supabase
         .from("portal_graficos")
         .select("grafico_id, titulo, subtitulo, tipo_grafico, grupo, ordem, dados")
-        .order("ordem");
+        .order("ordem", { ascending: true });
       return (data ?? []) as GraficoRow[];
     },
     staleTime: 30 * 60 * 1000,
+  });
+
+export type AkashaDia = { dia: string; msgs: number; usuarios: number };
+export type AkashaHora = { hora: number; msgs: number; percentual: number };
+
+export const useAkashaEvolucaoDiaria = () =>
+  useQuery({
+    queryKey: ["akasha-evolucao-diaria-full"],
+    queryFn: async () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data, error } = await (supabase as any).rpc("akasha_evolucao_diaria");
+      if (error) throw error;
+      return ((data ?? []) as Array<{ dia: string; msgs: number; usuarios: number }>).map((r) => ({
+        dia: r.dia,
+        msgs: Number(r.msgs),
+        usuarios: Number(r.usuarios),
+      })) as AkashaDia[];
+    },
+    staleTime: 15 * 60 * 1000,
+  });
+
+export const useAkashaDistribuicaoHoras = () =>
+  useQuery({
+    queryKey: ["akasha-distribuicao-horas-full"],
+    queryFn: async () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data, error } = await (supabase as any).rpc("akasha_distribuicao_horas");
+      if (error) throw error;
+      return ((data ?? []) as Array<{ hora: number; msgs: number; percentual: number }>).map((r) => ({
+        hora: Number(r.hora),
+        msgs: Number(r.msgs),
+        percentual: Number(r.percentual),
+      })) as AkashaHora[];
+    },
+    staleTime: 15 * 60 * 1000,
   });
