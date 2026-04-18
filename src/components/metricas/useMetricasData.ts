@@ -1,0 +1,70 @@
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+
+export type Snapshot = {
+  metrica_id: string;
+  familia: string;
+  categoria: string;
+  descricao: string;
+  percentual: number | null;
+  n_base: number | null;
+  data_calculo: string;
+};
+
+export const useLatestDate = () =>
+  useQuery({
+    queryKey: ["metricas-latest-date"],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("metricas_snapshot")
+        .select("data_calculo")
+        .order("data_calculo", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      return (data?.data_calculo ?? null) as string | null;
+    },
+    staleTime: 30 * 60 * 1000,
+  });
+
+export const useSnapshot = (date: string | null, ids: string[] | "akasha") =>
+  useQuery({
+    queryKey: ["metricas-snapshot", date, ids],
+    enabled: !!date,
+    queryFn: async () => {
+      let q = supabase
+        .from("metricas_snapshot")
+        .select(
+          "metrica_id, familia, categoria, descricao, percentual, n_base, data_calculo",
+        )
+        .eq("data_calculo", date!);
+      if (ids === "akasha") q = q.in("familia", ["Akasha", "Temporal"]);
+      else q = q.in("metrica_id", ids);
+      const { data } = await q;
+      return (data ?? []) as Snapshot[];
+    },
+    staleTime: 30 * 60 * 1000,
+  });
+
+export type GraficoRow = {
+  grafico_id: string;
+  titulo: string;
+  subtitulo: string | null;
+  tipo_grafico: "line" | "bar" | string;
+  grupo: string | null;
+  ordem: number | null;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  dados: any;
+};
+
+export const useGraficos = () =>
+  useQuery({
+    queryKey: ["portal-graficos"],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("portal_graficos")
+        .select("grafico_id, titulo, subtitulo, tipo_grafico, grupo, ordem, dados")
+        .order("ordem");
+      return (data ?? []) as GraficoRow[];
+    },
+    staleTime: 30 * 60 * 1000,
+  });
