@@ -10,12 +10,16 @@ const DoshaPreview = () => (
   <div className="relative select-none pointer-events-none">
     <div className="grid grid-cols-2 gap-6 items-center">
       {/* Left: donut chart, blurred/faded */}
-      <div className="flex flex-col items-center justify-center space-y-2" style={{ filter: "blur(6px)", opacity: 0.55 }}>
+      <div
+        className="flex flex-col items-center justify-center space-y-2"
+        style={{ filter: "blur(6px)", opacity: 0.55 }}
+      >
         <p className="font-serif font-bold text-primary text-sm">Pontuação</p>
         <div
           className="relative flex h-32 w-32 items-center justify-center rounded-full shadow-inner"
           style={{
-            background: "conic-gradient(hsl(0 100% 78%) 0% 59.7%, hsl(228 92% 78%) 59.7% 92.3%, hsl(142 70% 76%) 92.3% 100%)",
+            background:
+              "conic-gradient(hsl(0 100% 78%) 0% 59.7%, hsl(228 92% 78%) 59.7% 92.3%, hsl(142 70% 76%) 92.3% 100%)",
           }}
         >
           <div className="h-20 w-20 rounded-full bg-card" />
@@ -29,14 +33,17 @@ const DoshaPreview = () => (
 
       {/* Right: clinical chart, mostly faded but Pitta column highlighted */}
       <div className="flex flex-col space-y-2">
-        <p className="text-center font-serif text-sm font-bold text-primary" style={{ filter: "blur(6px)", opacity: 0.55 }}>
+        <p
+          className="text-center font-serif text-sm font-bold text-primary"
+          style={{ filter: "blur(6px)", opacity: 0.55 }}
+        >
           Quadro Clínico
         </p>
 
         <div className="flex gap-2">
           <div className="flex w-16 shrink-0 flex-col justify-between py-0.5 pr-1 text-right text-[10px] font-bold uppercase leading-tight">
-            <span style={{ filter: "blur(0.5px)", opacity: 0.95, color: "hsl(0 85% 50%)" }}>Fixado</span>
-            <span style={{ filter: "blur(1px)", opacity: 0.85, color: "hsl(0 92% 62%)" }}>Adoecido</span>
+            <span style={{ filter: "blur(0.5px)", opacity: 0.8, color: "hsl(0 85% 50%)" }}>Fixado</span>
+            <span style={{ filter: "blur(1px)", opacity: 0.75, color: "hsl(0 92% 62%)" }}>Adoecido</span>
             <span style={{ filter: "blur(1.5px)", opacity: 0.7, color: "hsl(0 98% 74%)" }}>Acúmulo</span>
             <span style={{ filter: "blur(2px)", opacity: 0.55, color: "hsl(0 100% 84%)" }}>Normal</span>
             <span style={{ filter: "blur(2.5px)", opacity: 0.4, color: "hsl(0 100% 92%)" }}>Pouco</span>
@@ -72,9 +79,24 @@ const DoshaPreview = () => (
         <div className="flex gap-2">
           <div className="w-16 shrink-0" />
           <div className="grid flex-1 grid-cols-3 gap-1.5 text-center">
-            <span className="text-[10px] font-bold text-muted-foreground" style={{ filter: "blur(6px)", opacity: 0.55 }}>Vata</span>
-            <span className="text-[10px] font-bold" style={{ filter: "blur(0.5px)", opacity: 0.95, color: "hsl(0 85% 50%)" }}>Pitta</span>
-            <span className="text-[10px] font-bold text-muted-foreground" style={{ filter: "blur(6px)", opacity: 0.55 }}>Kapha</span>
+            <span
+              className="text-[10px] font-bold text-muted-foreground"
+              style={{ filter: "blur(6px)", opacity: 0.55 }}
+            >
+              Vata
+            </span>
+            <span
+              className="text-[10px] font-bold"
+              style={{ filter: "blur(0.5px)", opacity: 0.8, color: "hsl(0 85% 50%)" }}
+            >
+              Pitta
+            </span>
+            <span
+              className="text-[10px] font-bold text-muted-foreground"
+              style={{ filter: "blur(6px)", opacity: 0.55 }}
+            >
+              Kapha
+            </span>
           </div>
         </div>
       </div>
@@ -113,15 +135,23 @@ const Hero = () => {
     <section
       className="relative overflow-hidden"
       style={{
-        background:
-          "linear-gradient(100deg, hsl(228 70% 96%) 0%, hsl(0 70% 97%) 50%, hsl(48 80% 95%) 100%)",
+        background: "linear-gradient(100deg, hsl(228 70% 96%) 0%, hsl(0 70% 97%) 50%, hsl(48 80% 95%) 100%)",
       }}
     >
       {/* Soft decorative shapes — reinforce the 3 portal tones (very subtle) */}
       <div className="absolute inset-0 opacity-25 pointer-events-none">
-        <div className="absolute -top-10 -left-20 w-[28rem] h-[28rem] rounded-full blur-3xl" style={{ background: "#6B7FF2" }} />
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[26rem] h-[26rem] rounded-full blur-3xl" style={{ background: "#F28888" }} />
-        <div className="absolute -bottom-16 -right-20 w-[28rem] h-[28rem] rounded-full blur-3xl" style={{ background: "#F2CB05" }} />
+        <div
+          className="absolute -top-10 -left-20 w-[28rem] h-[28rem] rounded-full blur-3xl"
+          style={{ background: "#6B7FF2" }}
+        />
+        <div
+          className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[26rem] h-[26rem] rounded-full blur-3xl"
+          style={{ background: "#F28888" }}
+        />
+        <div
+          className="absolute -bottom-16 -right-20 w-[28rem] h-[28rem] rounded-full blur-3xl"
+          style={{ background: "#F2CB05" }}
+        />
       </div>
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-12 md:py-16">
@@ -156,7 +186,9 @@ const Hero = () => {
 
               <div className="text-left space-y-3">
                 <div>
-                  <Label htmlFor="hero-nome" className="text-xs">Seu nome</Label>
+                  <Label htmlFor="hero-nome" className="text-xs">
+                    Seu nome
+                  </Label>
                   <Input
                     id="hero-nome"
                     placeholder="Nome"
@@ -167,7 +199,9 @@ const Hero = () => {
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <Label htmlFor="hero-idade" className="text-xs">Idade</Label>
+                    <Label htmlFor="hero-idade" className="text-xs">
+                      Idade
+                    </Label>
                     <Input
                       id="hero-idade"
                       type="number"
@@ -185,10 +219,12 @@ const Hero = () => {
                       className={cn(
                         "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm mt-1",
                         "ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-                        !nivel && "text-muted-foreground"
+                        !nivel && "text-muted-foreground",
                       )}
                     >
-                      <option value="" disabled>Selecione</option>
+                      <option value="" disabled>
+                        Selecione
+                      </option>
                       <option value="Iniciante">Iniciante</option>
                       <option value="Intermediário">Intermediário</option>
                       <option value="Avançado">Avançado</option>
