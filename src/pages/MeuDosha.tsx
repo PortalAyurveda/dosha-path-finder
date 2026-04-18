@@ -644,8 +644,16 @@ const MeuDosha = () => {
 
   const hasAgrav = result.agravVataTags || result.agravPittaTags || result.agravKaphaTags;
 
+  const formattedNome = result.nome
+    ? result.nome
+        .split(" ")
+        .filter(Boolean)
+        .map((p) => p.charAt(0).toUpperCase() + p.slice(1).toLowerCase())
+        .join(" ")
+    : "";
+
   return (
-    <PageContainer title={`Meu Dosha — ${result.nome}`} description={`Resultado do teste de dosha de ${result.nome}: ${result.doshaprincipal}`}>
+    <PageContainer title={`Meu Dosha — ${formattedNome}`} description={`Resultado do teste de dosha de ${formattedNome}: ${result.doshaprincipal}`}>
       <div className="max-w-3xl mx-auto space-y-6">
 
         {/* ===== HEADER ===== */}
@@ -653,7 +661,7 @@ const MeuDosha = () => {
           <h1 className="font-serif text-2xl md:text-3xl font-bold text-foreground">
             Seu Dosha principal é: <span style={{ color: PIE_COLORS[primaryDosha] }}>{result.doshaprincipal}</span>
           </h1>
-          <p className="text-muted-foreground text-sm">O que isso significa, {result.nome}?</p>
+          <p className="text-muted-foreground text-sm">O que isso significa, {formattedNome}?</p>
         </div>
 
         {/* ===== TABS ===== */}
