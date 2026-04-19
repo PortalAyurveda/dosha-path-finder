@@ -188,6 +188,7 @@ const SamkhyaProduto = () => {
                       nome={p.nome_display}
                       precoPix={Number(p.preco_pix)}
                       imagemUrl={p.imagem_url}
+                      resumoCurto={p.resumo_curto ?? null}
                     />
                   ))}
                 </div>
