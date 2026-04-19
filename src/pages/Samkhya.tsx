@@ -1,42 +1,82 @@
-import { useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-import { lojaSupabase, type LojaProdutoComCategorias, type LojaKit } from "@/integrations/supabase/loja-client";
+import {
+  lojaSupabase,
+  type LojaProdutoComCategorias,
+  type LojaKit,
+} from "@/integrations/supabase/loja-client";
 import SamkhyaLayout from "@/components/samkhya/SamkhyaLayout";
-import ProdutoCard from "@/components/samkhya/ProdutoCard";
+import CarouselSection from "@/components/samkhya/CarouselSection";
+import MinimalProductCard from "@/components/samkhya/MinimalProductCard";
 import KitCard from "@/components/samkhya/KitCard";
 import { samkhyaTokens } from "@/components/samkhya/tokens";
 
-const PAGE_SIZE = 12;
+const DESTAQUES_SLUGS = ["tonico-forca", "panaceia-desidratada", "madhu-vata"];
+
+const SkeletonRow = () => (
+  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-10">
+    {Array.from({ length: 3 }).map((_, i) => (
+      <div
+        key={i}
+        className="aspect-square rounded-sm animate-pulse"
+        style={{ background: samkhyaTokens.roxoLight }}
+      />
+    ))}
+  </div>
+);
 
 const Samkhya = () => {
-  const [params] = useSearchParams();
-  const cat = params.get("cat") ?? "todos";
-
-  const [produtos, setProdutos] = useState<LojaProdutoComCategorias[]>([]);
+  const [destaques, setDestaques] = useState<LojaProdutoComCategorias[]>([]);
+  const [rejuvenescimento, setRejuvenescimento] = useState<LojaProdutoComCategorias[]>([]);
+  const [detox, setDetox] = useState<LojaProdutoComCategorias[]>([]);
+  const [gold, setGold] = useState<LojaProdutoComCategorias[]>([]);
   const [kits, setKits] = useState<LojaKit[]>([]);
   const [loading, setLoading] = useState(true);
-  const [page, setPage] = useState(1);
 
   useEffect(() => {
     let cancelled = false;
     (async () => {
       setLoading(true);
-      const [prodRes, kitRes] = await Promise.all([
+      const fetchByCat = (slug: string) =>
         lojaSupabase
           .from("produtos")
-          .select(`*, produto_categorias ( categorias ( slug, nome ) )`)
+          .select(`*, produto_categorias!inner ( categorias!inner ( slug, nome ) )`)
           .eq("ativo", true)
-          .order("ordem_exibicao", { ascending: true, nullsFirst: false }),
+          .eq("produto_categorias.categorias.slug", slug)
+          .order("ordem_exibicao", { ascending: true, nullsFirst: false })
+          .limit(3);
+
+      const [destRes, rejRes, detoxRes, goldRes, kitsRes] = await Promise.all([
+        lojaSupabase
+          .from("produtos")
+          .select("*")
+          .in("slug", DESTAQUES_SLUGS)
+          .eq("ativo", true),
+        fetchByCat("rejuvenescimento"),
+        fetchByCat("detox"),
+        fetchByCat("gold"),
         lojaSupabase
           .from("kits")
           .select("*")
           .eq("ativo", true)
-          .order("ordem_exibicao", { ascending: true, nullsFirst: false }),
+          .order("ordem_exibicao", { ascending: true, nullsFirst: false })
+          .limit(3),
       ]);
+
       if (cancelled) return;
-      if (prodRes.data) setProdutos(prodRes.data as unknown as LojaProdutoComCategorias[]);
-      if (kitRes.data) setKits(kitRes.data as unknown as LojaKit[]);
+
+      if (destRes.data) {
+        // Manter ordem fixa de DESTAQUES_SLUGS
+        const map = new Map(
+          (destRes.data as unknown as LojaProdutoComCategorias[]).map((p) => [p.slug, p]),
+        );
+        setDestaques(DESTAQUES_SLUGS.map((s) => map.get(s)).filter(Boolean) as LojaProdutoComCategorias[]);
+      }
+      if (rejRes.data) setRejuvenescimento(rejRes.data as unknown as LojaProdutoComCategorias[]);
+      if (detoxRes.data) setDetox(detoxRes.data as unknown as LojaProdutoComCategorias[]);
+      if (goldRes.data) setGold(goldRes.data as unknown as LojaProdutoComCategorias[]);
+      if (kitsRes.data) setKits(kitsRes.data as unknown as LojaKit[]);
       setLoading(false);
     })();
     return () => {
@@ -44,25 +84,24 @@ const Samkhya = () => {
     };
   }, []);
 
-  useEffect(() => setPage(1), [cat]);
-
-  const filtrados = useMemo(() => {
-    if (cat === "todos" || cat === "kits") return produtos;
-    return produtos.filter((p) =>
-      p.produto_categorias?.some((pc) => pc.categorias?.slug === cat),
-    );
-  }, [produtos, cat]);
-
-  const totalPages = Math.max(1, Math.ceil(filtrados.length / PAGE_SIZE));
-  const paginados = filtrados.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
-
   // Scroll to kits section if hash present
   useEffect(() => {
     if (window.location.hash === "#kits") {
       const el = document.getElementById("kits");
-      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+      if (el) setTimeout(() => el.scrollIntoView({ behavior: "smooth", block: "start" }), 100);
     }
-  }, [cat]);
+  }, [loading]);
+
+  const renderProducts = (list: LojaProdutoComCategorias[]) =>
+    list.map((p) => (
+      <MinimalProductCard
+        key={p.id}
+        slug={p.slug}
+        nome={p.nome_display}
+        precoPix={Number(p.preco_pix)}
+        imagemUrl={p.imagem_url}
+      />
+    ));
 
   return (
     <>
@@ -70,93 +109,62 @@ const Samkhya = () => {
         <title>Loja Samkhya — Produtos Ayurvédicos Artesanais</title>
         <meta
           name="description"
-          content="Loja oficial Samkhya: produtos ayurvédicos formulados por terapeutas. Madhus, massalas, kits e linha GOLD."
+          content="Loja oficial Samkhya: madhus, tônicos, kits e linha GOLD formulados por terapeutas ayurvédicos."
         />
       </Helmet>
 
       <SamkhyaLayout>
-        {/* Grid de produtos */}
-        <section aria-labelledby="produtos-titulo">
-          <h1
-            id="produtos-titulo"
-            className="text-3xl md:text-4xl mb-6"
-            style={{ color: samkhyaTokens.roxo, fontFamily: "Georgia, 'Times New Roman', serif" }}
-          >
-            {cat === "todos" || cat === "kits" ? "Todos os Produtos" : `Produtos para ${cat[0].toUpperCase()}${cat.slice(1)}`}
-          </h1>
-
-          {loading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {Array.from({ length: 6 }).map((_, i) => (
-                <div
-                  key={i}
-                  className="h-96 rounded-lg animate-pulse"
-                  style={{ background: samkhyaTokens.roxoLight }}
-                />
-              ))}
+        {loading ? (
+          <>
+            <div className="text-center py-10">
+              <div
+                className="inline-block h-8 w-48 rounded animate-pulse"
+                style={{ background: samkhyaTokens.roxoLight }}
+              />
             </div>
-          ) : paginados.length === 0 ? (
-            <p style={{ color: samkhyaTokens.textoSec }}>Nenhum produto nesta categoria ainda.</p>
-          ) : (
-            <>
+            <SkeletonRow />
+          </>
+        ) : (
+          <>
+            <CarouselSection title="Destaques">
+              {renderProducts(destaques)}
+            </CarouselSection>
+
+            <CarouselSection
+              title="Rejuvenescimento"
+              to="/samkhya/categoria/rejuvenescimento"
+            >
+              {renderProducts(rejuvenescimento)}
+            </CarouselSection>
+
+            <CarouselSection title="Detox" to="/samkhya/categoria/detox">
+              {renderProducts(detox)}
+            </CarouselSection>
+
+            <CarouselSection title="Linha GOLD" to="/samkhya/categoria/gold">
+              {renderProducts(gold)}
+            </CarouselSection>
+
+            <section id="kits" className="py-10 md:py-14 scroll-mt-32">
+              <div className="text-center mb-8">
+                <h2
+                  className="text-2xl md:text-3xl italic font-light tracking-wide"
+                  style={{
+                    color: samkhyaTokens.roxo,
+                    fontFamily: "Georgia, 'Times New Roman', serif",
+                  }}
+                >
+                  ✦ Kits & Combos ✦
+                </h2>
+              </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {paginados.map((p) => (
-                  <ProdutoCard key={p.id} produto={p} />
+                {kits.map((k) => (
+                  <KitCard key={k.id} kit={k} />
                 ))}
               </div>
-
-              {totalPages > 1 && (
-                <div className="mt-8 flex justify-center gap-2">
-                  {Array.from({ length: totalPages }).map((_, i) => (
-                    <button
-                      key={i}
-                      onClick={() => {
-                        setPage(i + 1);
-                        window.scrollTo({ top: 0, behavior: "smooth" });
-                      }}
-                      className="w-10 h-10 rounded-md text-sm font-semibold transition-colors"
-                      style={{
-                        background: page === i + 1 ? samkhyaTokens.roxo : "transparent",
-                        color: page === i + 1 ? "#fff" : samkhyaTokens.roxo,
-                        border: `1px solid ${samkhyaTokens.roxo}`,
-                      }}
-                    >
-                      {i + 1}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </>
-          )}
-        </section>
-
-        {/* Seção Kits & Combos */}
-        <section id="kits" className="mt-16 md:mt-24 pt-8" aria-labelledby="kits-titulo">
-          <h2
-            id="kits-titulo"
-            className="text-3xl md:text-4xl mb-6"
-            style={{ color: samkhyaTokens.roxo, fontFamily: "Georgia, 'Times New Roman', serif" }}
-          >
-            Kits & Combos
-          </h2>
-          {loading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {Array.from({ length: 3 }).map((_, i) => (
-                <div
-                  key={i}
-                  className="h-96 rounded-lg animate-pulse"
-                  style={{ background: samkhyaTokens.roxoLight }}
-                />
-              ))}
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {kits.map((k) => (
-                <KitCard key={k.id} kit={k} />
-              ))}
-            </div>
-          )}
-        </section>
+            </section>
+          </>
+        )}
       </SamkhyaLayout>
     </>
   );
