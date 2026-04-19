@@ -59,7 +59,7 @@ const TagsPropriedades = ({ tags, max = 5 }: TagsPropriedadesProps) => {
   const visible = tags.slice(0, max);
 
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className="flex flex-wrap gap-3">
       {visible.map((tag, index) => {
         const config = tagConfig[tag];
         if (!config) return null;
@@ -67,11 +67,11 @@ const TagsPropriedades = ({ tags, max = 5 }: TagsPropriedadesProps) => {
         return (
           <div
             key={`${tag}-${index}`}
-            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full"
+            className="flex flex-col items-center gap-1.5 px-3 py-2.5 rounded-lg min-w-[70px]"
             style={{ backgroundColor: config.bg, color: config.color }}
           >
-            <Icon className="w-3.5 h-3.5" />
-            <span className="text-xs font-medium">{tag}</span>
+            <Icon className="w-5 h-5" />
+            <span className="text-xs font-medium text-center leading-tight">{tag}</span>
           </div>
         );
       })}
