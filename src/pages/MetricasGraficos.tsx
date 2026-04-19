@@ -57,7 +57,7 @@ const LineCard = ({ row }: { row: GraficoRow }) => {
         <XAxis dataKey="x" tick={{ fontSize: 11, fill: C.muted, fontFamily: SANS }} />
         <YAxis
           tick={{ fontSize: 11, fill: C.muted, fontFamily: SANS }}
-          domain={[0, "auto"]}
+          domain={["auto", "auto"]}
         />
         <Tooltip contentStyle={tooltipStyle} />
         {d.datasets.map((ds) => (
