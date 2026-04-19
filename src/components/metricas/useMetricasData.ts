@@ -58,15 +58,18 @@ export type GraficoRow = {
 
 export const useGraficos = () =>
   useQuery({
-    queryKey: ["portal-graficos"],
+    queryKey: ["portal-graficos", "v2"],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from("portal_graficos")
-        .select("grafico_id, titulo, subtitulo, tipo_grafico, grupo, ordem, dados")
+        .select("grafico_id, titulo, subtitulo, tipo_grafico, grupo, ordem, dados, atualizado_em")
         .order("ordem", { ascending: true });
+      if (error) throw error;
       return (data ?? []) as GraficoRow[];
     },
-    staleTime: 30 * 60 * 1000,
+    staleTime: 0,
+    refetchOnMount: "always",
+    refetchOnWindowFocus: true,
   });
 
 export type AkashaDia = { dia: string; msgs: number; usuarios: number };
