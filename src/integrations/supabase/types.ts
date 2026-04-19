@@ -387,6 +387,7 @@ export type Database = {
           email: string | null
           espiritual: string | null
           estado: string | null
+          foto_lingua_url: string | null
           id: string
           idade: number | null
           idPublico: string
@@ -424,6 +425,7 @@ export type Database = {
           email?: string | null
           espiritual?: string | null
           estado?: string | null
+          foto_lingua_url?: string | null
           id?: string
           idade?: number | null
           idPublico: string
@@ -461,6 +463,7 @@ export type Database = {
           email?: string | null
           espiritual?: string | null
           estado?: string | null
+          foto_lingua_url?: string | null
           id?: string
           idade?: number | null
           idPublico?: string
@@ -1839,6 +1842,7 @@ export type Database = {
           "Efeitos esperados": string | null
           embedding: string | null
           id: number
+          imagem_url: string | null
           Indicações: string | null
           Ingredientes: string | null
           "O que é": string | null
@@ -1851,6 +1855,7 @@ export type Database = {
           "Efeitos esperados"?: string | null
           embedding?: string | null
           id?: number
+          imagem_url?: string | null
           Indicações?: string | null
           Ingredientes?: string | null
           "O que é"?: string | null
@@ -1863,6 +1868,7 @@ export type Database = {
           "Efeitos esperados"?: string | null
           embedding?: string | null
           id?: number
+          imagem_url?: string | null
           Indicações?: string | null
           Ingredientes?: string | null
           "O que é"?: string | null
