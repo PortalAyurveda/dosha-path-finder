@@ -164,8 +164,15 @@ const SamkhyaProduto = () => {
                   </div>
                 </div>
 
-                <TabsConteudo clinico={clinico} />
+                {produto.tags_propriedades && produto.tags_propriedades.length > 0 && (
+                  <TagsPropriedades tags={produto.tags_propriedades} />
+                )}
               </div>
+            </div>
+
+            {/* Abas de conteúdo clínico — largura total, abaixo da foto/compra */}
+            <div className="mt-12 md:mt-16 max-w-4xl mx-auto">
+              <TabsConteudo clinico={clinico} />
             </div>
 
             {relacionados.length > 0 && (
