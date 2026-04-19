@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { samkhyaTokens } from "./tokens";
 
 interface HeroBannerProps {
@@ -23,7 +24,11 @@ const HeroBanner = ({
   bannerSubtitle = "em compras a partir de R$350,00",
 }: HeroBannerProps) => {
   return (
-    <div className="relative w-full">
+    <Link
+      to="/samkhya"
+      aria-label="Ir para a Loja Samkhya"
+      className="relative block w-full"
+    >
       <img
         src={bannerUrl}
         alt="Banner Samkhya"
@@ -54,7 +59,7 @@ const HeroBanner = ({
           {bannerSubtitle}
         </p>
       </div>
-    </div>
+    </Link>
   );
 };
 
