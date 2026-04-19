@@ -45,6 +45,7 @@ export interface LojaProduto {
   destaque: boolean;
   ordem_exibicao: number | null;
   created_at: string | null;
+  resumo_curto?: string | null;
 }
 
 export interface LojaProdutoComCategorias extends LojaProduto {
