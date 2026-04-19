@@ -7,6 +7,7 @@ Supabase BaaS. Auth: sem login inicial, teste de dosha primeiro.
 Doshas: vata (#93C5FD), pitta (#FCA5A5), kapha (#86EFAC).
 Teste usa tabela `testededosha`. Monetização: tokens_akasha (10 default), áreas premium futuras.
 Akasha removida do menu esquerdo; aparece como ✨ no user area do Header + tab em /meu-dosha.
+Loja Samkhya em /samkhya/* tem identidade própria (roxo #7b4963 + ouro) e usa cliente Supabase separado para schema 'loja'.
 
 ## Memories
 - [Design system](mem://design/system) — Full color tokens, typography, surfaces, component patterns
@@ -14,3 +15,4 @@ Akasha removida do menu esquerdo; aparece como ✨ no user area do Header + tab 
 - [Routes](mem://features/routes) — All app routes and their purposes
 - [User accounts](mem://features/user-accounts) — user_profiles table, auth flow, claim test logic
 - [Akasha chat](mem://features/akasha-chat) — AI chatbot embedded in /meu-dosha, first-message logic, token system, personalized videos
+- [Loja Samkhya](mem://features/samkhya-loja) — E-commerce section /samkhya/*, schema loja, dedicated client, WhatsApp checkout
