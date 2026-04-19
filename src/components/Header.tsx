@@ -178,8 +178,8 @@ const Header = () => {
             <img
               src={SAMKHYA_LOGO}
               alt="Loja Samkhya"
-              className="h-14 w-auto brightness-0 invert"
-              style={{ maxWidth: "240px" }}
+              className="h-16 w-auto brightness-0 invert"
+              style={{ maxWidth: "276px" }}
             />
           </Link>
         ) : (
