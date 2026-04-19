@@ -179,7 +179,7 @@ const Header = () => {
               src={SAMKHYA_LOGO}
               alt="Loja Samkhya"
               className="brightness-0 invert"
-              style={{ width: "260px", height: "auto" }}
+              style={{ width: "208px", height: "auto" }}
             />
           </Link>
         ) : (
