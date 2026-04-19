@@ -6,15 +6,21 @@ import {
   lojaSupabase,
   type LojaProdutoComCategorias,
   type LojaCategoria,
+  type LojaKit,
 } from "@/integrations/supabase/loja-client";
 import SamkhyaLayout from "@/components/samkhya/SamkhyaLayout";
 import MinimalProductCard from "@/components/samkhya/MinimalProductCard";
+import KitCard from "@/components/samkhya/KitCard";
 import { samkhyaTokens } from "@/components/samkhya/tokens";
+
+const DOSHA_SLUGS = new Set(["vata", "pitta", "kapha"]);
+const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
 const SamkhyaCategoria = () => {
   const { slug } = useParams<{ slug: string }>();
   const [produtos, setProdutos] = useState<LojaProdutoComCategorias[]>([]);
   const [categoria, setCategoria] = useState<LojaCategoria | null>(null);
+  const [kits, setKits] = useState<LojaKit[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -22,7 +28,8 @@ const SamkhyaCategoria = () => {
     let cancelled = false;
     (async () => {
       setLoading(true);
-      const [catRes, prodRes] = await Promise.all([
+      const isDosha = DOSHA_SLUGS.has(slug);
+      const [catRes, prodRes, kitsRes] = await Promise.all([
         lojaSupabase.from("categorias").select("*").eq("slug", slug).maybeSingle(),
         lojaSupabase
           .from("produtos")
@@ -30,10 +37,19 @@ const SamkhyaCategoria = () => {
           .eq("ativo", true)
           .eq("produto_categorias.categorias.slug", slug)
           .order("ordem_exibicao", { ascending: true, nullsFirst: false }),
+        isDosha
+          ? lojaSupabase
+              .from("kits")
+              .select("*")
+              .eq("ativo", true)
+              .ilike("nome", `%${cap(slug)}%`)
+              .order("preco_normal", { ascending: true })
+          : Promise.resolve({ data: [] as LojaKit[] }),
       ]);
       if (cancelled) return;
       if (catRes.data) setCategoria(catRes.data as unknown as LojaCategoria);
       if (prodRes.data) setProdutos(prodRes.data as unknown as LojaProdutoComCategorias[]);
+      if (kitsRes.data) setKits(kitsRes.data as unknown as LojaKit[]);
       setLoading(false);
     })();
     return () => {
@@ -89,23 +105,46 @@ const SamkhyaCategoria = () => {
               />
             ))}
           </div>
-        ) : produtos.length === 0 ? (
+        ) : produtos.length === 0 && kits.length === 0 ? (
           <p className="text-center" style={{ color: samkhyaTokens.textoSec }}>
             Nenhum produto nesta categoria ainda.
           </p>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-            {produtos.map((p) => (
-              <MinimalProductCard
-                key={p.id}
-                slug={p.slug}
-                nome={p.nome_display}
-                precoPix={Number(p.preco_pix)}
-                imagemUrl={p.imagem_url}
-                resumoCurto={p.resumo_curto ?? null}
-              />
-            ))}
-          </div>
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+              {produtos.map((p) => (
+                <MinimalProductCard
+                  key={p.id}
+                  slug={p.slug}
+                  nome={p.nome_display}
+                  precoPix={Number(p.preco_pix)}
+                  imagemUrl={p.imagem_url}
+                  resumoCurto={p.resumo_curto ?? null}
+                />
+              ))}
+            </div>
+
+            {kits.length > 0 && (
+              <section className="mt-16">
+                <div className="text-center mb-8">
+                  <h2
+                    className="text-2xl md:text-3xl italic font-light tracking-wide"
+                    style={{
+                      color: samkhyaTokens.roxo,
+                      fontFamily: "Georgia, 'Times New Roman', serif",
+                    }}
+                  >
+                    ✦ Kits {cap(slug ?? "")} ✦
+                  </h2>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+                  {kits.map((k) => (
+                    <KitCard key={k.id} kit={k} />
+                  ))}
+                </div>
+              </section>
+            )}
+          </>
         )}
       </SamkhyaLayout>
     </>
