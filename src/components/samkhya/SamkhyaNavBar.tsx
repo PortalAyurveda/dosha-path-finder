@@ -2,11 +2,14 @@ import { NavLink, useLocation } from "react-router-dom";
 import { samkhyaTokens } from "./tokens";
 
 const ITEMS = [
-  { slug: "todos", label: "Todos os Produtos" },
   { slug: "vata", label: "Vata" },
   { slug: "pitta", label: "Pitta" },
   { slug: "kapha", label: "Kapha" },
+  { slug: "detox", label: "Detox" },
+  { slug: "rasayana", label: "Rasayana" },
+  { slug: "gold", label: "Gold" },
   { slug: "kits", label: "Kits" },
+  { slug: "todos", label: "Todos" },
 ];
 
 const SamkhyaNavBar = () => {
@@ -25,7 +28,7 @@ const SamkhyaNavBar = () => {
           {ITEMS.map((item) => {
             const isKits = item.slug === "kits";
             const to = isKits ? "/samkhya?cat=kits#kits" : `/samkhya?cat=${item.slug}`;
-            const isActive = isKits ? activeCat === "kits" : activeCat === item.slug;
+            const isActive = activeCat === item.slug;
             return (
               <li key={item.slug}>
                 <NavLink

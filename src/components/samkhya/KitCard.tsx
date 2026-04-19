@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { useState } from "react";
 import PrecoDisplay from "./PrecoDisplay";
 import { samkhyaTokens } from "./tokens";
 import type { LojaKit } from "@/integrations/supabase/loja-client";
@@ -8,23 +9,29 @@ interface KitCardProps {
 }
 
 const TIPO_LABEL: Record<string, string> = {
-  anti_dosha: "Kit Completo",
+  anti_dosha: "Anti-Dosha",
   mini_kit: "Mini Kit",
   especial: "Especial",
-  viagem: "Para Viagem",
+  viagem: "Viagem",
+  gold: "Gold",
 };
 
 const KitCard = ({ kit }: KitCardProps) => {
+  const [hover, setHover] = useState(false);
   const tipoLabel = kit.tipo_kit ? TIPO_LABEL[kit.tipo_kit] ?? kit.tipo_kit : null;
 
   return (
     <Link
       to={`/samkhya/kits/${kit.slug}`}
-      className="group flex flex-col rounded-lg overflow-hidden transition-all hover:-translate-y-0.5"
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      className="group flex flex-col rounded-lg overflow-hidden"
       style={{
         background: samkhyaTokens.cardBg,
         border: `1px solid ${samkhyaTokens.cardBorder}`,
-        boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
+        boxShadow: hover ? "0 4px 12px rgba(123,73,99,0.12)" : "0 1px 4px rgba(0,0,0,0.06)",
+        transform: hover ? "translateY(-2px)" : "translateY(0)",
+        transition: "transform 0.2s, box-shadow 0.2s",
       }}
     >
       <div className="relative aspect-square bg-white p-6 flex items-center justify-center overflow-hidden">
@@ -45,7 +52,7 @@ const KitCard = ({ kit }: KitCardProps) => {
         )}
         {tipoLabel && (
           <span
-            className="absolute top-3 left-3 rounded-full px-2 py-0.5 text-[10px] font-bold tracking-wide uppercase text-white"
+            className="absolute top-3 left-3 rounded px-2 py-1 text-xs font-semibold text-white"
             style={{ background: samkhyaTokens.roxo }}
           >
             {tipoLabel}
@@ -53,10 +60,10 @@ const KitCard = ({ kit }: KitCardProps) => {
         )}
       </div>
 
-      <div className="flex flex-col gap-3 p-5">
+      <div className="flex flex-col gap-2 p-4 text-center">
         <h3
-          className="text-lg leading-tight"
-          style={{ color: samkhyaTokens.roxo, fontFamily: "Georgia, 'Times New Roman', serif" }}
+          className="text-lg leading-snug"
+          style={{ color: samkhyaTokens.texto, fontFamily: "Georgia, 'Times New Roman', serif" }}
         >
           {kit.nome}
         </h3>
@@ -65,10 +72,14 @@ const KitCard = ({ kit }: KitCardProps) => {
             {kit.descricao_curta}
           </p>
         )}
-        <PrecoDisplay precoNormal={Number(kit.preco_normal)} precoPix={Number(kit.preco_pix)} />
+        <div className="flex items-center justify-center">
+          <PrecoDisplay precoNormal={Number(kit.preco_normal)} precoPix={Number(kit.preco_pix)} />
+        </div>
         <span
-          className="mt-2 inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-semibold text-white"
-          style={{ background: samkhyaTokens.ouro }}
+          className="mt-2 inline-flex items-center justify-center rounded-md px-5 py-2.5 text-sm font-medium text-white w-full transition-colors"
+          style={{
+            background: hover ? samkhyaTokens.ouroDark : samkhyaTokens.ouro,
+          }}
         >
           Ver kit
         </span>

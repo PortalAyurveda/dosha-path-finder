@@ -12,4 +12,5 @@ export const samkhyaTokens = {
   texto: "#2C1A0E",
   textoSec: "#6B4C2A",
   goldBadge: "#8B6914",
+  footerTexto: "#F5F0E8",
 } as const;
