@@ -13,6 +13,7 @@ import PrecoDisplay from "@/components/samkhya/PrecoDisplay";
 import BotaoWhatsApp from "@/components/samkhya/BotaoWhatsApp";
 import BotaoStripe from "@/components/samkhya/BotaoStripe";
 import TabsConteudo from "@/components/samkhya/TabsConteudo";
+import TagsPropriedades from "@/components/samkhya/TagsPropriedades";
 import MinimalProductCard from "@/components/samkhya/MinimalProductCard";
 import { samkhyaTokens } from "@/components/samkhya/tokens";
 
