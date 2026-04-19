@@ -6,34 +6,36 @@ const ITEMS = [
   { slug: "pitta", label: "Pitta" },
   { slug: "kapha", label: "Kapha" },
   { slug: "detox", label: "Detox" },
-  { slug: "rasayana", label: "Rasayana" },
+  { slug: "rejuvenescimento", label: "Rejuvenescimento" },
   { slug: "gold", label: "Gold" },
   { slug: "kits", label: "Kits" },
-  { slug: "todos", label: "Todos" },
 ];
 
 const SamkhyaNavBar = () => {
-  const { search } = useLocation();
-  const params = new URLSearchParams(search);
-  const activeCat = params.get("cat") ?? "todos";
+  const location = useLocation();
+  // Active state derived from URL: /samkhya/categoria/:slug or hash
+  const match = location.pathname.match(/^\/samkhya\/categoria\/([^/]+)/);
+  const activeCat = match?.[1] ?? "";
 
   return (
     <nav
-      className="w-full sticky top-0 z-30"
+      className="w-full sticky top-16 z-40 shadow-sm"
       style={{ background: samkhyaTokens.roxo }}
       aria-label="Categorias da Loja Samkhya"
     >
       <div className="mx-auto max-w-6xl px-2 md:px-4">
-        <ul className="flex gap-1 overflow-x-auto scrollbar-none">
+        <ul className="flex justify-center gap-1 overflow-x-auto scrollbar-none">
           {ITEMS.map((item) => {
-            const isKits = item.slug === "kits";
-            const to = isKits ? "/samkhya?cat=kits#kits" : `/samkhya?cat=${item.slug}`;
+            const to =
+              item.slug === "kits"
+                ? "/samkhya#kits"
+                : `/samkhya/categoria/${item.slug}`;
             const isActive = activeCat === item.slug;
             return (
               <li key={item.slug}>
                 <NavLink
                   to={to}
-                  className="block px-4 py-3 text-sm md:text-base whitespace-nowrap transition-colors"
+                  className="block px-3 md:px-4 py-3 text-sm md:text-base whitespace-nowrap transition-colors"
                   style={{
                     color: "#fff",
                     background: isActive ? samkhyaTokens.roxoDark : "transparent",

@@ -12,8 +12,8 @@ import SamkhyaLayout from "@/components/samkhya/SamkhyaLayout";
 import PrecoDisplay from "@/components/samkhya/PrecoDisplay";
 import BotaoWhatsApp from "@/components/samkhya/BotaoWhatsApp";
 import BotaoStripe from "@/components/samkhya/BotaoStripe";
-import AcordeoConteudo from "@/components/samkhya/AcordeoConteudo";
-import ProdutoCard from "@/components/samkhya/ProdutoCard";
+import TabsConteudo from "@/components/samkhya/TabsConteudo";
+import MinimalProductCard from "@/components/samkhya/MinimalProductCard";
 import { samkhyaTokens } from "@/components/samkhya/tokens";
 
 const SamkhyaProduto = () => {
@@ -162,22 +162,33 @@ const SamkhyaProduto = () => {
                   </div>
                 </div>
 
-                <AcordeoConteudo clinico={clinico} />
+                <TabsConteudo clinico={clinico} />
               </div>
             </div>
 
             {relacionados.length > 0 && (
               <section className="mt-16 md:mt-24" aria-labelledby="relacionados">
-                <h2
-                  id="relacionados"
-                  className="text-2xl md:text-3xl mb-6"
-                  style={{ color: samkhyaTokens.roxo, fontFamily: "Georgia, 'Times New Roman', serif" }}
-                >
-                  Você também pode gostar
-                </h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="text-center mb-8">
+                  <h2
+                    id="relacionados"
+                    className="text-2xl md:text-3xl italic font-light tracking-wide"
+                    style={{
+                      color: samkhyaTokens.roxo,
+                      fontFamily: "Georgia, 'Times New Roman', serif",
+                    }}
+                  >
+                    ✦ Você também pode gostar ✦
+                  </h2>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-10">
                   {relacionados.map((p) => (
-                    <ProdutoCard key={p.id} produto={p} />
+                    <MinimalProductCard
+                      key={p.id}
+                      slug={p.slug}
+                      nome={p.nome_display}
+                      precoPix={Number(p.preco_pix)}
+                      imagemUrl={p.imagem_url}
+                    />
                   ))}
                 </div>
               </section>

@@ -34,6 +34,7 @@ import RegistroAkashico from "./pages/RegistroAkashico";
 import Samkhya from "./pages/Samkhya";
 import SamkhyaProduto from "./pages/SamkhyaProduto";
 import SamkhyaKit from "./pages/SamkhyaKit";
+import SamkhyaCategoria from "./pages/SamkhyaCategoria";
 
 const queryClient = new QueryClient();
 
@@ -99,6 +100,7 @@ const RoutedApp = () => {
               <Route path="/samkhya" element={<Samkhya />} />
               <Route path="/samkhya/produto/:slug" element={<SamkhyaProduto />} />
               <Route path="/samkhya/kits/:slug" element={<SamkhyaKit />} />
+              <Route path="/samkhya/categoria/:slug" element={<SamkhyaCategoria />} />
 
               <Route path="*" element={<NotFound />} />
       </Routes>
