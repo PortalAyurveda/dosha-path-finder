@@ -236,13 +236,12 @@ const LoggedHero = () => {
 
           {/* Lateral arrow — "continue para seu perfil" */}
           <div
-            className="absolute right-0 top-0 bottom-0 flex items-center justify-center w-8 md:w-10 rounded-r-2xl transition-colors group-hover:bg-primary/5"
-            style={{ background: `${C.primary}08` }}
+            className="absolute right-0 top-0 bottom-0 flex items-center justify-center w-8 md:w-10 rounded-r-2xl transition-all group-hover:brightness-110"
+            style={{ background: "#9b73ad" }}
             aria-hidden="true"
           >
             <ChevronRight
-              className="h-5 w-5 transition-transform group-hover:translate-x-0.5"
-              style={{ color: C.primary }}
+              className="h-5 w-5 text-white transition-transform group-hover:translate-x-0.5"
             />
           </div>
           <span className="sr-only">Continue para seu perfil</span>
