@@ -13,9 +13,10 @@ const ITEMS = [
 
 const SamkhyaNavBar = () => {
   const location = useLocation();
-  // Active state derived from URL: /samkhya/categoria/:slug or hash
+  // Active state derived from URL: /samkhya/categoria/:slug or /samkhya/kits
   const match = location.pathname.match(/^\/samkhya\/categoria\/([^/]+)/);
-  const activeCat = match?.[1] ?? "";
+  const isKitsPage = location.pathname === "/samkhya/kits";
+  const activeCat = isKitsPage ? "kits" : match?.[1] ?? "";
 
   return (
     <nav
@@ -28,7 +29,7 @@ const SamkhyaNavBar = () => {
           {ITEMS.map((item) => {
             const to =
               item.slug === "kits"
-                ? "/samkhya#kits"
+                ? "/samkhya/kits"
                 : `/samkhya/categoria/${item.slug}`;
             const isActive = activeCat === item.slug;
             return (
