@@ -1,9 +1,12 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
-import { Menu, LogIn, LogOut } from "lucide-react";
+import { Menu, LogIn, LogOut, ShoppingBag, Home } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { useUser } from "@/contexts/UserContext";
+import { samkhyaTokens } from "@/components/samkhya/tokens";
+
+const SAMKHYA_LOGO = "https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/samkhya/lg-samkhya.png";
 
 const PIE_COLORS: Record<string, string> = {
   Vata: '#4F75FF',
@@ -17,14 +20,13 @@ const HeaderDoshaPie = ({ vata, pitta, kapha, size = 22 }: { vata: number; pitta
   const cx = size / 2;
   const cy = size / 2;
   const r = size / 2;
-  const innerR = r * 0.45; // donut hole, mirrors LoggedHero/MeuDosha style
+  const innerR = r * 0.45;
   const slices = [
     { pct: (vata || 0) / total, color: PIE_COLORS.Vata },
     { pct: (pitta || 0) / total, color: PIE_COLORS.Pitta },
     { pct: (kapha || 0) / total, color: PIE_COLORS.Kapha },
   ].filter((s) => s.pct > 0);
 
-  // Single dosha = 100% → full donut ring (SVG arc can't draw 360° in one path)
   if (slices.length === 1) {
     return (
       <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="block shrink-0 overflow-visible">
@@ -34,7 +36,6 @@ const HeaderDoshaPie = ({ vata, pitta, kapha, size = 22 }: { vata: number; pitta
     );
   }
 
-  // Multiple slices: start at 12 o'clock (-90°), go clockwise — matches Recharts default
   let cumAngle = -90;
   const paths = slices.map((s, i) => {
     const angle = s.pct * 360;
@@ -73,6 +74,8 @@ const Header = () => {
   const [searchParams] = useSearchParams();
   const { user, doshaResult, profile, signOut } = useUser();
 
+  const isSamkhya = location.pathname.startsWith("/samkhya");
+
   const handleSignOut = async () => {
     await signOut();
     navigate("/", { replace: true });
@@ -86,6 +89,7 @@ const Header = () => {
 
   const navLinks = [
     { label: "Início", to: "/" },
+    { label: "Loja Samkhya", to: "/samkhya" },
     { label: "Biblioteca", to: "/biblioteca" },
     { label: "Artigos", to: "/blog" },
     { label: "Cursos", to: "/cursos" },
@@ -104,18 +108,38 @@ const Header = () => {
 
   const userInitial = profile?.nome?.[0] || user?.email?.[0] || "?";
 
+  // Estilo dinâmico para fundo do header
+  const headerBg = isSamkhya
+    ? { background: samkhyaTokens.roxo }
+    : undefined;
+  const sheetBg = isSamkhya
+    ? { background: samkhyaTokens.roxo }
+    : undefined;
+  const buttonTextColor = isSamkhya ? samkhyaTokens.roxo : undefined;
+
   return (
-    <header className="sticky top-0 z-50 w-full bg-primary text-primary-foreground shadow-md">
+    <header
+      className={`sticky top-0 z-50 w-full text-primary-foreground shadow-md ${isSamkhya ? "" : "bg-primary"}`}
+      style={headerBg}
+    >
       <div className="max-w-6xl mx-auto flex h-16 items-center justify-between px-4 sm:px-6">
         {/* LEFT — Hamburger menu */}
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger asChild>
-            <Button size="sm" className="bg-white text-primary font-semibold hover:bg-white/90 gap-1.5">
+            <Button
+              size="sm"
+              className="bg-white font-semibold hover:bg-white/90 gap-1.5"
+              style={buttonTextColor ? { color: buttonTextColor } : undefined}
+            >
               <Menu className="h-5 w-5" />
               <span className="text-sm font-medium">Menu</span>
             </Button>
           </SheetTrigger>
-          <SheetContent side="left" className="w-72 pt-12 bg-primary text-primary-foreground border-primary">
+          <SheetContent
+            side="left"
+            className={`w-72 pt-12 text-primary-foreground border-primary ${isSamkhya ? "" : "bg-primary"}`}
+            style={sheetBg}
+          >
             <SheetTitle className="sr-only">Menu de navegação</SheetTitle>
             <nav className="flex flex-col gap-2">
               {navLinks.map((link) => (
@@ -148,19 +172,30 @@ const Header = () => {
           </SheetContent>
         </Sheet>
 
-        {/* CENTER — Logo */}
-        <Link to="/" className="absolute left-1/2 -translate-x-1/2 flex items-center">
-          <img
-            src="https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/b8f47f-6144676c30ec476dbc1f8c5c8812eb1dmv2-1.png"
-            alt="Portal Ayurveda"
-            className="h-10 w-auto hidden sm:block"
-          />
-          <img
-            src="https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/simbolo-positivo.svg"
-            alt="Portal Ayurveda"
-            className="h-9 w-auto block sm:hidden"
-          />
-        </Link>
+        {/* CENTER — Logo (swap when in /samkhya/*) */}
+        {isSamkhya ? (
+          <Link to="/samkhya" className="absolute left-1/2 -translate-x-1/2 flex items-center">
+            <img
+              src={SAMKHYA_LOGO}
+              alt="Loja Samkhya"
+              className="h-10 w-auto"
+              style={{ maxWidth: "180px" }}
+            />
+          </Link>
+        ) : (
+          <Link to="/" className="absolute left-1/2 -translate-x-1/2 flex items-center">
+            <img
+              src="https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/b8f47f-6144676c30ec476dbc1f8c5c8812eb1dmv2-1.png"
+              alt="Portal Ayurveda"
+              className="h-10 w-auto hidden sm:block"
+            />
+            <img
+              src="https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/simbolo-positivo.svg"
+              alt="Portal Ayurveda"
+              className="h-9 w-auto block sm:hidden"
+            />
+          </Link>
+        )}
 
         {/* RIGHT — Profile with pie favicon */}
         <div className="flex items-center gap-1.5">
@@ -184,7 +219,8 @@ const Header = () => {
             ) : user ? (
               <Link
                 to="/meu-dosha"
-                className="flex items-center justify-center w-9 h-9 rounded-full bg-white text-primary font-bold text-sm hover:bg-white/90 transition-colors"
+                className="flex items-center justify-center w-9 h-9 rounded-full bg-white font-bold text-sm hover:bg-white/90 transition-colors"
+                style={buttonTextColor ? { color: buttonTextColor } : undefined}
               >
                 {userInitial.toUpperCase()}
               </Link>
@@ -192,7 +228,8 @@ const Header = () => {
               <Link to="/entrar">
                 <Button
                   size="sm"
-                  className="bg-white text-primary font-semibold hover:bg-white/90 gap-1.5"
+                  className="bg-white font-semibold hover:bg-white/90 gap-1.5"
+                  style={buttonTextColor ? { color: buttonTextColor } : undefined}
                 >
                   <LogIn className="h-4 w-4" />
                   Entrar
