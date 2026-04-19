@@ -7,6 +7,8 @@ interface BotaoWhatsAppProps {
 }
 
 const WHATSAPP = "5511998076111";
+const VERDE_ACAO = "#1A7366";
+const VERDE_HOVER = "#145A50";
 
 const BotaoWhatsApp = ({ produtoNome, size = "md", fullWidth = false }: BotaoWhatsAppProps) => {
   const text = encodeURIComponent(`Olá! Tenho interesse: ${produtoNome}`);
@@ -19,8 +21,10 @@ const BotaoWhatsApp = ({ produtoNome, size = "md", fullWidth = false }: BotaoWha
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className={`inline-flex items-center justify-center gap-2 rounded-md font-semibold text-white transition-colors hover:brightness-110 ${padding} ${fullWidth ? "w-full" : ""}`}
-      style={{ background: "#25D366" }}
+      className={`inline-flex items-center justify-center gap-2 rounded-md font-semibold text-white transition-colors ${padding} ${fullWidth ? "w-full" : ""}`}
+      style={{ background: VERDE_ACAO }}
+      onMouseEnter={(e) => (e.currentTarget.style.background = VERDE_HOVER)}
+      onMouseLeave={(e) => (e.currentTarget.style.background = VERDE_ACAO)}
     >
       <MessageCircle className="h-4 w-4" />
       Comprar via WhatsApp
