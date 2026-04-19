@@ -165,7 +165,9 @@ const SamkhyaProduto = () => {
                 </div>
 
                 {produto.tags_propriedades && produto.tags_propriedades.length > 0 && (
-                  <TagsPropriedades tags={produto.tags_propriedades} />
+                  <div className="flex justify-center">
+                    <TagsPropriedades tags={produto.tags_propriedades} />
+                  </div>
                 )}
               </div>
             </div>
