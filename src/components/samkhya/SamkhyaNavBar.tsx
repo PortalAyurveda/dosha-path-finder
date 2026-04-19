@@ -35,7 +35,7 @@ const SamkhyaNavBar = () => {
               <li key={item.slug}>
                 <NavLink
                   to={to}
-                  className="block px-3 md:px-4 py-3 text-sm md:text-base whitespace-nowrap transition-colors"
+                  className="block px-3 md:px-4 py-3 text-sm md:text-base whitespace-nowrap transition-colors hover:bg-[#5c3249]"
                   style={{
                     color: "#fff",
                     background: isActive ? samkhyaTokens.roxoDark : "transparent",
