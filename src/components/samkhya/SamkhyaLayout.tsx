@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 import SamkhyaNavBar from "./SamkhyaNavBar";
+import HeroBanner from "./HeroBanner";
 import { samkhyaTokens } from "./tokens";
 
 interface SamkhyaLayoutProps {
@@ -8,15 +9,14 @@ interface SamkhyaLayoutProps {
 
 /**
  * Wrapper for all /samkhya/* routes.
- * The global portal Header (already adapted in /samkhya/*) sits above.
- * We add only the category nav bar — the loja-specific banner/logo lives in
- * the global Header to keep a single sticky element on top.
+ * Order: global Header (sticky) → HeroBanner (elephant) → SamkhyaNavBar (sticky) → main.
  */
 const SamkhyaLayout = ({ children }: SamkhyaLayoutProps) => {
   return (
     <div style={{ background: samkhyaTokens.fundo, color: samkhyaTokens.texto }}>
+      <HeroBanner />
       <SamkhyaNavBar />
-      <main className="mx-auto max-w-6xl px-4 py-8 md:py-12">{children}</main>
+      <main className="mx-auto max-w-6xl px-4 py-6 md:py-8">{children}</main>
     </div>
   );
 };
