@@ -31,6 +31,9 @@ import Metricas from "./pages/Metricas";
 import MetricasGraficos from "./pages/MetricasGraficos";
 import MetricasAkasha from "./pages/MetricasAkasha";
 import RegistroAkashico from "./pages/RegistroAkashico";
+import Samkhya from "./pages/Samkhya";
+import SamkhyaProduto from "./pages/SamkhyaProduto";
+import SamkhyaKit from "./pages/SamkhyaKit";
 
 const queryClient = new QueryClient();
 
@@ -91,6 +94,12 @@ const RoutedApp = () => {
               <Route path="/termos-de-uso" element={<TermosDeUso />} />
               <Route path="/admin" element={<Admin />} />
               <Route path="/admin/blog" element={<AdminBlog />} />
+
+              {/* Loja Samkhya */}
+              <Route path="/samkhya" element={<Samkhya />} />
+              <Route path="/samkhya/produto/:slug" element={<SamkhyaProduto />} />
+              <Route path="/samkhya/kits/:slug" element={<SamkhyaKit />} />
+
               <Route path="*" element={<NotFound />} />
       </Routes>
       </Layout>
