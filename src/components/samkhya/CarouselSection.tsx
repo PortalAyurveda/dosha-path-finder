@@ -22,11 +22,11 @@ const CarouselSection = ({ title, to, children }: CarouselSectionProps) => {
   );
 
   return (
-    <section className="py-10 md:py-14">
-      <div className="text-center mb-8">
+    <section className="py-5 md:py-7">
+      <div className="text-center mb-5">
         {to ? <Link to={to}>{titleNode}</Link> : titleNode}
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-10">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
         {children}
       </div>
     </section>

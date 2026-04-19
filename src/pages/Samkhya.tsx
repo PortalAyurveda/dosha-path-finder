@@ -100,6 +100,7 @@ const Samkhya = () => {
         nome={p.nome_display}
         precoPix={Number(p.preco_pix)}
         imagemUrl={p.imagem_url}
+        resumoCurto={p.resumo_curto ?? null}
       />
     ));
 
@@ -145,8 +146,8 @@ const Samkhya = () => {
               {renderProducts(gold)}
             </CarouselSection>
 
-            <section id="kits" className="py-10 md:py-14 scroll-mt-32">
-              <div className="text-center mb-8">
+            <section id="kits" className="py-5 md:py-7 scroll-mt-32">
+              <div className="text-center mb-5">
                 <h2
                   className="text-2xl md:text-3xl italic font-light tracking-wide"
                   style={{
@@ -157,7 +158,7 @@ const Samkhya = () => {
                   ✦ Kits & Combos ✦
                 </h2>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
                 {kits.map((k) => (
                   <KitCard key={k.id} kit={k} />
                 ))}

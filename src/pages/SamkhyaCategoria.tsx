@@ -94,7 +94,7 @@ const SamkhyaCategoria = () => {
             Nenhum produto nesta categoria ainda.
           </p>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-10">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
             {produtos.map((p) => (
               <MinimalProductCard
                 key={p.id}
@@ -102,6 +102,7 @@ const SamkhyaCategoria = () => {
                 nome={p.nome_display}
                 precoPix={Number(p.preco_pix)}
                 imagemUrl={p.imagem_url}
+                resumoCurto={p.resumo_curto ?? null}
               />
             ))}
           </div>
