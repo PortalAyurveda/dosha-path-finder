@@ -51,11 +51,12 @@ const SamkhyaProduto = () => {
 
       // Conteúdo clínico (schema public)
       if (produtoTyped.samkhya_id) {
-        const { data: clin } = await supabase
+        const { data: clin, error: clinErr } = await supabase
           .from("samkhya")
-          .select(`"O que é", "Indicações", "Posologia", "Efeitos esperados"`)
+          .select(`"O que é", "Indicações", "Posologia", "Efeitos esperados", "Ingredientes"`)
           .eq("id", produtoTyped.samkhya_id)
           .maybeSingle();
+        if (clinErr) console.warn("[Samkhya clínico]", clinErr);
         if (!cancelled && clin) setClinico(clin as unknown as SamkhyaClinico);
       }
 

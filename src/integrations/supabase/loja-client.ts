@@ -92,4 +92,5 @@ export interface SamkhyaClinico {
   "Indicações": string | null;
   "Posologia": string | null;
   "Efeitos esperados": string | null;
+  "Ingredientes": string | null;
 }

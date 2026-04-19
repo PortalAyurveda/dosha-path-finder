@@ -11,6 +11,7 @@ const TABS = [
   { id: "indica", label: "Para quem é", key: "Indicações" as const },
   { id: "uso", label: "Como usar", key: "Posologia" as const },
   { id: "esperar", label: "O que esperar", key: "Efeitos esperados" as const },
+  { id: "ingredientes", label: "Ingredientes", key: "Ingredientes" as const },
 ];
 
 const TabsConteudo = ({ clinico }: TabsConteudoProps) => {
@@ -22,7 +23,7 @@ const TabsConteudo = ({ clinico }: TabsConteudoProps) => {
   return (
     <Tabs defaultValue="oque" className="w-full">
       <TabsList
-        className="w-full grid grid-cols-2 md:grid-cols-4 h-auto bg-transparent gap-0 p-0 rounded-none border-b"
+        className="w-full grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 h-auto bg-transparent gap-0 p-0 rounded-none border-b"
         style={{ borderColor: samkhyaTokens.cardBorder }}
       >
         {TABS.map((t) => (
