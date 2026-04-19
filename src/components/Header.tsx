@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useUser } from "@/contexts/UserContext";
 import { samkhyaTokens } from "@/components/samkhya/tokens";
 
-const SAMKHYA_LOGO = "https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/samkhya/lg-samkhya-branco-final.png";
+const SAMKHYA_LOGO = "https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/samkhya/lg-samkhya.png";
 
 const PIE_COLORS: Record<string, string> = {
   Vata: '#4F75FF',
