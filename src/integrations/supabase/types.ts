@@ -1849,6 +1849,7 @@ export type Database = {
           "Outros/curiosidade": string | null
           Posologia: string | null
           Produto: string | null
+          resumo_curto: string | null
         }
         Insert: {
           content?: string | null
@@ -1862,6 +1863,7 @@ export type Database = {
           "Outros/curiosidade"?: string | null
           Posologia?: string | null
           Produto?: string | null
+          resumo_curto?: string | null
         }
         Update: {
           content?: string | null
@@ -1875,6 +1877,7 @@ export type Database = {
           "Outros/curiosidade"?: string | null
           Posologia?: string | null
           Produto?: string | null
+          resumo_curto?: string | null
         }
         Relationships: []
       }
