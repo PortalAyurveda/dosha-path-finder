@@ -6,13 +6,14 @@ interface MinimalProductCardProps {
   nome: string;
   precoPix: number;
   imagemUrl: string | null;
+  resumoCurto?: string | null;
   to?: string;
 }
 
 const formatBRL = (v: number) =>
   v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
-const MinimalProductCard = ({ slug, nome, precoPix, imagemUrl, to }: MinimalProductCardProps) => {
+const MinimalProductCard = ({ slug, nome, precoPix, imagemUrl, resumoCurto, to }: MinimalProductCardProps) => {
   return (
     <Link
       to={to ?? `/samkhya/produto/${slug}`}
@@ -44,6 +45,18 @@ const MinimalProductCard = ({ slug, nome, precoPix, imagemUrl, to }: MinimalProd
       >
         {nome}
       </h3>
+      {resumoCurto && (
+        <p
+          className="mt-1 px-2 line-clamp-2"
+          style={{
+            color: samkhyaTokens.textoSec,
+            fontSize: "0.8rem",
+            lineHeight: 1.35,
+          }}
+        >
+          {resumoCurto}
+        </p>
+      )}
       <p
         className="mt-1 text-sm font-medium"
         style={{ color: samkhyaTokens.ouro }}
