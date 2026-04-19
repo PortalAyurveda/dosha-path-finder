@@ -1850,6 +1850,7 @@ export type Database = {
           Posologia: string | null
           Produto: string | null
           resumo_curto: string | null
+          tags_propriedades: string[] | null
         }
         Insert: {
           content?: string | null
@@ -1864,6 +1865,7 @@ export type Database = {
           Posologia?: string | null
           Produto?: string | null
           resumo_curto?: string | null
+          tags_propriedades?: string[] | null
         }
         Update: {
           content?: string | null
@@ -1878,6 +1880,7 @@ export type Database = {
           Posologia?: string | null
           Produto?: string | null
           resumo_curto?: string | null
+          tags_propriedades?: string[] | null
         }
         Relationships: []
       }
