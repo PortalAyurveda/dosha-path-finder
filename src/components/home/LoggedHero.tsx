@@ -193,8 +193,8 @@ const LoggedHero = () => {
 
             {/* Quadro Clínico */}
             <div>
-              <h2 className="font-serif font-bold text-foreground text-sm mb-2">
-                Quadro Clínico
+              <h2 className="font-serif font-bold text-foreground text-sm mb-2 text-center">
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Quadro Clínico
               </h2>
               <div className="grid grid-cols-[auto_1fr_1fr_1fr] gap-x-1.5 gap-y-[3px]">
                 {LEVEL_LABELS.map((label, rowIdx) => {
@@ -226,7 +226,7 @@ const LoggedHero = () => {
               <div className="grid grid-cols-[auto_1fr_1fr_1fr] gap-x-1.5 mt-1.5">
                 <div />
                 {doshaScores.map((d) => (
-                  <p key={d.name} className="text-[10px] font-bold text-center" style={{ color: PIE_COLORS[d.name] }}>
+                  <p key={d.name} className="text-[10px] font-bold text-center px-0 mx-0" style={{ color: PIE_COLORS[d.name] }}>
                     {d.name}
                   </p>
                 ))}
