@@ -88,7 +88,7 @@ const Header = () => {
   const akashaLink = akashaId ? `/akasha?id=${akashaId}` : "/akasha";
 
   const navLinks = [
-    { label: "Início", to: "/" },
+    { label: "Portal", to: "/" },
     { label: "Loja Samkhya", to: "/samkhya" },
     { label: "Biblioteca", to: "/biblioteca" },
     { label: "Artigos", to: "/blog" },
