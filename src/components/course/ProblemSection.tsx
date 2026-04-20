@@ -8,14 +8,14 @@ interface ProblemSectionProps {
 
 const ProblemSection = ({ data }: ProblemSectionProps) => {
   return (
-    <section className="bg-white py-12 md:py-16">
-      <div className="max-w-3xl mx-auto px-6">
+    <section className="bg-white py-10 md:py-14">
+      <div className="max-w-2xl mx-auto px-6">
         <motion.h2
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.5 }}
-          className="font-serif italic font-bold text-3xl md:text-4xl mb-6 text-center"
+          className="font-serif italic font-bold text-2xl md:text-3xl mb-5 text-center"
           style={{ color: "#352F54" }}
         >
           {data.title}
@@ -26,12 +26,12 @@ const ProblemSection = ({ data }: ProblemSectionProps) => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.5, delay: 0.1 }}
-          className="text-base md:text-lg text-gray-700 leading-relaxed mb-10 whitespace-pre-line"
+          className="text-sm md:text-base text-gray-700 leading-relaxed mb-8 whitespace-pre-line"
         >
           {data.intro}
         </motion.div>
 
-        <ul className="space-y-3 mb-10">
+        <ul className="space-y-2.5 mb-8">
           {data.bullets.map((bullet, i) => (
             <motion.li
               key={i}
@@ -39,12 +39,12 @@ const ProblemSection = ({ data }: ProblemSectionProps) => {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true, margin: "-50px" }}
               transition={{ duration: 0.4, delay: i * 0.06 }}
-              className="flex items-start gap-3 p-4 bg-red-50 border-l-4 border-red-400 rounded-r-md"
+              className="flex items-start gap-3 p-3.5 bg-red-50 border-l-4 border-red-400 rounded-r-md"
             >
-              <span className="shrink-0 w-6 h-6 rounded-full bg-red-500 flex items-center justify-center mt-0.5">
-                <X className="h-4 w-4 text-white" strokeWidth={3} />
+              <span className="shrink-0 w-5 h-5 rounded-full bg-red-500 flex items-center justify-center mt-0.5">
+                <X className="h-3.5 w-3.5 text-white" strokeWidth={3} />
               </span>
-              <span className="text-base text-gray-800 leading-relaxed">
+              <span className="text-sm md:text-base text-gray-800 leading-relaxed">
                 {bullet}
               </span>
             </motion.li>
@@ -56,7 +56,7 @@ const ProblemSection = ({ data }: ProblemSectionProps) => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.5, delay: 0.2 }}
-          className="font-serif font-bold italic text-xl md:text-2xl text-center leading-snug border-t border-gray-200 pt-8"
+          className="font-serif font-bold italic text-lg md:text-xl text-center leading-snug border-t border-gray-200 pt-7"
           style={{ color: "#352F54" }}
         >
           {data.closing}

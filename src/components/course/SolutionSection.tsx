@@ -13,14 +13,14 @@ interface SolutionSectionProps {
 
 const SolutionSection = ({ data, branding }: SolutionSectionProps) => {
   return (
-    <section className="py-12 md:py-16" style={{ background: "#FAF9F6" }}>
-      <div className="max-w-5xl mx-auto px-6">
+    <section className="py-10 md:py-14" style={{ background: "#FAF9F6" }}>
+      <div className="max-w-4xl mx-auto px-6">
         <motion.h2
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.5 }}
-          className="font-serif italic font-bold text-3xl md:text-4xl mb-4 text-center"
+          className="font-serif italic font-bold text-2xl md:text-3xl mb-3 text-center"
           style={{ color: "#352F54" }}
         >
           {data.title}
@@ -31,12 +31,12 @@ const SolutionSection = ({ data, branding }: SolutionSectionProps) => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.5, delay: 0.1 }}
-          className="text-base md:text-lg text-gray-700 max-w-3xl mx-auto text-center mb-12 leading-relaxed"
+          className="text-sm md:text-base text-gray-700 max-w-2xl mx-auto text-center mb-10 leading-relaxed"
         >
           {data.description}
         </motion.p>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           {data.benefits.map((benefit, i) => {
             const Icon = ICONS[benefit.iconName] ?? Brain;
             return (
@@ -47,21 +47,21 @@ const SolutionSection = ({ data, branding }: SolutionSectionProps) => {
                 viewport={{ once: true, margin: "-50px" }}
                 transition={{ duration: 0.5, delay: i * 0.08 }}
                 whileHover={{ y: -4 }}
-                className="bg-white p-6 md:p-7 shadow-sm hover:shadow-md border border-gray-100 transition-all rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm"
+                className="bg-white p-5 md:p-6 shadow-sm hover:shadow-md border border-gray-100 transition-all rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm"
               >
                 <div
-                  className="w-14 h-14 rounded-full flex items-center justify-center mb-5"
-                  style={{ background: `${branding.primaryColor}25` }}
+                  className="w-12 h-12 rounded-full flex items-center justify-center mb-4"
+                  style={{ background: `${branding.primaryColor}40` }}
                 >
-                  <Icon className="h-7 w-7" style={{ color: branding.darkColor }} />
+                  <Icon className="h-6 w-6" style={{ color: branding.darkColor }} />
                 </div>
                 <h3
-                  className="font-serif font-bold text-xl md:text-2xl mb-3"
+                  className="font-serif font-bold text-lg md:text-xl mb-2.5"
                   style={{ color: "#352F54" }}
                 >
                   {benefit.title}
                 </h3>
-                <p className="text-base text-gray-700 leading-relaxed">
+                <p className="text-sm md:text-base text-gray-700 leading-relaxed">
                   {benefit.text}
                 </p>
               </motion.div>
