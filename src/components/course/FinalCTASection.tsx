@@ -17,7 +17,7 @@ const FinalCTASection = ({ data, branding, onCtaClick }: FinalCTASectionProps) =
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.5 }}
-          className="font-serif italic font-bold text-2xl md:text-3xl mb-4 leading-tight"
+          className="font-serif italic font-bold text-2xl md:text-3xl mb-4 leading-tight text-primary-foreground"
         >
           {data.headline}
         </motion.h2>
@@ -39,7 +39,7 @@ const FinalCTASection = ({ data, branding, onCtaClick }: FinalCTASectionProps) =
           transition={{ duration: 0.5, delay: 0.2 }}
           className="inline-flex flex-col items-center gap-1 mb-7"
         >
-          <p className="font-serif font-bold text-3xl md:text-4xl">{data.priceNew}</p>
+          <p className="font-serif font-bold text-3xl md:text-4xl text-secondary">{data.priceNew}</p>
           <p className="text-xs md:text-sm text-white/80">ou {data.installments}</p>
           <p className="text-[11px] md:text-xs text-white/70 italic mt-1.5 max-w-md">
             {data.highlight}
