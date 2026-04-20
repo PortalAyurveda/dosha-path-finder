@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
@@ -10,7 +10,7 @@ import Index from "./pages/Index";
 import TesteDeDosha from "./pages/TesteDeDosha";
 import MeuDosha from "./pages/MeuDosha";
 import Biblioteca from "./pages/Biblioteca";
-import Cursos from "./pages/Cursos";
+import CursoAlimentacao from "./pages/curso/Alimentacao";
 import TerapeutasDoBrasil from "./pages/TerapeutasDoBrasil";
 import TerapeutaPerfil from "./pages/TerapeutaPerfil";
 import Akasha from "./pages/Akasha";
@@ -40,17 +40,25 @@ import SamkhyaTodos from "./pages/SamkhyaTodos";
 
 const queryClient = new QueryClient();
 
+const LayoutOrBare = ({ children }: { children: React.ReactNode }) => {
+  const { pathname } = useLocation();
+  // Course landing pages have their own header/footer
+  if (pathname.startsWith("/curso/")) return <>{children}</>;
+  return <Layout>{children}</Layout>;
+};
+
 const RoutedApp = () => {
   useCanonical();
   return (
     <UserProvider>
-      <Layout>
+      <LayoutOrBare>
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/teste-de-dosha" element={<TesteDeDosha />} />
               <Route path="/meu-dosha" element={<MeuDosha />} />
               <Route path="/biblioteca" element={<Biblioteca />} />
-              <Route path="/cursos" element={<Cursos />} />
+              <Route path="/cursos" element={<Navigate to="/curso/alimentacao" replace />} />
+              <Route path="/curso/alimentacao" element={<CursoAlimentacao />} />
               <Route path="/terapeutas-do-brasil" element={<TerapeutasDoBrasil />} />
               <Route path="/terapeutas-do-brasil/:slug" element={<TerapeutaPerfil />} />
               <Route path="/terapeutas/:slug" element={<TerapeutaPerfil />} />
@@ -108,7 +116,7 @@ const RoutedApp = () => {
 
               <Route path="*" element={<NotFound />} />
       </Routes>
-      </Layout>
+      </LayoutOrBare>
     </UserProvider>
   );
 };

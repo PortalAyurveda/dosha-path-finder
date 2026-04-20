@@ -38,9 +38,9 @@ const ProblemSection = ({ data }: ProblemSectionProps) => {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true, margin: "-50px" }}
               transition={{ duration: 0.4, delay: i * 0.08 }}
-              className="flex items-start gap-4 p-4 md:p-5 bg-red-50 border-l-4 border-red-500 rounded-r-lg"
+              className="flex items-start gap-4 p-4 md:p-5 bg-destructive/10 border-l-4 border-destructive rounded-r-lg"
             >
-              <span className="shrink-0 w-8 h-8 rounded-full bg-red-500 flex items-center justify-center mt-0.5">
+              <span className="shrink-0 w-8 h-8 rounded-full bg-destructive flex items-center justify-center mt-0.5">
                 <X className="h-5 w-5 text-white" strokeWidth={3} />
               </span>
               <span className="text-base md:text-lg text-foreground/90 leading-relaxed">
