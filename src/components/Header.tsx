@@ -229,10 +229,9 @@ const Header = () => {
               <Button
                   size="sm"
                   className="bg-white text-primary font-semibold hover:bg-white/90 hover:text-primary gap-1.5"
-                  style={buttonTextColor ? { color: buttonTextColor } : undefined}
                 >
-                  <LogIn className="h-4 w-4 text-primary" />
-                  <span className="text-primary">Entrar</span>
+                  <LogIn className="h-4 w-4" />
+                  Entrar
                 </Button>
               </Link>
             )}
