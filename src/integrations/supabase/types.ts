@@ -395,6 +395,8 @@ export type Database = {
           kaphascore: number | null
           mentoria: string | null
           nome: string | null
+          objetivo1: string | null
+          objetivo2: string | null
           pais: string | null
           peso: string | null
           pittascore: number | null
@@ -433,6 +435,8 @@ export type Database = {
           kaphascore?: number | null
           mentoria?: string | null
           nome?: string | null
+          objetivo1?: string | null
+          objetivo2?: string | null
           pais?: string | null
           peso?: string | null
           pittascore?: number | null
@@ -471,6 +475,8 @@ export type Database = {
           kaphascore?: number | null
           mentoria?: string | null
           nome?: string | null
+          objetivo1?: string | null
+          objetivo2?: string | null
           pais?: string | null
           peso?: string | null
           pittascore?: number | null
