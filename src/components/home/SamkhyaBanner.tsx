@@ -12,7 +12,7 @@ const SamkhyaCTA = ({ className = "" }: { className?: string }) => (
     className={`rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm px-8 py-6 text-base font-bold text-white shadow-lg transition-all hover:opacity-90 ${className}`}
     style={{ backgroundColor: PURPLE }}
   >
-    <a href="https://lojasamkhya.com.br" target="_blank" rel="noopener noreferrer">
+    <a href="/samkhya" target="_blank" rel="noopener noreferrer">
       Acessar Loja Samkhya
       <ExternalLink className="ml-2 h-4 w-4" />
     </a>
@@ -54,7 +54,8 @@ const SamkhyaBanner = () => {
           <div className="col-span-7 lg:col-span-6 lg:pl-24 xl:pl-32">
             <h3 className="mb-3">Leve o Ayurveda para a sua rotina</h3>
             <p className="text-foreground/80">
-              Conheça as fórmulas e produtos exclusivos da Samkhya — desenvolvidos com base nos textos clássicos do Ayurveda.
+              Conheça as fórmulas e produtos exclusivos da Samkhya — desenvolvidos com base nos textos clássicos do
+              Ayurveda.
             </p>
           </div>
 
@@ -70,7 +71,8 @@ const SamkhyaBanner = () => {
         <div>
           <h3 className="mb-3">Leve o Ayurveda para a sua rotina</h3>
           <p className="text-foreground/80">
-            Conheça as fórmulas e produtos exclusivos da Samkhya — desenvolvidos com base nos textos clássicos do Ayurveda.
+            Conheça as fórmulas e produtos exclusivos da Samkhya — desenvolvidos com base nos textos clássicos do
+            Ayurveda.
           </p>
         </div>
         <div className="flex justify-center">
