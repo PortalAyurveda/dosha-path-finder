@@ -13,9 +13,22 @@ const CourseHero = ({ data, branding, onCtaClick, logo }: CourseHeroProps) => {
   return (
     <section
       id="top"
-      className="relative w-full py-14 md:py-20"
-      style={{ background: branding.primaryColor }}
+      className="relative w-full py-14 md:py-20 overflow-hidden"
+      style={{
+        background: `linear-gradient(180deg, ${branding.lightColor} 0%, #FAF9F6 100%)`,
+      }}
     >
+      <div
+        className="absolute -top-20 -right-20 w-80 h-80 rounded-full opacity-40 pointer-events-none"
+        style={{ background: branding.primaryColor }}
+        aria-hidden
+      />
+      <div
+        className="absolute -bottom-24 -left-24 w-72 h-72 rounded-full opacity-30 pointer-events-none"
+        style={{ background: branding.primaryColor }}
+        aria-hidden
+      />
+
       <div className="relative max-w-5xl mx-auto px-6 text-center">
         {(logo ?? branding.logo) && (
           <motion.img
@@ -52,7 +65,7 @@ const CourseHero = ({ data, branding, onCtaClick, logo }: CourseHeroProps) => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.3 }}
-          className="text-base md:text-lg max-w-2xl mx-auto mb-10 text-white/95 leading-relaxed"
+          className="text-base md:text-lg max-w-2xl mx-auto mb-10 text-gray-700 leading-relaxed"
         >
           {data.description}
         </motion.p>
@@ -64,16 +77,16 @@ const CourseHero = ({ data, branding, onCtaClick, logo }: CourseHeroProps) => {
           className="inline-flex flex-col items-center gap-3 mb-8"
         >
           <div className="flex items-baseline gap-3 flex-wrap justify-center">
-            <span className="text-base md:text-lg line-through text-white/70">
+            <span className="text-base md:text-lg line-through text-gray-400">
               {data.priceOld}
             </span>
-            <span className="font-serif font-bold text-4xl md:text-5xl text-white">
+            <span className="font-serif font-bold text-4xl md:text-5xl" style={{ color: "#352F54" }}>
               {data.priceNew}
             </span>
           </div>
           <span
-            className="text-xs md:text-sm font-bold uppercase tracking-widest px-3 py-1 rounded-full"
-            style={{ background: branding.accentColor, color: "#352F54" }}
+            className="text-xs md:text-sm font-bold uppercase tracking-widest px-3 py-1 rounded-full text-white"
+            style={{ background: branding.accentColor }}
           >
             {data.accessYears}
           </span>
@@ -84,8 +97,8 @@ const CourseHero = ({ data, branding, onCtaClick, logo }: CourseHeroProps) => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.6 }}
           onClick={onCtaClick}
-          className="group inline-flex items-center gap-3 font-bold text-sm md:text-base uppercase tracking-wide px-8 md:px-12 py-4 md:py-5 bg-white shadow-md hover:shadow-xl transition-all hover:scale-[1.03] rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm w-full md:w-auto justify-center"
-          style={{ color: branding.darkColor }}
+          className="group inline-flex items-center gap-3 font-bold text-sm md:text-base uppercase tracking-wide px-8 md:px-12 py-4 md:py-5 shadow-md hover:shadow-xl transition-all hover:scale-[1.03] rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm w-full md:w-auto justify-center text-white"
+          style={{ background: branding.darkColor }}
         >
           {data.ctaText}
           <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
