@@ -1,7 +1,6 @@
 import { useCallback } from "react";
 import { Helmet } from "react-helmet-async";
 import { alimentacaoData } from "@/data/courses/alimentacao";
-import CourseHeader from "@/components/course/CourseHeader";
 import CourseHero from "@/components/course/CourseHero";
 import ProblemSection from "@/components/course/ProblemSection";
 import SolutionSection from "@/components/course/SolutionSection";
@@ -19,7 +18,6 @@ const Alimentacao = () => {
 
   const handleCtaClick = useCallback(
     (origin: string) => () => {
-      // Tracking placeholder
       // eslint-disable-next-line no-console
       console.log("[course-cta]", { course: data.meta.slug, origin, ts: Date.now() });
       if (data.checkoutUrl && data.checkoutUrl !== "#checkout") {
@@ -33,7 +31,7 @@ const Alimentacao = () => {
   );
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="bg-white">
       <Helmet>
         <title>{data.meta.title}</title>
         <meta name="description" content={data.meta.description} />
@@ -42,14 +40,6 @@ const Alimentacao = () => {
         <meta property="og:image" content={data.branding.logo} />
         <meta property="og:type" content="website" />
       </Helmet>
-
-      <CourseHeader
-        courseLogo={data.branding.logo}
-        courseColor={data.branding.primaryColor}
-        darkColor={data.branding.darkColor}
-        ctaText="Quero Entrar"
-        onCtaClick={handleCtaClick("header")}
-      />
 
       <main>
         <CourseHero
@@ -76,9 +66,8 @@ const Alimentacao = () => {
           branding={data.branding}
           onCtaClick={handleCtaClick("final")}
         />
+        <CourseFooter data={data.footer} branding={data.branding} />
       </main>
-
-      <CourseFooter data={data.footer} branding={data.branding} />
     </div>
   );
 };

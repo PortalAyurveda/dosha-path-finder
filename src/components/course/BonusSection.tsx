@@ -2,13 +2,7 @@ import { motion } from "framer-motion";
 import { Calendar, Heart, Users, Award, Sparkles, Check, type LucideIcon } from "lucide-react";
 import type { CourseBonusData, CourseBranding } from "@/data/courses/courseTypes";
 
-const ICONS: Record<string, LucideIcon> = {
-  Calendar,
-  Heart,
-  Users,
-  Award,
-  Sparkles,
-};
+const ICONS: Record<string, LucideIcon> = { Calendar, Heart, Users, Award, Sparkles };
 
 interface BonusSectionProps {
   data: CourseBonusData;
@@ -17,22 +11,25 @@ interface BonusSectionProps {
 
 const BonusSection = ({ data, branding }: BonusSectionProps) => {
   return (
-    <section className="bg-white py-12 md:py-20">
-      <div className="max-w-6xl mx-auto px-6">
+    <section className="py-12 md:py-16" style={{ background: "#FAF9F6" }}>
+      <div className="max-w-5xl mx-auto px-6">
         <motion.h2
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.5 }}
-          className="font-serif italic font-bold text-3xl md:text-5xl text-foreground mb-12 text-center"
+          className="font-serif italic font-bold text-3xl md:text-4xl mb-12 text-center"
+          style={{ color: "#352F54" }}
         >
           {data.title}
         </motion.h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-14">
-          {/* Inclusos */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-12">
           <div>
-            <h3 className="font-serif font-bold text-xl md:text-2xl text-foreground mb-6">
+            <h3
+              className="font-serif font-bold text-xl md:text-2xl mb-5"
+              style={{ color: "#352F54" }}
+            >
               Inclusos no curso
             </h3>
             <ul className="space-y-3">
@@ -51,17 +48,17 @@ const BonusSection = ({ data, branding }: BonusSectionProps) => {
                   >
                     <Check className="h-4 w-4 text-white" strokeWidth={3} />
                   </span>
-                  <span className="text-sm md:text-base text-foreground/85 leading-relaxed">
-                    {item}
-                  </span>
+                  <span className="text-base text-gray-700 leading-relaxed">{item}</span>
                 </motion.li>
               ))}
             </ul>
           </div>
 
-          {/* Bônus cards */}
           <div>
-            <h3 className="font-serif font-bold text-xl md:text-2xl text-foreground mb-6">
+            <h3
+              className="font-serif font-bold text-xl md:text-2xl mb-5"
+              style={{ color: "#352F54" }}
+            >
               Bônus exclusivos
             </h3>
             <div className="space-y-4">
@@ -70,25 +67,27 @@ const BonusSection = ({ data, branding }: BonusSectionProps) => {
                 return (
                   <motion.div
                     key={i}
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: 15 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true, margin: "-50px" }}
-                    transition={{ duration: 0.4, delay: i * 0.08 }}
-                    className="flex items-start gap-4 p-5 bg-white shadow-md border-l-4 rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm"
-                    style={{ borderLeftColor: branding.darkColor }}
+                    transition={{ duration: 0.4, delay: i * 0.06 }}
+                    className="flex items-start gap-4 p-5 bg-white border border-gray-200 shadow-sm rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm"
                   >
                     <span
-                      className="shrink-0 w-12 h-12 rounded-full flex items-center justify-center"
-                      style={{ background: `${branding.primaryColor}30` }}
+                      className="shrink-0 w-11 h-11 rounded-full flex items-center justify-center"
+                      style={{ background: `${branding.primaryColor}25` }}
                     >
-                      <Icon className="h-6 w-6" style={{ color: branding.darkColor }} />
+                      <Icon className="h-5 w-5" style={{ color: branding.darkColor }} />
                     </span>
                     <div className="flex-1">
-                      <h4 className="font-bold text-base md:text-lg text-foreground leading-snug">
+                      <h4
+                        className="font-bold text-base leading-snug"
+                        style={{ color: "#352F54" }}
+                      >
                         {bonus.title}
                       </h4>
                       {bonus.description && (
-                        <p className="text-sm text-foreground/70 mt-1">{bonus.description}</p>
+                        <p className="text-sm text-gray-600 mt-1">{bonus.description}</p>
                       )}
                     </div>
                   </motion.div>
