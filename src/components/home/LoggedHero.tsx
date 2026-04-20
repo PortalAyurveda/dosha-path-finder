@@ -161,12 +161,12 @@ const LoggedHero = () => {
           <div className="grid grid-cols-1 sm:grid-cols-[1.2fr_1fr] gap-4 items-center">
             {/* Pie */}
             <div className="flex flex-col items-center">
-              <h2 className="font-serif font-bold text-foreground text-sm mb-1 text-center">
+              <h2 className="font-serif font-bold text-foreground text-sm mb-1">
                 Pontuação dos Doshas
               </h2>
               <div className="w-full" style={{ height: 180 }}>
                 <ResponsiveContainer width="100%" height="100%">
-                  <PieChart margin={{ top: 12, right: 40, bottom: 12, left: 40 }}>
+                  <PieChart margin={{ top: 12, right: 40, bottom: 12, left: 40 }} className="text-center">
                     <Pie
                       data={pieData}
                       cx="50%"
@@ -193,7 +193,7 @@ const LoggedHero = () => {
 
             {/* Quadro Clínico */}
             <div>
-              <h2 className="font-serif font-bold text-foreground text-sm mb-2 text-center">
+              <h2 className="font-serif font-bold text-foreground text-sm mb-2">
                 Quadro Clínico
               </h2>
               <div className="grid grid-cols-[auto_1fr_1fr_1fr] gap-x-1.5 gap-y-[3px]">
@@ -236,8 +236,7 @@ const LoggedHero = () => {
 
           {/* Lateral arrow — "continue para seu perfil" */}
           <div
-            className="absolute right-0 top-0 bottom-0 flex items-center justify-center w-8 md:w-10 rounded-r-2xl transition-all group-hover:brightness-110"
-            style={{ background: "#9b73ad" }}
+            className="absolute right-0 top-0 bottom-0 flex items-center justify-center w-8 md:w-10 rounded-r-2xl transition-all group-hover:brightness-110 text-primary bg-primary"
             aria-hidden="true"
           >
             <ChevronRight
