@@ -42,9 +42,9 @@ const HeroBanner = ({
           (e.currentTarget as HTMLImageElement).src = bannerUrl;
         }}
       />
-      <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4">
+      <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4 opacity-100">
         <h2
-          className="text-4xl md:text-5xl mb-2 font-light tracking-wide"
+          className="text-4xl md:text-5xl mb-2 font-light tracking-wide bg-sidebar-accent shadow-none text-accent-foreground"
           style={{
             color: samkhyaTokens.roxo,
             fontFamily: "Georgia, 'Times New Roman', serif",
@@ -53,7 +53,7 @@ const HeroBanner = ({
           {bannerTitle}
         </h2>
         <p
-          className="text-base md:text-xl"
+          className="text-base md:text-xl shadow-none text-card-foreground"
           style={{ color: samkhyaTokens.textoSec }}
         >
           {bannerSubtitle}
