@@ -9,6 +9,7 @@ const ITEMS = [
   { slug: "rejuvenescimento", label: "Rejuvenescimento" },
   { slug: "gold", label: "Gold" },
   { slug: "kits", label: "Kits" },
+  { slug: "todos", label: "Todos" },
 ];
 
 const SamkhyaNavBar = () => {
@@ -16,7 +17,12 @@ const SamkhyaNavBar = () => {
   // Active state derived from URL: /samkhya/categoria/:slug or /samkhya/kits
   const match = location.pathname.match(/^\/samkhya\/categoria\/([^/]+)/);
   const isKitsPage = location.pathname === "/samkhya/kits";
-  const activeCat = isKitsPage ? "kits" : match?.[1] ?? "";
+  const isTodosPage = location.pathname === "/samkhya/todos";
+  const activeCat = isKitsPage
+    ? "kits"
+    : isTodosPage
+    ? "todos"
+    : match?.[1] ?? "";
 
   return (
     <nav
@@ -30,6 +36,8 @@ const SamkhyaNavBar = () => {
             const to =
               item.slug === "kits"
                 ? "/samkhya/kits"
+                : item.slug === "todos"
+                ? "/samkhya/todos"
                 : `/samkhya/categoria/${item.slug}`;
             const isActive = activeCat === item.slug;
             return (

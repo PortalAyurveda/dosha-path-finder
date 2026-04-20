@@ -36,6 +36,7 @@ import SamkhyaProduto from "./pages/SamkhyaProduto";
 import SamkhyaKit from "./pages/SamkhyaKit";
 import SamkhyaCategoria from "./pages/SamkhyaCategoria";
 import SamkhyaKits from "./pages/SamkhyaKits";
+import SamkhyaTodos from "./pages/SamkhyaTodos";
 
 const queryClient = new QueryClient();
 
@@ -102,6 +103,7 @@ const RoutedApp = () => {
               <Route path="/samkhya/produto/:slug" element={<SamkhyaProduto />} />
               <Route path="/samkhya/kits" element={<SamkhyaKits />} />
               <Route path="/samkhya/kits/:slug" element={<SamkhyaKit />} />
+              <Route path="/samkhya/todos" element={<SamkhyaTodos />} />
               <Route path="/samkhya/categoria/:slug" element={<SamkhyaCategoria />} />
 
               <Route path="*" element={<NotFound />} />
