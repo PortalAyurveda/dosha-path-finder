@@ -131,7 +131,7 @@ const Header = () => {
               className="bg-white font-semibold hover:bg-white/90 gap-1.5"
               style={buttonTextColor ? { color: buttonTextColor } : undefined}
             >
-              <Menu className="h-5 w-5" />
+              <Menu className="h-5 w-5 bg-primary-foreground text-primary" />
               <span className="text-sm font-medium">Menu</span>
             </Button>
           </SheetTrigger>
