@@ -12,20 +12,20 @@ const ModulesSection = ({ data, branding }: ModulesSectionProps) => {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
   return (
-    <section className="bg-white py-12 md:py-16">
-      <div className="max-w-3xl mx-auto px-6">
+    <section className="bg-white py-10 md:py-14">
+      <div className="max-w-2xl mx-auto px-6">
         <motion.h2
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.5 }}
-          className="font-serif italic font-bold text-3xl md:text-4xl mb-10 text-center"
+          className="font-serif italic font-bold text-2xl md:text-3xl mb-8 text-center"
           style={{ color: "#352F54" }}
         >
           {data.title}
         </motion.h2>
 
-        <div className="space-y-3">
+        <div className="space-y-2.5">
           {data.modules.map((mod, i) => {
             const isOpen = openIndex === i;
             return (
@@ -39,23 +39,23 @@ const ModulesSection = ({ data, branding }: ModulesSectionProps) => {
               >
                 <button
                   onClick={() => setOpenIndex(isOpen ? null : i)}
-                  className="w-full flex items-center gap-4 md:gap-5 p-5 md:p-6 text-left"
+                  className="w-full flex items-center gap-3.5 md:gap-4 p-4 md:p-5 text-left"
                   aria-expanded={isOpen}
                 >
                   <span
-                    className="shrink-0 w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center font-bold text-lg md:text-xl text-white"
+                    className="shrink-0 w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center font-bold text-base md:text-lg text-white"
                     style={{ background: branding.darkColor }}
                   >
                     {mod.number}
                   </span>
                   <h3
-                    className="flex-1 font-serif font-bold text-lg md:text-xl leading-tight"
+                    className="flex-1 font-serif font-bold text-base md:text-lg leading-tight"
                     style={{ color: "#352F54" }}
                   >
                     {mod.title}
                   </h3>
                   <ChevronDown
-                    className="shrink-0 h-5 w-5 text-gray-500 transition-transform duration-300"
+                    className="shrink-0 h-4 w-4 text-gray-500 transition-transform duration-300"
                     style={{ transform: isOpen ? "rotate(180deg)" : "rotate(0deg)" }}
                   />
                 </button>
@@ -69,8 +69,8 @@ const ModulesSection = ({ data, branding }: ModulesSectionProps) => {
                       transition={{ duration: 0.3, ease: "easeInOut" }}
                       className="overflow-hidden"
                     >
-                      <div className="px-5 md:px-6 pb-6 pl-[76px] md:pl-[88px]">
-                        <p className="text-base text-gray-700 leading-relaxed mb-4">
+                      <div className="px-4 md:px-5 pb-5 pl-[64px] md:pl-[76px]">
+                        <p className="text-sm md:text-base text-gray-700 leading-relaxed mb-3">
                           {mod.description}
                         </p>
                         {mod.highlights && mod.highlights.length > 0 && (
@@ -78,12 +78,12 @@ const ModulesSection = ({ data, branding }: ModulesSectionProps) => {
                             {mod.highlights.map((h, hi) => (
                               <li key={hi} className="flex items-start gap-3">
                                 <span
-                                  className="shrink-0 w-5 h-5 rounded-full flex items-center justify-center mt-1"
+                                  className="shrink-0 w-4 h-4 rounded-full flex items-center justify-center mt-1"
                                   style={{ background: branding.darkColor }}
                                 >
-                                  <Check className="h-3 w-3 text-white" strokeWidth={3} />
+                                  <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />
                                 </span>
-                                <span className="text-sm md:text-base text-gray-700">{h}</span>
+                                <span className="text-sm text-gray-700">{h}</span>
                               </li>
                             ))}
                           </ul>

@@ -8,9 +8,9 @@ interface ProfessorSectionProps {
 
 const ProfessorSection = ({ data, branding }: ProfessorSectionProps) => {
   return (
-    <section className="py-12 md:py-16" style={{ background: "#FAF9F6" }}>
-      <div className="max-w-5xl mx-auto px-6">
-        <div className="grid grid-cols-1 md:grid-cols-[auto_1fr] gap-10 md:gap-12 items-start">
+    <section className="py-10 md:py-14" style={{ background: "#FAF9F6" }}>
+      <div className="max-w-4xl mx-auto px-6">
+        <div className="grid grid-cols-1 md:grid-cols-[auto_1fr] gap-8 md:gap-10 items-start">
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
@@ -19,7 +19,7 @@ const ProfessorSection = ({ data, branding }: ProfessorSectionProps) => {
             className="mx-auto md:mx-0"
           >
             <div
-              className="w-[260px] h-[260px] md:w-[340px] md:h-[340px] overflow-hidden shadow-md rounded-t-full rounded-b-none"
+              className="w-[230px] h-[230px] md:w-[300px] md:h-[300px] overflow-hidden shadow-md rounded-t-full rounded-b-none"
               style={{ border: `5px solid ${branding.primaryColor}` }}
             >
               <img
@@ -37,21 +37,15 @@ const ProfessorSection = ({ data, branding }: ProfessorSectionProps) => {
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.5, delay: 0.15 }}
           >
-            <p
-              className="text-xs uppercase tracking-widest font-bold mb-3"
-              style={{ color: branding.darkColor }}
-            >
+            <p className="text-[11px] uppercase tracking-widest font-bold mb-2.5" style={{ color: branding.darkColor }}>
               Conheça seu professor
             </p>
-            <h2
-              className="font-serif italic font-bold text-3xl md:text-4xl mb-5"
-              style={{ color: "#352F54" }}
-            >
+            <h2 className="font-serif italic font-bold text-2xl md:text-3xl mb-4" style={{ color: "#352F54" }}>
               {data.name}
             </h2>
-            <div className="space-y-3">
+            <div className="space-y-2.5">
               {data.bio.map((para, i) => (
-                <p key={i} className="text-base text-gray-700 leading-relaxed">
+                <p key={i} className="text-sm md:text-base text-gray-700 leading-relaxed">
                   {para}
                 </p>
               ))}
