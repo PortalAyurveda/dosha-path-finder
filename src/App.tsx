@@ -41,9 +41,6 @@ import SamkhyaTodos from "./pages/SamkhyaTodos";
 const queryClient = new QueryClient();
 
 const LayoutOrBare = ({ children }: { children: React.ReactNode }) => {
-  const { pathname } = useLocation();
-  // Course landing pages have their own header/footer
-  if (pathname.startsWith("/curso/")) return <>{children}</>;
   return <Layout>{children}</Layout>;
 };
 

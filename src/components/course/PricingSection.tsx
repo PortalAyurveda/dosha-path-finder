@@ -10,69 +10,65 @@ interface PricingSectionProps {
 
 const PricingSection = ({ data, branding, onCtaClick }: PricingSectionProps) => {
   return (
-    <section className="py-16 md:py-24 bg-[#0F1419] text-white relative overflow-hidden">
-      <div
-        className="absolute inset-0 opacity-10 pointer-events-none"
-        style={{
-          backgroundImage: `radial-gradient(circle at 30% 20%, ${branding.primaryColor} 0%, transparent 50%), radial-gradient(circle at 70% 80%, ${branding.darkColor} 0%, transparent 50%)`,
-        }}
-      />
-
-      <div className="relative max-w-4xl mx-auto px-6 text-center">
+    <section className="py-12 md:py-16 bg-white">
+      <div className="max-w-3xl mx-auto px-6">
         <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          whileInView={{ opacity: 1, scale: 1 }}
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.5 }}
+          className="text-center bg-white border border-gray-200 shadow-sm p-8 md:p-12 rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm"
         >
-          <span className="text-sm md:text-base uppercase tracking-widest text-white/60 font-bold">
+          <span
+            className="text-xs md:text-sm uppercase tracking-widest font-bold"
+            style={{ color: branding.darkColor }}
+          >
             Investimento
           </span>
 
-          <p className="text-xl md:text-2xl line-through text-white/40 mt-6 mb-2">
+          <p className="text-lg md:text-xl line-through text-gray-400 mt-5 mb-1">
             {data.priceOld}
           </p>
 
           <p
-            className="font-serif font-bold text-5xl md:text-7xl lg:text-8xl mb-3 leading-none"
-            style={{ color: branding.primaryColor }}
+            className="font-serif font-bold text-5xl md:text-6xl mb-3 leading-none"
+            style={{ color: "#352F54" }}
           >
             {data.priceNew}
           </p>
 
-          <p className="text-lg md:text-2xl text-white/90 mb-2">
+          <p className="text-base md:text-lg text-gray-700 mb-2">
             ou <span className="font-bold">{data.installments}</span>
           </p>
 
-          <p className="text-base md:text-lg text-white/70 max-w-xl mx-auto mb-10 italic">
+          <p className="text-sm md:text-base text-gray-500 italic mb-8">
             {data.highlight}
           </p>
 
           <motion.button
             onClick={onCtaClick}
-            whileHover={{ scale: 1.05 }}
+            whileHover={{ scale: 1.04 }}
             whileTap={{ scale: 0.98 }}
-            className="group inline-flex items-center gap-3 font-bold text-base md:text-xl uppercase tracking-wide px-10 md:px-14 py-5 md:py-7 shadow-2xl transition-all rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm w-full md:w-auto justify-center animate-pulse hover:animate-none"
+            className="group inline-flex items-center gap-3 font-bold text-sm md:text-base uppercase tracking-wide px-8 md:px-12 py-4 md:py-5 shadow-md hover:shadow-xl transition-all rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm w-full md:w-auto justify-center"
             style={{
-              background: branding.primaryColor,
-              color: "#0F1419",
-              boxShadow: `0 20px 60px ${branding.primaryColor}66`,
+              background: branding.darkColor,
+              color: "#FFFFFF",
             }}
           >
             {data.ctaText}
-            <ArrowRight className="h-6 w-6 group-hover:translate-x-1 transition-transform" />
+            <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
           </motion.button>
 
           <div
-            className="mt-10 inline-flex items-start gap-4 p-5 md:p-6 max-w-2xl mx-auto bg-white/5 border border-white/10 rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm text-left"
+            className="mt-8 inline-flex items-start gap-3 p-4 max-w-xl mx-auto border border-gray-200 bg-gray-50 rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm text-left"
           >
             <span
-              className="shrink-0 w-12 h-12 rounded-full flex items-center justify-center"
-              style={{ background: branding.primaryColor }}
+              className="shrink-0 w-9 h-9 rounded-full flex items-center justify-center"
+              style={{ background: branding.darkColor }}
             >
-              <ShieldCheck className="h-6 w-6 text-[#0F1419]" />
+              <ShieldCheck className="h-5 w-5 text-white" />
             </span>
-            <p className="text-sm md:text-base text-white/85 leading-relaxed">
+            <p className="text-sm text-gray-700 leading-relaxed">
               {data.guarantee}
             </p>
           </div>
