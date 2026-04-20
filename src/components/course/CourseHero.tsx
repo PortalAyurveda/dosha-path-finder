@@ -43,7 +43,7 @@ const CourseHero = ({ data, branding, onCtaClick, logo, courseName = "Alimentaç
             className="h-16 md:h-20 w-auto object-contain"
           />
           <h2
-            className="font-serif font-bold text-xl md:text-2xl leading-tight text-left"
+            className="font-serif font-bold text-xl leading-tight text-primary md:text-2xl text-justify"
             style={{ color: branding.darkColor }}
           >
             Alimentação<span className="block">Ayurveda</span>
