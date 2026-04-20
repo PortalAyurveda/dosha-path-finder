@@ -112,12 +112,12 @@ const FeedSocial = () => {
   return (
     <Link
       to="/metricas"
-      className="sticky top-16 z-40 block overflow-hidden py-3 group cursor-pointer transition-colors hover:bg-[color:var(--marquee-hover)] backdrop-blur-sm"
+      className="sticky top-16 z-40 block overflow-hidden py-3 group cursor-pointer transition-colors hover:bg-[color:var(--marquee-hover)] bg-background"
       style={{
-        background: `${C.primary}F2`,
+        backgroundImage: `linear-gradient(${C.primary}14, ${C.primary}14)`,
         borderTop: `1px solid ${C.primary}1A`,
         borderBottom: `1px solid ${C.primary}1A`,
-        ['--marquee-hover' as any]: `${C.primary}FF`,
+        ['--marquee-hover' as any]: `${C.primary}1F`,
       }}
       aria-label="Ver todas as métricas do Portal Ayurveda"
     >
