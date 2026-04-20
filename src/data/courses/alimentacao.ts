@@ -9,11 +9,11 @@ export const alimentacaoData: CourseData = {
   },
   branding: {
     logo: "https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/logo-alimentacao.png",
-    primaryColor: "#4ADE80",
-    darkColor: "#16A34A",
-    lightColor: "#86EFAC",
-    accentColor: "#FACC15",
-    warmBg: "#FFF8EE",
+    primaryColor: "#A8E6CF",
+    darkColor: "#5BA882",
+    lightColor: "#D4F1E0",
+    accentColor: "#FF8A8A",
+    warmBg: "#FAF9F6",
   },
   hero: {
     headline: "Você não precisa de mais informação sobre dieta.",
