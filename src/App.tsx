@@ -25,6 +25,7 @@ import TermosDeUso from "./pages/TermosDeUso";
 import NotFound from "./pages/NotFound";
 import Admin from "./pages/Admin";
 import AdminBlog from "./pages/AdminBlog";
+import AdminAkasha from "./pages/AdminAkasha";
 import Blog from "./pages/Blog";
 import BlogArticle from "./pages/BlogArticle";
 import Metricas from "./pages/Metricas";
@@ -102,6 +103,7 @@ const RoutedApp = () => {
               <Route path="/termos-de-uso" element={<TermosDeUso />} />
               <Route path="/admin" element={<Admin />} />
               <Route path="/admin/blog" element={<AdminBlog />} />
+              <Route path="/admin/akasha" element={<AdminAkasha />} />
 
               {/* Loja Samkhya */}
               <Route path="/samkhya" element={<Samkhya />} />
