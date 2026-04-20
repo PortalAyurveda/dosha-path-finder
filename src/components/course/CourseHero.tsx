@@ -35,20 +35,18 @@ const CourseHero = ({ data, branding, onCtaClick, logo, courseName = "Alimentaç
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="flex flex-col items-center gap-3 mb-7"
+          className="flex flex-row items-center justify-center gap-3 mb-7"
         >
           <img
             src={logo ?? branding.logo}
             alt={courseName}
-            className="h-14 md:h-16 w-auto object-contain"
+            className="h-16 md:h-20 w-auto object-contain"
           />
           <h2
-            className="font-serif italic font-bold text-2xl md:text-3xl leading-tight"
+            className="font-serif font-bold text-xl md:text-2xl leading-tight text-left"
             style={{ color: branding.darkColor }}
           >
-            {courseName.split(" ").map((word, i) => (
-              <span key={i} className="block">{word}</span>
-            ))}
+            Alimentação<span className="block">Ayurveda</span>
           </h2>
         </motion.div>
 
