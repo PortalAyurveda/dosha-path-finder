@@ -41,6 +41,7 @@ export interface LojaProduto {
   preco_pix: number;
   stripe_price_id: string | null;
   imagem_url: string | null;
+  imagens?: string[] | null;
   ativo: boolean;
   destaque: boolean;
   ordem_exibicao: number | null;

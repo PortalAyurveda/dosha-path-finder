@@ -15,6 +15,7 @@ import BotaoStripe from "@/components/samkhya/BotaoStripe";
 import TabsConteudo from "@/components/samkhya/TabsConteudo";
 import TagsPropriedades from "@/components/samkhya/TagsPropriedades";
 import MinimalProductCard from "@/components/samkhya/MinimalProductCard";
+import ProdutoCarrossel from "@/components/samkhya/ProdutoCarrossel";
 import { samkhyaTokens } from "@/components/samkhya/tokens";
 
 const SamkhyaProduto = () => {
@@ -120,24 +121,17 @@ const SamkhyaProduto = () => {
         ) : (
           <>
             <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-start">
-              {/* Foto */}
-              <div
-                className="aspect-square rounded-lg flex items-center justify-center p-8 md:p-12"
-                style={{
-                  background: samkhyaTokens.cardBg,
-                  border: `1px solid ${samkhyaTokens.cardBorder}`,
-                }}
-              >
-                {produto.imagem_url ? (
-                  <img
-                    src={produto.imagem_url}
-                    alt={produto.nome_display}
-                    className="max-h-full max-w-full object-contain"
-                  />
-                ) : (
-                  <span style={{ color: samkhyaTokens.textoSec }}>Sem imagem</span>
-                )}
-              </div>
+              {/* Carrossel de imagens */}
+              <ProdutoCarrossel
+                imagens={
+                  produto.imagens && produto.imagens.length > 0
+                    ? produto.imagens
+                    : produto.imagem_url
+                      ? [produto.imagem_url]
+                      : []
+                }
+                alt={produto.nome_display}
+              />
 
               {/* Info + compra */}
               <div className="flex flex-col gap-6">

@@ -26,6 +26,7 @@ import NotFound from "./pages/NotFound";
 import Admin from "./pages/Admin";
 import AdminBlog from "./pages/AdminBlog";
 import AdminAkasha from "./pages/AdminAkasha";
+import AdminLoja from "./pages/AdminLoja";
 import Blog from "./pages/Blog";
 import BlogArticle from "./pages/BlogArticle";
 import Metricas from "./pages/Metricas";
@@ -104,6 +105,7 @@ const RoutedApp = () => {
               <Route path="/admin" element={<Admin />} />
               <Route path="/admin/blog" element={<AdminBlog />} />
               <Route path="/admin/akasha" element={<AdminAkasha />} />
+              <Route path="/admin/loja" element={<AdminLoja />} />
 
               {/* Loja Samkhya */}
               <Route path="/samkhya" element={<Samkhya />} />
