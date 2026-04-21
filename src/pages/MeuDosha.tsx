@@ -666,8 +666,8 @@ const MeuDosha = () => {
 
         {/* ===== TABS ===== */}
         <Tabs defaultValue={initialTab} className="w-full">
-          <div className="sticky top-0 z-[60] -mx-4 sm:-mx-6 px-4 sm:px-6 py-1 bg-background/95 backdrop-blur-sm border-b border-border shadow-sm">
-          <TabsList className="w-full grid grid-cols-5 h-auto max-w-6xl mx-auto">
+          <div className="sticky top-0 z-[60] py-2 flex justify-center">
+          <TabsList className="grid grid-cols-5 h-auto max-w-6xl w-full mx-4 rounded-full bg-muted/95 backdrop-blur-sm shadow-sm">
             <TabsTrigger value="perfil" className="text-xs sm:text-sm py-1 flex items-center gap-1">
               <DoshaMiniPie vata={result.vatascore ?? 0} pitta={result.pittascore ?? 0} kapha={result.kaphascore ?? 0} />
               Perfil
