@@ -18,7 +18,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Upload, Copy, Trash2, Image as ImageIcon, Loader2, ShieldCheck, X, FileText } from "lucide-react";
+import { Upload, Copy, Trash2, Image as ImageIcon, Loader2, ShieldCheck, X, FileText, Store } from "lucide-react";
 import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -239,12 +239,20 @@ const Admin = () => {
                 Painel Administrativo
               </h1>
             </div>
-            <Button asChild variant="outline" className="gap-2">
-              <Link to="/admin/blog">
-                <FileText className="w-4 h-4" />
-                Acessar Artigos
-              </Link>
-            </Button>
+            <div className="flex flex-wrap gap-2">
+              <Button asChild variant="outline" className="gap-2">
+                <Link to="/admin/blog">
+                  <FileText className="w-4 h-4" />
+                  Artigos
+                </Link>
+              </Button>
+              <Button asChild variant="outline" className="gap-2">
+                <Link to="/admin/loja">
+                  <Store className="w-4 h-4" />
+                  Loja Samkhya
+                </Link>
+              </Button>
+            </div>
           </div>
 
           {/* Upload Section */}
