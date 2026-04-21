@@ -9,9 +9,9 @@ interface HeroBannerProps {
 }
 
 const DEFAULT_BANNER_DESKTOP =
-  "https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/banner-samkhya-portal.jpg";
+  "https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/banner-principal.svg";
 const DEFAULT_BANNER_MOBILE =
-  "https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/bananer-smk-portal-mobile.jpg";
+  "https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/banner-principal.svg";
 
 /**
  * Banner Hero da Loja Samkhya — elefante / frete grátis com texto sobreposto.
