@@ -1341,6 +1341,60 @@ export type Database = {
         }
         Relationships: []
       }
+      plano_30_dias: {
+        Row: {
+          data_criacao: string | null
+          data_fim: string | null
+          data_inicio: string | null
+          dias_completados: number | null
+          distribuicao_categoria: Json | null
+          distribuicao_dificuldade: Json | null
+          distribuicao_pilar: Json | null
+          id: string
+          objetivo_tratamento_id: string | null
+          percentual_conclusao: number | null
+          plano_json: Json
+          status: string | null
+          total_dias: number | null
+          total_dicas_usadas: number | null
+          user_email: string
+        }
+        Insert: {
+          data_criacao?: string | null
+          data_fim?: string | null
+          data_inicio?: string | null
+          dias_completados?: number | null
+          distribuicao_categoria?: Json | null
+          distribuicao_dificuldade?: Json | null
+          distribuicao_pilar?: Json | null
+          id?: string
+          objetivo_tratamento_id?: string | null
+          percentual_conclusao?: number | null
+          plano_json: Json
+          status?: string | null
+          total_dias?: number | null
+          total_dicas_usadas?: number | null
+          user_email: string
+        }
+        Update: {
+          data_criacao?: string | null
+          data_fim?: string | null
+          data_inicio?: string | null
+          dias_completados?: number | null
+          distribuicao_categoria?: Json | null
+          distribuicao_dificuldade?: Json | null
+          distribuicao_pilar?: Json | null
+          id?: string
+          objetivo_tratamento_id?: string | null
+          percentual_conclusao?: number | null
+          plano_json?: Json
+          status?: string | null
+          total_dias?: number | null
+          total_dicas_usadas?: number | null
+          user_email?: string
+        }
+        Relationships: []
+      }
       portal_conteudo: {
         Row: {
           created_at: string
