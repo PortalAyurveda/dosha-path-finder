@@ -18,11 +18,22 @@ A seção de kits tem âncora `#kits`.
 As tabelas do catálogo vivem no schema `loja` (não em `public`):
 
 - `loja.produtos` — 16 produtos (samkhya_id aponta para `public.samkhya`)
+  - `imagem_url` (text) — capa principal (mantida por compatibilidade; espelha `imagens[0]`)
+  - `imagens` (text[]) — galeria de imagens. A primeira é a capa. Usado pelo carrossel da página de produto.
 - `loja.categorias` — 6 categorias: vata, pitta, kapha, detox, rasayana, gold
 - `loja.produto_categorias` — vínculo M:N
 - `loja.kits` — 11 kits com `tipo_kit`: anti_dosha, mini_kit, especial, viagem
 - `loja.kit_itens` — produtos de cada kit, com `quantidade` e `nota`
 - `public.samkhya` — conteúdo clínico (colunas com nomes acentuados/com espaços: `"O que é"`, `"Indicações"`, `"Posologia"`, `"Efeitos esperados"`)
+
+### Painel administrativo
+
+Rota `/admin/loja` (somente role `admin`). Tabs **Produtos** e **Kits**:
+- Edição inline de slug, nome, preços, resumo/descrição.
+- Upload de imagens diretamente para o bucket `samkhya` (múltiplas para produtos, única para kits).
+- Reordenação e remoção de imagens da galeria do produto. A primeira imagem do array é a capa.
+
+RLS: `UPDATE` em `loja.produtos` e `loja.kits` permitido apenas para `perfis.role = 'admin'`. Upload no bucket `samkhya` também é restrito a admins.
 
 ### Exposição na API REST
 
