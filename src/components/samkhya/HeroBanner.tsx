@@ -9,9 +9,9 @@ interface HeroBannerProps {
 }
 
 const DEFAULT_BANNER_DESKTOP =
-  "https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/banner-samkhya-portal.jpg";
+  "https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/banner-principal.svg";
 const DEFAULT_BANNER_MOBILE =
-  "https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/bananer-smk-portal-mobile.jpg";
+  "https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/banner-principal.svg";
 
 /**
  * Banner Hero da Loja Samkhya — elefante / frete grátis com texto sobreposto.
@@ -42,23 +42,6 @@ const HeroBanner = ({
           (e.currentTarget as HTMLImageElement).src = bannerUrl;
         }}
       />
-      <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4">
-        <h2
-          className="text-4xl md:text-5xl mb-2 font-light tracking-wide"
-          style={{
-            color: samkhyaTokens.roxo,
-            fontFamily: "Georgia, 'Times New Roman', serif",
-          }}
-        >
-          {bannerTitle}
-        </h2>
-        <p
-          className="text-base md:text-xl"
-          style={{ color: samkhyaTokens.textoSec }}
-        >
-          {bannerSubtitle}
-        </p>
-      </div>
     </Link>
   );
 };

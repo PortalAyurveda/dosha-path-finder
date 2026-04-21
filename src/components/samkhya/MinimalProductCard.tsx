@@ -19,10 +19,7 @@ const MinimalProductCard = ({ slug, nome, precoPix, imagemUrl, resumoCurto, to }
       to={to ?? `/samkhya/produto/${slug}`}
       className="group flex flex-col items-center text-center transition-transform duration-200 hover:scale-[1.02]"
     >
-      <div
-        className="aspect-square w-full flex items-center justify-center p-4 rounded-sm overflow-hidden"
-        style={{ background: "#FFFFFF" }}
-      >
+      <div className="aspect-square w-full flex items-center justify-center p-4 overflow-hidden">
         {imagemUrl ? (
           <img
             src={imagemUrl}
@@ -37,10 +34,9 @@ const MinimalProductCard = ({ slug, nome, precoPix, imagemUrl, resumoCurto, to }
         )}
       </div>
       <h3
-        className="mt-3 text-base italic"
+        className="mt-3 text-lg font-medium"
         style={{
-          color: samkhyaTokens.texto,
-          fontFamily: "Georgia, 'Times New Roman', serif",
+          color: samkhyaTokens.roxoDark,
         }}
       >
         {nome}
