@@ -47,8 +47,8 @@ const MetricasShell = ({ children, title, description, canonicalPath }: Metricas
 
         {/* Tabs (rotas reais) */}
         <div
-          className="sticky top-0 z-[60] -mx-4 sm:-mx-6 px-4 sm:px-6 py-2.5 backdrop-blur-sm border-b"
-          style={{ background: `${C.bg}f2`, borderColor: C.border }}
+          className="-mx-4 sm:-mx-6 px-4 sm:px-6 py-2.5 border-b"
+          style={{ background: C.bg, borderColor: C.border }}
         >
           <nav className="flex gap-3 max-w-2xl mx-auto">
             {TABS.map(({ to, label, icon: Icon, color }) => {
