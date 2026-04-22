@@ -168,9 +168,7 @@ const DoshaFoodContent = ({
             <h3 className="text-xl font-serif font-bold italic text-primary mb-3">{ctaTitle}</h3>
             <p className="text-sm text-foreground/70 leading-relaxed mb-5">{ctaText}</p>
             <a
-              href="https://samkhya.com.br"
-              target="_blank"
-              rel="noopener noreferrer"
+              href="/samkhya"
               className="inline-block bg-primary text-white font-semibold px-6 py-3 rounded-full hover:opacity-90 transition-opacity"
             >
               Acessar a Loja Oficial
