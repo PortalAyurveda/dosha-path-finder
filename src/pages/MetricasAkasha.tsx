@@ -11,7 +11,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { MessageCircle, Users, Repeat, BarChart3, Trophy } from "lucide-react";
+import { MessageCircle, Users, BarChart3, Trophy } from "lucide-react";
 import { C, SERIF, SANS, LEAF, fmtN } from "@/components/metricas/theme";
 import {
   useLatestDate,
@@ -178,7 +178,7 @@ const MetricasAkasha = () => {
   const totalUsers = get("AKASHA_02")?.n_base ?? null;
   const mediaUso = get("AKASHA_03"); // percentual = 69.3
   const picoUser = get("AKASHA_04")?.n_base ?? null;
-  const retencao = get("AKASHA_RETENCAO_PCT"); // ainda não existe no snapshot
+  
 
   const hasSnaps = (snaps?.length ?? 0) > 0;
   if (loadingSnap && !hasSnaps) {
@@ -223,7 +223,7 @@ const MetricasAkasha = () => {
         </div>
 
         {/* Bloco 1: KPIs */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <KpiCard
             label="Volume Total"
             value={fmtN(totalMsgs ? Number(totalMsgs) : null)}
@@ -238,18 +238,7 @@ const MetricasAkasha = () => {
             detail="Usuários distintos"
             icon={<Users className="w-5 h-5" />}
           />
-          <KpiCard
-            label="Retenção (>7 dias)"
-            value={
-              retencao?.percentual != null
-                ? `${retencao.percentual.toFixed(1).replace(".", ",")}%`
-                : retencao?.descricao
-                  ? `${retencao.descricao}%`
-                  : "—"
-            }
-            detail="Retornaram após a 1ª semana"
-            icon={<Repeat className="w-5 h-5" />}
-          />
+          
           <KpiCard
             label="Média de Uso"
             value={
