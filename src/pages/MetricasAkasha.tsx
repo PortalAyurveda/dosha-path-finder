@@ -180,7 +180,8 @@ const MetricasAkasha = () => {
   const picoUser = get("AKASHA_04")?.n_base ?? null;
   const retencao = get("AKASHA_RETENCAO_PCT"); // ainda não existe no snapshot
 
-  if (loadingSnap && (!snaps || snaps.length === 0)) {
+  const hasSnaps = (snaps?.length ?? 0) > 0;
+  if (loadingSnap && !hasSnaps) {
     return (
       <MetricasShell
         title="Akasha IA | Estatísticas | Portal Ayurveda"
