@@ -114,23 +114,47 @@ const ChartShell = ({
 
 const MetricasAkasha = () => {
   const { data: date } = useLatestDate();
-  const { data: snaps, isLoading } = useSnapshot(date ?? null, "akasha");
-  const { data: diasFull, isLoading: loadingDias } = useAkashaEvolucaoDiaria();
+  const { data: snaps, isLoading: loadingSnap } = useSnapshot(date ?? null, "akasha");
+  const { data: diasFull, isLoading: loadingDiasRpc } = useAkashaEvolucaoDiaria();
   const { data: horasFull, isLoading: loadingHoras } = useAkashaDistribuicaoHoras();
 
   const get = (id: string): Snapshot | undefined =>
     snaps?.find((s) => s.metrica_id === id);
 
+  // Série diária: prioriza TEMPORAL_AKASHA do snapshot; fallback à RPC
+  const diasFromSnapshot = useMemo(() => {
+    const temporal = snaps?.find((s) => s.metrica_id === "TEMPORAL_AKASHA");
+    if (!temporal?.descricao) return null;
+    try {
+      const parsed = JSON.parse(temporal.descricao) as Array<{
+        dia: string;
+        msgs: number;
+        usuarios: number;
+      }>;
+      if (!Array.isArray(parsed) || parsed.length === 0) return null;
+      return parsed.map((r) => ({
+        dia: r.dia,
+        msgs: Number(r.msgs),
+        usuarios: Number(r.usuarios),
+      }));
+    } catch {
+      return null;
+    }
+  }, [snaps]);
+
+  const diasSource = diasFromSnapshot ?? diasFull ?? [];
+  const loadingDias = !diasFromSnapshot && loadingDiasRpc && loadingSnap;
+
   // Formata dias em "DD/MM"
   const dias = useMemo(
     () =>
-      (diasFull ?? []).map((d) => {
+      diasSource.map((d) => {
         // d.dia vem como "YYYY-MM-DD"
         const parts = d.dia.split("-");
         const diaLabel = parts.length === 3 ? `${parts[2]}/${parts[1]}` : d.dia;
         return { ...d, diaLabel };
       }),
-    [diasFull],
+    [diasSource],
   );
 
   const horas = useMemo(
@@ -147,14 +171,17 @@ const MetricasAkasha = () => {
     return horas.reduce((a, b) => (b.percentual > a.percentual ? b : a));
   }, [horas]);
 
-  const horaPicoText = horaPico ? `${horaPico.hora}h` : (get("AKASHA_HORA_PICO")?.descricao ?? null);
-  const totalMsgs = get("AKASHA_TOTAL_MSGS")?.descricao ?? null;
-  const totalUsers = get("AKASHA_USUARIOS_UNICOS")?.descricao ?? null;
-  const retencao = get("AKASHA_RETENCAO_PCT");
-  const mediaUso = get("AKASHA_MEDIA_POR_USUARIO")?.descricao ?? null;
-  const picoUser = get("AKASHA_PICO_USUARIO")?.descricao ?? null;
+  const horaPicoText = horaPico ? `${horaPico.hora}h` : null;
 
-  if (isLoading) {
+  // Mapeamento dos IDs atuais do snapshot
+  const totalMsgs = get("AKASHA_01")?.n_base ?? null;
+  const totalUsers = get("AKASHA_02")?.n_base ?? null;
+  const mediaUso = get("AKASHA_03"); // percentual = 69.3
+  const picoUser = get("AKASHA_04")?.n_base ?? null;
+  const retencao = get("AKASHA_RETENCAO_PCT"); // ainda não existe no snapshot
+
+  const hasSnaps = (snaps?.length ?? 0) > 0;
+  if (loadingSnap && !hasSnaps) {
     return (
       <MetricasShell
         title="Akasha IA | Estatísticas | Portal Ayurveda"
@@ -225,7 +252,11 @@ const MetricasAkasha = () => {
           />
           <KpiCard
             label="Média de Uso"
-            value={mediaUso ?? "—"}
+            value={
+              mediaUso?.percentual != null
+                ? mediaUso.percentual.toFixed(1).replace(".", ",")
+                : "—"
+            }
             unit="msgs/usuário"
             icon={<BarChart3 className="w-5 h-5" />}
           />

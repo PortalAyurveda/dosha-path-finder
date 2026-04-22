@@ -742,27 +742,6 @@ export type Database = {
         }
         Relationships: []
       }
-      estatisticas_ayurvedicas: {
-        Row: {
-          atualizado_em: string
-          codigo_regra: string
-          n_amostra: number
-          porcentagem: number
-        }
-        Insert: {
-          atualizado_em?: string
-          codigo_regra: string
-          n_amostra?: number
-          porcentagem?: number
-        }
-        Update: {
-          atualizado_em?: string
-          codigo_regra?: string
-          n_amostra?: number
-          porcentagem?: number
-        }
-        Relationships: []
-      }
       feed_resultados: {
         Row: {
           created_at: string | null
