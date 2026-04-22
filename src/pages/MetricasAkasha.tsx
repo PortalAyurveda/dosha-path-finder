@@ -11,7 +11,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { MessageCircle, Users, Repeat, BarChart3, Trophy } from "lucide-react";
+import { MessageCircle, Users, BarChart3, Trophy } from "lucide-react";
 import { C, SERIF, SANS, LEAF, fmtN } from "@/components/metricas/theme";
 import {
   useLatestDate,
