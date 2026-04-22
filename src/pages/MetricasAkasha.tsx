@@ -171,14 +171,16 @@ const MetricasAkasha = () => {
     return horas.reduce((a, b) => (b.percentual > a.percentual ? b : a));
   }, [horas]);
 
-  const horaPicoText = horaPico ? `${horaPico.hora}h` : (get("AKASHA_HORA_PICO")?.descricao ?? null);
-  const totalMsgs = get("AKASHA_TOTAL_MSGS")?.descricao ?? null;
-  const totalUsers = get("AKASHA_USUARIOS_UNICOS")?.descricao ?? null;
-  const retencao = get("AKASHA_RETENCAO_PCT");
-  const mediaUso = get("AKASHA_MEDIA_POR_USUARIO")?.descricao ?? null;
-  const picoUser = get("AKASHA_PICO_USUARIO")?.descricao ?? null;
+  const horaPicoText = horaPico ? `${horaPico.hora}h` : null;
 
-  if (isLoading) {
+  // Mapeamento dos IDs atuais do snapshot
+  const totalMsgs = get("AKASHA_01")?.n_base ?? null;
+  const totalUsers = get("AKASHA_02")?.n_base ?? null;
+  const mediaUso = get("AKASHA_03"); // percentual = 69.3
+  const picoUser = get("AKASHA_04")?.n_base ?? null;
+  const retencao = get("AKASHA_RETENCAO_PCT"); // ainda não existe no snapshot
+
+  if (loadingSnap && !snaps?.length) {
     return (
       <MetricasShell
         title="Akasha IA | Estatísticas | Portal Ayurveda"
