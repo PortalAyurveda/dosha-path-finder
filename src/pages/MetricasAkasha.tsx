@@ -178,7 +178,7 @@ const MetricasAkasha = () => {
   const totalUsers = get("AKASHA_02")?.n_base ?? null;
   const mediaUso = get("AKASHA_03"); // percentual = 69.3
   const picoUser = get("AKASHA_04")?.n_base ?? null;
-  const retencao = get("AKASHA_RETENCAO_PCT"); // ainda não existe no snapshot
+  
 
   const hasSnaps = (snaps?.length ?? 0) > 0;
   if (loadingSnap && !hasSnaps) {
