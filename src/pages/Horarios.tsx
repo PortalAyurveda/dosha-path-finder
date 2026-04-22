@@ -421,9 +421,7 @@ const Horarios = () => {
             Acesse formulações autênticas desenvolvidas clinicamente. De especiarias a composições como o Madhu Anti-Kapha, Anti-Pitta e Anti-Vata, encontre o veículo perfeito para tratar a raiz do seu desequilíbrio metabólico.
           </p>
           <a
-            href="https://www.lojasamkhya.com.br"
-            target="_blank"
-            rel="noopener noreferrer"
+            href="/samkhya"
             className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-secondary text-secondary-foreground font-bold text-sm hover:opacity-90 transition-opacity"
           >
             <ExternalLink className="h-4 w-4" />

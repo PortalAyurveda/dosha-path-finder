@@ -1,4 +1,5 @@
-import { ExternalLink } from "lucide-react";
+import { ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
 const BANNER_URL =
@@ -12,10 +13,10 @@ const SamkhyaCTA = ({ className = "" }: { className?: string }) => (
     className={`rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm px-8 py-6 text-base font-bold text-white shadow-lg transition-all hover:opacity-90 ${className}`}
     style={{ backgroundColor: PURPLE }}
   >
-    <a href="/samkhya" target="_blank" rel="noopener noreferrer">
+    <Link to="/samkhya">
       Acessar Loja Samkhya
-      <ExternalLink className="ml-2 h-4 w-4" />
-    </a>
+      <ArrowRight className="ml-2 h-4 w-4" />
+    </Link>
   </Button>
 );
 

@@ -88,7 +88,7 @@ export const vataRemediesData: DoshaRemediesData = {
   ctaTitle: "A Alquimia Magistral em um Frasco",
   ctaText: "Unimos o veículo correto e as especiarias de aterramento em formulações clínicas desenvolvidas para o dia a dia. Conheça a linha Anti-Vata da Samkhya.",
   ctaButtonText: "Explorar na Samkhya",
-  ctaLink: "https://samkhya.com.br",
+  ctaLink: "/samkhya",
 };
 
 export const pittaRemediesData: DoshaRemediesData = {
@@ -132,7 +132,7 @@ export const pittaRemediesData: DoshaRemediesData = {
   ctaTitle: "A Alquimia da Purificação",
   ctaText: "Desenvolvemos formulações clínicas para pacificar a acidez e purificar o sangue sem apagar o fogo harmonioso. Conheça a linha Anti-Pitta da Samkhya.",
   ctaButtonText: "Explorar na Samkhya",
-  ctaLink: "https://samkhya.com.br",
+  ctaLink: "/samkhya",
 };
 
 export const kaphaRemediesData: DoshaRemediesData = {
@@ -181,5 +181,5 @@ export const kaphaRemediesData: DoshaRemediesData = {
   ctaTitle: "A Alquimia da Desobstrução",
   ctaText: "Utilizamos especiarias motoras e veículos adstringentes em formulações clínicas para descolar o muco e reduzir a obesidade sistêmica. Conheça a linha Anti-Kapha da Samkhya.",
   ctaButtonText: "Explorar na Samkhya",
-  ctaLink: "https://samkhya.com.br",
+  ctaLink: "/samkhya",
 };

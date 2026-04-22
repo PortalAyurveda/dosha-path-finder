@@ -1,5 +1,5 @@
 import { Youtube, Instagram, ShoppingBag } from "lucide-react";
-import { useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { samkhyaTokens } from "@/components/samkhya/tokens";
 
 const Footer = () => {
@@ -11,9 +11,16 @@ const Footer = () => {
   const linkClass = isSamkhya
     ? "inline-flex items-center gap-2 text-sm transition-colors hover:opacity-100"
     : "inline-flex items-center gap-2 text-sm text-white/80 hover:text-white transition-colors";
-
-  // Para hover em ouro nos links Samkhya, usamos onMouseOver inline (estilo dinâmico simples)
   const linkStyle = isSamkhya ? { color: textColor } : undefined;
+
+  const socialEnter = isSamkhya
+    ? (e: React.MouseEvent<HTMLAnchorElement>) =>
+        (e.currentTarget.style.color = samkhyaTokens.ouro)
+    : undefined;
+  const socialLeave = isSamkhya
+    ? (e: React.MouseEvent<HTMLAnchorElement>) =>
+        (e.currentTarget.style.color = samkhyaTokens.footerTexto)
+    : undefined;
 
   return (
     <footer
@@ -21,60 +28,89 @@ const Footer = () => {
       style={bgStyle}
     >
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10">
-        <div className="flex flex-col sm:flex-row items-center sm:items-start justify-between gap-6">
-          {/* Brand */}
-          <div className="text-center sm:text-left">
+        {/* Top row: 3 columns */}
+        <div className="grid grid-cols-1 md:grid-cols-3 items-center gap-8">
+          {/* Left: tagline */}
+          <div className="text-center md:text-left">
+            <p
+              className="text-sm max-w-xs mx-auto md:mx-0"
+              style={
+                isSamkhya
+                  ? { color: textColor, opacity: 0.85 }
+                  : { color: "rgba(255,255,255,0.8)" }
+              }
+            >
+              Saúde integrativa personalizada com base na sabedoria milenar do Ayurveda.
+            </p>
+          </div>
+
+          {/* Center: logo */}
+          <div className="flex justify-center">
             <img
               src="https://static.wixstatic.com/media/b8f47f_6144676c30ec476dbc1f8c5c8812eb1d~mv2.png"
               alt="Portal Ayurveda"
-              width={160}
-              height={40}
-              className="h-10 w-auto brightness-0 invert mb-4 mx-auto sm:mx-0"
+              width={180}
+              height={48}
+              className="h-12 w-auto brightness-0 invert"
             />
-            <p className="text-sm max-w-xs" style={isSamkhya ? { color: textColor, opacity: 0.85 } : { color: "rgba(255,255,255,0.7)" }}>
-              Saúde integrativa personalizada com base na sabedoria milenar do Ayurveda.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-3 sm:gap-5 mt-4 items-center sm:items-start">
-              <a
-                href="https://www.youtube.com/@portalayurveda"
-                target="_blank"
-                rel="noopener noreferrer"
-                className={linkClass}
-                style={linkStyle}
-                onMouseEnter={isSamkhya ? (e) => (e.currentTarget.style.color = samkhyaTokens.ouro) : undefined}
-                onMouseLeave={isSamkhya ? (e) => (e.currentTarget.style.color = samkhyaTokens.footerTexto) : undefined}
-              >
-                <Youtube className="h-5 w-5" />
-                YouTube
-              </a>
-              <a
-                href="https://www.instagram.com/edson_ayurveda"
-                target="_blank"
-                rel="noopener noreferrer"
-                className={linkClass}
-                style={linkStyle}
-                onMouseEnter={isSamkhya ? (e) => (e.currentTarget.style.color = samkhyaTokens.ouro) : undefined}
-                onMouseLeave={isSamkhya ? (e) => (e.currentTarget.style.color = samkhyaTokens.footerTexto) : undefined}
-              >
-                <Instagram className="h-5 w-5" />
-                Instagram
-              </a>
-              <a
-                href="https://samkhya.com.br"
-                target="_blank"
-                rel="noopener noreferrer"
-                className={linkClass}
-                style={linkStyle}
-                onMouseEnter={isSamkhya ? (e) => (e.currentTarget.style.color = samkhyaTokens.ouro) : undefined}
-                onMouseLeave={isSamkhya ? (e) => (e.currentTarget.style.color = samkhyaTokens.footerTexto) : undefined}
-              >
-                <ShoppingBag className="h-5 w-5" />
-                Loja Samkhya
-              </a>
-            </div>
           </div>
 
-          <p className="text-xs" style={isSamkhya ? { color: textColor, opacity: 0.7 } : { color: "rgba(255,255,255,0.5)" }}>
+          {/* Right: socials */}
+          <div className="flex justify-center md:justify-end gap-5">
+            <a
+              href="https://www.youtube.com/@portalayurveda"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={linkClass}
+              style={linkStyle}
+              onMouseEnter={socialEnter}
+              onMouseLeave={socialLeave}
+              aria-label="YouTube"
+            >
+              <Youtube className="h-5 w-5" />
+            </a>
+            <a
+              href="https://www.instagram.com/edson_ayurveda"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={linkClass}
+              style={linkStyle}
+              onMouseEnter={socialEnter}
+              onMouseLeave={socialLeave}
+              aria-label="Instagram"
+            >
+              <Instagram className="h-5 w-5" />
+            </a>
+            <Link
+              to="/samkhya"
+              className={linkClass}
+              style={linkStyle}
+              onMouseEnter={socialEnter}
+              onMouseLeave={socialLeave}
+              aria-label="Loja Samkhya"
+            >
+              <ShoppingBag className="h-5 w-5" />
+            </Link>
+          </div>
+        </div>
+
+        {/* Bottom row: copyright */}
+        <div
+          className="mt-8 pt-6 border-t text-center"
+          style={{
+            borderColor: isSamkhya
+              ? "rgba(255,255,255,0.15)"
+              : "rgba(255,255,255,0.15)",
+          }}
+        >
+          <p
+            className="text-xs"
+            style={
+              isSamkhya
+                ? { color: textColor, opacity: 0.7 }
+                : { color: "rgba(255,255,255,0.6)" }
+            }
+          >
             © {new Date().getFullYear()} portalayurveda.com — Todos os direitos reservados.
           </p>
         </div>
