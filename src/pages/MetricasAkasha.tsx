@@ -238,18 +238,7 @@ const MetricasAkasha = () => {
             detail="Usuários distintos"
             icon={<Users className="w-5 h-5" />}
           />
-          <KpiCard
-            label="Retenção (>7 dias)"
-            value={
-              retencao?.percentual != null
-                ? `${retencao.percentual.toFixed(1).replace(".", ",")}%`
-                : retencao?.descricao
-                  ? `${retencao.descricao}%`
-                  : "—"
-            }
-            detail="Retornaram após a 1ª semana"
-            icon={<Repeat className="w-5 h-5" />}
-          />
+          
           <KpiCard
             label="Média de Uso"
             value={
