@@ -1,4 +1,4 @@
-import { Youtube, Instagram, ShoppingBag } from "lucide-react";
+import { Youtube, Instagram, ShoppingCart } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { samkhyaTokens } from "@/components/samkhya/tokens";
 
@@ -56,7 +56,7 @@ const Footer = () => {
           </div>
 
           {/* Right: socials */}
-          <div className="flex justify-center md:justify-end gap-5">
+          <div className="flex flex-col sm:flex-row justify-center md:justify-end items-center gap-3 sm:gap-5">
             <a
               href="https://www.youtube.com/@portalayurveda"
               target="_blank"
@@ -65,9 +65,9 @@ const Footer = () => {
               style={linkStyle}
               onMouseEnter={socialEnter}
               onMouseLeave={socialLeave}
-              aria-label="YouTube"
             >
               <Youtube className="h-5 w-5" />
+              YouTube
             </a>
             <a
               href="https://www.instagram.com/edson_ayurveda"
@@ -77,9 +77,9 @@ const Footer = () => {
               style={linkStyle}
               onMouseEnter={socialEnter}
               onMouseLeave={socialLeave}
-              aria-label="Instagram"
             >
               <Instagram className="h-5 w-5" />
+              Instagram
             </a>
             <Link
               to="/samkhya"
@@ -87,9 +87,9 @@ const Footer = () => {
               style={linkStyle}
               onMouseEnter={socialEnter}
               onMouseLeave={socialLeave}
-              aria-label="Loja Samkhya"
             >
-              <ShoppingBag className="h-5 w-5" />
+              <ShoppingCart className="h-5 w-5" />
+              Loja Samkhya
             </Link>
           </div>
         </div>
