@@ -114,23 +114,47 @@ const ChartShell = ({
 
 const MetricasAkasha = () => {
   const { data: date } = useLatestDate();
-  const { data: snaps, isLoading } = useSnapshot(date ?? null, "akasha");
-  const { data: diasFull, isLoading: loadingDias } = useAkashaEvolucaoDiaria();
+  const { data: snaps, isLoading: loadingSnap } = useSnapshot(date ?? null, "akasha");
+  const { data: diasFull, isLoading: loadingDiasRpc } = useAkashaEvolucaoDiaria();
   const { data: horasFull, isLoading: loadingHoras } = useAkashaDistribuicaoHoras();
 
   const get = (id: string): Snapshot | undefined =>
     snaps?.find((s) => s.metrica_id === id);
 
+  // Série diária: prioriza TEMPORAL_AKASHA do snapshot; fallback à RPC
+  const diasFromSnapshot = useMemo(() => {
+    const temporal = snaps?.find((s) => s.metrica_id === "TEMPORAL_AKASHA");
+    if (!temporal?.descricao) return null;
+    try {
+      const parsed = JSON.parse(temporal.descricao) as Array<{
+        dia: string;
+        msgs: number;
+        usuarios: number;
+      }>;
+      if (!Array.isArray(parsed) || parsed.length === 0) return null;
+      return parsed.map((r) => ({
+        dia: r.dia,
+        msgs: Number(r.msgs),
+        usuarios: Number(r.usuarios),
+      }));
+    } catch {
+      return null;
+    }
+  }, [snaps]);
+
+  const diasSource = diasFromSnapshot ?? diasFull ?? [];
+  const loadingDias = !diasFromSnapshot && loadingDiasRpc && loadingSnap;
+
   // Formata dias em "DD/MM"
   const dias = useMemo(
     () =>
-      (diasFull ?? []).map((d) => {
+      diasSource.map((d) => {
         // d.dia vem como "YYYY-MM-DD"
         const parts = d.dia.split("-");
         const diaLabel = parts.length === 3 ? `${parts[2]}/${parts[1]}` : d.dia;
         return { ...d, diaLabel };
       }),
-    [diasFull],
+    [diasSource],
   );
 
   const horas = useMemo(
