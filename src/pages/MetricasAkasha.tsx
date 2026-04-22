@@ -252,7 +252,11 @@ const MetricasAkasha = () => {
           />
           <KpiCard
             label="Média de Uso"
-            value={mediaUso ?? "—"}
+            value={
+              mediaUso?.percentual != null
+                ? mediaUso.percentual.toFixed(1).replace(".", ",")
+                : "—"
+            }
             unit="msgs/usuário"
             icon={<BarChart3 className="w-5 h-5" />}
           />
