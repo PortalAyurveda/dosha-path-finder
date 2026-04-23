@@ -6,6 +6,21 @@ interface Props {
   branding: FormacaoData["branding"];
 }
 
+// Render **bold** segments inside plain text while preserving line breaks
+const renderRich = (text: string) => {
+  const parts = text.split(/(\*\*[^*]+\*\*)/g);
+  return parts.map((part, i) => {
+    if (part.startsWith("**") && part.endsWith("**")) {
+      return (
+        <strong key={i} className="font-semibold">
+          {part.slice(2, -2)}
+        </strong>
+      );
+    }
+    return <span key={i}>{part}</span>;
+  });
+};
+
 const ProblemaSection = ({ data, branding }: Props) => (
   <section className="py-12 md:py-16" style={{ background: "#F0F4FF" }}>
     <div className="max-w-2xl mx-auto px-6">
@@ -41,7 +56,7 @@ const ProblemaSection = ({ data, branding }: Props) => (
         transition={{ duration: 0.5, delay: 0.1 }}
         className="text-sm md:text-base text-gray-700 leading-relaxed mb-8 whitespace-pre-line"
       >
-        {data.intro}
+        {renderRich(data.intro)}
       </motion.div>
 
       <motion.div
@@ -51,7 +66,7 @@ const ProblemaSection = ({ data, branding }: Props) => (
         transition={{ duration: 0.5, delay: 0.1 }}
         className="text-sm md:text-base text-gray-700 leading-relaxed whitespace-pre-line"
       >
-        {data.closing}
+        {renderRich(data.closing)}
       </motion.div>
     </div>
   </section>

@@ -45,7 +45,12 @@ const Formacao = () => {
         <ProblemaSection data={data.problema} branding={data.branding} />
         <SolucaoSection data={data.solucao} branding={data.branding} />
         <ProgramaSection data={data.programa} branding={data.branding} />
-        <DiferenciaisSection data={data.diferenciais} branding={data.branding} />
+        <DiferenciaisSection
+          data={data.diferenciais}
+          branding={data.branding}
+          onCtaClick={handleEmBreve("diferenciais")}
+          ctaText="Quero garantir minha vaga"
+        />
         <ProfessorSection data={data.professor} branding={data.branding} />
         <InvestimentoSection
           data={data.investimento}
