@@ -32,7 +32,7 @@ const C = {
   primary: "#352F54",
   vata: "#6B8AFF",
   pitta: "#FF7676",
-  kapha: "#4ADE80",
+  kapha: "#9ED88B",
   accent: "#FACC15",
   bgSoft: "#F8F9FA",
   surface: "#FFF8EE",
