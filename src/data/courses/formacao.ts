@@ -207,6 +207,11 @@ export const formacaoData: FormacaoData = {
             date: "12-13 de Julho/2026",
             description:
               "A base de tudo: de onde vem o Ayurveda, como ele enxerga o universo e o ser humano.",
+            details: [
+              "A jornada da consciência à matéria: Purusha e Prakriti",
+              "Os 24 Tattvas: Mahat, Ahamkara, Manas, Indriyas, Tanmatras e Mahabhutas",
+              "A lógica invisível do adoecimento: Prajnaparadha e a separação da natureza",
+            ],
           },
           {
             number: 2,
@@ -215,6 +220,11 @@ export const formacaoData: FormacaoData = {
             date: "08-09 de Agosto/2026",
             description:
               "A estrutura central: Vata, Pitta, Kapha, os tecidos corporais e a lógica dos sabores.",
+            details: [
+              "Os Tridoshas e seus Gunas (atributos intrínsecos)",
+              "Sapta Dhatus: formação dos 7 tecidos e produção de Ojas",
+              "Shad Rasa: mecânica dos 6 sabores e impacto nos Doshas",
+            ],
           },
           {
             number: 3,
@@ -223,6 +233,11 @@ export const formacaoData: FormacaoData = {
             date: "12-13 de Setembro/2026",
             description:
               "Como os doshas se movem, onde moram, como causam desequilíbrio.",
+            details: [
+              "Agni (fogo biológico) e Ama (biotoxinas): raiz de saúde e doença",
+              "Srotas: anatomia sutil dos canais de circulação",
+              "Kostha: locais de acúmulo e trajeto de disseminação dos Doshas",
+            ],
           },
           {
             number: 4,
@@ -231,6 +246,11 @@ export const formacaoData: FormacaoData = {
             date: "03-04 de Outubro/2026",
             description:
               "Abhyanga, Shirodhara, Swedana, Basti — a lógica por trás de cada terapia.",
+            details: [
+              "Panchakarma (purificação) e Shamana (pacificação)",
+              "Purvakarma: Snehana (oleação) e Swedana (sudorese)",
+              "Indicações, contraindicações e mecânica de desintoxicação",
+            ],
           },
           {
             number: 5,
@@ -238,6 +258,11 @@ export const formacaoData: FormacaoData = {
             format: "Presencial SP",
             date: "07-08 de Novembro/2026",
             description: "Mão na massa. Você aplica, sente, aprende fazendo.",
+            details: [
+              "Abhyanga, Udvartana, Garshana e Pindas Sweda",
+              "Posicionamento, ritmo e pressão do terapeuta",
+              "Transferência de intenção através do toque terapêutico",
+            ],
           },
         ],
       },
@@ -252,6 +277,11 @@ export const formacaoData: FormacaoData = {
             date: "30-31 de Janeiro/2027",
             description:
               "A alimentação como medicina. Teoria profunda, aplicação prática.",
+            details: [
+              "Farmacologia do alimento: Virya, Vipaka e Prabhava",
+              "Viruddha Ahara (incompatibilidades) e doenças inflamatórias",
+              "Uso de especiarias (Deepana/Pachana) e dietoterapia corretiva",
+            ],
           },
           {
             number: 7,
@@ -260,6 +290,11 @@ export const formacaoData: FormacaoData = {
             date: "20-21 de Fevereiro/2027",
             description:
               "Como as plantas agem no corpo, classificação, propriedades, uso clínico.",
+            details: [
+              "Introdução à farmacologia ayurvédica botânica",
+              "Perfil energético de ervas principais (Guduchi, Ashwagandha, Triphala)",
+              "Anupana: veículos carreadores para tecidos específicos",
+            ],
           },
           {
             number: 8,
@@ -268,6 +303,11 @@ export const formacaoData: FormacaoData = {
             date: "20-21 de Março/2027",
             description:
               "O refinamento do diagnóstico: os 15 subdoshas e suas relações.",
+            details: [
+              "Os 15 subdoshas (Prana, Udana, Samana, Apana, Vyana; Pachaka, Ranjaka, Sadhaka, Alochaka, Bhrajaka; Kledaka, Avalambaka, Bodhaka, Tarpaka, Shleshaka)",
+              "Relação entre mente, emoções e subdoshas nos órgãos",
+              "Mapeamento de coração, fígado, cérebro e intestinos",
+            ],
           },
           {
             number: 9,
@@ -276,6 +316,11 @@ export const formacaoData: FormacaoData = {
             date: "10-11 de Abril/2027",
             description:
               "Língua, pulso, urina, fezes — como ler o corpo com precisão.",
+            details: [
+              "Métodos clássicos: Trividha, Ashtavidha e Dashavidha Pariksha",
+              "Jihva Pariksha (língua), Mala (fezes) e Mutra (urina)",
+              "Identificação de Ama sistêmico por observação externa",
+            ],
           },
           {
             number: 10,
@@ -284,6 +329,11 @@ export const formacaoData: FormacaoData = {
             date: "15-16 de Maio/2027",
             description:
               "Laboratório vivo. Você prepara medicamentos, óleos, panaceias.",
+            details: [
+              "Extração e concentração de princípios ativos",
+              "Preparo de Tailas (óleos), Ghritas (ghee), Kashayas (decocções) e Churnas (pós)",
+              "Processos de cura térmica e conservação",
+            ],
           },
         ],
       },
@@ -298,6 +348,11 @@ export const formacaoData: FormacaoData = {
             date: "10-11 de Julho/2027",
             description:
               "Como montar um plano terapêutico completo do zero.",
+            details: [
+              "Samprapti: 6 estágios de progressão da doença",
+              "Protocolo de primeira consulta (anamnese à linha terapêutica)",
+              "Raciocínio clínico para tratar a causa primária",
+            ],
           },
           {
             number: 12,
@@ -306,6 +361,11 @@ export const formacaoData: FormacaoData = {
             date: "14-15 de Agosto/2027",
             description:
               "Ciclos femininos, gestação, pós-parto, cuidados infantis.",
+            details: [
+              "Ciclo menstrual pela ótica dos Doshas e Dhatus",
+              "Garbhini Paricharya: cuidados mês a mês na gestação",
+              "Sutika Paricharya (puerpério) e Bala Roga (pediatria básica)",
+            ],
           },
           {
             number: 13,
@@ -313,6 +373,11 @@ export const formacaoData: FormacaoData = {
             format: "Online",
             date: "11-12 de Setembro/2027",
             description: "Longevidade, vitalidade, força reprodutiva.",
+            details: [
+              "Terapias de reconstrução celular, imunidade e longevidade (Rasayana)",
+              "Saúde reprodutiva e vitalidade (Vajikarana)",
+              "Protocolos Brimhana pós-purificação e resgate de Ojas",
+            ],
           },
           {
             number: 14,
@@ -321,6 +386,11 @@ export const formacaoData: FormacaoData = {
             date: "02-03 de Outubro/2027",
             description:
               "Leitura de pulso, refinamento diagnóstico, sutilezas clínicas.",
+            details: [
+              "Nadi Pariksha: teoria e mecânica da leitura de pulso",
+              "Cruzamento de anamnese, língua, fezes e pulso",
+              "Resolução de casos reais complexos",
+            ],
           },
           {
             number: 15,
@@ -329,6 +399,11 @@ export const formacaoData: FormacaoData = {
             date: "06-07 de Novembro/2027",
             description:
               "Atendimento real. Casos reais. Você encerra como terapeuta.",
+            details: [
+              "Atendimento de pacientes reais sob supervisão",
+              "Fechamento de diagnóstico e prescrição completa",
+              "TCC e cerimonial de encerramento",
+            ],
           },
         ],
       },
