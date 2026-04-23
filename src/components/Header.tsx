@@ -215,7 +215,7 @@ const Header = () => {
         </div>
 
         {/* RIGHT — Profile with pie favicon */}
-        <div className="flex items-center gap-1.5 justify-self-end">
+        <div className={`flex items-center gap-1.5 justify-self-end ${isFormacao ? "hidden md:flex" : ""}`}>
             {doshaResult ? (
               <Link
                 to={profileLink}
