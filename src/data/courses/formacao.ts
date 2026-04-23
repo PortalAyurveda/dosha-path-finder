@@ -40,6 +40,7 @@ export interface FormacaoData {
     subheadline: string;
     details: string;
     startDate: string;
+    endDate: string;
     ctaText: string;
     ctaSubtext: string;
   };
@@ -121,17 +122,18 @@ export const formacaoData: FormacaoData = {
   },
   hero: {
     headline:
-      "Torne-se Terapeuta Ayurveda e Construa uma Carreira com Propósito Cuidando da Sua Vitalidade e do Próximo",
+      "Torne-se Terapeuta Ayurveda e construa uma carreira com propósito cuidando da sua vitalidade e do próximo",
     subheadline:
       "Para quem já sentiu na pele o poder do Ayurveda — e agora quer dominar essa ciência de verdade, com autonomia para cuidar de si e transformar vidas ao seu redor.",
     details:
-      "400 horas de certificação | 15 módulos ao longo de 1,5 ano | Online + 3 Imersões Presenciais em SP",
+      "400 horas de certificação | 15 módulos ao longo de 1,5 ano | Online + 3 imersões presenciais em SP",
     startDate: "Início: 12 e 13 de Julho de 2026",
+    endDate: "Término: 06 e 07 de Novembro de 2027",
     ctaText: "Inscrições abrem início de maio",
     ctaSubtext: "Apenas 50 vagas no primeiro lote.",
   },
   paraQuem: {
-    title: "Para Quem É Esta Formação",
+    title: "Para quem é esta formação",
     items: [
       "Já experimentou Ayurveda na pele — melhorou sua saúde, sua energia, sua clareza mental — e agora quer ir além da experiência pessoal",
       "Quer se tornar terapeuta profissional, mas não sabe por onde começar ou tem medo de que o conhecimento seja complicado demais",
@@ -141,7 +143,7 @@ export const formacaoData: FormacaoData = {
     ],
   },
   problema: {
-    title: "O Problema Não É Falta de Informação",
+    title: "O problema não é falta de informação",
     intro:
       "Você já assistiu dezenas de lives. Já leu sobre doshas, subdoshas, agni, ama. Talvez até tenha feito cursos introdutórios.\n\nVocê já experimentou os frutos do Ayurveda. Sentiu a diferença na pele, na energia, na digestão. Viu como os temperos certos transformam um prato. Percebeu como a rotina muda tudo.\n\nMas agora você quer mais. Você quer plantar sua própria árvore. Não apenas colher os frutos — mas dominar a semente, a raiz, o cultivo. Para ter autonomia real. Para oferecer esses frutos a quem te procura.\n\nE aí percebe: uma coisa é experimentar os resultados. Outra coisa é olhar para uma língua e, em segundos, conectar subdoshas, digestão, excreção — e dar uma resposta precisa que transforma a vida de alguém.\n\nEssa é a diferença entre consumir Ayurveda e praticar Ayurveda.",
     box: {
@@ -152,7 +154,7 @@ export const formacaoData: FormacaoData = {
       "O desafio não é encontrar mais informação. O desafio é transformar informação em domínio clínico real.\n\nVocê pode estudar sozinho por anos — mas sem estrutura, sem prática supervisionada, sem uma linha condutora clara, você fica perdido em conceitos soltos. Falta a raiz. Falta a semente.",
   },
   solucao: {
-    title: "A Solução: Estrutura + Prática + Vivência",
+    title: "A solução: estrutura + prática + vivência",
     subtitle:
       "Esta formação foi desenhada para te capacitar de verdade. Não é só assistir aulas. É viver Ayurveda enquanto aprende Ayurveda.",
     listIntro: "Aqui você vai:",
@@ -167,7 +169,7 @@ export const formacaoData: FormacaoData = {
       "Essa é a diferença entre \"fazer mais um curso\" e \"se tornar terapeuta de verdade\". Você não vai só acumular informação. Você vai plantar raízes profundas — fundação, estrutura, domínio clínico.\n\nNão é sobre o que eu experimentei e vou te passar. Você vai experienciar Ayurveda a cada encontro, no online e no presencial, vamos nos aprofundar a cada degrau.",
   },
   programa: {
-    title: "Esta Não É Uma Formação Comum. É Uma Jornada Completa.",
+    title: "Esta não é uma formação comum. É uma jornada completa.",
     intro:
       "Ao longo de 1 ano e meio, você vai percorrer os 15 módulos que te transformam de praticante em terapeuta profissional. Mas isso vai muito além das 225 horas de aula ao vivo.",
     listIntro: "A cada módulo, você recebe:",
@@ -408,7 +410,7 @@ export const formacaoData: FormacaoData = {
         ],
       },
     ],
-    cargaTitle: "Carga Horária Total: 400 Horas Certificadas",
+    cargaTitle: "Carga horária total: 400 horas certificadas",
     cargaItems: [
       "225 horas de aulas ao vivo (online + presencial)",
       "175 horas de atividades obrigatórias:",
@@ -418,10 +420,10 @@ export const formacaoData: FormacaoData = {
       "→ 30h de diário de evolução clínica e pessoal",
       "→ 30h de TCC (trabalho de conclusão de curso)",
     ],
-    extrasTitle: "Você Também Recebe",
+    extrasTitle: "Você também recebe",
     extras: [
       { emoji: "🎯", text: "Motor de Teste de Dosha — Ferramenta profissional para seus pacientes" },
-      { emoji: "🤖", text: "IA Akasha — Suporte diagnóstico com inteligência artificial" },
+      { emoji: "💎", text: "IA Akasha — Suporte diagnóstico com inteligência artificial" },
       { emoji: "📚", text: "Compêndio de Alquimia Ayurvédica — Receitas e fórmulas práticas" },
       { emoji: "📋", text: "Protocolo de Atendimento Zero — Passo a passo para estruturar consultas" },
       { emoji: "👥", text: "Comunidade de Terapeutas do Portal — Estudos de caso, troca entre alunos, mentoria coletiva" },
@@ -431,7 +433,7 @@ export const formacaoData: FormacaoData = {
       "Essa formação te prepara para atuar. De verdade. Não é teoria solta. Não é informação sem aplicação. É a base sólida para você se tornar terapeuta — com segurança, profundidade e autonomia.",
   },
   diferenciais: {
-    title: "Por Que Esta Formação É Diferente",
+    title: "Por que esta formação é diferente",
     items: [
       {
         number: 1,
@@ -468,7 +470,7 @@ export const formacaoData: FormacaoData = {
         title: "Infraestrutura completa de suporte",
         body: "Você não fica sozinho.",
         bullets: [
-          "🤖 IA Akasha — suporte diagnóstico inteligente",
+          "💎 IA Akasha — suporte diagnóstico inteligente",
           "🎯 Acesso interno ao Portal Ayurveda — ferramenta profissional pronta",
           "📚 Compêndio de Nutrição e Alquimia — receitas e fórmulas práticas",
           "📋 Protocolo de Atendimento do Zero — estrutura pronta para consultas",
@@ -505,7 +507,7 @@ export const formacaoData: FormacaoData = {
       "💰 Módulos Presenciais (3 meses): R$ 630/mês",
     ],
     total: "Investimento total: R$ 8.370 ao longo de 1,5 ano",
-    condicoesTitle: "Condições Especiais — 1º Lote",
+    condicoesTitle: "Condições especiais — 1º lote",
     condicoes: [
       "10% de desconto para pagamento à vista no PIX",
       "Garantia de vaga com desconto válido até 12 de junho de 2026",
@@ -523,13 +525,13 @@ export const formacaoData: FormacaoData = {
       "Certificação de 400 horas",
       "Cardápios, rotinas e experiências mensais",
     ],
-    naoInclusoTitle: "O que NÃO está incluso",
+    naoInclusoTitle: "O que não está incluso",
     naoIncluso: [
       "Hospedagem e alimentação nos módulos presenciais (você organiza sua estadia em SP)",
     ],
   },
   faq: {
-    title: "Perguntas Frequentes",
+    title: "Perguntas frequentes",
     items: [
       {
         question:
@@ -571,7 +573,7 @@ export const formacaoData: FormacaoData = {
     ],
   },
   finalCta: {
-    title: "Esta É A Sua Chance",
+    title: "Esta é a sua chance",
     body: "Você já sabe que Ayurveda funciona. Você já experimentou na pele. Você já sentiu a diferença na saúde, na energia, na clareza.\n\nAgora é a hora de ir além. De sair de espectadora para protagonista. De deixar de ser paciente para se tornar terapeuta. De transformar sua própria vida — e a vida de outras pessoas.\n\nEsta é a primeira turma oficial de Terapeutas Ayurveda formada pelo Portal Ayurveda. São apenas 50 vagas. O desconto de 10% é válido até 12 de junho. A primeira aula começa em 12 de julho de 2026.",
     primaryCta: "Inscrições abrem início de maio",
     primarySub: "Apenas 50 vagas no primeiro lote",
