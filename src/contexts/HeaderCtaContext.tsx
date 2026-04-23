@@ -1,8 +1,11 @@
-import { createContext, useContext, useState, ReactNode, useCallback } from "react";
+import { createContext, useContext, useState, ReactNode, useCallback, type CSSProperties } from "react";
 
 export type HeaderCta = {
   label: string;
+  mobileLabel?: string;
   onClick: () => void;
+  className?: string;
+  style?: CSSProperties;
 } | null;
 
 interface HeaderCtaContextValue {
