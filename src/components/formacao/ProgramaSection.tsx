@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, Download, MapPin, Monitor } from "lucide-react";
-import Bullet from "./Bullet";
 import type { FormacaoData } from "@/data/courses/formacao";
 
 interface Props {
@@ -89,7 +88,12 @@ const ProgramaSection = ({ data, branding }: Props) => {
                   className="w-full flex items-center gap-4 p-5 text-left"
                   aria-expanded={isOpen}
                 >
-                  <Bullet src={branding.bulletSvg} size={32} />
+                  <span
+                    className="shrink-0 w-10 h-10 rounded-full flex items-center justify-center font-serif font-bold text-sm text-white"
+                    style={{ background: branding.darkColor }}
+                  >
+                    {si + 1}
+                  </span>
                   <div className="flex-1">
                     <p
                       className="text-[11px] uppercase tracking-widest font-bold"

@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import Bullet from "./Bullet";
+import CheckMark from "./CheckMark";
 import type { FormacaoData } from "@/data/courses/formacao";
 
 interface Props {
@@ -48,7 +48,7 @@ const SolucaoSection = ({ data, branding }: Props) => (
             transition={{ duration: 0.4, delay: i * 0.05 }}
             className="flex items-start gap-3.5"
           >
-            <Bullet src={branding.bulletSvg} size={22} className="mt-1" />
+            <CheckMark color={branding.darkColor} size={22} className="mt-1" />
             <span className="text-sm md:text-base text-gray-800 leading-relaxed">
               {item}
             </span>

@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import Bullet from "./Bullet";
+import CheckMark from "./CheckMark";
 import type { FormacaoData } from "@/data/courses/formacao";
 
 interface Props {
@@ -52,7 +52,7 @@ const DiferenciaisSection = ({ data, branding }: Props) => (
                 <ul className="space-y-2 mt-3">
                   {d.bullets.map((b, bi) => (
                     <li key={bi} className="flex items-start gap-2.5">
-                      <Bullet src={branding.bulletSvg} size={18} className="mt-0.5" />
+                      <CheckMark color={branding.darkColor} size={18} className="mt-0.5" />
                       <span className="text-sm md:text-base text-gray-700 leading-relaxed">
                         {b}
                       </span>

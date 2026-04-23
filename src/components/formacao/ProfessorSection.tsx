@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import Bullet from "./Bullet";
+import CheckMark from "./CheckMark";
 import type { FormacaoData } from "@/data/courses/formacao";
 
 interface Props {
@@ -54,7 +54,7 @@ const FormacaoProfessorSection = ({ data, branding }: Props) => (
           <ul className="space-y-2.5 mb-5">
             {data.bullets.map((b, i) => (
               <li key={i} className="flex items-start gap-3">
-                <Bullet src={branding.bulletSvg} size={20} className="mt-0.5" />
+                <CheckMark color={branding.darkColor} size={20} className="mt-0.5" />
                 <span className="text-sm md:text-base text-gray-800 leading-relaxed">
                   {b}
                 </span>
