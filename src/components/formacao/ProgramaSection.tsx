@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown, Download, MapPin, Monitor, Check } from "lucide-react";
+import { ChevronDown, Download, MapPin, Monitor, Check, Star } from "lucide-react";
 import type { FormacaoData } from "@/data/courses/formacao";
 
 interface Props {
@@ -8,13 +8,17 @@ interface Props {
   branding: FormacaoData["branding"];
 }
 
+const PHASE_LABELS = ["Fundamentos", "Aprofundamento", "Especialização"] as const;
+
 const ProgramaSection = ({ data, branding }: Props) => {
   const [openModule, setOpenModule] = useState<number | null>(1);
 
-  // Flatten all modules across semesters, preserving order
-  const allModules = data.semesters.flatMap((sem) =>
-    sem.modules.map((mod) => ({ ...mod, semester: sem.subtitle })),
-  );
+  // Group modules into 3 phases of 5 modules each, preserving order
+  const allModules = data.semesters.flatMap((sem) => sem.modules);
+  const phases = [0, 1, 2].map((p) => ({
+    label: PHASE_LABELS[p],
+    modules: allModules.slice(p * 5, p * 5 + 5),
+  }));
 
   return (
     <section className="py-12 md:py-16" style={{ background: "#FAF9F6" }}>
