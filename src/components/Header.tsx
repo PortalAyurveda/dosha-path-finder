@@ -4,6 +4,7 @@ import { Menu, LogIn, LogOut, ShoppingBag, Home } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { useUser } from "@/contexts/UserContext";
+import { useHeaderCta } from "@/contexts/HeaderCtaContext";
 import { samkhyaTokens } from "@/components/samkhya/tokens";
 
 const SAMKHYA_LOGO = "https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/samkhya/lg-samkhya.png";
@@ -73,8 +74,10 @@ const Header = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { user, doshaResult, profile, signOut } = useUser();
+  const { cta } = useHeaderCta();
 
   const isSamkhya = location.pathname.startsWith("/samkhya");
+  const showHeaderCta = !isSamkhya && cta !== null;
 
   const handleSignOut = async () => {
     await signOut();
@@ -172,7 +175,7 @@ const Header = () => {
           </SheetContent>
         </Sheet>
 
-        {/* CENTER — Logo (swap when in /samkhya/*) */}
+        {/* CENTER — Logo (swap when in /samkhya/* or when a page registers a CTA) */}
         {isSamkhya ? (
           <Link to="/samkhya" className="absolute left-1/2 -translate-x-1/2 flex items-center">
             <img
@@ -182,8 +185,18 @@ const Header = () => {
               style={{ width: "208px", height: "auto" }}
             />
           </Link>
+        ) : showHeaderCta ? (
+          <button
+            key="header-cta"
+            onClick={cta!.onClick}
+            className="absolute left-1/2 -translate-x-1/2 inline-flex items-center justify-center font-bold uppercase tracking-wide text-white shadow-md hover:shadow-lg transition-all hover:scale-[1.03] rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm animate-fade-in text-[10px] sm:text-xs px-3 sm:px-5 py-2 sm:py-2.5 max-w-[55vw] sm:max-w-none truncate"
+            style={{ background: "#FF7676" }}
+          >
+            <span className="hidden xs:inline sm:inline">{cta!.label}</span>
+            <span className="inline xs:hidden sm:hidden">Inscrever-se</span>
+          </button>
         ) : (
-          <Link to="/" className="absolute left-1/2 -translate-x-1/2 flex items-center">
+          <Link to="/" className="absolute left-1/2 -translate-x-1/2 flex items-center animate-fade-in">
             <img
               src="https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/b8f47f-6144676c30ec476dbc1f8c5c8812eb1dmv2-1.png"
               alt="Portal Ayurveda"
