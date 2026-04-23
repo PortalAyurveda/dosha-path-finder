@@ -71,10 +71,10 @@ const FormacaoHero = ({ data, branding, onCtaClick }: Props) => (
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5, delay: 0.3 }}
-        className="inline-flex flex-col items-center gap-2.5 mb-8 max-w-2xl"
+        className="flex flex-col items-center gap-2.5 mb-8 max-w-2xl mx-auto"
       >
         <p
-          className="text-xs md:text-sm font-bold tracking-wide px-4 py-2 rounded-full"
+          className="text-xs md:text-sm font-bold tracking-wide px-4 py-2 rounded-full text-center max-w-full"
           style={{ background: `${branding.primaryColor}25`, color: branding.darkColor }}
         >
           {data.details}
