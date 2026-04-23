@@ -9,37 +9,37 @@ const gradients = {
     from 330deg,
     #FF7676 0deg 60deg,
     #6B8AFF 60deg 120deg,
-    #4ADE80 120deg 180deg,
+    #9ED88B 120deg 180deg,
     #FF7676 180deg 240deg,
     #6B8AFF 240deg 300deg,
-    #4ADE80 300deg 360deg
+    #9ED88B 300deg 360deg
   )`,
   vata: `conic-gradient(
     from 330deg,
     rgba(255, 118, 118, 0.15) 0deg 60deg,
     #6B8AFF 60deg 120deg,
-    rgba(74, 222, 128, 0.15) 120deg 180deg,
+    rgba(158, 216, 139, 0.15) 120deg 180deg,
     rgba(255, 118, 118, 0.15) 180deg 240deg,
     #6B8AFF 240deg 300deg,
-    rgba(74, 222, 128, 0.15) 300deg 360deg
+    rgba(158, 216, 139, 0.15) 300deg 360deg
   )`,
   pitta: `conic-gradient(
     from 330deg,
     #FF7676 0deg 60deg,
     rgba(107, 138, 255, 0.15) 60deg 120deg,
-    rgba(74, 222, 128, 0.15) 120deg 180deg,
+    rgba(158, 216, 139, 0.15) 120deg 180deg,
     #FF7676 180deg 240deg,
     rgba(107, 138, 255, 0.15) 240deg 300deg,
-    rgba(74, 222, 128, 0.15) 300deg 360deg
+    rgba(158, 216, 139, 0.15) 300deg 360deg
   )`,
   kapha: `conic-gradient(
     from 330deg,
     rgba(255, 118, 118, 0.15) 0deg 60deg,
     rgba(107, 138, 255, 0.15) 60deg 120deg,
-    #4ADE80 120deg 180deg,
+    #9ED88B 120deg 180deg,
     rgba(255, 118, 118, 0.15) 180deg 240deg,
     rgba(107, 138, 255, 0.15) 240deg 300deg,
-    #4ADE80 300deg 360deg
+    #9ED88B 300deg 360deg
   )`,
 };
 
