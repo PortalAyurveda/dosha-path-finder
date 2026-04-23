@@ -67,6 +67,13 @@ const FormacaoHero = ({ data, branding, onCtaClick }: Props) => (
           <Calendar className="h-4 w-4" />
           {data.startDate}
         </p>
+        <p
+          className="inline-flex items-center gap-2 text-xs md:text-sm font-bold"
+          style={{ color: branding.darkColor, opacity: 0.85 }}
+        >
+          <Calendar className="h-4 w-4" />
+          {data.endDate}
+        </p>
       </motion.div>
 
       <motion.button

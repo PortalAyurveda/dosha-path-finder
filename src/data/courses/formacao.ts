@@ -507,7 +507,7 @@ export const formacaoData: FormacaoData = {
       "💰 Módulos Presenciais (3 meses): R$ 630/mês",
     ],
     total: "Investimento total: R$ 8.370 ao longo de 1,5 ano",
-    condicoesTitle: "Condições Especiais — 1º Lote",
+    condicoesTitle: "Condições especiais — 1º lote",
     condicoes: [
       "10% de desconto para pagamento à vista no PIX",
       "Garantia de vaga com desconto válido até 12 de junho de 2026",
@@ -525,13 +525,13 @@ export const formacaoData: FormacaoData = {
       "Certificação de 400 horas",
       "Cardápios, rotinas e experiências mensais",
     ],
-    naoInclusoTitle: "O que NÃO está incluso",
+    naoInclusoTitle: "O que não está incluso",
     naoIncluso: [
       "Hospedagem e alimentação nos módulos presenciais (você organiza sua estadia em SP)",
     ],
   },
   faq: {
-    title: "Perguntas Frequentes",
+    title: "Perguntas frequentes",
     items: [
       {
         question:
@@ -573,7 +573,7 @@ export const formacaoData: FormacaoData = {
     ],
   },
   finalCta: {
-    title: "Esta É A Sua Chance",
+    title: "Esta é a sua chance",
     body: "Você já sabe que Ayurveda funciona. Você já experimentou na pele. Você já sentiu a diferença na saúde, na energia, na clareza.\n\nAgora é a hora de ir além. De sair de espectadora para protagonista. De deixar de ser paciente para se tornar terapeuta. De transformar sua própria vida — e a vida de outras pessoas.\n\nEsta é a primeira turma oficial de Terapeutas Ayurveda formada pelo Portal Ayurveda. São apenas 50 vagas. O desconto de 10% é válido até 12 de junho. A primeira aula começa em 12 de julho de 2026.",
     primaryCta: "Inscrições abrem início de maio",
     primarySub: "Apenas 50 vagas no primeiro lote",
