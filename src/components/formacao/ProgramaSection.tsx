@@ -135,8 +135,15 @@ const ProgramaSection = ({ data, branding }: Props) => {
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true, margin: "-40px" }}
                         transition={{ duration: 0.35, delay: Math.min(mi * 0.04, 0.18) }}
-                        className="relative border border-gray-200 hover:border-gray-300 shadow-sm transition-all rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm overflow-hidden"
-                        style={{ background: altBg }}
+                        className={`relative shadow-sm transition-all rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm overflow-hidden ${
+                          isPresencial
+                            ? "border-2 hover:shadow-md"
+                            : "border border-gray-200 hover:border-gray-300"
+                        }`}
+                        style={{
+                          background: isPresencial ? branding.lightColor : altBg,
+                          borderColor: isPresencial ? branding.accentColor : undefined,
+                        }}
                       >
                         {/* Tick connecting to vertical line */}
                         <span
