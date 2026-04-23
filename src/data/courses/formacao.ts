@@ -165,6 +165,7 @@ export const formacaoData: FormacaoData = {
       "Viver a experiência em comunidade — A cada módulo, você recebe um cardápio, uma rotina (dinacharya), preparações para fazer em casa. Você não estuda Ayurveda. Você vive Ayurveda junto com a turma.",
       "Ter suporte completo — Acesso à IA Akasha para diagnóstico, acesso à área interna do Portal Ayurveda com Compêndio de Alquimia, Protocolo de Atendimento, apostilas detalhadas, comunidade de terapeutas e as próximas novidades ainda por vir.",
       "Aprender com UM professor do início ao fim (exceto o módulo de Saúde da Mulher) — Edson Osorío, 15 anos de clínica, mais de 4.500 alunos formados, te guiando módulo a módulo com coerência e profundidade",
+      "Aplicar Ayurveda no Brasil de verdade — com ervas nacionais, clima tropical, alimentos locais. Não é tradução da Índia: é Ayurveda adaptado à nossa realidade",
     ],
     closing:
       "Essa é a diferença entre \"fazer mais um curso\" e \"se tornar terapeuta de verdade\". Você não vai só acumular informação. Você vai plantar raízes profundas — fundação, estrutura, domínio clínico.\n\nNão é sobre o que eu experimentei e vou te passar. Você vai experienciar Ayurveda a cada encontro, no online e no presencial, vamos nos aprofundar a cada degrau.",
