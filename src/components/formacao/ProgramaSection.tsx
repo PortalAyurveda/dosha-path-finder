@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown, Download, MapPin, Monitor, Check } from "lucide-react";
+import { ChevronDown, Download, MapPin, Monitor, Check, Star } from "lucide-react";
 import type { FormacaoData } from "@/data/courses/formacao";
 
 interface Props {
@@ -8,13 +8,17 @@ interface Props {
   branding: FormacaoData["branding"];
 }
 
+const PHASE_LABELS = ["Fundamentos", "Aprofundamento", "Especialização"] as const;
+
 const ProgramaSection = ({ data, branding }: Props) => {
   const [openModule, setOpenModule] = useState<number | null>(1);
 
-  // Flatten all modules across semesters, preserving order
-  const allModules = data.semesters.flatMap((sem) =>
-    sem.modules.map((mod) => ({ ...mod, semester: sem.subtitle })),
-  );
+  // Group modules into 3 phases of 5 modules each, preserving order
+  const allModules = data.semesters.flatMap((sem) => sem.modules);
+  const phases = [0, 1, 2].map((p) => ({
+    label: PHASE_LABELS[p],
+    modules: allModules.slice(p * 5, p * 5 + 5),
+  }));
 
   return (
     <section className="py-12 md:py-16" style={{ background: "#FAF9F6" }}>
@@ -79,111 +83,163 @@ const ProgramaSection = ({ data, branding }: Props) => {
           {data.bridge}
         </p>
 
-        {/* Modules as accordions */}
-        <div className="space-y-3 mb-12">
-          {allModules.map((mod, mi) => {
-            const isOpen = openModule === mod.number;
-            const isPresencial = mod.format === "Presencial SP";
-            const altBg = mi % 2 === 0 ? "#FFFFFF" : "#FBF7F0";
-            return (
-              <motion.div
-                key={mod.number}
-                initial={{ opacity: 0, y: 12 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-40px" }}
-                transition={{ duration: 0.35, delay: Math.min(mi * 0.03, 0.2) }}
-                className="border border-gray-200 hover:border-gray-300 shadow-sm transition-all rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm overflow-hidden"
-                style={{ background: altBg }}
-              >
-                <button
-                  onClick={() => setOpenModule(isOpen ? null : mod.number)}
-                  className="w-full flex items-start gap-4 p-4 md:p-5 text-left"
-                  aria-expanded={isOpen}
+        {/* Modules grouped by phase */}
+        <div className="space-y-10 mb-12">
+          {phases.map((phase, pi) => (
+            <div key={phase.label} className="relative">
+              {/* Phase header with connector */}
+              <div className="flex items-center gap-4 mb-5">
+                <span
+                  className="shrink-0 inline-flex items-center justify-center w-9 h-9 rounded-full font-serif font-bold text-xs text-white"
+                  style={{ background: branding.primaryColor }}
                 >
-                  <span
-                    className="shrink-0 w-11 h-11 md:w-12 md:h-12 rounded-full flex items-center justify-center font-serif font-bold text-sm md:text-base text-white"
-                    style={{ background: branding.darkColor }}
+                  {pi + 1}
+                </span>
+                <div className="flex items-center gap-3 flex-1">
+                  <h3
+                    className="font-serif italic font-bold text-lg md:text-xl whitespace-nowrap"
+                    style={{ color: branding.darkColor }}
                   >
-                    {String(mod.number).padStart(2, "0")}
+                    {phase.label}
+                  </h3>
+                  <span
+                    className="text-[10px] md:text-xs uppercase tracking-widest font-bold"
+                    style={{ color: branding.primaryColor }}
+                  >
+                    Módulos {pi * 5 + 1}–{pi * 5 + 5}
                   </span>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex flex-wrap items-center gap-2 mb-1.5">
-                      <h3
-                        className="font-serif font-bold text-base md:text-lg leading-tight"
-                        style={{ color: branding.darkColor }}
-                      >
-                        {mod.title}
-                      </h3>
-                    </div>
-                    <div className="flex flex-wrap items-center gap-2 mb-1.5">
-                      <span className="text-[11px] md:text-xs text-gray-600 font-medium">
-                        {mod.date}
-                      </span>
-                      <span
-                        className="inline-flex items-center gap-1 text-[10px] md:text-xs font-bold px-2.5 py-0.5 rounded-full"
-                        style={{
-                          background: isPresencial
-                            ? `${branding.accentColor}40`
-                            : "#9ED88B40",
-                          color: isPresencial ? "#7C2D12" : "#14532D",
-                        }}
-                      >
-                        {isPresencial ? (
-                          <MapPin className="h-3 w-3" />
-                        ) : (
-                          <Monitor className="h-3 w-3" />
-                        )}
-                        {mod.format}
-                      </span>
-                    </div>
-                    <p className="text-xs md:text-sm text-gray-700 leading-relaxed">
-                      {mod.description}
-                    </p>
-                    <p
-                      className="mt-2 inline-flex items-center gap-1 text-[11px] md:text-xs font-bold uppercase tracking-wide"
-                      style={{ color: branding.primaryColor }}
-                    >
-                      {isOpen ? "Recolher" : "Ver conteúdo detalhado"}
-                      <ChevronDown
-                        className="h-3.5 w-3.5 transition-transform duration-200"
-                        style={{ transform: isOpen ? "rotate(180deg)" : "rotate(0deg)" }}
-                      />
-                    </p>
-                  </div>
-                </button>
+                  <span
+                    className="flex-1 h-px"
+                    style={{ background: `${branding.primaryColor}55` }}
+                    aria-hidden
+                  />
+                </div>
+              </div>
 
-                <AnimatePresence initial={false}>
-                  {isOpen && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.2, ease: "easeInOut" }}
-                      className="overflow-hidden"
-                    >
-                      <div className="px-4 md:px-5 pb-5 pl-[68px] md:pl-[76px]">
-                        <ul className="space-y-2.5 mt-1">
-                          {mod.details.map((d, di) => (
-                            <li key={di} className="flex items-start gap-3">
-                              <span
-                                className="shrink-0 w-4 h-4 rounded-full flex items-center justify-center mt-1"
-                                style={{ background: branding.darkColor }}
+              {/* Connector + module list */}
+              <div className="relative pl-4 md:pl-5">
+                <span
+                  className="absolute left-0 top-2 bottom-2 w-px"
+                  style={{ background: `${branding.primaryColor}40` }}
+                  aria-hidden
+                />
+                <div className="space-y-3">
+                  {phase.modules.map((mod, mi) => {
+                    const isOpen = openModule === mod.number;
+                    const isPresencial = mod.format === "Presencial SP";
+                    const altBg = mi % 2 === 0 ? "#FFFFFF" : "#FBF7F0";
+                    return (
+                      <motion.div
+                        key={mod.number}
+                        initial={{ opacity: 0, y: 12 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true, margin: "-40px" }}
+                        transition={{ duration: 0.35, delay: Math.min(mi * 0.04, 0.18) }}
+                        className="relative border border-gray-200 hover:border-gray-300 shadow-sm transition-all rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm overflow-hidden"
+                        style={{ background: altBg }}
+                      >
+                        {/* Tick connecting to vertical line */}
+                        <span
+                          className="hidden md:block absolute -left-5 top-7 w-5 h-px"
+                          style={{ background: `${branding.primaryColor}40` }}
+                          aria-hidden
+                        />
+                        <button
+                          onClick={() => setOpenModule(isOpen ? null : mod.number)}
+                          className="w-full flex items-start gap-4 p-4 md:p-5 text-left"
+                          aria-expanded={isOpen}
+                        >
+                          <span
+                            className="shrink-0 w-11 h-11 md:w-12 md:h-12 rounded-full flex items-center justify-center font-serif font-bold text-sm md:text-base text-white"
+                            style={{ background: branding.darkColor }}
+                          >
+                            {String(mod.number).padStart(2, "0")}
+                          </span>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex flex-wrap items-center gap-2 mb-1.5">
+                              <h3
+                                className="font-serif font-bold text-base md:text-lg leading-tight"
+                                style={{ color: branding.darkColor }}
                               >
-                                <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />
+                                {mod.title}
+                              </h3>
+                            </div>
+                            <div className="flex flex-wrap items-center gap-2 mb-1.5">
+                              <span className="text-[11px] md:text-xs text-gray-600 font-medium">
+                                {mod.date}
                               </span>
-                              <span className="text-sm md:text-[15px] text-gray-800 leading-relaxed">
-                                {d}
+                              <span
+                                className="inline-flex items-center gap-1 text-[10px] md:text-xs font-bold px-2.5 py-0.5 rounded-full"
+                                style={{
+                                  background: isPresencial
+                                    ? `${branding.accentColor}40`
+                                    : "#9ED88B40",
+                                  color: isPresencial ? "#7C2D12" : "#14532D",
+                                }}
+                              >
+                                {isPresencial ? (
+                                  <>
+                                    <Star className="h-3 w-3 fill-current" />
+                                    <MapPin className="h-3 w-3" />
+                                  </>
+                                ) : (
+                                  <Monitor className="h-3 w-3" />
+                                )}
+                                {mod.format}
                               </span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </motion.div>
-            );
-          })}
+                            </div>
+                            <p className="text-xs md:text-sm text-gray-700 leading-relaxed">
+                              {mod.description}
+                            </p>
+                            <p
+                              className="mt-2 inline-flex items-center gap-1 text-[11px] md:text-xs font-bold uppercase tracking-wide"
+                              style={{ color: branding.primaryColor }}
+                            >
+                              {isOpen ? "Recolher" : "Ver conteúdo detalhado"}
+                              <ChevronDown
+                                className="h-3.5 w-3.5 transition-transform duration-200"
+                                style={{ transform: isOpen ? "rotate(180deg)" : "rotate(0deg)" }}
+                              />
+                            </p>
+                          </div>
+                        </button>
+
+                        <AnimatePresence initial={false}>
+                          {isOpen && (
+                            <motion.div
+                              initial={{ height: 0, opacity: 0 }}
+                              animate={{ height: "auto", opacity: 1 }}
+                              exit={{ height: 0, opacity: 0 }}
+                              transition={{ duration: 0.2, ease: "easeInOut" }}
+                              className="overflow-hidden"
+                            >
+                              <div className="px-4 md:px-5 pb-5 pl-[68px] md:pl-[76px]">
+                                <ul className="space-y-2.5 mt-1">
+                                  {mod.details.map((d, di) => (
+                                    <li key={di} className="flex items-start gap-3">
+                                      <span
+                                        className="shrink-0 w-4 h-4 rounded-full flex items-center justify-center mt-1"
+                                        style={{ background: branding.darkColor }}
+                                      >
+                                        <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />
+                                      </span>
+                                      <span className="text-sm md:text-[15px] text-gray-800 leading-relaxed">
+                                        {d}
+                                      </span>
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </motion.div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
 
         {/* PDF CTA highlighted card */}
