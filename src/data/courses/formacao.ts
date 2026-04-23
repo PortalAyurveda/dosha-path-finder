@@ -568,11 +568,6 @@ export const formacaoData: FormacaoData = {
         answer:
           "Ao concluir os 15 módulos e as 175 horas de atividades obrigatórias, você recebe o Certificado de Formação em Ayurveda — 400 horas, emitido pelo Portal Ayurveda.",
       },
-      {
-        question: "Nunca é tarde para começar.",
-        answer:
-          "Minha mãe vive Ayurveda comigo há 15 anos. Depois de 10 anos de prática, ela fez o Caminho de Santiago de Compostela com 75 anos. Agora, aos 80, quer fazer de novo. Não é tarde para você viver seu sonho — e ele vai te dar a vitalidade que você almeja.",
-      },
     ],
   },
   finalCta: {
