@@ -122,12 +122,13 @@ export const formacaoData: FormacaoData = {
   },
   hero: {
     headline:
-      "Torne-se Terapeuta Ayurveda e Construa uma Carreira com Propósito Cuidando da Sua Vitalidade e do Próximo",
+      "Torne-se Terapeuta Ayurveda e construa uma carreira com propósito cuidando da sua vitalidade e do próximo",
     subheadline:
       "Para quem já sentiu na pele o poder do Ayurveda — e agora quer dominar essa ciência de verdade, com autonomia para cuidar de si e transformar vidas ao seu redor.",
     details:
-      "400 horas de certificação | 15 módulos ao longo de 1,5 ano | Online + 3 Imersões Presenciais em SP",
+      "400 horas de certificação | 15 módulos ao longo de 1,5 ano | Online + 3 imersões presenciais em SP",
     startDate: "Início: 12 e 13 de Julho de 2026",
+    endDate: "Término: 06 e 07 de Novembro de 2027",
     ctaText: "Inscrições abrem início de maio",
     ctaSubtext: "Apenas 50 vagas no primeiro lote.",
   },
