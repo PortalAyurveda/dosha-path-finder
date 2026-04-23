@@ -9,8 +9,8 @@ interface Props {
 }
 
 const FinalCtaSection = ({ data, branding, onPrimary, onSecondary }: Props) => (
-  <section className="py-14 md:py-20" style={{ background: branding.darkColor }}>
-    <div className="max-w-3xl mx-auto px-6 text-center text-white">
+  <section className="py-14 md:py-20" style={{ background: "#FFF8EE" }}>
+    <div className="max-w-3xl mx-auto px-6 text-center" style={{ color: branding.darkColor }}>
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         whileInView={{ opacity: 1, scale: 1 }}
@@ -41,7 +41,8 @@ const FinalCtaSection = ({ data, branding, onPrimary, onSecondary }: Props) => (
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-100px" }}
         transition={{ duration: 0.5, delay: 0.1 }}
-        className="text-base md:text-lg text-white max-w-2xl mx-auto mb-9 leading-relaxed whitespace-pre-line"
+        className="text-base md:text-lg max-w-2xl mx-auto mb-9 leading-relaxed whitespace-pre-line"
+        style={{ color: branding.darkColor, opacity: 0.85 }}
       >
         {data.body}
       </motion.p>
@@ -49,12 +50,14 @@ const FinalCtaSection = ({ data, branding, onPrimary, onSecondary }: Props) => (
       <div className="flex flex-col items-center gap-4">
         <button
           onClick={onPrimary}
-          className="inline-flex items-center justify-center gap-2.5 font-bold text-sm md:text-base uppercase tracking-wide px-10 md:px-14 py-4 md:py-5 shadow-lg hover:shadow-xl transition-all hover:scale-[1.03] rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm w-full md:w-auto"
-          style={{ background: "white", color: branding.darkColor }}
+          className="inline-flex items-center justify-center gap-2.5 font-bold text-sm md:text-base uppercase tracking-wide px-10 md:px-14 py-4 md:py-5 shadow-lg hover:shadow-xl transition-all hover:scale-[1.03] rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm w-full md:w-auto text-white"
+          style={{ background: "#FF7676" }}
         >
           {data.primaryCta}
         </button>
-        <p className="text-xs md:text-sm text-white">{data.primarySub}</p>
+        <p className="text-xs md:text-sm" style={{ color: branding.darkColor, opacity: 0.7 }}>
+          {data.primarySub}
+        </p>
       </div>
     </div>
   </section>
