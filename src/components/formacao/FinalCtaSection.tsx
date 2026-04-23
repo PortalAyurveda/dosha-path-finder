@@ -41,7 +41,7 @@ const FinalCtaSection = ({ data, branding, onPrimary, onSecondary }: Props) => (
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-100px" }}
         transition={{ duration: 0.5, delay: 0.1 }}
-        className="text-sm md:text-base text-white/90 max-w-2xl mx-auto mb-9 leading-relaxed whitespace-pre-line"
+        className="text-base md:text-lg text-white max-w-2xl mx-auto mb-9 leading-relaxed whitespace-pre-line"
       >
         {data.body}
       </motion.p>
