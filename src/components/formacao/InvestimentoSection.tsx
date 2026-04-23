@@ -59,21 +59,35 @@ const InvestimentoSection = ({ data, branding, onCtaClick, ctaText, ctaSubtext }
         whileInView={{ opacity: 1, scale: 1 }}
         viewport={{ once: true, margin: "-50px" }}
         transition={{ duration: 0.5 }}
-        className="p-6 md:p-7 mb-8 text-white rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm"
-        style={{ background: branding.darkColor }}
+        className="p-6 md:p-7 mb-8 rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm border-l-4"
+        style={{
+          background: branding.lightColor,
+          borderColor: branding.darkColor,
+          color: branding.darkColor,
+        }}
       >
-        <p className="text-[11px] uppercase tracking-widest font-bold mb-3 opacity-90">
+        <p
+          className="text-[11px] uppercase tracking-widest font-bold mb-3"
+          style={{ color: branding.darkColor }}
+        >
           {data.condicoesTitle}
         </p>
         <ul className="space-y-2.5 mb-4">
           {data.condicoes.map((c, i) => (
             <li key={i} className="flex items-start gap-3 text-sm md:text-base">
-              <CheckMark color="#FFFFFF" size={20} className="mt-0.5" />
-              <span className="leading-relaxed">{c}</span>
+              <CheckMark color={branding.darkColor} size={20} className="mt-0.5" />
+              <span className="leading-relaxed" style={{ color: branding.darkColor }}>
+                {c}
+              </span>
             </li>
           ))}
         </ul>
-        <p className="text-xs md:text-sm italic text-white/85">{data.condicoesNote}</p>
+        <p
+          className="text-xs md:text-sm italic"
+          style={{ color: branding.darkColor, opacity: 0.8 }}
+        >
+          {data.condicoesNote}
+        </p>
       </motion.div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-8">
