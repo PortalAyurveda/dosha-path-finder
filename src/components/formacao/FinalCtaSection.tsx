@@ -54,11 +54,11 @@ const FinalCtaSection = ({ data, branding, onPrimary, onSecondary }: Props) => (
         >
           {data.primaryCta}
         </button>
-        <p className="text-xs md:text-sm text-white/80">{data.primarySub}</p>
+        <p className="text-xs md:text-sm text-white">{data.primarySub}</p>
 
         <button
           onClick={onSecondary}
-          className="mt-2 inline-flex items-center justify-center gap-2 font-bold text-xs md:text-sm uppercase tracking-wide px-7 py-3 border-2 border-white/40 hover:border-white/70 transition-all rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm w-full md:w-auto text-white/95"
+          className="mt-2 inline-flex items-center justify-center gap-2 font-bold text-xs md:text-sm uppercase tracking-wide px-7 py-3 border-2 border-white/60 hover:border-white transition-all rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm w-full md:w-auto text-white"
         >
           {data.secondaryCta}
         </button>
