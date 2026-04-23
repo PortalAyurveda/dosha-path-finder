@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown, Download, MapPin, Monitor } from "lucide-react";
+import { ChevronDown, Download, MapPin, Monitor, Check } from "lucide-react";
 import type { FormacaoData } from "@/data/courses/formacao";
 
 interface Props {
@@ -9,7 +9,12 @@ interface Props {
 }
 
 const ProgramaSection = ({ data, branding }: Props) => {
-  const [openSemester, setOpenSemester] = useState<number | null>(0);
+  const [openModule, setOpenModule] = useState<number | null>(1);
+
+  // Flatten all modules across semesters, preserving order
+  const allModules = data.semesters.flatMap((sem) =>
+    sem.modules.map((mod) => ({ ...mod, semester: sem.subtitle })),
+  );
 
   return (
     <section className="py-12 md:py-16" style={{ background: "#FAF9F6" }}>
@@ -68,50 +73,83 @@ const ProgramaSection = ({ data, branding }: Props) => {
         </div>
 
         <p
-          className="font-serif italic text-base md:text-lg text-center mb-12 max-w-2xl mx-auto"
+          className="font-serif italic text-base md:text-lg text-center mb-10 max-w-2xl mx-auto"
           style={{ color: branding.darkColor }}
         >
           {data.bridge}
         </p>
 
-        {/* Semesters */}
-        <div className="space-y-4 mb-12">
-          {data.semesters.map((sem, si) => {
-            const isOpen = openSemester === si;
+        {/* Modules as accordions */}
+        <div className="space-y-3 mb-12">
+          {allModules.map((mod, mi) => {
+            const isOpen = openModule === mod.number;
+            const isPresencial = mod.format === "Presencial SP";
+            const altBg = mi % 2 === 0 ? "#FFFFFF" : "#FBF7F0";
             return (
-              <div
-                key={si}
-                className="bg-white border border-gray-200 shadow-sm rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm overflow-hidden"
+              <motion.div
+                key={mod.number}
+                initial={{ opacity: 0, y: 12 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-40px" }}
+                transition={{ duration: 0.35, delay: Math.min(mi * 0.03, 0.2) }}
+                className="border border-gray-200 hover:border-gray-300 shadow-sm transition-all rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm overflow-hidden"
+                style={{ background: altBg }}
               >
                 <button
-                  onClick={() => setOpenSemester(isOpen ? null : si)}
-                  className="w-full flex items-center gap-4 p-5 text-left"
+                  onClick={() => setOpenModule(isOpen ? null : mod.number)}
+                  className="w-full flex items-start gap-4 p-4 md:p-5 text-left"
                   aria-expanded={isOpen}
                 >
                   <span
-                    className="shrink-0 w-10 h-10 rounded-full flex items-center justify-center font-serif font-bold text-sm text-white"
+                    className="shrink-0 w-11 h-11 md:w-12 md:h-12 rounded-full flex items-center justify-center font-serif font-bold text-sm md:text-base text-white"
                     style={{ background: branding.darkColor }}
                   >
-                    {si + 1}
+                    {String(mod.number).padStart(2, "0")}
                   </span>
-                  <div className="flex-1">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex flex-wrap items-center gap-2 mb-1.5">
+                      <h3
+                        className="font-serif font-bold text-base md:text-lg leading-tight"
+                        style={{ color: branding.darkColor }}
+                      >
+                        {mod.title}
+                      </h3>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-2 mb-1.5">
+                      <span className="text-[11px] md:text-xs text-gray-600 font-medium">
+                        {mod.date}
+                      </span>
+                      <span
+                        className="inline-flex items-center gap-1 text-[10px] md:text-xs font-bold px-2.5 py-0.5 rounded-full"
+                        style={{
+                          background: isPresencial
+                            ? `${branding.accentColor}40`
+                            : "#9ED88B40",
+                          color: isPresencial ? "#7C2D12" : "#14532D",
+                        }}
+                      >
+                        {isPresencial ? (
+                          <MapPin className="h-3 w-3" />
+                        ) : (
+                          <Monitor className="h-3 w-3" />
+                        )}
+                        {mod.format}
+                      </span>
+                    </div>
+                    <p className="text-xs md:text-sm text-gray-700 leading-relaxed">
+                      {mod.description}
+                    </p>
                     <p
-                      className="text-[11px] uppercase tracking-widest font-bold"
+                      className="mt-2 inline-flex items-center gap-1 text-[11px] md:text-xs font-bold uppercase tracking-wide"
                       style={{ color: branding.primaryColor }}
                     >
-                      {sem.title}
+                      {isOpen ? "Recolher" : "Ver conteúdo detalhado"}
+                      <ChevronDown
+                        className="h-3.5 w-3.5 transition-transform duration-200"
+                        style={{ transform: isOpen ? "rotate(180deg)" : "rotate(0deg)" }}
+                      />
                     </p>
-                    <h3
-                      className="font-serif font-bold text-lg md:text-xl"
-                      style={{ color: branding.darkColor }}
-                    >
-                      {sem.subtitle}
-                    </h3>
                   </div>
-                  <ChevronDown
-                    className="shrink-0 h-5 w-5 text-gray-500 transition-transform duration-300"
-                    style={{ transform: isOpen ? "rotate(180deg)" : "rotate(0deg)" }}
-                  />
                 </button>
 
                 <AnimatePresence initial={false}>
@@ -120,67 +158,67 @@ const ProgramaSection = ({ data, branding }: Props) => {
                       initial={{ height: 0, opacity: 0 }}
                       animate={{ height: "auto", opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.3, ease: "easeInOut" }}
+                      transition={{ duration: 0.2, ease: "easeInOut" }}
                       className="overflow-hidden"
                     >
-                      <div className="px-5 pb-5 space-y-3">
-                        {sem.modules.map((mod) => {
-                          const isPresencial = mod.format === "Presencial SP";
-                          return (
-                            <div
-                              key={mod.number}
-                              className="flex gap-3 p-4 border border-gray-100 rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm"
-                              style={{ background: "#FAF9F6" }}
-                            >
+                      <div className="px-4 md:px-5 pb-5 pl-[68px] md:pl-[76px]">
+                        <ul className="space-y-2.5 mt-1">
+                          {mod.details.map((d, di) => (
+                            <li key={di} className="flex items-start gap-3">
                               <span
-                                className="shrink-0 w-9 h-9 rounded-full flex items-center justify-center font-bold text-sm text-white"
+                                className="shrink-0 w-4 h-4 rounded-full flex items-center justify-center mt-1"
                                 style={{ background: branding.darkColor }}
                               >
-                                {mod.number}
+                                <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />
                               </span>
-                              <div className="flex-1 min-w-0">
-                                <h4
-                                  className="font-serif font-bold text-sm md:text-base leading-snug mb-1"
-                                  style={{ color: branding.darkColor }}
-                                >
-                                  {mod.title}
-                                </h4>
-                                <div className="flex flex-wrap gap-2 mb-2">
-                                  <span
-                                    className="inline-flex items-center gap-1 text-[10px] md:text-xs font-bold px-2.5 py-0.5 rounded-full"
-                                    style={{
-                                      background: isPresencial
-                                        ? `${branding.accentColor}40`
-                                        : "#86EFAC55",
-                                      color: isPresencial ? "#7C2D12" : "#14532D",
-                                    }}
-                                  >
-                                    {isPresencial ? (
-                                      <MapPin className="h-3 w-3" />
-                                    ) : (
-                                      <Monitor className="h-3 w-3" />
-                                    )}
-                                    {mod.format}
-                                  </span>
-                                  <span className="text-[10px] md:text-xs text-gray-600 font-medium px-2 py-0.5">
-                                    {mod.date}
-                                  </span>
-                                </div>
-                                <p className="text-xs md:text-sm text-gray-700 leading-relaxed">
-                                  {mod.description}
-                                </p>
-                              </div>
-                            </div>
-                          );
-                        })}
+                              <span className="text-sm md:text-[15px] text-gray-800 leading-relaxed">
+                                {d}
+                              </span>
+                            </li>
+                          ))}
+                        </ul>
                       </div>
                     </motion.div>
                   )}
                 </AnimatePresence>
-              </div>
+              </motion.div>
             );
           })}
         </div>
+
+        {/* PDF CTA highlighted card */}
+        <motion.div
+          initial={{ opacity: 0, y: 18 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-40px" }}
+          transition={{ duration: 0.5 }}
+          className="mb-12 p-6 md:p-8 text-center rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm border-2"
+          style={{
+            background: branding.lightColor,
+            borderColor: branding.accentColor,
+          }}
+        >
+          <h3
+            className="font-serif italic font-bold text-xl md:text-2xl mb-3"
+            style={{ color: branding.darkColor }}
+          >
+            Quer o programa completo detalhado?
+          </h3>
+          <p className="text-sm md:text-base text-gray-700 max-w-xl mx-auto mb-6 leading-relaxed">
+            Receba o PDF com a descrição extensa de cada módulo, ementas, bibliografia e
+            cronograma de atividades.
+          </p>
+          <button
+            type="button"
+            disabled
+            className="inline-flex items-center justify-center gap-2 font-bold text-xs md:text-sm uppercase tracking-wide px-7 py-3.5 rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm cursor-not-allowed opacity-80 text-white"
+            style={{ background: branding.accentColor }}
+            title="Em breve"
+          >
+            <Download className="h-4 w-4" />
+            Baixar PDF do Programa — Em breve
+          </button>
+        </motion.div>
 
         {/* Carga horária */}
         <motion.div
@@ -244,19 +282,6 @@ const ProgramaSection = ({ data, branding }: Props) => {
         <p className="text-sm md:text-base text-gray-700 leading-relaxed text-center max-w-2xl mx-auto mb-8">
           {data.closing}
         </p>
-
-        <div className="text-center">
-          <button
-            type="button"
-            disabled
-            className="inline-flex items-center gap-2 font-bold text-xs md:text-sm uppercase tracking-wide px-7 py-3.5 border-2 rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm cursor-not-allowed opacity-70"
-            style={{ borderColor: branding.darkColor, color: branding.darkColor }}
-            title="Em breve"
-          >
-            <Download className="h-4 w-4" />
-            Baixar Programa Completo (PDF) — Em breve
-          </button>
-        </div>
       </div>
     </section>
   );
