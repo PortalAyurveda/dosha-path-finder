@@ -189,11 +189,11 @@ const Header = () => {
           <button
             key="header-cta"
             onClick={cta!.onClick}
-            className="absolute left-1/2 -translate-x-1/2 inline-flex items-center justify-center font-bold uppercase tracking-wide text-white shadow-md hover:shadow-lg transition-all hover:scale-[1.03] rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm animate-fade-in text-[10px] sm:text-xs px-3 sm:px-5 py-2 sm:py-2.5 max-w-[55vw] sm:max-w-none truncate"
-            style={{ background: "#FF7676" }}
+            className="absolute left-1/2 -translate-x-1/2 inline-flex items-center justify-center font-bold uppercase tracking-wide shadow-md hover:shadow-lg transition-all hover:scale-[1.03] rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm animate-fade-in text-[10px] sm:text-xs px-3 sm:px-5 py-2 sm:py-2.5 max-w-[55vw] sm:max-w-none truncate"
+            style={{ background: "#FF7676", color: "#FFFFFF" }}
           >
-            <span className="hidden xs:inline sm:inline">{cta!.label}</span>
-            <span className="inline xs:hidden sm:hidden">Inscrever-se</span>
+            <span className="hidden xs:inline sm:inline" style={{ color: "#FFFFFF" }}>{cta!.label}</span>
+            <span className="inline xs:hidden sm:hidden" style={{ color: "#FFFFFF" }}>Inscrever-se</span>
           </button>
         ) : (
           <Link to="/" className="absolute left-1/2 -translate-x-1/2 flex items-center animate-fade-in">
