@@ -5,10 +5,12 @@ import type { FormacaoData } from "@/data/courses/formacao";
 interface Props {
   data: FormacaoData["diferenciais"];
   branding: FormacaoData["branding"];
+  onCtaClick?: () => void;
+  ctaText?: string;
 }
 
-const DiferenciaisSection = ({ data, branding }: Props) => (
-  <section className="bg-white py-12 md:py-16">
+const DiferenciaisSection = ({ data, branding, onCtaClick, ctaText }: Props) => (
+  <section className="py-12 md:py-16" style={{ background: "#F0F4FF" }}>
     <div className="max-w-4xl mx-auto px-6">
       <motion.h2
         initial={{ opacity: 0, y: 20 }}
@@ -64,6 +66,24 @@ const DiferenciaisSection = ({ data, branding }: Props) => (
           </motion.article>
         ))}
       </div>
+
+      {onCtaClick && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: 0.5 }}
+          className="flex justify-center mt-10"
+        >
+          <button
+            onClick={onCtaClick}
+            className="inline-flex items-center justify-center gap-2.5 font-bold text-sm md:text-base uppercase tracking-wide px-10 md:px-14 py-4 md:py-5 shadow-lg hover:shadow-xl transition-all hover:scale-[1.03] rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm text-white"
+            style={{ background: "#FF7676" }}
+          >
+            {ctaText ?? "Quero garantir minha vaga"}
+          </button>
+        </motion.div>
+      )}
     </div>
   </section>
 );
