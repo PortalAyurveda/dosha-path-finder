@@ -43,14 +43,16 @@ const Formacao = () => {
             label: data.hero.ctaText,
             mobileLabel: "Inscrever-se",
             className:
-              "inline-flex items-center justify-center font-bold uppercase shadow-md hover:shadow-lg transition-all rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm text-white whitespace-nowrap",
+              "inline-flex items-center justify-center font-bold uppercase shadow-md hover:shadow-lg transition-all rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm text-white whitespace-nowrap leading-none",
             style: {
               background: "#f7b2b7",
               color: "#FFFFFF",
-              fontSize: "12px",
-              lineHeight: "16px",
-              padding: "10px 22px",
-              letterSpacing: "0.04em",
+              fontSize: "11px",
+              lineHeight: "11px",
+              padding: "8px 18px",
+              letterSpacing: "0.03em",
+              transform: "scale(0.86)",
+              transformOrigin: "center",
             },
             onClick: () => {
               // eslint-disable-next-line no-console

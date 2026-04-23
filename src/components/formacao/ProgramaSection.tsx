@@ -129,12 +129,16 @@ const ProgramaSection = ({ data, branding }: Props) => {
                     const isPresencial = mod.format === "Presencial SP";
                     const altBg = mi % 2 === 0 ? "#FFFFFF" : "#FBF7F0";
                     const cardBackground = isPresencial
-                      ? `linear-gradient(135deg, ${branding.lightColor} 0%, #F7FAFF 42%, #FFF4F1 76%, #f7b2b7 100%)`
+                      ? `linear-gradient(135deg, ${branding.lightColor} 0%, #EEF3FF 34%, #FDEBED 72%, #f7b2b7 100%)`
                       : altBg;
-                    const cardBorderColor = isPresencial ? "#f7b2b7" : "#E5E7EB";
+                    const cardBorderColor = isPresencial ? "#B56A84" : "#E5E7EB";
+                    const cardShadow = isPresencial
+                      ? "0 18px 40px -28px rgba(181, 106, 132, 0.55)"
+                      : undefined;
                     const moduleNumberBackground = isPresencial
                       ? `linear-gradient(135deg, ${branding.primaryColor} 0%, #8C9BFF 48%, #f7b2b7 100%)`
                       : branding.darkColor;
+                    const titleColor = isPresencial ? "#7E4A73" : branding.darkColor;
                     const formatBadgeStyle = isPresencial
                       ? {
                           background: "#f7b2b7",
@@ -156,7 +160,7 @@ const ProgramaSection = ({ data, branding }: Props) => {
                         viewport={{ once: true, margin: "-40px" }}
                         transition={{ duration: 0.35, delay: Math.min(mi * 0.04, 0.18) }}
                         className="relative border hover:border-gray-300 shadow-sm transition-all rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm overflow-hidden"
-                        style={{ background: cardBackground, borderColor: cardBorderColor }}
+                        style={{ background: cardBackground, borderColor: cardBorderColor, boxShadow: cardShadow }}
                       >
                         <span
                           className="hidden md:block absolute -left-5 top-7 w-5 h-px"
@@ -178,7 +182,7 @@ const ProgramaSection = ({ data, branding }: Props) => {
                             <div className="flex flex-wrap items-center gap-2 mb-1.5">
                               <h3
                                 className="font-serif font-bold text-base md:text-lg leading-tight"
-                                style={{ color: branding.darkColor }}
+                                style={{ color: titleColor }}
                               >
                                 {mod.title}
                               </h3>
@@ -202,7 +206,7 @@ const ProgramaSection = ({ data, branding }: Props) => {
                                 {mod.format}
                               </span>
                             </div>
-                            <p className="text-xs md:text-sm text-gray-700 leading-relaxed">
+                            <p className="text-xs md:text-sm text-gray-700 leading-relaxed" style={isPresencial ? { color: "#5B4A62" } : undefined}>
                               {mod.description}
                             </p>
                             <p
