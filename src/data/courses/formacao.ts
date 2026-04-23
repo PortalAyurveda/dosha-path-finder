@@ -163,7 +163,7 @@ export const formacaoData: FormacaoData = {
       "Dominar a teoria que importa — Filosofia Samkhya, Doshas, Dhathu, Subdoshas, Diagnóstico, Dravya Guna, Terapias — tudo conectado, sem lacunas",
       "Praticar desde o início — Você vai preparar medicamentos, fazer abhyangas, aplicar terapias, atender pacientes reais no ambulatório ao vivo",
       "Viver a experiência em comunidade — A cada módulo, você recebe um cardápio, uma rotina (dinacharya), preparações para fazer em casa. Você não estuda Ayurveda. Você vive Ayurveda junto com a turma.",
-      "Ter suporte completo — Acesso à IA Akasha para diagnóstico, acesso à área interna do Portal Ayurveda com Compêndio de Alquimia, Protocolo de Atendimento, apostilas detalhadas, comunidade de terapeutas e as próximas novidades ainda por vir.",
+      "Ter suporte completo — Acesso à área interna do Portal Ayurveda com Guia completo de Alimentação e Nutrição, Guia completo de Dravya Guna, Protocolo de Atendimento, apostilas detalhadas, comunidade de terapeutas e as próximas novidades ainda por vir.",
       "Aprender com UM professor do início ao fim (exceto o módulo de Saúde da Mulher) — Edson Osorío, 15 anos de clínica, mais de 4.500 alunos formados, te guiando módulo a módulo com coerência e profundidade",
       "Aplicar Ayurveda no Brasil de verdade — com ervas nacionais, clima tropical, alimentos locais. Não é tradução da Índia: é Ayurveda adaptado à nossa realidade",
     ],
