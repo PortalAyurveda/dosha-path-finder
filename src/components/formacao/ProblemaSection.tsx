@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { TreePine, Quote } from "lucide-react";
+import { Quote } from "lucide-react";
 import type { FormacaoData } from "@/data/courses/formacao";
 
 interface Props {
@@ -17,12 +17,11 @@ const ProblemaSection = ({ data, branding }: Props) => (
         transition={{ duration: 0.5 }}
         className="flex justify-center mb-5"
       >
-        <span
-          className="w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center"
-          style={{ background: `${branding.accentColor}40`, color: branding.darkColor }}
-        >
-          <TreePine className="h-8 w-8 md:h-10 md:w-10" strokeWidth={1.8} />
-        </span>
+        <img
+          src={branding.bulletSvg}
+          alt="Portal Ayurveda"
+          className="h-16 md:h-20 w-auto"
+        />
       </motion.div>
 
       <motion.h2

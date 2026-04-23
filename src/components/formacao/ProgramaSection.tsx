@@ -218,6 +218,13 @@ const ProgramaSection = ({ data, branding }: Props) => {
             <Download className="h-4 w-4" />
             Baixar PDF do Programa — Em breve
           </button>
+          <div className="flex justify-center mt-6">
+            <img
+              src={branding.bulletSvg}
+              alt="Portal Ayurveda"
+              className="h-12 md:h-14 w-auto opacity-90"
+            />
+          </div>
         </motion.div>
 
         {/* Carga horária */}

@@ -28,25 +28,6 @@ const FormacaoHero = ({ data, branding, onCtaClick }: Props) => (
     />
 
     <div className="relative max-w-4xl mx-auto px-6 text-center">
-      <motion.div
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="flex items-center justify-center gap-3 mb-6"
-      >
-        <img
-          src={branding.bulletSvg}
-          alt=""
-          aria-hidden
-          className="h-12 md:h-14 w-auto"
-        />
-        <span
-          className="text-[11px] md:text-xs uppercase tracking-[0.25em] font-bold"
-          style={{ color: branding.darkColor }}
-        >
-          Portal Ayurveda
-        </span>
-      </motion.div>
 
       <motion.h1
         initial={{ opacity: 0, y: 16 }}

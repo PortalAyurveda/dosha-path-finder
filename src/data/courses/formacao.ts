@@ -127,8 +127,8 @@ export const formacaoData: FormacaoData = {
     details:
       "400 horas de certificação | 15 módulos ao longo de 1,5 ano | Online + 3 Imersões Presenciais em SP",
     startDate: "Início: 12 e 13 de Julho de 2026",
-    ctaText: "Em breve",
-    ctaSubtext: "Inscrições ainda não estão abertas. Apenas 50 vagas.",
+    ctaText: "Inscrições abrem início de maio",
+    ctaSubtext: "Apenas 50 vagas no primeiro lote.",
   },
   paraQuem: {
     title: "Para Quem É Esta Formação",
@@ -573,8 +573,8 @@ export const formacaoData: FormacaoData = {
   finalCta: {
     title: "Esta É A Sua Chance",
     body: "Você já sabe que Ayurveda funciona. Você já experimentou na pele. Você já sentiu a diferença na saúde, na energia, na clareza.\n\nAgora é a hora de ir além. De sair de espectadora para protagonista. De deixar de ser paciente para se tornar terapeuta. De transformar sua própria vida — e a vida de outras pessoas.\n\nEsta é a primeira turma oficial de Terapeutas Ayurveda formada pelo Portal Ayurveda. São apenas 50 vagas. O desconto de 10% é válido até 12 de junho. A primeira aula começa em 12 de julho de 2026.",
-    primaryCta: "Em breve",
-    primarySub: "Inscrições ainda não estão abertas | Apenas 50 vagas",
-    secondaryCta: "Em breve",
+    primaryCta: "Inscrições abrem início de maio",
+    primarySub: "Apenas 50 vagas no primeiro lote",
+    secondaryCta: "",
   },
 };
