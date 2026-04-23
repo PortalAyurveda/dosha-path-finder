@@ -12,7 +12,7 @@ interface Props {
 }
 
 const InvestimentoSection = ({ data, branding, onCtaClick, ctaText, ctaSubtext }: Props) => (
-  <section className="bg-white py-12 md:py-16" id="investimento">
+  <section className="py-12 md:py-16" id="investimento" style={{ background: "#F0F4FF" }}>
     <div className="max-w-3xl mx-auto px-6">
       <motion.h2
         initial={{ opacity: 0, y: 20 }}

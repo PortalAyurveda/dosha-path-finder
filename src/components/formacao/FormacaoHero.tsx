@@ -12,9 +12,7 @@ const FormacaoHero = ({ data, branding, onCtaClick }: Props) => (
   <section
     id="top"
     className="relative w-full py-14 md:py-20 overflow-hidden"
-    style={{
-      background: `linear-gradient(180deg, ${branding.lightColor} 0%, #FAF9F6 100%)`,
-    }}
+    style={{ background: "#FFF8EE" }}
   >
     <div
       className="absolute -top-24 -right-24 w-80 h-80 rounded-full opacity-20 pointer-events-none"

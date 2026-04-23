@@ -8,7 +8,7 @@ interface Props {
 }
 
 const FormacaoProfessorSection = ({ data, branding }: Props) => (
-  <section className="py-12 md:py-16" style={{ background: "#FAF9F6" }}>
+  <section className="py-12 md:py-16 bg-white">
     <div className="max-w-4xl mx-auto px-6">
       <div className="grid grid-cols-1 md:grid-cols-[auto_1fr] gap-8 md:gap-10 items-start">
         <motion.div

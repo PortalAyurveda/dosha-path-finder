@@ -9,8 +9,8 @@ interface Props {
 }
 
 const FinalCtaSection = ({ data, branding, onPrimary, onSecondary }: Props) => (
-  <section className="py-14 md:py-20" style={{ background: branding.darkColor }}>
-    <div className="max-w-3xl mx-auto px-6 text-center text-white">
+  <section className="py-14 md:py-20" style={{ background: "#FFF8EE" }}>
+    <div className="max-w-3xl mx-auto px-6 text-center" style={{ color: branding.darkColor }}>
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         whileInView={{ opacity: 1, scale: 1 }}
