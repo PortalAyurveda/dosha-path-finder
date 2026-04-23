@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { BookMarked, Beaker, Users, Bot, User, type LucideIcon } from "lucide-react";
+import { BookMarked, Beaker, Users, Bot, User, Map, type LucideIcon } from "lucide-react";
 import type { FormacaoData } from "@/data/courses/formacao";
 
 interface Props {
@@ -7,7 +7,7 @@ interface Props {
   branding: FormacaoData["branding"];
 }
 
-const ICONS: LucideIcon[] = [BookMarked, Beaker, Users, Bot, User];
+const ICONS: LucideIcon[] = [BookMarked, Beaker, Users, Bot, User, Map];
 
 const SolucaoSection = ({ data, branding }: Props) => (
   <section className="bg-white py-12 md:py-16">

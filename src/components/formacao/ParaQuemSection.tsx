@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Sparkles, Target, Sprout, BookOpen, GraduationCap, type LucideIcon } from "lucide-react";
+import { Sparkles, Target, Sprout, BookOpen, GraduationCap, HeartHandshake, type LucideIcon } from "lucide-react";
 import type { FormacaoData } from "@/data/courses/formacao";
 
 interface Props {
@@ -7,7 +7,7 @@ interface Props {
   branding: FormacaoData["branding"];
 }
 
-const ICONS: LucideIcon[] = [Sparkles, Target, Sprout, BookOpen, GraduationCap];
+const ICONS: LucideIcon[] = [Sparkles, Target, Sprout, BookOpen, GraduationCap, HeartHandshake];
 
 const ParaQuemSection = ({ data, branding }: Props) => (
   <section className="bg-white py-12 md:py-16">
