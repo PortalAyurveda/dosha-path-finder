@@ -19,13 +19,14 @@ const FormacaoProfessorSection = ({ data, branding }: Props) => (
           className="mx-auto md:mx-0"
         >
           <div
-            className="w-[230px] h-[230px] md:w-[280px] md:h-[280px] overflow-hidden shadow-md rounded-t-full rounded-b-none"
+            className="w-[230px] h-[260px] md:w-[280px] md:h-[320px] overflow-hidden shadow-md rounded-t-full rounded-b-none"
             style={{ border: `5px solid ${branding.primaryColor}` }}
           >
             <img
               src={data.photo}
               alt={data.name}
               className="w-full h-full object-cover"
+              style={{ objectPosition: "center 15%" }}
               loading="lazy"
             />
           </div>

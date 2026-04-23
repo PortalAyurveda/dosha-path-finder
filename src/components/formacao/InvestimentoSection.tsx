@@ -121,7 +121,7 @@ const InvestimentoSection = ({ data, branding, onCtaClick, ctaText, ctaSubtext }
         </div>
       </div>
 
-      <div className="text-center">
+      <div className="flex flex-col items-center text-center">
         <button
           onClick={onCtaClick}
           className="inline-flex items-center justify-center gap-2.5 font-bold text-xs md:text-sm uppercase tracking-wide px-8 md:px-12 py-4 shadow-md hover:shadow-xl transition-all hover:scale-[1.03] rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm w-full md:w-auto text-white"

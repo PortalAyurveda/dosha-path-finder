@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { TreePine, Quote } from "lucide-react";
 import type { FormacaoData } from "@/data/courses/formacao";
 
 interface Props {
@@ -7,8 +8,23 @@ interface Props {
 }
 
 const ProblemaSection = ({ data, branding }: Props) => (
-  <section className="py-12 md:py-16" style={{ background: "#FAF9F6" }}>
+  <section className="py-12 md:py-16" style={{ background: "#FFF7ED" }}>
     <div className="max-w-2xl mx-auto px-6">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.85 }}
+        whileInView={{ opacity: 1, scale: 1 }}
+        viewport={{ once: true, margin: "-100px" }}
+        transition={{ duration: 0.5 }}
+        className="flex justify-center mb-5"
+      >
+        <span
+          className="w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center"
+          style={{ background: `${branding.accentColor}40`, color: branding.darkColor }}
+        >
+          <TreePine className="h-8 w-8 md:h-10 md:w-10" strokeWidth={1.8} />
+        </span>
+      </motion.div>
+
       <motion.h2
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -35,21 +51,25 @@ const ProblemaSection = ({ data, branding }: Props) => (
         whileInView={{ opacity: 1, scale: 1 }}
         viewport={{ once: true, margin: "-50px" }}
         transition={{ duration: 0.5 }}
-        className="p-6 md:p-7 mb-8 rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm border-l-4"
-        style={{
-          background: `${branding.primaryColor}18`,
-          borderColor: branding.darkColor,
-        }}
+        className="relative p-7 md:p-8 mb-8 rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm shadow-lg text-white"
+        style={{ background: branding.darkColor }}
       >
-        <p
-          className="font-serif italic font-bold text-base md:text-lg mb-3 leading-snug"
-          style={{ color: branding.darkColor }}
-        >
-          {data.box.title}
-        </p>
-        <p className="text-sm md:text-base text-gray-800 leading-relaxed whitespace-pre-line">
-          {data.box.body}
-        </p>
+        <Quote
+          className="absolute top-4 left-4 h-10 w-10 md:h-12 md:w-12 opacity-20"
+          style={{ color: branding.accentColor }}
+          strokeWidth={1.5}
+        />
+        <div className="relative pl-6 md:pl-8">
+          <p
+            className="font-serif italic font-bold text-base md:text-lg mb-3 leading-snug"
+            style={{ color: branding.accentColor }}
+          >
+            {data.box.title}
+          </p>
+          <p className="text-sm md:text-base text-white leading-relaxed whitespace-pre-line">
+            {data.box.body}
+          </p>
+        </div>
       </motion.div>
 
       <motion.div
