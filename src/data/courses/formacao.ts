@@ -410,7 +410,7 @@ export const formacaoData: FormacaoData = {
     name: "Edson Osorío",
     role: "Terapeuta Ayurveda | Professor | Fundador do Portal Ayurveda",
     photo:
-      "https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/EDSON-YOGA.jpg",
+      "https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/b8f47f-5f003e6165b44645b7163ec3dd646d32mv2-1.jpg",
     bullets: [
       "15 anos de prática clínica ativa",
       "13 anos de sala de aula",
