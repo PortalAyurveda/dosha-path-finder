@@ -1,43 +1,66 @@
 
 
-## Corrigir métricas da Akasha em /metricas/akasha
+## Objetivo
 
-### Problema
-Os 5 cards KPI estão vazios porque o código busca IDs antigos (`AKASHA_TOTAL_MSGS`, `AKASHA_USUARIOS_UNICOS`, etc.) que não existem mais em `metricas_snapshot`. O snapshot atual usa IDs novos: `AKASHA_01` a `AKASHA_04` (família "Akasha") + `TEMPORAL_AKASHA` (família "Temporal", com a série diária embutida em `descricao` como JSON).
+Na página `/curso/formacao`, fazer o botão **"INSCRIÇÕES ABREM INÍCIO DE MAIO"** "subir" para o cabeçalho — substituindo a logo do Portal Ayurveda — assim que o usuário rolar a página para além do botão original no Hero.
 
-### O que será feito
+## Comportamento
 
-**1. Corrigir mapeamento de IDs em `src/pages/MetricasAkasha.tsx`**
+```text
+Estado A — topo da página (hero visível)
+┌─────────────────────────────────────────────┐
+│ [Menu]      [Logo Portal Ayurveda]   [👤]   │ ← Header normal
+├─────────────────────────────────────────────┤
+│                                             │
+│        Torne-se Terapeuta Ayurveda…         │
+│   [INSCRIÇÕES ABREM INÍCIO DE MAIO] ← btn   │
+│                                             │
+└─────────────────────────────────────────────┘
 
-Trocar os lookups dos cards para os IDs reais:
+Estado B — usuário rolou para baixo (botão do hero saiu da tela)
+┌─────────────────────────────────────────────┐
+│ [Menu] [INSCRIÇÕES ABREM INÍCIO DE MAIO][👤]│ ← Botão substitui logo
+├─────────────────────────────────────────────┤
+│            (resto da página)                │
+└─────────────────────────────────────────────┘
+```
 
-| Card | ID antigo (não existe) | ID novo (snapshot atual) |
-|---|---|---|
-| Volume Total | `AKASHA_TOTAL_MSGS` | `AKASHA_01` (usar `n_base`) |
-| Usuários Atendidos | `AKASHA_USUARIOS_UNICOS` | `AKASHA_02` (usar `n_base`) |
-| Média de Uso | `AKASHA_MEDIA_POR_USUARIO` | `AKASHA_03` (usar `percentual` → 69,3) |
-| Engajamento Máximo | `AKASHA_PICO_USUARIO` | `AKASHA_04` (usar `n_base`) |
-| Retenção (>7 dias) | `AKASHA_RETENCAO_PCT` | não existe no snapshot → exibir "—" com legenda "em cálculo" |
+- Transição suave (fade + slide curto) ao trocar logo ↔ botão.
+- Ao clicar no botão do header, mesma ação dos outros CTAs (`handleEmBreve("header")` → scroll até `#investimento`).
+- Comportamento ativo apenas em `/curso/formacao`. Demais páginas mantêm a logo intacta.
+- Mobile: o botão no header usa versão compacta (texto menor, padding reduzido) para caber entre o Menu e o avatar; em telas muito estreitas, encurta para "INSCREVER-SE".
 
-**2. Usar `TEMPORAL_AKASHA` como fonte primária da Evolução Diária**
+## Implementação Técnica
 
-A linha `TEMPORAL_AKASHA` (família "Temporal") já traz os últimos 30 dias prontos como JSON em `descricao` (`[{dia, msgs, usuarios}, …]`). Vou:
-- Ler esse JSON do snapshot diretamente.
-- Manter a RPC `akasha_evolucao_diaria` como fallback caso o snapshot não tenha o registro.
+1. **Novo contexto leve** `src/contexts/HeaderCtaContext.tsx`
+   - Expõe `{ cta: { label, onClick } | null, setCta }`.
+   - `Layout.tsx` envolve a árvore com o `HeaderCtaProvider` para que qualquer página possa registrar/limpar um CTA do header.
 
-**3. Hora de pico e gráfico de horários**
+2. **`Header.tsx`**
+   - Consome `useHeaderCta()`.
+   - No bloco CENTER (linhas 175-198), quando `cta` está definido **e** não estamos em `/samkhya/*`, renderiza o botão (estilo salmão `#FF7676`, mesmo formato dos outros CTAs do curso) no lugar da logo.
+   - Animação via classes existentes `animate-fade-in` / `animate-scale-in` (Tailwind config já tem). Logo recebe fade-out reverso.
 
-Continua dependendo da RPC `akasha_distribuicao_horas` (não há equivalente no snapshot). Se a RPC retornar vazio, o gráfico mostra estado vazio limpo em vez de quebrar.
+3. **`src/pages/curso/Formacao.tsx`**
+   - Adiciona `useEffect` com `IntersectionObserver` observando o botão do hero (via `ref`).
+   - Quando o botão **sai** do viewport (`isIntersecting === false`) → `setCta({ label: data.hero.ctaText, onClick: handleEmBreve("header") })`.
+   - Quando volta a aparecer → `setCta(null)`.
+   - Cleanup ao desmontar limpa o CTA.
 
-**4. Fallback de carregamento**
+4. **`FormacaoHero.tsx`**
+   - Aceita prop opcional `ctaRef?: React.Ref<HTMLButtonElement>` e a aplica ao `motion.button` do CTA, para o observer rastrear exatamente o botão.
 
-Hoje a tela inteira fica em skeleton enquanto o snapshot carrega, mesmo se a RPC já trouxe dados (ou vice-versa). Vou separar os estados de loading: KPIs/Evolução dependem do snapshot; Horários dependem da RPC. Cada bloco mostra seu próprio skeleton.
+## Arquivos afetados
 
-### Arquivos a editar
-- `src/pages/MetricasAkasha.tsx` — corrigir IDs, ler `TEMPORAL_AKASHA`, separar loadings.
-- `src/components/metricas/useMetricasData.ts` — (opcional) adicionar helper para extrair série temporal a partir do snapshot Temporal, com fallback à RPC.
+- **Novo:** `src/contexts/HeaderCtaContext.tsx`
+- **Editado:** `src/components/Layout.tsx` (envolver com Provider)
+- **Editado:** `src/components/Header.tsx` (consumir contexto, renderizar botão no centro)
+- **Editado:** `src/components/formacao/FormacaoHero.tsx` (forwardRef no botão CTA)
+- **Editado:** `src/pages/curso/Formacao.tsx` (IntersectionObserver + setCta)
 
-### O que NÃO será feito
-- Nenhuma alteração de schema ou de dados no Supabase.
-- Sem mudar visual, cores, tipografia ou layout dos cards/gráficos.
+## Fora de escopo
+
+- Não altera a logo no header de outras páginas.
+- Não altera o cabeçalho da `/samkhya/*` (mantém logo Samkhya).
+- Não muda a aparência da seção Hero em si — apenas adiciona uma `ref` no botão.
 
