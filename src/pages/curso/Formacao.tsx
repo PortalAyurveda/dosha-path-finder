@@ -41,6 +41,10 @@ const Formacao = () => {
         } else {
           setCta({
             label: data.hero.ctaText,
+            mobileLabel: "Inscrever-se",
+            className:
+              "inline-flex items-center justify-center gap-2.5 font-bold text-xs md:text-sm uppercase tracking-wide px-8 md:px-12 py-4 md:py-4 shadow-md hover:shadow-xl transition-all hover:scale-[1.03] rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm w-full md:w-auto text-white",
+            style: { background: "#FF7676", color: "#FFFFFF" },
             onClick: () => {
               // eslint-disable-next-line no-console
               console.log("[formacao-cta]", { origin: "header", ts: Date.now(), status: "em-breve" });

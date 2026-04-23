@@ -125,93 +125,96 @@ const Header = () => {
       className={`sticky top-0 z-50 w-full text-primary-foreground shadow-md ${isSamkhya ? "" : "bg-primary"}`}
       style={headerBg}
     >
-      <div className="max-w-6xl mx-auto flex h-16 items-center justify-between px-4 sm:px-6">
+      <div className="max-w-6xl mx-auto grid h-16 grid-cols-[1fr_auto_1fr] items-center gap-3 px-4 sm:px-6">
         {/* LEFT — Hamburger menu */}
-        <Sheet open={open} onOpenChange={setOpen}>
-          <SheetTrigger asChild>
-            <Button
-              size="sm"
-              className="bg-white font-semibold hover:bg-white/90 gap-1.5"
-              style={buttonTextColor ? { color: buttonTextColor } : undefined}
+        <div className="justify-self-start">
+          <Sheet open={open} onOpenChange={setOpen}>
+            <SheetTrigger asChild>
+              <Button
+                size="sm"
+                className="bg-white font-semibold hover:bg-white/90 gap-1.5"
+                style={buttonTextColor ? { color: buttonTextColor } : undefined}
+              >
+                <Menu className="h-5 w-5 bg-primary-foreground text-primary" />
+                <span className="text-sm font-medium">Menu</span>
+              </Button>
+            </SheetTrigger>
+            <SheetContent
+              side="left"
+              className={`w-72 pt-12 text-primary-foreground border-primary ${isSamkhya ? "" : "bg-primary"}`}
+              style={sheetBg}
             >
-              <Menu className="h-5 w-5 bg-primary-foreground text-primary" />
-              <span className="text-sm font-medium">Menu</span>
-            </Button>
-          </SheetTrigger>
-          <SheetContent
-            side="left"
-            className={`w-72 pt-12 text-primary-foreground border-primary ${isSamkhya ? "" : "bg-primary"}`}
-            style={sheetBg}
-          >
-            <SheetTitle className="sr-only">Menu de navegação</SheetTitle>
-            <nav className="flex flex-col gap-2">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.to}
-                  to={link.to}
-                  onClick={() => setOpen(false)}
-                  className={`px-4 py-3 rounded-xl text-base font-medium transition-colors ${
-                    isActive(link.to)
-                      ? "bg-white/20 text-white font-bold"
-                      : "text-white/70 hover:text-white hover:bg-white/10"
-                  }`}
-                >
-                  {link.label}
-                </Link>
-              ))}
-              {user && (
-                <>
-                  <div className="border-t border-white/20 my-2" />
-                  <button
-                    onClick={() => { setOpen(false); handleSignOut(); }}
-                    className="px-4 py-3 rounded-xl text-base font-medium text-white/70 hover:text-white hover:bg-white/10 transition-colors flex items-center gap-2 text-left"
+              <SheetTitle className="sr-only">Menu de navegação</SheetTitle>
+              <nav className="flex flex-col gap-2">
+                {navLinks.map((link) => (
+                  <Link
+                    key={link.to}
+                    to={link.to}
+                    onClick={() => setOpen(false)}
+                    className={`px-4 py-3 rounded-xl text-base font-medium transition-colors ${
+                      isActive(link.to)
+                        ? "bg-white/20 text-white font-bold"
+                        : "text-white/70 hover:text-white hover:bg-white/10"
+                    }`}
                   >
-                    <LogOut className="h-4 w-4" />
-                    Sair
-                  </button>
-                </>
-              )}
-            </nav>
-          </SheetContent>
-        </Sheet>
+                    {link.label}
+                  </Link>
+                ))}
+                {user && (
+                  <>
+                    <div className="border-t border-white/20 my-2" />
+                    <button
+                      onClick={() => { setOpen(false); handleSignOut(); }}
+                      className="px-4 py-3 rounded-xl text-base font-medium text-white/70 hover:text-white hover:bg-white/10 transition-colors flex items-center gap-2 text-left"
+                    >
+                      <LogOut className="h-4 w-4" />
+                      Sair
+                    </button>
+                  </>
+                )}
+              </nav>
+            </SheetContent>
+          </Sheet>
+        </div>
 
         {/* CENTER — Logo (swap when in /samkhya/* or when a page registers a CTA) */}
-        {isSamkhya ? (
-          <Link to="/samkhya" className="absolute left-1/2 -translate-x-1/2 flex items-center">
-            <img
-              src={SAMKHYA_LOGO}
-              alt="Loja Samkhya"
-              className="brightness-0 invert"
-              style={{ width: "208px", height: "auto" }}
-            />
-          </Link>
-        ) : showHeaderCta ? (
-          <button
-            key="header-cta"
-            onClick={cta!.onClick}
-            className="absolute left-1/2 -translate-x-1/2 inline-flex items-center justify-center font-bold uppercase tracking-wide shadow-md hover:shadow-lg transition-all hover:scale-[1.03] rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm animate-fade-in text-[10px] sm:text-xs px-3 sm:px-5 py-2 sm:py-2.5 max-w-[55vw] sm:max-w-none truncate"
-            style={{ background: "#FF7676", color: "#FFFFFF" }}
-          >
-            <span className="hidden xs:inline sm:inline" style={{ color: "#FFFFFF" }}>{cta!.label}</span>
-            <span className="inline xs:hidden sm:hidden" style={{ color: "#FFFFFF" }}>Inscrever-se</span>
-          </button>
-        ) : (
-          <Link to="/" className="absolute left-1/2 -translate-x-1/2 flex items-center animate-fade-in">
-            <img
-              src="https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/b8f47f-6144676c30ec476dbc1f8c5c8812eb1dmv2-1.png"
-              alt="Portal Ayurveda"
-              className="h-10 w-auto hidden sm:block"
-            />
-            <img
-              src="https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/simbolo-positivo.svg"
-              alt="Portal Ayurveda"
-              className="h-9 w-auto block sm:hidden"
-            />
-          </Link>
-        )}
+        <div className="flex min-w-0 justify-center justify-self-center">
+          {isSamkhya ? (
+            <Link to="/samkhya" className="flex items-center justify-center">
+              <img
+                src={SAMKHYA_LOGO}
+                alt="Loja Samkhya"
+                className="brightness-0 invert"
+                style={{ width: "208px", height: "auto" }}
+              />
+            </Link>
+          ) : showHeaderCta ? (
+            <button
+              key="header-cta"
+              onClick={cta!.onClick}
+              className={`${cta!.className ?? "inline-flex items-center justify-center gap-2.5 font-bold text-xs md:text-sm uppercase tracking-wide px-8 md:px-12 py-4 md:py-4 shadow-md hover:shadow-xl transition-all hover:scale-[1.03] rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm w-full md:w-auto text-white"} shrink-0 animate-fade-in`}
+              style={cta!.style ?? { background: "#FF7676", color: "#FFFFFF" }}
+            >
+              <span style={{ color: "inherit" }}>{cta!.label}</span>
+            </button>
+          ) : (
+            <Link to="/" className="flex items-center justify-center animate-fade-in">
+              <img
+                src="https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/b8f47f-6144676c30ec476dbc1f8c5c8812eb1dmv2-1.png"
+                alt="Portal Ayurveda"
+                className="h-10 w-auto hidden sm:block"
+              />
+              <img
+                src="https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/simbolo-positivo.svg"
+                alt="Portal Ayurveda"
+                className="h-9 w-auto block sm:hidden"
+              />
+            </Link>
+          )}
+        </div>
 
         {/* RIGHT — Profile with pie favicon */}
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1.5 justify-self-end">
             {doshaResult ? (
               <Link
                 to={profileLink}
