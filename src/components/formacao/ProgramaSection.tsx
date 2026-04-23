@@ -188,17 +188,26 @@ const ProgramaSection = ({ data, branding }: Props) => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-50px" }}
           transition={{ duration: 0.5 }}
-          className="p-6 md:p-7 mb-12 text-white rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm"
-          style={{ background: branding.darkColor }}
+          className="p-6 md:p-7 mb-12 rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm border-l-4"
+          style={{
+            background: branding.lightColor,
+            borderColor: branding.darkColor,
+            color: branding.darkColor,
+          }}
         >
-          <h3 className="font-serif italic font-bold text-xl md:text-2xl mb-5">
+          <h3
+            className="font-serif italic font-bold text-xl md:text-2xl mb-5"
+            style={{ color: branding.darkColor }}
+          >
             {data.cargaTitle}
           </h3>
           <ul className="space-y-1.5 text-sm md:text-base">
             {data.cargaItems.map((item, i) => (
-              <li key={i} className="leading-relaxed">
+              <li key={i} className="leading-relaxed" style={{ color: branding.darkColor }}>
                 {item.startsWith("→") ? (
-                  <span className="pl-4 text-white/85 block">{item}</span>
+                  <span className="pl-4 block" style={{ opacity: 0.85 }}>
+                    {item}
+                  </span>
                 ) : (
                   <span className="font-bold">• {item}</span>
                 )}
