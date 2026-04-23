@@ -333,6 +333,21 @@ const ProgramaSection = ({ data, branding }: Props) => {
               </li>
             ))}
           </ul>
+
+          <div
+            className="mt-6 pt-5 border-t"
+            style={{ borderColor: `${branding.darkColor}30` }}
+          >
+            <h4
+              className="font-serif italic font-bold text-base md:text-lg mb-2.5"
+              style={{ color: branding.darkColor }}
+            >
+              Por que as avaliações existem?
+            </h4>
+            <p className="text-sm md:text-base leading-relaxed" style={{ color: branding.darkColor, opacity: 0.9 }}>
+              Os questionários ao final de cada módulo não são provas para te reprovar. São ferramentas de autodiagnóstico: eles ajudam você a identificar seus pontos fortes, os conceitos que já domina, e as áreas que ainda precisam de atenção. O objetivo é garantir que você construa uma base sólida — porque Ayurveda sem fundamento firme é informação solta, não formação real.
+            </p>
+          </div>
         </motion.div>
 
         {/* Extras */}
