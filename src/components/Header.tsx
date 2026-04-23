@@ -125,7 +125,7 @@ const Header = () => {
       className={`sticky top-0 z-50 w-full text-primary-foreground shadow-md ${isSamkhya ? "" : "bg-primary"}`}
       style={headerBg}
     >
-      <div className="max-w-6xl mx-auto grid h-16 grid-cols-[auto_1fr_auto] items-center gap-3 px-4 sm:px-6">
+      <div className="max-w-6xl mx-auto grid h-16 grid-cols-[1fr_auto_1fr] items-center gap-3 px-4 sm:px-6">
         {/* LEFT — Hamburger menu */}
         <div className="justify-self-start">
           <Sheet open={open} onOpenChange={setOpen}>
@@ -178,7 +178,7 @@ const Header = () => {
         </div>
 
         {/* CENTER — Logo (swap when in /samkhya/* or when a page registers a CTA) */}
-        <div className="min-w-0 flex justify-center">
+        <div className="flex min-w-0 justify-center justify-self-center">
           {isSamkhya ? (
             <Link to="/samkhya" className="flex items-center justify-center">
               <img
@@ -192,11 +192,10 @@ const Header = () => {
             <button
               key="header-cta"
               onClick={cta!.onClick}
-              className={`${cta!.className ?? "inline-flex items-center justify-center gap-2.5 font-bold text-xs md:text-sm uppercase tracking-wide px-8 md:px-12 py-4 md:py-4 shadow-md hover:shadow-xl transition-all hover:scale-[1.03] rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm w-full md:w-auto text-white"} animate-fade-in max-w-full`}
+              className={`${cta!.className ?? "inline-flex items-center justify-center gap-2.5 font-bold text-xs md:text-sm uppercase tracking-wide px-8 md:px-12 py-4 md:py-4 shadow-md hover:shadow-xl transition-all hover:scale-[1.03] rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm w-full md:w-auto text-white"} shrink-0 animate-fade-in`}
               style={cta!.style ?? { background: "#FF7676", color: "#FFFFFF" }}
             >
-              <span className="hidden sm:inline" style={{ color: "inherit" }}>{cta!.label}</span>
-              <span className="inline sm:hidden" style={{ color: "inherit" }}>{cta!.mobileLabel ?? cta!.label}</span>
+              <span style={{ color: "inherit" }}>{cta!.label}</span>
             </button>
           ) : (
             <Link to="/" className="flex items-center justify-center animate-fade-in">
