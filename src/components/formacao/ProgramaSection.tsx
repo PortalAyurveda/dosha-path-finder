@@ -128,6 +128,30 @@ const ProgramaSection = ({ data, branding }: Props) => {
                     const isOpen = openModule === mod.number;
                     const isPresencial = mod.format === "Presencial SP";
                     const altBg = mi % 2 === 0 ? "#FFFFFF" : "#FBF7F0";
+                    const cardBackground = isPresencial
+                      ? `linear-gradient(135deg, ${branding.lightColor} 0%, #EEF3FF 34%, #FDEBED 72%, #f7b2b7 100%)`
+                      : altBg;
+                    const cardBorderColor = isPresencial ? "#B56A84" : "#E5E7EB";
+                    const cardShadow = isPresencial
+                      ? "0 18px 40px -28px rgba(181, 106, 132, 0.55)"
+                      : undefined;
+                    const moduleNumberBackground = isPresencial
+                      ? `linear-gradient(135deg, ${branding.primaryColor} 0%, #8C9BFF 48%, #f7b2b7 100%)`
+                      : branding.darkColor;
+                    const titleColor = isPresencial ? "#7E4A73" : branding.darkColor;
+                    const formatBadgeStyle = isPresencial
+                      ? {
+                          background: "#f7b2b7",
+                          color: branding.darkColor,
+                          border: `1px solid ${branding.primaryColor}`,
+                        }
+                      : {
+                          background: "#6B8AFF20",
+                          color: "#1E3A8A",
+                        };
+                    const detailAccent = isPresencial ? "#B56A84" : branding.primaryColor;
+                    const detailBulletBackground = isPresencial ? "#f7b2b7" : branding.darkColor;
+
                     return (
                       <motion.div
                         key={mod.number}
@@ -135,10 +159,9 @@ const ProgramaSection = ({ data, branding }: Props) => {
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true, margin: "-40px" }}
                         transition={{ duration: 0.35, delay: Math.min(mi * 0.04, 0.18) }}
-                        className="relative border border-gray-200 hover:border-gray-300 shadow-sm transition-all rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm overflow-hidden"
-                        style={{ background: altBg }}
+                        className="relative border hover:border-gray-300 shadow-sm transition-all rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm overflow-hidden"
+                        style={{ background: cardBackground, borderColor: cardBorderColor, boxShadow: cardShadow }}
                       >
-                        {/* Tick connecting to vertical line */}
                         <span
                           className="hidden md:block absolute -left-5 top-7 w-5 h-px"
                           style={{ background: `${branding.primaryColor}40` }}
@@ -151,7 +174,7 @@ const ProgramaSection = ({ data, branding }: Props) => {
                         >
                           <span
                             className="shrink-0 w-11 h-11 md:w-12 md:h-12 rounded-full flex items-center justify-center font-serif font-bold text-sm md:text-base text-white"
-                            style={{ background: branding.darkColor }}
+                            style={{ background: moduleNumberBackground }}
                           >
                             {String(mod.number).padStart(2, "0")}
                           </span>
@@ -159,7 +182,7 @@ const ProgramaSection = ({ data, branding }: Props) => {
                             <div className="flex flex-wrap items-center gap-2 mb-1.5">
                               <h3
                                 className="font-serif font-bold text-base md:text-lg leading-tight"
-                                style={{ color: branding.darkColor }}
+                                style={{ color: titleColor }}
                               >
                                 {mod.title}
                               </h3>
@@ -170,10 +193,7 @@ const ProgramaSection = ({ data, branding }: Props) => {
                               </span>
                               <span
                                 className="inline-flex items-center gap-1 text-[10px] md:text-xs font-bold px-2.5 py-0.5 rounded-full"
-                                style={{
-                                  background: isPresencial ? "#9ED88B40" : "#6B8AFF20",
-                                  color: isPresencial ? "#14532D" : "#1E3A8A",
-                                }}
+                                style={formatBadgeStyle}
                               >
                                 {isPresencial ? (
                                   <>
@@ -186,12 +206,12 @@ const ProgramaSection = ({ data, branding }: Props) => {
                                 {mod.format}
                               </span>
                             </div>
-                            <p className="text-xs md:text-sm text-gray-700 leading-relaxed">
+                            <p className="text-xs md:text-sm text-gray-700 leading-relaxed" style={isPresencial ? { color: "#5B4A62" } : undefined}>
                               {mod.description}
                             </p>
                             <p
                               className="mt-2 inline-flex items-center gap-1 text-[11px] md:text-xs font-bold uppercase tracking-wide"
-                              style={{ color: branding.primaryColor }}
+                              style={{ color: detailAccent }}
                             >
                               {isOpen ? "Recolher" : "Ver conteúdo detalhado"}
                               <ChevronDown
@@ -217,7 +237,7 @@ const ProgramaSection = ({ data, branding }: Props) => {
                                     <li key={di} className="flex items-start gap-3">
                                       <span
                                         className="shrink-0 w-4 h-4 rounded-full flex items-center justify-center mt-1"
-                                        style={{ background: branding.darkColor }}
+                                        style={{ background: detailBulletBackground }}
                                       >
                                         <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />
                                       </span>
