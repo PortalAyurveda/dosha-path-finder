@@ -57,9 +57,8 @@ const FormacaoHero = ({ data, branding, onCtaClick, ctaRef }: Props) => (
         <p
           className="text-xs md:text-sm font-bold tracking-wide px-4 py-2 rounded-full text-center max-w-full"
           style={{ background: `${branding.primaryColor}25`, color: branding.darkColor }}
-        >
-          {data.details}
-        </p>
+          dangerouslySetInnerHTML={{ __html: data.details }}
+        />
         <p
           className="inline-flex items-center gap-2 text-xs md:text-sm font-bold"
           style={{ color: branding.darkColor }}
