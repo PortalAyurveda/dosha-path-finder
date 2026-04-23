@@ -139,7 +139,7 @@ const Video = () => {
         <meta property="og:image" content={`https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`} />
         <meta property="og:type" content="video.other" />
         <meta name="twitter:card" content="summary_large_image" />
-        <link rel="canonical" href={`https://dosha-path-finder.lovable.app/video/${canonicalSlug}`} />
+        <link rel="canonical" href={`https://www.portalayurveda.com/video/${canonicalSlug}`} />
         <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
       </Helmet>
 
