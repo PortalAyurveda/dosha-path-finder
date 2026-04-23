@@ -145,9 +145,9 @@ export const formacaoData: FormacaoData = {
   problema: {
     title: "O problema não é falta de informação",
     intro:
-      "Você já assistiu dezenas de lives. Já leu sobre doshas, subdoshas, agni, ama. Talvez até tenha feito cursos introdutórios.\n\nVocê já experimentou os frutos do Ayurveda. Sentiu a diferença na pele, na energia, na digestão. Viu como os temperos certos transformam um prato. Percebeu como a rotina muda tudo.\n\nMas agora você quer mais. Você quer plantar sua própria árvore. Não apenas colher os frutos — mas dominar a semente, a raiz, o cultivo. Para ter autonomia real. Para oferecer esses frutos a quem te procura.\n\nE aí percebe: uma coisa é experimentar os resultados. Outra coisa é olhar para uma língua e, em segundos, conectar subdoshas, digestão, excreção — e dar uma resposta precisa que transforma a vida de alguém.\n\nEssa é a diferença entre consumir Ayurveda e praticar Ayurveda.",
+      "Você já assistiu dezenas de lives. Já leu sobre doshas, agni, ama. Talvez até tenha feito cursos introdutórios.\n\nVocê já experimentou os frutos do Ayurveda — sentiu a diferença na pele, na energia, na digestão.\n\n**Mas agora você quer mais.**\n\nVocê quer plantar sua própria árvore. Não apenas colher os frutos, mas dominar a semente, a raiz, o cultivo. Para ter autonomia real. Para oferecer esses frutos a quem te procura.",
     closing:
-      "O desafio não é encontrar mais informação. O desafio é transformar informação em domínio clínico real.\n\nVocê pode estudar sozinho por anos — mas sem estrutura, sem prática supervisionada, sem uma linha condutora clara, você fica perdido em conceitos soltos. Falta a raiz. Falta a semente.",
+      "Porque uma coisa é experimentar os resultados. Outra coisa é olhar para uma língua e, em segundos, conectar subdoshas, digestão, excreção — e transformar a vida de alguém.\n\n**Essa é a diferença entre consumir Ayurveda e praticar Ayurveda.**",
   },
   solucao: {
     title: "A solução: estrutura + prática + vivência",
