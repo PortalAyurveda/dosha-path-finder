@@ -508,7 +508,7 @@ export const formacaoData: FormacaoData = {
     condicoes: [
       "10% de desconto para pagamento à vista no PIX",
       "Garantia de vaga com desconto válido até 12 de junho de 2026",
-      "Apenas 50 vagas disponíveis",
+      "Apenas 50 vagas.",
     ],
     condicoesNote: "Após 12 de junho, o valor volta ao preço cheio.",
     inclusoTitle: "O que está incluso",
