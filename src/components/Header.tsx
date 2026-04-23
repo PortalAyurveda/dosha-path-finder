@@ -77,6 +77,7 @@ const Header = () => {
   const { cta } = useHeaderCta();
 
   const isSamkhya = location.pathname.startsWith("/samkhya");
+  const isFormacao = location.pathname.startsWith("/curso/formacao");
   const showHeaderCta = !isSamkhya && cta !== null;
 
   const handleSignOut = async () => {
@@ -127,7 +128,7 @@ const Header = () => {
     >
       <div className="max-w-6xl mx-auto grid h-16 grid-cols-[1fr_auto_1fr] items-center gap-3 px-4 sm:px-6">
         {/* LEFT — Hamburger menu */}
-        <div className="justify-self-start">
+        <div className={`justify-self-start ${isFormacao ? "hidden md:block" : ""}`}>
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
               <Button
@@ -214,7 +215,7 @@ const Header = () => {
         </div>
 
         {/* RIGHT — Profile with pie favicon */}
-        <div className="flex items-center gap-1.5 justify-self-end">
+        <div className={`flex items-center gap-1.5 justify-self-end ${isFormacao ? "hidden md:flex" : ""}`}>
             {doshaResult ? (
               <Link
                 to={profileLink}
