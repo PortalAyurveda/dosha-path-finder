@@ -190,7 +190,7 @@ const Header = () => {
             <button
               key="header-cta"
               onClick={cta!.onClick}
-              className="inline-flex items-center justify-center w-full max-w-full font-bold uppercase tracking-wide text-white shadow-md hover:shadow-lg transition-all hover:scale-[1.03] rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm animate-fade-in text-[10px] sm:text-xs px-2 sm:px-5 py-2 sm:py-2.5 truncate"
+              className="inline-flex items-center justify-center w-full sm:w-auto max-w-full font-bold uppercase tracking-wide text-white shadow-md hover:shadow-lg transition-all hover:scale-[1.03] rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm animate-fade-in text-[10px] sm:text-xs px-2 sm:px-6 py-2 sm:py-2.5 truncate"
               style={{ background: "#FF7676" }}
             >
               <span className="hidden sm:inline truncate">{cta!.label}</span>
