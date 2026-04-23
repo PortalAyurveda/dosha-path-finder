@@ -472,9 +472,9 @@ export const formacaoData: FormacaoData = {
         title: "Infraestrutura completa de suporte",
         body: "Você não fica sozinho.",
         bullets: [
-          "💎 IA Akasha — suporte diagnóstico inteligente",
           "🎯 Acesso interno ao Portal Ayurveda — ferramenta profissional pronta",
-          "📚 Compêndio de Nutrição e Alquimia — receitas e fórmulas práticas",
+          "🍲 Guia completo de Alimentação e Nutrição Ayurvédica",
+          "🌿 Guia completo de Dravya Guna",
           "📋 Protocolo de Atendimento do Zero — estrutura pronta para consultas",
           "👥 Comunidade de terapeutas do Portal — troca, estudos de caso, mentoria coletiva",
         ],
