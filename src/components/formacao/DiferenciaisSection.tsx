@@ -78,7 +78,7 @@ const DiferenciaisSection = ({ data, branding, onCtaClick, ctaText }: Props) => 
           <button
             onClick={onCtaClick}
             className="inline-flex items-center justify-center gap-2.5 font-bold text-sm md:text-base uppercase tracking-wide px-10 md:px-14 py-4 md:py-5 shadow-lg hover:shadow-xl transition-all hover:scale-[1.03] rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm text-white"
-            style={{ background: "#FF7676" }}
+            style={{ background: "#f7b2b7" }}
           >
             {ctaText ?? "Quero garantir minha vaga"}
           </button>

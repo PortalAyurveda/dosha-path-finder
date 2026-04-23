@@ -44,7 +44,7 @@ const Formacao = () => {
             mobileLabel: "Inscrever-se",
             className:
               "inline-flex items-center justify-center gap-2 font-bold text-[11px] sm:text-xs uppercase tracking-wide px-4 sm:px-6 py-2 shadow-md hover:shadow-lg transition-all hover:scale-[1.03] rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm text-white whitespace-nowrap",
-            style: { background: "#FF7676", color: "#FFFFFF" },
+            style: { background: "#f7b2b7", color: "#FFFFFF" },
             onClick: () => {
               // eslint-disable-next-line no-console
               console.log("[formacao-cta]", { origin: "header", ts: Date.now(), status: "em-breve" });
