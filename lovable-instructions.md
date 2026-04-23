@@ -6,7 +6,7 @@ Salvar o `lovable-instructions.md` como memória do projeto com todas as regras 
 
 ### 2. Design System no Tailwind
 
-- **Cores Vibrantes (Oficial + Kapha ajustado):** Estender `tailwind.config.ts` com `primary` (#352F54), `secondary` (#FF7676 - Salmão para CTAs), `accent` (#FACC15 - Amarelo), `vata` (#6B8AFF), `pitta` (#FF7676), `kapha` (#4ADE80), `bg-soft` (#F8F9FA), `surface-sun` (#FFF8EE).
+- **Cores Vibrantes (Oficial + Kapha ajustado):** Estender `tailwind.config.ts` com `primary` (#352F54), `secondary` (#FF7676 - Salmão para CTAs), `accent` (#FACC15 - Amarelo), `vata` (#6B8AFF), `pitta` (#FF7676), `kapha` (#9ED88B), `bg-soft` (#F8F9FA), `surface-sun` (#FFF8EE).
 
 - **Tipografia:** Importar Google Fonts (Roboto Serif para Títulos/Destaques + DM Sans para Corpo/Subtítulos) no `index.html`.
 
