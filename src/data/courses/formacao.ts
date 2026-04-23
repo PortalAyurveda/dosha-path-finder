@@ -521,7 +521,7 @@ export const formacaoData: FormacaoData = {
       "225 horas de aulas ao vivo (online + presencial)",
       "175 horas de atividades obrigatórias",
       "Acesso vitalício às gravações",
-      "IA Akasha + Motor de Teste de Dosha + Compêndio de Alquimia",
+      "Motor de Teste de Dosha + Guia de Alimentação e Nutrição + Guia de Dravya Guna",
       "Protocolo de Atendimento Zero",
       "Comunidade de Terapeutas",
       "Certificação de 400 horas",
