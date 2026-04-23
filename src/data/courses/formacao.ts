@@ -4,6 +4,7 @@ export interface FormacaoModule {
   format: "Online" | "Presencial SP";
   date: string;
   description: string;
+  details: string[];
 }
 
 export interface FormacaoSemester {
