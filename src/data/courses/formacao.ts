@@ -129,7 +129,7 @@ export const formacaoData: FormacaoData = {
     startDate: "Início: 12 e 13 de Julho de 2026",
     endDate: "Término: 06 e 07 de Novembro de 2027",
     ctaText: "Inscrições abrem início de maio",
-    ctaSubtext: "Apenas 50 vagas no primeiro lote.",
+    ctaSubtext: "Apenas 50 vagas.",
   },
   paraQuem: {
     title: "Para quem é esta formação",
