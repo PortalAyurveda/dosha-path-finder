@@ -135,15 +135,8 @@ const ProgramaSection = ({ data, branding }: Props) => {
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true, margin: "-40px" }}
                         transition={{ duration: 0.35, delay: Math.min(mi * 0.04, 0.18) }}
-                        className={`relative shadow-sm transition-all rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm overflow-hidden ${
-                          isPresencial
-                            ? "border-2 hover:shadow-md"
-                            : "border border-gray-200 hover:border-gray-300"
-                        }`}
-                        style={{
-                          background: isPresencial ? branding.lightColor : altBg,
-                          borderColor: isPresencial ? branding.accentColor : undefined,
-                        }}
+                        className="relative border border-gray-200 hover:border-gray-300 shadow-sm transition-all rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm overflow-hidden"
+                        style={{ background: altBg }}
                       >
                         {/* Tick connecting to vertical line */}
                         <span
@@ -178,8 +171,8 @@ const ProgramaSection = ({ data, branding }: Props) => {
                               <span
                                 className="inline-flex items-center gap-1 text-[10px] md:text-xs font-bold px-2.5 py-0.5 rounded-full"
                                 style={{
-                                  background: isPresencial ? `${branding.accentColor}25` : "#6B8AFF20",
-                                  color: isPresencial ? branding.accentColor : "#1E3A8A",
+                                  background: isPresencial ? "#9ED88B40" : "#6B8AFF20",
+                                  color: isPresencial ? "#14532D" : "#1E3A8A",
                                 }}
                               >
                                 {isPresencial ? (

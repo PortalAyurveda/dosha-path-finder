@@ -125,7 +125,7 @@ const Header = () => {
       className={`sticky top-0 z-50 w-full text-primary-foreground shadow-md ${isSamkhya ? "" : "bg-primary"}`}
       style={headerBg}
     >
-      <div className="max-w-6xl mx-auto grid grid-cols-[auto_1fr_auto] items-center gap-2 sm:gap-4 h-16 px-4 sm:px-6">
+      <div className="max-w-6xl mx-auto flex h-16 items-center justify-between px-4 sm:px-6">
         {/* LEFT — Hamburger menu */}
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger asChild>
@@ -176,41 +176,39 @@ const Header = () => {
         </Sheet>
 
         {/* CENTER — Logo (swap when in /samkhya/* or when a page registers a CTA) */}
-        <div className="flex justify-center min-w-0">
-          {isSamkhya ? (
-            <Link to="/samkhya" className="flex items-center">
-              <img
-                src={SAMKHYA_LOGO}
-                alt="Loja Samkhya"
-                className="brightness-0 invert"
-                style={{ width: "208px", height: "auto" }}
-              />
-            </Link>
-          ) : showHeaderCta ? (
-            <button
-              key="header-cta"
-              onClick={cta!.onClick}
-              className="inline-flex items-center justify-center w-full sm:w-auto max-w-full font-bold uppercase tracking-wide text-white shadow-md hover:shadow-lg transition-all hover:scale-[1.03] rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm animate-fade-in text-[10px] sm:text-xs px-2 sm:px-6 py-2 sm:py-2.5 truncate"
-              style={{ background: "#FF7676" }}
-            >
-              <span className="hidden sm:inline truncate">{cta!.label}</span>
-              <span className="inline sm:hidden truncate">Inscrever-se</span>
-            </button>
-          ) : (
-            <Link to="/" className="flex items-center animate-fade-in">
-              <img
-                src="https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/b8f47f-6144676c30ec476dbc1f8c5c8812eb1dmv2-1.png"
-                alt="Portal Ayurveda"
-                className="h-10 w-auto hidden sm:block"
-              />
-              <img
-                src="https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/simbolo-positivo.svg"
-                alt="Portal Ayurveda"
-                className="h-9 w-auto block sm:hidden"
-              />
-            </Link>
-          )}
-        </div>
+        {isSamkhya ? (
+          <Link to="/samkhya" className="absolute left-1/2 -translate-x-1/2 flex items-center">
+            <img
+              src={SAMKHYA_LOGO}
+              alt="Loja Samkhya"
+              className="brightness-0 invert"
+              style={{ width: "208px", height: "auto" }}
+            />
+          </Link>
+        ) : showHeaderCta ? (
+          <button
+            key="header-cta"
+            onClick={cta!.onClick}
+            className="absolute left-1/2 -translate-x-1/2 inline-flex items-center justify-center font-bold uppercase tracking-wide shadow-md hover:shadow-lg transition-all hover:scale-[1.03] rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm animate-fade-in text-[10px] sm:text-xs px-3 sm:px-5 py-2 sm:py-2.5 max-w-[55vw] sm:max-w-none truncate"
+            style={{ background: "#FF7676", color: "#FFFFFF" }}
+          >
+            <span className="hidden xs:inline sm:inline" style={{ color: "#FFFFFF" }}>{cta!.label}</span>
+            <span className="inline xs:hidden sm:hidden" style={{ color: "#FFFFFF" }}>Inscrever-se</span>
+          </button>
+        ) : (
+          <Link to="/" className="absolute left-1/2 -translate-x-1/2 flex items-center animate-fade-in">
+            <img
+              src="https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/b8f47f-6144676c30ec476dbc1f8c5c8812eb1dmv2-1.png"
+              alt="Portal Ayurveda"
+              className="h-10 w-auto hidden sm:block"
+            />
+            <img
+              src="https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/simbolo-positivo.svg"
+              alt="Portal Ayurveda"
+              className="h-9 w-auto block sm:hidden"
+            />
+          </Link>
+        )}
 
         {/* RIGHT — Profile with pie favicon */}
         <div className="flex items-center gap-1.5">
