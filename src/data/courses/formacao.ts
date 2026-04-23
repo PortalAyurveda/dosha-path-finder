@@ -532,9 +532,9 @@ export const formacaoData: FormacaoData = {
     items: [
       {
         question:
-          "Tenho medo de ser tarde demais. Consigo começar com mais de 50 anos?",
+          "Tenho medo de ser tarde demais. Consigo começar mesmo depois de aposentar?",
         answer:
-          "Minha mãe vive Ayurveda comigo há 15 anos. Aos 75, ela fez o Caminho de Santiago de Compostela. Agora, aos 80, quer fazer de novo.\n\nNão é tarde. É o momento certo. Ayurveda não tem prazo de validade. Quanto antes você começar, mais tempo terá para colher — e oferecer — os frutos.\n\nA questão não é a idade. É a disposição. Se você está aqui lendo isso, você já tem a resposta.",
+          "Minha mãe vive Ayurveda comigo há 15 anos. Aos 75, ela fez o Caminho de Santiago de Compostela. Agora, aos 80, quer fazer de novo.\n\nNunca é tarde para viver o sonho. Ayurveda não tem prazo de validade. Quanto antes você começar, mais tempo terá para colher — e oferecer — os frutos.\n\nVocê vai colher frutos que te darão energia para trilhar suas maratonas e sonhos.",
       },
       {
         question:
