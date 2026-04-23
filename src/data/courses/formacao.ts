@@ -191,6 +191,11 @@ export const formacaoData: FormacaoData = {
         title: "Materiais Completos",
         text: "Apostilas detalhadas, acesso vitalício às gravações, suporte contínuo",
       },
+      {
+        icon: "📝",
+        title: "Diário de Evolução Clínica",
+        text: "Você se torna seu próprio caso de estudo: registra mudanças físicas, mentais e emocionais, pratica autoanamnese e aplica diagnóstico em si mesmo",
+      },
     ],
     bridge:
       "Você não vai apenas assistir aulas. Você vai viver Ayurveda — na teoria, na prática, no corpo, na rotina.",
