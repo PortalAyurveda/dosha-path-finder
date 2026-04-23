@@ -10,7 +10,7 @@ interface Props {
 const ICONS: LucideIcon[] = [BookMarked, Beaker, Users, Bot, User, Map];
 
 const SolucaoSection = ({ data, branding }: Props) => (
-  <section className="py-12 md:py-16" style={{ background: "#F0F4FF" }}>
+  <section className="py-12 md:py-16" style={{ background: "#F5F0E6" }}>
     <div className="max-w-4xl mx-auto px-6">
       <motion.h2
         initial={{ opacity: 0, y: 20 }}
