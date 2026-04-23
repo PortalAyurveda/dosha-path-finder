@@ -48,7 +48,6 @@ export interface FormacaoData {
   problema: {
     title: string;
     intro: string;
-    box: { title: string; body: string };
     closing: string;
   };
   solucao: {
@@ -147,10 +146,6 @@ export const formacaoData: FormacaoData = {
     title: "O problema não é falta de informação",
     intro:
       "Você já assistiu dezenas de lives. Já leu sobre doshas, subdoshas, agni, ama. Talvez até tenha feito cursos introdutórios.\n\nVocê já experimentou os frutos do Ayurveda. Sentiu a diferença na pele, na energia, na digestão. Viu como os temperos certos transformam um prato. Percebeu como a rotina muda tudo.\n\nMas agora você quer mais. Você quer plantar sua própria árvore. Não apenas colher os frutos — mas dominar a semente, a raiz, o cultivo. Para ter autonomia real. Para oferecer esses frutos a quem te procura.\n\nE aí percebe: uma coisa é experimentar os resultados. Outra coisa é olhar para uma língua e, em segundos, conectar subdoshas, digestão, excreção — e dar uma resposta precisa que transforma a vida de alguém.\n\nEssa é a diferença entre consumir Ayurveda e praticar Ayurveda.",
-    box: {
-      title: "E se você acha que é tarde demais para começar:",
-      body: "Minha mãe vive Ayurveda comigo há 15 anos. Aos 75, ela fez o Caminho de Santiago de Compostela. Agora, aos 80, quer fazer de novo.\n\nNão é tarde. É o momento certo. Ayurveda não tem prazo de validade. Quanto antes você começar, mais tempo terá para colher — e oferecer — os frutos.",
-    },
     closing:
       "O desafio não é encontrar mais informação. O desafio é transformar informação em domínio clínico real.\n\nVocê pode estudar sozinho por anos — mas sem estrutura, sem prática supervisionada, sem uma linha condutora clara, você fica perdido em conceitos soltos. Falta a raiz. Falta a semente.",
   },
@@ -535,6 +530,12 @@ export const formacaoData: FormacaoData = {
   faq: {
     title: "Perguntas frequentes",
     items: [
+      {
+        question:
+          "Tenho medo de ser tarde demais. Consigo começar com mais de 50 anos?",
+        answer:
+          "Minha mãe vive Ayurveda comigo há 15 anos. Aos 75, ela fez o Caminho de Santiago de Compostela. Agora, aos 80, quer fazer de novo.\n\nNão é tarde. É o momento certo. Ayurveda não tem prazo de validade. Quanto antes você começar, mais tempo terá para colher — e oferecer — os frutos.\n\nA questão não é a idade. É a disposição. Se você está aqui lendo isso, você já tem a resposta.",
+      },
       {
         question:
           "Tenho medo de não conseguir aprender. Ayurveda parece muito complicado.",
