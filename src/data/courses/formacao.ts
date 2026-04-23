@@ -425,8 +425,8 @@ export const formacaoData: FormacaoData = {
     extrasTitle: "Você também recebe",
     extras: [
       { emoji: "🎯", text: "Motor de Teste de Dosha — Ferramenta profissional para seus pacientes" },
-      { emoji: "💎", text: "IA Akasha — Suporte diagnóstico com inteligência artificial" },
-      { emoji: "📚", text: "Compêndio de Alquimia Ayurvédica — Receitas e fórmulas práticas" },
+      { emoji: "🍲", text: "Guia completo de Alimentação e Nutrição Ayurvédica" },
+      { emoji: "🌿", text: "Guia completo de Dravya Guna" },
       { emoji: "📋", text: "Protocolo de Atendimento Zero — Passo a passo para estruturar consultas" },
       { emoji: "👥", text: "Comunidade de Terapeutas do Portal — Estudos de caso, troca entre alunos, mentoria coletiva" },
       { emoji: "🎥", text: "Acesso vitalício às gravações" },
