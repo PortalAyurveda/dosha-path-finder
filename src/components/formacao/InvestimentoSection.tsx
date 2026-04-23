@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { X } from "lucide-react";
-import Bullet from "./Bullet";
+import CheckMark from "./CheckMark";
 import type { FormacaoData } from "@/data/courses/formacao";
 
 interface Props {
@@ -68,7 +68,7 @@ const InvestimentoSection = ({ data, branding, onCtaClick, ctaText, ctaSubtext }
         <ul className="space-y-2.5 mb-4">
           {data.condicoes.map((c, i) => (
             <li key={i} className="flex items-start gap-3 text-sm md:text-base">
-              <Bullet src={branding.bulletSvg} size={20} className="mt-0.5" />
+              <CheckMark color="#FFFFFF" size={20} className="mt-0.5" />
               <span className="leading-relaxed">{c}</span>
             </li>
           ))}
@@ -84,7 +84,7 @@ const InvestimentoSection = ({ data, branding, onCtaClick, ctaText, ctaSubtext }
           <ul className="space-y-2.5">
             {data.incluso.map((item, i) => (
               <li key={i} className="flex items-start gap-2.5">
-                <Bullet src={branding.bulletSvg} size={18} className="mt-0.5" />
+                <CheckMark color={branding.darkColor} size={18} className="mt-0.5" />
                 <span className="text-sm text-gray-700 leading-relaxed">{item}</span>
               </li>
             ))}
