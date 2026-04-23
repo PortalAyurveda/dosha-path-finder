@@ -128,7 +128,7 @@ const Header = () => {
     >
       <div className="max-w-6xl mx-auto grid h-16 grid-cols-[1fr_auto_1fr] items-center gap-3 px-4 sm:px-6">
         {/* LEFT — Hamburger menu */}
-        <div className="justify-self-start">
+        <div className={`justify-self-start ${isFormacao ? "hidden md:block" : ""}`}>
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
               <Button
