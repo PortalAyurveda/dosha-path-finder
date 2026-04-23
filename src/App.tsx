@@ -11,6 +11,7 @@ import TesteDeDosha from "./pages/TesteDeDosha";
 import MeuDosha from "./pages/MeuDosha";
 import Biblioteca from "./pages/Biblioteca";
 import CursoAlimentacao from "./pages/curso/Alimentacao";
+import CursoFormacao from "./pages/curso/Formacao";
 import TerapeutasDoBrasil from "./pages/TerapeutasDoBrasil";
 import TerapeutaPerfil from "./pages/TerapeutaPerfil";
 import Akasha from "./pages/Akasha";
@@ -59,6 +60,7 @@ const RoutedApp = () => {
               <Route path="/biblioteca" element={<Biblioteca />} />
               <Route path="/cursos" element={<Navigate to="/curso/alimentacao" replace />} />
               <Route path="/curso/alimentacao" element={<CursoAlimentacao />} />
+              <Route path="/curso/formacao" element={<CursoFormacao />} />
               <Route path="/terapeutas-do-brasil" element={<TerapeutasDoBrasil />} />
               <Route path="/terapeutas-do-brasil/:slug" element={<TerapeutaPerfil />} />
               <Route path="/terapeutas/:slug" element={<TerapeutaPerfil />} />
