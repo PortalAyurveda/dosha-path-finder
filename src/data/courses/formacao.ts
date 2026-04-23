@@ -140,6 +140,7 @@ export const formacaoData: FormacaoData = {
       "Busca uma mudança de carreira com propósito — uma profissão que una autoconhecimento, saúde e autonomia financeira",
       "Já fez cursos variados de Ayurveda como Nutrição Ayurvédica, Dravya Guna, Dinacharyas, Detox e agora quer dar o próximo passo com estrutura para atender pacientes com precisão",
       "Quer aprender com quem pratica: Professor com 15 anos de clínica ativa, mais de 4.500 alunos formados em diferentes áreas do Ayurveda",
+      "Tem um chamado para ajudar pessoas — e quer fazer isso com precisão, consciência e uma base sólida que te permita atuar com segurança e ética",
     ],
   },
   problema: {
