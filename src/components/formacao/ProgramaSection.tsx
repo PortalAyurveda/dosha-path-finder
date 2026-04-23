@@ -147,12 +147,12 @@ const ProgramaSection = ({ data, branding }: Props) => {
                                 </h4>
                                 <div className="flex flex-wrap gap-2 mb-2">
                                   <span
-                                    className="inline-flex items-center gap-1 text-[10px] md:text-xs font-bold px-2 py-0.5 rounded-full"
+                                    className="inline-flex items-center gap-1 text-[10px] md:text-xs font-bold px-2.5 py-0.5 rounded-full"
                                     style={{
                                       background: isPresencial
-                                        ? `${branding.accentColor}30`
-                                        : `${branding.primaryColor}25`,
-                                      color: branding.darkColor,
+                                        ? `${branding.accentColor}40`
+                                        : "#86EFAC55",
+                                      color: isPresencial ? "#7C2D12" : "#14532D",
                                     }}
                                   >
                                     {isPresencial ? (
