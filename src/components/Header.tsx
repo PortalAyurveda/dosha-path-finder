@@ -77,6 +77,7 @@ const Header = () => {
   const { cta } = useHeaderCta();
 
   const isSamkhya = location.pathname.startsWith("/samkhya");
+  const isFormacao = location.pathname.startsWith("/curso/formacao");
   const showHeaderCta = !isSamkhya && cta !== null;
 
   const handleSignOut = async () => {
