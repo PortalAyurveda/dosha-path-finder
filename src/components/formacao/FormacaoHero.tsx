@@ -1,16 +1,14 @@
 import { motion } from "framer-motion";
 import { Calendar } from "lucide-react";
-import { forwardRef } from "react";
 import type { FormacaoData } from "@/data/courses/formacao";
 
 interface Props {
   data: FormacaoData["hero"];
   branding: FormacaoData["branding"];
   onCtaClick: () => void;
-  ctaRef?: React.Ref<HTMLButtonElement>;
 }
 
-const FormacaoHero = ({ data, branding, onCtaClick, ctaRef }: Props) => (
+const FormacaoHero = ({ data, branding, onCtaClick }: Props) => (
   <section
     id="top"
     className="relative w-full py-14 md:py-20 overflow-hidden"
@@ -76,7 +74,6 @@ const FormacaoHero = ({ data, branding, onCtaClick, ctaRef }: Props) => (
       </motion.div>
 
       <motion.button
-        ref={ctaRef}
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.45 }}

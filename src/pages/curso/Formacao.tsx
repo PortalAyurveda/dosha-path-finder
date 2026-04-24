@@ -1,7 +1,6 @@
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback } from "react";
 import { Helmet } from "react-helmet-async";
 import { formacaoData } from "@/data/courses/formacao";
-import { useHeaderCta } from "@/contexts/HeaderCtaContext";
 import FormacaoHero from "@/components/formacao/FormacaoHero";
 import ParaQuemSection from "@/components/formacao/ParaQuemSection";
 import ProblemaSection from "@/components/formacao/ProblemaSection";
@@ -15,8 +14,6 @@ import FinalCtaSection from "@/components/formacao/FinalCtaSection";
 
 const Formacao = () => {
   const data = formacaoData;
-  const { setCta } = useHeaderCta();
-  const heroCtaRef = useRef<HTMLButtonElement>(null);
 
   const handleEmBreve = useCallback(
     (origin: string) => () => {
@@ -29,49 +26,6 @@ const Formacao = () => {
     },
     [],
   );
-
-  useEffect(() => {
-    const node = heroCtaRef.current;
-    if (!node) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setCta(null);
-        } else {
-          setCta({
-            label: data.hero.ctaText,
-            mobileLabel: "Inscrever-se",
-            className:
-              "inline-flex items-center justify-center font-bold uppercase shadow-md hover:shadow-lg transition-all rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm text-white whitespace-nowrap leading-none",
-            style: {
-              background: "#f7b2b7",
-              color: "#FFFFFF",
-              fontSize: "11px",
-              lineHeight: "11px",
-              padding: "8px 18px",
-              letterSpacing: "0.03em",
-              transform: "scale(0.86)",
-              transformOrigin: "center",
-            },
-            onClick: () => {
-              // eslint-disable-next-line no-console
-              console.log("[formacao-cta]", { origin: "header", ts: Date.now(), status: "em-breve" });
-              const target = document.getElementById("investimento");
-              if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
-            },
-          });
-        }
-      },
-      { threshold: 0, rootMargin: "-64px 0px 0px 0px" },
-    );
-
-    observer.observe(node);
-    return () => {
-      observer.disconnect();
-      setCta(null);
-    };
-  }, [setCta, data.hero.ctaText]);
 
   return (
     <div className="bg-white">
@@ -86,7 +40,7 @@ const Formacao = () => {
       </Helmet>
 
       <main>
-        <FormacaoHero data={data.hero} branding={data.branding} onCtaClick={handleEmBreve("hero")} ctaRef={heroCtaRef} />
+        <FormacaoHero data={data.hero} branding={data.branding} onCtaClick={handleEmBreve("hero")} />
         <ParaQuemSection data={data.paraQuem} branding={data.branding} />
         <ProblemaSection data={data.problema} branding={data.branding} />
         <SolucaoSection data={data.solucao} branding={data.branding} />
