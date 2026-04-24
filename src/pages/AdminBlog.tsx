@@ -25,6 +25,7 @@ import {
 import PaginationControls from "@/components/PaginationControls";
 import { ArrowLeft, Search, Loader2, Upload, Save, Copy } from "lucide-react";
 import { sanitizeSlug } from "@/lib/sanitizeSlug";
+import AdminNav from "@/components/admin/AdminNav";
 
 const PAGE_SIZE = 24;
 const FALLBACK_BUCKETS = ["portal_images", "portal_capas", "samkhya", "fotos-lingua"];
@@ -184,8 +185,6 @@ const AdminBlog = () => {
     );
   }
 
-  if (!user || role !== "admin") return null;
-
   return (
     <>
       <Helmet>
@@ -194,6 +193,7 @@ const AdminBlog = () => {
       </Helmet>
 
       <div className="min-h-screen bg-background">
+        <AdminNav />
         <div className="max-w-6xl mx-auto px-4 py-8 space-y-6">
           {/* Header */}
           <div className="flex flex-wrap items-center justify-between gap-3">
