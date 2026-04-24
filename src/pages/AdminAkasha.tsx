@@ -180,8 +180,6 @@ const AdminAkasha = () => {
     );
   }
 
-  if (!user || role !== "admin") return null;
-
   const dosha = result?.dosha;
 
   return (
@@ -192,6 +190,7 @@ const AdminAkasha = () => {
       </Helmet>
 
       <div className="min-h-screen bg-background">
+        <AdminNav />
         <div className="max-w-4xl mx-auto px-4 py-8 space-y-6">
           {/* Header */}
           <div className="flex items-center gap-3">
