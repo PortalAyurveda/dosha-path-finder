@@ -14,6 +14,7 @@ import CursoAlimentacao from "./pages/curso/Alimentacao";
 import CursoFormacao from "./pages/curso/Formacao";
 import TerapeutasDoBrasil from "./pages/TerapeutasDoBrasil";
 import TerapeutaPerfil from "./pages/TerapeutaPerfil";
+import TerapeutaCadastro from "./pages/TerapeutaCadastro";
 import Akasha from "./pages/Akasha";
 import Video from "./pages/Video";
 import DoshaVata from "./pages/DoshaVata";
@@ -29,6 +30,7 @@ import AdminBlog from "./pages/AdminBlog";
 import AdminAkasha from "./pages/AdminAkasha";
 import AdminLoja from "./pages/AdminLoja";
 import AdminBiblioteca from "./pages/AdminBiblioteca";
+import AdminTerapeutas from "./pages/AdminTerapeutas";
 import Blog from "./pages/Blog";
 import BlogArticle from "./pages/BlogArticle";
 import Metricas from "./pages/Metricas";
@@ -62,6 +64,7 @@ const RoutedApp = () => {
               <Route path="/curso/alimentacao" element={<CursoAlimentacao />} />
               <Route path="/curso/formacao" element={<CursoFormacao />} />
               <Route path="/terapeutas-do-brasil" element={<TerapeutasDoBrasil />} />
+              <Route path="/terapeutas-do-brasil/cadastro" element={<TerapeutaCadastro />} />
               <Route path="/terapeutas-do-brasil/:slug" element={<TerapeutaPerfil />} />
               <Route path="/terapeutas/:slug" element={<TerapeutaPerfil />} />
               <Route path="/akasha" element={<Akasha />} />
@@ -110,6 +113,7 @@ const RoutedApp = () => {
               <Route path="/admin/akasha" element={<AdminAkasha />} />
               <Route path="/admin/loja" element={<AdminLoja />} />
               <Route path="/admin/biblioteca" element={<AdminBiblioteca />} />
+              <Route path="/admin/terapeutas" element={<AdminTerapeutas />} />
 
               {/* Loja Samkhya */}
               <Route path="/samkhya" element={<Samkhya />} />
