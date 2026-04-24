@@ -183,9 +183,8 @@ const ProgramaSection = ({ data, branding }: Props) => {
                               <h3
                                 className="font-serif font-bold text-base md:text-lg leading-tight"
                                 style={{ color: titleColor }}
-                              >
-                                {mod.title}
-                              </h3>
+                                dangerouslySetInnerHTML={{ __html: mod.title }}
+                              />
                             </div>
                             <div className="flex flex-wrap items-center gap-2 mb-1.5">
                               <span className="text-[11px] md:text-xs text-gray-600 font-medium">
