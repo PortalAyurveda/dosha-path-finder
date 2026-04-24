@@ -360,7 +360,7 @@ export const formacaoData: FormacaoData = {
           },
           {
             number: 12,
-            title: "Saúde da Mulher, Gestante e Bebê",
+            title: "Saúde da Mulher, Gestante e Bebê<br>\nProfª convidada Micheline Souza",
             format: "Online",
             date: "14-15 de Agosto/2027",
             description:
