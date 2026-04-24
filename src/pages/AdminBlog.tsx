@@ -58,12 +58,8 @@ const AdminBlog = () => {
   const [uploadBucket, setUploadBucket] = useState<string>(FALLBACK_BUCKETS[0]);
   const [uploading, setUploading] = useState(false);
 
-  // Auth guard
-  useEffect(() => {
-    if (!accessLoading && (!user || role !== "admin")) {
-      navigate("/", { replace: true });
-    }
-  }, [accessLoading, user, role, navigate]);
+  // Auth guard removed: /admin is open during testing
+
 
   // Debounce search
   useEffect(() => {
