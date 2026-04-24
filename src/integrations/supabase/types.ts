@@ -1574,7 +1574,7 @@ export type Database = {
           especialidade?: string | null
           estado?: string | null
           formado_desde?: number | null
-          id: string
+          id?: string
           imagem?: string | null
           "imagem.1"?: string | null
           instagram?: string | null
