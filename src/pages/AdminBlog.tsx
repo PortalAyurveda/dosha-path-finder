@@ -97,21 +97,19 @@ const AdminBlog = () => {
   }, [page, debouncedSearch]);
 
   useEffect(() => {
-    if (!accessLoading && role === "admin") fetchArticles();
-  }, [accessLoading, role, fetchArticles]);
+    fetchArticles();
+  }, [fetchArticles]);
 
   // Load buckets for the dialog
   useEffect(() => {
-    if (!accessLoading && role === "admin") {
-      supabase.storage.listBuckets().then(({ data }) => {
-        if (data?.length) {
-          const names = data.map((b) => b.name);
-          setBuckets(names);
-          setUploadBucket((prev) => (names.includes(prev) ? prev : names[0]));
-        }
-      });
-    }
-  }, [accessLoading, role]);
+    supabase.storage.listBuckets().then(({ data }) => {
+      if (data?.length) {
+        const names = data.map((b) => b.name);
+        setBuckets(names);
+        setUploadBucket((prev) => (names.includes(prev) ? prev : names[0]));
+      }
+    });
+  }, []);
 
   const totalPages = useMemo(() => Math.max(1, Math.ceil(total / PAGE_SIZE)), [total]);
 
