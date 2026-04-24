@@ -1560,11 +1560,13 @@ export type Database = {
           instagram: string | null
           nome: string | null
           owner: string | null
+          pais: string | null
           resumo: string | null
           status: string | null
           "terapeutas(dinamica)": string | null
           title: string | null
           "updated date": string | null
+          website: string | null
           whatsapp: string | null
         }
         Insert: {
@@ -1580,11 +1582,13 @@ export type Database = {
           instagram?: string | null
           nome?: string | null
           owner?: string | null
+          pais?: string | null
           resumo?: string | null
           status?: string | null
           "terapeutas(dinamica)"?: string | null
           title?: string | null
           "updated date"?: string | null
+          website?: string | null
           whatsapp?: string | null
         }
         Update: {
@@ -1600,11 +1604,13 @@ export type Database = {
           instagram?: string | null
           nome?: string | null
           owner?: string | null
+          pais?: string | null
           resumo?: string | null
           status?: string | null
           "terapeutas(dinamica)"?: string | null
           title?: string | null
           "updated date"?: string | null
+          website?: string | null
           whatsapp?: string | null
         }
         Relationships: []
