@@ -554,8 +554,6 @@ const AdminLoja = () => {
     );
   }
 
-  if (!user || role !== "admin") return null;
-
   const produtosFiltrados = produtos.filter((p) => {
     const q = filtro.trim().toLowerCase();
     if (!q) return true;
@@ -579,6 +577,7 @@ const AdminLoja = () => {
       </Helmet>
 
       <div className="min-h-screen bg-background">
+        <AdminNav />
         <div className="max-w-5xl mx-auto px-4 py-8 space-y-6">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-3">
