@@ -97,7 +97,7 @@ const TerapeutaCadastro = () => {
     let cancelled = false;
     (async () => {
       setLoadingProfile(true);
-      const { data, error } = await supabase
+      const { data: rawData, error } = await supabase
         .from("portal_terapeutas")
         .select("*")
         .ilike("email", user.email!)
@@ -105,12 +105,14 @@ const TerapeutaCadastro = () => {
 
       if (cancelled) return;
 
+      const data = rawData as any;
+
       if (!error && data) {
         setExistingId(data.id);
         setExistingSlug(data["terapeutas(dinamica)"] ?? null);
         setExistingStatus(data.status ?? null);
 
-        const isBR = !data.pais || data.pais.toLowerCase() === "brasil" || data.pais === "";
+        const isBR = !data.pais || String(data.pais).toLowerCase() === "brasil" || data.pais === "";
         setForm({
           nome: data.nome ?? "",
           especialidades: (data.especialidade ?? "")
@@ -253,7 +255,7 @@ const TerapeutaCadastro = () => {
       if (existingId) {
         const { error } = await supabase
           .from("portal_terapeutas")
-          .update(payload)
+          .update(payload as any)
           .eq("id", existingId);
         if (error) throw error;
         toast({ title: "Perfil atualizado!", description: "Suas alterações foram salvas." });
@@ -261,7 +263,7 @@ const TerapeutaCadastro = () => {
         const { error } = await supabase.from("portal_terapeutas").insert({
           ...payload,
           status: "pendente",
-        });
+        } as any);
         if (error) throw error;
         setSuccess(true);
       }
