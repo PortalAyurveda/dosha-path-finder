@@ -34,6 +34,7 @@ import {
   Video as VideoIcon,
   FileText,
 } from "lucide-react";
+import AdminNav from "@/components/admin/AdminNav";
 
 const PAGE_SIZE = 30;
 
@@ -73,11 +74,8 @@ const AdminBiblioteca = () => {
   const { user, role, loading: authLoading, roleLoading } = useUser();
   const accessLoading = authLoading || (!!user && roleLoading);
 
-  useEffect(() => {
-    if (!accessLoading && (!user || role !== "admin")) {
-      navigate("/", { replace: true });
-    }
-  }, [accessLoading, user, role, navigate]);
+  // Auth guard removed: /admin is open during testing
+
 
   if (accessLoading) {
     return (
@@ -90,8 +88,6 @@ const AdminBiblioteca = () => {
     );
   }
 
-  if (!user || role !== "admin") return null;
-
   return (
     <>
       <Helmet>
@@ -100,6 +96,7 @@ const AdminBiblioteca = () => {
       </Helmet>
 
       <div className="min-h-screen bg-background">
+        <AdminNav />
         <div className="max-w-6xl mx-auto px-4 py-8 space-y-6">
           <div className="flex items-center gap-3">
             <ShieldCheck className="w-7 h-7 text-primary" />

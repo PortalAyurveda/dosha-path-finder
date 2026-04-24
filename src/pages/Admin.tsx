@@ -18,10 +18,10 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Upload, Copy, Trash2, Image as ImageIcon, Loader2, ShieldCheck, X, FileText, Store, Library } from "lucide-react";
+import { Upload, Copy, Trash2, Image as ImageIcon, Loader2, ShieldCheck, X } from "lucide-react";
 import { Helmet } from "react-helmet-async";
-import { Link } from "react-router-dom";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import AdminNav from "@/components/admin/AdminNav";
 
 const FALLBACK_BUCKETS = ["portal_images", "portal_capas", "samkhya", "fotos-lingua"];
 
@@ -56,12 +56,8 @@ const Admin = () => {
   // Delete state
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
 
-  // Auth guard
-  useEffect(() => {
-    if (!accessLoading && (!user || role !== "admin")) {
-      navigate("/", { replace: true });
-    }
-  }, [accessLoading, user, role, navigate]);
+  // Auth guard removed: /admin is open during testing
+
 
   const fetchBuckets = useCallback(async () => {
     const { data, error } = await supabase.storage.listBuckets();
@@ -98,14 +94,12 @@ const Admin = () => {
   }, []);
 
   useEffect(() => {
-    if (!accessLoading && role === "admin") {
-      fetchBuckets();
-    }
-  }, [accessLoading, role, fetchBuckets]);
+    fetchBuckets();
+  }, [fetchBuckets]);
 
   useEffect(() => {
-    if (!accessLoading && role === "admin") fetchFiles(bucket);
-  }, [accessLoading, role, bucket, fetchFiles]);
+    fetchFiles(bucket);
+  }, [bucket, fetchFiles]);
 
   // Add files to pending list
   const addFiles = (fileList: FileList | File[]) => {
@@ -220,8 +214,6 @@ const Admin = () => {
     );
   }
 
-  if (!user || role !== "admin") return null;
-
   return (
     <>
       <Helmet>
@@ -230,6 +222,7 @@ const Admin = () => {
       </Helmet>
 
       <div className="min-h-screen bg-background">
+        <AdminNav />
         <div className="max-w-5xl mx-auto px-4 py-8 space-y-8">
           {/* Header */}
           <div className="flex flex-wrap items-center justify-between gap-3">
@@ -238,26 +231,6 @@ const Admin = () => {
               <h1 className="text-2xl font-heading font-bold text-foreground">
                 Painel Administrativo
               </h1>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              <Button asChild variant="outline" className="gap-2">
-                <Link to="/admin/blog">
-                  <FileText className="w-4 h-4" />
-                  Artigos
-                </Link>
-              </Button>
-              <Button asChild variant="outline" className="gap-2">
-                <Link to="/admin/loja">
-                  <Store className="w-4 h-4" />
-                  Loja Samkhya
-                </Link>
-              </Button>
-              <Button asChild variant="outline" className="gap-2">
-                <Link to="/admin/biblioteca">
-                  <Library className="w-4 h-4" />
-                  Biblioteca
-                </Link>
-              </Button>
             </div>
           </div>
 

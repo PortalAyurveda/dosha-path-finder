@@ -21,6 +21,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Search, Send, Loader2, ShieldCheck, MessageCircle, User, Flame, Utensils, AlertTriangle, FileText } from "lucide-react";
+import AdminNav from "@/components/admin/AdminNav";
 
 type SearchType = "email" | "idPublico";
 
@@ -92,11 +93,8 @@ const AdminAkasha = () => {
   const [result, setResult] = useState<SearchResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (!accessLoading && (!user || role !== "admin")) {
-      navigate("/", { replace: true });
-    }
-  }, [accessLoading, user, role, navigate]);
+  // Auth guard removed: /admin is open during testing
+
 
   const handleSearch = async () => {
     const value = searchValue.trim();
@@ -182,8 +180,6 @@ const AdminAkasha = () => {
     );
   }
 
-  if (!user || role !== "admin") return null;
-
   const dosha = result?.dosha;
 
   return (
@@ -194,6 +190,7 @@ const AdminAkasha = () => {
       </Helmet>
 
       <div className="min-h-screen bg-background">
+        <AdminNav />
         <div className="max-w-4xl mx-auto px-4 py-8 space-y-6">
           {/* Header */}
           <div className="flex items-center gap-3">

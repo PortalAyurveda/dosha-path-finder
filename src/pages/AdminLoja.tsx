@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { toast } from "sonner";
 import { ShieldCheck, ArrowLeft, Loader2, Save, Upload, X, GripVertical, ImageIcon } from "lucide-react";
+import AdminNav from "@/components/admin/AdminNav";
 
 import { useUser } from "@/contexts/UserContext";
 import { lojaSupabase, type LojaProduto, type LojaKit } from "@/integrations/supabase/loja-client";
@@ -501,11 +502,8 @@ const AdminLoja = () => {
   const [loadingKits, setLoadingKits] = useState(true);
   const [filtro, setFiltro] = useState("");
 
-  useEffect(() => {
-    if (!accessLoading && (!user || role !== "admin")) {
-      navigate("/", { replace: true });
-    }
-  }, [accessLoading, user, role, navigate]);
+  // Auth guard removed: /admin is open during testing
+
 
   const fetchProdutos = useCallback(async () => {
     setLoadingProdutos(true);
@@ -538,11 +536,9 @@ const AdminLoja = () => {
   }, []);
 
   useEffect(() => {
-    if (!accessLoading && role === "admin") {
-      fetchProdutos();
-      fetchKits();
-    }
-  }, [accessLoading, role, fetchProdutos, fetchKits]);
+    fetchProdutos();
+    fetchKits();
+  }, [fetchProdutos, fetchKits]);
 
   if (accessLoading) {
     return (
@@ -557,8 +553,6 @@ const AdminLoja = () => {
       </div>
     );
   }
-
-  if (!user || role !== "admin") return null;
 
   const produtosFiltrados = produtos.filter((p) => {
     const q = filtro.trim().toLowerCase();
@@ -583,6 +577,7 @@ const AdminLoja = () => {
       </Helmet>
 
       <div className="min-h-screen bg-background">
+        <AdminNav />
         <div className="max-w-5xl mx-auto px-4 py-8 space-y-6">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-3">

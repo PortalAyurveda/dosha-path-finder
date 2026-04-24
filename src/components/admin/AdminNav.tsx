@@ -1,0 +1,40 @@
+import { Link, useLocation } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { ImageIcon, FileText, Store, Library, MessageCircle } from "lucide-react";
+
+const links = [
+  { to: "/admin", label: "Imagens", icon: ImageIcon },
+  { to: "/admin/blog", label: "Artigos", icon: FileText },
+  { to: "/admin/akasha", label: "Akasha", icon: MessageCircle },
+  { to: "/admin/loja", label: "Loja Samkhya", icon: Store },
+  { to: "/admin/biblioteca", label: "Biblioteca", icon: Library },
+];
+
+const AdminNav = () => {
+  const { pathname } = useLocation();
+  return (
+    <nav className="w-full border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-10">
+      <div className="max-w-6xl mx-auto px-4 py-3 flex flex-wrap gap-2">
+        {links.map(({ to, label, icon: Icon }) => {
+          const active = pathname === to;
+          return (
+            <Button
+              key={to}
+              asChild
+              size="sm"
+              variant={active ? "default" : "outline"}
+              className="gap-2"
+            >
+              <Link to={to}>
+                <Icon className="w-4 h-4" />
+                {label}
+              </Link>
+            </Button>
+          );
+        })}
+      </div>
+    </nav>
+  );
+};
+
+export default AdminNav;

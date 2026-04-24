@@ -25,6 +25,7 @@ import {
 import PaginationControls from "@/components/PaginationControls";
 import { ArrowLeft, Search, Loader2, Upload, Save, Copy } from "lucide-react";
 import { sanitizeSlug } from "@/lib/sanitizeSlug";
+import AdminNav from "@/components/admin/AdminNav";
 
 const PAGE_SIZE = 24;
 const FALLBACK_BUCKETS = ["portal_images", "portal_capas", "samkhya", "fotos-lingua"];
@@ -58,12 +59,8 @@ const AdminBlog = () => {
   const [uploadBucket, setUploadBucket] = useState<string>(FALLBACK_BUCKETS[0]);
   const [uploading, setUploading] = useState(false);
 
-  // Auth guard
-  useEffect(() => {
-    if (!accessLoading && (!user || role !== "admin")) {
-      navigate("/", { replace: true });
-    }
-  }, [accessLoading, user, role, navigate]);
+  // Auth guard removed: /admin is open during testing
+
 
   // Debounce search
   useEffect(() => {
@@ -101,21 +98,19 @@ const AdminBlog = () => {
   }, [page, debouncedSearch]);
 
   useEffect(() => {
-    if (!accessLoading && role === "admin") fetchArticles();
-  }, [accessLoading, role, fetchArticles]);
+    fetchArticles();
+  }, [fetchArticles]);
 
   // Load buckets for the dialog
   useEffect(() => {
-    if (!accessLoading && role === "admin") {
-      supabase.storage.listBuckets().then(({ data }) => {
-        if (data?.length) {
-          const names = data.map((b) => b.name);
-          setBuckets(names);
-          setUploadBucket((prev) => (names.includes(prev) ? prev : names[0]));
-        }
-      });
-    }
-  }, [accessLoading, role]);
+    supabase.storage.listBuckets().then(({ data }) => {
+      if (data?.length) {
+        const names = data.map((b) => b.name);
+        setBuckets(names);
+        setUploadBucket((prev) => (names.includes(prev) ? prev : names[0]));
+      }
+    });
+  }, []);
 
   const totalPages = useMemo(() => Math.max(1, Math.ceil(total / PAGE_SIZE)), [total]);
 
@@ -190,8 +185,6 @@ const AdminBlog = () => {
     );
   }
 
-  if (!user || role !== "admin") return null;
-
   return (
     <>
       <Helmet>
@@ -200,6 +193,7 @@ const AdminBlog = () => {
       </Helmet>
 
       <div className="min-h-screen bg-background">
+        <AdminNav />
         <div className="max-w-6xl mx-auto px-4 py-8 space-y-6">
           {/* Header */}
           <div className="flex flex-wrap items-center justify-between gap-3">
