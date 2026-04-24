@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
+import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { Search, MapPin, SlidersHorizontal } from "lucide-react";
+import { Search, MapPin, SlidersHorizontal, UserPlus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import PageContainer from "@/components/PageContainer";
 import SectionTitle from "@/components/SectionTitle";
@@ -162,6 +163,25 @@ const TerapeutasDoBrasil = () => {
           ))}
         </div>
       )}
+
+      {/* CTA: cadastre seu perfil */}
+      <section className="mt-16 mb-4 flex flex-col items-center text-center gap-3 border-t border-border pt-12">
+        <h2 className="text-xl md:text-2xl font-serif font-bold text-foreground">
+          É terapeuta ayurvédico?
+        </h2>
+        <p className="text-sm text-muted-foreground max-w-md">
+          Cadastre seu perfil gratuitamente e seja encontrado por pessoas em busca dos seus serviços.
+        </p>
+        <Link to="/terapeutas-do-brasil/cadastro">
+          <button
+            className="inline-flex items-center justify-center gap-2 font-bold text-sm uppercase tracking-wide px-8 py-4 mt-2 shadow-md hover:shadow-xl transition-all hover:scale-[1.03] rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm text-white"
+            style={{ background: "#FF7676" }}
+          >
+            <UserPlus className="h-4 w-4" />
+            Cadastre seu perfil
+          </button>
+        </Link>
+      </section>
     </PageContainer>
   );
 };
