@@ -122,7 +122,7 @@ const Header = () => {
       className={`sticky top-0 z-50 w-full text-primary-foreground shadow-md ${isSamkhya ? "" : "bg-primary"}`}
       style={headerBg}
     >
-      <div className="max-w-6xl mx-auto grid h-16 grid-cols-[1fr_auto_1fr] items-center gap-3 px-4 sm:px-6">
+      <div className={`max-w-6xl mx-auto grid ${isSamkhya ? "h-20" : "h-16"} grid-cols-[1fr_auto_1fr] items-center gap-3 px-4 sm:px-6`}>
         {/* LEFT — Hamburger menu */}
         <div className="justify-self-start">
           <Sheet open={open} onOpenChange={setOpen}>
