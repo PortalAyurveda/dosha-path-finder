@@ -5,8 +5,7 @@ import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/s
 import { Button } from "@/components/ui/button";
 import { useUser } from "@/contexts/UserContext";
 import { samkhyaTokens } from "@/components/samkhya/tokens";
-
-const SAMKHYA_LOGO = "https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/samkhya/lg-samkhya.png";
+import samkhyaLogo from "@/assets/samkhya-logo-cropped.png";
 
 const PIE_COLORS: Record<string, string> = {
   Vata: '#4F75FF',
@@ -122,7 +121,7 @@ const Header = () => {
       className={`sticky top-0 z-50 w-full text-primary-foreground shadow-md ${isSamkhya ? "" : "bg-primary"}`}
       style={headerBg}
     >
-      <div className={`max-w-6xl mx-auto grid ${isSamkhya ? "h-20" : "h-16"} grid-cols-[1fr_auto_1fr] items-center gap-3 px-4 sm:px-6`}>
+      <div className="max-w-6xl mx-auto grid h-16 grid-cols-[1fr_auto_1fr] items-center gap-3 px-4 sm:px-6">
         {/* LEFT — Hamburger menu */}
         <div className="justify-self-start">
           <Sheet open={open} onOpenChange={setOpen}>
@@ -177,12 +176,11 @@ const Header = () => {
         {/* CENTER — Logo (swap when in /samkhya/*) */}
         <div className="flex min-w-0 justify-center justify-self-center items-center h-full overflow-visible">
           {isSamkhya ? (
-            <Link to="/samkhya" className="flex items-center justify-center h-full overflow-visible">
+            <Link to="/samkhya" className="flex items-center justify-center animate-fade-in">
               <img
-                src={SAMKHYA_LOGO}
+                src={samkhyaLogo}
                 alt="Loja Samkhya"
-                className="brightness-0 invert w-auto object-contain"
-                style={{ height: "auto", width: "208px", maxHeight: "none" }}
+                className="h-10 w-auto"
               />
             </Link>
           ) : (
