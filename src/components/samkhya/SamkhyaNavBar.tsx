@@ -26,7 +26,7 @@ const SamkhyaNavBar = () => {
 
   return (
     <nav
-      className="w-full sticky top-16 z-40 shadow-sm"
+      className="w-full sticky top-20 z-40 shadow-sm"
       style={{ background: samkhyaTokens.roxo }}
       aria-label="Categorias da Loja Samkhya"
     >

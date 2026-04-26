@@ -122,7 +122,7 @@ const Header = () => {
       className={`sticky top-0 z-50 w-full text-primary-foreground shadow-md ${isSamkhya ? "" : "bg-primary"}`}
       style={headerBg}
     >
-      <div className="max-w-6xl mx-auto grid h-16 grid-cols-[1fr_auto_1fr] items-center gap-3 px-4 sm:px-6">
+      <div className={`max-w-6xl mx-auto grid ${isSamkhya ? "h-20" : "h-16"} grid-cols-[1fr_auto_1fr] items-center gap-3 px-4 sm:px-6`}>
         {/* LEFT — Hamburger menu */}
         <div className="justify-self-start">
           <Sheet open={open} onOpenChange={setOpen}>
@@ -175,13 +175,14 @@ const Header = () => {
         </div>
 
         {/* CENTER — Logo (swap when in /samkhya/*) */}
-        <div className="flex min-w-0 justify-center justify-self-center">
+        <div className="flex min-w-0 justify-center justify-self-center items-center h-full overflow-visible">
           {isSamkhya ? (
-            <Link to="/samkhya" className="flex items-center justify-center h-full">
+            <Link to="/samkhya" className="flex items-center justify-center h-full overflow-visible">
               <img
                 src={SAMKHYA_LOGO}
                 alt="Loja Samkhya"
-                className="brightness-0 invert h-10 w-auto max-h-[40px] object-contain"
+                className="brightness-0 invert w-auto object-contain"
+                style={{ height: "auto", width: "208px", maxHeight: "none" }}
               />
             </Link>
           ) : (
