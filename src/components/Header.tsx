@@ -180,7 +180,7 @@ const Header = () => {
               <img
                 src={samkhyaLogo}
                 alt="Loja Samkhya"
-                className="h-10 w-auto"
+                className="h-[46px] w-auto brightness-0 invert"
               />
             </Link>
           ) : (
