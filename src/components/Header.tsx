@@ -175,28 +175,26 @@ const Header = () => {
 
         {/* CENTER — Logo (swap when in /samkhya/*) */}
         <div className="flex min-w-0 justify-center justify-self-center items-center h-full overflow-visible">
-          {isSamkhya ? (
-            <Link to="/samkhya" className="flex items-center justify-center animate-fade-in">
-              <img
-                src={samkhyaLogo}
-                alt="Loja Samkhya"
-                className="h-[46px] w-auto brightness-0 invert"
-              />
-            </Link>
-          ) : (
-            <Link to="/" className="flex items-center justify-center animate-fade-in">
-              <img
-                src="https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/b8f47f-6144676c30ec476dbc1f8c5c8812eb1dmv2-1.png"
-                alt="Portal Ayurveda"
-                className="h-10 w-auto hidden sm:block"
-              />
-              <img
-                src="https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/simbolo-positivo.svg"
-                alt="Portal Ayurveda"
-                className="h-9 w-auto block sm:hidden"
-              />
-            </Link>
-          )}
+          <Link
+            to={isSamkhya ? "/samkhya" : "/"}
+            className="flex items-center justify-center animate-fade-in"
+          >
+            <img
+              src={samkhyaLogo}
+              alt="Loja Samkhya"
+              className={`h-[46px] w-auto brightness-0 invert ${isSamkhya ? "block" : "hidden"}`}
+            />
+            <img
+              src="https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/b8f47f-6144676c30ec476dbc1f8c5c8812eb1dmv2-1.png"
+              alt="Portal Ayurveda"
+              className={`h-10 w-auto ${isSamkhya ? "hidden" : "hidden sm:block"}`}
+            />
+            <img
+              src="https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/simbolo-positivo.svg"
+              alt="Portal Ayurveda"
+              className={`h-9 w-auto ${isSamkhya ? "hidden" : "block sm:hidden"}`}
+            />
+          </Link>
         </div>
 
         {/* RIGHT — Profile with pie favicon */}
