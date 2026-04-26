@@ -177,12 +177,11 @@ const Header = () => {
         {/* CENTER — Logo (swap when in /samkhya/*) */}
         <div className="flex min-w-0 justify-center justify-self-center">
           {isSamkhya ? (
-            <Link to="/samkhya" className="flex items-center justify-center">
+            <Link to="/samkhya" className="flex items-center justify-center h-full">
               <img
                 src={SAMKHYA_LOGO}
                 alt="Loja Samkhya"
-                className="brightness-0 invert"
-                style={{ width: "208px", height: "auto" }}
+                className="brightness-0 invert h-10 w-auto max-h-[40px] object-contain"
               />
             </Link>
           ) : (
