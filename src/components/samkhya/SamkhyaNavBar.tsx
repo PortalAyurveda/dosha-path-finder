@@ -30,7 +30,7 @@ const SamkhyaNavBar = () => {
       style={{ background: "#73465F" }}
       aria-label="Categorias da Loja Samkhya"
     >
-      <div className="mx-auto max-w-6xl px-3 md:px-6 py-2">
+      <div className="mx-auto max-w-6xl px-3 md:px-6 py-1">
         <ul className="flex justify-center gap-3 md:gap-5 overflow-x-auto scrollbar-none">
           {ITEMS.map((item) => {
             const to =
@@ -44,10 +44,10 @@ const SamkhyaNavBar = () => {
               <li key={item.slug}>
                 <NavLink
                   to={to}
-                  className="block px-4 md:px-5 py-2 text-sm md:text-base whitespace-nowrap uppercase tracking-wider font-bold transition-opacity hover:opacity-70"
+                  className="block px-4 md:px-5 py-1.5 text-sm md:text-base whitespace-nowrap uppercase tracking-wider font-bold transition-opacity hover:opacity-70"
                   style={{
                     color: "#FFFFFF",
-                    fontFamily: "Georgia, 'Times New Roman', serif",
+                    fontFamily: "Helvetica, Arial, sans-serif",
                     opacity: isActive ? 1 : 0.85,
                     textDecoration: isActive ? "underline" : "none",
                     textUnderlineOffset: "4px",
