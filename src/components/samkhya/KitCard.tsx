@@ -26,8 +26,7 @@ const KitCard = ({ kit }: KitCardProps) => {
       className="group flex flex-col items-center text-center transition-transform duration-200 hover:scale-[1.02]"
     >
       <div
-        className="relative aspect-square w-full flex items-center justify-center p-4 rounded-sm overflow-hidden"
-        style={{ background: "#FFFFFF" }}
+        className="relative aspect-square w-full flex items-center justify-center p-4 rounded-sm overflow-hidden bg-transparent"
       >
         {kit.imagem_url ? (
           <img
