@@ -1,15 +1,19 @@
 import { ShoppingCart } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { samkhyaTokens } from "./tokens";
 
 interface BotaoStripeProps {
   size?: "sm" | "md" | "lg";
   fullWidth?: boolean;
 }
 
-const CINZA_DESABILITADO = "#9CA3AF";
-
 const BotaoStripe = ({ size = "md", fullWidth = false }: BotaoStripeProps) => {
-  const padding = size === "lg" ? "px-6 py-4 text-base" : size === "sm" ? "px-3 py-2 text-sm" : "px-4 py-3 text-sm";
+  const padding =
+    size === "lg"
+      ? "px-5 py-3 text-sm"
+      : size === "sm"
+        ? "px-3 py-2 text-xs"
+        : "px-4 py-2.5 text-sm";
 
   return (
     <TooltipProvider>
@@ -19,8 +23,13 @@ const BotaoStripe = ({ size = "md", fullWidth = false }: BotaoStripeProps) => {
             type="button"
             disabled
             aria-disabled="true"
-            className={`inline-flex items-center justify-center gap-2 rounded-md font-semibold cursor-not-allowed ${padding} ${fullWidth ? "w-full" : ""}`}
-            style={{ background: CINZA_DESABILITADO, color: "#fff" }}
+            className={`inline-flex items-center justify-center gap-2 rounded-md font-medium cursor-not-allowed ${padding} ${fullWidth ? "w-full" : ""}`}
+            style={{
+              background: "transparent",
+              color: samkhyaTokens.roxo,
+              border: `1px solid ${samkhyaTokens.roxo}`,
+              opacity: 0.7,
+            }}
           >
             <ShoppingCart className="h-4 w-4" />
             Comprar Online
