@@ -51,8 +51,12 @@ const ProdutoCard = ({ produto }: ProdutoCardProps) => {
 
       <div className="flex flex-col gap-2 p-4 text-center">
         <h3
-          className="text-lg leading-snug"
-          style={{ color: samkhyaTokens.texto, fontFamily: "Georgia, 'Times New Roman', serif" }}
+          className="leading-snug font-bold"
+          style={{
+            color: samkhyaTokens.texto,
+            fontFamily: "Helvetica, 'Helvetica Neue', Arial, sans-serif",
+            fontSize: "15px",
+          }}
         >
           {produto.nome_display}
         </h3>

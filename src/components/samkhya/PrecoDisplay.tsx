@@ -15,20 +15,30 @@ const PrecoDisplay = ({ precoNormal, precoPix, showParcelas = false, size = "md"
 
   const pixSizeClass = size === "lg" ? "text-3xl md:text-4xl" : size === "sm" ? "text-lg" : "text-2xl";
   const normalSizeClass = size === "lg" ? "text-base" : "text-sm";
+  const helvetica = "Helvetica, 'Helvetica Neue', Arial, sans-serif";
 
   return (
-    <div className="flex flex-col gap-1">
-      <span className={`${normalSizeClass} line-through`} style={{ color: samkhyaTokens.textoSec }}>
+    <div className="flex flex-col gap-1" style={{ fontFamily: helvetica }}>
+      <span
+        className={`${normalSizeClass} line-through`}
+        style={{ color: samkhyaTokens.textoSec, fontFamily: helvetica }}
+      >
         {formatBRL(precoNormal)}
       </span>
-      <span className={`${pixSizeClass} font-bold leading-none`} style={{ color: samkhyaTokens.ouro }}>
+      <span
+        className={`${pixSizeClass} leading-none`}
+        style={{ color: samkhyaTokens.roxo, fontFamily: helvetica, fontWeight: 600 }}
+      >
         {formatBRL(precoPix)}{" "}
-        <span className={`${normalSizeClass} font-medium`} style={{ color: samkhyaTokens.ouroDark }}>
+        <span
+          className={`${normalSizeClass}`}
+          style={{ color: samkhyaTokens.roxoDark, fontFamily: helvetica, fontWeight: 500 }}
+        >
           no Pix
         </span>
       </span>
       {showParcelas && (
-        <span className="text-xs" style={{ color: samkhyaTokens.textoSec }}>
+        <span className="text-xs" style={{ color: samkhyaTokens.textoSec, fontFamily: helvetica }}>
           ou 3x de {formatBRL(parcela)} sem juros
         </span>
       )}

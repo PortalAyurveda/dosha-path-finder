@@ -34,9 +34,11 @@ const MinimalProductCard = ({ slug, nome, precoPix, imagemUrl, resumoCurto, to }
         )}
       </div>
       <h3
-        className="mt-3 text-lg font-medium"
+        className="mt-3 font-bold"
         style={{
           color: samkhyaTokens.roxoDark,
+          fontFamily: "Helvetica, 'Helvetica Neue', Arial, sans-serif",
+          fontSize: "15px",
         }}
       >
         {nome}
@@ -46,7 +48,8 @@ const MinimalProductCard = ({ slug, nome, precoPix, imagemUrl, resumoCurto, to }
           className="mt-1 px-2 line-clamp-2"
           style={{
             color: samkhyaTokens.textoSec,
-            fontSize: "0.8rem",
+            fontFamily: "Helvetica, 'Helvetica Neue', Arial, sans-serif",
+            fontSize: "12px",
             lineHeight: 1.35,
           }}
         >
@@ -54,8 +57,13 @@ const MinimalProductCard = ({ slug, nome, precoPix, imagemUrl, resumoCurto, to }
         </p>
       )}
       <p
-        className="mt-1 text-sm font-medium"
-        style={{ color: samkhyaTokens.ouro }}
+        className="mt-1"
+        style={{
+          color: samkhyaTokens.roxo,
+          fontFamily: "Helvetica, 'Helvetica Neue', Arial, sans-serif",
+          fontSize: "15px",
+          fontWeight: 600,
+        }}
       >
         {formatBRL(precoPix)}
       </p>
