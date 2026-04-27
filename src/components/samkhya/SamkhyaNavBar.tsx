@@ -44,7 +44,7 @@ const SamkhyaNavBar = () => {
               <li key={item.slug}>
                 <NavLink
                   to={to}
-                  className="block px-4 md:px-5 py-2 text-xs md:text-sm whitespace-nowrap uppercase tracking-wider font-bold transition-opacity hover:opacity-70"
+                  className="block px-4 md:px-5 py-2 text-sm md:text-base whitespace-nowrap uppercase tracking-wider font-bold transition-opacity hover:opacity-70"
                   style={{
                     color: "#73295F",
                     fontFamily: "Helvetica, 'Helvetica Neue', Arial, sans-serif",
