@@ -142,17 +142,15 @@ const SamkhyaProduto = () => {
                   {produto.nome_display}
                 </h1>
 
-                <div>
-                  <PrecoDisplay
-                    precoNormal={Number(produto.preco_normal)}
-                    precoPix={Number(produto.preco_pix)}
-                    showParcelas
-                    size="md"
-                  />
-                  <div className="mt-8 flex flex-col gap-3">
-                    <BotaoWhatsApp produtoNome={produto.nome_display} size="sm" fullWidth />
-                    <BotaoStripe size="sm" fullWidth />
-                  </div>
+                <PrecoDisplay
+                  precoNormal={Number(produto.preco_normal)}
+                  precoPix={Number(produto.preco_pix)}
+                  showParcelas
+                  size="md"
+                />
+                <div className="flex flex-col gap-3">
+                  <BotaoWhatsApp produtoNome={produto.nome_display} size="sm" fullWidth />
+                  <BotaoStripe size="sm" fullWidth />
                 </div>
 
                 {produto.tags_propriedades && produto.tags_propriedades.length > 0 && (
