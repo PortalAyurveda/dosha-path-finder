@@ -51,10 +51,13 @@ const KitCard = ({ kit }: KitCardProps) => {
         )}
       </div>
       <h3
-        className="mt-3 text-base italic"
+        className="mt-3"
         style={{
-          color: samkhyaTokens.texto,
-          fontFamily: "Georgia, 'Times New Roman', serif",
+          color: samkhyaTokens.roxo,
+          fontFamily: "Helvetica, 'Helvetica Neue', Arial, sans-serif",
+          fontSize: "18px",
+          fontWeight: 600,
+          fontStyle: "normal",
         }}
       >
         {kit.nome}
@@ -64,7 +67,8 @@ const KitCard = ({ kit }: KitCardProps) => {
           className="mt-1 px-2 line-clamp-2"
           style={{
             color: samkhyaTokens.textoSec,
-            fontSize: "0.8rem",
+            fontFamily: "Helvetica, 'Helvetica Neue', Arial, sans-serif",
+            fontSize: "13px",
             lineHeight: 1.35,
           }}
         >
@@ -72,8 +76,13 @@ const KitCard = ({ kit }: KitCardProps) => {
         </p>
       )}
       <p
-        className="mt-1 text-sm font-medium"
-        style={{ color: samkhyaTokens.ouro }}
+        className="mt-1"
+        style={{
+          color: samkhyaTokens.roxo,
+          fontFamily: "Helvetica, 'Helvetica Neue', Arial, sans-serif",
+          fontSize: "15px",
+          fontWeight: 600,
+        }}
       >
         {formatBRL(Number(kit.preco_pix))}
       </p>
