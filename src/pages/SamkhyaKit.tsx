@@ -96,10 +96,7 @@ const SamkhyaKit = () => {
           </p>
         ) : (
           <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-start">
-            <div
-              className="aspect-square rounded-lg flex items-center justify-center p-8 md:p-12"
-              style={{ background: samkhyaTokens.cardBg, border: `1px solid ${samkhyaTokens.cardBorder}` }}
-            >
+            <div className="aspect-square rounded-lg flex items-center justify-center p-4 md:p-6">
               {kit.imagem_url ? (
                 <img src={kit.imagem_url} alt={kit.nome} className="max-h-full max-w-full object-contain" />
               ) : (
@@ -107,25 +104,23 @@ const SamkhyaKit = () => {
               )}
             </div>
 
-            <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-10">
               <h1
-                className="text-4xl md:text-5xl leading-tight"
+                className="text-2xl md:text-3xl leading-tight"
                 style={{ color: samkhyaTokens.roxo, fontFamily: "Georgia, 'Times New Roman', serif" }}
               >
                 {kit.nome}
               </h1>
+
               {kit.descricao_curta && (
-                <p style={{ color: samkhyaTokens.textoSec }} className="text-base leading-relaxed">
+                <p style={{ color: samkhyaTokens.textoSec }} className="text-sm leading-relaxed">
                   {kit.descricao_curta}
                 </p>
               )}
 
-              <div
-                className="rounded-lg p-6"
-                style={{ background: samkhyaTokens.cardBg, border: `1px solid ${samkhyaTokens.cardBorder}` }}
-              >
+              <div>
                 <h2
-                  className="text-lg mb-3"
+                  className="text-base mb-3"
                   style={{ color: samkhyaTokens.roxo, fontFamily: "Georgia, 'Times New Roman', serif" }}
                 >
                   O que vem no kit
@@ -140,20 +135,16 @@ const SamkhyaKit = () => {
                 </ul>
               </div>
 
-              <div
-                className="rounded-lg p-6"
-                style={{ background: samkhyaTokens.cardBg, border: `1px solid ${samkhyaTokens.cardBorder}` }}
-              >
-                <PrecoDisplay
-                  precoNormal={Number(kit.preco_normal)}
-                  precoPix={Number(kit.preco_pix)}
-                  showParcelas
-                  size="lg"
-                />
-                <div className="mt-6 flex flex-col gap-3">
-                  <BotaoWhatsApp produtoNome={kit.nome} size="lg" fullWidth />
-                  <BotaoStripe size="lg" fullWidth />
-                </div>
+              <PrecoDisplay
+                precoNormal={Number(kit.preco_normal)}
+                precoPix={Number(kit.preco_pix)}
+                showParcelas
+                size="md"
+              />
+
+              <div className="flex flex-col gap-3">
+                <BotaoWhatsApp produtoNome={kit.nome} size="sm" fullWidth />
+                <BotaoStripe size="sm" fullWidth />
               </div>
             </div>
           </div>
