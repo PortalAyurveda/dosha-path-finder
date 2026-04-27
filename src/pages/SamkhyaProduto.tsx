@@ -134,7 +134,7 @@ const SamkhyaProduto = () => {
               />
 
               {/* Info + compra */}
-              <div className="flex flex-col gap-5">
+              <div className="flex flex-col gap-10">
                 <h1
                   className="text-2xl md:text-3xl leading-tight"
                   style={{ color: samkhyaTokens.roxo, fontFamily: "Georgia, 'Times New Roman', serif" }}
@@ -149,7 +149,7 @@ const SamkhyaProduto = () => {
                     showParcelas
                     size="md"
                   />
-                  <div className="mt-5 flex flex-col gap-2">
+                  <div className="mt-8 flex flex-col gap-3">
                     <BotaoWhatsApp produtoNome={produto.nome_display} size="sm" fullWidth />
                     <BotaoStripe size="sm" fullWidth />
                   </div>
