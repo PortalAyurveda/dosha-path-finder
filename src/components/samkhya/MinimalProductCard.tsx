@@ -34,11 +34,13 @@ const MinimalProductCard = ({ slug, nome, precoPix, imagemUrl, resumoCurto, to }
         )}
       </div>
       <h3
-        className="mt-3 font-bold"
+        className="mt-3"
         style={{
-          color: samkhyaTokens.roxoDark,
+          color: samkhyaTokens.roxo,
           fontFamily: "Helvetica, 'Helvetica Neue', Arial, sans-serif",
-          fontSize: "15px",
+          fontSize: "18px",
+          fontWeight: 600,
+          fontStyle: "normal",
         }}
       >
         {nome}
@@ -49,7 +51,7 @@ const MinimalProductCard = ({ slug, nome, precoPix, imagemUrl, resumoCurto, to }
           style={{
             color: samkhyaTokens.textoSec,
             fontFamily: "Helvetica, 'Helvetica Neue', Arial, sans-serif",
-            fontSize: "12px",
+            fontSize: "13px",
             lineHeight: 1.35,
           }}
         >
