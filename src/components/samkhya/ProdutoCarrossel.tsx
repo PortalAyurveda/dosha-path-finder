@@ -53,13 +53,7 @@ export default function ProdutoCarrossel({ imagens, alt }: ProdutoCarrosselProps
   return (
     <div className="space-y-3">
       {/* Imagem principal */}
-      <div
-        className="relative aspect-square rounded-lg flex items-center justify-center p-8 md:p-12 group"
-        style={{
-          background: samkhyaTokens.cardBg,
-          border: `1px solid ${samkhyaTokens.cardBorder}`,
-        }}
-      >
+      <div className="relative aspect-square rounded-lg flex items-center justify-center p-4 md:p-6 group">
         <img
           key={atual}
           src={atual}
@@ -72,26 +66,24 @@ export default function ProdutoCarrossel({ imagens, alt }: ProdutoCarrosselProps
             <button
               onClick={goPrev}
               aria-label="Imagem anterior"
-              className="absolute left-2 md:left-3 top-1/2 -translate-y-1/2 w-9 h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center shadow-md transition-opacity"
+              className="absolute left-2 md:left-3 top-1/2 -translate-y-1/2 w-9 h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-opacity"
               style={{
-                background: "rgba(255,255,255,0.92)",
+                background: "transparent",
                 color: samkhyaTokens.roxo,
-                border: `1px solid ${samkhyaTokens.cardBorder}`,
               }}
             >
-              <ChevronLeft className="w-5 h-5" />
+              <ChevronLeft className="w-6 h-6" />
             </button>
             <button
               onClick={goNext}
               aria-label="Próxima imagem"
-              className="absolute right-2 md:right-3 top-1/2 -translate-y-1/2 w-9 h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center shadow-md transition-opacity"
+              className="absolute right-2 md:right-3 top-1/2 -translate-y-1/2 w-9 h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-opacity"
               style={{
-                background: "rgba(255,255,255,0.92)",
+                background: "transparent",
                 color: samkhyaTokens.roxo,
-                border: `1px solid ${samkhyaTokens.cardBorder}`,
               }}
             >
-              <ChevronRight className="w-5 h-5" />
+              <ChevronRight className="w-6 h-6" />
             </button>
 
             {/* Contador */}
