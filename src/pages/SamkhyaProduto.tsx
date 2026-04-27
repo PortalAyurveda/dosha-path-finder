@@ -134,27 +134,24 @@ const SamkhyaProduto = () => {
               />
 
               {/* Info + compra */}
-              <div className="flex flex-col gap-6">
+              <div className="flex flex-col gap-5">
                 <h1
-                  className="text-4xl md:text-5xl leading-tight"
+                  className="text-2xl md:text-3xl leading-tight"
                   style={{ color: samkhyaTokens.roxo, fontFamily: "Georgia, 'Times New Roman', serif" }}
                 >
                   {produto.nome_display}
                 </h1>
 
-                <div
-                  className="rounded-lg p-6"
-                  style={{ background: samkhyaTokens.cardBg, border: `1px solid ${samkhyaTokens.cardBorder}` }}
-                >
+                <div>
                   <PrecoDisplay
                     precoNormal={Number(produto.preco_normal)}
                     precoPix={Number(produto.preco_pix)}
                     showParcelas
-                    size="lg"
+                    size="md"
                   />
-                  <div className="mt-6 flex flex-col gap-3">
-                    <BotaoWhatsApp produtoNome={produto.nome_display} size="lg" fullWidth />
-                    <BotaoStripe size="lg" fullWidth />
+                  <div className="mt-5 flex flex-col gap-2">
+                    <BotaoWhatsApp produtoNome={produto.nome_display} size="sm" fullWidth />
+                    <BotaoStripe size="sm" fullWidth />
                   </div>
                 </div>
 
