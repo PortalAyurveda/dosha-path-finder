@@ -19,7 +19,6 @@ import { samkhyaTokens } from "@/components/samkhya/tokens";
 const SamkhyaProduto = () => {
   const { slug } = useParams<{ slug: string }>();
   const [produto, setProduto] = useState<LojaProdutoComCategorias | null>(null);
-  const [clinico, setClinico] = useState<SamkhyaClinico | null>(null);
   const [relacionados, setRelacionados] = useState<LojaProdutoComCategorias[]>([]);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
