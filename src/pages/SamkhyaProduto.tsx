@@ -2,11 +2,9 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { ChevronLeft } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
 import {
   lojaSupabase,
   type LojaProdutoComCategorias,
-  type SamkhyaClinico,
 } from "@/integrations/supabase/loja-client";
 import SamkhyaLayout from "@/components/samkhya/SamkhyaLayout";
 import PrecoDisplay from "@/components/samkhya/PrecoDisplay";
@@ -21,7 +19,6 @@ import { samkhyaTokens } from "@/components/samkhya/tokens";
 const SamkhyaProduto = () => {
   const { slug } = useParams<{ slug: string }>();
   const [produto, setProduto] = useState<LojaProdutoComCategorias | null>(null);
-  const [clinico, setClinico] = useState<SamkhyaClinico | null>(null);
   const [relacionados, setRelacionados] = useState<LojaProdutoComCategorias[]>([]);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
@@ -51,16 +48,8 @@ const SamkhyaProduto = () => {
       const produtoTyped = prod as unknown as LojaProdutoComCategorias;
       setProduto(produtoTyped);
 
-      // Conteúdo clínico (schema public)
-      if (produtoTyped.samkhya_id) {
-        const { data: clin, error: clinErr } = await supabase
-          .from("samkhya")
-          .select(`"O que é", "Indicações", "Posologia", "Efeitos esperados", "Ingredientes"`)
-          .eq("id", produtoTyped.samkhya_id)
-          .maybeSingle();
-        if (clinErr) console.warn("[Samkhya clínico]", clinErr);
-        if (!cancelled && clin) setClinico(clin as unknown as SamkhyaClinico);
-      }
+
+
 
       // Relacionados — mesma 1ª categoria, exceto o atual
       const primeiraCategoriaSlug = produtoTyped.produto_categorias?.[0]?.categorias?.slug;
@@ -163,7 +152,7 @@ const SamkhyaProduto = () => {
 
             {/* Abas de conteúdo clínico — largura total, abaixo da foto/compra */}
             <div className="mt-12 md:mt-16 max-w-4xl mx-auto">
-              <TabsConteudo clinico={clinico} />
+              <TabsConteudo descricaoProduto={produto.descricao_produto} />
             </div>
 
             {relacionados.length > 0 && (
