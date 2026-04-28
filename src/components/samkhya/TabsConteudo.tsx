@@ -20,7 +20,7 @@ const SECOES = [
  * exatamente a um cabeçalho conhecido. Tudo entre dois cabeçalhos vira o corpo.
  */
 function parseDescricao(texto: string): Record<string, string> {
-  const headers = SECOES.map((s) => s.header);
+  const headers: string[] = SECOES.map((s) => s.header);
   const linhas = texto.split(/\r?\n/);
   const result: Record<string, string> = {};
   let atual: string | null = null;
