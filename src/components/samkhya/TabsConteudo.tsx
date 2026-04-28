@@ -1,32 +1,70 @@
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { samkhyaTokens } from "./tokens";
-import type { SamkhyaClinico } from "@/integrations/supabase/loja-client";
 
 interface TabsConteudoProps {
-  clinico: SamkhyaClinico | null;
+  descricaoProduto: string | null | undefined;
 }
 
-const TABS = [
-  { id: "oque", label: "O que é", key: "O que é" as const },
-  { id: "indica", label: "Para quem é", key: "Indicações" as const },
-  { id: "uso", label: "Como usar", key: "Posologia" as const },
-  { id: "esperar", label: "O que esperar", key: "Efeitos esperados" as const },
-  { id: "ingredientes", label: "Ingredientes", key: "Ingredientes" as const },
-];
+// Cabeçalhos esperados (ordem fixa) e label da aba
+const SECOES = [
+  { id: "oque", label: "O que é", header: "O que é" },
+  { id: "indica", label: "Para quem é", header: "Indicações" },
+  { id: "uso", label: "Como usar", header: "Posologia" },
+  { id: "esperar", label: "O que esperar", header: "Efeitos esperados" },
+  { id: "ingredientes", label: "Ingredientes", header: "Ingredientes" },
+  { id: "curiosidades", label: "Curiosidades", header: "Curiosidades" },
+] as const;
 
-const TabsConteudo = ({ clinico }: TabsConteudoProps) => {
-  if (!clinico) return null;
+/**
+ * Quebra `descricao_produto` em seções, identificando as linhas que correspondem
+ * exatamente a um cabeçalho conhecido. Tudo entre dois cabeçalhos vira o corpo.
+ */
+function parseDescricao(texto: string): Record<string, string> {
+  const headers = SECOES.map((s) => s.header);
+  const linhas = texto.split(/\r?\n/);
+  const result: Record<string, string> = {};
+  let atual: string | null = null;
+  let buffer: string[] = [];
 
-  const hasAnyContent = TABS.some((t) => clinico[t.key]);
-  if (!hasAnyContent) return null;
+  const flush = () => {
+    if (atual) {
+      result[atual] = buffer.join("\n").trim();
+    }
+    buffer = [];
+  };
+
+  for (const raw of linhas) {
+    const linha = raw.trim();
+    if (headers.includes(linha)) {
+      flush();
+      atual = linha;
+    } else if (atual) {
+      buffer.push(raw);
+    }
+  }
+  flush();
+  return result;
+}
+
+const TabsConteudo = ({ descricaoProduto }: TabsConteudoProps) => {
+  if (!descricaoProduto?.trim()) return null;
+
+  const secoes = parseDescricao(descricaoProduto);
+  const abasComConteudo = SECOES.filter((s) => secoes[s.header]);
+  if (abasComConteudo.length === 0) return null;
+
+  const cols = Math.min(abasComConteudo.length, 6);
 
   return (
-    <Tabs defaultValue="oque" className="w-full">
+    <Tabs defaultValue={abasComConteudo[0].id} className="w-full">
       <TabsList
-        className="w-full grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 h-auto bg-transparent gap-0 p-0 rounded-none border-b"
-        style={{ borderColor: samkhyaTokens.cardBorder }}
+        className="w-full grid h-auto bg-transparent gap-0 p-0 rounded-none border-b"
+        style={{
+          borderColor: samkhyaTokens.cardBorder,
+          gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
+        }}
       >
-        {TABS.map((t) => (
+        {abasComConteudo.map((t) => (
           <TabsTrigger
             key={t.id}
             value={t.id}
@@ -44,27 +82,17 @@ const TabsConteudo = ({ clinico }: TabsConteudoProps) => {
         ))}
       </TabsList>
 
-      {TABS.map((t) => {
-        const body = clinico[t.key];
-        return (
-          <TabsContent key={t.id} value={t.id} className="pt-6">
-            {body ? (
-              <p
-                className="whitespace-pre-line text-sm md:text-base leading-relaxed text-justify"
-                style={{ color: samkhyaTokens.texto }}
-              >
-                {body}
-              </p>
-            ) : (
-              <p className="text-sm italic" style={{ color: samkhyaTokens.textoSec }}>
-                Conteúdo em preparação.
-              </p>
-            )}
-          </TabsContent>
-        );
-      })}
+      {abasComConteudo.map((t) => (
+        <TabsContent key={t.id} value={t.id} className="pt-6">
+          <p
+            className="whitespace-pre-line text-sm md:text-base leading-relaxed text-justify"
+            style={{ color: samkhyaTokens.texto }}
+          >
+            {secoes[t.header]}
+          </p>
+        </TabsContent>
+      ))}
 
-      {/* Active tab underline via inline style override */}
       <style>{`
         [data-samkhya-tab][data-state="active"] {
           border-bottom-color: ${samkhyaTokens.roxo} !important;
