@@ -47,6 +47,7 @@ export interface LojaProduto {
   ordem_exibicao: number | null;
   created_at: string | null;
   resumo_curto?: string | null;
+  descricao_produto?: string | null;
   tags_propriedades?: string[] | null;
 }
 
