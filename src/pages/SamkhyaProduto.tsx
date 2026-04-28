@@ -2,11 +2,9 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { ChevronLeft } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
 import {
   lojaSupabase,
   type LojaProdutoComCategorias,
-  type SamkhyaClinico,
 } from "@/integrations/supabase/loja-client";
 import SamkhyaLayout from "@/components/samkhya/SamkhyaLayout";
 import PrecoDisplay from "@/components/samkhya/PrecoDisplay";
