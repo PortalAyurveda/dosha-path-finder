@@ -390,10 +390,12 @@ const VideoEditDialog = ({
   row,
   onClose,
   onSave,
+  onDelete,
 }: {
   row: VideoRow | null;
   onClose: () => void;
   onSave: (r: VideoRow) => Promise<boolean>;
+  onDelete: (r: VideoRow) => void;
 }) => {
   const [draft, setDraft] = useState<VideoRow | null>(row);
   const [saving, setSaving] = useState(false);
