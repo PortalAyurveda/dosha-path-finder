@@ -240,7 +240,7 @@ const ColumnCard = ({
           <Play className="h-12 w-12 text-white/90" fill="white" />
         )}
         <span
-          className="absolute top-3 left-3 text-[11px] font-semibold uppercase tracking-wider px-2.5 py-1 rounded"
+          className="absolute bottom-3 right-3 text-[10px] font-semibold uppercase tracking-wider px-2.5 py-1 rounded"
           style={{ background: accentColor, color: "white" }}
         >
           {badge}
