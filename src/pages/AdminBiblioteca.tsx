@@ -606,7 +606,7 @@ const ArtigosPanel = () => {
                 <th className="text-left p-3 font-medium text-muted-foreground w-[120px]">
                   Status
                 </th>
-                <th className="p-3 w-[100px]"></th>
+                <th className="p-3 w-[170px]"></th>
               </tr>
             </thead>
             <tbody>
