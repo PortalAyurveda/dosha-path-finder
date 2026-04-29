@@ -569,6 +569,19 @@ const ArtigosPanel = () => {
     return true;
   };
 
+  const handleDelete = async (row: ArtigoRow, fromDialog = false) => {
+    if (!window.confirm(`Excluir o artigo "${row.title}"? Esta ação não pode ser desfeita.`)) return;
+    const { error } = await supabase.from("portal_conteudo").delete().eq("id", row.id);
+    if (error) {
+      toast.error("Erro ao excluir: " + error.message);
+      return;
+    }
+    toast.success("Artigo excluído");
+    if (fromDialog) setEditing(null);
+    setRows((prev) => prev.filter((r) => r.id !== row.id));
+    setTotal((t) => Math.max(0, t - 1));
+  };
+
   return (
     <div className="space-y-4">
       <div className="bg-card border border-border rounded-xl p-4">
