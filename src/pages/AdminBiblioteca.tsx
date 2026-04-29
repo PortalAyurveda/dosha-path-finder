@@ -691,6 +691,7 @@ const ArtigosPanel = () => {
         row={editing}
         onClose={() => setEditing(null)}
         onSave={handleSave}
+        onDelete={(r) => handleDelete(r, true)}
       />
     </div>
   );
