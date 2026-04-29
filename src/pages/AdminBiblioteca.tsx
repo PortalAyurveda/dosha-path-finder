@@ -461,21 +461,31 @@ const VideoEditDialog = ({
           </div>
         </div>
 
-        <DialogFooter>
-          <Button variant="outline" onClick={onClose} disabled={saving}>
-            Cancelar
-          </Button>
+        <DialogFooter className="gap-2 sm:justify-between">
           <Button
-            onClick={async () => {
-              setSaving(true);
-              await onSave(draft);
-              setSaving(false);
-            }}
+            variant="ghost"
+            onClick={() => onDelete(draft)}
             disabled={saving}
+            className="text-destructive hover:text-destructive hover:bg-destructive/10"
           >
-            {saving && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
-            Salvar
+            <Trash2 className="w-4 h-4 mr-1" /> Excluir
           </Button>
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={onClose} disabled={saving}>
+              Cancelar
+            </Button>
+            <Button
+              onClick={async () => {
+                setSaving(true);
+                await onSave(draft);
+                setSaving(false);
+              }}
+              disabled={saving}
+            >
+              {saving && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
+              Salvar
+            </Button>
+          </div>
         </DialogFooter>
       </DialogContent>
     </Dialog>
