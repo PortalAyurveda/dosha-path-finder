@@ -148,6 +148,19 @@ const AdminBlog = () => {
     closeEdit();
   };
 
+  const handleDelete = async (article: Article, fromDialog = false) => {
+    if (!window.confirm(`Excluir o artigo "${article.title}"? Esta ação não pode ser desfeita.`)) return;
+    const { error } = await supabase.from("portal_conteudo").delete().eq("id", article.id);
+    if (error) {
+      toast.error("Erro ao excluir: " + error.message);
+      return;
+    }
+    toast.success("Artigo excluído");
+    setArticles((prev) => prev.filter((a) => a.id !== article.id));
+    setTotal((t) => Math.max(0, t - 1));
+    if (fromDialog) closeEdit();
+  };
+
   const handleUploadFile = async (file: File) => {
     setUploading(true);
     const finalName = sanitizeSlug(file.name);
