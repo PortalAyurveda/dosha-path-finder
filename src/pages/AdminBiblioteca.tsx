@@ -701,10 +701,12 @@ const ArtigoEditDialog = ({
   row,
   onClose,
   onSave,
+  onDelete,
 }: {
   row: ArtigoRow | null;
   onClose: () => void;
   onSave: (r: ArtigoRow) => Promise<boolean>;
+  onDelete: (r: ArtigoRow) => void;
 }) => {
   const [draft, setDraft] = useState<ArtigoRow | null>(row);
   const [saving, setSaving] = useState(false);
