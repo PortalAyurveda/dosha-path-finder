@@ -321,15 +321,26 @@ const VideosPanel = () => {
                       {r.novo_titulo || <span className="text-muted-foreground italic">—</span>}
                     </td>
                     <td className="p-3 text-right">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="gap-1"
-                        onClick={() => setEditing(r)}
-                      >
-                        <Pencil className="w-3 h-3" />
-                        Editar
-                      </Button>
+                      <div className="flex justify-end gap-1">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="gap-1"
+                          onClick={() => setEditing(r)}
+                        >
+                          <Pencil className="w-3 h-3" />
+                          Editar
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                          onClick={() => handleDelete(r)}
+                          title="Excluir"
+                        >
+                          <Trash2 className="w-3 h-3" />
+                        </Button>
+                      </div>
                     </td>
                   </tr>
                 ))
