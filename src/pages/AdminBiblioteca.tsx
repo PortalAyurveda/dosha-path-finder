@@ -33,6 +33,7 @@ import {
   ShieldCheck,
   Video as VideoIcon,
   FileText,
+  Trash2,
 } from "lucide-react";
 import AdminNav from "@/components/admin/AdminNav";
 
