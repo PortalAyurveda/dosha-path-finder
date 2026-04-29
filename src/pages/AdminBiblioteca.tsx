@@ -380,6 +380,7 @@ const VideosPanel = () => {
         row={editing}
         onClose={() => setEditing(null)}
         onSave={handleSave}
+        onDelete={(r) => handleDelete(r, true)}
       />
     </div>
   );
