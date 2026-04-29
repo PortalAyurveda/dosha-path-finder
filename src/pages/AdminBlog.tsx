@@ -23,7 +23,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import PaginationControls from "@/components/PaginationControls";
-import { ArrowLeft, Search, Loader2, Upload, Save, Copy } from "lucide-react";
+import { ArrowLeft, Search, Loader2, Upload, Save, Copy, Trash2 } from "lucide-react";
 import { sanitizeSlug } from "@/lib/sanitizeSlug";
 import AdminNav from "@/components/admin/AdminNav";
 
@@ -148,6 +148,19 @@ const AdminBlog = () => {
     closeEdit();
   };
 
+  const handleDelete = async (article: Article, fromDialog = false) => {
+    if (!window.confirm(`Excluir o artigo "${article.title}"? Esta ação não pode ser desfeita.`)) return;
+    const { error } = await supabase.from("portal_conteudo").delete().eq("id", article.id);
+    if (error) {
+      toast.error("Erro ao excluir: " + error.message);
+      return;
+    }
+    toast.success("Artigo excluído");
+    setArticles((prev) => prev.filter((a) => a.id !== article.id));
+    setTotal((t) => Math.max(0, t - 1));
+    if (fromDialog) closeEdit();
+  };
+
   const handleUploadFile = async (file: File) => {
     setUploading(true);
     const finalName = sanitizeSlug(file.name);
@@ -235,31 +248,47 @@ const AdminBlog = () => {
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
               {articles.map((a) => (
-                <button
+                <div
                   key={a.id}
-                  onClick={() => openEdit(a)}
-                  className="group flex items-center gap-3 bg-card border border-border rounded-lg p-2 text-left transition-shadow hover:shadow-md hover:border-primary/40"
+                  className="group relative flex items-center gap-3 bg-card border border-border rounded-lg p-2 transition-shadow hover:shadow-md hover:border-primary/40"
                 >
-                  <div className="w-20 h-20 shrink-0 rounded-md overflow-hidden bg-muted">
-                    {a.image_url ? (
-                      <img
-                        src={a.image_url}
-                        alt={a.title}
-                        className="w-full h-full object-cover"
-                        loading="lazy"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-xs text-muted-foreground">
-                        sem capa
-                      </div>
-                    )}
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-xs font-medium text-foreground line-clamp-3">
-                      {a.title}
-                    </p>
-                  </div>
-                </button>
+                  <button
+                    onClick={() => openEdit(a)}
+                    className="flex items-center gap-3 flex-1 min-w-0 text-left"
+                  >
+                    <div className="w-20 h-20 shrink-0 rounded-md overflow-hidden bg-muted">
+                      {a.image_url ? (
+                        <img
+                          src={a.image_url}
+                          alt={a.title}
+                          className="w-full h-full object-cover"
+                          loading="lazy"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-xs text-muted-foreground">
+                          sem capa
+                        </div>
+                      )}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-xs font-medium text-foreground line-clamp-3">
+                        {a.title}
+                      </p>
+                    </div>
+                  </button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-7 w-7 shrink-0 text-destructive hover:text-destructive hover:bg-destructive/10 opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDelete(a);
+                    }}
+                    title="Excluir artigo"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
               ))}
             </div>
           )}
@@ -350,14 +379,24 @@ const AdminBlog = () => {
             </div>
           </div>
 
-          <DialogFooter>
-            <Button variant="outline" onClick={closeEdit} disabled={saving}>
-              Cancelar
+          <DialogFooter className="gap-2 sm:justify-between">
+            <Button
+              variant="ghost"
+              onClick={() => editing && handleDelete(editing, true)}
+              disabled={saving}
+              className="text-destructive hover:text-destructive hover:bg-destructive/10"
+            >
+              <Trash2 className="w-4 h-4 mr-1" /> Excluir
             </Button>
-            <Button onClick={handleSave} disabled={saving} className="gap-2">
-              {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-              Salvar
-            </Button>
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={closeEdit} disabled={saving}>
+                Cancelar
+              </Button>
+              <Button onClick={handleSave} disabled={saving} className="gap-2">
+                {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                Salvar
+              </Button>
+            </div>
           </DialogFooter>
         </DialogContent>
       </Dialog>

@@ -33,6 +33,7 @@ import {
   ShieldCheck,
   Video as VideoIcon,
   FileText,
+  Trash2,
 } from "lucide-react";
 import AdminNav from "@/components/admin/AdminNav";
 
@@ -213,6 +214,19 @@ const VideosPanel = () => {
     return true;
   };
 
+  const handleDelete = async (row: VideoRow, fromDialog = false) => {
+    if (!window.confirm(`Excluir o vídeo "${row.novo_titulo || row.titulo_original || row.video_id}"? Esta ação não pode ser desfeita.`)) return;
+    const { error } = await supabase.from(table).delete().eq("video_id", row.video_id);
+    if (error) {
+      toast.error("Erro ao excluir: " + error.message);
+      return;
+    }
+    toast.success("Vídeo excluído");
+    if (fromDialog) setEditing(null);
+    setRows((prev) => prev.filter((r) => r.video_id !== row.video_id));
+    setTotal((t) => Math.max(0, t - 1));
+  };
+
   return (
     <div className="space-y-4">
       <div className="bg-card border border-border rounded-xl p-4 space-y-3">
@@ -276,7 +290,7 @@ const VideosPanel = () => {
                 <th className="text-left p-3 font-medium text-muted-foreground">
                   Novo título
                 </th>
-                <th className="p-3 w-[100px]"></th>
+                <th className="p-3 w-[170px]"></th>
               </tr>
             </thead>
             <tbody>
@@ -307,15 +321,26 @@ const VideosPanel = () => {
                       {r.novo_titulo || <span className="text-muted-foreground italic">—</span>}
                     </td>
                     <td className="p-3 text-right">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="gap-1"
-                        onClick={() => setEditing(r)}
-                      >
-                        <Pencil className="w-3 h-3" />
-                        Editar
-                      </Button>
+                      <div className="flex justify-end gap-1">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="gap-1"
+                          onClick={() => setEditing(r)}
+                        >
+                          <Pencil className="w-3 h-3" />
+                          Editar
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                          onClick={() => handleDelete(r)}
+                          title="Excluir"
+                        >
+                          <Trash2 className="w-3 h-3" />
+                        </Button>
+                      </div>
                     </td>
                   </tr>
                 ))
@@ -355,6 +380,7 @@ const VideosPanel = () => {
         row={editing}
         onClose={() => setEditing(null)}
         onSave={handleSave}
+        onDelete={(r) => handleDelete(r, true)}
       />
     </div>
   );
@@ -364,10 +390,12 @@ const VideoEditDialog = ({
   row,
   onClose,
   onSave,
+  onDelete,
 }: {
   row: VideoRow | null;
   onClose: () => void;
   onSave: (r: VideoRow) => Promise<boolean>;
+  onDelete: (r: VideoRow) => void;
 }) => {
   const [draft, setDraft] = useState<VideoRow | null>(row);
   const [saving, setSaving] = useState(false);
@@ -433,21 +461,31 @@ const VideoEditDialog = ({
           </div>
         </div>
 
-        <DialogFooter>
-          <Button variant="outline" onClick={onClose} disabled={saving}>
-            Cancelar
-          </Button>
+        <DialogFooter className="gap-2 sm:justify-between">
           <Button
-            onClick={async () => {
-              setSaving(true);
-              await onSave(draft);
-              setSaving(false);
-            }}
+            variant="ghost"
+            onClick={() => onDelete(draft)}
             disabled={saving}
+            className="text-destructive hover:text-destructive hover:bg-destructive/10"
           >
-            {saving && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
-            Salvar
+            <Trash2 className="w-4 h-4 mr-1" /> Excluir
           </Button>
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={onClose} disabled={saving}>
+              Cancelar
+            </Button>
+            <Button
+              onClick={async () => {
+                setSaving(true);
+                await onSave(draft);
+                setSaving(false);
+              }}
+              disabled={saving}
+            >
+              {saving && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
+              Salvar
+            </Button>
+          </div>
         </DialogFooter>
       </DialogContent>
     </Dialog>
@@ -531,6 +569,19 @@ const ArtigosPanel = () => {
     return true;
   };
 
+  const handleDelete = async (row: ArtigoRow, fromDialog = false) => {
+    if (!window.confirm(`Excluir o artigo "${row.title}"? Esta ação não pode ser desfeita.`)) return;
+    const { error } = await supabase.from("portal_conteudo").delete().eq("id", row.id);
+    if (error) {
+      toast.error("Erro ao excluir: " + error.message);
+      return;
+    }
+    toast.success("Artigo excluído");
+    if (fromDialog) setEditing(null);
+    setRows((prev) => prev.filter((r) => r.id !== row.id));
+    setTotal((t) => Math.max(0, t - 1));
+  };
+
   return (
     <div className="space-y-4">
       <div className="bg-card border border-border rounded-xl p-4">
@@ -555,7 +606,7 @@ const ArtigosPanel = () => {
                 <th className="text-left p-3 font-medium text-muted-foreground w-[120px]">
                   Status
                 </th>
-                <th className="p-3 w-[100px]"></th>
+                <th className="p-3 w-[170px]"></th>
               </tr>
             </thead>
             <tbody>
@@ -581,15 +632,26 @@ const ArtigosPanel = () => {
                     </td>
                     <td className="p-3 text-xs text-muted-foreground">{r.status ?? "—"}</td>
                     <td className="p-3 text-right">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="gap-1"
-                        onClick={() => setEditing(r)}
-                      >
-                        <Pencil className="w-3 h-3" />
-                        Editar
-                      </Button>
+                      <div className="flex justify-end gap-1">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="gap-1"
+                          onClick={() => setEditing(r)}
+                        >
+                          <Pencil className="w-3 h-3" />
+                          Editar
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                          onClick={() => handleDelete(r)}
+                          title="Excluir"
+                        >
+                          <Trash2 className="w-3 h-3" />
+                        </Button>
+                      </div>
                     </td>
                   </tr>
                 ))
@@ -629,6 +691,7 @@ const ArtigosPanel = () => {
         row={editing}
         onClose={() => setEditing(null)}
         onSave={handleSave}
+        onDelete={(r) => handleDelete(r, true)}
       />
     </div>
   );
@@ -638,10 +701,12 @@ const ArtigoEditDialog = ({
   row,
   onClose,
   onSave,
+  onDelete,
 }: {
   row: ArtigoRow | null;
   onClose: () => void;
   onSave: (r: ArtigoRow) => Promise<boolean>;
+  onDelete: (r: ArtigoRow) => void;
 }) => {
   const [draft, setDraft] = useState<ArtigoRow | null>(row);
   const [saving, setSaving] = useState(false);
@@ -736,21 +801,31 @@ const ArtigoEditDialog = ({
           </div>
         </div>
 
-        <DialogFooter>
-          <Button variant="outline" onClick={onClose} disabled={saving}>
-            Cancelar
-          </Button>
+        <DialogFooter className="gap-2 sm:justify-between">
           <Button
-            onClick={async () => {
-              setSaving(true);
-              await onSave(draft);
-              setSaving(false);
-            }}
+            variant="ghost"
+            onClick={() => onDelete(draft)}
             disabled={saving}
+            className="text-destructive hover:text-destructive hover:bg-destructive/10"
           >
-            {saving && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
-            Salvar
+            <Trash2 className="w-4 h-4 mr-1" /> Excluir
           </Button>
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={onClose} disabled={saving}>
+              Cancelar
+            </Button>
+            <Button
+              onClick={async () => {
+                setSaving(true);
+                await onSave(draft);
+                setSaving(false);
+              }}
+              disabled={saving}
+            >
+              {saving && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
+              Salvar
+            </Button>
+          </div>
         </DialogFooter>
       </DialogContent>
     </Dialog>
