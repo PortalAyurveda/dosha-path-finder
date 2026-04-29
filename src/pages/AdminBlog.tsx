@@ -379,14 +379,24 @@ const AdminBlog = () => {
             </div>
           </div>
 
-          <DialogFooter>
-            <Button variant="outline" onClick={closeEdit} disabled={saving}>
-              Cancelar
+          <DialogFooter className="gap-2 sm:justify-between">
+            <Button
+              variant="ghost"
+              onClick={() => editing && handleDelete(editing, true)}
+              disabled={saving}
+              className="text-destructive hover:text-destructive hover:bg-destructive/10"
+            >
+              <Trash2 className="w-4 h-4 mr-1" /> Excluir
             </Button>
-            <Button onClick={handleSave} disabled={saving} className="gap-2">
-              {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-              Salvar
-            </Button>
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={closeEdit} disabled={saving}>
+                Cancelar
+              </Button>
+              <Button onClick={handleSave} disabled={saving} className="gap-2">
+                {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                Salvar
+              </Button>
+            </div>
           </DialogFooter>
         </DialogContent>
       </Dialog>
