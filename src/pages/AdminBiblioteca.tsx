@@ -214,6 +214,19 @@ const VideosPanel = () => {
     return true;
   };
 
+  const handleDelete = async (row: VideoRow, fromDialog = false) => {
+    if (!window.confirm(`Excluir o vídeo "${row.novo_titulo || row.titulo_original || row.video_id}"? Esta ação não pode ser desfeita.`)) return;
+    const { error } = await supabase.from(table).delete().eq("video_id", row.video_id);
+    if (error) {
+      toast.error("Erro ao excluir: " + error.message);
+      return;
+    }
+    toast.success("Vídeo excluído");
+    if (fromDialog) setEditing(null);
+    setRows((prev) => prev.filter((r) => r.video_id !== row.video_id));
+    setTotal((t) => Math.max(0, t - 1));
+  };
+
   return (
     <div className="space-y-4">
       <div className="bg-card border border-border rounded-xl p-4 space-y-3">
