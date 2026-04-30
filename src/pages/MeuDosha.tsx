@@ -501,22 +501,8 @@ const MeuDosha = () => {
   } : null;
   const registroUuid = registroRaw?.id || null;
 
-  // ── Glossário (portal_glossario) ──
-  const { data: glossario } = useQuery({
-    queryKey: ['meudosha-glossario', result?.doshaprincipal],
-    queryFn: async () => {
-      const { data } = await supabase
-        .from('portal_glossario')
-        .select('*')
-        .eq('doshanome', result!.doshaprincipal!)
-        .maybeSingle();
-      return (data as unknown as PortalGlossario) || null;
-    },
-    enabled: !!result?.doshaprincipal,
-    staleTime: CACHE_STALE,
-    gcTime: CACHE_GC,
-    refetchOnWindowFocus: false,
-  });
+  // (Glossário antigo removido — substituído por DiagnosticoCompleto)
+
 
   // ── Insights RPC ──
   const { data: insights, isLoading: insightsLoading } = useQuery({
