@@ -29,6 +29,7 @@ import Admin from "./pages/Admin";
 import AdminBlog from "./pages/AdminBlog";
 import AdminAkasha from "./pages/AdminAkasha";
 import AdminTeste from "./pages/AdminTeste";
+import AdminRoute from "./components/admin/AdminRoute";
 import AdminLoja from "./pages/AdminLoja";
 import AdminBiblioteca from "./pages/AdminBiblioteca";
 import AdminTerapeutas from "./pages/AdminTerapeutas";
@@ -109,13 +110,13 @@ const RoutedApp = () => {
               <Route path="/entrar" element={<Auth />} />
               <Route path="/politica-de-privacidade" element={<PoliticaDePrivacidade />} />
               <Route path="/termos-de-uso" element={<TermosDeUso />} />
-              <Route path="/admin" element={<Admin />} />
-              <Route path="/admin/blog" element={<AdminBlog />} />
-              <Route path="/admin/akasha" element={<AdminAkasha />} />
-              <Route path="/admin/teste" element={<AdminTeste />} />
-              <Route path="/admin/loja" element={<AdminLoja />} />
-              <Route path="/admin/biblioteca" element={<AdminBiblioteca />} />
-              <Route path="/admin/terapeutas" element={<AdminTerapeutas />} />
+              <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />
+              <Route path="/admin/blog" element={<AdminRoute><AdminBlog /></AdminRoute>} />
+              <Route path="/admin/akasha" element={<AdminRoute><AdminAkasha /></AdminRoute>} />
+              <Route path="/admin/teste" element={<AdminRoute><AdminTeste /></AdminRoute>} />
+              <Route path="/admin/loja" element={<AdminRoute><AdminLoja /></AdminRoute>} />
+              <Route path="/admin/biblioteca" element={<AdminRoute><AdminBiblioteca /></AdminRoute>} />
+              <Route path="/admin/terapeutas" element={<AdminRoute><AdminTerapeutas /></AdminRoute>} />
 
               {/* Loja Samkhya */}
               <Route path="/samkhya" element={<Samkhya />} />
