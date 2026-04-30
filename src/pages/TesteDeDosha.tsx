@@ -232,7 +232,7 @@ const [step, setStep] = useState(0);
     ].sort((a, b) => b.score - a.score);
 
     let doshaPrincipal: string;
-    if (scores[0].score - scores[1].score >= 5) {
+    if (scores[0].score - scores[1].score >= 11) {
       doshaPrincipal = scores[0].name;
     } else {
       const top2 = [scores[0].name, scores[1].name];
