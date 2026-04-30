@@ -709,52 +709,13 @@ const MeuDosha = () => {
                 </div>
                 <ClinicalThermometer doshaScores={doshaScores} />
               </div>
-              <div className="border-t border-border pt-4">
-                <DoshaLevelBullets doshaScores={doshaScores} />
-              </div>
-              {hasAgrav && (
-                <div className="border-t border-border pt-4">
-                  <h3 className="font-serif font-bold text-foreground text-sm mb-3">Agravamentos Detectados</h3>
-                  <div className="grid grid-cols-3 gap-3">
-                    <div className="space-y-1">
-                      <p className="text-[10px] font-bold text-vata uppercase text-center">Vata</p>
-                      {result.agravVataTags ? (
-                        <div className="flex flex-col gap-1">
-                          {result.agravVataTags.split(',').map(t => (
-                            <span key={t} className="text-[10px] px-1.5 py-1 rounded-md bg-vata/10 text-vata border border-vata/30 text-center">{t.trim()}</span>
-                          ))}
-                        </div>
-                      ) : <p className="text-[10px] text-muted-foreground text-center">—</p>}
-                    </div>
-                    <div className="space-y-1">
-                      <p className="text-[10px] font-bold text-pitta uppercase text-center">Pitta</p>
-                      {result.agravPittaTags ? (
-                        <div className="flex flex-col gap-1">
-                          {result.agravPittaTags.split(',').map(t => (
-                            <span key={t} className="text-[10px] px-1.5 py-1 rounded-md bg-pitta/10 text-pitta border border-pitta/30 text-center">{t.trim()}</span>
-                          ))}
-                        </div>
-                      ) : <p className="text-[10px] text-muted-foreground text-center">—</p>}
-                    </div>
-                    <div className="space-y-1">
-                      <p className="text-[10px] font-bold text-kapha uppercase text-center">Kapha</p>
-                      {result.agravKaphaTags ? (
-                        <div className="flex flex-col gap-1">
-                          {result.agravKaphaTags.split(',').map(t => (
-                            <span key={t} className="text-[10px] px-1.5 py-1 rounded-md bg-kapha/10 text-kapha border border-kapha/30 text-center">{t.trim()}</span>
-                          ))}
-                        </div>
-                      ) : <p className="text-[10px] text-muted-foreground text-center">—</p>}
-                    </div>
-                  </div>
-                </div>
-              )}
             </div>
 
             {/* ===== Diagnóstico clínico completo (substitui glossário + Refazer Teste) ===== */}
             <DiagnosticoCompleto
               email={result.email}
               doshaPrincipal={primaryDosha}
+              doshaPrincipalCompleto={result.doshaprincipal || primaryDosha}
               refazerTeste={() => {
                 if (result) {
                   localStorage.setItem('dosha_test_info', JSON.stringify({

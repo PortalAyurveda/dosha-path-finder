@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { Loader2, ChevronDown, ChevronRight } from "lucide-react";
+import { Loader2, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { premiumSupabase, type ObjetivoTratamento } from "@/integrations/supabase/premium-client";
 import { lojaSupabase } from "@/integrations/supabase/loja-client";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 
-// ============ Tokens (espelham o brief) ============
+// ============ Tokens ============
 const COLOR = {
   primary: "#352F54",
   secondary: "#FF7676",
@@ -26,13 +26,16 @@ const COLOR = {
   textoSec: "#6B4C2A",
 };
 
-// Forma de Folha (cantos opostos arredondados)
 const LEAF = "rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm";
-const LEAF_SM = "rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm";
 
-const DOSHA_COLOR: Record<string, string> = {
-  Vata: COLOR.vata, Pitta: COLOR.pitta, Kapha: COLOR.kapha,
-  vata: COLOR.vata, pitta: COLOR.pitta, kapha: COLOR.kapha,
+const AKASHA_LOGO = "https://static.wixstatic.com/media/b8f47f_105371e1ade24ccd9bd3406b83bd925e~mv2.png";
+
+const corDosha = (dosha: string): string => {
+  const d = (dosha || "").trim();
+  if (d.startsWith("Vata")) return COLOR.vata;
+  if (d.startsWith("Pitta")) return COLOR.pitta;
+  if (d.startsWith("Kapha")) return COLOR.kapha;
+  return COLOR.primary;
 };
 
 // ============ Tipos ============
@@ -47,80 +50,43 @@ interface ProdutoExibicao {
   basePath: "produto" | "kits";
 }
 
-interface DicaPlano {
-  titulo: string;
-  acao_pratica: string;
-  explicacao: string;
-  categoria: string;
-  dificuldade: string;
-  pilar?: string;
+interface PortalGlossario {
+  resumo_curto: string | null;
+  oque: string | null;
+  alimentosEvitar: string | null;
+  alimentosPriorizar: string | null;
+  rotinasEquilibrar: string | null;
+  dicasGeraisFazer: string | null;
 }
 
-interface SemanaPlano {
-  numero: number;
-  titulo: string;
-  foco?: string;
-  dicas?: DicaPlano[];
-  alimentacao?: any;
-  ervas?: any;
-  rotina?: any;
-  comportamento?: any;
+// ============ Utils ============
+function stripHtml(s: string | null | undefined): string {
+  if (!s) return "";
+  return s
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<\/p>/gi, "\n\n")
+    .replace(/<[^>]+>/g, "")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
 }
 
-interface Plano30Json {
-  semanas?: SemanaPlano[];
-  [k: string]: any;
+function trunc(s: string | null | undefined, n: number): string {
+  const t = stripHtml(s);
+  if (!t) return "";
+  if (t.length <= n) return t;
+  return t.slice(0, n).trimEnd() + "…";
 }
 
-// Normaliza dicas legadas (campos separados por categoria)
-function normalizarDicas(s: SemanaPlano): DicaPlano[] {
-  if (Array.isArray(s.dicas) && s.dicas.length) return s.dicas;
-  const out: DicaPlano[] = [];
-  const fromField = (f: any, categoria: string) => {
-    if (!f) return;
-    const arr = Array.isArray(f) ? f : [f];
-    for (const item of arr) {
-      if (typeof item === "string") {
-        out.push({ titulo: item, acao_pratica: "", explicacao: "", categoria, dificuldade: "Fácil" });
-      } else if (item && typeof item === "object") {
-        out.push({
-          titulo: item.titulo || item.nome || "Dica",
-          acao_pratica: item.acao_pratica || item.acao || "",
-          explicacao: item.explicacao || item.descricao || "",
-          categoria,
-          dificuldade: item.dificuldade || "Fácil",
-        });
-      }
-    }
-  };
-  fromField(s.alimentacao, "alimentação");
-  fromField(s.ervas, "ervas");
-  fromField(s.rotina, "rotina");
-  fromField(s.comportamento, "comportamento");
-  return out;
-}
-
-const CATEGORIA_META: Record<string, { icon: string; label: string; cor: string }> = {
-  "alimentação": { icon: "🥗", label: "ALIMENTAÇÃO", cor: COLOR.kapha },
-  "alimentacao": { icon: "🥗", label: "ALIMENTAÇÃO", cor: COLOR.kapha },
-  "ervas": { icon: "🌿", label: "ERVAS", cor: COLOR.kapha },
-  "rotina": { icon: "🔄", label: "ROTINA", cor: COLOR.vata },
-  "comportamento": { icon: "💭", label: "COMPORTAMENTO", cor: COLOR.pitta },
-};
-
-const DIFICULDADE_COR: Record<string, string> = {
-  "Fácil": COLOR.kapha,
-  "Médio": COLOR.accent,
-  "Difícil": COLOR.secondary,
-};
-
-// ============ Hook: análise + plano com polling ============
-function useAnaliseEPlano(email: string | null) {
-  const [pollAnalise, setPollAnalise] = useState(0);
-  const [pollPlano, setPollPlano] = useState(0);
+// ============ Hook: análise + polling (inclui narrativa) ============
+function useAnalise(email: string | null) {
+  const [poll, setPoll] = useState(0);
 
   const analiseQ = useQuery({
-    queryKey: ["meudosha-analise", email, pollAnalise],
+    queryKey: ["meudosha-analise", email, poll],
     queryFn: async () => {
       if (!email) return null;
       const { data, error } = await premiumSupabase
@@ -140,45 +106,42 @@ function useAnaliseEPlano(email: string | null) {
     refetchOnWindowFocus: false,
   });
 
-  const planoQ = useQuery({
-    queryKey: ["meudosha-plano", email, pollPlano],
-    queryFn: async () => {
-      if (!email) return null;
-      const { data, error } = await supabase
-        .from("plano_30_dias" as any)
-        .select("plano_json, total_dicas_usadas")
-        .eq("user_email", email)
-        .eq("status", "ativo")
-        .maybeSingle();
-      if (error) return null;
-      return data as any;
-    },
-    enabled: !!email,
-    staleTime: 30_000,
-    refetchOnWindowFocus: false,
-  });
-
-  // Polling análise: 3s × 60s
+  // Polling: até análise existir E ter narrativa_clinica. Limite 20 ticks (~60s).
   useEffect(() => {
-    if (!email || analiseQ.data || pollAnalise >= 20) return;
-    const t = setTimeout(() => setPollAnalise((n) => n + 1), 3000);
+    if (!email) return;
+    if (poll >= 20) return;
+    const ready = analiseQ.data && analiseQ.data.narrativa_clinica;
+    if (ready) return;
+    const t = setTimeout(() => setPoll((n) => n + 1), 3000);
     return () => clearTimeout(t);
-  }, [email, analiseQ.data, pollAnalise]);
-
-  // Polling plano: 5s × 120s, somente após análise existir
-  useEffect(() => {
-    if (!email || !analiseQ.data || planoQ.data || pollPlano >= 24) return;
-    const t = setTimeout(() => setPollPlano((n) => n + 1), 5000);
-    return () => clearTimeout(t);
-  }, [email, analiseQ.data, planoQ.data, pollPlano]);
+  }, [email, analiseQ.data, poll]);
 
   return {
     analise: analiseQ.data,
     analiseLoading: analiseQ.isLoading,
-    analiseTimeout: !analiseQ.data && pollAnalise >= 20,
-    plano: planoQ.data,
-    planoLoading: planoQ.isLoading || (!!analiseQ.data && !planoQ.data && pollPlano < 24),
+    analiseTimeout: !analiseQ.data && poll >= 20,
+    narrativaPolling: !!analiseQ.data && !analiseQ.data.narrativa_clinica && poll < 20,
   };
+}
+
+// ============ Hook: glossário ============
+function useGlossario(doshaCompleto: string | null) {
+  return useQuery({
+    queryKey: ["meudosha-glossario", doshaCompleto],
+    queryFn: async (): Promise<PortalGlossario | null> => {
+      if (!doshaCompleto) return null;
+      const { data, error } = await supabase
+        .from("portal_glossario")
+        .select(`resumo_curto, oque, "alimentosEvitar", "alimentosPriorizar", "rotinasEquilibrar", "dicasGeraisFazer"`)
+        .eq("doshanome", doshaCompleto)
+        .maybeSingle();
+      if (error || !data) return null;
+      return data as PortalGlossario;
+    },
+    enabled: !!doshaCompleto,
+    staleTime: 30 * 60_000,
+    refetchOnWindowFocus: false,
+  });
 }
 
 // ============ Hook: produtos prescritos ============
@@ -197,7 +160,6 @@ function useProdutosPrescritos(analise: ObjetivoTratamento | null | undefined) {
         { slug: analise.upgrade_kit_slug, tipo: "upgrade" as const },
         { slug: analise.suplementar_slug, tipo: "suplementar" as const },
       ].filter((s) => !!s.slug);
-
       if (!slugs.length) return [];
 
       const slugList = slugs.map((s) => s.slug as string);
@@ -252,80 +214,198 @@ function useProdutosPrescritos(analise: ObjetivoTratamento | null | undefined) {
   });
 }
 
-// ============ SEÇÃO A — Quadro Clínico ============
-const QuadroClinico = ({
+// ============ Sub-componentes de bloco ============
+const LeftCard = ({ label, children }: { label: string; children: React.ReactNode }) => (
+  <div
+    className={cn("p-5 space-y-3", LEAF)}
+    style={{ backgroundColor: COLOR.surfaceSun, border: `1px solid ${COLOR.cardBorder}` }}
+  >
+    <p
+      className="text-[12px] font-semibold uppercase tracking-wider"
+      style={{ color: COLOR.ouro, fontFamily: "'DM Sans', sans-serif" }}
+    >
+      {label}
+    </p>
+    {children}
+  </div>
+);
+
+const RightCard = ({
+  label,
+  cor,
+  children,
+}: {
+  label: string;
+  cor: string;
+  children: React.ReactNode;
+}) => (
+  <div
+    className={cn("p-5 space-y-3 transition-opacity duration-500", LEAF)}
+    style={{
+      backgroundColor: "#FFFFFF",
+      borderLeft: `4px solid ${cor}`,
+      border: `1px solid ${COLOR.cardBorder}`,
+      borderLeftWidth: 4,
+      borderLeftColor: cor,
+    }}
+  >
+    <p
+      className="text-[12px] font-semibold uppercase tracking-wider"
+      style={{ color: cor, fontFamily: "'DM Sans', sans-serif" }}
+    >
+      {label}
+    </p>
+    {children}
+  </div>
+);
+
+const AkashaPlaceholder = ({ cor }: { cor: string }) => (
+  <div className="flex flex-col items-center text-center gap-2 py-3">
+    <img src={AKASHA_LOGO} alt="Akasha" className="w-12 h-12 object-contain opacity-90" />
+    <p
+      className="text-sm font-medium leading-snug"
+      style={{ color: COLOR.primary, fontFamily: "'DM Sans', sans-serif" }}
+    >
+      Akasha está lendo
+      <br />
+      seu resultado...
+    </p>
+    <div
+      className="w-5 h-5 rounded-full border-2 animate-spin"
+      style={{ borderColor: `${cor}40`, borderTopColor: cor }}
+    />
+  </div>
+);
+
+// ============ SEÇÃO 1 — Diagnóstico ============
+const Diagnostico = ({
   analise,
+  glossario,
   doshaPrincipal,
+  doshaPrincipalCompleto,
 }: {
   analise: ObjetivoTratamento;
+  glossario: PortalGlossario | null;
   doshaPrincipal: string;
+  doshaPrincipalCompleto: string;
 }) => {
-  const corDosha = DOSHA_COLOR[doshaPrincipal] || COLOR.primary;
-  const causas = Array.isArray(analise.causas) ? analise.causas : [];
-  const objetivos = Array.isArray(analise.objetivos) ? analise.objetivos : [];
+  const cor = corDosha(doshaPrincipal);
+  const narr = analise.narrativa_clinica;
 
-  return (
-    <div
-      className={cn("bg-white p-5 md:p-6 space-y-4", LEAF)}
-      style={{
-        borderLeft: `4px solid ${corDosha}`,
-        boxShadow: "0 1px 8px rgba(53,47,84,0.08)",
-      }}
-    >
-      <h2
-        className="font-serif font-bold text-xl md:text-2xl"
-        style={{ color: COLOR.primary, fontFamily: "'Roboto Serif', serif" }}
-      >
-        O que está acontecendo no seu corpo
-      </h2>
+  const blocosDireita = [
+    { label: "Sua situação atual", texto: narr?.bloco_1_situacao },
+    { label: "O que te trouxe aqui", texto: narr?.bloco_2_causas },
+    { label: "Por que esses sabores pra você", texto: narr?.bloco_3_sabores },
+    { label: "Seus próximos 30 dias", texto: narr?.bloco_4_proximos },
+  ];
 
-      {analise.o_que_e && (
-        <p
-          className="text-sm md:text-base leading-relaxed"
-          style={{ color: COLOR.texto, fontFamily: "'DM Sans', sans-serif" }}
-        >
-          {analise.o_que_e}
-        </p>
-      )}
-
-      {causas.length > 0 && (
-        <ul className="space-y-1.5">
-          {causas.map((c, i) => (
-            <li
-              key={i}
-              className="text-sm md:text-base leading-relaxed flex gap-2"
+  const blocosEsquerda = [
+    {
+      label: `Sobre ${doshaPrincipal} agravado`,
+      render: () => (
+        <>
+          {glossario?.resumo_curto && (
+            <p
+              className="text-base italic font-medium leading-snug"
               style={{ color: COLOR.textoSec, fontFamily: "'DM Sans', sans-serif" }}
             >
-              <span className="shrink-0">⚠️</span>
-              <span>{c}</span>
-            </li>
-          ))}
-        </ul>
-      )}
-
-      {objetivos.length > 0 && (
-        <ul className="space-y-1.5 pt-1">
-          {objetivos.map((o, i) => (
-            <li
-              key={i}
-              className="text-sm md:text-base leading-relaxed flex gap-2"
-              style={{ color: COLOR.texto, fontFamily: "'DM Sans', sans-serif" }}
+              {stripHtml(glossario.resumo_curto)}
+            </p>
+          )}
+          {glossario?.resumo_curto && glossario?.oque && (
+            <hr style={{ borderColor: COLOR.cardBorder }} />
+          )}
+          {glossario?.oque && (
+            <p
+              className="text-sm leading-relaxed whitespace-pre-line"
+              style={{ color: COLOR.texto, fontFamily: "'DM Sans', sans-serif", lineHeight: 1.7 }}
             >
-              <span className="shrink-0">🎯</span>
-              <span>{o}</span>
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
+              {trunc(glossario.oque, 400)}
+            </p>
+          )}
+        </>
+      ),
+    },
+    {
+      label: `O que agrava ${doshaPrincipal}`,
+      render: () => (
+        <p
+          className="text-sm leading-relaxed whitespace-pre-line"
+          style={{ color: COLOR.texto, fontFamily: "'DM Sans', sans-serif", lineHeight: 1.7 }}
+        >
+          {trunc(glossario?.alimentosEvitar, 350)}
+        </p>
+      ),
+    },
+    {
+      label: "Alimentos que ajudam",
+      render: () => (
+        <p
+          className="text-sm leading-relaxed whitespace-pre-line"
+          style={{ color: COLOR.texto, fontFamily: "'DM Sans', sans-serif", lineHeight: 1.7 }}
+        >
+          {trunc(glossario?.alimentosPriorizar, 350)}
+        </p>
+      ),
+    },
+    {
+      label: "Rotinas que equilibram",
+      render: () => (
+        <p
+          className="text-sm leading-relaxed whitespace-pre-line"
+          style={{ color: COLOR.texto, fontFamily: "'DM Sans', sans-serif", lineHeight: 1.7 }}
+        >
+          {trunc(glossario?.rotinasEquilibrar, 350)}
+        </p>
+      ),
+    },
+  ];
+
+  return (
+    <section className="space-y-6">
+      <h2
+        className="font-serif font-bold text-2xl md:text-3xl text-center"
+        style={{ color: COLOR.primary, fontFamily: "'Roboto Serif', serif" }}
+      >
+        Seu Diagnóstico: <span style={{ color: cor }}>{doshaPrincipalCompleto}</span>
+      </h2>
+
+      <div className="space-y-6">
+        {blocosEsquerda.map((bloco, idx) => {
+          const direita = blocosDireita[idx];
+          return (
+            <div key={idx} className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+              {/* No mobile, coluna direita (pessoal) aparece primeiro */}
+              <div className="order-2 md:order-1">
+                <LeftCard label={bloco.label}>{bloco.render()}</LeftCard>
+              </div>
+              <div className="order-1 md:order-2">
+                <RightCard label={direita.label} cor={cor}>
+                  {direita.texto ? (
+                    <p
+                      className="text-[15px] leading-relaxed"
+                      style={{ color: COLOR.texto, fontFamily: "'DM Sans', sans-serif", lineHeight: 1.7 }}
+                    >
+                      {direita.texto}
+                    </p>
+                  ) : (
+                    <AkashaPlaceholder cor={cor} />
+                  )}
+                </RightCard>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </section>
   );
 };
 
-// ============ SEÇÃO B — Protocolo Samkhya ============
+// ============ SEÇÃO 2 — Protocolo Samkhya ============
 const BADGE_TIPO: Record<string, { label: string; bg: string; cor: string }> = {
-  primario: { label: "PRINCIPAL ★", bg: COLOR.roxoSamkhya, cor: "#fff" },
-  upgrade: { label: "KIT COMPLETO", bg: COLOR.ouro, cor: "#fff" },
-  suplementar: { label: "SUPLEMENTAR", bg: COLOR.accent, cor: COLOR.primary },
+  primario: { label: "PRINCIPAL", bg: COLOR.roxoSamkhya, cor: "#fff" },
+  upgrade: { label: "COMPLEMENTAR", bg: COLOR.ouro, cor: "#fff" },
+  suplementar: { label: "SUPORTE", bg: COLOR.accent, cor: COLOR.primary },
 };
 
 const ProtocoloSamkhya = ({
@@ -338,7 +418,7 @@ const ProtocoloSamkhya = ({
   if (!produtos.length) return null;
 
   return (
-    <section className="space-y-4">
+    <section className="space-y-4 pt-12">
       <div className="space-y-1 text-center md:text-left">
         <h2
           className="font-serif font-bold text-xl md:text-2xl"
@@ -362,14 +442,14 @@ const ProtocoloSamkhya = ({
           return (
             <div
               key={p.slug}
-              className={cn("relative bg-white p-4 flex flex-col gap-3", LEAF)}
+              className={cn("relative bg-white p-5 flex flex-col gap-3", LEAF)}
               style={{
                 border: `1px solid ${COLOR.cardBorder}`,
                 boxShadow: "0 1px 8px rgba(53,47,84,0.08)",
               }}
             >
               <span
-                className="absolute top-2 right-2 z-10 text-[10px] font-bold px-2 py-1 rounded-md tracking-wide"
+                className="absolute top-2 right-2 z-10 text-[10px] font-bold px-2 py-1 rounded-full tracking-wide"
                 style={{ backgroundColor: badge.bg, color: badge.cor }}
               >
                 {badge.label}
@@ -380,10 +460,10 @@ const ProtocoloSamkhya = ({
                   <img
                     src={p.imagem_url}
                     alt={p.nome_display}
-                    className="w-[120px] h-[120px] object-cover rounded-lg"
+                    className="w-[100px] h-[100px] object-cover rounded-lg"
                   />
                 ) : (
-                  <div className="w-[120px] h-[120px] bg-muted rounded-lg" />
+                  <div className="w-[100px] h-[100px] bg-muted rounded-lg" />
                 )}
               </div>
 
@@ -396,7 +476,7 @@ const ProtocoloSamkhya = ({
                 </h3>
                 {p.resumo_curto && (
                   <p
-                    className="text-sm leading-snug"
+                    className="text-[13px] leading-snug"
                     style={{ color: COLOR.textoSec, fontFamily: "'DM Sans', sans-serif" }}
                   >
                     {p.resumo_curto}
@@ -406,13 +486,13 @@ const ProtocoloSamkhya = ({
 
               <div className="space-y-0.5">
                 <p
-                  className="text-xs line-through"
+                  className="text-[13px] line-through"
                   style={{ color: COLOR.textoSec, fontFamily: "'DM Sans', sans-serif" }}
                 >
                   R$ {p.preco_normal.toFixed(2).replace(".", ",")}
                 </p>
                 <p
-                  className="text-lg font-bold"
+                  className="text-[15px] font-bold"
                   style={{ color: COLOR.ouro, fontFamily: "'DM Sans', sans-serif" }}
                 >
                   R$ {p.preco_pix.toFixed(2).replace(".", ",")}{" "}
@@ -423,19 +503,12 @@ const ProtocoloSamkhya = ({
               <Link
                 to={`/samkhya/${p.basePath}/${p.slug}`}
                 className={cn(
-                  "block text-center py-2.5 px-4 text-white font-medium text-sm transition-colors",
+                  "block text-center py-2.5 px-4 text-white font-medium text-sm transition-colors mt-auto",
                   LEAF,
                 )}
-                style={{
-                  backgroundColor: COLOR.secondary,
-                  fontFamily: "'DM Sans', sans-serif",
-                }}
-                onMouseEnter={(e) =>
-                  (e.currentTarget.style.backgroundColor = COLOR.secondaryHover)
-                }
-                onMouseLeave={(e) =>
-                  (e.currentTarget.style.backgroundColor = COLOR.secondary)
-                }
+                style={{ backgroundColor: COLOR.secondary, fontFamily: "'DM Sans', sans-serif" }}
+                onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = COLOR.secondaryHover)}
+                onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = COLOR.secondary)}
               >
                 Ver produto →
               </Link>
@@ -447,159 +520,52 @@ const ProtocoloSamkhya = ({
   );
 };
 
-// ============ SEÇÃO C — Plano 30 Dias ============
-const SemanaAccordion = ({
-  semana,
-  isOpen,
-  onToggle,
-}: {
-  semana: SemanaPlano;
-  isOpen: boolean;
-  onToggle: () => void;
-}) => {
-  const dicas = normalizarDicas(semana);
-  const grupos = dicas.reduce<Record<string, DicaPlano[]>>((acc, d) => {
-    const key = (d.categoria || "").toLowerCase();
-    if (!acc[key]) acc[key] = [];
-    acc[key].push(d);
-    return acc;
-  }, {});
+// ============ SEÇÃO 3 — Plano 30 Dias 🔒 ============
+const Plano30DiasBloqueado = () => (
+  <section className="space-y-4 pt-12">
+    <h2
+      className="font-serif font-bold text-xl md:text-2xl"
+      style={{ color: COLOR.primary, fontFamily: "'Roboto Serif', serif" }}
+    >
+      Seu Plano de 30 Dias
+    </h2>
 
-  return (
-    <div className={cn("bg-white overflow-hidden", LEAF)} style={{ border: `1px solid ${COLOR.cardBorder}` }}>
-      <button
-        onClick={onToggle}
-        className="w-full flex items-center justify-between p-4 text-left"
+    <div
+      className={cn("p-10 flex flex-col items-center text-center gap-4", LEAF)}
+      style={{ backgroundColor: COLOR.surfaceSun, border: `1px solid ${COLOR.cardBorder}` }}
+    >
+      <Lock className="w-10 h-10" style={{ color: COLOR.primary }} strokeWidth={1.5} />
+      <p
+        className="text-base font-medium max-w-md"
+        style={{ color: COLOR.primary, fontFamily: "'DM Sans', sans-serif" }}
       >
-        <div>
-          <h3
-            className="font-serif font-bold text-base md:text-lg"
-            style={{ color: COLOR.primary, fontFamily: "'Roboto Serif', serif" }}
-          >
-            Semana {semana.numero}: {semana.titulo}
-          </h3>
-          {semana.foco && (
-            <p className="text-xs" style={{ color: COLOR.textoSec }}>
-              {semana.foco}
-            </p>
-          )}
-        </div>
-        {isOpen ? (
-          <ChevronDown className="w-5 h-5 shrink-0" style={{ color: COLOR.primary }} />
-        ) : (
-          <ChevronRight className="w-5 h-5 shrink-0" style={{ color: COLOR.primary }} />
+        Este plano personalizado é exclusivo para assinantes do Portal
+      </p>
+      <p
+        className="text-[13px] max-w-md"
+        style={{ color: COLOR.textoSec, fontFamily: "'DM Sans', sans-serif" }}
+      >
+        Acompanhamento e atualização do plano mensalmente com Akasha
+      </p>
+      <a
+        href="https://www.portalayurveda.com/curso-rotinas"
+        target="_blank"
+        rel="noopener noreferrer"
+        className={cn(
+          "inline-block py-3 px-6 text-white font-medium text-sm transition-colors",
+          LEAF,
         )}
-      </button>
-
-      {isOpen && (
-        <div className="px-4 pb-4 space-y-5">
-          {Object.entries(grupos).map(([cat, items]) => {
-            const meta = CATEGORIA_META[cat] || { icon: "•", label: cat.toUpperCase(), cor: COLOR.primary };
-            return (
-              <div key={cat} className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <span>{meta.icon}</span>
-                  <span
-                    className="text-xs font-bold tracking-wider px-2 py-0.5 rounded-md text-white"
-                    style={{ backgroundColor: meta.cor }}
-                  >
-                    {meta.label}
-                  </span>
-                </div>
-                <div className="space-y-2">
-                  {items.map((d, i) => (
-                    <div
-                      key={i}
-                      className={cn("relative p-3 pr-20", LEAF_SM)}
-                      style={{
-                        backgroundColor: COLOR.surfaceSun,
-                        border: `1px solid ${COLOR.cardBorder}`,
-                      }}
-                    >
-                      {d.dificuldade && (
-                        <span
-                          className="absolute top-2 right-2 text-[10px] font-bold px-2 py-0.5 rounded-md text-white"
-                          style={{ backgroundColor: DIFICULDADE_COR[d.dificuldade] || COLOR.primary }}
-                        >
-                          {d.dificuldade}
-                        </span>
-                      )}
-                      <h4
-                        className="font-serif font-bold text-sm mb-1"
-                        style={{ color: COLOR.primary, fontFamily: "'Roboto Serif', serif" }}
-                      >
-                        {d.titulo}
-                      </h4>
-                      {d.explicacao && (
-                        <p
-                          className="text-sm leading-snug mb-1"
-                          style={{ color: COLOR.textoSec, fontFamily: "'DM Sans', sans-serif" }}
-                        >
-                          {d.explicacao}
-                        </p>
-                      )}
-                      {d.acao_pratica && (
-                        <p
-                          className="text-sm italic leading-snug"
-                          style={{ color: COLOR.texto, fontFamily: "'DM Sans', sans-serif" }}
-                        >
-                          → Como fazer: {d.acao_pratica}
-                        </p>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            );
-          })}
-          {dicas.length === 0 && (
-            <p className="text-sm text-muted-foreground">Nenhuma dica disponível para esta semana.</p>
-          )}
-        </div>
-      )}
-    </div>
-  );
-};
-
-const Plano30Dias = ({ plano, loading }: { plano: any; loading: boolean }) => {
-  const [openWeek, setOpenWeek] = useState<number>(1);
-
-  return (
-    <section className="space-y-4">
-      <h2
-        className="font-serif font-bold text-xl md:text-2xl"
-        style={{ color: COLOR.primary, fontFamily: "'Roboto Serif', serif" }}
+        style={{ backgroundColor: COLOR.secondary, fontFamily: "'DM Sans', sans-serif" }}
+        onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = COLOR.secondaryHover)}
+        onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = COLOR.secondary)}
       >
-        Seu Plano de 30 Dias
-      </h2>
+        Desbloquear por R$ 97 →
+      </a>
+    </div>
+  </section>
+);
 
-      {loading || !plano?.plano_json ? (
-        <div
-          className={cn("bg-white p-6 flex flex-col items-center gap-3 text-center", LEAF)}
-          style={{ border: `1px solid ${COLOR.cardBorder}` }}
-        >
-          <Loader2 className="w-6 h-6 animate-spin" style={{ color: COLOR.primary }} />
-          <p className="text-sm" style={{ color: COLOR.textoSec, fontFamily: "'DM Sans', sans-serif" }}>
-            Seu plano personalizado está sendo gerado. Geralmente fica pronto 1 minuto após o teste.
-          </p>
-        </div>
-      ) : (
-        <div className="space-y-3">
-          {(((plano.plano_json as Plano30Json)?.semanas || []) as SemanaPlano[]).map((s) => (
-            <SemanaAccordion
-              key={s.numero}
-              semana={s}
-              isOpen={openWeek === s.numero}
-              onToggle={() => setOpenWeek(openWeek === s.numero ? -1 : s.numero)}
-            />
-          ))}
-        </div>
-      )}
-    </section>
-  );
-};
-
-// ============ SEÇÃO D — Próximos Passos ============
+// ============ SEÇÃO 4 — Próximos Passos ============
 const ProximoPassoCard = ({
   icone,
   titulo,
@@ -619,13 +585,10 @@ const ProximoPassoCard = ({
 }) => {
   const cardInner = (
     <div
-      className={cn("bg-white p-5 flex flex-col gap-3 h-full", LEAF)}
-      style={{
-        border: `1px solid ${COLOR.cardBorder}`,
-        boxShadow: "0 1px 8px rgba(53,47,84,0.08)",
-      }}
+      className={cn("bg-white p-6 flex flex-col gap-3 h-full", LEAF)}
+      style={{ border: `1px solid ${COLOR.cardBorder}`, boxShadow: "0 1px 8px rgba(53,47,84,0.08)" }}
     >
-      <div className="text-4xl text-center">{icone}</div>
+      <div className="text-5xl text-center">{icone}</div>
       <h3
         className="font-serif font-bold text-base text-center"
         style={{ color: COLOR.primary, fontFamily: "'Roboto Serif', serif" }}
@@ -633,15 +596,15 @@ const ProximoPassoCard = ({
         {titulo}
       </h3>
       <p
-        className="text-sm text-center leading-snug flex-1"
+        className="text-[13px] text-center leading-snug flex-1"
         style={{ color: COLOR.textoSec, fontFamily: "'DM Sans', sans-serif" }}
       >
         {descricao}
       </p>
       {preco && (
         <p
-          className="font-serif font-bold text-lg text-center"
-          style={{ color: COLOR.ouro, fontFamily: "'Roboto Serif', serif" }}
+          className="font-bold text-lg text-center"
+          style={{ color: COLOR.ouro, fontFamily: "'DM Sans', sans-serif" }}
         >
           {preco}
         </p>
@@ -669,62 +632,67 @@ const ProximoPassoCard = ({
   );
 };
 
-const ProximosPassos = ({ refazerTeste }: { refazerTeste: () => void }) => {
-  return (
-    <section className="space-y-4">
-      <h2
-        className="font-serif font-bold text-xl md:text-2xl text-center"
-        style={{ color: COLOR.primary, fontFamily: "'Roboto Serif', serif" }}
-      >
-        Próximos Passos
-      </h2>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <ProximoPassoCard
-          icone="🧘"
-          titulo="Curso de Rotinas Diárias"
-          descricao="Construa hábitos ayurvédicos no dia a dia"
-          preco="R$ 99"
-          ctaLabel="Conhecer →"
-          href="https://www.portalayurveda.com/curso-rotinas"
-          externo
-        />
-        <ProximoPassoCard
-          icone="📚"
-          titulo="Curso de Alimentação Ayurvédica"
-          descricao="A base do seu tratamento"
-          preco="R$ 397"
-          ctaLabel="Conhecer →"
-          href="https://www.portalayurveda.com/promocao-alimentacao"
-          externo
-        />
-        <ProximoPassoCard
-          icone="🛍️"
-          titulo="Ver produtos Samkhya"
-          descricao="Produtos curativos personalizados"
-          ctaLabel="Ver loja →"
-          href="/samkhya"
-        />
-      </div>
+const ProximosPassos = ({ refazerTeste }: { refazerTeste: () => void }) => (
+  <section className="space-y-4 pt-12">
+    <h2
+      className="font-serif font-bold text-xl md:text-2xl text-center"
+      style={{ color: COLOR.primary, fontFamily: "'Roboto Serif', serif" }}
+    >
+      Próximos Passos
+    </h2>
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <ProximoPassoCard
+        icone="🧘"
+        titulo="Curso de Rotinas Diárias"
+        descricao="Construa hábitos ayurvédicos no dia a dia"
+        preco="R$ 99"
+        ctaLabel="Conhecer →"
+        href="https://www.portalayurveda.com/curso-rotinas"
+        externo
+      />
+      <ProximoPassoCard
+        icone="📚"
+        titulo="Curso de Alimentação Ayurvédica"
+        descricao="A base do seu tratamento"
+        preco="R$ 397"
+        ctaLabel="Conhecer →"
+        href="https://www.portalayurveda.com/promocao-alimentacao"
+        externo
+      />
+      <ProximoPassoCard
+        icone="🛍️"
+        titulo="Ver produtos Samkhya"
+        descricao="Produtos curativos personalizados"
+        ctaLabel="Ver loja →"
+        href="/samkhya"
+      />
+    </div>
 
-      <div className="pt-4 flex justify-center">
-        <Button variant="outline" onClick={refazerTeste} className="text-sm">
-          Refazer Teste
-        </Button>
-      </div>
-    </section>
-  );
-};
+    <div className="pt-4 flex justify-center">
+      <Button variant="outline" onClick={refazerTeste} className="text-sm">
+        Refazer Teste
+      </Button>
+    </div>
+  </section>
+);
 
 // ============ Componente principal ============
 interface DiagnosticoCompletoProps {
   email: string | null;
   doshaPrincipal: string;
+  doshaPrincipalCompleto: string;
   refazerTeste: () => void;
 }
 
-const DiagnosticoCompleto = ({ email, doshaPrincipal, refazerTeste }: DiagnosticoCompletoProps) => {
-  const { analise, analiseLoading, analiseTimeout, plano, planoLoading } = useAnaliseEPlano(email);
+const DiagnosticoCompleto = ({
+  email,
+  doshaPrincipal,
+  doshaPrincipalCompleto,
+  refazerTeste,
+}: DiagnosticoCompletoProps) => {
+  const { analise, analiseLoading, analiseTimeout } = useAnalise(email);
   const { data: produtos } = useProdutosPrescritos(analise);
+  const { data: glossario } = useGlossario(doshaPrincipalCompleto);
 
   if (analiseLoading) {
     return (
@@ -747,8 +715,8 @@ const DiagnosticoCompleto = ({ email, doshaPrincipal, refazerTeste }: Diagnostic
           <Loader2 className="w-6 h-6 animate-spin mx-auto mb-3" style={{ color: COLOR.primary }} />
           <p className="text-sm" style={{ color: COLOR.textoSec, fontFamily: "'DM Sans', sans-serif" }}>
             {analiseTimeout
-              ? "Seu diagnóstico completo está sendo processado. Volte em instantes."
-              : "Carregando análise clínica..."}
+              ? "Seu diagnóstico está sendo processado. Tente atualizar a página."
+              : "Akasha está preparando sua análise..."}
           </p>
         </div>
         <ProximosPassos refazerTeste={refazerTeste} />
@@ -757,10 +725,15 @@ const DiagnosticoCompleto = ({ email, doshaPrincipal, refazerTeste }: Diagnostic
   }
 
   return (
-    <div className="space-y-12 pt-12 pb-12">
-      <QuadroClinico analise={analise} doshaPrincipal={doshaPrincipal} />
+    <div className="space-y-0 pt-12 pb-12">
+      <Diagnostico
+        analise={analise}
+        glossario={glossario || null}
+        doshaPrincipal={doshaPrincipal}
+        doshaPrincipalCompleto={doshaPrincipalCompleto}
+      />
       {!!produtos?.length && <ProtocoloSamkhya analise={analise} produtos={produtos} />}
-      <Plano30Dias plano={plano} loading={planoLoading} />
+      <Plano30DiasBloqueado />
       <ProximosPassos refazerTeste={refazerTeste} />
     </div>
   );

@@ -41,4 +41,10 @@ export interface ObjetivoTratamento {
   suplementar_slug: string | null;
   frase_clinica: string | null;
   status: string | null;
+  narrativa_clinica: {
+    bloco_1_situacao?: string;
+    bloco_2_causas?: string;
+    bloco_3_sabores?: string;
+    bloco_4_proximos?: string;
+  } | null;
 }
