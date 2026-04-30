@@ -28,6 +28,7 @@ import NotFound from "./pages/NotFound";
 import Admin from "./pages/Admin";
 import AdminBlog from "./pages/AdminBlog";
 import AdminAkasha from "./pages/AdminAkasha";
+import AdminTeste from "./pages/AdminTeste";
 import AdminLoja from "./pages/AdminLoja";
 import AdminBiblioteca from "./pages/AdminBiblioteca";
 import AdminTerapeutas from "./pages/AdminTerapeutas";
@@ -111,6 +112,7 @@ const RoutedApp = () => {
               <Route path="/admin" element={<Admin />} />
               <Route path="/admin/blog" element={<AdminBlog />} />
               <Route path="/admin/akasha" element={<AdminAkasha />} />
+              <Route path="/admin/teste" element={<AdminTeste />} />
               <Route path="/admin/loja" element={<AdminLoja />} />
               <Route path="/admin/biblioteca" element={<AdminBiblioteca />} />
               <Route path="/admin/terapeutas" element={<AdminTerapeutas />} />
