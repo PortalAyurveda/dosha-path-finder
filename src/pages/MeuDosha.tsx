@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 import MetricasTab from "@/components/meudosha/MetricasTab";
 import type { InsightAyurvedico } from "@/components/meudosha/MetricasTab";
 import ArtigosTab from "@/components/meudosha/ArtigosTab";
+import DiagnosticoCompleto from "@/components/meudosha/DiagnosticoCompleto";
 import VideosTab from "@/components/meudosha/VideosTab";
 import AkashaTab from "@/components/meudosha/AkashaTab";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
@@ -500,22 +501,8 @@ const MeuDosha = () => {
   } : null;
   const registroUuid = registroRaw?.id || null;
 
-  // ── Glossário (portal_glossario) ──
-  const { data: glossario } = useQuery({
-    queryKey: ['meudosha-glossario', result?.doshaprincipal],
-    queryFn: async () => {
-      const { data } = await supabase
-        .from('portal_glossario')
-        .select('*')
-        .eq('doshanome', result!.doshaprincipal!)
-        .maybeSingle();
-      return (data as unknown as PortalGlossario) || null;
-    },
-    enabled: !!result?.doshaprincipal,
-    staleTime: CACHE_STALE,
-    gcTime: CACHE_GC,
-    refetchOnWindowFocus: false,
-  });
+  // (Glossário antigo removido — substituído por DiagnosticoCompleto)
+
 
   // ── Insights RPC ──
   const { data: insights, isLoading: insightsLoading } = useQuery({
@@ -764,48 +751,27 @@ const MeuDosha = () => {
               )}
             </div>
 
-            {/* Glossary */}
-            {glossario && (
-              <div className="space-y-4">
-                <h2 className="font-serif font-bold text-foreground text-xl text-center">
-                  Sobre o Dosha {glossario.doshaNome || glossario.Title}
-                </h2>
-                <ExpandableSection title="O que é?" content={glossario.oque} icon="🧬" />
-                <ThreeColumnTable atributos={glossario.atributos} equilibrio={glossario.equilibrio} desequilibrio={glossario.desequilibrio} />
-                <ExpandableSection title="Principais Causas" content={glossario.principaisCausas} icon="⚡" />
-                <ExpandableSection title="Principais Enfermidades" content={glossario.principaisDoencas} icon="🩺" />
-                <ExpandableSection title="Caminhos de Equilíbrio" content={glossario.caminhosEquilibrio} icon="🌿" />
-                <ExpandableSection title="Alimentos a Priorizar" content={glossario.alimentosPriorizar} icon="✅" />
-                <ExpandableSection title="Alimentos a Evitar" content={glossario.alimentosEvitar} icon="🚫" />
-              </div>
-            )}
-
-            {/* Links */}
-            <div className="space-y-3 pb-8">
-              <h2 className="font-serif font-bold text-foreground text-lg text-center">O que deseja fazer?</h2>
-              <Button
-                variant="outline"
-                className="w-full"
-                onClick={() => {
-                  if (result) {
-                    localStorage.setItem('dosha_test_info', JSON.stringify({
-                      nome: result.nome || '',
-                      idade: result.idade?.toString() || '',
-                      nivel: result.conhecimentoAyurveda || 'Iniciante',
-                      email: result.email || '',
-                      altura: result.altura || '',
-                      peso: result.peso || '',
-                      estado: result.estado || '',
-                      cidade: result.cidade || '',
-                      paisCidade: result.pais || '',
-                    }));
-                  }
-                  window.location.href = '/teste-de-dosha';
-                }}
-              >
-                Refazer Teste
-              </Button>
-            </div>
+            {/* ===== Diagnóstico clínico completo (substitui glossário + Refazer Teste) ===== */}
+            <DiagnosticoCompleto
+              email={result.email}
+              doshaPrincipal={primaryDosha}
+              refazerTeste={() => {
+                if (result) {
+                  localStorage.setItem('dosha_test_info', JSON.stringify({
+                    nome: result.nome || '',
+                    idade: result.idade?.toString() || '',
+                    nivel: result.conhecimentoAyurveda || 'Iniciante',
+                    email: result.email || '',
+                    altura: result.altura || '',
+                    peso: result.peso || '',
+                    estado: result.estado || '',
+                    cidade: result.cidade || '',
+                    paisCidade: result.pais || '',
+                  }));
+                }
+                window.location.href = '/teste-de-dosha';
+              }}
+            />
           </TabsContent>
 
           {/* ===== TAB: MÉTRICAS ===== */}
