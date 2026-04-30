@@ -1230,6 +1230,7 @@ export type Database = {
       }
       portal_glossario: {
         Row: {
+          alertas_cotidianos: Json | null
           alimentosEvitar: string | null
           alimentosPriorizar: string | null
           atributos: string | null
@@ -1239,15 +1240,20 @@ export type Database = {
           dicasGeraisNaoFazer: string | null
           doshanome: string | null
           equilibrio: string | null
+          frase_clinica: string | null
+          habitos_diarios: Json | null
           id: number
+          kit_recomendado_slug: string | null
           oque: string | null
           principaiscausas: string | null
           principaisDoencas: string | null
+          produto_primario_slug: string | null
+          resumo_curto: string | null
           rotinasEquilibrar: string | null
           rotinasInadequadas: string | null
-          Title: string | null
         }
         Insert: {
+          alertas_cotidianos?: Json | null
           alimentosEvitar?: string | null
           alimentosPriorizar?: string | null
           atributos?: string | null
@@ -1257,15 +1263,20 @@ export type Database = {
           dicasGeraisNaoFazer?: string | null
           doshanome?: string | null
           equilibrio?: string | null
+          frase_clinica?: string | null
+          habitos_diarios?: Json | null
           id: number
+          kit_recomendado_slug?: string | null
           oque?: string | null
           principaiscausas?: string | null
           principaisDoencas?: string | null
+          produto_primario_slug?: string | null
+          resumo_curto?: string | null
           rotinasEquilibrar?: string | null
           rotinasInadequadas?: string | null
-          Title?: string | null
         }
         Update: {
+          alertas_cotidianos?: Json | null
           alimentosEvitar?: string | null
           alimentosPriorizar?: string | null
           atributos?: string | null
@@ -1275,13 +1286,17 @@ export type Database = {
           dicasGeraisNaoFazer?: string | null
           doshanome?: string | null
           equilibrio?: string | null
+          frase_clinica?: string | null
+          habitos_diarios?: Json | null
           id?: number
+          kit_recomendado_slug?: string | null
           oque?: string | null
           principaiscausas?: string | null
           principaisDoencas?: string | null
+          produto_primario_slug?: string | null
+          resumo_curto?: string | null
           rotinasEquilibrar?: string | null
           rotinasInadequadas?: string | null
-          Title?: string | null
         }
         Relationships: []
       }
@@ -1975,9 +1990,17 @@ export type Database = {
       }
       atualizar_estatisticas_globais: { Args: never; Returns: undefined }
       bytea_to_text: { Args: { data: string }; Returns: string }
+      calc_dosha_status: {
+        Args: { dosha: string; score: number }
+        Returns: string
+      }
       gerar_insights_ayurvedicos: {
         Args: { p_registro_id: string }
         Returns: Json
+      }
+      get_dosha_principal: {
+        Args: { k: number; p: number; v: number }
+        Returns: string
       }
       http: {
         Args: { request: Database["public"]["CompositeTypes"]["http_request"] }
