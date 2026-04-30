@@ -765,48 +765,27 @@ const MeuDosha = () => {
               )}
             </div>
 
-            {/* Glossary */}
-            {glossario && (
-              <div className="space-y-4">
-                <h2 className="font-serif font-bold text-foreground text-xl text-center">
-                  Sobre o Dosha {glossario.doshaNome || glossario.Title}
-                </h2>
-                <ExpandableSection title="O que é?" content={glossario.oque} icon="🧬" />
-                <ThreeColumnTable atributos={glossario.atributos} equilibrio={glossario.equilibrio} desequilibrio={glossario.desequilibrio} />
-                <ExpandableSection title="Principais Causas" content={glossario.principaisCausas} icon="⚡" />
-                <ExpandableSection title="Principais Enfermidades" content={glossario.principaisDoencas} icon="🩺" />
-                <ExpandableSection title="Caminhos de Equilíbrio" content={glossario.caminhosEquilibrio} icon="🌿" />
-                <ExpandableSection title="Alimentos a Priorizar" content={glossario.alimentosPriorizar} icon="✅" />
-                <ExpandableSection title="Alimentos a Evitar" content={glossario.alimentosEvitar} icon="🚫" />
-              </div>
-            )}
-
-            {/* Links */}
-            <div className="space-y-3 pb-8">
-              <h2 className="font-serif font-bold text-foreground text-lg text-center">O que deseja fazer?</h2>
-              <Button
-                variant="outline"
-                className="w-full"
-                onClick={() => {
-                  if (result) {
-                    localStorage.setItem('dosha_test_info', JSON.stringify({
-                      nome: result.nome || '',
-                      idade: result.idade?.toString() || '',
-                      nivel: result.conhecimentoAyurveda || 'Iniciante',
-                      email: result.email || '',
-                      altura: result.altura || '',
-                      peso: result.peso || '',
-                      estado: result.estado || '',
-                      cidade: result.cidade || '',
-                      paisCidade: result.pais || '',
-                    }));
-                  }
-                  window.location.href = '/teste-de-dosha';
-                }}
-              >
-                Refazer Teste
-              </Button>
-            </div>
+            {/* ===== Diagnóstico clínico completo (substitui glossário + Refazer Teste) ===== */}
+            <DiagnosticoCompleto
+              email={result.email}
+              doshaPrincipal={primaryDosha}
+              refazerTeste={() => {
+                if (result) {
+                  localStorage.setItem('dosha_test_info', JSON.stringify({
+                    nome: result.nome || '',
+                    idade: result.idade?.toString() || '',
+                    nivel: result.conhecimentoAyurveda || 'Iniciante',
+                    email: result.email || '',
+                    altura: result.altura || '',
+                    peso: result.peso || '',
+                    estado: result.estado || '',
+                    cidade: result.cidade || '',
+                    paisCidade: result.pais || '',
+                  }));
+                }
+                window.location.href = '/teste-de-dosha';
+              }}
+            />
           </TabsContent>
 
           {/* ===== TAB: MÉTRICAS ===== */}
