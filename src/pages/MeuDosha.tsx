@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 import MetricasTab from "@/components/meudosha/MetricasTab";
 import type { InsightAyurvedico } from "@/components/meudosha/MetricasTab";
 import ArtigosTab from "@/components/meudosha/ArtigosTab";
+import DiagnosticoCompleto from "@/components/meudosha/DiagnosticoCompleto";
 import VideosTab from "@/components/meudosha/VideosTab";
 import AkashaTab from "@/components/meudosha/AkashaTab";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
