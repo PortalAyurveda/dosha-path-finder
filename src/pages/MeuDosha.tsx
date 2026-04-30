@@ -715,6 +715,7 @@ const MeuDosha = () => {
             <DiagnosticoCompleto
               email={result.email}
               doshaPrincipal={primaryDosha}
+              doshaPrincipalCompleto={result.doshaprincipal || primaryDosha}
               refazerTeste={() => {
                 if (result) {
                   localStorage.setItem('dosha_test_info', JSON.stringify({
