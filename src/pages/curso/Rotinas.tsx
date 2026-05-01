@@ -57,15 +57,15 @@ const LeafButton = ({
 const Hero = () => (
   <section
     className="relative w-full py-14 md:py-20 overflow-hidden"
-    style={{ background: COLORS.purple }}
+    style={{ background: COLORS.sand }}
   >
     <div
-      className="absolute -top-24 -right-24 w-80 h-80 rounded-full opacity-10 pointer-events-none"
+      className="absolute -top-24 -right-24 w-80 h-80 rounded-full opacity-30 pointer-events-none"
       style={{ background: COLORS.yellow }}
       aria-hidden
     />
     <div
-      className="absolute -bottom-24 -left-24 w-72 h-72 rounded-full opacity-10 pointer-events-none"
+      className="absolute -bottom-24 -left-24 w-72 h-72 rounded-full opacity-20 pointer-events-none"
       style={{ background: COLORS.yellow }}
       aria-hidden
     />
@@ -89,7 +89,8 @@ const Hero = () => (
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.1 }}
-        className="font-serif italic font-bold text-[28px] md:text-[44px] leading-[1.15] mb-5 text-white"
+        className="font-serif italic font-bold text-[28px] md:text-[44px] leading-[1.15] mb-5"
+        style={{ color: COLORS.night }}
       >
         Tem hora pra tudo.
         <br />
@@ -101,7 +102,7 @@ const Hero = () => (
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.2 }}
         className="text-base md:text-lg max-w-2xl mx-auto mb-7 leading-relaxed space-y-4"
-        style={{ color: "rgba(255,255,255,0.85)" }}
+        style={{ color: COLORS.graphite }}
       >
         <p>
           Você acabou de descobrir seu Dosha. O próximo passo é colocar isso pra
@@ -124,7 +125,7 @@ const Hero = () => (
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5, delay: 0.3 }}
         className="text-xs md:text-sm font-bold tracking-wide px-4 py-2 rounded-full inline-block mb-8"
-        style={{ background: `${COLORS.yellow}25`, color: COLORS.yellow }}
+        style={{ background: COLORS.night, color: COLORS.yellow }}
       >
         Acesso Imediato e Vitalício | 100% Online
       </motion.p>
@@ -743,8 +744,8 @@ const BoxTdah = () => (
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-50px" }}
         transition={{ duration: 0.5 }}
-        className="relative p-7 md:p-9 rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm shadow-lg"
-        style={{ background: COLORS.purple }}
+        className="relative p-7 md:p-9 rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm shadow-md border-l-4 bg-white"
+        style={{ borderColor: COLORS.yellow }}
       >
         <span
           className="absolute -top-4 left-5 font-serif italic font-bold leading-none select-none"
@@ -753,7 +754,7 @@ const BoxTdah = () => (
         >
           “
         </span>
-        <div className="text-sm md:text-base leading-relaxed text-white/90 space-y-4 pt-2">
+        <div className="text-sm md:text-base leading-relaxed space-y-4 pt-2" style={{ color: COLORS.graphite }}>
           <p>
             Durante anos, busquei entender por que minha mente e meu corpo
             pareciam trabalhar contra mim — mesmo quando eu me esforçava.
@@ -766,7 +767,7 @@ const BoxTdah = () => (
             minha saúde, meu foco e minha vitalidade. Transformei essa
             descoberta em método.
           </p>
-          <p className="font-serif italic font-bold text-base md:text-lg" style={{ color: COLORS.yellow }}>
+          <p className="font-serif italic font-bold text-base md:text-lg" style={{ color: COLORS.night }}>
             Se funcionou para mim, funciona para você.
           </p>
         </div>
@@ -865,14 +866,25 @@ const Faq = () => {
 
 // ---------------- FINAL CTA ----------------
 const FinalCta = () => (
-  <section className="py-14 md:py-20" style={{ background: COLORS.purple }}>
-    <div className="max-w-3xl mx-auto px-6 text-center text-white">
+  <section className="relative py-14 md:py-20 overflow-hidden" style={{ background: COLORS.sand }}>
+    <div
+      className="absolute -top-24 -left-24 w-72 h-72 rounded-full opacity-25 pointer-events-none"
+      style={{ background: COLORS.yellow }}
+      aria-hidden
+    />
+    <div
+      className="absolute -bottom-24 -right-24 w-80 h-80 rounded-full opacity-20 pointer-events-none"
+      style={{ background: COLORS.yellow }}
+      aria-hidden
+    />
+    <div className="relative max-w-3xl mx-auto px-6 text-center">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-100px" }}
         transition={{ duration: 0.5 }}
         className="text-base md:text-lg leading-relaxed space-y-4 mb-10"
+        style={{ color: COLORS.graphite }}
       >
         <p>
           Você já percebeu que copiar a rotina dos outros não funciona.
@@ -881,7 +893,7 @@ const FinalCta = () => (
           Você continuará lutando contra o próprio corpo até entender como ele
           foi projetado para operar.
         </p>
-        <p className="font-serif italic font-bold text-xl md:text-2xl pt-2" style={{ color: COLORS.yellow }}>
+        <p className="font-serif italic font-bold text-xl md:text-2xl pt-2" style={{ color: COLORS.night }}>
           Agora é a hora de organizar a fundação.
         </p>
         <p>
