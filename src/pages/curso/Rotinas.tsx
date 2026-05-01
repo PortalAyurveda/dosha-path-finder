@@ -7,7 +7,6 @@ import {
   Sprout,
   Compass,
   Zap,
-  AlertCircle,
   ChevronDown,
   Check,
   Bot,
@@ -15,6 +14,8 @@ import {
   User,
   Sun,
   Moon,
+  Star,
+  Cloud,
   Sunrise,
   Wind,
   Heart,
@@ -25,32 +26,40 @@ import {
 
 // ============================================================
 // /cursos/rotinas — Curso Rotinas Diárias Ayurvédicas
-// Design system: usa tokens semânticos (primary, secondary,
-// accent, surface-sun, bg-soft). Tema dia/noite/sol/lua.
+// Paleta exata:
+//   Creme:        #fff4e0
+//   Azul marinho: #1a2347
+//   Amarelo logo: #f2cb05
+//   Salmão (CTA): #ff7676
 // ============================================================
 
 const HOTMART = "https://pay.hotmart.com/F101182057Y";
 const LOGO =
   "https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/logo-rotinas.png";
 
+const CREAM = "#fff4e0";
+const NAVY = "#1a2347";
+const YELLOW = "#f2cb05";
+const SALMON = "#ff7676";
+
 // ---------------- BOTÃO BASE (Forma de Folha) ----------------
 const LeafCTA = ({
   children,
   href = HOTMART,
-  variant = "secondary",
+  variant = "salmon",
   className = "",
 }: {
   children: React.ReactNode;
   href?: string;
-  variant?: "secondary" | "inverted";
+  variant?: "salmon" | "yellow";
   className?: string;
 }) => {
   const base =
     "inline-flex items-center justify-center gap-2.5 font-bold text-xs md:text-sm uppercase tracking-wide px-8 md:px-12 py-4 shadow-md hover:shadow-xl transition-all hover:scale-[1.03] rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm";
   const styles =
-    variant === "inverted"
-      ? "bg-accent text-primary hover:bg-accent/90"
-      : "bg-secondary text-secondary-foreground hover:bg-secondary/90";
+    variant === "yellow"
+      ? "bg-[#f2cb05] text-[#1a2347] hover:bg-[#f2cb05]/90"
+      : "bg-[#ff7676] text-white hover:bg-[#ff7676]/90";
   return (
     <a
       href={href}
@@ -63,50 +72,21 @@ const LeafCTA = ({
   );
 };
 
-// ---------------- ÍCONE EM CÍRCULO SUTIL ----------------
-const IconBubble = ({
-  Icon,
-  tone = "secondary",
-  size = "md",
-}: {
-  Icon: LucideIcon;
-  tone?: "primary" | "secondary" | "white";
-  size?: "md" | "lg";
-}) => {
-  const dim = size === "lg" ? "w-14 h-14" : "w-12 h-12";
-  const inner = size === "lg" ? "w-7 h-7" : "w-6 h-6";
-  const bg =
-    tone === "white"
-      ? "bg-white"
-      : tone === "primary"
-        ? "bg-white"
-        : "bg-white";
-  const color =
-    tone === "primary"
-      ? "text-primary"
-      : tone === "white"
-        ? "text-primary"
-        : "text-secondary";
-  return (
-    <span
-      className={`shrink-0 ${dim} rounded-full ${bg} shadow-sm flex items-center justify-center`}
-    >
-      <Icon className={`${inner} ${color}`} strokeWidth={2} />
-    </span>
-  );
-};
-
 // ---------------- SEÇÃO 1: HERO ----------------
 const Hero = () => (
-  <section className="relative w-full py-14 md:py-20 overflow-hidden bg-accent">
-    {/* Sol gigante de fundo, sutil */}
+  <section className="relative w-full py-16 md:py-24 overflow-hidden bg-[#fff4e0]">
     <Sun
-      className="absolute -top-16 -right-16 w-[420px] h-[420px] text-primary opacity-[0.05] pointer-events-none"
+      className="absolute -top-12 -right-10 w-72 h-72 md:w-96 md:h-96 text-[#ff7676] opacity-20 pointer-events-none"
+      strokeWidth={1}
+      aria-hidden
+    />
+    <Cloud
+      className="absolute top-10 left-6 w-32 h-32 md:w-40 md:h-40 text-[#1a2347] opacity-10 pointer-events-none"
       strokeWidth={1}
       aria-hidden
     />
     <Sunrise
-      className="absolute -bottom-12 -left-12 w-72 h-72 text-primary opacity-[0.06] pointer-events-none"
+      className="absolute -bottom-10 -left-10 w-64 h-64 text-[#1a2347] opacity-[0.06] pointer-events-none"
       strokeWidth={1}
       aria-hidden
     />
@@ -116,7 +96,7 @@ const Hero = () => (
         initial={{ opacity: 0, scale: 0.92 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.6 }}
-        className="flex justify-center mb-6"
+        className="flex justify-center mb-8"
       >
         <img
           src={LOGO}
@@ -130,7 +110,7 @@ const Hero = () => (
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.1 }}
-        className="font-serif italic font-bold text-[28px] md:text-[44px] leading-[1.15] mb-5 text-primary"
+        className="font-serif italic font-bold text-[28px] md:text-[44px] leading-[1.15] mb-6 text-[#1a2347]"
       >
         Tem hora pra tudo.
         <br />
@@ -141,7 +121,7 @@ const Hero = () => (
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.2 }}
-        className="text-base md:text-lg max-w-2xl mx-auto mb-7 leading-relaxed space-y-4 text-primary/85"
+        className="text-base md:text-lg max-w-2xl mx-auto mb-8 leading-relaxed space-y-4 text-[#1a2347]/80"
       >
         <p>
           Você acabou de descobrir seu Dosha. O próximo passo é colocar isso pra
@@ -151,18 +131,13 @@ const Hero = () => (
           Até a dieta certa dá errado se o seu relógio biológico não está
           alinhado. Tudo começa com a rotina certa para o seu Dosha.
         </p>
-        <p>
-          Os pilares da saúde exigem horários precisos. Yoga, exercício,
-          acordar, dormir, respirar, se alimentar. Tudo tem seu jeito certo e
-          sua hora exata.
-        </p>
       </motion.div>
 
       <motion.p
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5, delay: 0.3 }}
-        className="text-xs md:text-sm font-bold tracking-wide px-4 py-2 rounded-full inline-block mb-8 bg-primary text-accent"
+        className="text-xs md:text-sm font-bold tracking-wide px-4 py-2 rounded-full inline-block mb-10 bg-[#1a2347] text-[#f2cb05]"
       >
         Acesso Imediato e Vitalício | 100% Online
       </motion.p>
@@ -203,19 +178,19 @@ const PARA_QUEM = [
 ];
 
 const ParaQuem = () => (
-  <section className="bg-surface-sun py-12 md:py-16">
+  <section className="bg-white py-16 md:py-24">
     <div className="max-w-4xl mx-auto px-6">
       <motion.h2
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-100px" }}
         transition={{ duration: 0.5 }}
-        className="font-serif italic font-bold text-2xl md:text-3xl mb-10 text-center text-primary"
+        className="font-serif italic font-bold text-2xl md:text-3xl mb-12 text-center text-[#1a2347]"
       >
         Para Quem É Esta Jornada
       </motion.h2>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         {PARA_QUEM.map((item, i) => {
           const Icon = item.icon;
           return (
@@ -225,14 +200,16 @@ const ParaQuem = () => (
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-50px" }}
               transition={{ duration: 0.4, delay: (i % 2) * 0.06 }}
-              className="flex items-start gap-4 p-5 bg-white shadow-sm hover:shadow-md transition-shadow rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm"
+              className="flex items-start gap-4 p-6 bg-[#fff4e0] border border-[#1a2347]/10 hover:border-[#f2cb05] transition-colors rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm"
             >
-              <IconBubble Icon={Icon} tone="secondary" />
+              <span className="shrink-0 w-12 h-12 rounded-full bg-white flex items-center justify-center shadow-sm">
+                <Icon className="w-6 h-6 text-[#ff7676]" strokeWidth={2} />
+              </span>
               <div>
-                <h3 className="font-serif font-bold text-base mb-1 text-primary">
+                <h3 className="font-serif font-bold text-base md:text-lg mb-1.5 text-[#1a2347]">
                   {item.title}
                 </h3>
-                <p className="text-sm leading-relaxed text-primary/75">
+                <p className="text-sm leading-relaxed text-[#1a2347]/80">
                   {item.text}
                 </p>
               </div>
@@ -244,35 +221,28 @@ const ParaQuem = () => (
   </section>
 );
 
+// Util: marca-texto amarelo
+const Mark = ({ children }: { children: React.ReactNode }) => (
+  <span
+    className="px-1 font-semibold"
+    style={{ background: "rgba(242,203,5,0.4)", color: NAVY }}
+  >
+    {children}
+  </span>
+);
+
 // ---------------- SEÇÃO 3: PROBLEMA ----------------
 const Problema = () => (
-  <section className="relative py-14 md:py-18 bg-secondary overflow-hidden">
-    <Clock
-      className="absolute -top-10 -right-10 w-72 h-72 text-white opacity-[0.08] pointer-events-none"
-      strokeWidth={1}
-      aria-hidden
-    />
-    <div className="relative max-w-2xl mx-auto px-6">
-      <motion.div
-        initial={{ opacity: 0, scale: 0.85 }}
-        whileInView={{ opacity: 1, scale: 1 }}
-        viewport={{ once: true, margin: "-100px" }}
-        transition={{ duration: 0.5 }}
-        className="flex justify-center mb-5"
-      >
-        <span className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-white shadow-sm">
-          <AlertCircle className="w-7 h-7 text-secondary" strokeWidth={2} />
-        </span>
-      </motion.div>
-
+  <section className="py-16 md:py-24 bg-[#fff4e0]">
+    <div className="max-w-2xl mx-auto px-6">
       <motion.h2
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-100px" }}
         transition={{ duration: 0.5 }}
-        className="font-serif italic font-bold text-2xl md:text-3xl mb-6 text-center text-white"
+        className="font-serif italic font-bold text-2xl md:text-3xl mb-8 text-center text-[#1a2347]"
       >
-        O Problema: Ação na Hora Errada
+        O Problema: <Mark>Ação na Hora Errada</Mark>
       </motion.h2>
 
       <motion.div
@@ -280,17 +250,17 @@ const Problema = () => (
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-100px" }}
         transition={{ duration: 0.5, delay: 0.1 }}
-        className="text-sm md:text-base leading-relaxed space-y-4 text-white/95"
+        className="text-base md:text-lg leading-relaxed space-y-5 text-[#1a2347]/80"
       >
         <p>
-          Você tenta meditar com a mente fervendo. Faz treinos pesados à noite e
-          perde o sono. Toma o remédio certo na hora errada.
+          Você tenta <Mark>meditar com a mente fervendo</Mark>. Faz treinos
+          pesados à noite e perde o sono. Toma o remédio certo na hora errada.
         </p>
         <p>
-          Fazer a coisa certa no momento errado desgasta o corpo e queima a
-          vitalidade.
+          Fazer a coisa certa no momento errado{" "}
+          <Mark>desgasta o corpo</Mark> e queima a vitalidade.
         </p>
-        <p className="font-serif italic font-bold text-base md:text-lg text-white">
+        <p className="font-serif italic font-bold text-lg md:text-xl text-[#1a2347] pt-4">
           O problema não é falta de esforço. É lutar contra a própria biologia.
         </p>
       </motion.div>
@@ -299,37 +269,71 @@ const Problema = () => (
 );
 
 // ---------------- SEÇÃO 4: SOLUÇÃO ----------------
+const SOLUCAO_BENEFITS = [
+  {
+    icon: Compass,
+    title: "Sincronia",
+    text: "Alinhe suas ações com as forças que regem cada hora do dia.",
+  },
+  {
+    icon: Leaf,
+    title: "Satmia",
+    text: "Adaptabilidade gradual e realista — sem rigidez, sem prisão de planilhas.",
+  },
+  {
+    icon: Zap,
+    title: "Automatismo",
+    text: "Energia, foco e boa digestão tornam-se naturais no seu dia.",
+  },
+];
+
 const Solucao = () => (
-  <section className="py-12 md:py-16 bg-bg-soft">
+  <section className="py-16 md:py-24 bg-white">
     <div className="max-w-3xl mx-auto px-6">
       <motion.h2
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-100px" }}
         transition={{ duration: 0.5 }}
-        className="font-serif italic font-bold text-2xl md:text-3xl mb-8 text-center text-primary"
+        className="font-serif italic font-bold text-2xl md:text-3xl mb-4 text-center text-[#1a2347]"
       >
         A Solução: Sincronia e Adaptabilidade
       </motion.h2>
 
-      <div className="text-sm md:text-base leading-relaxed space-y-4 mb-8 text-primary/85">
-        <p>
-          A solução não é uma <span className="bg-accent/30 px-1">prisão de planilhas</span>.
-          É a compreensão mecânica do tempo.
-        </p>
-        <p>
-          O segredo é o conceito ayurvédico de{" "}
-          <span className="bg-accent/30 px-1 font-bold">Satmia</span> —
-          adaptabilidade. Não é rigidez. É mudança gradual e realista que gera
-          resultados duradouros.
-        </p>
-        <p>
-          Ao alinhar suas ações com as forças que regem cada hora do dia, a
-          manutenção da <span className="bg-accent/30 px-1">energia</span>, do{" "}
-          <span className="bg-accent/30 px-1">foco</span> e da{" "}
-          <span className="bg-accent/30 px-1">boa digestão</span> tornam-se
-          automáticas.
-        </p>
+      <p className="text-base md:text-lg text-center leading-relaxed mb-12 max-w-2xl mx-auto text-[#1a2347]/80">
+        A solução não é controle rígido. É a compreensão mecânica do tempo —
+        e o conceito ayurvédico de <Mark>Satmia</Mark>, a adaptação inteligente.
+      </p>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {SOLUCAO_BENEFITS.map((item, i) => {
+          const Icon = item.icon;
+          return (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 15 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ duration: 0.4, delay: i * 0.08 }}
+              className="text-center px-4"
+            >
+              <div className="relative inline-flex items-center justify-center mb-4">
+                <Icon className="w-10 h-10 text-[#1a2347]" strokeWidth={1.5} />
+                <span
+                  className="absolute -top-1 -right-1 w-3 h-3 rounded-full"
+                  style={{ background: YELLOW }}
+                  aria-hidden
+                />
+              </div>
+              <h3 className="font-serif font-bold text-lg mb-2 text-[#1a2347]">
+                {item.title}
+              </h3>
+              <p className="text-sm leading-relaxed text-[#1a2347]/75">
+                {item.text}
+              </p>
+            </motion.div>
+          );
+        })}
       </div>
 
       <motion.p
@@ -337,7 +341,7 @@ const Solucao = () => (
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-50px" }}
         transition={{ duration: 0.5 }}
-        className="font-serif italic font-bold text-lg md:text-xl text-center pt-6 border-t border-accent/40 text-primary"
+        className="font-serif italic font-bold text-lg md:text-xl text-center pt-12 mt-12 border-t border-[#1a2347]/10 text-[#1a2347]"
       >
         Não é só assistir aulas. É aplicar pequenos ajustes no mesmo dia.
       </motion.p>
@@ -351,19 +355,19 @@ type Aula = { title: string; description: string; icon: LucideIcon };
 const BLOCO_1: Aula[] = [
   {
     icon: Clock,
-    title: "Aula 1 | Como Criar Rotinas Diárias Ayurvédicas",
+    title: "Como Criar Rotinas Diárias Ayurvédicas",
     description:
       "Estratégias práticas para acordar, meditar e comer no momento certo. O relógio biológico não é rígido — é inteligente.",
   },
   {
     icon: Compass,
-    title: "Aula 2 | Equilibrar Doshas na Vida Real",
+    title: "Equilibrar Doshas na Vida Real",
     description:
       "Como Vata, Pitta e Kapha se manifestam nas suas necessidades diárias. Os canais de movimento (Srotas) e a importância dos estímulos matinais.",
   },
   {
     icon: Sun,
-    title: "Aula 8 | O Guia Completo da Rotina Diária",
+    title: "O Guia Completo da Rotina Diária",
     description:
       "A influência matemática dos horários sobre os Doshas. Como estruturar manhã, almoço, tarde e noite. Dormir entre 22h30 e 5h00 para máxima regeneração celular.",
   },
@@ -372,31 +376,31 @@ const BLOCO_1: Aula[] = [
 const BLOCO_2: Aula[] = [
   {
     icon: Moon,
-    title: "Aula 3 | As Três Fontes de Restauração",
+    title: "As Três Fontes de Restauração",
     description:
       "Sono, nutrição e respiração — os três pilares que restauram o corpo. Ajustes finos para cada Dosha.",
   },
   {
     icon: Heart,
-    title: "Aula 4 | Como Meditar em 3 Estágios",
+    title: "Como Meditar em 3 Estágios",
     description:
       "Técnica de meditação em 3 etapas: controle da mente, observação do meio, expansão da consciência.",
   },
   {
     icon: Leaf,
-    title: "Aula 5 | Qual Tipo de Yoga é Ideal para Seu Dosha",
+    title: "Qual Tipo de Yoga é Ideal para Seu Dosha",
     description:
       "Yoga Nidra, Ashtanga, Hatha — cada um serve para um Dosha específico. A escolha certa muda completamente o resultado.",
   },
   {
     icon: Sprout,
-    title: "Aula 6 | Rotinas de Meditação e Respiração por Dosha",
+    title: "Rotinas de Meditação e Respiração por Dosha",
     description:
       "Guia tático do que fazer — e do que potencializar — para acalmar Vata, esfriar Pitta e ativar Kapha.",
   },
   {
     icon: Wind,
-    title: "Aula 7 | Como Respirar Corretamente",
+    title: "Como Respirar Corretamente",
     description:
       "Mecânica respiratória profunda. Diafragma, capacidade pulmonar total e respiração nasal. O Pranayama Ujjayi no dia a dia.",
   },
@@ -405,19 +409,19 @@ const BLOCO_2: Aula[] = [
 const BLOCO_3: Aula[] = [
   {
     icon: Wind,
-    title: "Aula 9 | Prática para Vata",
+    title: "Prática para Vata",
     description:
       "Aterramento, alívio de inseguranças e direcionamento do Prana. Técnica para indução de sono profundo.",
   },
   {
     icon: Sun,
-    title: "Aula 10 | Prática para Pitta",
+    title: "Prática para Pitta",
     description:
       "Som Bhramari e visualização de cores frias para baixar a temperatura mental e liberar o estresse acumulado.",
   },
   {
     icon: Zap,
-    title: "Aula 11 | Prática para Kapha",
+    title: "Prática para Kapha",
     description:
       "Técnicas respiratórias para aumentar termogênese e ativar o sistema digestivo. 12 repetições de respiração ativadora.",
   },
@@ -441,25 +445,27 @@ const AulaItem = ({
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-40px" }}
       transition={{ duration: 0.35 }}
-      className="bg-white shadow-sm rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm overflow-hidden"
+      className="bg-white shadow-sm rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm overflow-hidden border border-[#1a2347]/10"
     >
       <button
         onClick={onToggle}
         className="w-full flex items-center gap-3 p-4 md:p-5 text-left"
         aria-expanded={isOpen}
       >
-        <span className="shrink-0 inline-flex items-center justify-center px-3 py-1 rounded-full bg-accent text-primary font-bold text-xs">
+        <span
+          className="shrink-0 inline-flex items-center justify-center w-9 h-9 rounded-full font-bold text-sm"
+          style={{ background: YELLOW, color: NAVY }}
+        >
           {String(number).padStart(2, "0")}
         </span>
-        <span className="shrink-0 w-9 h-9 rounded-full bg-surface-sun flex items-center justify-center">
-          <Icon className="w-5 h-5 text-secondary" strokeWidth={2} />
-        </span>
-        <h3 className="flex-1 font-serif font-bold text-sm md:text-base leading-snug text-primary">
-          {aula.title}
+        <Icon className="shrink-0 w-5 h-5 text-[#1a2347]/60" strokeWidth={2} />
+        <h3 className="flex-1 font-serif font-bold text-sm md:text-base leading-snug text-[#1a2347]">
+          Aula {number} | {aula.title}
         </h3>
         <ChevronDown
-          className="shrink-0 h-4 w-4 text-primary/50 transition-transform duration-300"
+          className="shrink-0 h-4 w-4 text-[#f2cb05] transition-transform duration-300"
           style={{ transform: isOpen ? "rotate(180deg)" : "rotate(0deg)" }}
+          strokeWidth={3}
         />
       </button>
 
@@ -472,7 +478,7 @@ const AulaItem = ({
             transition={{ duration: 0.25, ease: "easeInOut" }}
             className="overflow-hidden"
           >
-            <p className="px-4 md:px-5 pb-5 text-sm md:text-base leading-relaxed text-primary/75">
+            <p className="px-4 md:px-5 pb-5 text-sm md:text-base leading-relaxed text-[#1a2347]/80">
               {aula.description}
             </p>
           </motion.div>
@@ -483,8 +489,8 @@ const AulaItem = ({
 };
 
 const BlocoTitle = ({ children }: { children: React.ReactNode }) => (
-  <div className="pl-4 py-2 mb-5 border-l-4 border-accent">
-    <p className="font-serif italic font-bold text-lg md:text-xl text-primary">
+  <div className="pl-4 py-2 mb-5 border-l-4" style={{ borderColor: YELLOW }}>
+    <p className="font-serif italic font-bold text-lg md:text-xl text-[#1a2347]">
       {children}
     </p>
   </div>
@@ -512,19 +518,19 @@ const Programa = () => {
   );
 
   return (
-    <section className="py-12 md:py-16 bg-surface-sun">
+    <section className="py-16 md:py-24 bg-[#fff4e0]">
       <div className="max-w-3xl mx-auto px-6">
         <motion.h2
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.5 }}
-          className="font-serif italic font-bold text-2xl md:text-3xl mb-4 text-center text-primary"
+          className="font-serif italic font-bold text-2xl md:text-3xl mb-4 text-center text-[#1a2347]"
         >
           O Programa
         </motion.h2>
 
-        <p className="text-sm md:text-base text-center mb-10 leading-relaxed max-w-2xl mx-auto text-primary/75">
+        <p className="text-base md:text-lg text-center mb-12 leading-relaxed max-w-2xl mx-auto text-[#1a2347]/75">
           Não é apenas um curso gravado. É um manual prático. A cada conceito,
           você recebe a ferramenta exata para aplicar.
         </p>
@@ -541,7 +547,7 @@ const Programa = () => {
 
         <div>
           <BlocoTitle>Bloco 3 — Laboratório Prático Guiado</BlocoTitle>
-          <p className="text-sm md:text-base text-center mb-5 italic text-primary/70">
+          <p className="text-sm md:text-base text-center mb-5 italic text-[#1a2347]/70">
             Práticas guiadas em áudio e vídeo, prontas para usar hoje.
           </p>
           {renderBloco(BLOCO_3, 2)}
@@ -559,9 +565,9 @@ const PROFESSOR_BULLETS = [
 ];
 
 const Professor = () => (
-  <section className="py-14 md:py-20 bg-primary">
+  <section className="py-16 md:py-24 bg-[#1a2347]">
     <div className="max-w-4xl mx-auto px-6">
-      <div className="grid grid-cols-1 md:grid-cols-[auto_1fr] gap-8 md:gap-10 items-start">
+      <div className="grid grid-cols-1 md:grid-cols-[auto_1fr] gap-10 md:gap-12 items-start">
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           whileInView={{ opacity: 1, scale: 1 }}
@@ -569,9 +575,12 @@ const Professor = () => (
           transition={{ duration: 0.5 }}
           className="mx-auto md:mx-0"
         >
-          {/* Forma de Portal — rounded-t-full rounded-b-none */}
-          <div className="w-[230px] h-[280px] md:w-[260px] md:h-[320px] flex items-center justify-center shadow-xl rounded-t-full rounded-b-none overflow-hidden bg-accent border-4 border-accent">
-            <User className="h-24 w-24 md:h-32 md:w-32 text-primary" strokeWidth={1.5} />
+          {/* Forma de Portal */}
+          <div
+            className="w-[230px] h-[280px] md:w-[260px] md:h-[320px] flex items-center justify-center shadow-2xl rounded-t-full rounded-b-none overflow-hidden"
+            style={{ background: CREAM, border: `4px solid ${YELLOW}` }}
+          >
+            <User className="h-24 w-24 md:h-32 md:w-32 text-[#1a2347]" strokeWidth={1.5} />
           </div>
         </motion.div>
 
@@ -581,30 +590,33 @@ const Professor = () => (
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.5, delay: 0.15 }}
         >
-          <p className="text-[11px] uppercase tracking-widest font-bold mb-2 text-accent">
+          <p className="text-[11px] uppercase tracking-widest font-bold mb-2 text-[#f2cb05]">
             Sobre o Professor
           </p>
-          <h2 className="font-serif italic font-bold text-2xl md:text-3xl mb-1 text-white">
+          <h2 className="font-serif italic font-bold text-2xl md:text-3xl mb-1 text-[#fff4e0]">
             Edson Osorio
           </h2>
-          <p className="text-xs md:text-sm text-white/70 mb-5">
+          <p className="text-xs md:text-sm text-[#fff4e0]/70 mb-6">
             Terapeuta Ayurveda | Professor | Fundador do Portal Ayurveda
           </p>
 
-          <ul className="space-y-2.5 mb-8">
+          <ul className="space-y-3 mb-8">
             {PROFESSOR_BULLETS.map((b, i) => (
               <li key={i} className="flex items-start gap-3">
-                <span className="shrink-0 inline-flex items-center justify-center w-5 h-5 rounded-full bg-accent text-primary mt-0.5">
+                <span
+                  className="shrink-0 inline-flex items-center justify-center w-5 h-5 rounded-full mt-0.5"
+                  style={{ background: YELLOW, color: NAVY }}
+                >
                   <Check className="h-3 w-3" strokeWidth={3} />
                 </span>
-                <span className="text-sm md:text-base leading-relaxed text-white/90">
+                <span className="text-sm md:text-base leading-relaxed text-[#fff4e0]/90">
                   {b}
                 </span>
               </li>
             ))}
           </ul>
 
-          <h3 className="font-serif italic font-bold text-lg md:text-xl mb-4 text-accent">
+          <h3 className="font-serif italic font-bold text-lg md:text-xl mb-4 text-[#f2cb05]">
             O Ecossistema de Apoio
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -622,12 +634,13 @@ const Professor = () => (
               return (
                 <div
                   key={i}
-                  className="flex items-start gap-3 p-4 bg-white/10 backdrop-blur-sm rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm"
+                  className="flex items-start gap-3 p-4 rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm"
+                  style={{ background: "rgba(255,244,224,0.08)" }}
                 >
-                  <span className="shrink-0 w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center">
-                    <Icon className="h-5 w-5 text-secondary" strokeWidth={2} />
+                  <span className="shrink-0 w-10 h-10 rounded-full bg-[#fff4e0] flex items-center justify-center">
+                    <Icon className="h-5 w-5 text-[#ff7676]" strokeWidth={2} />
                   </span>
-                  <p className="text-sm leading-relaxed pt-1.5 text-white/90">
+                  <p className="text-sm leading-relaxed pt-1.5 text-[#fff4e0]/90">
                     {c.text}
                   </p>
                 </div>
@@ -636,45 +649,6 @@ const Professor = () => (
           </div>
         </motion.div>
       </div>
-    </div>
-  </section>
-);
-
-// ---------------- BOX TDAH (depoimento, fundo claro) ----------------
-const BoxTdah = () => (
-  <section className="bg-bg-soft py-12 md:py-16">
-    <div className="max-w-2xl mx-auto px-6">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-50px" }}
-        transition={{ duration: 0.5 }}
-        className="relative p-7 md:p-9 rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm shadow-md border-l-4 border-accent bg-white"
-      >
-        <span
-          className="absolute -top-4 left-5 font-serif italic font-bold leading-none select-none text-accent"
-          style={{ fontSize: "5.5rem" }}
-          aria-hidden
-        >
-          “
-        </span>
-        <div className="text-sm md:text-base leading-relaxed space-y-4 pt-2 text-primary/85">
-          <p>
-            Durante anos, busquei entender por que minha mente e meu corpo
-            pareciam trabalhar contra mim — mesmo quando eu me esforçava.
-          </p>
-          <p>
-            A resposta não estava em fazer mais. Estava em fazer na hora certa.
-          </p>
-          <p>
-            O Ayurveda me deu uma estrutura mecânica do tempo que transformou
-            minha saúde, meu foco e minha vitalidade.
-          </p>
-          <p className="font-serif italic font-bold text-base md:text-lg text-primary">
-            Se funcionou para mim, funciona para você.
-          </p>
-        </div>
-      </motion.div>
     </div>
   </section>
 );
@@ -688,27 +662,22 @@ const INCLUSO = [
 ];
 
 const Investimento = () => (
-  <section id="investimento" className="relative py-14 md:py-20 bg-accent overflow-hidden">
-    <Sun
-      className="absolute -top-16 -left-16 w-80 h-80 text-primary opacity-[0.05] pointer-events-none"
-      strokeWidth={1}
-      aria-hidden
-    />
-    <div className="relative max-w-3xl mx-auto px-6 text-center">
+  <section id="investimento" className="py-16 md:py-24 bg-[#fff4e0]">
+    <div className="max-w-3xl mx-auto px-6 text-center">
       <motion.h2
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-100px" }}
         transition={{ duration: 0.5 }}
-        className="font-serif italic font-bold text-2xl md:text-3xl mb-6 text-primary"
+        className="font-serif italic font-bold text-2xl md:text-3xl mb-6 text-[#1a2347]"
       >
         Investimento
       </motion.h2>
 
-      <p className="text-sm md:text-base max-w-2xl mx-auto mb-10 leading-relaxed text-primary/85">
+      <p className="text-base md:text-lg max-w-2xl mx-auto mb-12 leading-relaxed text-[#1a2347]/80">
         A desorganização é o que mais rouba sua performance. Consultas, remédios
         e suplementos não funcionam se o relógio biológico estiver invertido.{" "}
-        <strong className="text-primary">Resolva a base.</strong>
+        <strong className="text-[#1a2347]">Resolva a base.</strong>
       </p>
 
       <motion.div
@@ -716,32 +685,35 @@ const Investimento = () => (
         whileInView={{ opacity: 1, scale: 1 }}
         viewport={{ once: true, margin: "-50px" }}
         transition={{ duration: 0.5 }}
-        className="p-6 md:p-10 mb-8 text-left rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm shadow-2xl bg-white"
+        className="p-8 md:p-12 mb-8 text-left rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm shadow-xl bg-white border-2 border-[#f2cb05]"
       >
-        <p className="text-[11px] uppercase tracking-widest font-bold mb-4 text-secondary">
+        <p className="text-[11px] uppercase tracking-widest font-bold mb-5 text-[#ff7676]">
           O que está incluso
         </p>
-        <ul className="space-y-2.5 mb-6">
+        <ul className="space-y-3 mb-8">
           {INCLUSO.map((item, i) => (
             <li key={i} className="flex items-start gap-3">
-              <span className="shrink-0 inline-flex items-center justify-center w-5 h-5 rounded-full bg-accent text-primary mt-0.5">
+              <span
+                className="shrink-0 inline-flex items-center justify-center w-5 h-5 rounded-full mt-0.5"
+                style={{ background: YELLOW, color: NAVY }}
+              >
                 <Check className="h-3 w-3" strokeWidth={3} />
               </span>
-              <span className="text-sm md:text-base leading-relaxed text-primary/85">
+              <span className="text-sm md:text-base leading-relaxed text-[#1a2347]/85">
                 {item}
               </span>
             </li>
           ))}
         </ul>
 
-        <div className="pt-6 border-t border-primary/15 text-center">
-          <p className="font-serif italic font-bold text-3xl md:text-5xl mb-2 text-primary">
+        <div className="pt-8 border-t border-[#1a2347]/10 text-center">
+          <p className="font-serif italic font-bold text-3xl md:text-5xl mb-2 text-[#1a2347]">
             12x de R$ 9,68
           </p>
-          <p className="text-sm md:text-base text-primary/70 mb-6">
-            ou <strong className="text-primary">R$ 97,00</strong> à vista
+          <p className="text-sm md:text-base text-[#1a2347]/70 mb-8">
+            ou <strong className="text-[#1a2347]">R$ 97,00</strong> à vista
           </p>
-          <LeafCTA className="w-full md:w-auto md:px-14">
+          <LeafCTA className="w-full md:w-auto md:!px-16 !py-5 !text-sm md:!text-base">
             Quero assumir o controle agora
           </LeafCTA>
         </div>
@@ -773,14 +745,14 @@ const Faq = () => {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   return (
-    <section className="py-12 md:py-16 bg-bg-soft">
+    <section className="py-16 md:py-24 bg-white">
       <div className="max-w-3xl mx-auto px-6">
         <motion.h2
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.5 }}
-          className="font-serif italic font-bold text-2xl md:text-3xl mb-10 text-center text-primary"
+          className="font-serif italic font-bold text-2xl md:text-3xl mb-12 text-center text-[#1a2347]"
         >
           Perguntas Frequentes
         </motion.h2>
@@ -791,21 +763,21 @@ const Faq = () => {
             return (
               <div
                 key={i}
-                className="bg-white shadow-sm rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm overflow-hidden"
+                className="bg-[#fff4e0] rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm overflow-hidden"
               >
                 <button
                   onClick={() => setOpenIndex(isOpen ? null : i)}
-                  className="w-full flex items-center gap-3 p-4 md:p-5 text-left"
+                  className="w-full flex items-center gap-3 p-5 md:p-6 text-left"
                   aria-expanded={isOpen}
                 >
-                  <h3 className="flex-1 font-serif font-bold text-sm md:text-base leading-snug text-primary">
+                  <h3 className="flex-1 font-serif font-bold text-base md:text-lg leading-snug text-[#1a2347]">
                     {item.question}
                   </h3>
-                  <span className="shrink-0 w-8 h-8 rounded-full bg-surface-sun flex items-center justify-center">
+                  <span className="shrink-0 w-9 h-9 rounded-full bg-white flex items-center justify-center shadow-sm">
                     {isOpen ? (
-                      <Minus className="h-4 w-4 text-secondary" strokeWidth={2.5} />
+                      <Minus className="h-4 w-4 text-[#f2cb05]" strokeWidth={3} />
                     ) : (
-                      <Plus className="h-4 w-4 text-secondary" strokeWidth={2.5} />
+                      <Plus className="h-4 w-4 text-[#f2cb05]" strokeWidth={3} />
                     )}
                   </span>
                 </button>
@@ -819,7 +791,7 @@ const Faq = () => {
                       transition={{ duration: 0.3, ease: "easeInOut" }}
                       className="overflow-hidden"
                     >
-                      <p className="px-4 md:px-5 pb-5 text-sm md:text-base leading-relaxed text-primary/75">
+                      <p className="px-5 md:px-6 pb-6 text-sm md:text-base leading-relaxed text-[#1a2347]/80">
                         {item.answer}
                       </p>
                     </motion.div>
@@ -838,7 +810,7 @@ const Faq = () => {
 const FinalCta = () => (
   <>
     {/* Wave divider orgânica */}
-    <div className="bg-bg-soft leading-none">
+    <div className="bg-white leading-none">
       <svg
         viewBox="0 0 1440 80"
         preserveAspectRatio="none"
@@ -847,36 +819,37 @@ const FinalCta = () => (
       >
         <path
           d="M0,40 C240,80 480,0 720,30 C960,60 1200,20 1440,50 L1440,80 L0,80 Z"
-          className="fill-primary"
+          fill={NAVY}
         />
       </svg>
     </div>
 
-    <section className="relative py-14 md:py-20 bg-primary overflow-hidden">
-      <Moon
-        className="absolute -top-12 -left-12 w-72 h-72 text-accent opacity-[0.07] pointer-events-none"
-        strokeWidth={1}
-        aria-hidden
-      />
-      <Sun
-        className="absolute -bottom-16 -right-16 w-80 h-80 text-accent opacity-[0.07] pointer-events-none"
-        strokeWidth={1}
-        aria-hidden
-      />
+    <section className="relative py-16 md:py-24 bg-[#1a2347] overflow-hidden">
       <div className="relative max-w-3xl mx-auto px-6 text-center">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.6 }}
+          className="flex items-center justify-center gap-3 mb-8"
+        >
+          <Moon className="w-10 h-10 text-[#f2cb05]" strokeWidth={1.5} />
+          <Star className="w-5 h-5 text-[#f2cb05]" strokeWidth={1.5} fill={YELLOW} />
+        </motion.div>
+
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.5 }}
-          className="text-base md:text-lg leading-relaxed space-y-4 mb-10 text-white/90"
+          className="text-base md:text-lg leading-relaxed space-y-4 mb-12 text-[#fff4e0]/90"
         >
           <p>Você já percebeu que copiar a rotina dos outros não funciona.</p>
           <p>
             Você continuará lutando contra o próprio corpo até entender como ele
             foi projetado para operar.
           </p>
-          <p className="font-serif italic font-bold text-xl md:text-2xl pt-2 text-accent">
+          <p className="font-serif italic font-bold text-xl md:text-2xl pt-2 text-[#f2cb05]">
             Agora é a hora de organizar a fundação.
           </p>
           <p>
@@ -885,7 +858,7 @@ const FinalCta = () => (
           </p>
         </motion.div>
 
-        <LeafCTA variant="inverted" className="!text-base md:!text-lg !px-10 md:!px-14 !py-5">
+        <LeafCTA variant="yellow" className="!text-base md:!text-lg !px-10 md:!px-14 !py-5">
           Garantir minha vaga agora
         </LeafCTA>
       </div>
@@ -920,7 +893,6 @@ const Rotinas = () => {
         <Solucao />
         <Programa />
         <Professor />
-        <BoxTdah />
         <Investimento />
         <Faq />
         <FinalCta />
