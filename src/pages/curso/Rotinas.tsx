@@ -233,7 +233,7 @@ const Problema = () => (
       >
         <span
           className="inline-flex items-center justify-center w-16 h-16 rounded-full"
-          style={{ background: `${COLORS.yellow}30`, color: COLORS.yellow }}
+          style={{ background: COLORS.night, color: COLORS.yellow }}
         >
           <AlertTriangle className="h-8 w-8" strokeWidth={2.2} />
         </span>
