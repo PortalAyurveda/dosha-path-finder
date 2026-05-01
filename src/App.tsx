@@ -12,6 +12,7 @@ import MeuDosha from "./pages/MeuDosha";
 import Biblioteca from "./pages/Biblioteca";
 import CursoAlimentacao from "./pages/curso/Alimentacao";
 import CursoFormacao from "./pages/curso/Formacao";
+import CursoRotinas from "./pages/curso/Rotinas";
 import TerapeutasDoBrasil from "./pages/TerapeutasDoBrasil";
 import TerapeutaPerfil from "./pages/TerapeutaPerfil";
 import TerapeutaCadastro from "./pages/TerapeutaCadastro";
@@ -65,6 +66,8 @@ const RoutedApp = () => {
               <Route path="/cursos" element={<Navigate to="/curso/alimentacao" replace />} />
               <Route path="/curso/alimentacao" element={<CursoAlimentacao />} />
               <Route path="/curso/formacao" element={<CursoFormacao />} />
+              <Route path="/cursos/rotinas" element={<CursoRotinas />} />
+              <Route path="/curso/rotinas" element={<CursoRotinas />} />
               <Route path="/terapeutas-do-brasil" element={<TerapeutasDoBrasil />} />
               <Route path="/terapeutas-do-brasil/cadastro" element={<TerapeutaCadastro />} />
               <Route path="/terapeutas-do-brasil/:slug" element={<TerapeutaPerfil />} />
