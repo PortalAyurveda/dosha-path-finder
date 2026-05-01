@@ -57,15 +57,15 @@ const LeafButton = ({
 const Hero = () => (
   <section
     className="relative w-full py-14 md:py-20 overflow-hidden"
-    style={{ background: COLORS.purple }}
+    style={{ background: COLORS.sand }}
   >
     <div
-      className="absolute -top-24 -right-24 w-80 h-80 rounded-full opacity-10 pointer-events-none"
+      className="absolute -top-24 -right-24 w-80 h-80 rounded-full opacity-30 pointer-events-none"
       style={{ background: COLORS.yellow }}
       aria-hidden
     />
     <div
-      className="absolute -bottom-24 -left-24 w-72 h-72 rounded-full opacity-10 pointer-events-none"
+      className="absolute -bottom-24 -left-24 w-72 h-72 rounded-full opacity-20 pointer-events-none"
       style={{ background: COLORS.yellow }}
       aria-hidden
     />
