@@ -69,7 +69,7 @@ const IconBubble = ({
   tone = "secondary",
   size = "md",
 }: {
-  Icon: React.ComponentType<{ className?: string; strokeWidth?: number }>;
+  Icon: LucideIcon;
   tone?: "primary" | "secondary" | "white";
   size?: "md" | "lg";
 }) => {
@@ -346,7 +346,7 @@ const Solucao = () => (
 );
 
 // ---------------- SEÇÃO 5: PROGRAMA ----------------
-type Aula = { title: string; description: string; icon: React.ComponentType<{ className?: string; strokeWidth?: number }> };
+type Aula = { title: string; description: string; icon: LucideIcon };
 
 const BLOCO_1: Aula[] = [
   {
