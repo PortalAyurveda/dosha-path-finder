@@ -448,12 +448,12 @@ const AulaItem = ({
 
 const BlocoTitle = ({ children }: { children: React.ReactNode }) => (
   <div
-    className="px-5 py-3 mb-4 rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm text-center"
-    style={{ background: COLORS.yellowSoft }}
+    className="pl-4 py-2 mb-5 border-l-4"
+    style={{ borderColor: COLORS.yellow }}
   >
     <p
-      className="font-serif italic font-bold text-base md:text-lg"
-      style={{ color: COLORS.purple }}
+      className="font-serif italic font-bold text-lg md:text-xl"
+      style={{ color: COLORS.night }}
     >
       {children}
     </p>
