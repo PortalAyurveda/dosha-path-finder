@@ -3,8 +3,8 @@ import { Helmet } from "react-helmet-async";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Clock,
-  Frown,
-  BatteryLow,
+  Sprout,
+  Compass,
   Zap,
   AlertTriangle,
   ChevronDown,
@@ -16,11 +16,13 @@ import {
 
 // ============================================================
 // /cursos/rotinas — Curso Rotinas Diárias Ayurvédicas
-// Estrutura inspirada em /curso/formacao com identidade própria.
+// Paleta: roxo #352F54 só no Hero, Investimento e CTA Final.
+// Demais seções alternam branco e bege (#FFF8EE).
 // ============================================================
 
 const COLORS = {
   yellow: "#f2cb05",
+  yellowSoft: "#FEF9C3",
   purple: "#352F54",
   graphite: "#2D3748",
   bg: "#FFF8EE",
@@ -139,24 +141,24 @@ const Hero = () => (
 // ---------------- PARA QUEM ----------------
 const PARA_QUEM = [
   {
-    icon: Clock,
+    icon: Sprout,
     title: "O Iniciante",
-    text: "Quer iniciar no Ayurveda com base sólida, sem se perder no excesso de informações.",
+    text: "Quer dar o primeiro passo no Ayurveda com base sólida e clareza — sem se perder em informações soltas.",
   },
   {
-    icon: Frown,
-    title: "O Frustrado",
-    text: "Tenta manter hábitos saudáveis, mas trava na falta de consistência e adaptação à vida real.",
-  },
-  {
-    icon: BatteryLow,
-    title: "O Exausto",
-    text: "Sofre com oscilações de energia, má digestão ou sono que não restaura a vitalidade.",
+    icon: Compass,
+    title: "O Buscador",
+    text: "Já tenta manter bons hábitos e quer um sistema que realmente funcione na sua rotina real.",
   },
   {
     icon: Zap,
+    title: "O Animado",
+    text: "Percebeu que energia, digestão e sono têm tudo a ver com o momento certo de cada ação — e quer provar isso.",
+  },
+  {
+    icon: Clock,
     title: "O Ocupado",
-    text: "Não tem tempo a perder e precisa otimizar suas ações diárias com precisão.",
+    text: "Quer otimizar seu tempo e extrair o máximo da saúde sem complicar a rotina.",
   },
 ];
 
@@ -249,7 +251,7 @@ const Problema = () => (
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-100px" }}
         transition={{ duration: 0.5, delay: 0.1 }}
-        className="text-sm md:text-base leading-relaxed mb-8 space-y-4"
+        className="text-sm md:text-base leading-relaxed space-y-4"
         style={{ color: COLORS.graphite }}
       >
         <p>
@@ -262,37 +264,6 @@ const Problema = () => (
         </p>
         <p>
           <strong>O problema não é falta de esforço. É lutar contra a própria biologia.</strong>
-        </p>
-      </motion.div>
-
-      {/* BOX DESTACADO TDAH */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-50px" }}
-        transition={{ duration: 0.5 }}
-        className="relative p-7 md:p-9 rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm shadow-lg"
-        style={{ background: COLORS.purple }}
-      >
-        <span
-          className="absolute -top-4 left-5 font-serif italic font-bold leading-none select-none"
-          style={{ color: COLORS.yellow, fontSize: "5.5rem" }}
-          aria-hidden
-        >
-          “
-        </span>
-        <p
-          className="font-serif italic font-bold text-base md:text-lg mb-4 leading-snug pt-2 text-white"
-        >
-          Não é sobre ter "foco" ou "dom natural".
-        </p>
-        <p className="text-sm md:text-base leading-relaxed text-white/90">
-          Fui diagnosticado com TDAH cedo e recusei aceitar que viveria à base
-          de remédios. Eu era a definição da desorganização mental e física. O
-          Ayurveda foi minha cura justamente porque me deu uma estrutura
-          mecânica do tempo. Transformei essa busca pessoal em um método
-          organizado. Se funcionou para mim, a desculpa de "eu sou muito
-          bagunçado para ter rotina" acaba aqui.
         </p>
       </motion.div>
     </div>
@@ -351,7 +322,7 @@ const Solucao = () => (
 // ---------------- PROGRAMA ----------------
 type Aula = { title: string; description: string };
 
-const AULAS_PRINCIPAIS: Aula[] = [
+const BLOCO_1: Aula[] = [
   {
     title: "Aula 1 | Como Criar Rotinas Diárias Ayurvédicas",
     description:
@@ -363,6 +334,14 @@ const AULAS_PRINCIPAIS: Aula[] = [
       "Como Vata, Pitta e Kapha se manifestam nas suas necessidades diárias. Os canais de movimento (Srotas) e a importância dos estímulos matinais para um dia inteiro de energia.",
   },
   {
+    title: "Aula 8 | O Guia Completo da Rotina Diária",
+    description:
+      "A influência matemática dos horários sobre os Doshas. Como estruturar manhã, almoço, tarde e noite. O relógio biológico ayurvédico: dormir entre 22h30 e 5h00 para máxima regeneração celular.",
+  },
+];
+
+const BLOCO_2: Aula[] = [
+  {
     title: "Aula 3 | As Três Fontes de Restauração",
     description:
       "Sono, nutrição e respiração — os três pilares que restauram o corpo. Ajustes finos para cada Dosha: a diferença crucial entre o sono de Pitta (descanso precoce) e o de Kapha (evitar letargia).",
@@ -370,56 +349,49 @@ const AULAS_PRINCIPAIS: Aula[] = [
   {
     title: "Aula 4 | Como Meditar em 3 Estágios",
     description:
-      "Técnica de meditação em 3 etapas: controle da mente, observação do meio, expansão da consciência. Como interromper o piloto automático e perceber o que realmente está acontecendo no seu corpo.",
+      "Técnica de meditação em 3 etapas: controle da mente, observação do meio, expansão da consciência. Como interromper o piloto automático.",
   },
   {
     title: "Aula 5 | Qual Tipo de Yoga é Ideal para Seu Dosha",
     description:
-      "Yoga Nidra, Ashtanga, Hatha — cada um serve para um Dosha específico. Erro comum: Pitta fazendo Ashtanga e alimentando ainda mais o fogo interno. A escolha certa muda completamente o resultado.",
+      "Yoga Nidra, Ashtanga, Hatha — cada um serve para um Dosha específico. A escolha certa muda completamente o resultado.",
   },
   {
     title: "Aula 6 | Rotinas de Meditação e Respiração por Dosha",
     description:
-      "Guia tático do que fazer — e do que evitar — para acalmar Vata, esfriar Pitta e ativar Kapha. Não existe meditação universal. Cada constituição exige um gatilho diferente.",
+      "Guia tático do que fazer — e do que potencializar — para acalmar Vata, esfriar Pitta e ativar Kapha.",
   },
   {
     title: "Aula 7 | Como Respirar Corretamente",
     description:
-      "Mecânica respiratória profunda. Uso do diafragma, capacidade pulmonar total e respiração nasal para controle físico e emocional. O Pranayama Ujjayi e os erros mais comuns que drenam energia sem você perceber.",
-  },
-  {
-    title: "Aula 8 | O Guia Completo da Rotina Diária",
-    description:
-      "A influência matemática dos horários sobre os Doshas. Como estruturar manhã, almoço, tarde e noite. O relógio biológico ayurvédico: dormir entre 22h30 e 5h00 para máxima regeneração celular.",
+      "Mecânica respiratória profunda. Diafragma, capacidade pulmonar total e respiração nasal para controle físico e emocional. O Pranayama Ujjayi e como usá-lo no dia a dia.",
   },
 ];
 
-const AULAS_LAB: Aula[] = [
+const BLOCO_3: Aula[] = [
   {
-    title: "Aula 9 | Meditação e Respiração para Vata",
+    title: "Aula 9 | Prática para Vata",
     description:
-      "Aterramento, alívio de inseguranças e direcionamento do Prana. Técnica para indução de sono profundo e fim da ansiedade.",
+      "Aterramento, alívio de inseguranças e direcionamento do Prana. Técnica para indução de sono profundo.",
   },
   {
-    title: "Aula 10 | Meditação e Respiração para Pitta",
+    title: "Aula 10 | Prática para Pitta",
     description:
-      "Som Bhramari e visualização de cores frias para baixar a temperatura mental. Como esfriar a cabeça literalmente e parar de queimar energia à toa.",
+      "Som Bhramari e visualização de cores frias para baixar a temperatura mental e liberar o estresse acumulado.",
   },
   {
-    title: "Aula 11 | Meditação e Respiração para Kapha",
+    title: "Aula 11 | Prática para Kapha",
     description:
-      "Técnicas respiratórias intensas para aumentar termogênese, limpar toxinas e ativar o sistema digestivo. 12 repetições de respiração ativadora para derreter a letargia física e mental.",
+      "Técnicas respiratórias para aumentar termogênese e ativar o sistema digestivo. 12 repetições de respiração ativadora para transformar letargia em energia.",
   },
 ];
 
 const AulaItem = ({
   aula,
-  index,
   isOpen,
   onToggle,
 }: {
   aula: Aula;
-  index: number;
   isOpen: boolean;
   onToggle: () => void;
 }) => (
@@ -427,7 +399,7 @@ const AulaItem = ({
     initial={{ opacity: 0, y: 12 }}
     whileInView={{ opacity: 1, y: 0 }}
     viewport={{ once: true, margin: "-40px" }}
-    transition={{ duration: 0.35, delay: Math.min(index * 0.03, 0.18) }}
+    transition={{ duration: 0.35 }}
     className="bg-white border border-gray-200 shadow-sm rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm overflow-hidden"
   >
     <button
@@ -436,14 +408,6 @@ const AulaItem = ({
       aria-expanded={isOpen}
     >
       <div className="flex-1 min-w-0">
-        <div className="flex flex-wrap items-center gap-2 mb-1.5">
-          <span
-            className="inline-flex items-center gap-1 text-[10px] md:text-xs font-bold px-2.5 py-0.5 rounded-full"
-            style={{ background: `${COLORS.yellow}30`, color: COLORS.purple }}
-          >
-            💻 Online
-          </span>
-        </div>
         <h3
           className="font-serif font-bold text-base md:text-lg leading-snug"
           style={{ color: COLORS.purple }}
@@ -452,7 +416,7 @@ const AulaItem = ({
         </h3>
       </div>
       <ChevronDown
-        className="shrink-0 h-4 w-4 text-gray-500 transition-transform duration-300 mt-2"
+        className="shrink-0 h-4 w-4 text-gray-500 transition-transform duration-300 mt-1"
         style={{ transform: isOpen ? "rotate(180deg)" : "rotate(0deg)" }}
       />
     </button>
@@ -478,8 +442,37 @@ const AulaItem = ({
   </motion.div>
 );
 
+const BlocoTitle = ({ children }: { children: React.ReactNode }) => (
+  <div
+    className="px-5 py-3 mb-4 rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm text-center"
+    style={{ background: COLORS.yellowSoft }}
+  >
+    <p
+      className="font-serif italic font-bold text-base md:text-lg"
+      style={{ color: COLORS.purple }}
+    >
+      {children}
+    </p>
+  </div>
+);
+
 const Programa = () => {
-  const [openIndex, setOpenIndex] = useState<number | null>(0);
+  const [openKey, setOpenKey] = useState<string | null>("0-0");
+  const renderBloco = (aulas: Aula[], blocoIdx: number) => (
+    <div className="space-y-3">
+      {aulas.map((aula, i) => {
+        const key = `${blocoIdx}-${i}`;
+        return (
+          <AulaItem
+            key={key}
+            aula={aula}
+            isOpen={openKey === key}
+            onToggle={() => setOpenKey(openKey === key ? null : key)}
+          />
+        );
+      })}
+    </div>
+  );
 
   return (
     <section className="py-12 md:py-16" style={{ background: COLORS.bg }}>
@@ -503,51 +496,25 @@ const Programa = () => {
           você recebe a ferramenta exata para aplicar.
         </p>
 
-        <div className="space-y-3 mb-10">
-          {AULAS_PRINCIPAIS.map((aula, i) => (
-            <AulaItem
-              key={i}
-              aula={aula}
-              index={i}
-              isOpen={openIndex === i}
-              onToggle={() => setOpenIndex(openIndex === i ? null : i)}
-            />
-          ))}
+        <div className="mb-10">
+          <BlocoTitle>Bloco 1 — A Lógica dos Horários</BlocoTitle>
+          {renderBloco(BLOCO_1, 0)}
         </div>
 
-        {/* Separador */}
-        <div className="flex items-center gap-4 my-10">
-          <span
-            className="flex-1 h-px"
-            style={{ background: `${COLORS.purple}30` }}
-            aria-hidden
-          />
+        <div className="mb-10">
+          <BlocoTitle>Bloco 2 — Práticas para o Seu Dosha</BlocoTitle>
+          {renderBloco(BLOCO_2, 1)}
+        </div>
+
+        <div>
+          <BlocoTitle>Bloco 3 — Laboratório Prático Guiado</BlocoTitle>
           <p
-            className="font-serif italic font-bold text-sm md:text-base text-center px-2"
-            style={{ color: COLORS.purple }}
+            className="text-sm md:text-base text-center mb-5 italic"
+            style={{ color: COLORS.graphite }}
           >
-            Laboratório Prático Guiado — Em Áudio e Vídeo
+            Práticas guiadas em áudio e vídeo, prontas para usar hoje.
           </p>
-          <span
-            className="flex-1 h-px"
-            style={{ background: `${COLORS.purple}30` }}
-            aria-hidden
-          />
-        </div>
-
-        <div className="space-y-3">
-          {AULAS_LAB.map((aula, i) => {
-            const idx = AULAS_PRINCIPAIS.length + i;
-            return (
-              <AulaItem
-                key={idx}
-                aula={aula}
-                index={idx}
-                isOpen={openIndex === idx}
-                onToggle={() => setOpenIndex(openIndex === idx ? null : idx)}
-              />
-            );
-          })}
+          {renderBloco(BLOCO_3, 2)}
         </div>
       </div>
     </section>
@@ -588,7 +555,7 @@ const Professor = () => (
         >
           <p
             className="text-[11px] uppercase tracking-widest font-bold mb-2"
-            style={{ color: COLORS.yellow }}
+            style={{ color: COLORS.purple }}
           >
             Sobre o Professor
           </p>
@@ -610,8 +577,8 @@ const Professor = () => (
                   style={{
                     width: 20,
                     height: 20,
-                    background: `${COLORS.yellow}30`,
-                    color: COLORS.yellow,
+                    background: COLORS.yellow,
+                    color: COLORS.purple,
                   }}
                 >
                   <Check className="h-3 w-3" strokeWidth={3} />
@@ -680,23 +647,27 @@ const INCLUSO = [
 ];
 
 const Investimento = () => (
-  <section className="py-14 md:py-20" style={{ background: COLORS.purple }}>
+  <section className="py-14 md:py-20" style={{ background: COLORS.yellowSoft }}>
     <div className="max-w-3xl mx-auto px-6 text-center">
       <motion.h2
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-100px" }}
         transition={{ duration: 0.5 }}
-        className="font-serif italic font-bold text-2xl md:text-3xl mb-6 text-white"
+        className="font-serif italic font-bold text-2xl md:text-3xl mb-6"
+        style={{ color: COLORS.purple }}
       >
         Investimento
       </motion.h2>
 
-      <p className="text-sm md:text-base text-white/85 max-w-2xl mx-auto mb-10 leading-relaxed">
+      <p
+        className="text-sm md:text-base max-w-2xl mx-auto mb-10 leading-relaxed"
+        style={{ color: COLORS.graphite }}
+      >
         A desorganização é o que mais rouba sua performance. Consultas, remédios
         e suplementos não funcionam se o relógio biológico estiver invertido.
         <br />
-        <strong className="text-white">Resolva a base.</strong>
+        <strong style={{ color: COLORS.purple }}>Resolva a base.</strong>
       </p>
 
       <motion.div
@@ -708,7 +679,7 @@ const Investimento = () => (
       >
         <p
           className="text-[11px] uppercase tracking-widest font-bold mb-4"
-          style={{ color: COLORS.yellow }}
+          style={{ color: COLORS.purple }}
         >
           O que está incluso
         </p>
@@ -720,8 +691,8 @@ const Investimento = () => (
                 style={{
                   width: 20,
                   height: 20,
-                  background: `${COLORS.yellow}30`,
-                  color: COLORS.yellow,
+                  background: COLORS.yellow,
+                  color: COLORS.purple,
                 }}
               >
                 <Check className="h-3 w-3" strokeWidth={3} />
@@ -755,6 +726,47 @@ const Investimento = () => (
       <LeafButton href={HOTMART}>
         Quero assumir o controle da minha rotina agora
       </LeafButton>
+    </div>
+  </section>
+);
+
+// ---------------- BOX TDAH (acima do FAQ) ----------------
+const BoxTdah = () => (
+  <section className="bg-white pt-12 md:pt-16">
+    <div className="max-w-2xl mx-auto px-6">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-50px" }}
+        transition={{ duration: 0.5 }}
+        className="relative p-7 md:p-9 rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm shadow-lg"
+        style={{ background: COLORS.purple }}
+      >
+        <span
+          className="absolute -top-4 left-5 font-serif italic font-bold leading-none select-none"
+          style={{ color: COLORS.yellow, fontSize: "5.5rem" }}
+          aria-hidden
+        >
+          “
+        </span>
+        <div className="text-sm md:text-base leading-relaxed text-white/90 space-y-4 pt-2">
+          <p>
+            Durante anos, busquei entender por que minha mente e meu corpo
+            pareciam trabalhar contra mim — mesmo quando eu me esforçava.
+          </p>
+          <p>
+            A resposta não estava em fazer mais. Estava em fazer na hora certa.
+          </p>
+          <p>
+            O Ayurveda me deu uma estrutura mecânica do tempo que transformou
+            minha saúde, meu foco e minha vitalidade. Transformei essa
+            descoberta em método.
+          </p>
+          <p className="font-serif italic font-bold text-base md:text-lg" style={{ color: COLORS.yellow }}>
+            Se funcionou para mim, funciona para você.
+          </p>
+        </div>
+      </motion.div>
     </div>
   </section>
 );
@@ -911,6 +923,7 @@ const Rotinas = () => {
         <Programa />
         <Professor />
         <Investimento />
+        <BoxTdah />
         <Faq />
         <FinalCta />
       </main>
