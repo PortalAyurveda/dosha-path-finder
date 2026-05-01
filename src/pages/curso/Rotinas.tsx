@@ -89,7 +89,8 @@ const Hero = () => (
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.1 }}
-        className="font-serif italic font-bold text-[28px] md:text-[44px] leading-[1.15] mb-5 text-white"
+        className="font-serif italic font-bold text-[28px] md:text-[44px] leading-[1.15] mb-5"
+        style={{ color: COLORS.night }}
       >
         Tem hora pra tudo.
         <br />
@@ -101,7 +102,7 @@ const Hero = () => (
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.2 }}
         className="text-base md:text-lg max-w-2xl mx-auto mb-7 leading-relaxed space-y-4"
-        style={{ color: "rgba(255,255,255,0.85)" }}
+        style={{ color: COLORS.graphite }}
       >
         <p>
           Você acabou de descobrir seu Dosha. O próximo passo é colocar isso pra
@@ -124,7 +125,7 @@ const Hero = () => (
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5, delay: 0.3 }}
         className="text-xs md:text-sm font-bold tracking-wide px-4 py-2 rounded-full inline-block mb-8"
-        style={{ background: `${COLORS.yellow}25`, color: COLORS.yellow }}
+        style={{ background: COLORS.night, color: COLORS.yellow }}
       >
         Acesso Imediato e Vitalício | 100% Online
       </motion.p>
