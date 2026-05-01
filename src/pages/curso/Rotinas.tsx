@@ -21,12 +21,16 @@ import {
 // ============================================================
 
 const COLORS = {
-  yellow: "#f2cb05",
-  yellowSoft: "#FEF9C3",
-  purple: "#352F54",
-  graphite: "#2D3748",
-  bg: "#FFF8EE",
-  cta: "#FF7676",
+  yellow: "#F3CB04",      // amarelo logo (acentos, ícones, citações)
+  night: "#1A2347",       // azul-noite (Hero, CTA Final, box TDAH, títulos)
+  graphite: "#2D3748",    // texto corpo
+  sand: "#FFF4E0",        // bege areia (seções "dia")
+  terracotta: "#F5E6D3",  // terracota suave (Investimento)
+  cta: "#FF7676",         // salmão (botões)
+  // legados — mapeados para a nova paleta para evitar quebras
+  purple: "#1A2347",
+  bg: "#FFF4E0",
+  yellowSoft: "#F5E6D3",
 };
 
 const HOTMART = "https://pay.hotmart.com/F101182057Y";
@@ -190,7 +194,7 @@ const ParaQuem = () => (
             >
               <span
                 className="shrink-0 w-11 h-11 rounded-full flex items-center justify-center"
-                style={{ background: `${COLORS.yellow}30`, color: COLORS.purple }}
+                style={{ background: COLORS.night, color: COLORS.yellow }}
               >
                 <Icon className="h-5 w-5" strokeWidth={2.2} />
               </span>
@@ -229,7 +233,7 @@ const Problema = () => (
       >
         <span
           className="inline-flex items-center justify-center w-16 h-16 rounded-full"
-          style={{ background: `${COLORS.yellow}30`, color: COLORS.yellow }}
+          style={{ background: COLORS.night, color: COLORS.yellow }}
         >
           <AlertTriangle className="h-8 w-8" strokeWidth={2.2} />
         </span>
@@ -444,12 +448,12 @@ const AulaItem = ({
 
 const BlocoTitle = ({ children }: { children: React.ReactNode }) => (
   <div
-    className="px-5 py-3 mb-4 rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm text-center"
-    style={{ background: COLORS.yellowSoft }}
+    className="pl-4 py-2 mb-5 border-l-4"
+    style={{ borderColor: COLORS.yellow }}
   >
     <p
-      className="font-serif italic font-bold text-base md:text-lg"
-      style={{ color: COLORS.purple }}
+      className="font-serif italic font-bold text-lg md:text-xl"
+      style={{ color: COLORS.night }}
     >
       {children}
     </p>
@@ -618,7 +622,7 @@ const Professor = () => (
                 >
                   <span
                     className="shrink-0 w-10 h-10 rounded-full flex items-center justify-center"
-                    style={{ background: `${COLORS.yellow}30`, color: COLORS.purple }}
+                    style={{ background: COLORS.night, color: COLORS.yellow }}
                   >
                     <Icon className="h-5 w-5" strokeWidth={2.2} />
                   </span>
