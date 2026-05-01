@@ -21,12 +21,16 @@ import {
 // ============================================================
 
 const COLORS = {
-  yellow: "#f2cb05",
-  yellowSoft: "#FEF9C3",
-  purple: "#352F54",
-  graphite: "#2D3748",
-  bg: "#FFF8EE",
-  cta: "#FF7676",
+  yellow: "#F3CB04",      // amarelo logo (acentos, ícones, citações)
+  night: "#1A2347",       // azul-noite (Hero, CTA Final, box TDAH, títulos)
+  graphite: "#2D3748",    // texto corpo
+  sand: "#FFF4E0",        // bege areia (seções "dia")
+  terracotta: "#F5E6D3",  // terracota suave (Investimento)
+  cta: "#FF7676",         // salmão (botões)
+  // legados — mapeados para a nova paleta para evitar quebras
+  purple: "#1A2347",
+  bg: "#FFF4E0",
+  yellowSoft: "#F5E6D3",
 };
 
 const HOTMART = "https://pay.hotmart.com/F101182057Y";
