@@ -48,20 +48,20 @@ const SALMON = "#ff7676";
 const LeafCTA = ({
   children,
   href = HOTMART,
-  variant = "salmon",
+  variant = "yellow",
   className = "",
 }: {
   children: React.ReactNode;
   href?: string;
-  variant?: "salmon" | "yellow";
+  variant?: "yellow" | "navy";
   className?: string;
 }) => {
   const base =
     "inline-flex items-center justify-center gap-2.5 font-bold text-xs md:text-sm uppercase tracking-wide px-8 md:px-12 py-4 shadow-md hover:shadow-xl transition-all hover:scale-[1.03] rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm";
   const styles =
-    variant === "yellow"
-      ? "bg-[#f2cb05] text-[#1a2347] hover:bg-[#f2cb05]/90"
-      : "bg-[#ff7676] text-white hover:bg-[#ff7676]/90";
+    variant === "navy"
+      ? "bg-[#1a2347] text-[#f2cb05] hover:bg-[#1a2347]/90"
+      : "bg-[#f2cb05] text-[#1a2347] hover:bg-[#f2cb05]/90";
   return (
     <a
       href={href}
