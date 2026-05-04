@@ -48,20 +48,20 @@ const SALMON = "#ff7676";
 const LeafCTA = ({
   children,
   href = HOTMART,
-  variant = "salmon",
+  variant = "yellow",
   className = "",
 }: {
   children: React.ReactNode;
   href?: string;
-  variant?: "salmon" | "yellow";
+  variant?: "yellow" | "navy";
   className?: string;
 }) => {
   const base =
     "inline-flex items-center justify-center gap-2.5 font-bold text-xs md:text-sm uppercase tracking-wide px-8 md:px-12 py-4 shadow-md hover:shadow-xl transition-all hover:scale-[1.03] rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm";
   const styles =
-    variant === "yellow"
-      ? "bg-[#f2cb05] text-[#1a2347] hover:bg-[#f2cb05]/90"
-      : "bg-[#ff7676] text-white hover:bg-[#ff7676]/90";
+    variant === "navy"
+      ? "bg-[#1a2347] text-[#f2cb05] hover:bg-[#1a2347]/90"
+      : "bg-[#f2cb05] text-[#1a2347] hover:bg-[#f2cb05]/90";
   return (
     <a
       href={href}
@@ -90,7 +90,7 @@ const Hero = () => (
             <img
               src={LOGO}
               alt="Rotinas Diárias Ayurvédicas"
-              className="h-28 md:h-36 w-auto"
+              className="h-20 md:h-24 w-auto"
               loading="eager"
             />
           </motion.div>
@@ -99,38 +99,22 @@ const Hero = () => (
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="font-serif italic font-bold text-[22px] md:text-[30px] leading-[1.2] mb-5 text-[#1a2347]"
+            className="font-sans font-light text-base md:text-xl leading-[1.35] mb-5 text-[#1a2347]"
           >
-            <span style={{ color: YELLOW }}>Tem hora pra tudo.</span>
-            <br />
-            Até para se cuidar da{" "}
-            <span style={{ color: SALMON }}>forma certa</span>.
+            Tem hora pra tudo. Até para se cuidar da forma certa.
           </motion.h1>
 
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-sm md:text-base max-w-xl mx-auto md:mx-0 mb-7 leading-relaxed space-y-3 text-[#1a2347]/80"
+            className="text-sm md:text-base max-w-xl mx-auto md:mx-0 mb-7 leading-relaxed text-[#1a2347]/80"
           >
             <p>
               Você acabou de descobrir seu Dosha. O próximo passo é colocar
               isso pra funcionar na sua vida.
             </p>
-            <p>
-              Até a dieta certa dá errado se o seu relógio biológico não está
-              alinhado. Tudo começa com a rotina certa para o seu Dosha.
-            </p>
           </motion.div>
-
-          <motion.p
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-            className="text-xs md:text-sm font-bold tracking-wide px-4 py-2 rounded-full inline-block mb-8 bg-[#1a2347] text-[#f2cb05]"
-          >
-            Acesso Imediato e Vitalício | 100% Online
-          </motion.p>
 
           <motion.div
             initial={{ opacity: 0, y: 16 }}
@@ -148,7 +132,7 @@ const Hero = () => (
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.7, delay: 0.2 }}
-          className="relative w-full h-[320px] md:h-[480px] rounded-tl-[3rem] rounded-br-[3rem] rounded-tr-md rounded-bl-md overflow-hidden shadow-xl"
+          className="relative w-full h-[240px] md:h-[360px] rounded-tl-[3rem] rounded-br-[3rem] rounded-tr-md rounded-bl-md overflow-hidden shadow-xl"
         >
           <img
             src={HERO_IMG}
@@ -213,7 +197,7 @@ const ParaQuem = () => (
               className="flex items-start gap-4 p-6 bg-[#fff4e0] border border-[#1a2347]/10 hover:border-[#f2cb05] transition-colors rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm"
             >
               <span className="shrink-0 w-12 h-12 rounded-full bg-white flex items-center justify-center shadow-sm">
-                <Icon className="w-6 h-6 text-[#ff7676]" strokeWidth={2} />
+                <Icon className="w-6 h-6 text-[#1a2347]" strokeWidth={2} />
               </span>
               <div>
                 <h3 className="font-serif font-bold text-base md:text-lg mb-1.5 text-[#1a2347]">
@@ -648,7 +632,7 @@ const Professor = () => (
                   style={{ background: "rgba(255,244,224,0.08)" }}
                 >
                   <span className="shrink-0 w-10 h-10 rounded-full bg-[#fff4e0] flex items-center justify-center">
-                    <Icon className="h-5 w-5 text-[#ff7676]" strokeWidth={2} />
+                    <Icon className="h-5 w-5 text-[#1a2347]" strokeWidth={2} />
                   </span>
                   <p className="text-sm leading-relaxed pt-1.5 text-[#fff4e0]/90">
                     {c.text}
@@ -697,7 +681,7 @@ const Investimento = () => (
         transition={{ duration: 0.5 }}
         className="p-8 md:p-12 mb-8 text-left rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm shadow-xl bg-white border-2 border-[#f2cb05]"
       >
-        <p className="text-[11px] uppercase tracking-widest font-bold mb-5 text-[#ff7676]">
+        <p className="text-[11px] uppercase tracking-widest font-bold mb-5 text-[#1a2347]">
           O que está incluso
         </p>
         <ul className="space-y-3 mb-8">
