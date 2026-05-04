@@ -197,7 +197,7 @@ const ParaQuem = () => (
               className="flex items-start gap-4 p-6 bg-[#fff4e0] border border-[#1a2347]/10 hover:border-[#f2cb05] transition-colors rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm"
             >
               <span className="shrink-0 w-12 h-12 rounded-full bg-white flex items-center justify-center shadow-sm">
-                <Icon className="w-6 h-6 text-[#ff7676]" strokeWidth={2} />
+                <Icon className="w-6 h-6 text-[#1a2347]" strokeWidth={2} />
               </span>
               <div>
                 <h3 className="font-serif font-bold text-base md:text-lg mb-1.5 text-[#1a2347]">
@@ -632,7 +632,7 @@ const Professor = () => (
                   style={{ background: "rgba(255,244,224,0.08)" }}
                 >
                   <span className="shrink-0 w-10 h-10 rounded-full bg-[#fff4e0] flex items-center justify-center">
-                    <Icon className="h-5 w-5 text-[#ff7676]" strokeWidth={2} />
+                    <Icon className="h-5 w-5 text-[#1a2347]" strokeWidth={2} />
                   </span>
                   <p className="text-sm leading-relaxed pt-1.5 text-[#fff4e0]/90">
                     {c.text}
@@ -681,7 +681,7 @@ const Investimento = () => (
         transition={{ duration: 0.5 }}
         className="p-8 md:p-12 mb-8 text-left rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm shadow-xl bg-white border-2 border-[#f2cb05]"
       >
-        <p className="text-[11px] uppercase tracking-widest font-bold mb-5 text-[#ff7676]">
+        <p className="text-[11px] uppercase tracking-widest font-bold mb-5 text-[#1a2347]">
           O que está incluso
         </p>
         <ul className="space-y-3 mb-8">
