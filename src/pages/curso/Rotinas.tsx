@@ -90,7 +90,7 @@ const Hero = () => (
             <img
               src={LOGO}
               alt="Rotinas Diárias Ayurvédicas"
-              className="h-28 md:h-36 w-auto"
+              className="h-20 md:h-24 w-auto"
               loading="eager"
             />
           </motion.div>
@@ -99,38 +99,22 @@ const Hero = () => (
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="font-serif italic font-bold text-[22px] md:text-[30px] leading-[1.2] mb-5 text-[#1a2347]"
+            className="font-sans font-light text-base md:text-xl leading-[1.35] mb-5 text-[#1a2347]"
           >
-            <span style={{ color: YELLOW }}>Tem hora pra tudo.</span>
-            <br />
-            Até para se cuidar da{" "}
-            <span style={{ color: SALMON }}>forma certa</span>.
+            Tem hora pra tudo. Até para se cuidar da forma certa.
           </motion.h1>
 
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-sm md:text-base max-w-xl mx-auto md:mx-0 mb-7 leading-relaxed space-y-3 text-[#1a2347]/80"
+            className="text-sm md:text-base max-w-xl mx-auto md:mx-0 mb-7 leading-relaxed text-[#1a2347]/80"
           >
             <p>
               Você acabou de descobrir seu Dosha. O próximo passo é colocar
               isso pra funcionar na sua vida.
             </p>
-            <p>
-              Até a dieta certa dá errado se o seu relógio biológico não está
-              alinhado. Tudo começa com a rotina certa para o seu Dosha.
-            </p>
           </motion.div>
-
-          <motion.p
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-            className="text-xs md:text-sm font-bold tracking-wide px-4 py-2 rounded-full inline-block mb-8 bg-[#1a2347] text-[#f2cb05]"
-          >
-            Acesso Imediato e Vitalício | 100% Online
-          </motion.p>
 
           <motion.div
             initial={{ opacity: 0, y: 16 }}
@@ -148,7 +132,7 @@ const Hero = () => (
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.7, delay: 0.2 }}
-          className="relative w-full h-[320px] md:h-[480px] rounded-tl-[3rem] rounded-br-[3rem] rounded-tr-md rounded-bl-md overflow-hidden shadow-xl"
+          className="relative w-full h-[240px] md:h-[360px] rounded-tl-[3rem] rounded-br-[3rem] rounded-tr-md rounded-bl-md overflow-hidden shadow-xl"
         >
           <img
             src={HERO_IMG}
