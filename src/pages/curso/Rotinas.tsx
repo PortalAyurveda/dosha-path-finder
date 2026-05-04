@@ -76,81 +76,89 @@ const LeafCTA = ({
 
 // ---------------- SEÇÃO 1: HERO ----------------
 const Hero = () => (
-  <section className="relative w-full py-16 md:py-24 overflow-hidden bg-[#fff4e0]">
-    <Sun
-      className="absolute -top-12 -right-10 w-72 h-72 md:w-96 md:h-96 text-[#ff7676] opacity-20 pointer-events-none"
-      strokeWidth={1}
-      aria-hidden
-    />
-    <Cloud
-      className="absolute top-10 left-6 w-32 h-32 md:w-40 md:h-40 text-[#1a2347] opacity-10 pointer-events-none"
-      strokeWidth={1}
-      aria-hidden
-    />
-    <Sunrise
-      className="absolute -bottom-10 -left-10 w-64 h-64 text-[#1a2347] opacity-[0.06] pointer-events-none"
-      strokeWidth={1}
-      aria-hidden
-    />
+  <section className="relative w-full py-12 md:py-20 overflow-hidden bg-white">
+    <div className="relative max-w-6xl mx-auto px-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-12 items-center">
+        {/* Coluna esquerda: logo + textos */}
+        <div className="text-center md:text-left">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.92 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6 }}
+            className="flex justify-center md:justify-start mb-6"
+          >
+            <img
+              src={LOGO}
+              alt="Rotinas Diárias Ayurvédicas"
+              className="h-28 md:h-36 w-auto"
+              loading="eager"
+            />
+          </motion.div>
 
-    <div className="relative max-w-4xl mx-auto px-6 text-center">
-      <motion.div
-        initial={{ opacity: 0, scale: 0.92 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.6 }}
-        className="flex justify-center mb-8"
-      >
-        <img
-          src={LOGO}
-          alt="Rotinas Diárias Ayurvédicas"
-          className="h-24 md:h-32 w-auto"
-          loading="eager"
-        />
-      </motion.div>
+          <motion.h1
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="font-serif italic font-bold text-[22px] md:text-[30px] leading-[1.2] mb-5 text-[#1a2347]"
+          >
+            <span style={{ color: YELLOW }}>Tem hora pra tudo.</span>
+            <br />
+            Até para se cuidar da{" "}
+            <span style={{ color: SALMON }}>forma certa</span>.
+          </motion.h1>
 
-      <motion.h1
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.1 }}
-        className="font-serif italic font-bold text-[28px] md:text-[44px] leading-[1.15] mb-6 text-[#1a2347]"
-      >
-        Tem hora pra tudo.
-        <br />
-        Até pra se cuidar da forma certa.
-      </motion.h1>
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="text-sm md:text-base max-w-xl mx-auto md:mx-0 mb-7 leading-relaxed space-y-3 text-[#1a2347]/80"
+          >
+            <p>
+              Você acabou de descobrir seu Dosha. O próximo passo é colocar
+              isso pra funcionar na sua vida.
+            </p>
+            <p>
+              Até a dieta certa dá errado se o seu relógio biológico não está
+              alinhado. Tudo começa com a rotina certa para o seu Dosha.
+            </p>
+          </motion.div>
 
-      <motion.div
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.2 }}
-        className="text-base md:text-lg max-w-2xl mx-auto mb-8 leading-relaxed space-y-4 text-[#1a2347]/80"
-      >
-        <p>
-          Você acabou de descobrir seu Dosha. O próximo passo é colocar isso pra
-          funcionar na sua vida.
-        </p>
-        <p>
-          Até a dieta certa dá errado se o seu relógio biológico não está
-          alinhado. Tudo começa com a rotina certa para o seu Dosha.
-        </p>
-      </motion.div>
+          <motion.p
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+            className="text-xs md:text-sm font-bold tracking-wide px-4 py-2 rounded-full inline-block mb-8 bg-[#1a2347] text-[#f2cb05]"
+          >
+            Acesso Imediato e Vitalício | 100% Online
+          </motion.p>
 
-      <motion.p
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5, delay: 0.3 }}
-        className="text-xs md:text-sm font-bold tracking-wide px-4 py-2 rounded-full inline-block mb-10 bg-[#1a2347] text-[#f2cb05]"
-      >
-        Acesso Imediato e Vitalício | 100% Online
-      </motion.p>
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+          >
+            <LeafCTA href="#investimento">
+              Quero organizar meu relógio biológico
+            </LeafCTA>
+          </motion.div>
+        </div>
 
-      <motion.div
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.4 }}
-      >
-        <LeafCTA href="#investimento">Quero organizar meu relógio biológico</LeafCTA>
-      </motion.div>
+        {/* Coluna direita: imagem */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.7, delay: 0.2 }}
+          className="relative w-full h-[320px] md:h-[480px] rounded-tl-[3rem] rounded-br-[3rem] rounded-tr-md rounded-bl-md overflow-hidden shadow-xl"
+        >
+          <img
+            src={HERO_IMG}
+            alt="Rotina ayurvédica ao amanhecer"
+            className="w-full h-full object-cover"
+            style={{ objectPosition: "center" }}
+            loading="eager"
+          />
+        </motion.div>
+      </div>
     </div>
   </section>
 );
