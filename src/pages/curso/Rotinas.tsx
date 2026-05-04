@@ -9,7 +9,7 @@ import {
   Zap,
   ChevronDown,
   Check,
-  Bot,
+  Target,
   Users,
   User,
   Sun,
@@ -125,7 +125,7 @@ const Hero = () => (
       >
         <p>
           Você acabou de descobrir seu Dosha. O próximo passo é colocar isso pra
-          funcionar na sua vida — todos os dias.
+          funcionar na sua vida.
         </p>
         <p>
           Até a dieta certa dá errado se o seu relógio biológico não está
@@ -622,7 +622,7 @@ const Professor = () => (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {[
               {
-                icon: Bot,
+                icon: Target,
                 text: "Tutor de IA Ayurveda 24h — tira suas dúvidas de rotina a qualquer hora",
               },
               {
