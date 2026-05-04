@@ -35,7 +35,9 @@ import {
 
 const HOTMART = "https://pay.hotmart.com/F101182057Y";
 const LOGO =
-  "https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/logo-rotinas.png";
+  "https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/lg-rotinas-extenso.svg";
+const HERO_IMG =
+  "https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/adobestock-1889656601.jpeg";
 
 const CREAM = "#fff4e0";
 const NAVY = "#1a2347";
