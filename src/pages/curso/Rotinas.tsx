@@ -848,7 +848,7 @@ const FinalCta = () => (
             Você continuará lutando contra o próprio corpo até entender como ele
             foi projetado para operar.
           </p>
-          <p className="font-serif italic font-bold text-xl md:text-2xl pt-2 text-[#f2cb05]">
+          <p className="font-serif italic font-bold text-xl md:text-2xl pt-2 text-white">
             Agora é a hora de organizar a fundação.
           </p>
           <p>
@@ -857,7 +857,7 @@ const FinalCta = () => (
           </p>
         </motion.div>
 
-        <LeafCTA variant="yellow" className="!text-base md:!text-lg !px-10 md:!px-14 !py-5">
+        <LeafCTA variant="yellow" className="!text-xs md:!text-sm !px-8 md:!px-10 !py-3.5">
           Garantir minha vaga agora
         </LeafCTA>
       </div>
