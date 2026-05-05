@@ -595,7 +595,7 @@ const Professor = () => (
           <h2 className="font-serif italic font-bold text-2xl md:text-3xl mb-1 text-[#fff4e0]">
             Edson Osorio
           </h2>
-          <p className="text-xs md:text-sm text-[#fff4e0]/70 mb-6">
+          <p className="text-xs md:text-sm text-white/70 mb-6">
             Terapeuta Ayurveda | Professor | Fundador do Portal Ayurveda
           </p>
 
@@ -608,7 +608,7 @@ const Professor = () => (
                 >
                   <Check className="h-3 w-3" strokeWidth={3} />
                 </span>
-                <span className="text-sm md:text-base leading-relaxed text-[#fff4e0]/90">
+                <span className="text-sm md:text-base leading-relaxed text-white">
                   {b}
                 </span>
               </li>
@@ -639,7 +639,7 @@ const Professor = () => (
                   <span className="shrink-0 w-10 h-10 rounded-full bg-[#fff4e0] flex items-center justify-center">
                     <Icon className="h-5 w-5 text-[#1a2347]" strokeWidth={2} />
                   </span>
-                  <p className="text-sm leading-relaxed pt-1.5 text-[#fff4e0]/90">
+                  <p className="text-sm leading-relaxed pt-1.5 text-white">
                     {c.text}
                   </p>
                 </div>
@@ -841,7 +841,7 @@ const FinalCta = () => (
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.5 }}
-          className="text-base md:text-lg leading-relaxed space-y-4 mb-12 text-[#fff4e0]/90"
+          className="text-base md:text-lg leading-relaxed space-y-4 mb-12 text-white"
         >
           <p>Você já percebeu que copiar a rotina dos outros não funciona.</p>
           <p>
