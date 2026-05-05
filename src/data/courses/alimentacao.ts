@@ -16,10 +16,10 @@ export const alimentacaoData: CourseData = {
     warmBg: "#FAF9F6",
   },
   hero: {
-    headline: "Você passa a vida buscando o que comer.\nDepois desse curso, você sabe por quê.",
-    subheadline: "Não siga uma dieta. Siga um caminho.",
+    headline: "Não siga uma dieta.\nSiga um caminho.",
+    subheadline: "",
     description:
-      "Aprenda a Lógica da Alimentação Ayurveda e nunca mais dependa de cardápio pronto, consulta cara ou intuição — tenha um Sistema de Decisão que funciona para o SEU corpo, com suporte de IA 24h.",
+      "Aprenda a lógica da Alimentação Ayurveda e nunca mais dependa de cardápio pronto para cuidar da sua saúde.",
     priceOld: "R$ 697",
     priceNew: "R$ 397",
     installments: "12x de R$ 39,62",
