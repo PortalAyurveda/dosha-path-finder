@@ -1,14 +1,17 @@
 import { motion } from "framer-motion";
-import { ShieldCheck, ArrowRight } from "lucide-react";
-import type { CoursePricingData, CourseBranding } from "@/data/courses/courseTypes";
+import { ShieldCheck, ArrowRight, Check, Calendar, Heart, Users, Award, Sparkles, type LucideIcon } from "lucide-react";
+import type { CoursePricingData, CourseBranding, CourseBonusData } from "@/data/courses/courseTypes";
+
+const ICONS: Record<string, LucideIcon> = { Calendar, Heart, Users, Award, Sparkles };
 
 interface PricingSectionProps {
   data: CoursePricingData;
   branding: CourseBranding;
+  bonus?: CourseBonusData;
   onCtaClick: () => void;
 }
 
-const PricingSection = ({ data, branding, onCtaClick }: PricingSectionProps) => {
+const PricingSection = ({ data, branding, bonus, onCtaClick }: PricingSectionProps) => {
   return (
     <section className="py-10 md:py-14 bg-white">
       <div className="max-w-2xl mx-auto px-6">
