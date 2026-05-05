@@ -219,7 +219,7 @@ const ParaQuem = () => (
 const Mark = ({ children }: { children: React.ReactNode }) => (
   <span
     className="px-1 font-semibold"
-    style={{ background: "rgba(242,203,5,0.4)", color: NAVY }}
+    style={{ background: "rgba(242,203,5,0.18)", color: NAVY }}
   >
     {children}
   </span>
@@ -236,7 +236,7 @@ const Problema = () => (
         transition={{ duration: 0.5 }}
         className="font-serif italic font-bold text-2xl md:text-3xl mb-8 text-center text-[#1a2347]"
       >
-        O Problema: <Mark>Ação na Hora Errada</Mark>
+        O Problema: <strong>Ação na Hora Errada</strong>
       </motion.h2>
 
       <motion.div
@@ -244,15 +244,15 @@ const Problema = () => (
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-100px" }}
         transition={{ duration: 0.5, delay: 0.1 }}
-        className="text-base md:text-lg leading-relaxed space-y-5 text-[#1a2347]/80"
+        className="text-base md:text-lg leading-relaxed space-y-5 text-[#1a2347]/80 text-center"
       >
         <p>
-          Você tenta <Mark>meditar com a mente fervendo</Mark>. Faz treinos
+          Você tenta <strong className="text-[#1a2347]">meditar com a mente fervendo</strong>. Faz treinos
           pesados à noite e perde o sono. Toma o remédio certo na hora errada.
         </p>
         <p>
           Fazer a coisa certa no momento errado{" "}
-          <Mark>desgasta o corpo</Mark> e queima a vitalidade.
+          <strong className="text-[#1a2347]">desgasta o corpo</strong> e queima a vitalidade.
         </p>
         <p className="font-serif italic font-bold text-lg md:text-xl text-[#1a2347] pt-4">
           O problema não é falta de esforço. É lutar contra a própria biologia.
@@ -571,10 +571,15 @@ const Professor = () => (
         >
           {/* Forma de Portal */}
           <div
-            className="w-[230px] h-[280px] md:w-[260px] md:h-[320px] flex items-center justify-center shadow-2xl rounded-t-full rounded-b-none overflow-hidden"
-            style={{ background: CREAM, border: `4px solid ${YELLOW}` }}
+            className="w-[230px] h-[280px] md:w-[260px] md:h-[320px] shadow-2xl rounded-t-full rounded-b-none overflow-hidden"
+            style={{ border: `4px solid ${YELLOW}` }}
           >
-            <User className="h-24 w-24 md:h-32 md:w-32 text-[#1a2347]" strokeWidth={1.5} />
+            <img
+              src="https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/870818ba-1815-4447-8ac2-b798b42e2074.jpg"
+              alt="Edson Osorio"
+              className="w-full h-full object-cover"
+              loading="lazy"
+            />
           </div>
         </motion.div>
 
@@ -590,7 +595,7 @@ const Professor = () => (
           <h2 className="font-serif italic font-bold text-2xl md:text-3xl mb-1 text-[#fff4e0]">
             Edson Osorio
           </h2>
-          <p className="text-xs md:text-sm text-[#fff4e0]/70 mb-6">
+          <p className="text-xs md:text-sm text-white/70 mb-6">
             Terapeuta Ayurveda | Professor | Fundador do Portal Ayurveda
           </p>
 
@@ -603,7 +608,7 @@ const Professor = () => (
                 >
                   <Check className="h-3 w-3" strokeWidth={3} />
                 </span>
-                <span className="text-sm md:text-base leading-relaxed text-[#fff4e0]/90">
+                <span className="text-sm md:text-base leading-relaxed text-white">
                   {b}
                 </span>
               </li>
@@ -634,7 +639,7 @@ const Professor = () => (
                   <span className="shrink-0 w-10 h-10 rounded-full bg-[#fff4e0] flex items-center justify-center">
                     <Icon className="h-5 w-5 text-[#1a2347]" strokeWidth={2} />
                   </span>
-                  <p className="text-sm leading-relaxed pt-1.5 text-[#fff4e0]/90">
+                  <p className="text-sm leading-relaxed pt-1.5 text-white">
                     {c.text}
                   </p>
                 </div>
@@ -657,7 +662,7 @@ const INCLUSO = [
 
 const Investimento = () => (
   <section id="investimento" className="py-16 md:py-24 bg-[#fff4e0]">
-    <div className="max-w-3xl mx-auto px-6 text-center">
+    <div className="max-w-2xl mx-auto px-6 text-center">
       <motion.h2
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -668,7 +673,7 @@ const Investimento = () => (
         Investimento
       </motion.h2>
 
-      <p className="text-base md:text-lg max-w-2xl mx-auto mb-12 leading-relaxed text-[#1a2347]/80">
+      <p className="text-base md:text-lg max-w-xl mx-auto mb-10 leading-relaxed text-[#1a2347]/80">
         A desorganização é o que mais rouba sua performance. Consultas, remédios
         e suplementos não funcionam se o relógio biológico estiver invertido.{" "}
         <strong className="text-[#1a2347]">Resolva a base.</strong>
@@ -679,12 +684,12 @@ const Investimento = () => (
         whileInView={{ opacity: 1, scale: 1 }}
         viewport={{ once: true, margin: "-50px" }}
         transition={{ duration: 0.5 }}
-        className="p-8 md:p-12 mb-8 text-left rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm shadow-xl bg-white border-2 border-[#f2cb05]"
+        className="max-w-md mx-auto p-7 md:p-9 mb-8 rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm shadow-xl bg-white border-2 border-[#f2cb05]"
       >
-        <p className="text-[11px] uppercase tracking-widest font-bold mb-5 text-[#1a2347]">
+        <p className="text-sm md:text-base uppercase tracking-widest font-bold mb-6 text-[#1a2347] text-center">
           O que está incluso
         </p>
-        <ul className="space-y-3 mb-8">
+        <ul className="space-y-3 mb-8 text-left">
           {INCLUSO.map((item, i) => (
             <li key={i} className="flex items-start gap-3">
               <span
@@ -700,14 +705,14 @@ const Investimento = () => (
           ))}
         </ul>
 
-        <div className="pt-8 border-t border-[#1a2347]/10 text-center">
-          <p className="font-serif italic font-bold text-3xl md:text-5xl mb-2 text-[#1a2347]">
+        <div className="pt-6 border-t border-[#1a2347]/10 text-center">
+          <p className="font-serif italic font-bold text-2xl md:text-4xl mb-2 text-[#1a2347]">
             12x de R$ 9,68
           </p>
-          <p className="text-sm md:text-base text-[#1a2347]/70 mb-8">
+          <p className="text-sm text-[#1a2347]/70 mb-6">
             ou <strong className="text-[#1a2347]">R$ 97,00</strong> à vista
           </p>
-          <LeafCTA className="w-full md:w-auto md:!px-16 !py-5 !text-sm md:!text-base">
+          <LeafCTA className="!px-6 md:!px-8 !py-3 !text-xs">
             Quero assumir o controle agora
           </LeafCTA>
         </div>
@@ -836,7 +841,7 @@ const FinalCta = () => (
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.5 }}
-          className="text-base md:text-lg leading-relaxed space-y-4 mb-12 text-[#fff4e0]/90"
+          className="text-base md:text-lg leading-relaxed space-y-4 mb-12 text-white"
         >
           <p>Você já percebeu que copiar a rotina dos outros não funciona.</p>
           <p>
