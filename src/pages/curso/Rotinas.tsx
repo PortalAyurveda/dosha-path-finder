@@ -483,7 +483,7 @@ const AulaItem = ({
 };
 
 const BlocoTitle = ({ children }: { children: React.ReactNode }) => (
-  <div className="pl-4 py-2 mb-5 border-l-4" style={{ borderColor: YELLOW }}>
+  <div className="pl-4 py-2 mb-5 border-l-4" style={{ borderColor: "#F6F4BA" }}>
     <p className="font-serif italic font-bold text-lg md:text-xl text-[#1a2347]">
       {children}
     </p>
