@@ -194,7 +194,7 @@ const ParaQuem = () => (
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-50px" }}
               transition={{ duration: 0.4, delay: (i % 2) * 0.06 }}
-              className="flex items-start gap-4 p-6 bg-[#fff4e0] border border-[#1a2347]/10 hover:border-[#f2cb05] transition-colors rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm"
+              className="flex items-start gap-4 p-6 bg-[#F6F4BA] border border-[#1a2347]/10 hover:border-[#f2cb05] transition-colors rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm"
             >
               <span className="shrink-0 w-12 h-12 rounded-full bg-white flex items-center justify-center shadow-sm">
                 <Icon className="w-6 h-6 text-[#1a2347]" strokeWidth={2} />
@@ -227,7 +227,7 @@ const Mark = ({ children }: { children: React.ReactNode }) => (
 
 // ---------------- SEÇÃO 3: PROBLEMA ----------------
 const Problema = () => (
-  <section className="py-16 md:py-24 bg-[#fff4e0]">
+  <section className="py-16 md:py-24 bg-[#F6F4BA]">
     <div className="max-w-2xl mx-auto px-6">
       <motion.h2
         initial={{ opacity: 0, y: 20 }}
@@ -448,7 +448,7 @@ const AulaItem = ({
       >
         <span
           className="shrink-0 inline-flex items-center justify-center w-9 h-9 rounded-full font-bold text-sm"
-          style={{ background: YELLOW, color: NAVY }}
+          style={{ background: "#F6F4BA", color: NAVY }}
         >
           {String(number).padStart(2, "0")}
         </span>
@@ -483,7 +483,7 @@ const AulaItem = ({
 };
 
 const BlocoTitle = ({ children }: { children: React.ReactNode }) => (
-  <div className="pl-4 py-2 mb-5 border-l-4" style={{ borderColor: YELLOW }}>
+  <div className="pl-4 py-2 mb-5 border-l-4" style={{ borderColor: "#F6F4BA" }}>
     <p className="font-serif italic font-bold text-lg md:text-xl text-[#1a2347]">
       {children}
     </p>
@@ -512,7 +512,7 @@ const Programa = () => {
   );
 
   return (
-    <section className="py-16 md:py-24 bg-[#fff4e0]">
+    <section className="py-16 md:py-24 bg-[#F6F4BA]">
       <div className="max-w-3xl mx-auto px-6">
         <motion.h2
           initial={{ opacity: 0, y: 20 }}
@@ -572,7 +572,7 @@ const Professor = () => (
           {/* Forma de Portal */}
           <div
             className="w-[230px] h-[280px] md:w-[260px] md:h-[320px] shadow-2xl rounded-t-full rounded-b-none overflow-hidden"
-            style={{ border: `4px solid ${YELLOW}` }}
+            style={{ border: `4px solid #F6F4BA` }}
           >
             <img
               src="https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/870818ba-1815-4447-8ac2-b798b42e2074.jpg"
@@ -636,7 +636,7 @@ const Professor = () => (
                   className="flex items-start gap-3 p-4 rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm"
                   style={{ background: "rgba(255,244,224,0.08)" }}
                 >
-                  <span className="shrink-0 w-10 h-10 rounded-full bg-[#fff4e0] flex items-center justify-center">
+                  <span className="shrink-0 w-10 h-10 rounded-full bg-[#F6F4BA] flex items-center justify-center">
                     <Icon className="h-5 w-5 text-[#1a2347]" strokeWidth={2} />
                   </span>
                   <p className="text-sm leading-relaxed pt-1.5 text-white">
@@ -661,7 +661,7 @@ const INCLUSO = [
 ];
 
 const Investimento = () => (
-  <section id="investimento" className="py-16 md:py-24 bg-[#fff4e0]">
+  <section id="investimento" className="py-16 md:py-24 bg-[#F6F4BA]">
     <div className="max-w-2xl mx-auto px-6 text-center">
       <motion.h2
         initial={{ opacity: 0, y: 20 }}
@@ -684,17 +684,17 @@ const Investimento = () => (
         whileInView={{ opacity: 1, scale: 1 }}
         viewport={{ once: true, margin: "-50px" }}
         transition={{ duration: 0.5 }}
-        className="max-w-md mx-auto p-7 md:p-9 mb-8 rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm shadow-xl bg-white border-2 border-[#f2cb05]"
+        className="max-w-2xl mx-auto p-8 md:p-12 mb-8 rounded-tl-[2.5rem] rounded-br-[2.5rem] rounded-tr-md rounded-bl-md shadow-xl bg-[#F6F4BA] border border-[#1a2347]/10"
       >
-        <p className="text-sm md:text-base uppercase tracking-widest font-bold mb-6 text-[#1a2347] text-center">
+        <p className="text-xs md:text-sm uppercase tracking-[0.2em] font-bold mb-6 text-[#1a2347] text-center">
           O que está incluso
         </p>
-        <ul className="space-y-3 mb-8 text-left">
+        <ul className="space-y-3 mb-8 text-left max-w-md mx-auto">
           {INCLUSO.map((item, i) => (
             <li key={i} className="flex items-start gap-3">
               <span
                 className="shrink-0 inline-flex items-center justify-center w-5 h-5 rounded-full mt-0.5"
-                style={{ background: YELLOW, color: NAVY }}
+                style={{ background: NAVY, color: YELLOW }}
               >
                 <Check className="h-3 w-3" strokeWidth={3} />
               </span>
@@ -705,14 +705,14 @@ const Investimento = () => (
           ))}
         </ul>
 
-        <div className="pt-6 border-t border-[#1a2347]/10 text-center">
-          <p className="font-serif italic font-bold text-2xl md:text-4xl mb-2 text-[#1a2347]">
+        <div className="pt-6 border-t border-[#1a2347]/15 text-center">
+          <p className="font-serif italic font-bold text-3xl md:text-5xl mb-2 text-[#1a2347]">
             12x de R$ 9,68
           </p>
-          <p className="text-sm text-[#1a2347]/70 mb-6">
+          <p className="text-sm md:text-base text-[#1a2347]/70 mb-6">
             ou <strong className="text-[#1a2347]">R$ 97,00</strong> à vista
           </p>
-          <LeafCTA className="!px-6 md:!px-8 !py-3 !text-xs">
+          <LeafCTA className="!px-8 md:!px-10 !py-4 !text-sm">
             Quero assumir o controle agora
           </LeafCTA>
         </div>
@@ -762,7 +762,7 @@ const Faq = () => {
             return (
               <div
                 key={i}
-                className="bg-[#fff4e0] rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm overflow-hidden"
+                className="bg-[#F6F4BA] rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm overflow-hidden"
               >
                 <button
                   onClick={() => setOpenIndex(isOpen ? null : i)}
@@ -848,7 +848,7 @@ const FinalCta = () => (
             Você continuará lutando contra o próprio corpo até entender como ele
             foi projetado para operar.
           </p>
-          <p className="font-serif italic font-bold text-xl md:text-2xl pt-2 text-[#f2cb05]">
+          <p className="font-serif italic font-bold text-xl md:text-2xl pt-2 text-white">
             Agora é a hora de organizar a fundação.
           </p>
           <p>
@@ -857,7 +857,7 @@ const FinalCta = () => (
           </p>
         </motion.div>
 
-        <LeafCTA variant="yellow" className="!text-base md:!text-lg !px-10 md:!px-14 !py-5">
+        <LeafCTA variant="yellow" className="!text-xs md:!text-sm !px-8 md:!px-10 !py-3.5">
           Garantir minha vaga agora
         </LeafCTA>
       </div>
