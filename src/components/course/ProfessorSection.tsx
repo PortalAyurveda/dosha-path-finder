@@ -19,7 +19,7 @@ const ProfessorSection = ({ data, branding }: ProfessorSectionProps) => {
             className="mx-auto md:mx-0"
           >
             <div
-              className="w-[230px] h-[230px] md:w-[300px] md:h-[300px] overflow-hidden shadow-md rounded-t-full rounded-b-none"
+              className="w-[280px] h-[280px] md:w-[380px] md:h-[380px] overflow-hidden shadow-md rounded-t-full rounded-b-none"
               style={{ border: `5px solid ${branding.primaryColor}` }}
             >
               <img
