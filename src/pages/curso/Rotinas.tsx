@@ -843,15 +843,15 @@ const FinalCta = () => (
           transition={{ duration: 0.5 }}
           className="text-base md:text-lg leading-relaxed space-y-4 mb-12 text-white"
         >
-          <p>Você já percebeu que copiar a rotina dos outros não funciona.</p>
-          <p>
+          <p className="text-primary-foreground">Você já percebeu que copiar a rotina dos outros não funciona.</p>
+          <p className="text-primary-foreground">
             Você continuará lutando contra o próprio corpo até entender como ele
             foi projetado para operar.
           </p>
           <p className="font-serif italic font-bold text-xl md:text-2xl pt-2 text-[#f2cb05]">
             Agora é a hora de organizar a fundação.
           </p>
-          <p>
+          <p className="text-primary-foreground">
             De parar de mascarar o cansaço e a má digestão — e alinhar sua vida
             ao seu ritmo natural.
           </p>
