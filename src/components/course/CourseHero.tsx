@@ -77,13 +77,13 @@ const CourseHero = ({ data, branding, onCtaClick, logo, courseName = "Alimentaç
             {data.description}
           </motion.p>
 
-          <div className="flex flex-col items-center md:items-start">
+          <div className="flex flex-col items-center">
             {(data.priceOld || data.priceNew) && (
               <motion.p
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.45 }}
-                className="text-sm md:text-base mb-6 text-center md:text-left w-full"
+                className="text-sm md:text-base mb-6 text-center w-full"
                 style={{ color: "#352F54" }}
               >
                 {data.priceOld && <span className="line-through text-gray-400 mr-2">De {data.priceOld}</span>}
