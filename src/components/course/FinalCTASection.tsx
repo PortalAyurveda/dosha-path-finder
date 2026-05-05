@@ -32,19 +32,23 @@ const FinalCTASection = ({ data, branding, onCtaClick }: FinalCTASectionProps) =
           {data.subheadline}
         </motion.p>
 
-        <motion.div
-          initial={{ opacity: 0, scale: 0.97 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="inline-flex flex-col items-center gap-1 mb-7"
-        >
-          <p className="font-serif font-bold text-3xl md:text-4xl text-secondary">{data.priceNew}</p>
-          <p className="text-xs md:text-sm text-white/80">ou {data.installments}</p>
-          <p className="text-[11px] md:text-xs text-white/70 italic mt-1.5 max-w-md">
-            {data.highlight}
-          </p>
-        </motion.div>
+        {data.priceNew && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.97 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="inline-flex flex-col items-center gap-1 mb-7"
+          >
+            <p className="font-serif font-bold text-3xl md:text-4xl text-secondary">{data.priceNew}</p>
+            {data.installments && <p className="text-xs md:text-sm text-white/80">ou {data.installments}</p>}
+            {data.highlight && (
+              <p className="text-[11px] md:text-xs text-white/70 italic mt-1.5 max-w-md">
+                {data.highlight}
+              </p>
+            )}
+          </motion.div>
+        )}
 
         <motion.button
           onClick={onCtaClick}
