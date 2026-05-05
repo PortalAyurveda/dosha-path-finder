@@ -194,7 +194,7 @@ const ParaQuem = () => (
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-50px" }}
               transition={{ duration: 0.4, delay: (i % 2) * 0.06 }}
-              className="flex items-start gap-4 p-6 bg-[#F6E297] border border-[#1a2347]/10 hover:border-[#f2cb05] transition-colors rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm"
+              className="flex items-start gap-4 p-6 bg-[#FBEFC2] border border-[#1a2347]/10 hover:border-[#f2cb05] transition-colors rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm"
             >
               <span className="shrink-0 w-12 h-12 rounded-full bg-white flex items-center justify-center shadow-sm">
                 <Icon className="w-6 h-6 text-[#1a2347]" strokeWidth={2} />
@@ -227,7 +227,7 @@ const Mark = ({ children }: { children: React.ReactNode }) => (
 
 // ---------------- SEÇÃO 3: PROBLEMA ----------------
 const Problema = () => (
-  <section className="py-16 md:py-24 bg-[#F6E297]">
+  <section className="py-16 md:py-24 bg-[#FBEFC2]">
     <div className="max-w-2xl mx-auto px-6">
       <motion.h2
         initial={{ opacity: 0, y: 20 }}
@@ -448,7 +448,7 @@ const AulaItem = ({
       >
         <span
           className="shrink-0 inline-flex items-center justify-center w-9 h-9 rounded-full font-bold text-sm"
-          style={{ background: "#F6E297", color: NAVY }}
+          style={{ background: "#FBEFC2", color: NAVY }}
         >
           {String(number).padStart(2, "0")}
         </span>
@@ -483,7 +483,7 @@ const AulaItem = ({
 };
 
 const BlocoTitle = ({ children }: { children: React.ReactNode }) => (
-  <div className="pl-4 py-2 mb-5 border-l-4" style={{ borderColor: "#F6E297" }}>
+  <div className="pl-4 py-2 mb-5 border-l-4" style={{ borderColor: "#FBEFC2" }}>
     <p className="font-serif italic font-bold text-lg md:text-xl text-[#1a2347]">
       {children}
     </p>
@@ -512,7 +512,7 @@ const Programa = () => {
   );
 
   return (
-    <section className="py-16 md:py-24 bg-[#F6E297]">
+    <section className="py-16 md:py-24 bg-[#FBEFC2]">
       <div className="max-w-3xl mx-auto px-6">
         <motion.h2
           initial={{ opacity: 0, y: 20 }}
@@ -572,7 +572,7 @@ const Professor = () => (
           {/* Forma de Portal */}
           <div
             className="w-[230px] h-[280px] md:w-[260px] md:h-[320px] shadow-2xl rounded-t-full rounded-b-none overflow-hidden"
-            style={{ border: `4px solid #F6E297` }}
+            style={{ border: `4px solid #FBEFC2` }}
           >
             <img
               src="https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/870818ba-1815-4447-8ac2-b798b42e2074.jpg"
@@ -636,7 +636,7 @@ const Professor = () => (
                   className="flex items-start gap-3 p-4 rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm"
                   style={{ background: "rgba(255,244,224,0.08)" }}
                 >
-                  <span className="shrink-0 w-10 h-10 rounded-full bg-[#F6E297] flex items-center justify-center">
+                  <span className="shrink-0 w-10 h-10 rounded-full bg-[#FBEFC2] flex items-center justify-center">
                     <Icon className="h-5 w-5 text-[#1a2347]" strokeWidth={2} />
                   </span>
                   <p className="text-sm leading-relaxed pt-1.5 text-white">
@@ -661,7 +661,7 @@ const INCLUSO = [
 ];
 
 const Investimento = () => (
-  <section id="investimento" className="py-16 md:py-24 bg-[#F6E297]">
+  <section id="investimento" className="py-16 md:py-24 bg-[#FBEFC2]">
     <div className="max-w-2xl mx-auto px-6 text-center">
       <motion.h2
         initial={{ opacity: 0, y: 20 }}
@@ -762,7 +762,7 @@ const Faq = () => {
             return (
               <div
                 key={i}
-                className="bg-[#F6E297] rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm overflow-hidden"
+                className="bg-[#FBEFC2] rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm overflow-hidden"
               >
                 <button
                   onClick={() => setOpenIndex(isOpen ? null : i)}
