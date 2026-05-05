@@ -82,9 +82,9 @@ const CourseHero = ({ data, branding, onCtaClick, logo, courseName = "Alimentaç
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.45 }}
-              className="text-sm md:text-base mb-6"
-              style={{ color: "#352F54" }}
-            >
+            className={`text-sm md:text-base mb-6 ${heroImage ? "text-center md:text-left" : ""}`}
+            style={{ color: "#352F54" }}
+          >
               {data.priceOld && <span className="line-through text-gray-400 mr-2">De {data.priceOld}</span>}
               {data.priceNew && <span className="font-bold">→ {data.priceNew}</span>}
               {data.installments && <span className="text-gray-700"> ou {data.installments}</span>}
@@ -97,7 +97,7 @@ const CourseHero = ({ data, branding, onCtaClick, logo, courseName = "Alimentaç
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.6 }}
             onClick={onCtaClick}
-            className="group inline-flex items-center gap-2.5 font-bold text-xs md:text-sm uppercase tracking-wide px-7 md:px-10 py-3.5 md:py-4 shadow-md hover:shadow-xl transition-all hover:scale-[1.03] rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm w-full md:w-auto justify-center text-white"
+            className="group inline-flex items-center gap-2.5 font-bold text-xs md:text-sm uppercase tracking-wide px-7 md:px-10 py-3.5 md:py-4 shadow-md hover:shadow-xl transition-all hover:scale-[1.03] rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm w-full md:w-auto mx-auto md:mx-0 justify-center text-white"
             style={{ background: branding.darkColor }}
           >
             {data.ctaText}
