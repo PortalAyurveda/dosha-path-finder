@@ -46,6 +46,7 @@ const Alimentacao = () => {
           data={data.hero}
           branding={data.branding}
           onCtaClick={handleCtaClick("hero")}
+          heroImage="https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/timothy-newman-pbwmdofmxtu-unsplash.jpg"
         />
         <ProblemSection data={data.problem} />
         <SolutionSection data={data.solution} branding={data.branding} />
@@ -66,7 +67,7 @@ const Alimentacao = () => {
           branding={data.branding}
           onCtaClick={handleCtaClick("final")}
         />
-        <CourseFooter data={data.footer} branding={data.branding} />
+        
       </main>
     </div>
   );
