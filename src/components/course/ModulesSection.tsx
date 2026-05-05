@@ -39,17 +39,17 @@ const ModulesSection = ({ data, branding }: ModulesSectionProps) => {
               >
                 <button
                   onClick={() => setOpenIndex(isOpen ? null : i)}
-                  className="w-full flex items-center gap-3.5 md:gap-4 p-4 md:p-5 text-left"
+                  className="w-full flex items-center gap-3 p-3 md:p-3.5 text-left"
                   aria-expanded={isOpen}
                 >
                   <span
-                    className="shrink-0 w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center font-bold text-base md:text-lg text-white"
+                    className="shrink-0 w-8 h-8 md:w-9 md:h-9 rounded-full flex items-center justify-center font-bold text-sm md:text-base text-white"
                     style={{ background: branding.darkColor }}
                   >
                     {mod.number}
                   </span>
                   <h3
-                    className="flex-1 font-sans font-bold text-base md:text-lg leading-tight"
+                    className="flex-1 font-sans font-bold text-sm md:text-base leading-tight"
                     style={{ color: "#352F54" }}
                   >
                     {mod.title}

@@ -34,12 +34,12 @@ const TestimonialsSection = ({ testimonials, branding }: TestimonialsSectionProp
             >
               <Quote
                 className="absolute top-3.5 right-3.5 h-6 w-6 opacity-40"
-                style={{ color: branding.darkColor }}
+                style={{ color: "#3F7A2E" }}
                 fill="currentColor"
               />
               <p
                 className="font-bold text-xs md:text-sm uppercase tracking-wide mb-2.5 pr-9"
-                style={{ color: branding.darkColor }}
+                style={{ color: "#3F7A2E" }}
               >
                 "{t.highlight}"
               </p>
