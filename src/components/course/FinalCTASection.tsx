@@ -76,7 +76,7 @@ const FinalCTASection = ({ data, branding, onCtaClick }: FinalCTASectionProps) =
             transition={{ duration: 0.5, delay: 0.4 }}
             className="mt-10"
           >
-            <p className="font-serif italic text-base md:text-lg" style={{ color: "#352F54" }}>
+            <p className="font-serif italic text-base md:text-lg whitespace-pre-line" style={{ color: "#352F54" }}>
               "{data.quote}"
             </p>
             {data.quoteAuthor && (
