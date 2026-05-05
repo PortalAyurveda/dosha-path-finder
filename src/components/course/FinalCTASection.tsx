@@ -10,14 +10,15 @@ interface FinalCTASectionProps {
 
 const FinalCTASection = ({ data, branding, onCtaClick }: FinalCTASectionProps) => {
   return (
-    <section className="py-12 md:py-16" style={{ background: "#352F54" }}>
-      <div className="max-w-2xl mx-auto px-6 text-center text-white">
+    <section className="py-12 md:py-16" style={{ background: branding.primaryColor }}>
+      <div className="max-w-2xl mx-auto px-6 text-center" style={{ color: "#352F54" }}>
         <motion.h2
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.5 }}
-          className="font-serif italic font-bold text-2xl md:text-3xl mb-4 leading-tight text-primary-foreground"
+          className="font-serif italic font-bold text-2xl md:text-3xl mb-4 leading-tight"
+          style={{ color: "#352F54" }}
         >
           {data.headline}
         </motion.h2>
@@ -27,7 +28,8 @@ const FinalCTASection = ({ data, branding, onCtaClick }: FinalCTASectionProps) =
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.5, delay: 0.1 }}
-          className="text-sm md:text-base text-white/85 max-w-xl mx-auto mb-8 leading-relaxed"
+          className="text-sm md:text-base max-w-xl mx-auto mb-8 leading-relaxed"
+          style={{ color: "#352F54" }}
         >
           {data.subheadline}
         </motion.p>
@@ -59,7 +61,7 @@ const FinalCTASection = ({ data, branding, onCtaClick }: FinalCTASectionProps) =
           whileTap={{ scale: 0.97 }}
           transition={{ duration: 0.4, delay: 0.3 }}
           className="group inline-flex items-center gap-2.5 font-bold text-xs md:text-sm uppercase tracking-wide px-7 md:px-10 py-3.5 md:py-4 shadow-lg hover:shadow-xl rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm w-full md:w-auto md:max-w-md justify-center text-white"
-          style={{ background: branding.darkColor }}
+          style={{ background: "#352F54" }}
         >
           {data.ctaText}
           <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />

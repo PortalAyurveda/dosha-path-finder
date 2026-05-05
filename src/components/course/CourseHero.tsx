@@ -31,7 +31,7 @@ const CourseHero = ({ data, branding, onCtaClick, logo, courseName = "Alimentaç
         aria-hidden
       />
 
-      <div className={`relative max-w-6xl mx-auto px-6 ${heroImage ? "grid grid-cols-1 md:grid-cols-2 gap-10 items-center" : "max-w-4xl text-center"}`}>
+      <div className={`relative max-w-6xl mx-auto px-6 ${heroImage ? "grid grid-cols-1 md:grid-cols-[1.6fr_1fr] gap-10 items-center" : "max-w-4xl text-center"}`}>
         <div className={heroImage ? "text-left" : "text-center"}>
           <motion.div
             initial={{ opacity: 0, y: -10 }}
@@ -83,7 +83,7 @@ const CourseHero = ({ data, branding, onCtaClick, logo, courseName = "Alimentaç
             transition={{ duration: 0.5, delay: 0.6 }}
             onClick={onCtaClick}
             className="group inline-flex items-center gap-2.5 font-bold text-xs md:text-sm uppercase tracking-wide px-7 md:px-10 py-3.5 md:py-4 shadow-md hover:shadow-xl transition-all hover:scale-[1.03] rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm w-full md:w-auto justify-center text-white"
-            style={{ background: "#352F54" }}
+            style={{ background: branding.darkColor }}
           >
             {data.ctaText}
             <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
@@ -100,7 +100,7 @@ const CourseHero = ({ data, branding, onCtaClick, logo, courseName = "Alimentaç
             <img
               src={heroImage}
               alt={courseName}
-              className="w-full h-[320px] md:h-[460px] object-cover rounded-tl-[3rem] rounded-br-[3rem] rounded-tr-md rounded-bl-md shadow-lg"
+              className="w-full max-w-[280px] h-[240px] md:h-[320px] mx-auto object-cover rounded-tl-[3rem] rounded-br-[3rem] rounded-tr-md rounded-bl-md shadow-lg"
             />
           </motion.div>
         )}

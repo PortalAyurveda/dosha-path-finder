@@ -10,16 +10,16 @@ const ProfessorSection = ({ data, branding }: ProfessorSectionProps) => {
   return (
     <section className="py-10 md:py-14" style={{ background: "#FAF9F6" }}>
       <div className="max-w-4xl mx-auto px-6">
-        <div className="grid grid-cols-1 md:grid-cols-[auto_1fr] gap-8 md:gap-10 items-start">
+        <div className="grid grid-cols-1 md:grid-cols-[auto_1fr] gap-8 md:gap-10 items-stretch">
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.5 }}
-            className="mx-auto md:mx-0"
+            className="mx-auto md:mx-0 h-full"
           >
             <div
-              className="w-[280px] h-[280px] md:w-[380px] md:h-[380px] overflow-hidden shadow-md rounded-t-full rounded-b-none"
+              className="w-[200px] md:w-[220px] h-full min-h-[280px] overflow-hidden shadow-md rounded-t-full rounded-b-none"
               style={{ border: `5px solid ${branding.primaryColor}` }}
             >
               <img
