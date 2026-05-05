@@ -684,7 +684,7 @@ const Investimento = () => (
         whileInView={{ opacity: 1, scale: 1 }}
         viewport={{ once: true, margin: "-50px" }}
         transition={{ duration: 0.5 }}
-        className="max-w-2xl mx-auto p-8 md:p-12 mb-8 rounded-tl-[2.5rem] rounded-br-[2.5rem] rounded-tr-md rounded-bl-md shadow-xl bg-[#F6F4BA] border border-[#1a2347]/10"
+        className="max-w-2xl mx-auto p-8 md:p-12 mb-8 rounded-tl-[2.5rem] rounded-br-[2.5rem] rounded-tr-md rounded-bl-md shadow-xl bg-white border border-[#1a2347]/10"
       >
         <p className="text-xs md:text-sm uppercase tracking-[0.2em] font-bold mb-6 text-[#1a2347] text-center">
           O que está incluso
