@@ -49,7 +49,7 @@ const ModulesSection = ({ data, branding }: ModulesSectionProps) => {
                     {mod.number}
                   </span>
                   <h3
-                    className="flex-1 font-serif font-bold text-base md:text-lg leading-tight"
+                    className="flex-1 font-bold text-base md:text-lg leading-tight"
                     style={{ color: "#352F54" }}
                   >
                     {mod.title}
