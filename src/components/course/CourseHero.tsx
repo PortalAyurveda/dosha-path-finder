@@ -35,19 +35,13 @@ const CourseHero = ({ data, branding, onCtaClick, logo, courseName = "Alimentaç
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="flex flex-row items-center justify-center gap-3 mb-7"
+          className="flex items-center justify-center mb-7"
         >
           <img
             src={logo ?? branding.logo}
             alt={courseName}
-            className="h-16 md:h-20 w-auto object-contain"
+            className="h-20 md:h-28 w-auto object-contain"
           />
-          <h2
-            className="font-serif not-italic font-bold text-xl leading-tight text-primary md:text-2xl text-justify"
-            style={{ color: branding.darkColor }}
-          >
-            Alimentação<span className="block">Ayurveda</span>
-          </h2>
         </motion.div>
 
         <motion.h1
@@ -85,17 +79,9 @@ const CourseHero = ({ data, branding, onCtaClick, logo, courseName = "Alimentaç
           transition={{ duration: 0.5, delay: 0.45 }}
           className="inline-flex flex-col items-center gap-2 mb-7"
         >
-          <div className="flex items-baseline gap-2.5 flex-wrap justify-center">
-            <span className="text-sm md:text-base line-through text-gray-400">
-              {data.priceOld}
-            </span>
-            <span className="font-serif font-bold text-3xl md:text-4xl" style={{ color: "#352F54" }}>
-              {data.priceNew}
-            </span>
-          </div>
           <span
             className="text-[11px] md:text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full text-white"
-            style={{ background: branding.accentColor }}
+            style={{ background: branding.darkColor }}
           >
             {data.accessYears}
           </span>

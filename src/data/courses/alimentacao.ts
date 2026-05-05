@@ -8,11 +8,11 @@ export const alimentacaoData: CourseData = {
       "Aprenda a Lógica da Alimentação Ayurveda em 60+ aulas. Sistema completo com Tutor de IA, receitas terapêuticas e certificado de 40h.",
   },
   branding: {
-    logo: "https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/logo-alimentacao.png",
+    logo: "https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/logo-alimentacao-extenso.svg",
     primaryColor: "#A8E6CF",
-    darkColor: "#5BA882",
+    darkColor: "#3F8F66",
     lightColor: "#D4F1E0",
-    accentColor: "#FF8A8A",
+    accentColor: "#3F8F66",
     warmBg: "#FAF9F6",
   },
   hero: {
@@ -201,7 +201,7 @@ export const alimentacaoData: CourseData = {
   professor: {
     name: "Edson Osorio",
     photo:
-      "https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/EDSON-YOGA.jpg",
+      "https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/b8f47f-5f003e6165b44645b7163ec3dd646d32mv2-1.jpg",
     bio: [
       "Sou terapeuta e professor há 15 anos, com mais de 6.000 alunos formados neste curso.",
       "Eu não gosto de truques. Eu entrego tudo que você necessita e ilumino seu caminho. A conquista é certa — basta você trilhar sua jornada pessoal de evolução.",
@@ -212,12 +212,12 @@ export const alimentacaoData: CourseData = {
     ],
   },
   finalCta: {
-    headline: "Quanto custa continuar escolhendo errado?",
+    headline: "Ayurveda é para todo mundo. E todo mundo merece conhecer Ayurveda.",
     subheadline:
       "Você pode esperar mais um mês. Pode testar mais uma dieta da moda. Pode continuar acumulando informação sem estrutura. Ou você pode escolher o caminho certeiro agora.",
-    priceNew: "R$ 397,00",
-    installments: "12x de R$ 39,62",
-    highlight: "2 anos de acesso • Garantia de 7 dias • Tutor de IA incluso",
+    priceNew: "",
+    installments: "",
+    highlight: "",
     ctaText: "QUERO TRILHAR O CAMINHO CERTEIRO",
   },
   footer: {

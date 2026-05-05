@@ -1,14 +1,17 @@
 import { motion } from "framer-motion";
-import { ShieldCheck, ArrowRight } from "lucide-react";
-import type { CoursePricingData, CourseBranding } from "@/data/courses/courseTypes";
+import { ShieldCheck, ArrowRight, Check, Calendar, Heart, Users, Award, Sparkles, type LucideIcon } from "lucide-react";
+import type { CoursePricingData, CourseBranding, CourseBonusData } from "@/data/courses/courseTypes";
+
+const ICONS: Record<string, LucideIcon> = { Calendar, Heart, Users, Award, Sparkles };
 
 interface PricingSectionProps {
   data: CoursePricingData;
   branding: CourseBranding;
+  bonus?: CourseBonusData;
   onCtaClick: () => void;
 }
 
-const PricingSection = ({ data, branding, onCtaClick }: PricingSectionProps) => {
+const PricingSection = ({ data, branding, bonus, onCtaClick }: PricingSectionProps) => {
   return (
     <section className="py-10 md:py-14 bg-white">
       <div className="max-w-2xl mx-auto px-6">
@@ -67,6 +70,54 @@ const PricingSection = ({ data, branding, onCtaClick }: PricingSectionProps) => 
               {data.guarantee}
             </p>
           </div>
+
+          {bonus && (
+            <div className="mt-8 pt-7 border-t border-gray-200 text-left">
+              <h3 className="font-serif font-bold text-lg md:text-xl mb-4 text-center" style={{ color: "#352F54" }}>
+                {bonus.title}
+              </h3>
+              <ul className="space-y-2.5 mb-6">
+                {bonus.included.map((item, i) => (
+                  <li key={i} className="flex items-start gap-3">
+                    <span
+                      className="shrink-0 w-5 h-5 rounded-full flex items-center justify-center mt-0.5"
+                      style={{ background: branding.darkColor }}
+                    >
+                      <Check className="h-3.5 w-3.5 text-white" strokeWidth={3} />
+                    </span>
+                    <span className="text-sm md:text-base text-gray-700 leading-relaxed">{item}</span>
+                  </li>
+                ))}
+              </ul>
+              <h4 className="font-bold text-sm md:text-base mb-3 text-center uppercase tracking-wide" style={{ color: branding.darkColor }}>
+                Bônus exclusivos
+              </h4>
+              <div className="space-y-2.5">
+                {bonus.bonuses.map((b, i) => {
+                  const Icon = ICONS[b.iconName] ?? Sparkles;
+                  return (
+                    <div
+                      key={i}
+                      className="flex items-start gap-3 p-3 border border-gray-200 rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm"
+                      style={{ background: `${branding.primaryColor}20` }}
+                    >
+                      <span
+                        className="shrink-0 w-9 h-9 rounded-full flex items-center justify-center"
+                        style={{ background: `${branding.primaryColor}60` }}
+                      >
+                        <Icon className="h-4.5 w-4.5" style={{ color: branding.darkColor }} />
+                      </span>
+                      <div className="flex-1">
+                        <h5 className="font-bold text-sm md:text-base leading-snug" style={{ color: "#352F54" }}>
+                          {b.title}
+                        </h5>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </motion.div>
       </div>
     </section>
