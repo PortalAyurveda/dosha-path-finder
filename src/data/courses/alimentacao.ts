@@ -139,7 +139,7 @@ export const alimentacaoData: CourseData = {
     priceOld: "R$ 697",
     priceNew: "R$ 397,00",
     installments: "12x de R$ 39,62",
-    highlight: "R$ 16 por mês para ter um sistema que funciona",
+    highlight: "",
     ctaText: "QUERO ENTRAR AGORA",
     guarantee:
       "Garantia de 7 dias: Você pode acessar tudo, assistir as aulas, imprimir o certificado. Se não se adaptar, devolvemos 100% do valor. Simples assim.",
