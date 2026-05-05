@@ -662,7 +662,7 @@ const INCLUSO = [
 
 const Investimento = () => (
   <section id="investimento" className="py-16 md:py-24 bg-[#fff4e0]">
-    <div className="max-w-3xl mx-auto px-6 text-center">
+    <div className="max-w-2xl mx-auto px-6 text-center">
       <motion.h2
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -673,7 +673,7 @@ const Investimento = () => (
         Investimento
       </motion.h2>
 
-      <p className="text-base md:text-lg max-w-2xl mx-auto mb-12 leading-relaxed text-[#1a2347]/80">
+      <p className="text-base md:text-lg max-w-xl mx-auto mb-10 leading-relaxed text-[#1a2347]/80">
         A desorganização é o que mais rouba sua performance. Consultas, remédios
         e suplementos não funcionam se o relógio biológico estiver invertido.{" "}
         <strong className="text-[#1a2347]">Resolva a base.</strong>
@@ -684,12 +684,12 @@ const Investimento = () => (
         whileInView={{ opacity: 1, scale: 1 }}
         viewport={{ once: true, margin: "-50px" }}
         transition={{ duration: 0.5 }}
-        className="p-8 md:p-12 mb-8 text-left rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm shadow-xl bg-white border-2 border-[#f2cb05]"
+        className="max-w-md mx-auto p-7 md:p-9 mb-8 rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm shadow-xl bg-white border-2 border-[#f2cb05]"
       >
-        <p className="text-[11px] uppercase tracking-widest font-bold mb-5 text-[#1a2347]">
+        <p className="text-sm md:text-base uppercase tracking-widest font-bold mb-6 text-[#1a2347] text-center">
           O que está incluso
         </p>
-        <ul className="space-y-3 mb-8">
+        <ul className="space-y-3 mb-8 text-left">
           {INCLUSO.map((item, i) => (
             <li key={i} className="flex items-start gap-3">
               <span
@@ -705,14 +705,14 @@ const Investimento = () => (
           ))}
         </ul>
 
-        <div className="pt-8 border-t border-[#1a2347]/10 text-center">
-          <p className="font-serif italic font-bold text-3xl md:text-5xl mb-2 text-[#1a2347]">
+        <div className="pt-6 border-t border-[#1a2347]/10 text-center">
+          <p className="font-serif italic font-bold text-2xl md:text-4xl mb-2 text-[#1a2347]">
             12x de R$ 9,68
           </p>
-          <p className="text-sm md:text-base text-[#1a2347]/70 mb-8">
+          <p className="text-sm text-[#1a2347]/70 mb-6">
             ou <strong className="text-[#1a2347]">R$ 97,00</strong> à vista
           </p>
-          <LeafCTA className="w-full md:w-auto md:!px-16 !py-5 !text-sm md:!text-base">
+          <LeafCTA className="!px-6 md:!px-8 !py-3 !text-xs">
             Quero assumir o controle agora
           </LeafCTA>
         </div>
