@@ -219,7 +219,7 @@ const ParaQuem = () => (
 const Mark = ({ children }: { children: React.ReactNode }) => (
   <span
     className="px-1 font-semibold"
-    style={{ background: "rgba(242,203,5,0.4)", color: NAVY }}
+    style={{ background: "rgba(242,203,5,0.18)", color: NAVY }}
   >
     {children}
   </span>
