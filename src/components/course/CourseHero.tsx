@@ -50,7 +50,7 @@ const CourseHero = ({ data, branding, onCtaClick, logo, courseName = "Alimentaç
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="font-serif italic font-bold text-3xl md:text-4xl leading-tight mb-3"
+            className="font-serif italic font-bold text-3xl md:text-4xl leading-tight mb-3 whitespace-pre-line"
             style={{ color: "#352F54" }}
           >
             {data.headline}
@@ -72,10 +72,25 @@ const CourseHero = ({ data, branding, onCtaClick, logo, courseName = "Alimentaç
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
-            className={`text-sm md:text-base mb-8 text-gray-700 leading-relaxed ${heroImage ? "" : "max-w-xl mx-auto"}`}
+            className={`text-sm md:text-base mb-6 text-gray-700 leading-relaxed ${heroImage ? "" : "max-w-xl mx-auto"}`}
           >
             {data.description}
           </motion.p>
+
+          {(data.priceOld || data.priceNew) && (
+            <motion.p
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.45 }}
+              className="text-sm md:text-base mb-6"
+              style={{ color: "#352F54" }}
+            >
+              {data.priceOld && <span className="line-through text-gray-400 mr-2">De {data.priceOld}</span>}
+              {data.priceNew && <span className="font-bold">→ {data.priceNew}</span>}
+              {data.installments && <span className="text-gray-700"> ou {data.installments}</span>}
+              {data.accessYears && <span className="text-gray-700"> · {data.accessYears}</span>}
+            </motion.p>
+          )}
 
           <motion.button
             initial={{ opacity: 0, y: 16 }}

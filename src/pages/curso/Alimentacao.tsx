@@ -3,6 +3,7 @@ import { Helmet } from "react-helmet-async";
 import { alimentacaoData } from "@/data/courses/alimentacao";
 import CourseHero from "@/components/course/CourseHero";
 import ProblemSection from "@/components/course/ProblemSection";
+import OpportunitySection from "@/components/course/OpportunitySection";
 import SolutionSection from "@/components/course/SolutionSection";
 import ModulesSection from "@/components/course/ModulesSection";
 
@@ -49,6 +50,7 @@ const Alimentacao = () => {
           heroImage="https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/timothy-newman-pbwmdofmxtu-unsplash.jpg"
         />
         <ProblemSection data={data.problem} />
+        {data.opportunity && <OpportunitySection data={data.opportunity} branding={data.branding} />}
         <SolutionSection data={data.solution} branding={data.branding} />
         <ModulesSection data={data.modules} branding={data.branding} />
         <div id="pricing">

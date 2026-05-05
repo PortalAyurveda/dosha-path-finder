@@ -20,6 +20,7 @@ export interface CourseHeroData {
   priceOld: string;
   priceNew: string;
   accessYears: string;
+  installments?: string;
   ctaText: string;
 }
 
@@ -28,10 +29,30 @@ export interface CourseProblemData {
   intro: string;
   bullets: string[];
   closing: string;
+  examples?: string[];
+  finalNote?: string;
 }
 
+export type CourseIconName =
+  | "Brain"
+  | "Sparkles"
+  | "Target"
+  | "Heart"
+  | "Calendar"
+  | "Users"
+  | "Award"
+  | "Zap"
+  | "Bot"
+  | "BookOpen"
+  | "Clock"
+  | "AlertTriangle"
+  | "Sprout"
+  | "Puzzle"
+  | "Stethoscope"
+  | "Check";
+
 export interface CourseBenefit {
-  iconName: "Brain" | "Sparkles" | "Target" | "Heart" | "Calendar" | "Users" | "Award" | "Zap";
+  iconName: CourseIconName;
   title: string;
   text: string;
 }
@@ -55,7 +76,7 @@ export interface CourseModulesData {
 }
 
 export interface CourseBonusItem {
-  iconName: "Calendar" | "Heart" | "Users" | "Award" | "Sparkles";
+  iconName: CourseIconName;
   title: string;
   description?: string;
 }
@@ -71,6 +92,7 @@ export interface CoursePricingData {
   priceNew: string;
   installments: string;
   highlight: string;
+  context?: string;
   ctaText: string;
   guarantee: string;
 }
@@ -81,9 +103,15 @@ export interface CourseTestimonial {
   name: string;
 }
 
+export interface CourseAudienceItem {
+  iconName?: CourseIconName;
+  title: string;
+  description: string;
+}
+
 export interface CourseAudienceData {
   title: string;
-  audiences: { title: string; description: string }[];
+  audiences: CourseAudienceItem[];
 }
 
 export interface CourseProfessorData {
@@ -95,10 +123,13 @@ export interface CourseProfessorData {
 export interface CourseFinalCTAData {
   headline: string;
   subheadline: string;
+  priceOld?: string;
   priceNew: string;
   installments: string;
   highlight: string;
   ctaText: string;
+  quote?: string;
+  quoteAuthor?: string;
 }
 
 export interface CourseFooterData {
@@ -108,11 +139,19 @@ export interface CourseFooterData {
   instagram: string;
 }
 
+export interface CourseOpportunityData {
+  title: string;
+  paragraphs: string[];
+  highlight: string;
+  closing: string;
+}
+
 export interface CourseData {
   meta: CourseMeta;
   branding: CourseBranding;
   hero: CourseHeroData;
   problem: CourseProblemData;
+  opportunity?: CourseOpportunityData;
   solution: CourseSolutionData;
   modules: CourseModulesData;
   bonus: CourseBonusData;

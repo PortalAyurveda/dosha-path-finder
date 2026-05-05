@@ -1,8 +1,8 @@
 import { motion } from "framer-motion";
-import { ShieldCheck, ArrowRight, Check, Calendar, Heart, Users, Award, Sparkles, type LucideIcon } from "lucide-react";
+import { ShieldCheck, ArrowRight, Check, Calendar, Heart, Users, Award, Sparkles, Clock, Brain, Bot, BookOpen, Target, AlertTriangle, Sprout, Puzzle, Stethoscope, Zap, type LucideIcon } from "lucide-react";
 import type { CoursePricingData, CourseBranding, CourseBonusData } from "@/data/courses/courseTypes";
 
-const ICONS: Record<string, LucideIcon> = { Calendar, Heart, Users, Award, Sparkles };
+const ICONS: Record<string, LucideIcon> = { Calendar, Heart, Users, Award, Sparkles, Clock, Brain, Bot, BookOpen, Target, AlertTriangle, Sprout, Puzzle, Stethoscope, Zap, Check };
 
 interface PricingSectionProps {
   data: CoursePricingData;
@@ -56,12 +56,15 @@ const PricingSection = ({ data, branding, bonus, onCtaClick }: PricingSectionPro
                         className="shrink-0 w-9 h-9 rounded-full flex items-center justify-center"
                         style={{ background: `${branding.primaryColor}` }}
                       >
-                        <Icon className="h-4.5 w-4.5" style={{ color: "#352F54" }} />
+                        <Icon className="h-4 w-4" style={{ color: "#352F54" }} />
                       </span>
                       <div className="flex-1">
                         <h5 className="font-bold text-sm md:text-base leading-snug" style={{ color: "#352F54" }}>
                           {b.title}
                         </h5>
+                        {b.description && (
+                          <p className="text-xs md:text-sm text-gray-700 mt-0.5 leading-relaxed">{b.description}</p>
+                        )}
                       </div>
                     </div>
                   );
@@ -77,8 +80,14 @@ const PricingSection = ({ data, branding, bonus, onCtaClick }: PricingSectionPro
             Investimento
           </span>
 
-          <p className="text-base md:text-lg line-through text-gray-400 mt-4 mb-1">
-            {data.priceOld}
+          {data.highlight && (
+            <p className="text-sm md:text-base font-serif italic mt-3 mb-1" style={{ color: "#352F54" }}>
+              {data.highlight}
+            </p>
+          )}
+
+          <p className="text-base md:text-lg line-through text-gray-400 mt-3 mb-1">
+            De {data.priceOld}
           </p>
 
           <p
@@ -88,13 +97,13 @@ const PricingSection = ({ data, branding, bonus, onCtaClick }: PricingSectionPro
             {data.priceNew}
           </p>
 
-          <p className="text-sm md:text-base text-gray-700 mb-1.5">
+          <p className="text-sm md:text-base text-gray-700 mb-2">
             ou <span className="font-bold">{data.installments}</span>
           </p>
 
-          <p className="text-xs md:text-sm text-gray-500 italic mb-7">
-            {data.highlight}
-          </p>
+          {data.context && (
+            <p className="text-xs md:text-sm text-gray-600 mb-7">{data.context}</p>
+          )}
 
           <motion.button
             onClick={onCtaClick}

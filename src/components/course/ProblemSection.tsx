@@ -15,7 +15,7 @@ const ProblemSection = ({ data }: ProblemSectionProps) => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.5 }}
-          className="font-serif italic font-bold text-2xl md:text-3xl mb-5 text-center"
+          className="font-serif italic font-bold text-2xl md:text-3xl mb-5 text-center whitespace-pre-line"
           style={{ color: "#352F54" }}
         >
           {data.title}
@@ -57,11 +57,34 @@ const ProblemSection = ({ data }: ProblemSectionProps) => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.5, delay: 0.2 }}
-          className="font-serif font-bold italic text-lg md:text-xl text-center leading-snug border-t border-gray-200 pt-7"
+          className="font-serif font-bold italic text-lg md:text-xl text-center leading-snug border-t border-gray-200 pt-7 whitespace-pre-line"
           style={{ color: "#352F54" }}
         >
           {data.closing}
         </motion.p>
+
+        {data.examples && data.examples.length > 0 && (
+          <ul className="space-y-2 mt-8">
+            {data.examples.map((ex, i) => (
+              <li
+                key={i}
+                className="text-sm md:text-base text-gray-700 leading-relaxed pl-4 border-l-2"
+                style={{ borderColor: "#A6D98F" }}
+              >
+                {ex}
+              </li>
+            ))}
+          </ul>
+        )}
+
+        {data.finalNote && (
+          <p
+            className="font-serif font-bold italic text-base md:text-lg text-center mt-8"
+            style={{ color: "#352F54" }}
+          >
+            {data.finalNote}
+          </p>
+        )}
       </div>
     </section>
   );

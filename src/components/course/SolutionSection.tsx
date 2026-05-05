@@ -1,9 +1,9 @@
 import { motion } from "framer-motion";
-import { Brain, Sparkles, Target, Heart, Calendar, Users, Award, Zap, type LucideIcon } from "lucide-react";
+import { Brain, Sparkles, Target, Heart, Calendar, Users, Award, Zap, Bot, BookOpen, Clock, AlertTriangle, Sprout, Puzzle, Stethoscope, Check, type LucideIcon } from "lucide-react";
 import type { CourseSolutionData, CourseBranding } from "@/data/courses/courseTypes";
 
 const ICONS: Record<string, LucideIcon> = {
-  Brain, Sparkles, Target, Heart, Calendar, Users, Award, Zap,
+  Brain, Sparkles, Target, Heart, Calendar, Users, Award, Zap, Bot, BookOpen, Clock, AlertTriangle, Sprout, Puzzle, Stethoscope, Check,
 };
 
 interface SolutionSectionProps {
@@ -31,7 +31,7 @@ const SolutionSection = ({ data, branding }: SolutionSectionProps) => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.5, delay: 0.1 }}
-          className="text-sm md:text-base text-gray-700 max-w-2xl mx-auto text-center mb-10 leading-relaxed"
+          className="text-sm md:text-base text-gray-700 max-w-2xl mx-auto text-center mb-10 leading-relaxed whitespace-pre-line"
         >
           {data.description}
         </motion.p>
