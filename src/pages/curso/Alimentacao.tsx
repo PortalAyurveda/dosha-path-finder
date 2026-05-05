@@ -5,7 +5,7 @@ import CourseHero from "@/components/course/CourseHero";
 import ProblemSection from "@/components/course/ProblemSection";
 import SolutionSection from "@/components/course/SolutionSection";
 import ModulesSection from "@/components/course/ModulesSection";
-import BonusSection from "@/components/course/BonusSection";
+
 import PricingSection from "@/components/course/PricingSection";
 import TestimonialsSection from "@/components/course/TestimonialsSection";
 import AudienceSection from "@/components/course/AudienceSection";
@@ -50,11 +50,11 @@ const Alimentacao = () => {
         <ProblemSection data={data.problem} />
         <SolutionSection data={data.solution} branding={data.branding} />
         <ModulesSection data={data.modules} branding={data.branding} />
-        <BonusSection data={data.bonus} branding={data.branding} />
         <div id="pricing">
           <PricingSection
             data={data.pricing}
             branding={data.branding}
+            bonus={data.bonus}
             onCtaClick={handleCtaClick("pricing")}
           />
         </div>
