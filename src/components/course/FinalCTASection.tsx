@@ -17,22 +17,23 @@ const FinalCTASection = ({ data, branding, onCtaClick }: FinalCTASectionProps) =
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.5 }}
-          className="font-serif italic font-bold text-2xl md:text-3xl mb-4 leading-tight"
+          className="font-serif italic font-bold text-2xl md:text-3xl mb-4 leading-tight whitespace-pre-line"
           style={{ color: "#352F54" }}
         >
           {data.headline}
         </motion.h2>
 
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-          className="text-sm md:text-base max-w-xl mx-auto mb-8 leading-relaxed"
-          style={{ color: "#352F54" }}
-        >
-          {data.subheadline}
-        </motion.p>
+        {data.subheadline && (
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="text-sm md:text-base max-w-xl mx-auto mb-8 leading-relaxed"
+          >
+            {data.subheadline}
+          </motion.p>
+        )}
 
         {data.priceNew && (
           <motion.div
@@ -42,13 +43,11 @@ const FinalCTASection = ({ data, branding, onCtaClick }: FinalCTASectionProps) =
             transition={{ duration: 0.5, delay: 0.2 }}
             className="inline-flex flex-col items-center gap-1 mb-7"
           >
-            <p className="font-serif font-bold text-3xl md:text-4xl text-secondary">{data.priceNew}</p>
-            {data.installments && <p className="text-xs md:text-sm text-white/80">ou {data.installments}</p>}
-            {data.highlight && (
-              <p className="text-[11px] md:text-xs text-white/70 italic mt-1.5 max-w-md">
-                {data.highlight}
-              </p>
-            )}
+            <p className="text-sm md:text-base">
+              {data.priceOld && <span className="line-through text-gray-500 mr-2">De {data.priceOld}</span>}
+              <span className="font-serif font-bold text-2xl md:text-3xl" style={{ color: "#352F54" }}>→ {data.priceNew}</span>
+            </p>
+            {data.installments && <p className="text-xs md:text-sm" style={{ color: "#352F54" }}>{data.installments}{data.highlight ? ` · ${data.highlight}` : ""}</p>}
           </motion.div>
         )}
 
@@ -66,6 +65,23 @@ const FinalCTASection = ({ data, branding, onCtaClick }: FinalCTASectionProps) =
           {data.ctaText}
           <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
         </motion.button>
+
+        {data.quote && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+            className="mt-10"
+          >
+            <p className="font-serif italic text-base md:text-lg" style={{ color: "#352F54" }}>
+              "{data.quote}"
+            </p>
+            {data.quoteAuthor && (
+              <p className="text-sm mt-2" style={{ color: "#352F54" }}>— {data.quoteAuthor}</p>
+            )}
+          </motion.div>
+        )}
       </div>
     </section>
   );

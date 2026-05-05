@@ -3,6 +3,7 @@ import { Helmet } from "react-helmet-async";
 import { alimentacaoData } from "@/data/courses/alimentacao";
 import CourseHero from "@/components/course/CourseHero";
 import ProblemSection from "@/components/course/ProblemSection";
+import OpportunitySection from "@/components/course/OpportunitySection";
 import SolutionSection from "@/components/course/SolutionSection";
 import ModulesSection from "@/components/course/ModulesSection";
 

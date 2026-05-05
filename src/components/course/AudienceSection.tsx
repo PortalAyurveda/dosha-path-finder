@@ -1,6 +1,8 @@
 import { motion } from "framer-motion";
-import { Check } from "lucide-react";
+import { Check, Heart, Sprout, Puzzle, Stethoscope, Users, Award, Sparkles, type LucideIcon } from "lucide-react";
 import type { CourseAudienceData, CourseBranding } from "@/data/courses/courseTypes";
+
+const ICONS: Record<string, LucideIcon> = { Check, Heart, Sprout, Puzzle, Stethoscope, Users, Award, Sparkles };
 
 interface AudienceSectionProps {
   data: CourseAudienceData;
@@ -23,31 +25,34 @@ const AudienceSection = ({ data, branding }: AudienceSectionProps) => {
         </motion.h2>
 
         <ul className="space-y-4">
-          {data.audiences.map((item, i) => (
-            <motion.li
-              key={i}
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{ duration: 0.4, delay: i * 0.06 }}
-              className="flex items-start gap-3.5"
-            >
-              <span
-                className="shrink-0 w-9 h-9 rounded-full flex items-center justify-center mt-0.5"
-                style={{ background: branding.darkColor }}
+          {data.audiences.map((item, i) => {
+            const Icon = (item.iconName && ICONS[item.iconName]) || Check;
+            return (
+              <motion.li
+                key={i}
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ duration: 0.4, delay: i * 0.06 }}
+                className="flex items-start gap-3.5"
               >
-                <Check className="h-4 w-4 text-white" strokeWidth={3} />
-              </span>
-              <div>
-                <h3 className="font-serif font-bold text-base md:text-lg leading-snug" style={{ color: "#352F54" }}>
-                  {item.title}
-                </h3>
-                <p className="text-sm md:text-base text-gray-700 mt-0.5">
-                  {item.description}
-                </p>
-              </div>
-            </motion.li>
-          ))}
+                <span
+                  className="shrink-0 w-9 h-9 rounded-full flex items-center justify-center mt-0.5"
+                  style={{ background: branding.darkColor }}
+                >
+                  <Icon className="h-4 w-4 text-white" strokeWidth={2.5} />
+                </span>
+                <div>
+                  <h3 className="font-serif font-bold text-base md:text-lg leading-snug" style={{ color: "#352F54" }}>
+                    {item.title}
+                  </h3>
+                  <p className="text-sm md:text-base text-gray-700 mt-0.5">
+                    {item.description}
+                  </p>
+                </div>
+              </motion.li>
+            );
+          })}
         </ul>
       </div>
     </section>
