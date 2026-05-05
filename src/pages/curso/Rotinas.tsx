@@ -572,7 +572,7 @@ const Professor = () => (
           {/* Forma de Portal */}
           <div
             className="w-[230px] h-[280px] md:w-[260px] md:h-[320px] shadow-2xl rounded-t-full rounded-b-none overflow-hidden"
-            style={{ border: `4px solid ${YELLOW}` }}
+            style={{ border: `4px solid #F6F4BA` }}
           >
             <img
               src="https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/870818ba-1815-4447-8ac2-b798b42e2074.jpg"
