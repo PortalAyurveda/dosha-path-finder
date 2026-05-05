@@ -684,17 +684,17 @@ const Investimento = () => (
         whileInView={{ opacity: 1, scale: 1 }}
         viewport={{ once: true, margin: "-50px" }}
         transition={{ duration: 0.5 }}
-        className="max-w-md mx-auto p-7 md:p-9 mb-8 rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm shadow-xl bg-white border-2 border-[#f2cb05]"
+        className="max-w-2xl mx-auto p-8 md:p-12 mb-8 rounded-tl-[2.5rem] rounded-br-[2.5rem] rounded-tr-md rounded-bl-md shadow-xl bg-[#F6F4BA] border border-[#1a2347]/10"
       >
-        <p className="text-sm md:text-base uppercase tracking-widest font-bold mb-6 text-[#1a2347] text-center">
+        <p className="text-xs md:text-sm uppercase tracking-[0.2em] font-bold mb-6 text-[#1a2347] text-center">
           O que está incluso
         </p>
-        <ul className="space-y-3 mb-8 text-left">
+        <ul className="space-y-3 mb-8 text-left max-w-md mx-auto">
           {INCLUSO.map((item, i) => (
             <li key={i} className="flex items-start gap-3">
               <span
                 className="shrink-0 inline-flex items-center justify-center w-5 h-5 rounded-full mt-0.5"
-                style={{ background: YELLOW, color: NAVY }}
+                style={{ background: NAVY, color: YELLOW }}
               >
                 <Check className="h-3 w-3" strokeWidth={3} />
               </span>
@@ -705,14 +705,14 @@ const Investimento = () => (
           ))}
         </ul>
 
-        <div className="pt-6 border-t border-[#1a2347]/10 text-center">
-          <p className="font-serif italic font-bold text-2xl md:text-4xl mb-2 text-[#1a2347]">
+        <div className="pt-6 border-t border-[#1a2347]/15 text-center">
+          <p className="font-serif italic font-bold text-3xl md:text-5xl mb-2 text-[#1a2347]">
             12x de R$ 9,68
           </p>
-          <p className="text-sm text-[#1a2347]/70 mb-6">
+          <p className="text-sm md:text-base text-[#1a2347]/70 mb-6">
             ou <strong className="text-[#1a2347]">R$ 97,00</strong> à vista
           </p>
-          <LeafCTA className="!px-6 md:!px-8 !py-3 !text-xs">
+          <LeafCTA className="!px-8 md:!px-10 !py-4 !text-sm">
             Quero assumir o controle agora
           </LeafCTA>
         </div>
