@@ -9,15 +9,15 @@ export const alimentacaoData: CourseData = {
   },
   branding: {
     logo: "https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/logo-alimentacao-extenso.svg",
-    primaryColor: "#A8E6CF",
-    darkColor: "#3F8F66",
-    lightColor: "#D4F1E0",
-    accentColor: "#3F8F66",
+    primaryColor: "#CFEDC2",
+    darkColor: "#A6D98F",
+    lightColor: "#CFEDC2",
+    accentColor: "#A6D98F",
     warmBg: "#FAF9F6",
   },
   hero: {
-    headline: "Você não precisa de mais informação sobre dieta.",
-    subheadline: "Você precisa de uma ESTRUTURA para organizar a bagunça.",
+    headline: "Previna, controle e cure doenças e transtornos de toda uma vida!",
+    subheadline: "",
     description:
       "Pare de depender de cardápios prontos que não duram uma semana. Aprenda a Lógica da Alimentação Ayurveda para montar a rotina da sua casa, ganhar autonomia e ter um Tutor de IA Pessoal para tirar dúvidas 24h.",
     priceOld: "De R$ 697",
