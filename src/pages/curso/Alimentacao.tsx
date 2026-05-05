@@ -11,7 +11,7 @@ import TestimonialsSection from "@/components/course/TestimonialsSection";
 import AudienceSection from "@/components/course/AudienceSection";
 import ProfessorSection from "@/components/course/ProfessorSection";
 import FinalCTASection from "@/components/course/FinalCTASection";
-import CourseFooter from "@/components/course/CourseFooter";
+
 
 const Alimentacao = () => {
   const data = alimentacaoData;
