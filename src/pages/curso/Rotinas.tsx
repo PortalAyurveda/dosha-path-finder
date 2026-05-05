@@ -194,7 +194,7 @@ const ParaQuem = () => (
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-50px" }}
               transition={{ duration: 0.4, delay: (i % 2) * 0.06 }}
-              className="flex items-start gap-4 p-6 bg-[#fff4e0] border border-[#1a2347]/10 hover:border-[#f2cb05] transition-colors rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm"
+              className="flex items-start gap-4 p-6 bg-[#F6F4BA] border border-[#1a2347]/10 hover:border-[#f2cb05] transition-colors rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm"
             >
               <span className="shrink-0 w-12 h-12 rounded-full bg-white flex items-center justify-center shadow-sm">
                 <Icon className="w-6 h-6 text-[#1a2347]" strokeWidth={2} />
@@ -227,7 +227,7 @@ const Mark = ({ children }: { children: React.ReactNode }) => (
 
 // ---------------- SEÇÃO 3: PROBLEMA ----------------
 const Problema = () => (
-  <section className="py-16 md:py-24 bg-[#fff4e0]">
+  <section className="py-16 md:py-24 bg-[#F6F4BA]">
     <div className="max-w-2xl mx-auto px-6">
       <motion.h2
         initial={{ opacity: 0, y: 20 }}
@@ -512,7 +512,7 @@ const Programa = () => {
   );
 
   return (
-    <section className="py-16 md:py-24 bg-[#fff4e0]">
+    <section className="py-16 md:py-24 bg-[#F6F4BA]">
       <div className="max-w-3xl mx-auto px-6">
         <motion.h2
           initial={{ opacity: 0, y: 20 }}
@@ -636,7 +636,7 @@ const Professor = () => (
                   className="flex items-start gap-3 p-4 rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm"
                   style={{ background: "rgba(255,244,224,0.08)" }}
                 >
-                  <span className="shrink-0 w-10 h-10 rounded-full bg-[#fff4e0] flex items-center justify-center">
+                  <span className="shrink-0 w-10 h-10 rounded-full bg-[#F6F4BA] flex items-center justify-center">
                     <Icon className="h-5 w-5 text-[#1a2347]" strokeWidth={2} />
                   </span>
                   <p className="text-sm leading-relaxed pt-1.5 text-white">
@@ -661,7 +661,7 @@ const INCLUSO = [
 ];
 
 const Investimento = () => (
-  <section id="investimento" className="py-16 md:py-24 bg-[#fff4e0]">
+  <section id="investimento" className="py-16 md:py-24 bg-[#F6F4BA]">
     <div className="max-w-2xl mx-auto px-6 text-center">
       <motion.h2
         initial={{ opacity: 0, y: 20 }}
@@ -762,7 +762,7 @@ const Faq = () => {
             return (
               <div
                 key={i}
-                className="bg-[#fff4e0] rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm overflow-hidden"
+                className="bg-[#F6F4BA] rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm overflow-hidden"
               >
                 <button
                   onClick={() => setOpenIndex(isOpen ? null : i)}
