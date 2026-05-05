@@ -10,7 +10,7 @@ interface FinalCTASectionProps {
 
 const FinalCTASection = ({ data, branding, onCtaClick }: FinalCTASectionProps) => {
   return (
-    <section className="py-12 md:py-16" style={{ background: branding.primaryColor }}>
+    <section className="py-12 md:py-16" style={{ background: "linear-gradient(180deg, #F5FBF7 0%, #FAF9F6 100%)" }}>
       <div className="max-w-2xl mx-auto px-6 text-center" style={{ color: "#352F54" }}>
         <motion.h2
           initial={{ opacity: 0, y: 20 }}
