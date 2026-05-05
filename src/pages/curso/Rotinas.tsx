@@ -448,7 +448,7 @@ const AulaItem = ({
       >
         <span
           className="shrink-0 inline-flex items-center justify-center w-9 h-9 rounded-full font-bold text-sm"
-          style={{ background: YELLOW, color: NAVY }}
+          style={{ background: "#F6F4BA", color: NAVY }}
         >
           {String(number).padStart(2, "0")}
         </span>
