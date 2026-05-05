@@ -236,7 +236,7 @@ const Problema = () => (
         transition={{ duration: 0.5 }}
         className="font-serif italic font-bold text-2xl md:text-3xl mb-8 text-center text-[#1a2347]"
       >
-        O Problema: <Mark>Ação na Hora Errada</Mark>
+        O Problema: <strong>Ação na Hora Errada</strong>
       </motion.h2>
 
       <motion.div
@@ -244,15 +244,15 @@ const Problema = () => (
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-100px" }}
         transition={{ duration: 0.5, delay: 0.1 }}
-        className="text-base md:text-lg leading-relaxed space-y-5 text-[#1a2347]/80"
+        className="text-base md:text-lg leading-relaxed space-y-5 text-[#1a2347]/80 text-center"
       >
         <p>
-          Você tenta <Mark>meditar com a mente fervendo</Mark>. Faz treinos
+          Você tenta <strong className="text-[#1a2347]">meditar com a mente fervendo</strong>. Faz treinos
           pesados à noite e perde o sono. Toma o remédio certo na hora errada.
         </p>
         <p>
           Fazer a coisa certa no momento errado{" "}
-          <Mark>desgasta o corpo</Mark> e queima a vitalidade.
+          <strong className="text-[#1a2347]">desgasta o corpo</strong> e queima a vitalidade.
         </p>
         <p className="font-serif italic font-bold text-lg md:text-xl text-[#1a2347] pt-4">
           O problema não é falta de esforço. É lutar contra a própria biologia.
