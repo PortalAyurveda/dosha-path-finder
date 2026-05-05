@@ -41,7 +41,7 @@ const FinalCTASection = ({ data, branding, onCtaClick }: FinalCTASectionProps) =
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="inline-flex flex-col items-center gap-1 mb-7"
+            className="flex flex-col items-center gap-1 mb-7"
           >
             <p className="text-sm md:text-base">
               {data.priceOld && <span className="line-through text-gray-500 mr-2">De {data.priceOld}</span>}
@@ -51,20 +51,22 @@ const FinalCTASection = ({ data, branding, onCtaClick }: FinalCTASectionProps) =
           </motion.div>
         )}
 
-        <motion.button
-          onClick={onCtaClick}
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.97 }}
-          transition={{ duration: 0.4, delay: 0.3 }}
-          className="group inline-flex items-center gap-2.5 font-bold text-xs md:text-sm uppercase tracking-wide px-7 md:px-10 py-3.5 md:py-4 shadow-lg hover:shadow-xl rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm w-full md:w-auto justify-center text-white text-center"
-          style={{ background: "#352F54" }}
-        >
-          {data.ctaText}
-          <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
-        </motion.button>
+        <div className="flex justify-center">
+          <motion.button
+            onClick={onCtaClick}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.97 }}
+            transition={{ duration: 0.4, delay: 0.3 }}
+            className="group inline-flex items-center gap-2.5 font-bold text-xs md:text-sm uppercase tracking-wide px-7 md:px-10 py-3.5 md:py-4 shadow-lg hover:shadow-xl rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm w-full md:w-auto justify-center text-white whitespace-nowrap"
+            style={{ background: "#352F54" }}
+          >
+            {data.ctaText}
+            <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+          </motion.button>
+        </div>
 
         {data.quote && (
           <motion.div
