@@ -246,11 +246,11 @@ export const alimentacaoData: CourseData = {
     installments: "12x de R$ 39,62",
     highlight: "2 anos de acesso",
     ctaText: "QUERO TRILHAR O CAMINHO CERTEIRO",
-    quote: "Ayurveda é para todo mundo. E todo mundo merece conhecer Ayurveda.",
+    quote: "Ayurveda é para todo mundo.\nE todo mundo merece conhecer Ayurveda.",
     quoteAuthor: "Edson Osorio",
   },
   footer: {
-    tagline: "Ayurveda é para todo mundo. E todo mundo merece conhecer Ayurveda.",
+    tagline: "Ayurveda é para todo mundo.\nE todo mundo merece conhecer Ayurveda.",
     phone: "(11) 99807-6111",
     email: "contato@portalayurveda.com",
     instagram: "@edson_ayurveda",
