@@ -149,45 +149,8 @@ const Header = () => {
           </Link>
         </div>
 
-        {/* RIGHT — Profile with pie favicon */}
-        <div className="flex items-center gap-1.5 justify-self-end">
-            {doshaResult ? (
-              <Link
-                to={profileLink}
-                className="flex items-center gap-2 pl-3 pr-2.5 py-1 rounded-full bg-white hover:bg-white/90 transition-colors border border-border/30 shadow-sm"
-              >
-                <span className="text-xs sm:text-sm font-semibold text-foreground truncate max-w-[80px] sm:max-w-[120px] leading-none">
-                  {firstName}
-                </span>
-                <span className="shrink-0 inline-flex items-center justify-center">
-                  <HeaderDoshaPie
-                    vata={doshaResult.vatascore ?? 0}
-                    pitta={doshaResult.pittascore ?? 0}
-                    kapha={doshaResult.kaphascore ?? 0}
-                    size={20}
-                  />
-                </span>
-              </Link>
-            ) : user ? (
-              <Link
-                to="/meu-dosha"
-                className="flex items-center justify-center w-9 h-9 rounded-full bg-white font-bold text-sm hover:bg-white/90 transition-colors"
-                style={buttonTextColor ? { color: buttonTextColor } : undefined}
-              >
-                {userInitial.toUpperCase()}
-              </Link>
-            ) : (
-              <Link to="/entrar">
-              <Button
-                  size="sm"
-                  className="bg-white text-primary font-semibold hover:bg-white/90 hover:text-primary gap-1.5"
-                >
-                  <LogIn className="h-4 w-4" />
-                  Entrar
-                </Button>
-              </Link>
-            )}
-          </div>
+        {/* RIGHT — empty placeholder */}
+        <div className="justify-self-end" />
       </div>
     </header>
   );
