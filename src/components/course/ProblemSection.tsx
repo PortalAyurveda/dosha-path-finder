@@ -79,8 +79,7 @@ const ProblemSection = ({ data }: ProblemSectionProps) => {
 
         {data.finalNote && (
           <p
-            className="font-serif font-bold italic text-base md:text-lg text-center mt-8"
-            style={{ color: "#352F54" }}
+            className="text-sm md:text-base text-gray-700 leading-relaxed text-center mt-8"
           >
             {data.finalNote}
           </p>

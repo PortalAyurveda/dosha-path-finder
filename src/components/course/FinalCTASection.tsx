@@ -12,16 +12,24 @@ const FinalCTASection = ({ data, branding, onCtaClick }: FinalCTASectionProps) =
   return (
     <section className="py-12 md:py-16" style={{ background: "linear-gradient(180deg, #F5FBF7 0%, #FAF9F6 100%)" }}>
       <div className="max-w-2xl mx-auto px-6 text-center" style={{ color: "#352F54" }}>
-        <motion.h2
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.5 }}
-          className="font-serif italic font-bold text-2xl md:text-3xl mb-4 leading-tight whitespace-pre-line"
+          className="font-serif italic font-bold text-lg md:text-xl mb-6 leading-relaxed space-y-3"
           style={{ color: "#352F54" }}
         >
-          {data.headline}
-        </motion.h2>
+          <p>
+            Você pode <span style={{ color: branding.darkColor }}>esperar mais um mês</span>.
+          </p>
+          <p>
+            Pode <span style={{ color: branding.darkColor }}>testar mais uma dieta</span>.
+          </p>
+          <p>
+            Ou pode <span style={{ color: branding.darkColor }}>entrar agora</span> no único caminho que vai funcionar para o seu corpo.
+          </p>
+        </motion.div>
 
         {data.subheadline && (
           <motion.p

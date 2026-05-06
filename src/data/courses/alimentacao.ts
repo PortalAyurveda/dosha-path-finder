@@ -38,7 +38,7 @@ export const alimentacaoData: CourseData = {
       "Dorme mal e acorda pesada",
     ],
     closing:
-      "Não é falta de esforço. Não é fraqueza de vontade.\n\nO problema é que ninguém te ensinou as regras do jogo.",
+      "O problema é que ninguém te ensinou as regras do jogo.",
     examples: [
       "Salada crua à noite piora sua ansiedade — e você não sabia.",
       "Iogurte com granola te deixa constipada — e você achava que era saudável.",
@@ -54,8 +54,7 @@ export const alimentacaoData: CourseData = {
       "A maioria das pessoas vai demorar anos para encontrar isso organizado, em português, com método claro, suporte de IA treinada com 15 anos de conteúdo — e por menos de R$ 400.",
     ],
     highlight: "Você está aqui agora. Isso já é raro.",
-    closing:
-      "Não é sobre desconto. É sobre acesso a um caminho que muito pouca gente conhece — e que, quem conhece, nunca mais volta para a dieta genérica.",
+    closing: "",
   },
   solution: {
     title: "Depois desse curso, você não chuta mais.",
