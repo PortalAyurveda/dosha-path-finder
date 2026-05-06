@@ -47,15 +47,17 @@ const OpportunitySection = ({ data, branding }: OpportunitySectionProps) => {
           </p>
         </motion.div>
 
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.5, delay: 0.4 }}
-          className="text-sm md:text-base text-gray-700 leading-relaxed"
-        >
-          {data.closing}
-        </motion.p>
+        {data.closing && (
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+            className="text-sm md:text-base text-gray-700 leading-relaxed"
+          >
+            {data.closing}
+          </motion.p>
+        )}
       </div>
     </section>
   );
