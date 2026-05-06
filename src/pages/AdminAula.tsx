@@ -5,6 +5,7 @@ import { Helmet } from "react-helmet-async";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -26,9 +27,52 @@ interface Aula {
   youtube_url: string;
   is_active: boolean;
   created_at: string;
+  starts_at: string | null;
+  descricao: string | null;
+  button_text: string | null;
+  button_url: string | null;
+  button_delay_seconds: number | null;
 }
 
-const emptyForm = { titulo: "", youtube_url: "", slug: "" };
+const SP_OFFSET = "-03:00"; // São Paulo is UTC-3 year-round (no DST)
+
+// Convert ISO UTC string -> "YYYY-MM-DDTHH:mm" interpreted in São Paulo for input
+const isoToSpInput = (iso: string | null): string => {
+  if (!iso) return "";
+  const d = new Date(iso);
+  // get parts in SP timezone via formatter
+  const fmt = new Intl.DateTimeFormat("sv-SE", {
+    timeZone: "America/Sao_Paulo",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
+  // sv-SE produces "YYYY-MM-DD HH:mm" -> replace space with T
+  return fmt.format(d).replace(" ", "T");
+};
+
+// Convert "YYYY-MM-DDTHH:mm" (SP local) -> ISO UTC string
+const spInputToIso = (val: string): string | null => {
+  if (!val) return null;
+  // Append SP offset so Date parses it correctly
+  const d = new Date(`${val}:00${SP_OFFSET}`);
+  if (isNaN(d.getTime())) return null;
+  return d.toISOString();
+};
+
+const emptyForm = {
+  titulo: "",
+  youtube_url: "",
+  slug: "",
+  starts_at: "",
+  descricao: "",
+  button_text: "",
+  button_url: "",
+  button_delay_seconds: "0",
+};
 
 const AdminAula = () => {
   const [aulas, setAulas] = useState<Aula[]>([]);
@@ -43,11 +87,8 @@ const AdminAula = () => {
       .from("aulas_ao_vivo")
       .select("*")
       .order("created_at", { ascending: false });
-    if (error) {
-      toast.error("Erro ao carregar aulas: " + error.message);
-    } else {
-      setAulas((data || []) as Aula[]);
-    }
+    if (error) toast.error("Erro ao carregar aulas: " + error.message);
+    else setAulas((data || []) as Aula[]);
     setLoading(false);
   }, []);
 
@@ -62,14 +103,23 @@ const AdminAula = () => {
 
   const handleEdit = (a: Aula) => {
     setEditingId(a.id);
-    setForm({ titulo: a.titulo, youtube_url: a.youtube_url, slug: a.slug });
+    setForm({
+      titulo: a.titulo,
+      youtube_url: a.youtube_url,
+      slug: a.slug,
+      starts_at: isoToSpInput(a.starts_at),
+      descricao: a.descricao ?? "",
+      button_text: a.button_text ?? "",
+      button_url: a.button_url ?? "",
+      button_delay_seconds: String(a.button_delay_seconds ?? 0),
+    });
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.titulo.trim() || !form.youtube_url.trim() || !form.slug.trim()) {
-      toast.error("Preencha todos os campos.");
+      toast.error("Preencha título, URL e slug.");
       return;
     }
     setSaving(true);
@@ -77,14 +127,18 @@ const AdminAula = () => {
       titulo: form.titulo.trim(),
       youtube_url: form.youtube_url.trim(),
       slug: sanitizeSlug(form.slug),
+      starts_at: spInputToIso(form.starts_at),
+      descricao: form.descricao.trim() || null,
+      button_text: form.button_text.trim() || null,
+      button_url: form.button_url.trim() || null,
+      button_delay_seconds: Math.max(0, parseInt(form.button_delay_seconds, 10) || 0),
     };
     const { error } = editingId
       ? await supabase.from("aulas_ao_vivo").update(payload).eq("id", editingId)
       : await supabase.from("aulas_ao_vivo").insert(payload);
 
-    if (error) {
-      toast.error("Erro ao salvar: " + error.message);
-    } else {
+    if (error) toast.error("Erro ao salvar: " + error.message);
+    else {
       toast.success(editingId ? "Aula atualizada" : "Aula criada");
       resetForm();
       fetchAulas();
@@ -123,11 +177,11 @@ const AdminAula = () => {
             Aulas ao Vivo
           </h1>
           <p className="text-sm text-muted-foreground">
-            Cadastre e gerencie as aulas que serão exibidas em /aula/:slug
+            Cadastre e gerencie as aulas exibidas em /aula/:slug. Horários no fuso de
+            São Paulo (UTC-3).
           </p>
         </header>
 
-        {/* Form */}
         <form
           onSubmit={handleSubmit}
           className="bg-card border border-border rounded-xl p-6 space-y-4"
@@ -168,6 +222,64 @@ const AdminAula = () => {
                 placeholder="https://www.youtube.com/watch?v=..."
               />
             </div>
+            <div className="space-y-2">
+              <Label htmlFor="starts_at">Início da aula (São Paulo)</Label>
+              <Input
+                id="starts_at"
+                type="datetime-local"
+                value={form.starts_at}
+                onChange={(e) => setForm({ ...form, starts_at: e.target.value })}
+              />
+              <p className="text-xs text-muted-foreground">
+                O countdown desaparece quando esse horário chega.
+              </p>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="button_delay_seconds">
+                Botão aparece X segundos após o início
+              </Label>
+              <Input
+                id="button_delay_seconds"
+                type="number"
+                min={0}
+                value={form.button_delay_seconds}
+                onChange={(e) =>
+                  setForm({ ...form, button_delay_seconds: e.target.value })
+                }
+                placeholder="0"
+              />
+              <p className="text-xs text-muted-foreground">
+                Ex: 1800 = 30 min após o início da aula.
+              </p>
+            </div>
+            <div className="space-y-2 md:col-span-2">
+              <Label htmlFor="descricao">Descrição (abaixo do vídeo)</Label>
+              <Textarea
+                id="descricao"
+                value={form.descricao}
+                onChange={(e) => setForm({ ...form, descricao: e.target.value })}
+                rows={4}
+                placeholder="Texto que aparece logo abaixo do vídeo."
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="button_text">Texto do botão</Label>
+              <Input
+                id="button_text"
+                value={form.button_text}
+                onChange={(e) => setForm({ ...form, button_text: e.target.value })}
+                placeholder="Quero garantir minha vaga"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="button_url">Link do botão</Label>
+              <Input
+                id="button_url"
+                value={form.button_url}
+                onChange={(e) => setForm({ ...form, button_url: e.target.value })}
+                placeholder="https://..."
+              />
+            </div>
           </div>
           <div className="flex gap-2">
             <Button type="submit" disabled={saving}>
@@ -182,7 +294,6 @@ const AdminAula = () => {
           </div>
         </form>
 
-        {/* List */}
         <section className="bg-card border border-border rounded-xl p-6">
           <h2 className="font-heading text-lg font-semibold mb-4">
             Aulas cadastradas
@@ -197,6 +308,7 @@ const AdminAula = () => {
                 <TableRow>
                   <TableHead>Título</TableHead>
                   <TableHead>Slug</TableHead>
+                  <TableHead>Início (SP)</TableHead>
                   <TableHead>Ativa</TableHead>
                   <TableHead className="text-right">Ações</TableHead>
                 </TableRow>
@@ -214,6 +326,13 @@ const AdminAula = () => {
                       >
                         /aula/{a.slug} <ExternalLink className="w-3 h-3" />
                       </a>
+                    </TableCell>
+                    <TableCell className="text-xs text-muted-foreground">
+                      {a.starts_at
+                        ? new Date(a.starts_at).toLocaleString("pt-BR", {
+                            timeZone: "America/Sao_Paulo",
+                          })
+                        : "—"}
                     </TableCell>
                     <TableCell>
                       <Switch
