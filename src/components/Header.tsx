@@ -122,56 +122,8 @@ const Header = () => {
       style={headerBg}
     >
       <div className="max-w-6xl mx-auto grid h-16 grid-cols-[1fr_auto_1fr] items-center gap-3 px-4 sm:px-6">
-        {/* LEFT — Hamburger menu */}
-        <div className="justify-self-start">
-          <Sheet open={open} onOpenChange={setOpen}>
-            <SheetTrigger asChild>
-              <Button
-                size="sm"
-                className="bg-white font-semibold hover:bg-white/90 gap-1.5"
-                style={buttonTextColor ? { color: buttonTextColor } : undefined}
-              >
-                <Menu className="h-5 w-5 bg-primary-foreground text-primary" />
-                <span className="text-sm font-medium">Menu</span>
-              </Button>
-            </SheetTrigger>
-            <SheetContent
-              side="left"
-              className={`w-72 pt-12 text-primary-foreground border-primary ${isSamkhya ? "" : "bg-primary"}`}
-              style={sheetBg}
-            >
-              <SheetTitle className="sr-only">Menu de navegação</SheetTitle>
-              <nav className="flex flex-col gap-2">
-                {navLinks.map((link) => (
-                  <Link
-                    key={link.to}
-                    to={link.to}
-                    onClick={() => setOpen(false)}
-                    className={`px-4 py-3 rounded-xl text-base font-medium transition-colors ${
-                      isActive(link.to)
-                        ? "bg-white/20 text-white font-bold"
-                        : "text-white/70 hover:text-white hover:bg-white/10"
-                    }`}
-                  >
-                    {link.label}
-                  </Link>
-                ))}
-                {user && (
-                  <>
-                    <div className="border-t border-white/20 my-2" />
-                    <button
-                      onClick={() => { setOpen(false); handleSignOut(); }}
-                      className="px-4 py-3 rounded-xl text-base font-medium text-white/70 hover:text-white hover:bg-white/10 transition-colors flex items-center gap-2 text-left"
-                    >
-                      <LogOut className="h-4 w-4" />
-                      Sair
-                    </button>
-                  </>
-                )}
-              </nav>
-            </SheetContent>
-          </Sheet>
-        </div>
+        {/* LEFT — empty placeholder */}
+        <div className="justify-self-start" />
 
         {/* CENTER — Logo (swap when in /samkhya/*) */}
         <div className="flex min-w-0 justify-center justify-self-center items-center h-full overflow-visible">
@@ -197,45 +149,8 @@ const Header = () => {
           </Link>
         </div>
 
-        {/* RIGHT — Profile with pie favicon */}
-        <div className="flex items-center gap-1.5 justify-self-end">
-            {doshaResult ? (
-              <Link
-                to={profileLink}
-                className="flex items-center gap-2 pl-3 pr-2.5 py-1 rounded-full bg-white hover:bg-white/90 transition-colors border border-border/30 shadow-sm"
-              >
-                <span className="text-xs sm:text-sm font-semibold text-foreground truncate max-w-[80px] sm:max-w-[120px] leading-none">
-                  {firstName}
-                </span>
-                <span className="shrink-0 inline-flex items-center justify-center">
-                  <HeaderDoshaPie
-                    vata={doshaResult.vatascore ?? 0}
-                    pitta={doshaResult.pittascore ?? 0}
-                    kapha={doshaResult.kaphascore ?? 0}
-                    size={20}
-                  />
-                </span>
-              </Link>
-            ) : user ? (
-              <Link
-                to="/meu-dosha"
-                className="flex items-center justify-center w-9 h-9 rounded-full bg-white font-bold text-sm hover:bg-white/90 transition-colors"
-                style={buttonTextColor ? { color: buttonTextColor } : undefined}
-              >
-                {userInitial.toUpperCase()}
-              </Link>
-            ) : (
-              <Link to="/entrar">
-              <Button
-                  size="sm"
-                  className="bg-white text-primary font-semibold hover:bg-white/90 hover:text-primary gap-1.5"
-                >
-                  <LogIn className="h-4 w-4" />
-                  Entrar
-                </Button>
-              </Link>
-            )}
-          </div>
+        {/* RIGHT — empty placeholder */}
+        <div className="justify-self-end" />
       </div>
     </header>
   );
