@@ -31,7 +31,7 @@ interface Aula {
   descricao: string | null;
   button_text: string | null;
   button_url: string | null;
-  button_delay_seconds: number | null;
+  button_delay_minutes: number | null;
 }
 
 const SP_OFFSET = "-03:00"; // São Paulo is UTC-3 year-round (no DST)
@@ -71,7 +71,7 @@ const emptyForm = {
   descricao: "",
   button_text: "",
   button_url: "",
-  button_delay_seconds: "0",
+  button_delay_minutes: "0",
 };
 
 const AdminAula = () => {
@@ -111,7 +111,7 @@ const AdminAula = () => {
       descricao: a.descricao ?? "",
       button_text: a.button_text ?? "",
       button_url: a.button_url ?? "",
-      button_delay_seconds: String(a.button_delay_seconds ?? 0),
+      button_delay_minutes: String(a.button_delay_minutes ?? 0),
     });
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -131,7 +131,7 @@ const AdminAula = () => {
       descricao: form.descricao.trim() || null,
       button_text: form.button_text.trim() || null,
       button_url: form.button_url.trim() || null,
-      button_delay_seconds: Math.max(0, parseInt(form.button_delay_seconds, 10) || 0),
+      button_delay_minutes: Math.max(0, parseInt(form.button_delay_minutes, 10) || 0),
     };
     const { error } = editingId
       ? await supabase.from("aulas_ao_vivo").update(payload).eq("id", editingId)
@@ -235,16 +235,16 @@ const AdminAula = () => {
               </p>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="button_delay_seconds">
+              <Label htmlFor="button_delay_minutes">
                 Botão aparece X segundos após o início
               </Label>
               <Input
-                id="button_delay_seconds"
+                id="button_delay_minutes"
                 type="number"
                 min={0}
-                value={form.button_delay_seconds}
+                value={form.button_delay_minutes}
                 onChange={(e) =>
-                  setForm({ ...form, button_delay_seconds: e.target.value })
+                  setForm({ ...form, button_delay_minutes: e.target.value })
                 }
                 placeholder="0"
               />
