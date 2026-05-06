@@ -54,8 +54,7 @@ export const alimentacaoData: CourseData = {
       "A maioria das pessoas vai demorar anos para encontrar isso organizado, em português, com método claro, suporte de IA treinada com 15 anos de conteúdo — e por menos de R$ 400.",
     ],
     highlight: "Você está aqui agora. Isso já é raro.",
-    closing:
-      "Não é sobre desconto. É sobre acesso a um caminho que muito pouca gente conhece — e que, quem conhece, nunca mais volta para a dieta genérica.",
+    closing: "",
   },
   solution: {
     title: "Depois desse curso, você não chuta mais.",
