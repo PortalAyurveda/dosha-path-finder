@@ -15,7 +15,7 @@ interface Aula {
   descricao: string | null;
   button_text: string | null;
   button_url: string | null;
-  button_delay_seconds: number | null;
+  button_delay_minutes: number | null;
 }
 
 function getYouTubeEmbedUrl(url: string): string | null {
@@ -112,7 +112,7 @@ const Aula = () => {
     !!aula?.button_url &&
     !!aula?.button_text &&
     startTs !== null &&
-    now >= startTs + (aula.button_delay_seconds ?? 0) * 1000;
+    now >= startTs + (aula.button_delay_minutes ?? 0) * 60 * 1000;
 
   return (
     <div className="bg-white min-h-screen">
