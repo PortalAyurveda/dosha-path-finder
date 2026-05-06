@@ -112,7 +112,7 @@ const Aula = () => {
     !!aula?.button_url &&
     !!aula?.button_text &&
     startTs !== null &&
-    now >= startTs + (aula.button_delay_minutes ?? 0) * 1000;
+    now >= startTs + (aula.button_delay_minutes ?? 0) * 60 * 1000;
 
   return (
     <div className="bg-white min-h-screen">
