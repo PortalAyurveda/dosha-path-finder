@@ -122,56 +122,8 @@ const Header = () => {
       style={headerBg}
     >
       <div className="max-w-6xl mx-auto grid h-16 grid-cols-[1fr_auto_1fr] items-center gap-3 px-4 sm:px-6">
-        {/* LEFT — Hamburger menu */}
-        <div className="justify-self-start">
-          <Sheet open={open} onOpenChange={setOpen}>
-            <SheetTrigger asChild>
-              <Button
-                size="sm"
-                className="bg-white font-semibold hover:bg-white/90 gap-1.5"
-                style={buttonTextColor ? { color: buttonTextColor } : undefined}
-              >
-                <Menu className="h-5 w-5 bg-primary-foreground text-primary" />
-                <span className="text-sm font-medium">Menu</span>
-              </Button>
-            </SheetTrigger>
-            <SheetContent
-              side="left"
-              className={`w-72 pt-12 text-primary-foreground border-primary ${isSamkhya ? "" : "bg-primary"}`}
-              style={sheetBg}
-            >
-              <SheetTitle className="sr-only">Menu de navegação</SheetTitle>
-              <nav className="flex flex-col gap-2">
-                {navLinks.map((link) => (
-                  <Link
-                    key={link.to}
-                    to={link.to}
-                    onClick={() => setOpen(false)}
-                    className={`px-4 py-3 rounded-xl text-base font-medium transition-colors ${
-                      isActive(link.to)
-                        ? "bg-white/20 text-white font-bold"
-                        : "text-white/70 hover:text-white hover:bg-white/10"
-                    }`}
-                  >
-                    {link.label}
-                  </Link>
-                ))}
-                {user && (
-                  <>
-                    <div className="border-t border-white/20 my-2" />
-                    <button
-                      onClick={() => { setOpen(false); handleSignOut(); }}
-                      className="px-4 py-3 rounded-xl text-base font-medium text-white/70 hover:text-white hover:bg-white/10 transition-colors flex items-center gap-2 text-left"
-                    >
-                      <LogOut className="h-4 w-4" />
-                      Sair
-                    </button>
-                  </>
-                )}
-              </nav>
-            </SheetContent>
-          </Sheet>
-        </div>
+        {/* LEFT — empty placeholder */}
+        <div className="justify-self-start" />
 
         {/* CENTER — Logo (swap when in /samkhya/*) */}
         <div className="flex min-w-0 justify-center justify-self-center items-center h-full overflow-visible">
