@@ -53,6 +53,9 @@ import SamkhyaTodos from "./pages/SamkhyaTodos";
 const queryClient = new QueryClient();
 
 const LayoutOrBare = ({ children }: { children: React.ReactNode }) => {
+  const { pathname } = useLocation();
+  const bare = pathname.startsWith("/aula") || pathname === "/aovivo";
+  if (bare) return <>{children}</>;
   return <Layout>{children}</Layout>;
 };
 
