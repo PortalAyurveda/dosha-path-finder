@@ -128,7 +128,7 @@ const RoutedApp = () => {
 
               {/* Aulas ao vivo */}
               <Route path="/aula/:slug" element={<Aula />} />
-              <Route path="/aovivo" element={<Aula />} />
+              <Route path="/aovivo" element={<Navigate to="/aula/aovivo" replace />} />
 
               {/* Loja Samkhya */}
               <Route path="/samkhya" element={<Samkhya />} />
