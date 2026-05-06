@@ -38,7 +38,7 @@ export const alimentacaoData: CourseData = {
       "Dorme mal e acorda pesada",
     ],
     closing:
-      "Não é falta de esforço. Não é fraqueza de vontade.\n\nO problema é que ninguém te ensinou as regras do jogo.",
+      "O problema é que ninguém te ensinou as regras do jogo.",
     examples: [
       "Salada crua à noite piora sua ansiedade — e você não sabia.",
       "Iogurte com granola te deixa constipada — e você achava que era saudável.",
