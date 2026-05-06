@@ -254,5 +254,5 @@ export const alimentacaoData: CourseData = {
     email: "contato@portalayurveda.com",
     instagram: "@edson_ayurveda",
   },
-  checkoutUrl: "#checkout",
+  checkoutUrl: "https://pay.hotmart.com/Y82085107Y?off=foe7nkqx",
 };
