@@ -35,6 +35,8 @@ import AdminRoute from "./components/admin/AdminRoute";
 import AdminLoja from "./pages/AdminLoja";
 import AdminBiblioteca from "./pages/AdminBiblioteca";
 import AdminTerapeutas from "./pages/AdminTerapeutas";
+import AdminAula from "./pages/AdminAula";
+import Aula from "./pages/Aula";
 import Blog from "./pages/Blog";
 import BlogArticle from "./pages/BlogArticle";
 import Metricas from "./pages/Metricas";
@@ -122,6 +124,11 @@ const RoutedApp = () => {
               <Route path="/admin/loja" element={<AdminRoute><AdminLoja /></AdminRoute>} />
               <Route path="/admin/biblioteca" element={<AdminRoute><AdminBiblioteca /></AdminRoute>} />
               <Route path="/admin/terapeutas" element={<AdminRoute><AdminTerapeutas /></AdminRoute>} />
+              <Route path="/admin/aula" element={<AdminRoute><AdminAula /></AdminRoute>} />
+
+              {/* Aulas ao vivo */}
+              <Route path="/aula/:slug" element={<Aula />} />
+              <Route path="/aovivo" element={<Navigate to="/aula/aovivo" replace />} />
 
               {/* Loja Samkhya */}
               <Route path="/samkhya" element={<Samkhya />} />
