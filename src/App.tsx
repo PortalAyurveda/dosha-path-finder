@@ -54,7 +54,7 @@ const queryClient = new QueryClient();
 
 const LayoutOrBare = ({ children }: { children: React.ReactNode }) => {
   const { pathname } = useLocation();
-  const bare = pathname.startsWith("/aula") || pathname === "/aovivo";
+  const bare = pathname === "/aovivo";
   if (bare) return <>{children}</>;
   return <Layout>{children}</Layout>;
 };
