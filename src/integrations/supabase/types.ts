@@ -104,6 +104,36 @@ export type Database = {
         }
         Relationships: []
       }
+      aulas_ao_vivo: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          slug: string
+          titulo: string
+          updated_at: string
+          youtube_url: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          slug: string
+          titulo: string
+          updated_at?: string
+          youtube_url: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          slug?: string
+          titulo?: string
+          updated_at?: string
+          youtube_url?: string
+        }
+        Relationships: []
+      }
       bkp: {
         Row: {
           agniforte: number | null
