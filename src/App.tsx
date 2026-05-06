@@ -7,6 +7,7 @@ import { UserProvider } from "@/contexts/UserContext";
 import { useCanonical } from "@/hooks/useCanonical";
 import Layout from "@/components/Layout";
 import Index from "./pages/Index";
+import LaunchPage from "./pages/LaunchPage";
 import TesteDeDosha from "./pages/TesteDeDosha";
 import MeuDosha from "./pages/MeuDosha";
 import Biblioteca from "./pages/Biblioteca";
@@ -59,7 +60,8 @@ const RoutedApp = () => {
     <UserProvider>
       <LayoutOrBare>
             <Routes>
-              <Route path="/" element={<Index />} />
+              <Route path="/" element={<LaunchPage />} />
+              <Route path="/preview" element={<Index />} />
               <Route path="/teste-de-dosha" element={<TesteDeDosha />} />
               <Route path="/meu-dosha" element={<MeuDosha />} />
               <Route path="/biblioteca" element={<Biblioteca />} />
