@@ -236,7 +236,7 @@ const AdminAula = () => {
             </div>
             <div className="space-y-2">
               <Label htmlFor="button_delay_minutes">
-                Botão aparece X segundos após o início
+                Botão aparece X minutos após o início
               </Label>
               <Input
                 id="button_delay_minutes"
@@ -249,7 +249,7 @@ const AdminAula = () => {
                 placeholder="0"
               />
               <p className="text-xs text-muted-foreground">
-                Ex: 1800 = 30 min após o início da aula.
+                Ex: 30 = 30 min após o início da aula.
               </p>
             </div>
             <div className="space-y-2 md:col-span-2">
