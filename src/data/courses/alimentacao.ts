@@ -238,7 +238,7 @@ export const alimentacaoData: CourseData = {
   },
   finalCta: {
     headline:
-      "Você pode esperar mais um mês.\nPode testar mais uma dieta.\nOu pode entrar agora no único caminho que vai funcionar para o seu corpo.",
+      "Você pode esperar mais um mês, testar mais uma dieta... Ou pode entrar agora no único caminho que vai funcionar para o seu corpo.",
     subheadline: "",
     priceOld: "R$ 697",
     priceNew: "R$ 397",
