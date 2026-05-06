@@ -106,7 +106,7 @@ export type Database = {
       }
       aulas_ao_vivo: {
         Row: {
-          button_delay_seconds: number
+          button_delay_minutes: number
           button_text: string | null
           button_url: string | null
           created_at: string
@@ -120,7 +120,7 @@ export type Database = {
           youtube_url: string
         }
         Insert: {
-          button_delay_seconds?: number
+          button_delay_minutes?: number
           button_text?: string | null
           button_url?: string | null
           created_at?: string
@@ -134,7 +134,7 @@ export type Database = {
           youtube_url: string
         }
         Update: {
-          button_delay_seconds?: number
+          button_delay_minutes?: number
           button_text?: string | null
           button_url?: string | null
           created_at?: string

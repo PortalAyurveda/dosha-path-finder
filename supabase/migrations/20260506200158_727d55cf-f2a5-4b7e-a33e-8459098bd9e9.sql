@@ -1,0 +1,1 @@
+ALTER TABLE public.aulas_ao_vivo RENAME COLUMN button_delay_seconds TO button_delay_minutes;
