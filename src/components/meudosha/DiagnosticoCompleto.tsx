@@ -583,12 +583,19 @@ const ProximoPassoCard = ({
   href: string;
   externo?: boolean;
 }) => {
+  const isImg = icone.startsWith("http");
   const cardInner = (
     <div
       className={cn("bg-white p-6 flex flex-col gap-3 h-full", LEAF)}
       style={{ border: `1px solid ${COLOR.cardBorder}`, boxShadow: "0 1px 8px rgba(53,47,84,0.08)" }}
     >
-      <div className="text-5xl text-center">{icone}</div>
+      <div className="text-5xl text-center">
+        {isImg ? (
+          <img src={icone} alt={titulo} className="w-14 h-14 object-contain mx-auto" />
+        ) : (
+          icone
+        )}
+      </div>
       <h3
         className="font-serif font-bold text-base text-center"
         style={{ color: COLOR.primary, fontFamily: "'Roboto Serif', serif" }}
