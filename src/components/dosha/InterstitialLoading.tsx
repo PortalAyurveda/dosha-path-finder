@@ -54,7 +54,9 @@ const scenes = [
         <img
           src={IMG4_URL}
           alt="Métricas"
-          className="max-w-[200px] md:max-w-[260px] object-contain"
+          width={260}
+          height={260}
+          className="w-[200px] h-[200px] md:w-[260px] md:h-[260px] object-contain"
         />
       </div>
     ),
@@ -66,7 +68,9 @@ const scenes = [
         <img
           src={IMG5_URL}
           alt="Akasha"
-          className="max-w-[200px] md:max-w-[260px] object-contain"
+          width={260}
+          height={260}
+          className="w-[200px] h-[200px] md:w-[260px] md:h-[260px] object-contain"
         />
       </div>
     ),
