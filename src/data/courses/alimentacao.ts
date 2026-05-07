@@ -22,7 +22,7 @@ export const alimentacaoData: CourseData = {
       "Aprenda a lógica da Alimentação Ayurveda e nunca mais dependa de cardápio pronto para cuidar da sua saúde.",
     priceOld: "R$ 697",
     priceNew: "R$ 397",
-    installments: "12x de R$ 39,62",
+    installments: "12x de R$ 41,06",
     accessYears: "2 anos de acesso",
     ctaText: "QUERO O CAMINHO CERTEIRO",
   },
