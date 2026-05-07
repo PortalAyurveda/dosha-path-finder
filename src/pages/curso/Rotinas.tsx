@@ -561,17 +561,17 @@ const PROFESSOR_BULLETS = [
 const Professor = () => (
   <section className="py-16 md:py-24 bg-[#1a2347]">
     <div className="max-w-4xl mx-auto px-6">
-      <div className="grid grid-cols-1 md:grid-cols-[auto_1fr] gap-10 md:gap-12 items-start">
+      <div className="grid grid-cols-1 md:grid-cols-[auto_1fr] gap-10 md:gap-12 items-stretch">
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.5 }}
-          className="mx-auto md:mx-0"
+          className="mx-auto md:mx-0 h-full"
         >
           {/* Forma de Portal */}
           <div
-            className="w-[230px] h-[280px] md:w-[260px] md:h-[320px] shadow-2xl rounded-t-full rounded-b-none overflow-hidden"
+            className="w-[230px] md:w-[260px] h-full min-h-[280px] shadow-2xl rounded-t-full rounded-b-none overflow-hidden"
             style={{ border: `4px solid #FBEFC2` }}
           >
             <img
@@ -599,7 +599,7 @@ const Professor = () => (
             Terapeuta Ayurveda | Professor | Fundador do Portal Ayurveda
           </p>
 
-          <ul className="space-y-3 mb-8">
+          <ul className="space-y-3">
             {PROFESSOR_BULLETS.map((b, i) => (
               <li key={i} className="flex items-start gap-3">
                 <span
@@ -614,38 +614,6 @@ const Professor = () => (
               </li>
             ))}
           </ul>
-
-          <h3 className="font-serif italic font-bold text-lg md:text-xl mb-4 text-[#f2cb05]">
-            O Ecossistema de Apoio
-          </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {[
-              {
-                icon: Target,
-                text: "Tutor de IA Ayurveda 24h — tira suas dúvidas de rotina a qualquer hora",
-              },
-              {
-                icon: Users,
-                text: "Comunidade de Alunos — troque resultados práticos com o grupo do Portal Ayurveda",
-              },
-            ].map((c, i) => {
-              const Icon = c.icon;
-              return (
-                <div
-                  key={i}
-                  className="flex items-start gap-3 p-4 rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm"
-                  style={{ background: "rgba(255,244,224,0.08)" }}
-                >
-                  <span className="shrink-0 w-10 h-10 rounded-full bg-[#FBEFC2] flex items-center justify-center">
-                    <Icon className="h-5 w-5 text-[#1a2347]" strokeWidth={2} />
-                  </span>
-                  <p className="text-sm leading-relaxed pt-1.5 text-white">
-                    {c.text}
-                  </p>
-                </div>
-              );
-            })}
-          </div>
         </motion.div>
       </div>
     </div>
