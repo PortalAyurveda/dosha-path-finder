@@ -608,7 +608,7 @@ const Professor = () => (
                 >
                   <Check className="h-3 w-3" strokeWidth={3} />
                 </span>
-                <span className="text-sm md:text-base leading-relaxed text-white">
+                <span className="text-sm md:text-base leading-relaxed text-slate-50">
                   {b}
                 </span>
               </li>
