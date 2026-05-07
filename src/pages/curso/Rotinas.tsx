@@ -561,7 +561,7 @@ const PROFESSOR_BULLETS = [
 const Professor = () => (
   <section className="py-16 md:py-24 bg-[#352F54]">
     <div className="max-w-4xl mx-auto px-6">
-      <div className="grid grid-cols-1 md:grid-cols-[auto_1fr] gap-10 md:gap-12 items-stretch">
+      <div className="grid grid-cols-1 md:grid-cols-[auto_1fr] gap-10 md:gap-12 items-center">
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           whileInView={{ opacity: 1, scale: 1 }}
