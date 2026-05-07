@@ -584,6 +584,8 @@ const ProximoPassoCard = ({
   externo?: boolean;
 }) => {
   const isImg = icone.startsWith("http");
+  const isSamkhya = icone.includes("samkhya");
+  const imgClass = isSamkhya ? "w-28 h-28" : "w-20 h-20";
   const cardInner = (
     <div
       className={cn("bg-white p-6 flex flex-col gap-3 h-full", LEAF)}
@@ -591,7 +593,7 @@ const ProximoPassoCard = ({
     >
       <div className="text-5xl text-center">
         {isImg ? (
-          <img src={icone} alt={titulo} className="w-20 h-20 object-contain mx-auto" />
+          <img src={icone} alt={titulo} className={`${imgClass} object-contain mx-auto`} />
         ) : (
           icone
         )}
@@ -649,7 +651,7 @@ const ProximosPassos = ({ refazerTeste }: { refazerTeste: () => void }) => (
     </h2>
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
       <ProximoPassoCard
-        icone="https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/logo-rotinas.svg"
+        icone="https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/logo-rotinas-3.svg"
         titulo="Curso de Rotinas Diárias"
         descricao="Construa hábitos ayurvédicos no dia a dia"
         preco="R$ 99"
