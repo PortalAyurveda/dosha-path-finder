@@ -649,7 +649,7 @@ const ProximosPassos = ({ refazerTeste }: { refazerTeste: () => void }) => (
     </h2>
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
       <ProximoPassoCard
-        icone="🧘"
+        icone="https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/logo-rotinas.svg"
         titulo="Curso de Rotinas Diárias"
         descricao="Construa hábitos ayurvédicos no dia a dia"
         preco="R$ 99"
@@ -658,7 +658,7 @@ const ProximosPassos = ({ refazerTeste }: { refazerTeste: () => void }) => (
         externo
       />
       <ProximoPassoCard
-        icone="📚"
+        icone="https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/logo-alimentacao2.svg"
         titulo="Curso de Alimentação Ayurvédica"
         descricao="A base do seu tratamento"
         preco="R$ 397"
@@ -667,7 +667,7 @@ const ProximosPassos = ({ refazerTeste }: { refazerTeste: () => void }) => (
         externo
       />
       <ProximoPassoCard
-        icone="🛍️"
+        icone="https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/logo-samkhya-org.svg"
         titulo="Ver produtos Samkhya"
         descricao="Produtos curativos personalizados"
         ctaLabel="Ver loja →"
