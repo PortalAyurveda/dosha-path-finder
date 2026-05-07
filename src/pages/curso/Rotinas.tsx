@@ -624,8 +624,11 @@ const Professor = () => (
 const INCLUSO = [
   "As 11 aulas do Método Rotinas Diárias",
   "Laboratório Prático de Meditação e Respiração (por Dosha)",
-  "Acesso ao Tutor IA Ayurveda 24h",
-  "Acesso à Comunidade de Alunos",
+];
+
+const ECOSSISTEMA = [
+  "Tutor de IA Ayurveda 24h — tira suas dúvidas de rotina a qualquer hora",
+  "Comunidade de Alunos — troque resultados práticos com o grupo do Portal Ayurveda",
 ];
 
 const Investimento = () => (
