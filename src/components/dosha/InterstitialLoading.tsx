@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Mail, Video, BarChart, LayoutGrid } from "lucide-react";
 
-const LOGO_URL = "https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/logo-positivo-png-certo.png";
-const IMG1_URL = "https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/1.jpeg";
-const IMG2_URL = "https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/2.jpeg";
-const AKASHA_URL = "https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/logo-akasha.png";
+const IMG1_URL = "https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/design-sem-nome-1.svg";
+const IMG2_URL = "https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/element-download-1778166966.png";
+const IMG3_URL = "https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/design-sem-nome-2.svg";
+const IMG4_URL = "https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/flor-1.svg";
+const IMG5_URL = "https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/logo-akasha.svg";
 
 const SCENE_DURATION = 2500;
 
@@ -18,9 +18,8 @@ const scenes = [
   {
     text: "Estamos enviando um e-mail para você salvar seu teste. Clique lá para confirmar.",
     render: () => (
-      <div className="flex flex-col items-center gap-5">
-        <img src={LOGO_URL} alt="Logo" className="h-16 md:h-20 object-contain" />
-        <Mail className="w-10 h-10 text-primary animate-pulse" />
+      <div className="flex items-center justify-center">
+        <img src={IMG1_URL} alt="Enviando email" className="max-w-[240px] md:max-w-[320px] object-contain" />
       </div>
     ),
   },
@@ -29,9 +28,9 @@ const scenes = [
     render: () => (
       <div className="flex items-center justify-center">
         <img
-          src={IMG1_URL}
-          alt="Doshas"
-          className="max-w-[280px] md:max-w-md rounded-2xl"
+          src={IMG2_URL}
+          alt="Calculando doshas"
+          className="max-w-[240px] md:max-w-[320px] object-contain"
         />
       </div>
     ),
@@ -41,57 +40,38 @@ const scenes = [
     render: () => (
       <div className="flex items-center justify-center">
         <img
-          src={IMG2_URL}
+          src={IMG3_URL}
           alt="Agravamento"
-          className="max-w-[224px] md:max-w-[320px] rounded-2xl"
+          className="max-w-[240px] md:max-w-[320px] object-contain"
         />
       </div>
     ),
   },
   {
     text: "Selecionando vídeos e calculando métricas personalizadas...",
-    render: () => <StaggeredIcons />,
+    render: () => (
+      <div className="flex items-center justify-center">
+        <img
+          src={IMG4_URL}
+          alt="Métricas"
+          className="max-w-[200px] md:max-w-[260px] object-contain"
+        />
+      </div>
+    ),
   },
   {
     text: "Enviando seu resultado para nossa assistente de IA Akasha...",
     render: () => (
       <div className="flex items-center justify-center">
         <img
-          src={AKASHA_URL}
+          src={IMG5_URL}
           alt="Akasha"
-          className="h-24 md:h-32 object-contain animate-[akasha-pulse_2s_ease-in-out_infinite]"
+          className="max-w-[200px] md:max-w-[260px] object-contain"
         />
       </div>
     ),
   },
 ];
-
-function StaggeredIcons() {
-  const icons = [
-    { Icon: Video, label: "Vídeos" },
-    { Icon: BarChart, label: "Métricas" },
-    { Icon: LayoutGrid, label: "Painel" },
-  ];
-
-  return (
-    <div className="flex gap-8 justify-center">
-      {icons.map(({ Icon, label }, i) => (
-        <motion.div
-          key={label}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: i * 0.5, duration: 0.5 }}
-          className="flex flex-col items-center gap-2"
-        >
-          <div className="w-16 h-16 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center">
-            <Icon className="w-7 h-7 text-primary" />
-          </div>
-          <span className="text-xs text-muted-foreground font-medium">{label}</span>
-        </motion.div>
-      ))}
-    </div>
-  );
-}
 
 const InterstitialLoading = ({ redirectTo }: Props) => {
   const navigate = useNavigate();
