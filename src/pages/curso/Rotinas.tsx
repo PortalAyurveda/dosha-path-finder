@@ -254,7 +254,7 @@ const Problema = () => (
           Fazer a coisa certa no momento errado{" "}
           <strong className="text-[#1a2347]">desgasta o corpo</strong> e queima a vitalidade.
         </p>
-        <p className="font-serif italic font-bold text-lg md:text-xl text-[#1a2347] pt-4">
+        <p className="text-base md:text-lg text-[#1a2347]/80 pt-4">
           O problema não é falta de esforço. É lutar contra a própria biologia.
         </p>
       </motion.div>
