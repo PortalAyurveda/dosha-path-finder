@@ -676,8 +676,32 @@ const Investimento = () => (
           ))}
         </ul>
 
+        <div
+          className="mb-8 p-5 rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm border border-[#1a2347]/10"
+          style={{ background: "#FDF6DD" }}
+        >
+          <p className="text-[11px] uppercase tracking-[0.2em] font-bold mb-3 text-[#1a2347]">
+            + Ecossistema de Apoio
+          </p>
+          <ul className="space-y-2 text-left">
+            {ECOSSISTEMA.map((item, i) => (
+              <li key={i} className="flex items-start gap-2.5">
+                <span
+                  className="shrink-0 inline-flex items-center justify-center w-4 h-4 rounded-full mt-1"
+                  style={{ background: NAVY, color: YELLOW }}
+                >
+                  <Check className="h-2.5 w-2.5" strokeWidth={3} />
+                </span>
+                <span className="text-sm leading-relaxed text-[#1a2347]/85">
+                  {item}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+
         <div className="pt-6 border-t border-[#1a2347]/15 text-center">
-          <p className="font-serif italic font-bold text-3xl md:text-5xl mb-2 text-[#1a2347]">
+          <p className="font-serif italic font-bold text-2xl md:text-3xl mb-2 text-[#1a2347]">
             12x de R$ 9,68
           </p>
           <p className="text-sm md:text-base text-[#1a2347]/70 mb-6">
