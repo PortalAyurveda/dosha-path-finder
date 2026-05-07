@@ -610,13 +610,15 @@ const ProximoPassoCard = ({
       >
         {descricao}
       </p>
-      {preco && (
+      {preco ? (
         <p
           className="font-bold text-lg text-center"
           style={{ color: COLOR.ouro, fontFamily: "'DM Sans', sans-serif" }}
         >
           {preco}
         </p>
+      ) : (
+        <div className="h-7" aria-hidden="true" />
       )}
       <span
         className={cn("block text-center py-2.5 px-4 text-white font-medium text-sm", LEAF)}
