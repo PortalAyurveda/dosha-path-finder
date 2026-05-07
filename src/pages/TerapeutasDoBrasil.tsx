@@ -77,7 +77,7 @@ const TerapeutasDoBrasil = () => {
         as="h1"
         subtitle="Encontre terapeutas ayurvédicos qualificados perto de você"
       >
-        🌿 Terapeutas do Brasil
+        Terapeutas do Brasil
       </SectionTitle>
 
       {/* Search & Filters */}
