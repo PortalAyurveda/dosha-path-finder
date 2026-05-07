@@ -172,14 +172,14 @@ const PARA_QUEM = [
 ];
 
 const ParaQuem = () => (
-  <section className="bg-white py-16 md:py-24">
+  <section className="py-16 md:py-24 bg-[#352F54]">
     <div className="max-w-4xl mx-auto px-6">
       <motion.h2
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-100px" }}
         transition={{ duration: 0.5 }}
-        className="font-serif italic font-bold text-2xl md:text-3xl mb-12 text-center text-[#1a2347]"
+        className="font-serif italic font-bold text-2xl md:text-3xl mb-12 text-center text-white"
       >
         Para Quem É Esta Jornada
       </motion.h2>
@@ -194,16 +194,16 @@ const ParaQuem = () => (
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-50px" }}
               transition={{ duration: 0.4, delay: (i % 2) * 0.06 }}
-              className="flex items-start gap-4 p-6 bg-[#FBEFC2] border border-[#1a2347]/10 hover:border-[#f2cb05] transition-colors rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm"
+              className="flex items-start gap-4 p-6 bg-white/5 border border-white/10 hover:border-[#f2cb05] transition-colors rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm"
             >
               <span className="shrink-0 w-12 h-12 rounded-full bg-white flex items-center justify-center shadow-sm">
-                <Icon className="w-6 h-6 text-[#1a2347]" strokeWidth={2} />
+                <Icon className="w-6 h-6 text-[#352F54]" strokeWidth={2} />
               </span>
               <div>
-                <h3 className="font-serif font-bold text-base md:text-lg mb-1.5 text-[#1a2347]">
+                <h3 className="font-serif font-bold text-base md:text-lg mb-1.5 text-[#f2cb05]">
                   {item.title}
                 </h3>
-                <p className="text-sm leading-relaxed text-[#1a2347]/80">
+                <p className="text-sm leading-relaxed text-white/85">
                   {item.text}
                 </p>
               </div>
@@ -254,7 +254,7 @@ const Problema = () => (
           Fazer a coisa certa no momento errado{" "}
           <strong className="text-[#1a2347]">desgasta o corpo</strong> e queima a vitalidade.
         </p>
-        <p className="font-serif italic font-bold text-lg md:text-xl text-[#1a2347] pt-4">
+        <p className="text-base md:text-lg text-[#1a2347]/80 pt-4">
           O problema não é falta de esforço. É lutar contra a própria biologia.
         </p>
       </motion.div>
@@ -561,17 +561,17 @@ const PROFESSOR_BULLETS = [
 const Professor = () => (
   <section className="py-16 md:py-24 bg-[#1a2347]">
     <div className="max-w-4xl mx-auto px-6">
-      <div className="grid grid-cols-1 md:grid-cols-[auto_1fr] gap-10 md:gap-12 items-start">
+      <div className="grid grid-cols-1 md:grid-cols-[auto_1fr] gap-10 md:gap-12 items-stretch">
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.5 }}
-          className="mx-auto md:mx-0"
+          className="mx-auto md:mx-0 h-full"
         >
           {/* Forma de Portal */}
           <div
-            className="w-[230px] h-[280px] md:w-[260px] md:h-[320px] shadow-2xl rounded-t-full rounded-b-none overflow-hidden"
+            className="w-[230px] md:w-[260px] h-full min-h-[280px] shadow-2xl rounded-t-full rounded-b-none overflow-hidden"
             style={{ border: `4px solid #FBEFC2` }}
           >
             <img
@@ -599,7 +599,7 @@ const Professor = () => (
             Terapeuta Ayurveda | Professor | Fundador do Portal Ayurveda
           </p>
 
-          <ul className="space-y-3 mb-8">
+          <ul className="space-y-3">
             {PROFESSOR_BULLETS.map((b, i) => (
               <li key={i} className="flex items-start gap-3">
                 <span
@@ -614,38 +614,6 @@ const Professor = () => (
               </li>
             ))}
           </ul>
-
-          <h3 className="font-serif italic font-bold text-lg md:text-xl mb-4 text-[#f2cb05]">
-            O Ecossistema de Apoio
-          </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {[
-              {
-                icon: Target,
-                text: "Tutor de IA Ayurveda 24h — tira suas dúvidas de rotina a qualquer hora",
-              },
-              {
-                icon: Users,
-                text: "Comunidade de Alunos — troque resultados práticos com o grupo do Portal Ayurveda",
-              },
-            ].map((c, i) => {
-              const Icon = c.icon;
-              return (
-                <div
-                  key={i}
-                  className="flex items-start gap-3 p-4 rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm"
-                  style={{ background: "rgba(255,244,224,0.08)" }}
-                >
-                  <span className="shrink-0 w-10 h-10 rounded-full bg-[#FBEFC2] flex items-center justify-center">
-                    <Icon className="h-5 w-5 text-[#1a2347]" strokeWidth={2} />
-                  </span>
-                  <p className="text-sm leading-relaxed pt-1.5 text-white">
-                    {c.text}
-                  </p>
-                </div>
-              );
-            })}
-          </div>
         </motion.div>
       </div>
     </div>
@@ -705,8 +673,30 @@ const Investimento = () => (
           ))}
         </ul>
 
+        <div className="mb-8 p-4 rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm bg-[#352F54]/5 border border-[#352F54]/15 text-left">
+          <p className="text-[11px] uppercase tracking-widest font-bold mb-3 text-[#352F54]">
+            Ecossistema de Apoio
+          </p>
+          <ul className="space-y-2.5">
+            {[
+              "Tutor de IA Ayurveda 24h — tira suas dúvidas de rotina a qualquer hora",
+              "Comunidade de Alunos — troque resultados práticos com o grupo do Portal Ayurveda",
+            ].map((t, i) => (
+              <li key={i} className="flex items-start gap-2.5">
+                <span
+                  className="shrink-0 inline-flex items-center justify-center w-4 h-4 rounded-full mt-0.5"
+                  style={{ background: NAVY, color: YELLOW }}
+                >
+                  <Check className="h-2.5 w-2.5" strokeWidth={3} />
+                </span>
+                <span className="text-sm leading-relaxed text-[#1a2347]/85">{t}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+
         <div className="pt-6 border-t border-[#1a2347]/15 text-center">
-          <p className="font-serif italic font-bold text-3xl md:text-5xl mb-2 text-[#1a2347]">
+          <p className="font-serif italic font-bold text-2xl md:text-3xl mb-2 text-[#1a2347]">
             12x de R$ 9,68
           </p>
           <p className="text-sm md:text-base text-[#1a2347]/70 mb-6">
