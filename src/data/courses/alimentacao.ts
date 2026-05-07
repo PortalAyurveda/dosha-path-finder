@@ -152,7 +152,7 @@ export const alimentacaoData: CourseData = {
   pricing: {
     priceOld: "R$ 697",
     priceNew: "R$ 397,00",
-    installments: "12x de R$ 39,62",
+    installments: "12x de R$ 41,06",
     highlight: "R$ 16 por mês para nunca mais chutar o que comer.",
     context: "2 anos de acesso · Tutor de IA incluso · Certificado de 40h · Garantia de 7 dias",
     ctaText: "QUERO ENTRAR AGORA",
@@ -242,7 +242,7 @@ export const alimentacaoData: CourseData = {
     subheadline: "",
     priceOld: "R$ 697",
     priceNew: "R$ 397",
-    installments: "12x de R$ 39,62",
+    installments: "12x de R$ 41,06",
     highlight: "2 anos de acesso",
     ctaText: "QUERO TRILHAR O CAMINHO CERTEIRO",
     quote: "Ayurveda é para todo mundo.\nE todo mundo merece conhecer Ayurveda.",
