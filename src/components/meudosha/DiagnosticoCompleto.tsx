@@ -591,7 +591,7 @@ const ProximoPassoCard = ({
     >
       <div className="text-5xl text-center">
         {isImg ? (
-          <img src={icone} alt={titulo} className="w-14 h-14 object-contain mx-auto" />
+          <img src={icone} alt={titulo} className="w-20 h-20 object-contain mx-auto" />
         ) : (
           icone
         )}
