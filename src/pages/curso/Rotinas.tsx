@@ -673,8 +673,30 @@ const Investimento = () => (
           ))}
         </ul>
 
+        <div className="mb-8 p-4 rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm bg-[#352F54]/5 border border-[#352F54]/15 text-left">
+          <p className="text-[11px] uppercase tracking-widest font-bold mb-3 text-[#352F54]">
+            Ecossistema de Apoio
+          </p>
+          <ul className="space-y-2.5">
+            {[
+              "Tutor de IA Ayurveda 24h — tira suas dúvidas de rotina a qualquer hora",
+              "Comunidade de Alunos — troque resultados práticos com o grupo do Portal Ayurveda",
+            ].map((t, i) => (
+              <li key={i} className="flex items-start gap-2.5">
+                <span
+                  className="shrink-0 inline-flex items-center justify-center w-4 h-4 rounded-full mt-0.5"
+                  style={{ background: NAVY, color: YELLOW }}
+                >
+                  <Check className="h-2.5 w-2.5" strokeWidth={3} />
+                </span>
+                <span className="text-sm leading-relaxed text-[#1a2347]/85">{t}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+
         <div className="pt-6 border-t border-[#1a2347]/15 text-center">
-          <p className="font-serif italic font-bold text-3xl md:text-5xl mb-2 text-[#1a2347]">
+          <p className="font-serif italic font-bold text-2xl md:text-3xl mb-2 text-[#1a2347]">
             12x de R$ 9,68
           </p>
           <p className="text-sm md:text-base text-[#1a2347]/70 mb-6">
