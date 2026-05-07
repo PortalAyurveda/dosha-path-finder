@@ -818,7 +818,7 @@ const FinalCta = () => (
       </svg>
     </div>
 
-    <section className="relative py-16 md:py-24 bg-[#1a2347] overflow-hidden">
+    <section className="relative py-16 md:py-24 bg-[#352F54] overflow-hidden">
       <div className="relative max-w-3xl mx-auto px-6 text-center">
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
