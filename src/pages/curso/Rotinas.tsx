@@ -172,14 +172,14 @@ const PARA_QUEM = [
 ];
 
 const ParaQuem = () => (
-  <section className="bg-white py-16 md:py-24">
+  <section className="py-16 md:py-24 bg-[#352F54]">
     <div className="max-w-4xl mx-auto px-6">
       <motion.h2
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-100px" }}
         transition={{ duration: 0.5 }}
-        className="font-serif italic font-bold text-2xl md:text-3xl mb-12 text-center text-[#1a2347]"
+        className="font-serif italic font-bold text-2xl md:text-3xl mb-12 text-center text-white"
       >
         Para Quem É Esta Jornada
       </motion.h2>
@@ -194,16 +194,16 @@ const ParaQuem = () => (
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-50px" }}
               transition={{ duration: 0.4, delay: (i % 2) * 0.06 }}
-              className="flex items-start gap-4 p-6 bg-[#FBEFC2] border border-[#1a2347]/10 hover:border-[#f2cb05] transition-colors rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm"
+              className="flex items-start gap-4 p-6 bg-white/5 border border-white/10 hover:border-[#f2cb05] transition-colors rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm"
             >
               <span className="shrink-0 w-12 h-12 rounded-full bg-white flex items-center justify-center shadow-sm">
-                <Icon className="w-6 h-6 text-[#1a2347]" strokeWidth={2} />
+                <Icon className="w-6 h-6 text-[#352F54]" strokeWidth={2} />
               </span>
               <div>
-                <h3 className="font-serif font-bold text-base md:text-lg mb-1.5 text-[#1a2347]">
+                <h3 className="font-serif font-bold text-base md:text-lg mb-1.5 text-[#f2cb05]">
                   {item.title}
                 </h3>
-                <p className="text-sm leading-relaxed text-[#1a2347]/80">
+                <p className="text-sm leading-relaxed text-white/85">
                   {item.text}
                 </p>
               </div>
