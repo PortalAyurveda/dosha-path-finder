@@ -246,11 +246,11 @@ const Problema = () => (
         transition={{ duration: 0.5, delay: 0.1 }}
         className="text-base md:text-lg leading-relaxed space-y-5 text-slate-50 text-center"
       >
-        <p>
+        <p className="text-slate-50">
           Você tenta <strong className="text-[#f2cb05]">meditar com a mente fervendo</strong>. Faz treinos
           pesados à noite e perde o sono. Toma o remédio certo na hora errada.
         </p>
-        <p>
+        <p className="text-slate-50">
           Fazer a coisa certa no momento errado{" "}
           <strong className="text-[#f2cb05]">desgasta o corpo</strong> e queima a vitalidade.
         </p>
