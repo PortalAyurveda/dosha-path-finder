@@ -669,7 +669,7 @@ const ProximosPassos = ({ refazerTeste }: { refazerTeste: () => void }) => (
         externo
       />
       <ProximoPassoCard
-        icone="https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/logo-samkhya-org.svg"
+        icone="https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/ativo-20.svg"
         titulo="Ver produtos Samkhya"
         descricao="Produtos curativos personalizados"
         ctaLabel="Ver loja →"
