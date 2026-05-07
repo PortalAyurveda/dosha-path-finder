@@ -656,24 +656,26 @@ const MeuDosha = () => {
           <div className="sticky top-0 z-[60] py-2 flex justify-center">
           <TabsList className="grid grid-cols-5 h-auto max-w-6xl w-full mx-4 rounded-full bg-muted/95 backdrop-blur-sm shadow-sm">
             <TabsTrigger value="perfil" className="text-xs sm:text-sm py-1 flex items-center gap-1">
-              <DoshaMiniPie vata={result.vatascore ?? 0} pitta={result.pittascore ?? 0} kapha={result.kaphascore ?? 0} />
+              <span className="hidden sm:inline-flex">
+                <DoshaMiniPie vata={result.vatascore ?? 0} pitta={result.pittascore ?? 0} kapha={result.kaphascore ?? 0} />
+              </span>
               Perfil
             </TabsTrigger>
             <TabsTrigger value="metricas" className="text-xs sm:text-sm py-1 flex items-center gap-1">
-              <span aria-hidden="true">📊</span>
+              <span aria-hidden="true" className="hidden sm:inline">📊</span>
               Métricas
             </TabsTrigger>
             <TabsTrigger value="artigos" className="text-xs sm:text-sm py-1 flex items-center gap-1">
-              <span aria-hidden="true">📖</span>
+              <span aria-hidden="true" className="hidden sm:inline">📖</span>
               Artigos
             </TabsTrigger>
             <TabsTrigger value="videos" className="text-xs sm:text-sm py-1 flex items-center gap-1">
-              <span aria-hidden="true">▶️</span>
+              <span aria-hidden="true" className="hidden sm:inline">▶️</span>
               Vídeos
             </TabsTrigger>
             <TabsTrigger value="akasha" className="text-xs sm:text-sm py-1 flex items-center gap-1">
               Akasha
-              <img src="https://static.wixstatic.com/media/b8f47f_105371e1ade24ccd9bd3406b83bd925e~mv2.png" alt="" className="w-4 h-4 object-contain" />
+              <img src="https://static.wixstatic.com/media/b8f47f_105371e1ade24ccd9bd3406b83bd925e~mv2.png" alt="" className="w-4 h-4 object-contain hidden sm:inline-block" />
             </TabsTrigger>
           </TabsList>
           </div>
