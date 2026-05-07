@@ -584,7 +584,7 @@ const ProximoPassoCard = ({
   externo?: boolean;
 }) => {
   const isImg = icone.startsWith("http");
-  const isSamkhya = icone.includes("samkhya");
+  const isSamkhya = icone.includes("samkhya") || icone.includes("ativo-20");
   const imgClass = isSamkhya ? "w-28 h-28" : "w-20 h-20";
   const cardInner = (
     <div
