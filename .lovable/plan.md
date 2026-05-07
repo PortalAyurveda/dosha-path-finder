@@ -1,41 +1,30 @@
-## Ajustar regra de cálculo do dosha principal
+## Objetivo
 
-### Onde está a regra
-A lógica vive em `src/pages/TesteDeDosha.tsx` (linhas 234–241), dentro da função que calcula os resultados antes de salvar em `doshas_registros.doshaprincipal` e enviar pro webhook do n8n.
+Criar uma página de preview isolada que reproduza exatamente a sequência de 5 imagens (interstitial) exibida entre o clique em "calcular" no /teste-de-dosha e a chegada ao /meu-dosha, sem precisar refazer o teste a cada ajuste visual.
 
-### Regra atual
-```ts
-if (scores[0].score - scores[1].score >= 5) {
-  doshaPrincipal = scores[0].name;       // Monodosha
-} else {
-  doshaPrincipal = ordered.join('-');    // Bidosha
-}
-```
-- Diferença ≥ 5 → monodosha
-- Diferença < 5 → bidosha
+## Abordagem
 
-### Regra nova (sua proposta)
-- Diferença **≥ 11** entre o 1º e o 2º dosha → **monodosha** (ex.: Vata 50, Pitta 39 → "Vata")
-- Diferença **≤ 10** → **bidosha** (ex.: Vata 50, Pitta 40, Kapha 15 → "Vata-Pitta")
+O componente `src/components/dosha/InterstitialLoading.tsx` já encapsula toda a esteira (5 cenas, dots de progresso, animações, textos e imagens). Ele é a fonte única de verdade — basta reutilizá-lo na página de preview para garantir que qualquer alteração feita nele apareça automaticamente nos dois lugares (teste real e preview).
 
-### Mudança no código
-Substituir o bloco acima por:
-```ts
-if (scores[0].score - scores[1].score >= 11) {
-  doshaPrincipal = scores[0].name;
-} else {
-  const top2 = [scores[0].name, scores[1].name];
-  const ordered = ['Vata', 'Pitta', 'Kapha'].filter(d => top2.includes(d));
-  doshaPrincipal = ordered.join('-');
-}
-```
+A rota `/preview` hoje já está ocupada pela `Index` antiga. Para evitar conflito, vou usar `/preview-loading` (rota nova, dedicada).
 
-A ordem (Vata-Pitta, Vata-Kapha, Pitta-Kapha) é mantida pelo filter na ordem canônica Vata→Pitta→Kapha, então o output continua compatível com o que `/meu-dosha`, `LoggedHero`, `MeuDosha`, `DiagnosticoCompleto` etc. já consomem.
+## O que será criado
 
-### O que NÃO muda
-- Nada no Supabase (sem migration — é só lógica de cálculo no client antes do insert).
-- Registros antigos em `doshas_registros` ficam como estão. Se você quiser reprocessar testes antigos com a nova regra, posso fazer num próximo passo (script de update ou opção em `/admin/teste`). Não está incluído neste plano.
-- Cálculo de Agni continua igual.
+1. **Nova página `src/pages/PreviewLoading.tsx`**
+   - Botão "Calcular" centralizado (mesmo estilo visual do botão final do teste).
+   - Ao clicar, renderiza `<InterstitialLoading redirectTo="/preview-loading" />` — assim, ao final da sequência, ele volta para a própria página de preview e mostra o botão "Calcular" novamente, permitindo rodar quantas vezes quiser.
+   - Pequeno cabeçalho explicativo: "Preview da esteira de carregamento".
 
-### Arquivos editados
-- `src/pages/TesteDeDosha.tsx` — apenas o bloco de 6 linhas do `if`.
+2. **Nova rota em `src/App.tsx`**
+   - `<Route path="/preview-loading" element={<PreviewLoading />} />`
+
+## Garantias
+
+- Nenhuma alteração no `InterstitialLoading.tsx`, no `TesteDeDosha.tsx` ou no fluxo real — a página de preview apenas consome o mesmo componente.
+- Qualquer mudança futura nas imagens/textos/tempos do interstitial reflete automaticamente em `/preview-loading`.
+
+## Detalhes técnicos
+
+- Componente reusado: `src/components/dosha/InterstitialLoading.tsx` (já recebe `redirectTo` como prop).
+- Estado local na página: `started: boolean` para alternar entre tela do botão e a esteira.
+- Após o redirect, `started` reseta (a página remonta), então o botão reaparece pronto para nova execução.
