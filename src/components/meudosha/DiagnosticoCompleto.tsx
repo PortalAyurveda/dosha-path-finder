@@ -584,7 +584,7 @@ const ProximoPassoCard = ({
   externo?: boolean;
 }) => {
   const isImg = icone.startsWith("http");
-  const isSamkhya = icone.includes("samkhya");
+  const isSamkhya = icone.includes("samkhya") || icone.includes("ativo-20");
   const imgClass = isSamkhya ? "w-28 h-28" : "w-20 h-20";
   const cardInner = (
     <div
@@ -669,7 +669,7 @@ const ProximosPassos = ({ refazerTeste }: { refazerTeste: () => void }) => (
         externo
       />
       <ProximoPassoCard
-        icone="https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/logo-samkhya-org.svg"
+        icone="https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/ativo-20.svg"
         titulo="Ver produtos Samkhya"
         descricao="Produtos curativos personalizados"
         ctaLabel="Ver loja →"
