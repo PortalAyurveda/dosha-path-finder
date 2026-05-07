@@ -583,12 +583,19 @@ const ProximoPassoCard = ({
   href: string;
   externo?: boolean;
 }) => {
+  const isImg = icone.startsWith("http");
   const cardInner = (
     <div
       className={cn("bg-white p-6 flex flex-col gap-3 h-full", LEAF)}
       style={{ border: `1px solid ${COLOR.cardBorder}`, boxShadow: "0 1px 8px rgba(53,47,84,0.08)" }}
     >
-      <div className="text-5xl text-center">{icone}</div>
+      <div className="text-5xl text-center">
+        {isImg ? (
+          <img src={icone} alt={titulo} className="w-14 h-14 object-contain mx-auto" />
+        ) : (
+          icone
+        )}
+      </div>
       <h3
         className="font-serif font-bold text-base text-center"
         style={{ color: COLOR.primary, fontFamily: "'Roboto Serif', serif" }}
@@ -642,7 +649,7 @@ const ProximosPassos = ({ refazerTeste }: { refazerTeste: () => void }) => (
     </h2>
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
       <ProximoPassoCard
-        icone="🧘"
+        icone="https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/logo-rotinas.svg"
         titulo="Curso de Rotinas Diárias"
         descricao="Construa hábitos ayurvédicos no dia a dia"
         preco="R$ 99"
@@ -651,7 +658,7 @@ const ProximosPassos = ({ refazerTeste }: { refazerTeste: () => void }) => (
         externo
       />
       <ProximoPassoCard
-        icone="📚"
+        icone="https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/logo-alimentacao2.svg"
         titulo="Curso de Alimentação Ayurvédica"
         descricao="A base do seu tratamento"
         preco="R$ 397"
@@ -660,7 +667,7 @@ const ProximosPassos = ({ refazerTeste }: { refazerTeste: () => void }) => (
         externo
       />
       <ProximoPassoCard
-        icone="🛍️"
+        icone="https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/logo-samkhya-org.svg"
         titulo="Ver produtos Samkhya"
         descricao="Produtos curativos personalizados"
         ctaLabel="Ver loja →"
