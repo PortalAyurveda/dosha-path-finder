@@ -244,7 +244,7 @@ const Problema = () => (
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-100px" }}
         transition={{ duration: 0.5, delay: 0.1 }}
-        className="text-base md:text-lg leading-relaxed space-y-5 text-white/90 text-center"
+        className="text-base md:text-lg leading-relaxed space-y-5 text-slate-50 text-center"
       >
         <p>
           Você tenta <strong className="text-[#f2cb05]">meditar com a mente fervendo</strong>. Faz treinos
@@ -254,7 +254,7 @@ const Problema = () => (
           Fazer a coisa certa no momento errado{" "}
           <strong className="text-[#f2cb05]">desgasta o corpo</strong> e queima a vitalidade.
         </p>
-        <p className="text-base md:text-lg text-white pt-4">
+        <p className="text-base md:text-lg text-slate-50 pt-4">
           O problema não é falta de esforço. É lutar contra a própria biologia.
         </p>
       </motion.div>
