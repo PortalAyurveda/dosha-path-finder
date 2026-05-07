@@ -244,7 +244,7 @@ const Problema = () => (
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-100px" }}
         transition={{ duration: 0.5, delay: 0.1 }}
-        className="text-base md:text-lg leading-relaxed space-y-5 text-white/90 text-center"
+        className="text-base md:text-lg leading-relaxed space-y-5 text-slate-50 text-center"
       >
         <p>
           Você tenta <strong className="text-[#f2cb05]">meditar com a mente fervendo</strong>. Faz treinos
@@ -254,7 +254,7 @@ const Problema = () => (
           Fazer a coisa certa no momento errado{" "}
           <strong className="text-[#f2cb05]">desgasta o corpo</strong> e queima a vitalidade.
         </p>
-        <p className="text-base md:text-lg text-white pt-4">
+        <p className="text-base md:text-lg text-slate-50 pt-4">
           O problema não é falta de esforço. É lutar contra a própria biologia.
         </p>
       </motion.div>
@@ -608,7 +608,7 @@ const Professor = () => (
                 >
                   <Check className="h-3 w-3" strokeWidth={3} />
                 </span>
-                <span className="text-sm md:text-base leading-relaxed text-white">
+                <span className="text-sm md:text-base leading-relaxed text-slate-50">
                   {b}
                 </span>
               </li>
@@ -838,15 +838,15 @@ const FinalCta = () => (
           transition={{ duration: 0.5 }}
           className="text-base md:text-lg leading-relaxed space-y-4 mb-12 text-white"
         >
-          <p className="text-primary-foreground">Você já percebeu que copiar a rotina dos outros não funciona.</p>
-          <p className="text-primary-foreground">
+          <p className="text-slate-50">Você já percebeu que copiar a rotina dos outros não funciona.</p>
+          <p className="text-slate-50">
             Você continuará lutando contra o próprio corpo até entender como ele
             foi projetado para operar.
           </p>
           <p className="font-serif italic font-bold text-xl md:text-2xl pt-2 text-[#f2cb05]">
             Agora é a hora de organizar a fundação.
           </p>
-          <p className="text-primary-foreground">
+          <p className="text-slate-50">
             De parar de mascarar o cansaço e a má digestão — e alinhar sua vida
             ao seu ritmo natural.
           </p>
