@@ -2172,6 +2172,7 @@ export type Database = {
         Args: { curlopt: string; value: string }
         Returns: boolean
       }
+      is_admin: { Args: never; Returns: boolean }
       match_documents: {
         Args: {
           filter?: Json
