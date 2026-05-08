@@ -34,6 +34,7 @@ export const alimentacaoData: CourseData = {
       "Acorda com o intestino preso — todo dia",
       "Sente aquele cansaço que nem café resolve",
       "Fica inchada depois de comer \"certo\"",
+      "Sente azia, queimação ou inflamação que não passa",
       "A ansiedade sobe à noite, sem motivo aparente",
       "Dorme mal e acorda pesada",
     ],
@@ -53,7 +54,7 @@ export const alimentacaoData: CourseData = {
       "O Ayurveda é a ciência médica mais antiga do mundo. Chegou ao Brasil há pouco tempo, ainda mal traduzida, espalhada em fragmentos pela internet.",
       "A maioria das pessoas vai demorar anos para encontrar isso organizado, em português, com método claro, suporte de IA treinada com 15 anos de conteúdo — e por menos de R$ 400.",
     ],
-    highlight: "Você está aqui agora. Isso já é raro.",
+    highlight: "A maioria das pessoas vai continuar errando porque nunca vai encontrar isso organizado assim. Você encontrou agora.",
     closing: "",
   },
   solution: {
