@@ -12,23 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/contexts/UserContext";
 import { cn } from "@/lib/utils";
-import {
-  PART1_QUESTIONS, PART2_QUESTIONS, PART3_QUESTIONS, PART4_QUESTIONS,
-  PART5_QUESTIONS, PART6_QUESTIONS, PART7_QUESTIONS,
-  FOOD_TAGS, AGRAVAMENTOS_VATA, AGRAVAMENTOS_PITTA, AGRAVAMENTOS_KAPHA,
-  ALL_QUESTIONS, STEP_CONFIG, type Question,
-} from "@/data/doshaTestQuestions";
-import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
-
-const QUESTIONS_BY_STEP: Record<string, Question[]> = {
-  part1: PART1_QUESTIONS,
-  part2: PART2_QUESTIONS,
-  part3: PART3_QUESTIONS,
-  part4: PART4_QUESTIONS,
-  part5: PART5_QUESTIONS,
-  part6: PART6_QUESTIONS,
-  part7: PART7_QUESTIONS,
-};
+import { STEP_CONFIG, useDoshaTestContent, type Question } from "@/lib/doshaTest";
 
 const INTERESSE_OPTIONS = [
   { id: 'aliment', label: '🥗 Nutrição, Alimentação e Culinária' },
