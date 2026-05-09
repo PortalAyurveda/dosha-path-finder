@@ -3,295 +3,402 @@ import { Helmet } from "react-helmet-async";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Loader2, Plus, Trash2, Save, History as HistoryIcon } from "lucide-react";
 import { toast } from "sonner";
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { Search, Send, Trash2, ShieldCheck, Loader2 } from "lucide-react";
+  Accordion, AccordionContent, AccordionItem, AccordionTrigger,
+} from "@/components/ui/accordion";
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
+} from "@/components/ui/dialog";
 import AdminNav from "@/components/admin/AdminNav";
+import QuestionCard from "@/components/admin/teste/QuestionCard";
+import ScoreTagPicker from "@/components/admin/teste/ScoreTagPicker";
+import {
+  fetchDoshaTestRows, rowsToContent, STEP_CONFIG, summarizeScores,
+  type DoshaTestRow, type Question, type ScoreValues,
+} from "@/lib/doshaTest";
 
-interface Registro {
-  id: string;
-  idPublico: string;
-  nome: string | null;
-  email: string | null;
-  created_at: string | null;
+interface TagItem {
+  label: string;
+  scores: ScoreValues;
 }
 
-const WEBHOOK_URL = "https://n8n.portalayurveda.com/webhook/teste-dosha-ayurveda";
-const PAGE_SIZE = 50;
+interface State {
+  partQuestions: Record<string, Question[]>;
+  agravamentos: Record<"vata" | "pitta" | "kapha", TagItem[]>;
+  foods: Record<"vata" | "pitta" | "kapha", TagItem[]>;
+}
+
+const emptyState = (): State => ({
+  partQuestions: { part1: [], part2: [], part3: [], part4: [], part5: [], part6: [], part7: [] },
+  agravamentos: { vata: [], pitta: [], kapha: [] },
+  foods: { vata: [], pitta: [], kapha: [] },
+});
+
+const stateFromRows = (rows: DoshaTestRow[]): State => {
+  const s = emptyState();
+  const sorted = [...rows].sort((a, b) => {
+    if (a.part !== b.part) return a.part.localeCompare(b.part);
+    if ((a.group ?? "") !== (b.group ?? "")) return (a.group ?? "").localeCompare(b.group ?? "");
+    return a.sort_order - b.sort_order;
+  });
+  for (const r of sorted) {
+    if (r.part.startsWith("part") && s.partQuestions[r.part]) {
+      s.partQuestions[r.part].push({
+        id: `${r.part}_${r.sort_order}`,
+        text: r.text ?? "",
+        options: r.options ?? [],
+      });
+    } else if (r.part === "agravamentos" && r.group && r.tag_label) {
+      const grp = r.group as "vata" | "pitta" | "kapha";
+      if (s.agravamentos[grp]) s.agravamentos[grp].push({
+        label: r.tag_label,
+        scores: (r.options?.[0]?.scores) ?? {},
+      });
+    } else if (r.part === "foods" && r.group && r.tag_label) {
+      const grp = r.group as "vata" | "pitta" | "kapha";
+      if (s.foods[grp]) s.foods[grp].push({
+        label: r.tag_label,
+        scores: (r.options?.[0]?.scores) ?? {},
+      });
+    }
+  }
+  return s;
+};
+
+const stateToInsertRows = (s: State) => {
+  const rows: any[] = [];
+  for (const part of ["part1","part2","part3","part4","part5","part6","part7"] as const) {
+    s.partQuestions[part].forEach((q, i) => {
+      rows.push({
+        part, group: null, sort_order: i, text: q.text, options: q.options as any, tag_label: null,
+      });
+    });
+  }
+  for (const grp of ["vata","pitta","kapha"] as const) {
+    s.agravamentos[grp].forEach((t, i) => {
+      rows.push({
+        part: "agravamentos", group: grp, sort_order: i, text: null,
+        options: [{ label: t.label, scores: t.scores }] as any, tag_label: t.label,
+      });
+    });
+    s.foods[grp].forEach((t, i) => {
+      rows.push({
+        part: "foods", group: grp, sort_order: i, text: null,
+        options: [{ label: t.label, scores: t.scores }] as any, tag_label: t.label,
+      });
+    });
+  }
+  return rows;
+};
+
+const TagListEditor = ({
+  title, items, onChange, defaultAxis,
+}: {
+  title: string;
+  items: TagItem[];
+  onChange: (next: TagItem[]) => void;
+  defaultAxis: keyof ScoreValues;
+}) => {
+  return (
+    <div className="border rounded-lg bg-card p-4 space-y-2">
+      <h4 className="font-semibold text-sm">{title}</h4>
+      <div className="space-y-2">
+        {items.map((t, idx) => (
+          <div key={idx} className="border rounded-md p-2 bg-muted/30 space-y-2">
+            <div className="flex gap-2">
+              <Input
+                value={t.label}
+                onChange={e => onChange(items.map((x, i) => i === idx ? { ...x, label: e.target.value } : x))}
+                className="text-sm h-8"
+              />
+              <Button type="button" variant="ghost" size="icon" onClick={() => onChange(items.filter((_, i) => i !== idx))}>
+                <Trash2 className="w-4 h-4 text-destructive" />
+              </Button>
+            </div>
+            <ScoreTagPicker value={t.scores} onChange={scores => onChange(items.map((x, i) => i === idx ? { ...x, scores } : x))} />
+            {summarizeScores(t.scores) && (
+              <p className="text-[11px] text-muted-foreground italic">Pontuação: {summarizeScores(t.scores)}</p>
+            )}
+          </div>
+        ))}
+      </div>
+      <Button
+        type="button"
+        variant="outline"
+        size="sm"
+        onClick={() => onChange([...items, { label: "Novo item", scores: { [defaultAxis]: 1 } }])}
+        className="gap-1"
+      >
+        <Plus className="w-3.5 h-3.5" /> Adicionar item
+      </Button>
+    </div>
+  );
+};
+
+interface VersionRow {
+  id: string;
+  version_number: number;
+  label: string | null;
+  created_at: string;
+}
 
 const AdminTeste = () => {
-  const [registros, setRegistros] = useState<Registro[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [search, setSearch] = useState("");
-  const [resending, setResending] = useState<string | null>(null);
-  const [deleting, setDeleting] = useState<string | null>(null);
-  const [confirmDelete, setConfirmDelete] = useState<Registro | null>(null);
+  const [state, setState] = useState<State | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [versions, setVersions] = useState<VersionRow[]>([]);
+  const [currentVersion, setCurrentVersion] = useState<number | null>(null);
+  const [historyOpen, setHistoryOpen] = useState(false);
+  const [versionLabel, setVersionLabel] = useState("");
 
-  const fetchRegistros = async (term: string) => {
+  const refetchAll = async () => {
     setLoading(true);
     try {
-      let query = supabase
-        .from("doshas_registros")
-        .select("id, idPublico, nome, email, created_at")
-        .order("created_at", { ascending: false })
-        .limit(PAGE_SIZE);
-
-      const t = term.trim();
-      if (t) {
-        query = query.or(
-          `email.ilike.%${t}%,nome.ilike.%${t}%,idPublico.ilike.%${t}%`,
-        );
-      }
-
-      const { data, error } = await query;
-      if (error) throw error;
-      setRegistros((data ?? []) as Registro[]);
+      const rows = await fetchDoshaTestRows();
+      setState(stateFromRows(rows));
+      const { data: vs } = await supabase
+        .from("dosha_test_versions" as any)
+        .select("id, version_number, label, created_at")
+        .order("version_number", { ascending: false });
+      const list = (vs ?? []) as unknown as VersionRow[];
+      setVersions(list);
+      if (list.length) setCurrentVersion(list[0].version_number);
     } catch (e: any) {
-      console.error("[AdminTeste] fetch error:", e);
-      toast.error("Erro ao carregar testes");
+      console.error("[AdminTeste] load error:", e);
+      toast.error("Erro ao carregar conteúdo do teste.");
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    fetchRegistros("");
-  }, []);
+  useEffect(() => { refetchAll(); }, []);
 
-  const handleSearch = () => fetchRegistros(search);
-
-  const handleResend = async (reg: Registro) => {
-    setResending(reg.id);
+  const saveAll = async () => {
+    if (!state) return;
+    setSaving(true);
     try {
-      // Busca a linha completa para enviar ao webhook
-      const { data, error } = await supabase
-        .from("doshas_registros")
-        .select("*")
-        .eq("id", reg.id)
-        .maybeSingle();
-      if (error) throw error;
-      if (!data) {
-        toast.error("Registro não encontrado");
-        return;
-      }
-
-      const payload = {
-        email: data.email?.toLowerCase?.() ?? data.email,
-        idPublico: data.idPublico,
-        title: data.nome,
-        nome: data.nome,
-        idade: data.idade,
-        "conhecimento ayurveda": data.conhecimentoAyurveda || "Iniciante",
-        altura: data.altura,
-        peso: data.peso,
-        imc: data.imc,
-        datateste: data.created_at,
-        vatascore: data.vatascore,
-        pittascore: data.pittascore,
-        kaphascore: data.kaphascore,
-        doshaprincipal: data.doshaprincipal,
-        agniPrincipal: data.agniPrincipal,
-        agniirregular: data.agniirregular,
-        agniforte: data.agniforte,
-        agnifraco: data.agnifraco,
-        relato_aberto: data.relato_aberto || "",
-        agravVataTags: data.agravVataTags || "",
-        agravPittaTags: data.agravPittaTags || "",
-        agravKaphaTags: data.agravKaphaTags || "",
-        alimVata: data.alimVata || "",
-        alimPitta: data.alimPitta || "",
-        alimKapha: data.alimKapha || "",
-        aliment: data.aliment || "",
-        remedios: data.remedios || "",
-        mentoria: data.mentoria || "",
-        diagn: data.diagn || "",
-        espiritual: data.espiritual || "",
-        produtos: data.produtos || "",
-      };
-
-      // Fire-and-forget, não aguardamos resposta
-      fetch(WEBHOOK_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      }).catch(() => {});
-
-      toast.success("Teste reenviado para o webhook");
-    } catch (e: any) {
-      console.error("[AdminTeste] resend error:", e);
-      toast.error("Erro ao reenviar teste");
-    } finally {
-      setResending(null);
-    }
-  };
-
-  const handleDelete = async () => {
-    if (!confirmDelete) return;
-    const reg = confirmDelete;
-    setDeleting(reg.id);
-    try {
-      const { error } = await supabase
-        .from("doshas_registros")
+      const newRows = stateToInsertRows(state);
+      // Delete all + insert all (small dataset)
+      const { error: delErr } = await supabase
+        .from("dosha_test_questions" as any)
         .delete()
-        .eq("id", reg.id);
-      if (error) throw error;
-      setRegistros((prev) => prev.filter((r) => r.id !== reg.id));
-      toast.success("Teste deletado");
+        .gte("sort_order", -999999);
+      if (delErr) throw delErr;
+      if (newRows.length) {
+        const { error: insErr } = await supabase
+          .from("dosha_test_questions" as any)
+          .insert(newRows);
+        if (insErr) throw insErr;
+      }
+      toast.success("Conteúdo salvo!");
+      await refetchAll();
     } catch (e: any) {
-      console.error("[AdminTeste] delete error:", e);
-      toast.error("Erro ao deletar teste");
+      console.error("[AdminTeste] save error:", e);
+      toast.error("Erro ao salvar: " + (e.message ?? "desconhecido"));
     } finally {
-      setDeleting(null);
-      setConfirmDelete(null);
+      setSaving(false);
     }
   };
+
+  const saveAsNewVersion = async () => {
+    try {
+      // First save current edits
+      await saveAll();
+      // Then snapshot
+      const { data: rows, error } = await supabase
+        .from("dosha_test_questions" as any)
+        .select("*");
+      if (error) throw error;
+      const { error: vErr } = await supabase
+        .from("dosha_test_versions" as any)
+        .insert({
+          label: versionLabel || `Versão de ${new Date().toLocaleString("pt-BR")}`,
+          snapshot: rows as any,
+        });
+      if (vErr) throw vErr;
+      toast.success("Nova versão salva no histórico!");
+      setVersionLabel("");
+      await refetchAll();
+    } catch (e: any) {
+      console.error("[AdminTeste] version save error:", e);
+      toast.error("Erro ao salvar versão: " + (e.message ?? "desconhecido"));
+    }
+  };
+
+  const restoreVersion = async (versionNumber: number) => {
+    if (!confirm(`Restaurar a versão ${versionNumber}? As edições atuais não salvas serão perdidas.`)) return;
+    try {
+      const { error } = await supabase.rpc("restore_dosha_test_version" as any, {
+        _version_number: versionNumber,
+      } as any);
+      if (error) throw error;
+      toast.success(`Versão ${versionNumber} restaurada!`);
+      setHistoryOpen(false);
+      await refetchAll();
+    } catch (e: any) {
+      console.error("[AdminTeste] restore error:", e);
+      toast.error("Erro ao restaurar: " + (e.message ?? "desconhecido"));
+    }
+  };
+
+  const updatePartQuestions = (part: string, qs: Question[]) => {
+    setState(s => s ? { ...s, partQuestions: { ...s.partQuestions, [part]: qs } } : s);
+  };
+
+  const updateAgrav = (grp: "vata" | "pitta" | "kapha", items: TagItem[]) => {
+    setState(s => s ? { ...s, agravamentos: { ...s.agravamentos, [grp]: items } } : s);
+  };
+  const updateFoods = (grp: "vata" | "pitta" | "kapha", items: TagItem[]) => {
+    setState(s => s ? { ...s, foods: { ...s.foods, [grp]: items } } : s);
+  };
+
+  if (loading || !state) {
+    return (
+      <>
+        <AdminNav />
+        <div className="max-w-5xl mx-auto p-6 flex items-center justify-center py-20">
+          <Loader2 className="w-6 h-6 animate-spin text-primary" />
+        </div>
+      </>
+    );
+  }
 
   return (
     <>
-      <Helmet>
-        <title>Admin Testes – Portal Ayurveda</title>
-        <meta name="robots" content="noindex, nofollow" />
-      </Helmet>
-
-      <div className="min-h-screen bg-background">
-        <AdminNav />
-        <div className="max-w-5xl mx-auto px-4 py-8 space-y-6">
-          <div className="flex items-center gap-3">
-            <ShieldCheck className="w-7 h-7 text-primary" />
-            <h1 className="text-2xl font-heading font-bold text-foreground">
-              Testes de Dosha
-            </h1>
+      <Helmet><title>Admin — Teste de Dosha</title></Helmet>
+      <AdminNav />
+      <div className="max-w-5xl mx-auto p-4 sm:p-6 space-y-4">
+        {/* Version bar */}
+        <div className="flex flex-wrap items-center gap-2 border rounded-lg p-3 bg-card">
+          <span className="text-sm">
+            Versão atual: <strong>v{currentVersion ?? "?"}</strong>
+            {versions[0]?.label && <span className="text-muted-foreground"> — {versions[0].label}</span>}
+          </span>
+          <div className="ml-auto flex flex-wrap gap-2 items-center">
+            <Input
+              placeholder="Rótulo da nova versão (opcional)"
+              value={versionLabel}
+              onChange={e => setVersionLabel(e.target.value)}
+              className="h-9 w-64"
+            />
+            <Button onClick={saveAsNewVersion} disabled={saving} size="sm" className="gap-1">
+              <Save className="w-4 h-4" /> Salvar nova versão
+            </Button>
+            <Button onClick={() => setHistoryOpen(true)} variant="outline" size="sm" className="gap-1">
+              <HistoryIcon className="w-4 h-4" /> Histórico
+            </Button>
           </div>
+        </div>
 
-          {/* Search */}
-          <section className="bg-card border border-border rounded-xl p-5 space-y-3">
-            <h2 className="text-sm font-semibold text-foreground">
-              Buscar por email, nome ou ID público
-            </h2>
-            <div className="flex flex-col sm:flex-row gap-2">
-              <Input
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-                placeholder="email, nome ou ID público"
-                className="flex-1"
-              />
-              <Button onClick={handleSearch} disabled={loading} className="gap-2">
-                {loading ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <Search className="w-4 h-4" />
-                )}
-                Pesquisar
-              </Button>
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Mostrando até {PAGE_SIZE} resultados, mais recentes primeiro.
-            </p>
-          </section>
+        <div className="flex justify-end">
+          <Button onClick={saveAll} disabled={saving} variant="secondary" size="sm" className="gap-1">
+            {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+            Salvar mudanças
+          </Button>
+        </div>
 
-          {/* List */}
-          {loading ? (
-            <div className="space-y-2">
-              {Array.from({ length: 6 }).map((_, i) => (
-                <Skeleton key={i} className="h-16 w-full rounded-lg" />
-              ))}
-            </div>
-          ) : registros.length === 0 ? (
-            <div className="bg-card border border-border rounded-xl p-8 text-center text-sm text-muted-foreground">
-              Nenhum teste encontrado.
-            </div>
-          ) : (
-            <div className="space-y-2">
-              {registros.map((reg) => (
-                <div
-                  key={reg.id}
-                  className="bg-card border border-border rounded-xl p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3"
-                >
-                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm min-w-0">
-                    <span className="font-semibold text-foreground truncate">
-                      {reg.nome || "—"}
-                    </span>
-                    <span className="text-muted-foreground hidden md:inline">|</span>
-                    <span className="text-foreground/80 truncate">
-                      {reg.email || "—"}
-                    </span>
-                    <span className="text-muted-foreground hidden md:inline">|</span>
-                    <span className="text-xs text-muted-foreground font-mono">
-                      {reg.idPublico}
-                    </span>
+        <Accordion type="multiple" className="space-y-2">
+          {STEP_CONFIG.map((step, idx) => {
+            const partKey = step.part;
+            return (
+              <AccordionItem key={partKey} value={partKey} className="border rounded-lg bg-card px-3">
+                <AccordionTrigger className="text-left hover:no-underline">
+                  <div>
+                    <p className="font-semibold">{step.title}</p>
+                    <p className="text-xs text-muted-foreground">{step.subtitle}</p>
                   </div>
-                  <div className="flex items-center gap-2 shrink-0">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => handleResend(reg)}
-                      disabled={resending === reg.id}
-                      className="gap-2"
-                    >
-                      {resending === reg.id ? (
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                      ) : (
-                        <Send className="w-4 h-4" />
-                      )}
-                      Reenviar
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="destructive"
-                      onClick={() => setConfirmDelete(reg)}
-                      disabled={deleting === reg.id}
-                      className="gap-2"
-                    >
-                      {deleting === reg.id ? (
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                      ) : (
-                        <Trash2 className="w-4 h-4" />
-                      )}
-                      Deletar
-                    </Button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
+                </AccordionTrigger>
+                <AccordionContent className="space-y-3 pt-2">
+                  {partKey.startsWith("part") && state.partQuestions[partKey] && (
+                    <>
+                      {state.partQuestions[partKey].map((q, qIdx) => (
+                        <QuestionCard
+                          key={qIdx}
+                          question={q}
+                          onChange={next => updatePartQuestions(partKey, state.partQuestions[partKey].map((x, i) => i === qIdx ? next : x))}
+                          onRemove={() => updatePartQuestions(partKey, state.partQuestions[partKey].filter((_, i) => i !== qIdx))}
+                          onDuplicate={() => {
+                            const arr = [...state.partQuestions[partKey]];
+                            arr.splice(qIdx + 1, 0, { ...q, id: `${partKey}_dup_${Date.now()}` });
+                            updatePartQuestions(partKey, arr);
+                          }}
+                        />
+                      ))}
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => updatePartQuestions(partKey, [
+                          ...state.partQuestions[partKey],
+                          { id: `${partKey}_new_${Date.now()}`, text: "Nova pergunta", options: [{ label: "Opção", scores: {} }] },
+                        ])}
+                        className="gap-1"
+                      >
+                        <Plus className="w-3.5 h-3.5" /> Nova pergunta
+                      </Button>
+                    </>
+                  )}
+                  {partKey === "part8" && (
+                    <div className="space-y-4">
+                      <div className="grid md:grid-cols-3 gap-3">
+                        <TagListEditor title="💨 Agrav. Vata" items={state.agravamentos.vata} onChange={items => updateAgrav("vata", items)} defaultAxis="v" />
+                        <TagListEditor title="🔥 Agrav. Pitta" items={state.agravamentos.pitta} onChange={items => updateAgrav("pitta", items)} defaultAxis="p" />
+                        <TagListEditor title="🪨 Agrav. Kapha" items={state.agravamentos.kapha} onChange={items => updateAgrav("kapha", items)} defaultAxis="k" />
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-sm mb-2">Alimentos consumidos</h3>
+                        <div className="grid md:grid-cols-3 gap-3">
+                          <TagListEditor title="💨 Alim. Vata" items={state.foods.vata} onChange={items => updateFoods("vata", items)} defaultAxis="v" />
+                          <TagListEditor title="🔥 Alim. Pitta" items={state.foods.pitta} onChange={items => updateFoods("pitta", items)} defaultAxis="p" />
+                          <TagListEditor title="🪨 Alim. Kapha" items={state.foods.kapha} onChange={items => updateFoods("kapha", items)} defaultAxis="k" />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  {partKey === "interests" && (
+                    <div className="text-sm text-muted-foreground p-3 border rounded-md bg-muted/30">
+                      Esta etapa é fixa no código (e-mail, altura, peso, localização, interesses, relato pessoal) e não é editável aqui.
+                    </div>
+                  )}
+                </AccordionContent>
+              </AccordionItem>
+            );
+          })}
+        </Accordion>
+
+        <div className="flex justify-end pt-4">
+          <Button onClick={saveAll} disabled={saving} className="gap-1">
+            {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+            Salvar mudanças
+          </Button>
         </div>
       </div>
 
-      <AlertDialog
-        open={!!confirmDelete}
-        onOpenChange={(o) => !o && setConfirmDelete(null)}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Deletar este teste?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Esta ação é irreversível. O registro de{" "}
-              <strong>{confirmDelete?.nome || confirmDelete?.email || confirmDelete?.idPublico}</strong>{" "}
-              será permanentemente removido.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDelete}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              Deletar
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <Dialog open={historyOpen} onOpenChange={setHistoryOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Histórico de versões</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-2 max-h-[60vh] overflow-y-auto">
+            {versions.map(v => (
+              <div key={v.id} className="flex items-center gap-3 border rounded-md p-2">
+                <div className="flex-1">
+                  <p className="font-medium text-sm">v{v.version_number} {v.label && `— ${v.label}`}</p>
+                  <p className="text-xs text-muted-foreground">{new Date(v.created_at).toLocaleString("pt-BR")}</p>
+                </div>
+                <Button size="sm" variant="outline" onClick={() => restoreVersion(v.version_number)}>
+                  Restaurar
+                </Button>
+              </div>
+            ))}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setHistoryOpen(false)}>Fechar</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 };
