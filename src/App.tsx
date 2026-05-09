@@ -32,6 +32,7 @@ import Admin from "./pages/Admin";
 import AdminBlog from "./pages/AdminBlog";
 import AdminAkasha from "./pages/AdminAkasha";
 import AdminTeste from "./pages/AdminTeste";
+import AdminTesteRegistros from "./pages/AdminTesteRegistros";
 import AdminRoute from "./components/admin/AdminRoute";
 import AdminLoja from "./pages/AdminLoja";
 import AdminBiblioteca from "./pages/AdminBiblioteca";
