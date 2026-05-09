@@ -410,6 +410,69 @@ export type Database = {
         }
         Relationships: []
       }
+      dosha_test_questions: {
+        Row: {
+          created_at: string
+          group: string | null
+          id: string
+          options: Json
+          part: string
+          sort_order: number
+          tag_label: string | null
+          text: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          group?: string | null
+          id?: string
+          options?: Json
+          part: string
+          sort_order?: number
+          tag_label?: string | null
+          text?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          group?: string | null
+          id?: string
+          options?: Json
+          part?: string
+          sort_order?: number
+          tag_label?: string | null
+          text?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      dosha_test_versions: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          label: string | null
+          snapshot: Json
+          version_number: number
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          label?: string | null
+          snapshot: Json
+          version_number?: number
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          label?: string | null
+          snapshot?: Json
+          version_number?: number
+        }
+        Relationships: []
+      }
       doshas_registros: {
         Row: {
           agniforte: number | null
@@ -2237,6 +2300,10 @@ export type Database = {
           isOneToOne: false
           isSetofReturn: true
         }
+      }
+      restore_dosha_test_version: {
+        Args: { _version_number: number }
+        Returns: undefined
       }
       text_to_bytea: { Args: { data: string }; Returns: string }
       urlencode:
