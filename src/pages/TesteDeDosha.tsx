@@ -13,6 +13,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/contexts/UserContext";
 import { cn } from "@/lib/utils";
 import { STEP_CONFIG, useDoshaTestContent, type Question } from "@/lib/doshaTest";
+import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 
 const INTERESSE_OPTIONS = [
   { id: 'aliment', label: '🥗 Nutrição, Alimentação e Culinária' },
