@@ -29,7 +29,7 @@ interface Registro {
 const WEBHOOK_URL = "https://n8n.portalayurveda.com/webhook/teste-dosha-ayurveda";
 const PAGE_SIZE = 50;
 
-const AdminTeste = () => {
+const AdminTesteRegistros = () => {
   const [registros, setRegistros] = useState<Registro[]>([]);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
@@ -57,7 +57,7 @@ const AdminTeste = () => {
       if (error) throw error;
       setRegistros((data ?? []) as Registro[]);
     } catch (e: any) {
-      console.error("[AdminTeste] fetch error:", e);
+      console.error("[AdminTesteRegistros] fetch error:", e);
       toast.error("Erro ao carregar testes");
     } finally {
       setLoading(false);
@@ -128,7 +128,7 @@ const AdminTeste = () => {
 
       toast.success("Teste reenviado para o webhook");
     } catch (e: any) {
-      console.error("[AdminTeste] resend error:", e);
+      console.error("[AdminTesteRegistros] resend error:", e);
       toast.error("Erro ao reenviar teste");
     } finally {
       setResending(null);
@@ -148,7 +148,7 @@ const AdminTeste = () => {
       setRegistros((prev) => prev.filter((r) => r.id !== reg.id));
       toast.success("Teste deletado");
     } catch (e: any) {
-      console.error("[AdminTeste] delete error:", e);
+      console.error("[AdminTesteRegistros] delete error:", e);
       toast.error("Erro ao deletar teste");
     } finally {
       setDeleting(null);
@@ -296,4 +296,4 @@ const AdminTeste = () => {
   );
 };
 
-export default AdminTeste;
+export default AdminTesteRegistros;
