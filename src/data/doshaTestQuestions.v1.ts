@@ -1,3 +1,8 @@
+// ============================================================
+// SNAPSHOT v1.0 — estado original do teste de dosha (NÃO EDITAR)
+// Congelado em 2026-05-09 antes da migração para banco editável.
+// Fonte de fallback caso a leitura de `dosha_test_questions` falhe.
+// ============================================================
 export interface ScoreValues {
   v?: number;
   p?: number;
