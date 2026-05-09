@@ -471,7 +471,7 @@ export const RULES: RuleDefinition[] = [
   {
     id: "R34",
     categoria: "Atencao",
-    applies: (c) => c.p >= 0 && c.p <= 14 && !c.agni.includes("forte") && c.ap <= 1,
+    applies: (c) => c.p >= 0 && c.p <= 19 && !c.agni.includes("forte") && c.ap <= 1,
     copy: {
       titulo: "Apagando o próprio fogo",
       subtitulo: "Atenção · {pct}%",
@@ -482,7 +482,7 @@ export const RULES: RuleDefinition[] = [
   {
     id: "R35",
     categoria: "Atencao",
-    applies: (c) => c.p >= 0 && c.p <= 14 && c.age >= 50,
+    applies: (c) => c.p >= 0 && c.p <= 19 && c.age >= 50,
     copy: {
       titulo: "Pitta baixo — a fase Vata chegou",
       subtitulo: "Atenção · {pct}%",
@@ -493,7 +493,7 @@ export const RULES: RuleDefinition[] = [
   {
     id: "R36",
     categoria: "Atencao",
-    applies: (c) => c.v >= 0 && c.v <= 14 && !c.agni.includes("irregular") && c.av <= 1,
+    applies: (c) => c.v >= 0 && c.v <= 16 && !c.agni.includes("irregular") && c.av <= 1,
     copy: {
       titulo: "Vata baixo sem estímulo de movimento",
       subtitulo: "Atenção · {pct}%",
@@ -581,7 +581,7 @@ export const RULES: RuleDefinition[] = [
   {
     id: "R44",
     categoria: "Atencao",
-    applies: (c) => c.v >= 15 && c.v <= 24 && c.agni.includes("irregular"),
+    applies: (c) => c.v >= 17 && c.v <= 24 && c.agni.includes("irregular"),
     copy: {
       titulo: "Sinal precoce: digestão irregular antes do score subir",
       subtitulo: "Atenção · {pct}%",
@@ -592,7 +592,7 @@ export const RULES: RuleDefinition[] = [
   {
     id: "R45",
     categoria: "Atencao",
-    applies: (c) => c.v >= 15 && c.v <= 24 && c.sv >= 4,
+    applies: (c) => c.v >= 17 && c.v <= 24 && c.sv >= 4,
     copy: {
       titulo: "Os sintomas chegam antes do score",
       subtitulo: "Atenção · {pct}%",
