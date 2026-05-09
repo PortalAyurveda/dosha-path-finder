@@ -23,15 +23,15 @@ const VATA_LEVELS = [
   { label: "Fixado", min: 50, max: 999 },
   { label: "Adoecido", min: 36, max: 49 },
   { label: "Acúmulo", min: 25, max: 35 },
-  { label: "Normal", min: 15, max: 24 },
-  { label: "Pouco", min: 0, max: 14 },
+  { label: "Normal", min: 17, max: 24 },
+  { label: "Pouco", min: 0, max: 16 },
 ];
 const PITTA_LEVELS = [
   { label: "Fixado", min: 50, max: 999 },
   { label: "Adoecido", min: 41, max: 49 },
   { label: "Acúmulo", min: 31, max: 40 },
-  { label: "Normal", min: 15, max: 30 },
-  { label: "Pouco", min: 0, max: 14 },
+  { label: "Normal", min: 20, max: 30 },
+  { label: "Pouco", min: 0, max: 19 },
 ];
 const KAPHA_LEVELS = [
   { label: "Fixado", min: 60, max: 999 },
