@@ -60,9 +60,9 @@ interface SearchResponse {
 type Nivel = "Fixado" | "Adoecido" | "Acúmulo" | "Normal" | "Pouco";
 
 const getVataNivel = (score: number): Nivel =>
-  score >= 50 ? "Fixado" : score >= 36 ? "Adoecido" : score >= 25 ? "Acúmulo" : score >= 15 ? "Normal" : "Pouco";
+  score >= 50 ? "Fixado" : score >= 36 ? "Adoecido" : score >= 25 ? "Acúmulo" : score >= 17 ? "Normal" : "Pouco";
 const getPittaNivel = (score: number): Nivel =>
-  score >= 50 ? "Fixado" : score >= 41 ? "Adoecido" : score >= 31 ? "Acúmulo" : score >= 15 ? "Normal" : "Pouco";
+  score >= 50 ? "Fixado" : score >= 41 ? "Adoecido" : score >= 31 ? "Acúmulo" : score >= 20 ? "Normal" : "Pouco";
 const getKaphaNivel = (score: number): Nivel =>
   score >= 60 ? "Fixado" : score >= 51 ? "Adoecido" : score >= 36 ? "Acúmulo" : score >= 15 ? "Normal" : "Pouco";
 
