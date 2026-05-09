@@ -12,23 +12,8 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/contexts/UserContext";
 import { cn } from "@/lib/utils";
-import {
-  PART1_QUESTIONS, PART2_QUESTIONS, PART3_QUESTIONS, PART4_QUESTIONS,
-  PART5_QUESTIONS, PART6_QUESTIONS, PART7_QUESTIONS,
-  FOOD_TAGS, AGRAVAMENTOS_VATA, AGRAVAMENTOS_PITTA, AGRAVAMENTOS_KAPHA,
-  ALL_QUESTIONS, STEP_CONFIG, type Question,
-} from "@/data/doshaTestQuestions";
+import { STEP_CONFIG, useDoshaTestContent, type Question } from "@/lib/doshaTest";
 import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
-
-const QUESTIONS_BY_STEP: Record<string, Question[]> = {
-  part1: PART1_QUESTIONS,
-  part2: PART2_QUESTIONS,
-  part3: PART3_QUESTIONS,
-  part4: PART4_QUESTIONS,
-  part5: PART5_QUESTIONS,
-  part6: PART6_QUESTIONS,
-  part7: PART7_QUESTIONS,
-};
 
 const INTERESSE_OPTIONS = [
   { id: 'aliment', label: '🥗 Nutrição, Alimentação e Culinária' },
@@ -42,6 +27,25 @@ const TesteDeDosha = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { setDoshaResultFromId } = useUser();
+  const { content: doshaContent, loading: contentLoading } = useDoshaTestContent();
+
+  const FOOD_TAGS = doshaContent?.foodTags ?? [];
+  const AGRAVAMENTOS_VATA = doshaContent?.agravamentosVata ?? [];
+  const AGRAVAMENTOS_PITTA = doshaContent?.agravamentosPitta ?? [];
+  const AGRAVAMENTOS_KAPHA = doshaContent?.agravamentosKapha ?? [];
+  const QUESTIONS_BY_STEP: Record<string, Question[]> = doshaContent ? {
+    part1: doshaContent.part1,
+    part2: doshaContent.part2,
+    part3: doshaContent.part3,
+    part4: doshaContent.part4,
+    part5: doshaContent.part5,
+    part6: doshaContent.part6,
+    part7: doshaContent.part7,
+  } : { part1: [], part2: [], part3: [], part4: [], part5: [], part6: [], part7: [] };
+  const ALL_QUESTIONS: Question[] = doshaContent ? [
+    ...doshaContent.part1, ...doshaContent.part2, ...doshaContent.part3,
+    ...doshaContent.part4, ...doshaContent.part5, ...doshaContent.part6, ...doshaContent.part7,
+  ] : [];
 const [step, setStep] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [interstitialTarget, setInterstitialTarget] = useState<string | null>(null);
@@ -621,6 +625,16 @@ const [step, setStep] = useState(0);
 
   if (interstitialTarget) {
     return <InterstitialLoading redirectTo={interstitialTarget} />;
+  }
+
+  if (contentLoading || !doshaContent) {
+    return (
+      <PageContainer title="Teste de Dosha" description="Descubra seu dosha predominante com nosso teste personalizado baseado no Ayurveda.">
+        <div className="max-w-2xl mx-auto py-20 flex items-center justify-center">
+          <Loader2 className="w-6 h-6 animate-spin text-primary" />
+        </div>
+      </PageContainer>
+    );
   }
 
   return (
