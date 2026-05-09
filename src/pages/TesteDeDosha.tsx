@@ -627,6 +627,16 @@ const [step, setStep] = useState(0);
     return <InterstitialLoading redirectTo={interstitialTarget} />;
   }
 
+  if (contentLoading || !doshaContent) {
+    return (
+      <PageContainer title="Teste de Dosha" description="Descubra seu dosha predominante com nosso teste personalizado baseado no Ayurveda.">
+        <div className="max-w-2xl mx-auto py-20 flex items-center justify-center">
+          <Loader2 className="w-6 h-6 animate-spin text-primary" />
+        </div>
+      </PageContainer>
+    );
+  }
+
   return (
     <PageContainer title="Teste de Dosha" description="Descubra seu dosha predominante com nosso teste personalizado baseado no Ayurveda.">
       <div className="max-w-2xl mx-auto">
