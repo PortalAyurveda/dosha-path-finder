@@ -4,13 +4,11 @@ import {
   XAxis,
   YAxis,
   Tooltip,
-  ReferenceArea,
+  ReferenceLine,
   ResponsiveContainer,
   Legend,
 } from "recharts";
 import {
-  ZONE_BANDS,
-  ZONE_COLORS,
   ZONE_TICKS,
   ZONE_TICK_LABELS,
   agniStyle,
@@ -19,7 +17,7 @@ import {
 } from "./doshaScale";
 
 export interface SeriesPoint {
-  t: number; // timestamp ms
+  t: number;
   vata?: number; vataRaw?: number;
   pitta?: number; pittaRaw?: number;
   kapha?: number; kaphaRaw?: number;
@@ -28,18 +26,34 @@ export interface SeriesPoint {
 }
 
 interface Props {
-  realPoints: SeriesPoint[]; // pontos reais (incluindo "Hoje" no início)
-  metaPoint: SeriesPoint | null; // ponto da meta (data_fim)
+  realPoints: SeriesPoint[];
+  metaPoint: SeriesPoint | null;
   agniTipo: string | null;
   agniNivelAtual: number | null;
   agniNivelMeta: number | null;
 }
 
-const DOSHA_COLORS = {
-  vata: "hsl(228 100% 65%)",
-  pitta: "hsl(0 85% 65%)",
-  kapha: "hsl(105 45% 50%)",
-};
+// Paletas alinhadas com tailwind.config.ts (vata.1..5, pitta.1..5, kapha.1..5)
+const VATA_SHADES  = ["#D6E0FF", "#A3C1FF", "#709AFF", "#4F75FF", "#2A4BCC"];
+const PITTA_SHADES = ["#FFE0E0", "#FFB3B3", "#FF8585", "#FF5C5C", "#CC3333"];
+const KAPHA_SHADES = ["#D1F4E0", "#9AE6B8", "#5ED58F", "#22C55E", "#15803D"];
+
+// Mapeia nível 1..15 -> shade 1..5 (uma intensidade por zona).
+function shadeForLevel(level: number, palette: string[]): string {
+  const z = Math.min(5, Math.max(1, Math.ceil(level / 3)));
+  return palette[z - 1];
+}
+
+function maxLevel(points: SeriesPoint[], key: "vata" | "pitta" | "kapha"): number {
+  let m = 0;
+  for (const p of points) {
+    const v = p[key];
+    if (typeof v === "number" && v > m) m = v;
+  }
+  return m || 1;
+}
+
+const SIX_MONTHS_MS = 180 * 24 * 60 * 60 * 1000;
 
 function ZoneTooltip({ active, payload }: { active?: boolean; payload?: any[] }) {
   if (!active || !payload?.length) return null;
@@ -57,15 +71,10 @@ function ZoneTooltip({ active, payload }: { active?: boolean; payload?: any[] })
           info = scoreToLevel(key, raw ?? 0);
         return (
           <div key={key} className="flex items-center gap-2" style={{ color: p.color }}>
-            <span
-              className="w-2.5 h-2.5 rounded-full"
-              style={{ background: p.color }}
-            />
+            <span className="w-2.5 h-2.5 rounded-full" style={{ background: p.color }} />
             <span className="capitalize font-semibold">{key}</span>
             <span className="text-muted-foreground">— {raw ?? "—"} —</span>
-            <span>
-              {info ? `${info.zona} nível ${info.sub}` : `nível ${level}`}
-            </span>
+            <span>{info ? `${info.zona} nível ${info.sub}` : `nível ${level}`}</span>
           </div>
         );
       })}
@@ -80,20 +89,24 @@ export default function DoshasEvolutionChart({
   agniNivelAtual,
   agniNivelMeta,
 }: Props) {
-  const agni = agniStyle(agniTipo, agniNivelAtual);
-
-  // Dados completos para zonas/eixo
   const all: SeriesPoint[] = [...realPoints];
   if (metaPoint) all.push(metaPoint);
-
   if (all.length === 0) return null;
 
-  const xMin = all[0].t;
-  const xMax = all[all.length - 1].t;
+  // Janela fixa de 6 meses a partir do primeiro ponto real
+  const xMin = realPoints[0]?.t ?? all[0].t;
+  const xMax = xMin + SIX_MONTHS_MS;
 
-  // Segmento projetado: último real -> meta (linha tracejada por dosha)
   const lastReal = realPoints[realPoints.length - 1];
   const projection: SeriesPoint[] = lastReal && metaPoint ? [lastReal, metaPoint] : [];
+
+  // Cores por dosha baseadas no nível máximo observado
+  const vataColor  = shadeForLevel(maxLevel([...realPoints, ...(metaPoint ? [metaPoint] : [])], "vata"),  VATA_SHADES);
+  const pittaColor = shadeForLevel(maxLevel([...realPoints, ...(metaPoint ? [metaPoint] : [])], "pitta"), PITTA_SHADES);
+  const kaphaColor = shadeForLevel(maxLevel([...realPoints, ...(metaPoint ? [metaPoint] : [])], "kapha"), KAPHA_SHADES);
+  const agni = agniStyle(agniTipo, agniNivelAtual);
+
+  const ZONE_BOUNDARIES = [3.5, 6.5, 9.5, 12.5];
 
   return (
     <div className="w-full h-[420px]">
@@ -102,30 +115,16 @@ export default function DoshasEvolutionChart({
           data={all}
           margin={{ top: 16, right: 24, left: 8, bottom: 8 }}
         >
-          {/* Faixas de zona */}
-          {ZONE_BANDS.map((b, i) => {
-            const opacity = b.sub === 1 ? 0.18 : b.sub === 2 ? 0.32 : 0.5;
-            return (
-              <ReferenceArea
-                key={i}
-                y1={b.from}
-                y2={b.to}
-                fill={ZONE_COLORS[b.zona]}
-                fillOpacity={opacity}
-                stroke="none"
-                ifOverflow="visible"
-              />
-            );
-          })}
-          {/* Destaque da zona Normal */}
-          <ReferenceArea
-            y1={3.5}
-            y2={6.5}
-            stroke="hsl(150 45% 45%)"
-            strokeOpacity={0.4}
-            strokeDasharray="2 4"
-            fill="none"
-          />
+          {/* Linhas guia sutis nas fronteiras das 5 zonas */}
+          {ZONE_BOUNDARIES.map((y) => (
+            <ReferenceLine
+              key={y}
+              y={y}
+              stroke="hsl(var(--border))"
+              strokeDasharray="2 4"
+              ifOverflow="visible"
+            />
+          ))}
 
           <XAxis
             dataKey="t"
@@ -153,92 +152,19 @@ export default function DoshasEvolutionChart({
             wrapperStyle={{ fontSize: 12, paddingTop: 8 }}
           />
 
-          {/* Linhas reais */}
-          <Line
-            data={realPoints}
-            dataKey="vata"
-            name="Vata"
-            stroke={DOSHA_COLORS.vata}
-            strokeWidth={2}
-            dot={{ r: 4 }}
-            connectNulls
-            isAnimationActive={false}
-          />
-          <Line
-            data={realPoints}
-            dataKey="pitta"
-            name="Pitta"
-            stroke={DOSHA_COLORS.pitta}
-            strokeWidth={2}
-            dot={{ r: 4 }}
-            connectNulls
-            isAnimationActive={false}
-          />
-          <Line
-            data={realPoints}
-            dataKey="kapha"
-            name="Kapha"
-            stroke={DOSHA_COLORS.kapha}
-            strokeWidth={2}
-            dot={{ r: 4 }}
-            connectNulls
-            isAnimationActive={false}
-          />
-          <Line
-            data={realPoints}
-            dataKey="agni"
-            name="Agni"
-            stroke={agni.color}
-            strokeWidth={2}
-            strokeDasharray={agni.dash}
-            dot={{ r: 4 }}
-            connectNulls
-            isAnimationActive={false}
-          />
+          {/* Linhas reais (com legenda) */}
+          <Line data={realPoints} dataKey="vata"  name="Vata"  stroke={vataColor}  strokeWidth={2} dot={{ r: 4 }} connectNulls isAnimationActive={false} />
+          <Line data={realPoints} dataKey="pitta" name="Pitta" stroke={pittaColor} strokeWidth={2} dot={{ r: 4 }} connectNulls isAnimationActive={false} />
+          <Line data={realPoints} dataKey="kapha" name="Kapha" stroke={kaphaColor} strokeWidth={2} dot={{ r: 4 }} connectNulls isAnimationActive={false} />
+          <Line data={realPoints} dataKey="agni"  name="Agni"  stroke={agni.color} strokeWidth={2} strokeDasharray={agni.dash} dot={{ r: 4 }} connectNulls isAnimationActive={false} />
 
-          {/* Projeções tracejadas até a meta */}
+          {/* Projeções tracejadas até a meta — sem legenda duplicada */}
           {projection.length === 2 && (
             <>
-              <Line
-                data={projection}
-                dataKey="vata"
-                stroke={DOSHA_COLORS.vata}
-                strokeWidth={2}
-                strokeDasharray="6 4"
-                dot={{ r: 4, fill: "white", strokeWidth: 2 }}
-                legendType="none"
-                isAnimationActive={false}
-              />
-              <Line
-                data={projection}
-                dataKey="pitta"
-                stroke={DOSHA_COLORS.pitta}
-                strokeWidth={2}
-                strokeDasharray="6 4"
-                dot={{ r: 4, fill: "white", strokeWidth: 2 }}
-                legendType="none"
-                isAnimationActive={false}
-              />
-              <Line
-                data={projection}
-                dataKey="kapha"
-                stroke={DOSHA_COLORS.kapha}
-                strokeWidth={2}
-                strokeDasharray="6 4"
-                dot={{ r: 4, fill: "white", strokeWidth: 2 }}
-                legendType="none"
-                isAnimationActive={false}
-              />
-              <Line
-                data={projection}
-                dataKey="agni"
-                stroke={agniStyle(agniTipo, agniNivelMeta).color}
-                strokeWidth={2}
-                strokeDasharray="6 4"
-                dot={{ r: 4, fill: "white", strokeWidth: 2 }}
-                legendType="none"
-                isAnimationActive={false}
-              />
+              <Line data={projection} dataKey="vata"  stroke={vataColor}  strokeWidth={2} strokeDasharray="6 4" dot={{ r: 4, fill: "white", strokeWidth: 2 }} legendType="none" isAnimationActive={false} />
+              <Line data={projection} dataKey="pitta" stroke={pittaColor} strokeWidth={2} strokeDasharray="6 4" dot={{ r: 4, fill: "white", strokeWidth: 2 }} legendType="none" isAnimationActive={false} />
+              <Line data={projection} dataKey="kapha" stroke={kaphaColor} strokeWidth={2} strokeDasharray="6 4" dot={{ r: 4, fill: "white", strokeWidth: 2 }} legendType="none" isAnimationActive={false} />
+              <Line data={projection} dataKey="agni"  stroke={agniStyle(agniTipo, agniNivelMeta).color} strokeWidth={2} strokeDasharray="6 4" dot={{ r: 4, fill: "white", strokeWidth: 2 }} legendType="none" isAnimationActive={false} />
             </>
           )}
         </ComposedChart>

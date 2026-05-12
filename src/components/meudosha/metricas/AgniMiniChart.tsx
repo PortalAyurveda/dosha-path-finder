@@ -35,13 +35,15 @@ export default function AgniMiniChart({ tStart, tEnd, agniTipo, agniAtual, agniM
             fontSize={11}
           />
           <YAxis
+            type="number"
             domain={[-0.3, 3.3]}
             ticks={[0, 1, 2, 3]}
-            tickFormatter={(v) => AGNI_LABEL[v as number] || ""}
+            interval={0}
+            allowDecimals={false}
+            tickFormatter={(v) => AGNI_LABEL[v as number] ?? ""}
             stroke="hsl(var(--muted-foreground))"
             fontSize={11}
-            width={70}
-            reversed
+            width={84}
           />
           <Line
             dataKey="agni"
