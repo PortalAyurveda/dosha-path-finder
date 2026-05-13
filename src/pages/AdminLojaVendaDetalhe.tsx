@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { toast } from "sonner";
-import { Loader2, ExternalLink, Save, ArrowLeft, MapPin } from "lucide-react";
+import { Loader2, ExternalLink, Save, ArrowLeft, MapPin, Mail } from "lucide-react";
 import AdminNav from "@/components/admin/AdminNav";
 import { lojaSupabase } from "@/integrations/supabase/loja-client";
 import { Button } from "@/components/ui/button";
