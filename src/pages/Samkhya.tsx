@@ -114,7 +114,7 @@ const Samkhya = () => {
         />
       </Helmet>
 
-      <SamkhyaLayout>
+      <SamkhyaLayout showHero>
         {loading ? (
           <>
             <div className="text-center py-10">
