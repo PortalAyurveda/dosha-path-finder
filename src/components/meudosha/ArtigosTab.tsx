@@ -263,7 +263,7 @@ const ArtigosTab = ({ agravVataTags, agravPittaTags, agravKaphaTags, doshaprinci
             <p className="text-muted-foreground">
               {allSymptoms.length === 0
                 ? "Nenhum agravamento registrado para personalizar artigos."
-                : "Não encontramos artigos específicos para seus agravamentos."}
+                : "Você já leu tudo aqui — explore a aba Gerais!"}
             </p>
           </div>
         ) : (
@@ -301,7 +301,10 @@ const ArtigosTab = ({ agravVataTags, agravPittaTags, agravKaphaTags, doshaprinci
                             {article.title}
                           </h3>
                         </Link>
-                        <HeartButton contentType="artigo" contentId={article.id} />
+                        <div className="flex items-center gap-1 shrink-0">
+                          <HeartButton contentType="artigo" contentId={article.id} />
+                          <MarkAsReadButton contentType="artigo" contentId={article.id} />
+                        </div>
                       </div>
                       <p className="text-sm text-muted-foreground line-clamp-3">
                         {article.meta_description || article.summary || ""}
@@ -315,7 +318,9 @@ const ArtigosTab = ({ agravVataTags, agravPittaTags, agravKaphaTags, doshaprinci
         )
       ) : filteredGeneralArticles.length === 0 ? (
         <div className="text-center p-8 rounded-2xl bg-surface-sun border border-border">
-          <p className="text-muted-foreground">Nenhum artigo encontrado.</p>
+          <p className="text-muted-foreground">
+            Você já leu tudo disponível — use a busca para encontrar algo específico.
+          </p>
         </div>
       ) : (
         (() => {
