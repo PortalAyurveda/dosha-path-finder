@@ -1,29 +1,42 @@
-## Pré-preencher dados do usuário logado no checkout
+## Restauração do header (Menu / Perfil / Carrinho)
 
-### O que temos hoje (de onde vem o dado)
-O `UserContext` (`src/contexts/UserContext.tsx`) já expõe, quando o usuário está logado:
-- `user.email` — email do auth
-- `profile.nome` — vem da tabela `user_profiles`
-- `doshaResult.nome` — vem do último registro em `doshas_registros` por email
+Encontrei a versão exata do `src/components/Header.tsx` anterior à remoção feita em 06/05 (commit `a4260a9`). Vou apenas restaurar o que foi retirado, sem mexer em cor, dimensão, fonte ou layout.
 
-Endereço completo (logradouro, número, bairro, CEP, CPF, telefone) **não está armazenado em lugar nenhum** hoje no projeto — `doshas_registros` só tem `cidade`, `estado` e `pais`, e `user_profiles` não tem campos de endereço. Então só dá para pré-preencher: **nome, email e, se quiser, cidade/UF** (esses dois com cuidado, porque o ViaCEP/CEP do carrinho deve ter prioridade).
+### O que será restaurado
 
-### Mudanças
+1. **Canto esquerdo — botão "Menu" (Sheet/hamburger)**
+   - Botão branco com ícone `Menu` + label "Menu"
+   - `Sheet` lateral (`side="left"`) com `navLinks`: Portal, Loja Samkhya, Biblioteca, Artigos, Cursos, Terapeutas, Métricas
+   - Botão "Sair" (`LogOut`) no final do menu quando o usuário está logado
+   - Fundo do Sheet adapta para roxo Samkhya quando em `/samkhya/*` (mesma lógica original)
 
-**Arquivo:** `src/components/loja/CartDrawer.tsx`
+2. **Canto direito — Perfil / Entrar**
+   - Se `doshaResult`: pílula branca com primeiro nome + mini gráfico de pizza (`HeaderDoshaPie`) linkando para `/meu-dosha?id=…`
+   - Se apenas `user` logado (sem dosha): círculo branco com inicial linkando para `/meu-dosha`
+   - Senão: botão "Entrar" com ícone `LogIn` linkando para `/entrar`
 
-1. Importar `useUser` de `@/contexts/UserContext`.
-2. Ler `user`, `profile`, `doshaResult` do contexto.
-3. Adicionar um `useEffect` que dispara quando `step === "checkout"` (ou quando o drawer abre), e faz merge não-destrutivo no `form`:
-   - `nome`: `profile?.nome ?? doshaResult?.nome ?? ""` — só preenche se o campo estiver vazio
-   - `email`: `user?.email ?? ""` — só preenche se o campo estiver vazio
-   - Não tocar em telefone, CPF, logradouro, número, complemento, bairro (não temos esses dados).
-   - Cidade/UF: **não pré-preencher** a partir de `doshaResult` — o ViaCEP do CEP informado já cuida disso e é mais confiável (evita conflito).
+3. **Helpers internos restaurados**
+   - Componente `HeaderDoshaPie` (SVG donut Vata/Pitta/Kapha)
+   - Constante `PIE_COLORS`
+   - Imports: `Menu, LogIn, LogOut, ShoppingBag, Home` do lucide; `Sheet*` do shadcn; `Button`
 
-4. Se o usuário não estiver logado, comportamento atual continua igual (tudo em branco).
+### O que será preservado (não tocado)
 
-### Por que não persistir mais nada agora
-O usuário não pediu pra criar tabela de endereço/cliente. Quando quisermos lembrar endereço completo entre compras, criamos depois uma tabela `loja.clientes` (ou similar) ligada ao `user_id` e populamos a partir dos dados de checkout — fica como próximo passo, não escopo desta tarefa.
+- `headerBg` / `bg-primary` / cor roxa Samkhya — sem alteração
+- Centralização do logo via `grid-cols-[1fr_auto_1fr]` — mantida
+- Imagens do logo (Samkhya / Portal desktop / símbolo mobile) — mantidas
+- O link do logo central continua como está hoje:
+  ```
+  to={isSamkhya ? "/samkhya" : (pathname.startsWith("/aula") ? "/curso/alimentacao" : "/")}
+  ```
+  (não reverto isso para manter a regra atual — `/` continua apontando para `LaunchPage` enquanto você não trocar o index)
 
-### Resultado esperado
-Usuário logado abre o carrinho → calcula frete → clica "Seguir" → na tela de dados, o **nome** e **email** já aparecem preenchidos, e ele só precisa completar telefone, CPF e endereço. O CEP continua vindo da etapa anterior (já implementado).
+### Observação sobre carrinho
+
+No header anterior **não havia ícone de carrinho** — o carrinho da loja Samkhya fica em `SamkhyaNavBar.tsx` (sub-barra roxa abaixo do header), e continua lá funcionando normalmente. Portanto não há "carrinho do header" para restaurar; se você quiser um ícone de carrinho global no header também (fora de `/samkhya`), me diga e eu adiciono — mas isso seria novo, não uma restauração.
+
+### Arquivo afetado
+
+- `src/components/Header.tsx` — substituído pelo conteúdo da versão pré-remoção, mantendo apenas a regra atual do link do logo central (item acima).
+
+Nenhuma outra mudança em estilos, contextos, rotas ou componentes.
