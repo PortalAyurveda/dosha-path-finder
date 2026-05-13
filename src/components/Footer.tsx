@@ -113,6 +113,17 @@ const Footer = () => {
           >
             © {new Date().getFullYear()} portalayurveda.com — Todos os direitos reservados.
           </p>
+          <Link
+            to="/politica-de-privacidade"
+            className="mt-2 inline-block text-xs hover:underline"
+            style={
+              isSamkhya
+                ? { color: textColor, opacity: 0.7 }
+                : { color: "rgba(255,255,255,0.6)" }
+            }
+          >
+            Política de Privacidade
+          </Link>
         </div>
       </div>
     </footer>
