@@ -86,18 +86,30 @@ const CartDrawer = () => {
     }
   }, [isOpen]);
 
-  // Pré-preenche nome/email a partir do usuário logado, sem sobrescrever edições
+  // Pré-preenche dados a partir do usuário logado (user_profiles), sem sobrescrever edições
   useEffect(() => {
-    if (!isOpen) return;
-    const nomeLogado = profile?.nome || doshaResult?.nome || "";
-    const emailLogado = user?.email || "";
-    if (!nomeLogado && !emailLogado) return;
-    setForm((prev) => ({
-      ...prev,
-      nome: prev.nome || nomeLogado,
-      email: prev.email || emailLogado,
-    }));
-  }, [isOpen, step, user?.email, profile?.nome, doshaResult?.nome]);
+    if (!isOpen || !user?.id) return;
+    let cancelled = false;
+    (async () => {
+      const { data } = await supabase
+        .from("user_profiles")
+        .select("nome, nome_completo, telefone, cpf")
+        .eq("id", user.id)
+        .maybeSingle();
+      if (cancelled) return;
+      const p = (data || {}) as { nome?: string | null; nome_completo?: string | null; telefone?: string | null; cpf?: string | null };
+      const nomeLogado = p.nome_completo || p.nome || profile?.nome || doshaResult?.nome || "";
+      const emailLogado = user?.email || "";
+      setForm((prev) => ({
+        ...prev,
+        nome: prev.nome || nomeLogado,
+        email: prev.email || emailLogado,
+        telefone: prev.telefone || (p.telefone ? maskTel(p.telefone) : ""),
+        cpf: prev.cpf || (p.cpf ? maskCPF(p.cpf) : ""),
+      }));
+    })();
+    return () => { cancelled = true; };
+  }, [isOpen, user?.id, user?.email, profile?.nome, doshaResult?.nome]);
 
   // Reset frete quando itens mudam
   useEffect(() => {
@@ -187,8 +199,21 @@ const CartDrawer = () => {
 
     setEnviando(true);
     try {
+      // Salva dados do comprador no perfil quando logado
+      if (user?.id) {
+        await supabase
+          .from("user_profiles")
+          .update({
+            nome_completo: form.nome.trim(),
+            telefone: onlyDigits(form.telefone),
+            cpf: onlyDigits(form.cpf),
+          } as never)
+          .eq("id", user.id);
+      }
+
       const { data, error } = await supabase.functions.invoke("create-checkout", {
         body: {
+          user_id: user?.id ?? null,
           itens: itens.map((it) => ({
             slug: it.slug,
             tipo: it.tipo,
@@ -206,7 +231,7 @@ const CartDrawer = () => {
             prazo_dias: freteSelecionado.prazo_dias,
           },
           comprador: {
-            nome: form.nome.trim(),
+            nome: form.nome.trim() || "Cliente",
             email: form.email.trim(),
             telefone: onlyDigits(form.telefone),
             cpf: onlyDigits(form.cpf),
