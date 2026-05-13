@@ -11,6 +11,8 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { BLOG_TAGS } from "@/data/blogTags";
 import HeartButton from "@/components/HeartButton";
+import MarkAsReadButton from "@/components/meudosha/MarkAsReadButton";
+import { useViewedContent } from "@/hooks/useViewedContent";
 import PaginationControls from "@/components/PaginationControls";
 
 const ITEMS_PER_PAGE = 12;
@@ -50,7 +52,7 @@ function normalizeForSearch(text: string): string {
     .replace(/[^a-z0-9\s]/g, " ");
 }
 
-const MAX_PERSONALIZED = 12;
+const MAX_PERSONALIZED = 3;
 
 const ArtigosTab = ({ agravVataTags, agravPittaTags, agravKaphaTags, doshaprincipal, initialMode = "geral" }: ArtigosTabProps) => {
   const [subTab, setSubTab] = useState<SubTab>(initialMode);
