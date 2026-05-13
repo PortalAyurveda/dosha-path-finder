@@ -26,6 +26,7 @@ import DoshaPitta from "./pages/DoshaPitta";
 import DoshaKapha from "./pages/DoshaKapha";
 import Horarios from "./pages/Horarios";
 import Auth from "./pages/Auth";
+import Assinar from "./pages/Assinar";
 import PoliticaDePrivacidade from "./pages/PoliticaDePrivacidade";
 import TermosDeUso from "./pages/TermosDeUso";
 import NotFound from "./pages/NotFound";
