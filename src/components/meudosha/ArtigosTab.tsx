@@ -352,7 +352,10 @@ const ArtigosTab = ({ agravVataTags, agravPittaTags, agravKaphaTags, doshaprinci
                             {article.title}
                           </h3>
                         </Link>
-                        <HeartButton contentType="artigo" contentId={article.id} />
+                        <div className="flex items-center gap-1 shrink-0">
+                          <HeartButton contentType="artigo" contentId={article.id} />
+                          <MarkAsReadButton contentType="artigo" contentId={article.id} />
+                        </div>
                       </div>
                       <p className="text-xs text-muted-foreground line-clamp-2">
                         {article.meta_description || ""}
