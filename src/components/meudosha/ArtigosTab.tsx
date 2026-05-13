@@ -58,6 +58,8 @@ const MAX_PERSONALIZED = 3;
 
 const ArtigosTab = ({ agravVataTags, agravPittaTags, agravKaphaTags, doshaprincipal, initialMode = "geral" }: ArtigosTabProps) => {
   const [subTab, setSubTab] = useState<SubTab>(initialMode);
+  const { profile } = useUser();
+  const isPremium = profile?.is_premium === true;
   const [searchTerm, setSearchTerm] = useState("");
   const [isAdvanced, setIsAdvanced] = useState(false);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
