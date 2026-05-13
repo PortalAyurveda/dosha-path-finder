@@ -2079,10 +2079,16 @@ export type Database = {
           created_at: string
           email: string
           id: string
+          is_premium: boolean | null
           nivel_evolucao: string
           nome: string | null
           nome_completo: string | null
           pontos_ojas: number
+          premium_since: string | null
+          premium_until: string | null
+          stripe_customer_id: string | null
+          stripe_subscription_id: string | null
+          subscription_status: string | null
           telefone: string | null
           tokens_akasha: number
           visitor_id: string | null
@@ -2092,10 +2098,16 @@ export type Database = {
           created_at?: string
           email: string
           id: string
+          is_premium?: boolean | null
           nivel_evolucao?: string
           nome?: string | null
           nome_completo?: string | null
           pontos_ojas?: number
+          premium_since?: string | null
+          premium_until?: string | null
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          subscription_status?: string | null
           telefone?: string | null
           tokens_akasha?: number
           visitor_id?: string | null
@@ -2105,10 +2117,16 @@ export type Database = {
           created_at?: string
           email?: string
           id?: string
+          is_premium?: boolean | null
           nivel_evolucao?: string
           nome?: string | null
           nome_completo?: string | null
           pontos_ojas?: number
+          premium_since?: string | null
+          premium_until?: string | null
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          subscription_status?: string | null
           telefone?: string | null
           tokens_akasha?: number
           visitor_id?: string | null
