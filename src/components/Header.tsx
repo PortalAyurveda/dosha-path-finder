@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Menu, LogIn, LogOut, ShoppingBag, Home } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
@@ -70,7 +70,6 @@ const Header = () => {
   const [open, setOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
   const { user, doshaResult, profile, signOut } = useUser();
 
   const isSamkhya = location.pathname.startsWith("/samkhya");
@@ -81,10 +80,6 @@ const Header = () => {
   };
 
   const isActive = (path: string) => location.pathname === path;
-
-  const doshaId = searchParams.get("id");
-  const akashaId = doshaResult?.idPublico || doshaId || localStorage.getItem("activeDoshaId");
-  const akashaLink = akashaId ? `/akasha?id=${akashaId}` : "/akasha";
 
   const navLinks = [
     { label: "Portal", to: "/" },

@@ -19,7 +19,7 @@ import CursoRotinas from "./pages/curso/Rotinas";
 import TerapeutasDoBrasil from "./pages/TerapeutasDoBrasil";
 import TerapeutaPerfil from "./pages/TerapeutaPerfil";
 import TerapeutaCadastro from "./pages/TerapeutaCadastro";
-import Akasha from "./pages/Akasha";
+
 import Video from "./pages/Video";
 import DoshaVata from "./pages/DoshaVata";
 import DoshaPitta from "./pages/DoshaPitta";
@@ -89,7 +89,7 @@ const RoutedApp = () => {
               <Route path="/terapeutas-do-brasil/cadastro" element={<TerapeutaCadastro />} />
               <Route path="/terapeutas-do-brasil/:slug" element={<TerapeutaPerfil />} />
               <Route path="/terapeutas/:slug" element={<TerapeutaPerfil />} />
-              <Route path="/akasha" element={<Akasha />} />
+              <Route path="/akasha" element={<Navigate to="/meu-dosha" replace />} />
               <Route path="/video/:slug" element={<Video />} />
 
               {/* Vata */}
