@@ -216,8 +216,9 @@ const AkashaTab = ({
   const sendMessage = async () => {
     if (!input.trim() || sending) return;
 
+    const isPremium = profile?.is_premium === true;
     const tokens = profile?.tokens_akasha ?? 10;
-    if (tokens <= 0) {
+    if (!isPremium && tokens <= 0) {
       const noTokenMsg: ChatMessage = {
         role: "assistant",
         content: "Seus tokens Akasha acabaram. Em breve esta funcionalidade estará disponível como serviço premium. 🙏",
