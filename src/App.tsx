@@ -74,8 +74,7 @@ const RoutedApp = () => {
       <CartDrawer />
       <LayoutOrBare>
             <Routes>
-              <Route path="/" element={<LaunchPage />} />
-              <Route path="/preview" element={<Index />} />
+              <Route path="/" element={<Index />} />
               <Route path="/preview-loading" element={<PreviewLoading />} />
               <Route path="/teste-de-dosha" element={<TesteDeDosha />} />
               <Route path="/meu-dosha" element={<MeuDosha />} />
