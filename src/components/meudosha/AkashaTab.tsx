@@ -216,8 +216,9 @@ const AkashaTab = ({
   const sendMessage = async () => {
     if (!input.trim() || sending) return;
 
+    const isPremium = profile?.is_premium === true;
     const tokens = profile?.tokens_akasha ?? 10;
-    if (tokens <= 0) {
+    if (!isPremium && tokens <= 0) {
       const noTokenMsg: ChatMessage = {
         role: "assistant",
         content: "Seus tokens Akasha acabaram. Em breve esta funcionalidade estará disponível como serviço premium. 🙏",
@@ -242,7 +243,7 @@ const AkashaTab = ({
     setSending(true);
 
     try {
-      if (user?.id) {
+      if (user?.id && !isPremium) {
         await supabase
           .from("user_profiles")
           .update({ tokens_akasha: Math.max(tokens - 1, 0) } as any)
@@ -293,6 +294,7 @@ const AkashaTab = ({
     }
   };
 
+  const isPremium = profile?.is_premium === true;
   const tokens = profile?.tokens_akasha ?? 10;
 
   return (
@@ -304,7 +306,7 @@ const AkashaTab = ({
           <img src={AKASHA_LOGO} alt="Akasha IA" className="w-12 h-12 object-contain" />
           <h2 className="font-serif text-lg font-bold text-akasha">Akasha IA</h2>
           <p className="text-xs text-muted-foreground">
-            {tokens > 0 ? `${tokens} conversas restantes` : "Tokens esgotados"}
+            {isPremium ? "Conversas ilimitadas ✨" : tokens > 0 ? `${tokens} conversas restantes` : "Tokens esgotados"}
           </p>
         </div>
 
