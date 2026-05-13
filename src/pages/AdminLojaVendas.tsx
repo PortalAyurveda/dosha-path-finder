@@ -249,6 +249,32 @@ const AdminLojaVendas = () => {
           </div>
         </div>
 
+        {selecionados.size > 0 && (
+          <div className="flex items-center justify-between gap-3 rounded-lg border bg-muted px-4 py-3">
+            <span className="text-sm font-medium">
+              {selecionados.size} pedido(s) selecionado(s)
+            </span>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setSelecionados(new Set())}
+                disabled={enviando}
+              >
+                Limpar
+              </Button>
+              <Button size="sm" onClick={enviarMelhorEnvio} disabled={enviando}>
+                {enviando ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Send className="h-4 w-4" />
+                )}
+                Enviar para MelhorEnvio
+              </Button>
+            </div>
+          </div>
+        )}
+
         <div className="border rounded-lg overflow-hidden bg-card">
           {loading ? (
             <div className="flex items-center justify-center py-16">
@@ -262,6 +288,15 @@ const AdminLojaVendas = () => {
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead className="w-10">
+                    {pagosVisiveis.length > 0 ? (
+                      <Checkbox
+                        checked={todosPagosSelecionados}
+                        onCheckedChange={toggleAll}
+                        aria-label="Selecionar todos os pagos"
+                      />
+                    ) : null}
+                  </TableHead>
                   <TableHead>Nº</TableHead>
                   <TableHead>Data</TableHead>
                   <TableHead>Comprador</TableHead>
@@ -273,7 +308,16 @@ const AdminLojaVendas = () => {
               </TableHeader>
               <TableBody>
                 {filtrados.map((p) => (
-                  <TableRow key={p.id}>
+                  <TableRow key={p.id} data-state={selecionados.has(p.id) ? "selected" : undefined}>
+                    <TableCell>
+                      {p.status === "pago" ? (
+                        <Checkbox
+                          checked={selecionados.has(p.id)}
+                          onCheckedChange={() => toggleOne(p.id)}
+                          aria-label={`Selecionar pedido ${p.numero_pedido || p.id.slice(0, 8)}`}
+                        />
+                      ) : null}
+                    </TableCell>
                     <TableCell className="font-mono text-xs">
                       {p.numero_pedido || p.id.slice(0, 8)}
                     </TableCell>
