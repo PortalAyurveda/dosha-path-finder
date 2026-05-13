@@ -49,6 +49,7 @@ const validateCPF = (cpf: string) => {
 
 const CartDrawer = () => {
   const navigate = useNavigate();
+  const { user, profile, doshaResult } = useUser();
   const {
     itens,
     isOpen,
