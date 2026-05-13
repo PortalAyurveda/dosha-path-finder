@@ -7,6 +7,7 @@ import { UserProvider } from "@/contexts/UserContext";
 import { useCanonical } from "@/hooks/useCanonical";
 import Layout from "@/components/Layout";
 import Index from "./pages/Index";
+// preserved for launch mode — re-enable by routing "/" to <LaunchPage />
 import LaunchPage from "./pages/LaunchPage";
 import PreviewLoading from "./pages/PreviewLoading";
 import TesteDeDosha from "./pages/TesteDeDosha";
