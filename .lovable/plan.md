@@ -1,26 +1,21 @@
 ## Objetivo
-Reverter o "Modo Lançamento" para que `/` volte a exibir a home original (`Index`), preservando a `LaunchPage` e o countdown intactos para uso futuro.
+Deixar apenas o login via **magic link** ativo na página `/auth`, escondendo Google e Facebook (que ainda não estão configurados).
 
-## O que aconteceu antes (06/Mai)
-Em `src/App.tsx`:
-- `/` → `LaunchPage` (countdown)
-- `/preview` → `Index` (home original)
+## Mudança (1 arquivo)
 
-## Mudança (apenas 1 arquivo)
+### `src/pages/Auth.tsx`
+Remover do JSX (linhas ~149-186):
+- O divisor "ou"
+- O bloco de OAuth buttons (Google e Facebook)
 
-### `src/App.tsx`
-- Trocar `<Route path="/" element={<LaunchPage />} />` por `<Route path="/" element={<Index />} />`.
-- **Remover** a linha `<Route path="/preview" element={<Index />} />` (a home volta a viver em `/`, então `/preview` deixa de fazer sentido apontando para o mesmo lugar).
-- Manter o `import LaunchPage from "./pages/LaunchPage"` — sem usar, mas preservado para reativar rapidamente. (Se o ESLint reclamar de import não usado, adiciono comentário `// preserved for launch mode` acima.)
+Manter intactos:
+- Formulário de magic link (`signInWithOtp`)
+- Função `handleOAuth` no código (apenas não chamada) — **ou** removê-la junto. Proponho **remover** `handleOAuth` também, já que fica como código morto, mas é trivial reativar no futuro recolocando o bloco.
 
-## O que NÃO será tocado
-- `src/pages/LaunchPage.tsx` — fica intacto, com countdown, logo, link secreto, tudo como está.
-- Nenhum outro arquivo, componente ou estilo.
-- Nenhuma rota além das duas acima.
+## O que NÃO muda
+- Backend / Supabase Auth providers (Google permanece desabilitado lá; nada a fazer).
+- Fluxo de magic link e redirecionamentos.
+- Outras páginas/componentes.
 
-## Como reativar no futuro
-Basta inverter de volta as duas linhas em `App.tsx`:
-```tsx
-<Route path="/" element={<LaunchPage />} />
-<Route path="/preview" element={<Index />} />
-```
+## Reativação futura
+Para ligar Google de volta, basta reinserir o bloco OAuth + handler (Git history preserva). Eu também posso deixar o bloco comentado em vez de removido — me avise se preferir essa opção.
