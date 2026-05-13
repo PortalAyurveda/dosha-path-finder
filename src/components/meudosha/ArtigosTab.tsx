@@ -11,6 +11,8 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { BLOG_TAGS } from "@/data/blogTags";
 import HeartButton from "@/components/HeartButton";
+import MarkAsReadButton from "@/components/meudosha/MarkAsReadButton";
+import { useViewedContent } from "@/hooks/useViewedContent";
 import PaginationControls from "@/components/PaginationControls";
 
 const ITEMS_PER_PAGE = 12;
@@ -50,7 +52,7 @@ function normalizeForSearch(text: string): string {
     .replace(/[^a-z0-9\s]/g, " ");
 }
 
-const MAX_PERSONALIZED = 12;
+const MAX_PERSONALIZED = 3;
 
 const ArtigosTab = ({ agravVataTags, agravPittaTags, agravKaphaTags, doshaprincipal, initialMode = "geral" }: ArtigosTabProps) => {
   const [subTab, setSubTab] = useState<SubTab>(initialMode);
@@ -59,6 +61,7 @@ const ArtigosTab = ({ agravVataTags, agravPittaTags, agravKaphaTags, doshaprinci
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [page, setPage] = useState(1);
+  const { viewedIds: viewedArticleIds } = useViewedContent("artigo");
 
   useEffect(() => {
     const t = setTimeout(() => setDebouncedSearch(searchTerm), 300);
@@ -117,6 +120,7 @@ const ArtigosTab = ({ agravVataTags, agravPittaTags, agravKaphaTags, doshaprinci
       const list: MatchedArticle[] = [];
 
       for (const a of articles) {
+        if (viewedArticleIds.has(a.id)) continue;
         const searchable = normalizeForSearch(`${a.title} ${a.tags || ""} ${a.meta_description || ""} ${a.summary || ""}`);
         if (words.some((w) => searchable.includes(w))) {
           list.push({ ...a, matchedSymptom: symptom, matchedDosha: dosha });
@@ -147,15 +151,16 @@ const ArtigosTab = ({ agravVataTags, agravPittaTags, agravKaphaTags, doshaprinci
       if (!added) break;
     }
     return result;
-  }, [articles, allSymptoms]);
+  }, [articles, allSymptoms, viewedArticleIds]);
 
   const filteredGeneralArticles = useMemo(() => {
-    if (selectedTags.length === 0) return articles;
-    return articles.filter((a) => {
+    const notViewed = articles.filter((a) => !viewedArticleIds.has(a.id));
+    if (selectedTags.length === 0) return notViewed;
+    return notViewed.filter((a) => {
       if (!a.tags) return false;
       return selectedTags.every((tag) => a.tags!.includes(tag));
     });
-  }, [articles, selectedTags]);
+  }, [articles, selectedTags, viewedArticleIds]);
 
   const toggleTag = (tag: string) => {
     setSelectedTags((prev) =>
@@ -258,7 +263,7 @@ const ArtigosTab = ({ agravVataTags, agravPittaTags, agravKaphaTags, doshaprinci
             <p className="text-muted-foreground">
               {allSymptoms.length === 0
                 ? "Nenhum agravamento registrado para personalizar artigos."
-                : "Não encontramos artigos específicos para seus agravamentos."}
+                : "Você já leu tudo aqui — explore a aba Gerais!"}
             </p>
           </div>
         ) : (
@@ -296,7 +301,10 @@ const ArtigosTab = ({ agravVataTags, agravPittaTags, agravKaphaTags, doshaprinci
                             {article.title}
                           </h3>
                         </Link>
-                        <HeartButton contentType="artigo" contentId={article.id} />
+                        <div className="flex items-center gap-1 shrink-0">
+                          <HeartButton contentType="artigo" contentId={article.id} />
+                          <MarkAsReadButton contentType="artigo" contentId={article.id} />
+                        </div>
                       </div>
                       <p className="text-sm text-muted-foreground line-clamp-3">
                         {article.meta_description || article.summary || ""}
@@ -310,7 +318,9 @@ const ArtigosTab = ({ agravVataTags, agravPittaTags, agravKaphaTags, doshaprinci
         )
       ) : filteredGeneralArticles.length === 0 ? (
         <div className="text-center p-8 rounded-2xl bg-surface-sun border border-border">
-          <p className="text-muted-foreground">Nenhum artigo encontrado.</p>
+          <p className="text-muted-foreground">
+            Você já leu tudo disponível — use a busca para encontrar algo específico.
+          </p>
         </div>
       ) : (
         (() => {
@@ -342,7 +352,10 @@ const ArtigosTab = ({ agravVataTags, agravPittaTags, agravKaphaTags, doshaprinci
                             {article.title}
                           </h3>
                         </Link>
-                        <HeartButton contentType="artigo" contentId={article.id} />
+                        <div className="flex items-center gap-1 shrink-0">
+                          <HeartButton contentType="artigo" contentId={article.id} />
+                          <MarkAsReadButton contentType="artigo" contentId={article.id} />
+                        </div>
                       </div>
                       <p className="text-xs text-muted-foreground line-clamp-2">
                         {article.meta_description || ""}

@@ -4,6 +4,9 @@ import { supabase } from "@/integrations/supabase/client";
 import VideoResultCard from "@/components/biblioteca/VideoResultCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import PaginationControls from "@/components/PaginationControls";
+import { useViewedContent } from "@/hooks/useViewedContent";
+import { useNavigate } from "react-router-dom";
+import { slugify } from "@/lib/slugify";
 
 interface VideosGeneralTabProps {
   doshaprincipal: string | null;
@@ -25,6 +28,8 @@ function parseDoshas(doshaprincipal: string | null): string[] {
 const VideosGeneralTab = ({ doshaprincipal }: VideosGeneralTabProps) => {
   const doshas = parseDoshas(doshaprincipal);
   const [page, setPage] = useState(1);
+  const navigate = useNavigate();
+  const { viewedIds, markAsViewed } = useViewedContent("video");
 
   useEffect(() => {
     setPage(1);
@@ -34,7 +39,6 @@ const VideosGeneralTab = ({ doshaprincipal }: VideosGeneralTabProps) => {
     queryKey: ["meudosha-videos-general", doshaprincipal],
     queryFn: async () => {
       const results: any[] = [];
-      // Fetch a larger pool so we can paginate
       const perDosha = Math.ceil(60 / Math.max(doshas.length, 1));
       for (const dosha of doshas) {
         const table = TABLE_MAP[dosha];
@@ -70,18 +74,22 @@ const VideosGeneralTab = ({ doshaprincipal }: VideosGeneralTabProps) => {
     );
   }
 
-  if (!videos || videos.length === 0) {
+  const filtered = (videos || []).filter((v: any) => !viewedIds.has(v.video_id));
+
+  if (!filtered || filtered.length === 0) {
     return (
       <div className="text-center p-8 rounded-2xl bg-surface-sun border border-border">
-        <p className="text-muted-foreground">📺 Nenhum vídeo disponível para {doshaprincipal}.</p>
+        <p className="text-muted-foreground">
+          Você já viu tudo disponível — use a busca para encontrar algo específico.
+        </p>
       </div>
     );
   }
 
-  const totalPages = Math.max(1, Math.ceil(videos.length / ITEMS_PER_PAGE));
+  const totalPages = Math.max(1, Math.ceil(filtered.length / ITEMS_PER_PAGE));
   const safePage = Math.min(page, totalPages);
   const start = (safePage - 1) * ITEMS_PER_PAGE;
-  const pageItems = videos.slice(start, start + ITEMS_PER_PAGE);
+  const pageItems = filtered.slice(start, start + ITEMS_PER_PAGE);
 
   return (
     <>
@@ -93,6 +101,10 @@ const VideosGeneralTab = ({ doshaprincipal }: VideosGeneralTabProps) => {
             title={v.novo_titulo || "Sem título"}
             summary={v.mini_resumo || ""}
             tags={v.tags}
+            onClick={() => {
+              markAsViewed(v.video_id);
+              navigate(`/video/${slugify(v.novo_titulo || "video")}`, { state: { videoId: v.video_id } });
+            }}
           />
         ))}
       </div>
