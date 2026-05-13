@@ -357,6 +357,22 @@ const CartDrawer = () => {
             </div>
           ) : (
             <div className="space-y-3">
+              {/* CEP resumo — já preenchido na etapa anterior */}
+              <div className="flex items-center justify-between p-3 rounded-md" style={{ background: samkhyaTokens.cardBg, border: `1px solid ${samkhyaTokens.cardBorder}` }}>
+                <div>
+                  <p className="text-xs" style={{ color: samkhyaTokens.textoSec }}>CEP de entrega</p>
+                  <p className="text-sm font-medium" style={{ color: samkhyaTokens.texto }}>{cep || "—"}</p>
+                </div>
+                <button
+                  onClick={() => setStep("cart")}
+                  className="text-xs underline"
+                  style={{ color: samkhyaTokens.roxo }}
+                  type="button"
+                >
+                  Alterar
+                </button>
+              </div>
+
               <div className="grid grid-cols-1 gap-3">
                 <div>
                   <Label htmlFor="nome">Nome completo</Label>
@@ -375,10 +391,6 @@ const CartDrawer = () => {
                     <Label htmlFor="cpf">CPF</Label>
                     <Input id="cpf" value={form.cpf} onChange={(e) => setForm({ ...form, cpf: maskCPF(e.target.value) })} inputMode="numeric" />
                   </div>
-                </div>
-                <div>
-                  <Label htmlFor="cep2">CEP</Label>
-                  <Input id="cep2" value={cep} onChange={(e) => setCep(maskCEP(e.target.value))} inputMode="numeric" />
                 </div>
                 <div>
                   <Label htmlFor="log">Logradouro</Label>
@@ -401,11 +413,11 @@ const CartDrawer = () => {
                 <div className="grid grid-cols-[1fr_80px] gap-3">
                   <div>
                     <Label htmlFor="cid">Cidade</Label>
-                    <Input id="cid" value={form.cidade} readOnly />
+                    <Input id="cid" value={form.cidade} onChange={(e) => setForm({ ...form, cidade: e.target.value })} />
                   </div>
                   <div>
                     <Label htmlFor="uf">UF</Label>
-                    <Input id="uf" value={form.estado} readOnly />
+                    <Input id="uf" value={form.estado} onChange={(e) => setForm({ ...form, estado: e.target.value })} maxLength={2} />
                   </div>
                 </div>
               </div>
