@@ -70,7 +70,6 @@ const Header = () => {
   const [open, setOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
   const { user, doshaResult, profile, signOut } = useUser();
 
   const isSamkhya = location.pathname.startsWith("/samkhya");
@@ -81,8 +80,6 @@ const Header = () => {
   };
 
   const isActive = (path: string) => location.pathname === path;
-
-  const doshaId = searchParams.get("id");
 
   const navLinks = [
     { label: "Portal", to: "/" },
