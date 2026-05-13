@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { toast } from "sonner";
 import { useCart } from "@/contexts/CartContext";
+import { useUser } from "@/contexts/UserContext";
 import { samkhyaTokens } from "@/components/samkhya/tokens";
 import { supabase } from "@/integrations/supabase/client";
 

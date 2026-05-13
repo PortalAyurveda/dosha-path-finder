@@ -1917,6 +1917,51 @@ export type Database = {
           },
         ]
       }
+      rotinas_usuario: {
+        Row: {
+          created_at: string | null
+          dia: number
+          id: string
+          nugget_id: string | null
+          slot: string
+          status: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          dia: number
+          id?: string
+          nugget_id?: string | null
+          slot: string
+          status?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          dia?: number
+          id?: string
+          nugget_id?: string | null
+          slot?: string
+          status?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rotinas_usuario_nugget_id_fkey"
+            columns: ["nugget_id"]
+            isOneToOne: false
+            referencedRelation: "rotina_nuggets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rotinas_usuario_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "doshas_registros"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       samkhya: {
         Row: {
           content: string | null
