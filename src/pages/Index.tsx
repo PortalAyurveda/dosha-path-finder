@@ -26,6 +26,7 @@ import RegistrosAkashikos from "@/components/index/RegistrosAkashikos";
 import Hero from "@/components/home/Hero";
 import LoggedHero from "@/components/home/LoggedHero";
 import SamkhyaBanner from "@/components/home/SamkhyaBanner";
+import AulaAoVivoBanner from "@/components/home/AulaAoVivoBanner";
 
 /* ---------- Design tokens (scoped to this page) ---------- */
 const C = {
