@@ -157,6 +157,44 @@ const AdminLojaVendaDetalhe = () => {
     setSavingNotas(false);
   };
 
+  const handleSendEmail = async () => {
+    if (!pedido) return;
+    if (!emailAssunto.trim() || !emailMensagem.trim()) {
+      toast.error("Preencha o assunto e a mensagem do email.");
+      return;
+    }
+    setSendingEmail(true);
+    try {
+      const payload = {
+        tipo: "manual",
+        assunto_custom: emailAssunto.trim(),
+        mensagem_custom: emailMensagem.trim(),
+        record: {
+          id: pedido.id,
+          numero_pedido: pedido.numero_pedido || "",
+          comprador_email: pedido.comprador_email,
+          comprador_nome: pedido.comprador_nome,
+          frete_servico: pedido.frete_servico || "",
+          frete_prazo_dias: pedido.frete_prazo_dias ?? "",
+          total: pedido.total,
+        },
+      };
+      const res = await fetch("https://n8n.portalayurveda.com/webhook/samkhya-pedido", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      toast.success("Email enviado com sucesso!");
+      setEmailAssunto("");
+      setEmailMensagem("");
+    } catch (err) {
+      toast.error("Erro ao enviar email. Tente novamente.");
+    } finally {
+      setSendingEmail(false);
+    }
+  };
+
   const e = pedido.endereco_entrega || {};
   const mapsQuery = encodeURIComponent(enderecoCompleto(e));
   const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${mapsQuery}`;
