@@ -14,6 +14,8 @@ import HeartButton from "@/components/HeartButton";
 import MarkAsReadButton from "@/components/meudosha/MarkAsReadButton";
 import { useViewedContent } from "@/hooks/useViewedContent";
 import PaginationControls from "@/components/PaginationControls";
+import PremiumLock from "@/components/meudosha/PremiumLock";
+import { useUser } from "@/contexts/UserContext";
 
 const ITEMS_PER_PAGE = 12;
 
@@ -22,10 +24,10 @@ interface ArtigosTabProps {
   agravPittaTags: string | null;
   agravKaphaTags: string | null;
   doshaprincipal: string | null;
-  initialMode?: "geral" | "personalizado";
+  initialMode?: "geral" | "personalizado" | "pesquisa";
 }
 
-type SubTab = "geral" | "personalizado";
+type SubTab = "geral" | "personalizado" | "pesquisa";
 
 interface MatchedArticle {
   id: string;
@@ -56,6 +58,8 @@ const MAX_PERSONALIZED = 3;
 
 const ArtigosTab = ({ agravVataTags, agravPittaTags, agravKaphaTags, doshaprincipal, initialMode = "geral" }: ArtigosTabProps) => {
   const [subTab, setSubTab] = useState<SubTab>(initialMode);
+  const { profile } = useUser();
+  const isPremium = profile?.is_premium === true;
   const [searchTerm, setSearchTerm] = useState("");
   const [isAdvanced, setIsAdvanced] = useState(false);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
@@ -188,10 +192,18 @@ const ArtigosTab = ({ agravVataTags, agravPittaTags, agravKaphaTags, doshaprinci
         >
           <Sparkles className="h-3.5 w-3.5" /> Personalizado
         </button>
+        <button
+          onClick={() => setSubTab("pesquisa")}
+          className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all flex items-center gap-1 ${
+            subTab === "pesquisa" ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          <Search className="h-3.5 w-3.5" /> Pesquisa
+        </button>
       </div>
 
-      {/* Search (only for geral) */}
-      {subTab === "geral" && (
+      {/* Search (only for pesquisa subtab) */}
+      {subTab === "pesquisa" && isPremium && (
         <div className="space-y-2">
           <div className="relative max-w-md mx-auto">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -244,7 +256,24 @@ const ArtigosTab = ({ agravVataTags, agravPittaTags, agravKaphaTags, doshaprinci
         </div>
       )}
 
-      {/* Content */}
+      {/* Premium lock for personalizado / pesquisa */}
+      {(subTab === "personalizado" || subTab === "pesquisa") && !isPremium ? (
+        <PremiumLock>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 min-h-[300px]">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="rounded-xl overflow-hidden border border-border">
+                <Skeleton className="aspect-video w-full" />
+                <div className="p-4 space-y-2">
+                  <Skeleton className="h-4 w-3/4" />
+                  <Skeleton className="h-3 w-full" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </PremiumLock>
+      ) : (
+        <>
+          {/* Content */}
       {isLoading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           {[1, 2, 3, 4].map((i) => (
@@ -386,6 +415,8 @@ const ArtigosTab = ({ agravVataTags, agravPittaTags, agravKaphaTags, doshaprinci
             </>
           );
         })()
+      )}
+        </>
       )}
     </div>
   );
