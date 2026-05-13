@@ -539,28 +539,8 @@ const Plano30DiasBloqueado = () => (
         className="text-base font-medium max-w-md"
         style={{ color: COLOR.primary, fontFamily: "'DM Sans', sans-serif" }}
       >
-        Este plano personalizado é exclusivo para assinantes do Portal
+        Em breve: plano personalizado de rotinas para assinantes
       </p>
-      <p
-        className="text-[13px] max-w-md"
-        style={{ color: COLOR.textoSec, fontFamily: "'DM Sans', sans-serif" }}
-      >
-        Acompanhamento e atualização do plano mensalmente com Akasha
-      </p>
-      <a
-        href="https://www.portalayurveda.com/curso-rotinas"
-        target="_blank"
-        rel="noopener noreferrer"
-        className={cn(
-          "inline-block py-3 px-6 text-white font-medium text-sm transition-colors",
-          LEAF,
-        )}
-        style={{ backgroundColor: COLOR.secondary, fontFamily: "'DM Sans', sans-serif" }}
-        onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = COLOR.secondaryHover)}
-        onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = COLOR.secondary)}
-      >
-        Desbloquear por R$ 97 →
-      </a>
     </div>
   </section>
 );

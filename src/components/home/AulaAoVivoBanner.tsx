@@ -97,15 +97,39 @@ const AulaAoVivoBanner = () => {
       aria-label="Aula ao vivo"
     >
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 md:py-10">
-        <div className="flex flex-col items-center text-center gap-4 mb-6">
+        <div className="flex flex-col items-center text-center gap-4 mb-6 relative">
+          {isLive && (
+            <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
+              {["🎉","✨","🎆","🎊","🪔","✨","🎉","🎆"].map((e, i) => (
+                <span
+                  key={i}
+                  className="absolute text-2xl md:text-3xl select-none"
+                  style={{
+                    left: `${(i * 13 + 7) % 95}%`,
+                    bottom: 0,
+                    animation: `aula-firework 2.8s ease-out ${i * 0.35}s infinite`,
+                  }}
+                >
+                  {e}
+                </span>
+              ))}
+              <style>{`
+                @keyframes aula-firework {
+                  0%   { transform: translateY(0) scale(0.6); opacity: 0; }
+                  20%  { opacity: 1; }
+                  100% { transform: translateY(-160px) scale(1.2); opacity: 0; }
+                }
+              `}</style>
+            </div>
+          )}
           <img
             src={PORTAL_LOGO}
             alt="Portal Ayurveda"
-            className="h-12 md:h-14 w-auto"
+            className="h-12 md:h-14 w-auto relative"
             loading="eager"
           />
           {isLive ? (
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-secondary/10 border border-secondary/30">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-secondary/10 border border-secondary/30 relative">
               <span className="h-2 w-2 rounded-full bg-secondary animate-pulse" />
               <span className="text-xs font-bold uppercase tracking-wider text-secondary">
                 Ao vivo agora
@@ -116,10 +140,14 @@ const AulaAoVivoBanner = () => {
               Aula ao vivo começa em
             </p>
           )}
-          <h2 className="font-heading text-2xl md:text-3xl font-bold text-primary leading-tight">
+          <h2 className="font-heading text-2xl md:text-3xl font-bold text-primary leading-tight relative">
             {aula.titulo}
           </h2>
-          {!isLive && startTs && <Countdown target={startTs} />}
+          {startTs && (
+            <div className="relative">
+              <Countdown target={isLive ? Date.now() : startTs} />
+            </div>
+          )}
         </div>
 
         {isLive ? (
