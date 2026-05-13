@@ -83,8 +83,6 @@ const Header = () => {
   const isActive = (path: string) => location.pathname === path;
 
   const doshaId = searchParams.get("id");
-  const akashaId = doshaResult?.idPublico || doshaId || localStorage.getItem("activeDoshaId");
-  const akashaLink = akashaId ? `/akasha?id=${akashaId}` : "/akasha";
 
   const navLinks = [
     { label: "Portal", to: "/" },
