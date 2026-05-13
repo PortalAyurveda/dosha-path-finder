@@ -110,28 +110,27 @@ const AdminLojaVendas = () => {
   const [pedidos, setPedidos] = useState<Pedido[]>([]);
   const [busca, setBusca] = useState("");
   const [statusFiltro, setStatusFiltro] = useState<string>("todos");
+  const [selecionados, setSelecionados] = useState<Set<string>>(new Set());
+  const [enviando, setEnviando] = useState(false);
+
+  const carregarPedidos = async () => {
+    setLoading(true);
+    const { data, error } = await lojaSupabase
+      .from("pedidos")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(500);
+    if (error) {
+      console.error(error);
+      setPedidos([]);
+    } else {
+      setPedidos((data || []) as unknown as Pedido[]);
+    }
+    setLoading(false);
+  };
 
   useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      setLoading(true);
-      const { data, error } = await lojaSupabase
-        .from("pedidos")
-        .select("*")
-        .order("created_at", { ascending: false })
-        .limit(500);
-      if (cancelled) return;
-      if (error) {
-        console.error(error);
-        setPedidos([]);
-      } else {
-        setPedidos((data || []) as unknown as Pedido[]);
-      }
-      setLoading(false);
-    })();
-    return () => {
-      cancelled = true;
-    };
+    carregarPedidos();
   }, []);
 
   const filtrados = useMemo(() => {
@@ -146,6 +145,58 @@ const AdminLojaVendas = () => {
       );
     });
   }, [pedidos, busca, statusFiltro]);
+
+  const pagosVisiveis = useMemo(
+    () => filtrados.filter((p) => p.status === "pago"),
+    [filtrados],
+  );
+  const todosPagosSelecionados =
+    pagosVisiveis.length > 0 && pagosVisiveis.every((p) => selecionados.has(p.id));
+
+  const toggleOne = (id: string) => {
+    setSelecionados((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const toggleAll = () => {
+    setSelecionados((prev) => {
+      const next = new Set(prev);
+      if (todosPagosSelecionados) {
+        pagosVisiveis.forEach((p) => next.delete(p.id));
+      } else {
+        pagosVisiveis.forEach((p) => next.add(p.id));
+      }
+      return next;
+    });
+  };
+
+  const enviarMelhorEnvio = async () => {
+    if (selecionados.size === 0) return;
+    setEnviando(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("enviar-melhorenvio", {
+        body: { pedido_ids: Array.from(selecionados) },
+      });
+      if (error) throw error;
+      const resultados = (data?.resultados ?? []) as Array<{ ok?: boolean; status?: string }>;
+      const sucessos = resultados.filter((r) => r.ok || r.status === "ok").length || resultados.length;
+      if (data?.print_url) {
+        window.open(data.print_url, "_blank", "noopener,noreferrer");
+      }
+      toast.success(`${sucessos} pedido(s) enviado(s) com sucesso`);
+      setSelecionados(new Set());
+      await carregarPedidos();
+    } catch (e: any) {
+      console.error(e);
+      toast.error(e?.message || "Falha ao enviar para o MelhorEnvio");
+    } finally {
+      setEnviando(false);
+    }
+  };
 
   return (
     <>
