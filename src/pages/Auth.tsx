@@ -70,20 +70,6 @@ const Auth = () => {
     setLoading(false);
   };
 
-  const handleOAuth = async (provider: "google" | "facebook") => {
-    const storedDoshaId = localStorage.getItem("activeDoshaId");
-    const redirectUrl = storedDoshaId
-      ? `${window.location.origin}/meu-dosha?id=${storedDoshaId}`
-      : window.location.origin;
-
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider,
-      options: { redirectTo: redirectUrl },
-    });
-    if (error) {
-      toast({ title: "Erro", description: error.message, variant: "destructive" });
-    }
-  };
 
   return (
     <PageContainer title="Entrar" description="Acesse sua conta no Portal Ayurveda para acompanhar seus doshas e evolução.">
