@@ -22,10 +22,10 @@ interface ArtigosTabProps {
   agravPittaTags: string | null;
   agravKaphaTags: string | null;
   doshaprincipal: string | null;
-  initialMode?: "geral" | "personalizado";
+  initialMode?: "geral" | "personalizado" | "pesquisa";
 }
 
-type SubTab = "geral" | "personalizado";
+type SubTab = "geral" | "personalizado" | "pesquisa";
 
 interface MatchedArticle {
   id: string;
