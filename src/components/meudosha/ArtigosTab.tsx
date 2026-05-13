@@ -256,7 +256,23 @@ const ArtigosTab = ({ agravVataTags, agravPittaTags, agravKaphaTags, doshaprinci
         </div>
       )}
 
-      {/* Content */}
+      {/* Premium lock for personalizado / pesquisa */}
+      {(subTab === "personalizado" || subTab === "pesquisa") && !isPremium ? (
+        <PremiumLock>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 min-h-[300px]">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="rounded-xl overflow-hidden border border-border">
+                <Skeleton className="aspect-video w-full" />
+                <div className="p-4 space-y-2">
+                  <Skeleton className="h-4 w-3/4" />
+                  <Skeleton className="h-3 w-full" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </PremiumLock>
+      ) : (
+      /* Content */
       {isLoading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           {[1, 2, 3, 4].map((i) => (
