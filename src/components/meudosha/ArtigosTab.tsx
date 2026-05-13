@@ -14,6 +14,8 @@ import HeartButton from "@/components/HeartButton";
 import MarkAsReadButton from "@/components/meudosha/MarkAsReadButton";
 import { useViewedContent } from "@/hooks/useViewedContent";
 import PaginationControls from "@/components/PaginationControls";
+import PremiumLock from "@/components/meudosha/PremiumLock";
+import { useUser } from "@/contexts/UserContext";
 
 const ITEMS_PER_PAGE = 12;
 
