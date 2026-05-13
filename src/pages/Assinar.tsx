@@ -233,7 +233,7 @@ const Assinar = () => {
       <section style={{ background: `linear-gradient(160deg, ${PRIMARY} 0%, #1f1a3a 100%)` }}>
         <div className="max-w-3xl mx-auto px-4 sm:px-6 py-16 md:py-20 text-center">
           <h2 className="font-serif italic font-bold text-3xl md:text-4xl text-white mb-8 leading-tight">
-            Pronto para transformar sua saúde com o Ayurveda?
+            Pronto para transformar sua saúde com Ayurveda?
           </h2>
           <button
             onClick={scrollToPlanos}
