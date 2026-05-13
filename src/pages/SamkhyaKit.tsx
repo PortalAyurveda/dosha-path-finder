@@ -6,7 +6,7 @@ import { lojaSupabase, type LojaKitComItens } from "@/integrations/supabase/loja
 import SamkhyaLayout from "@/components/samkhya/SamkhyaLayout";
 import PrecoDisplay from "@/components/samkhya/PrecoDisplay";
 import BotaoWhatsApp from "@/components/samkhya/BotaoWhatsApp";
-import BotaoStripe from "@/components/samkhya/BotaoStripe";
+import BotaoAdicionarCarrinho from "@/components/samkhya/BotaoAdicionarCarrinho";
 import { samkhyaTokens } from "@/components/samkhya/tokens";
 
 const renderItemNome = (
@@ -143,8 +143,22 @@ const SamkhyaKit = () => {
               />
 
               <div className="flex flex-col gap-3">
+                <BotaoAdicionarCarrinho
+                  item={{
+                    id: kit.id,
+                    slug: kit.slug,
+                    nome: kit.nome,
+                    preco_normal: Number(kit.preco_normal),
+                    preco_pix: Number(kit.preco_pix),
+                    stripe_price_id: kit.stripe_price_id,
+                    imagem_url: kit.imagem_url,
+                    peso_gramas: (kit as unknown as { peso_gramas?: number }).peso_gramas ?? 0,
+                    tipo: "kit",
+                  }}
+                  size="sm"
+                  fullWidth
+                />
                 <BotaoWhatsApp produtoNome={kit.nome} size="sm" fullWidth />
-                <BotaoStripe size="sm" fullWidth />
               </div>
             </div>
           </div>
