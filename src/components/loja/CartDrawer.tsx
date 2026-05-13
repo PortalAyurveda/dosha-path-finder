@@ -86,6 +86,19 @@ const CartDrawer = () => {
     }
   }, [isOpen]);
 
+  // Pré-preenche nome/email a partir do usuário logado, sem sobrescrever edições
+  useEffect(() => {
+    if (!isOpen) return;
+    const nomeLogado = profile?.nome || doshaResult?.nome || "";
+    const emailLogado = user?.email || "";
+    if (!nomeLogado && !emailLogado) return;
+    setForm((prev) => ({
+      ...prev,
+      nome: prev.nome || nomeLogado,
+      email: prev.email || emailLogado,
+    }));
+  }, [isOpen, step, user?.email, profile?.nome, doshaResult?.nome]);
+
   // Reset frete quando itens mudam
   useEffect(() => {
     setOpcoesFrete([]);
