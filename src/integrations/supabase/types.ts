@@ -1783,6 +1783,140 @@ export type Database = {
         }
         Relationships: []
       }
+      rotina_acoes: {
+        Row: {
+          anti_kapha: number | null
+          anti_pitta: number | null
+          anti_vata: number | null
+          ativo: boolean | null
+          categoria: string | null
+          created_at: string | null
+          descricao: string | null
+          duracao: string | null
+          importancia: string | null
+          periodo_dia: string | null
+          pilar: string | null
+          playlist: string
+          pode_repetir: boolean | null
+          receita_json: Json | null
+          revisado: boolean | null
+          tem_receita: boolean | null
+          titulo: string
+          url: string
+          video_id: string
+        }
+        Insert: {
+          anti_kapha?: number | null
+          anti_pitta?: number | null
+          anti_vata?: number | null
+          ativo?: boolean | null
+          categoria?: string | null
+          created_at?: string | null
+          descricao?: string | null
+          duracao?: string | null
+          importancia?: string | null
+          periodo_dia?: string | null
+          pilar?: string | null
+          playlist: string
+          pode_repetir?: boolean | null
+          receita_json?: Json | null
+          revisado?: boolean | null
+          tem_receita?: boolean | null
+          titulo: string
+          url: string
+          video_id: string
+        }
+        Update: {
+          anti_kapha?: number | null
+          anti_pitta?: number | null
+          anti_vata?: number | null
+          ativo?: boolean | null
+          categoria?: string | null
+          created_at?: string | null
+          descricao?: string | null
+          duracao?: string | null
+          importancia?: string | null
+          periodo_dia?: string | null
+          pilar?: string | null
+          playlist?: string
+          pode_repetir?: boolean | null
+          receita_json?: Json | null
+          revisado?: boolean | null
+          tem_receita?: boolean | null
+          titulo?: string
+          url?: string
+          video_id?: string
+        }
+        Relationships: []
+      }
+      rotina_nuggets: {
+        Row: {
+          categoria: string | null
+          chunk_index: number | null
+          created_at: string | null
+          icone_lucide: string | null
+          id: string
+          kapha: number | null
+          nugget_json: Json | null
+          pitta: number | null
+          revisado: boolean | null
+          score: number | null
+          subcategoria: string | null
+          tags: string[] | null
+          tipo: string | null
+          titulo: string
+          vata: number | null
+          video_id: string
+          video_timestamp: string | null
+        }
+        Insert: {
+          categoria?: string | null
+          chunk_index?: number | null
+          created_at?: string | null
+          icone_lucide?: string | null
+          id?: string
+          kapha?: number | null
+          nugget_json?: Json | null
+          pitta?: number | null
+          revisado?: boolean | null
+          score?: number | null
+          subcategoria?: string | null
+          tags?: string[] | null
+          tipo?: string | null
+          titulo: string
+          vata?: number | null
+          video_id: string
+          video_timestamp?: string | null
+        }
+        Update: {
+          categoria?: string | null
+          chunk_index?: number | null
+          created_at?: string | null
+          icone_lucide?: string | null
+          id?: string
+          kapha?: number | null
+          nugget_json?: Json | null
+          pitta?: number | null
+          revisado?: boolean | null
+          score?: number | null
+          subcategoria?: string | null
+          tags?: string[] | null
+          tipo?: string | null
+          titulo?: string
+          vata?: number | null
+          video_id?: string
+          video_timestamp?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rotina_nuggets_video_id_fkey"
+            columns: ["video_id"]
+            isOneToOne: false
+            referencedRelation: "rotina_acoes"
+            referencedColumns: ["video_id"]
+          },
+        ]
+      }
       samkhya: {
         Row: {
           content: string | null
