@@ -10,6 +10,7 @@ interface UserProfile {
   tokens_akasha: number;
   nivel_evolucao: string;
   pontos_ojas: number;
+  is_premium: boolean | null;
   created_at: string;
 }
 
