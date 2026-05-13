@@ -129,6 +129,7 @@ const RoutedApp = () => {
               <Route path="/metricas/akasha" element={<MetricasAkasha />} />
               <Route path="/registros/:id" element={<RegistroAkashico />} />
               <Route path="/entrar" element={<Auth />} />
+              <Route path="/assinar" element={<Assinar />} />
               <Route path="/politica-de-privacidade" element={<PoliticaDePrivacidade />} />
               <Route path="/termos-de-uso" element={<TermosDeUso />} />
               <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />
