@@ -192,10 +192,18 @@ const ArtigosTab = ({ agravVataTags, agravPittaTags, agravKaphaTags, doshaprinci
         >
           <Sparkles className="h-3.5 w-3.5" /> Personalizado
         </button>
+        <button
+          onClick={() => setSubTab("pesquisa")}
+          className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all flex items-center gap-1 ${
+            subTab === "pesquisa" ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          <Search className="h-3.5 w-3.5" /> Pesquisa
+        </button>
       </div>
 
-      {/* Search (only for geral) */}
-      {subTab === "geral" && (
+      {/* Search (only for pesquisa subtab) */}
+      {subTab === "pesquisa" && isPremium && (
         <div className="space-y-2">
           <div className="relative max-w-md mx-auto">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
