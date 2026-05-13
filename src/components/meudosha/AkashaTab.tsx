@@ -361,7 +361,7 @@ const AkashaTab = ({
 
       {/* Input ou bloqueio de tokens */}
       <div className="pt-2 pb-2">
-        {tokens > 0 ? (
+        {(isPremium || tokens > 0) ? (
           <div className="flex items-center gap-2 bg-card border border-border rounded-full px-4 py-2 shadow-lg shadow-akasha/5">
             <input
               type="text"
