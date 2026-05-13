@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { toast } from "sonner";
-import { Loader2, ExternalLink, Save, ArrowLeft, MapPin } from "lucide-react";
+import { Loader2, ExternalLink, Save, ArrowLeft, MapPin, Mail } from "lucide-react";
 import AdminNav from "@/components/admin/AdminNav";
 import { lojaSupabase } from "@/integrations/supabase/loja-client";
 import { Button } from "@/components/ui/button";
@@ -54,6 +54,9 @@ const AdminLojaVendaDetalhe = () => {
   const [savingRastreio, setSavingRastreio] = useState(false);
   const [notas, setNotas] = useState("");
   const [savingNotas, setSavingNotas] = useState(false);
+  const [emailAssunto, setEmailAssunto] = useState("");
+  const [emailMensagem, setEmailMensagem] = useState("");
+  const [sendingEmail, setSendingEmail] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -152,6 +155,44 @@ const AdminLojaVendaDetalhe = () => {
       toast.success("Notas salvas");
     }
     setSavingNotas(false);
+  };
+
+  const handleSendEmail = async () => {
+    if (!pedido) return;
+    if (!emailAssunto.trim() || !emailMensagem.trim()) {
+      toast.error("Preencha o assunto e a mensagem do email.");
+      return;
+    }
+    setSendingEmail(true);
+    try {
+      const payload = {
+        tipo: "manual",
+        assunto_custom: emailAssunto.trim(),
+        mensagem_custom: emailMensagem.trim(),
+        record: {
+          id: pedido.id,
+          numero_pedido: pedido.numero_pedido || "",
+          comprador_email: pedido.comprador_email,
+          comprador_nome: pedido.comprador_nome,
+          frete_servico: pedido.frete_servico || "",
+          frete_prazo_dias: pedido.frete_prazo_dias ?? "",
+          total: pedido.total,
+        },
+      };
+      const res = await fetch("https://n8n.portalayurveda.com/webhook/samkhya-pedido", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      toast.success("Email enviado com sucesso!");
+      setEmailAssunto("");
+      setEmailMensagem("");
+    } catch (err) {
+      toast.error("Erro ao enviar email. Tente novamente.");
+    } finally {
+      setSendingEmail(false);
+    }
   };
 
   const e = pedido.endereco_entrega || {};
@@ -463,6 +504,55 @@ const AdminLojaVendaDetalhe = () => {
             </CardContent>
           </Card>
         )}
+
+        {/* Enviar email para o cliente */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base flex items-center gap-2">
+              <Mail className="h-4 w-4" />
+              Enviar email para o cliente
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div>
+              <Label htmlFor="email-assunto" className="text-xs">
+                Assunto
+              </Label>
+              <Input
+                id="email-assunto"
+                value={emailAssunto}
+                onChange={(ev) => setEmailAssunto(ev.target.value)}
+                placeholder="Ex: Atualização sobre seu pedido"
+                className="mt-1"
+              />
+            </div>
+            <div>
+              <Label htmlFor="email-mensagem" className="text-xs">
+                Mensagem
+              </Label>
+              <Textarea
+                id="email-mensagem"
+                value={emailMensagem}
+                onChange={(ev) => setEmailMensagem(ev.target.value)}
+                placeholder="Digite a mensagem aqui..."
+                rows={5}
+                className="mt-1"
+              />
+            </div>
+            <Button
+              onClick={handleSendEmail}
+              disabled={sendingEmail}
+              className="min-w-[140px]"
+            >
+              {sendingEmail ? (
+                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+              ) : (
+                <Mail className="h-4 w-4 mr-2" />
+              )}
+              Enviar email
+            </Button>
+          </CardContent>
+        </Card>
       </div>
     </>
   );
