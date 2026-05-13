@@ -9,7 +9,7 @@ import {
 import SamkhyaLayout from "@/components/samkhya/SamkhyaLayout";
 import PrecoDisplay from "@/components/samkhya/PrecoDisplay";
 import BotaoWhatsApp from "@/components/samkhya/BotaoWhatsApp";
-import BotaoStripe from "@/components/samkhya/BotaoStripe";
+import BotaoAdicionarCarrinho from "@/components/samkhya/BotaoAdicionarCarrinho";
 import TabsConteudo from "@/components/samkhya/TabsConteudo";
 import TagsPropriedades from "@/components/samkhya/TagsPropriedades";
 import MinimalProductCard from "@/components/samkhya/MinimalProductCard";
@@ -138,8 +138,22 @@ const SamkhyaProduto = () => {
                   size="md"
                 />
                 <div className="flex flex-col gap-3">
+                  <BotaoAdicionarCarrinho
+                    item={{
+                      id: produto.id,
+                      slug: produto.slug,
+                      nome: produto.nome_display,
+                      preco_normal: Number(produto.preco_normal),
+                      preco_pix: Number(produto.preco_pix),
+                      stripe_price_id: produto.stripe_price_id,
+                      imagem_url: produto.imagem_url,
+                      peso_gramas: (produto as unknown as { peso_gramas?: number }).peso_gramas ?? 0,
+                      tipo: "produto",
+                    }}
+                    size="sm"
+                    fullWidth
+                  />
                   <BotaoWhatsApp produtoNome={produto.nome_display} size="sm" fullWidth />
-                  <BotaoStripe size="sm" fullWidth />
                 </div>
 
                 {produto.tags_propriedades && produto.tags_propriedades.length > 0 && (

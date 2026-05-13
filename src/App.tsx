@@ -51,6 +51,9 @@ import SamkhyaKit from "./pages/SamkhyaKit";
 import SamkhyaCategoria from "./pages/SamkhyaCategoria";
 import SamkhyaKits from "./pages/SamkhyaKits";
 import SamkhyaTodos from "./pages/SamkhyaTodos";
+import SamkhyaObrigado from "./pages/SamkhyaObrigado";
+import { CartProvider } from "./contexts/CartContext";
+import CartDrawer from "./components/loja/CartDrawer";
 
 const queryClient = new QueryClient();
 
@@ -65,6 +68,8 @@ const RoutedApp = () => {
   useCanonical();
   return (
     <UserProvider>
+      <CartProvider>
+      <CartDrawer />
       <LayoutOrBare>
             <Routes>
               <Route path="/" element={<LaunchPage />} />
@@ -144,10 +149,12 @@ const RoutedApp = () => {
               <Route path="/samkhya/kits/:slug" element={<SamkhyaKit />} />
               <Route path="/samkhya/todos" element={<SamkhyaTodos />} />
               <Route path="/samkhya/categoria/:slug" element={<SamkhyaCategoria />} />
+              <Route path="/samkhya/obrigado" element={<SamkhyaObrigado />} />
 
               <Route path="*" element={<NotFound />} />
       </Routes>
       </LayoutOrBare>
+      </CartProvider>
     </UserProvider>
   );
 };
