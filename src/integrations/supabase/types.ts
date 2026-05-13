@@ -2075,32 +2075,41 @@ export type Database = {
       }
       user_profiles: {
         Row: {
+          cpf: string | null
           created_at: string
           email: string
           id: string
           nivel_evolucao: string
           nome: string | null
+          nome_completo: string | null
           pontos_ojas: number
+          telefone: string | null
           tokens_akasha: number
           visitor_id: string | null
         }
         Insert: {
+          cpf?: string | null
           created_at?: string
           email: string
           id: string
           nivel_evolucao?: string
           nome?: string | null
+          nome_completo?: string | null
           pontos_ojas?: number
+          telefone?: string | null
           tokens_akasha?: number
           visitor_id?: string | null
         }
         Update: {
+          cpf?: string | null
           created_at?: string
           email?: string
           id?: string
           nivel_evolucao?: string
           nome?: string | null
+          nome_completo?: string | null
           pontos_ojas?: number
+          telefone?: string | null
           tokens_akasha?: number
           visitor_id?: string | null
         }
