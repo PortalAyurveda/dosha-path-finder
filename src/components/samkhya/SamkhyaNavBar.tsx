@@ -1,5 +1,7 @@
 import { NavLink, useLocation } from "react-router-dom";
+import { ShoppingBag } from "lucide-react";
 import { samkhyaTokens } from "./tokens";
+import { useCart } from "@/contexts/CartContext";
 
 const ITEMS = [
   { slug: "vata", label: "Vata" },
@@ -13,6 +15,7 @@ const ITEMS = [
 ];
 
 const SamkhyaNavBar = () => {
+  const { totalItens, abrirCarrinho } = useCart();
   const location = useLocation();
   // Active state derived from URL: /samkhya/categoria/:slug or /samkhya/kits
   const match = location.pathname.match(/^\/samkhya\/categoria\/([^/]+)/);
@@ -30,8 +33,8 @@ const SamkhyaNavBar = () => {
       style={{ background: "#73465F" }}
       aria-label="Categorias da Loja Samkhya"
     >
-      <div className="mx-auto max-w-6xl px-3 md:px-6 py-1">
-        <ul className="flex justify-center gap-3 md:gap-5 overflow-x-auto scrollbar-none">
+      <div className="mx-auto max-w-6xl px-3 md:px-6 py-1 flex items-center gap-3">
+        <ul className="flex-1 flex justify-center gap-3 md:gap-5 overflow-x-auto scrollbar-none">
           {ITEMS.map((item) => {
             const to =
               item.slug === "kits"
@@ -59,6 +62,22 @@ const SamkhyaNavBar = () => {
             );
           })}
         </ul>
+        <button
+          type="button"
+          onClick={abrirCarrinho}
+          aria-label={`Abrir carrinho (${totalItens} itens)`}
+          className="relative shrink-0 p-2 text-white hover:opacity-80 transition-opacity"
+        >
+          <ShoppingBag className="h-5 w-5" />
+          {totalItens > 0 && (
+            <span
+              className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] rounded-full text-[10px] font-bold flex items-center justify-center px-1"
+              style={{ background: samkhyaTokens.ouro, color: "#fff" }}
+            >
+              {totalItens}
+            </span>
+          )}
+        </button>
       </div>
     </nav>
   );
