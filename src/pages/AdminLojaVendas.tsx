@@ -1,9 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-import { Loader2, Search, ExternalLink } from "lucide-react";
+import { Loader2, Search, ExternalLink, Send } from "lucide-react";
+import { toast } from "sonner";
 import AdminNav from "@/components/admin/AdminNav";
 import { lojaSupabase } from "@/integrations/supabase/loja-client";
+import { supabase } from "@/integrations/supabase/client";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -107,28 +110,27 @@ const AdminLojaVendas = () => {
   const [pedidos, setPedidos] = useState<Pedido[]>([]);
   const [busca, setBusca] = useState("");
   const [statusFiltro, setStatusFiltro] = useState<string>("todos");
+  const [selecionados, setSelecionados] = useState<Set<string>>(new Set());
+  const [enviando, setEnviando] = useState(false);
+
+  const carregarPedidos = async () => {
+    setLoading(true);
+    const { data, error } = await lojaSupabase
+      .from("pedidos")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(500);
+    if (error) {
+      console.error(error);
+      setPedidos([]);
+    } else {
+      setPedidos((data || []) as unknown as Pedido[]);
+    }
+    setLoading(false);
+  };
 
   useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      setLoading(true);
-      const { data, error } = await lojaSupabase
-        .from("pedidos")
-        .select("*")
-        .order("created_at", { ascending: false })
-        .limit(500);
-      if (cancelled) return;
-      if (error) {
-        console.error(error);
-        setPedidos([]);
-      } else {
-        setPedidos((data || []) as unknown as Pedido[]);
-      }
-      setLoading(false);
-    })();
-    return () => {
-      cancelled = true;
-    };
+    carregarPedidos();
   }, []);
 
   const filtrados = useMemo(() => {
@@ -143,6 +145,58 @@ const AdminLojaVendas = () => {
       );
     });
   }, [pedidos, busca, statusFiltro]);
+
+  const pagosVisiveis = useMemo(
+    () => filtrados.filter((p) => p.status === "pago"),
+    [filtrados],
+  );
+  const todosPagosSelecionados =
+    pagosVisiveis.length > 0 && pagosVisiveis.every((p) => selecionados.has(p.id));
+
+  const toggleOne = (id: string) => {
+    setSelecionados((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const toggleAll = () => {
+    setSelecionados((prev) => {
+      const next = new Set(prev);
+      if (todosPagosSelecionados) {
+        pagosVisiveis.forEach((p) => next.delete(p.id));
+      } else {
+        pagosVisiveis.forEach((p) => next.add(p.id));
+      }
+      return next;
+    });
+  };
+
+  const enviarMelhorEnvio = async () => {
+    if (selecionados.size === 0) return;
+    setEnviando(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("enviar-melhorenvio", {
+        body: { pedido_ids: Array.from(selecionados) },
+      });
+      if (error) throw error;
+      const resultados = (data?.resultados ?? []) as Array<{ ok?: boolean; status?: string }>;
+      const sucessos = resultados.filter((r) => r.ok || r.status === "ok").length || resultados.length;
+      if (data?.print_url) {
+        window.open(data.print_url, "_blank", "noopener,noreferrer");
+      }
+      toast.success(`${sucessos} pedido(s) enviado(s) com sucesso`);
+      setSelecionados(new Set());
+      await carregarPedidos();
+    } catch (e: any) {
+      console.error(e);
+      toast.error(e?.message || "Falha ao enviar para o MelhorEnvio");
+    } finally {
+      setEnviando(false);
+    }
+  };
 
   return (
     <>
@@ -195,6 +249,32 @@ const AdminLojaVendas = () => {
           </div>
         </div>
 
+        {selecionados.size > 0 && (
+          <div className="flex items-center justify-between gap-3 rounded-lg border bg-muted px-4 py-3">
+            <span className="text-sm font-medium">
+              {selecionados.size} pedido(s) selecionado(s)
+            </span>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setSelecionados(new Set())}
+                disabled={enviando}
+              >
+                Limpar
+              </Button>
+              <Button size="sm" onClick={enviarMelhorEnvio} disabled={enviando}>
+                {enviando ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Send className="h-4 w-4" />
+                )}
+                Enviar para MelhorEnvio
+              </Button>
+            </div>
+          </div>
+        )}
+
         <div className="border rounded-lg overflow-hidden bg-card">
           {loading ? (
             <div className="flex items-center justify-center py-16">
@@ -208,6 +288,15 @@ const AdminLojaVendas = () => {
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead className="w-10">
+                    {pagosVisiveis.length > 0 ? (
+                      <Checkbox
+                        checked={todosPagosSelecionados}
+                        onCheckedChange={toggleAll}
+                        aria-label="Selecionar todos os pagos"
+                      />
+                    ) : null}
+                  </TableHead>
                   <TableHead>Nº</TableHead>
                   <TableHead>Data</TableHead>
                   <TableHead>Comprador</TableHead>
@@ -219,7 +308,16 @@ const AdminLojaVendas = () => {
               </TableHeader>
               <TableBody>
                 {filtrados.map((p) => (
-                  <TableRow key={p.id}>
+                  <TableRow key={p.id} data-state={selecionados.has(p.id) ? "selected" : undefined}>
+                    <TableCell>
+                      {p.status === "pago" ? (
+                        <Checkbox
+                          checked={selecionados.has(p.id)}
+                          onCheckedChange={() => toggleOne(p.id)}
+                          aria-label={`Selecionar pedido ${p.numero_pedido || p.id.slice(0, 8)}`}
+                        />
+                      ) : null}
+                    </TableCell>
                     <TableCell className="font-mono text-xs">
                       {p.numero_pedido || p.id.slice(0, 8)}
                     </TableCell>
