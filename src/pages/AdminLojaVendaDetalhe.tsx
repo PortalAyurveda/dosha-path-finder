@@ -54,6 +54,9 @@ const AdminLojaVendaDetalhe = () => {
   const [savingRastreio, setSavingRastreio] = useState(false);
   const [notas, setNotas] = useState("");
   const [savingNotas, setSavingNotas] = useState(false);
+  const [emailAssunto, setEmailAssunto] = useState("");
+  const [emailMensagem, setEmailMensagem] = useState("");
+  const [sendingEmail, setSendingEmail] = useState(false);
 
   useEffect(() => {
     if (!id) return;
