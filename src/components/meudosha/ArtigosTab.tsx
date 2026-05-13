@@ -120,6 +120,7 @@ const ArtigosTab = ({ agravVataTags, agravPittaTags, agravKaphaTags, doshaprinci
       const list: MatchedArticle[] = [];
 
       for (const a of articles) {
+        if (viewedArticleIds.has(a.id)) continue;
         const searchable = normalizeForSearch(`${a.title} ${a.tags || ""} ${a.meta_description || ""} ${a.summary || ""}`);
         if (words.some((w) => searchable.includes(w))) {
           list.push({ ...a, matchedSymptom: symptom, matchedDosha: dosha });
