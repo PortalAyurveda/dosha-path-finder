@@ -416,6 +416,8 @@ const ArtigosTab = ({ agravVataTags, agravPittaTags, agravKaphaTags, doshaprinci
           );
         })()
       )}
+        </>
+      )}
     </div>
   );
 };
