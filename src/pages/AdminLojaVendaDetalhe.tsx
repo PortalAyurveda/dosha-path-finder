@@ -504,6 +504,55 @@ const AdminLojaVendaDetalhe = () => {
             </CardContent>
           </Card>
         )}
+
+        {/* Enviar email para o cliente */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base flex items-center gap-2">
+              <Mail className="h-4 w-4" />
+              Enviar email para o cliente
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div>
+              <Label htmlFor="email-assunto" className="text-xs">
+                Assunto
+              </Label>
+              <Input
+                id="email-assunto"
+                value={emailAssunto}
+                onChange={(ev) => setEmailAssunto(ev.target.value)}
+                placeholder="Ex: Atualização sobre seu pedido"
+                className="mt-1"
+              />
+            </div>
+            <div>
+              <Label htmlFor="email-mensagem" className="text-xs">
+                Mensagem
+              </Label>
+              <Textarea
+                id="email-mensagem"
+                value={emailMensagem}
+                onChange={(ev) => setEmailMensagem(ev.target.value)}
+                placeholder="Digite a mensagem aqui..."
+                rows={5}
+                className="mt-1"
+              />
+            </div>
+            <Button
+              onClick={handleSendEmail}
+              disabled={sendingEmail}
+              className="min-w-[140px]"
+            >
+              {sendingEmail ? (
+                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+              ) : (
+                <Mail className="h-4 w-4 mr-2" />
+              )}
+              Enviar email
+            </Button>
+          </CardContent>
+        </Card>
       </div>
     </>
   );
