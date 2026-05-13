@@ -61,6 +61,7 @@ const ArtigosTab = ({ agravVataTags, agravPittaTags, agravKaphaTags, doshaprinci
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [page, setPage] = useState(1);
+  const { viewedIds: viewedArticleIds } = useViewedContent("artigo");
 
   useEffect(() => {
     const t = setTimeout(() => setDebouncedSearch(searchTerm), 300);
@@ -149,15 +150,16 @@ const ArtigosTab = ({ agravVataTags, agravPittaTags, agravKaphaTags, doshaprinci
       if (!added) break;
     }
     return result;
-  }, [articles, allSymptoms]);
+  }, [articles, allSymptoms, viewedArticleIds]);
 
   const filteredGeneralArticles = useMemo(() => {
-    if (selectedTags.length === 0) return articles;
-    return articles.filter((a) => {
+    const notViewed = articles.filter((a) => !viewedArticleIds.has(a.id));
+    if (selectedTags.length === 0) return notViewed;
+    return notViewed.filter((a) => {
       if (!a.tags) return false;
       return selectedTags.every((tag) => a.tags!.includes(tag));
     });
-  }, [articles, selectedTags]);
+  }, [articles, selectedTags, viewedArticleIds]);
 
   const toggleTag = (tag: string) => {
     setSelectedTags((prev) =>
