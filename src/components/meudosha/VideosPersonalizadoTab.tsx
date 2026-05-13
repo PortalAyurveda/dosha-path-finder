@@ -240,7 +240,7 @@ const VideosPersonalizadoTab = ({
   if (!matchedVideos || matchedVideos.length === 0) {
     return (
       <div className="text-center p-8 rounded-2xl bg-surface-sun border border-border">
-        <p className="text-muted-foreground">Não encontramos vídeos específicos para seus agravamentos ainda. Tente a aba Gerais.</p>
+        <p className="text-muted-foreground">Você já viu tudo aqui — explore a aba Gerais!</p>
       </div>
     );
   }
