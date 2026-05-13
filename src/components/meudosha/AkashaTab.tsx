@@ -243,7 +243,7 @@ const AkashaTab = ({
     setSending(true);
 
     try {
-      if (user?.id) {
+      if (user?.id && !isPremium) {
         await supabase
           .from("user_profiles")
           .update({ tokens_akasha: Math.max(tokens - 1, 0) } as any)
