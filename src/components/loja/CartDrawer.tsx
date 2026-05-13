@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { toast } from "sonner";
 import { useCart } from "@/contexts/CartContext";
+import { useUser } from "@/contexts/UserContext";
 import { samkhyaTokens } from "@/components/samkhya/tokens";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -48,6 +49,7 @@ const validateCPF = (cpf: string) => {
 
 const CartDrawer = () => {
   const navigate = useNavigate();
+  const { user, profile, doshaResult } = useUser();
   const {
     itens,
     isOpen,
@@ -83,6 +85,19 @@ const CartDrawer = () => {
       setStep("cart");
     }
   }, [isOpen]);
+
+  // Pré-preenche nome/email a partir do usuário logado, sem sobrescrever edições
+  useEffect(() => {
+    if (!isOpen) return;
+    const nomeLogado = profile?.nome || doshaResult?.nome || "";
+    const emailLogado = user?.email || "";
+    if (!nomeLogado && !emailLogado) return;
+    setForm((prev) => ({
+      ...prev,
+      nome: prev.nome || nomeLogado,
+      email: prev.email || emailLogado,
+    }));
+  }, [isOpen, step, user?.email, profile?.nome, doshaResult?.nome]);
 
   // Reset frete quando itens mudam
   useEffect(() => {
