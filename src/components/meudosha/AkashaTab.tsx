@@ -2,8 +2,18 @@ import { useEffect, useState, useRef, useCallback } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/contexts/UserContext";
-import { Send, Loader2 } from "lucide-react";
+import { Send, Loader2, Lock } from "lucide-react";
 import ReactMarkdown from "react-markdown";
+import { Link } from "react-router-dom";
+
+// Tokens renovam no 1º dia de cada mês
+const getNextResetLabel = () => {
+  const now = new Date();
+  const next = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+  const dia = next.getDate();
+  const mes = next.toLocaleDateString("pt-BR", { month: "long" });
+  return `${dia} de ${mes}`;
+};
 
 const AKASHA_LOGO = "https://static.wixstatic.com/media/b8f47f_105371e1ade24ccd9bd3406b83bd925e~mv2.png";
 const WEBHOOK_URL = "https://n8n.portalayurveda.com/webhook/chat-ayurveda";
