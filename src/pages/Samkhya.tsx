@@ -7,7 +7,6 @@ import {
   type LojaKit,
 } from "@/integrations/supabase/loja-client";
 import SamkhyaLayout from "@/components/samkhya/SamkhyaLayout";
-import HeroBanner from "@/components/samkhya/HeroBanner";
 import CarouselSection from "@/components/samkhya/CarouselSection";
 import MinimalProductCard from "@/components/samkhya/MinimalProductCard";
 import KitCard from "@/components/samkhya/KitCard";
@@ -116,7 +115,6 @@ const Samkhya = () => {
       </Helmet>
 
       <SamkhyaLayout>
-        <HeroBanner />
         {loading ? (
           <>
             <div className="text-center py-10">

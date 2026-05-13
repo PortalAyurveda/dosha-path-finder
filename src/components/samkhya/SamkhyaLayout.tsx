@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 import SamkhyaNavBar from "./SamkhyaNavBar";
+import HeroBanner from "./HeroBanner";
 import { samkhyaTokens } from "./tokens";
 
 interface SamkhyaLayoutProps {
@@ -8,11 +9,12 @@ interface SamkhyaLayoutProps {
 
 /**
  * Wrapper for all /samkhya/* routes.
- * Order: global Header (sticky) → SamkhyaNavBar (sticky) → main.
+ * Order: global Header (sticky) → HeroBanner (elephant) → SamkhyaNavBar (sticky) → main.
  */
 const SamkhyaLayout = ({ children }: SamkhyaLayoutProps) => {
   return (
     <div style={{ background: samkhyaTokens.fundo, color: samkhyaTokens.texto, fontFamily: "Helvetica, 'Helvetica Neue', Arial, sans-serif" }}>
+      <HeroBanner />
       <SamkhyaNavBar />
       <main className="mx-auto max-w-6xl px-4 py-6 md:py-8">{children}</main>
     </div>
