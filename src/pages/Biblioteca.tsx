@@ -10,6 +10,7 @@ import AdvancedVideoCard from "@/components/biblioteca/AdvancedVideoCard";
 import AdvancedVideoResult from "@/components/biblioteca/AdvancedVideoResult";
 import { Skeleton } from "@/components/ui/skeleton";
 import PaginationControls from "@/components/PaginationControls";
+import Seo from "@/components/Seo";
 
 const PAGE_SIZE = 12;
 
