@@ -1,0 +1,2 @@
+CREATE POLICY "admin_select_mensagens" ON public.mensagens FOR SELECT USING (public.is_admin());
+CREATE POLICY "admin_update_mensagens" ON public.mensagens FOR UPDATE USING (public.is_admin()) WITH CHECK (public.is_admin());
