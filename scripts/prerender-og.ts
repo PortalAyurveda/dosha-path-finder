@@ -147,7 +147,7 @@ async function dynamicRoutes(): Promise<Route[]> {
     image_url: string;
     link_do_artigo: string;
   }>(
-    "portal_conteudo?select=title,summary,meta_description,image_url,link_do_artigo&status=eq.publicado&link_do_artigo=not.is.null"
+    "portal_conteudo?select=title,summary,meta_description,image_url,link_do_artigo&link_do_artigo=not.is.null&limit=500"
   );
   for (const p of posts) {
     if (!p.link_do_artigo) continue;
