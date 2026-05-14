@@ -23,7 +23,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import PaginationControls from "@/components/PaginationControls";
-import { ArrowLeft, Search, Loader2, Upload, Save, Copy, Trash2 } from "lucide-react";
+import { ArrowLeft, Search, Loader2, Upload, Save, Copy, Trash2, Pencil } from "lucide-react";
 import { sanitizeSlug } from "@/lib/sanitizeSlug";
 import AdminNav from "@/components/admin/AdminNav";
 
@@ -52,7 +52,13 @@ const AdminBlog = () => {
   // Edit dialog
   const [editing, setEditing] = useState<Article | null>(null);
   const [newUrl, setNewUrl] = useState("");
+  const [newTitle, setNewTitle] = useState("");
   const [saving, setSaving] = useState(false);
+
+  // Inline title edit (card)
+  const [inlineEditId, setInlineEditId] = useState<string | null>(null);
+  const [inlineTitle, setInlineTitle] = useState("");
+  const [inlineSaving, setInlineSaving] = useState(false);
 
   // Upload state inside dialog
   const [buckets, setBuckets] = useState<string[]>(FALLBACK_BUCKETS);
@@ -117,35 +123,78 @@ const AdminBlog = () => {
   const openEdit = (article: Article) => {
     setEditing(article);
     setNewUrl(article.image_url || "");
+    setNewTitle(article.title || "");
   };
 
   const closeEdit = () => {
     setEditing(null);
     setNewUrl("");
+    setNewTitle("");
   };
 
   const handleSave = async () => {
     if (!editing) return;
     const url = newUrl.trim();
+    const title = newTitle.trim();
     if (!url) {
       toast.error("Informe uma URL de imagem");
+      return;
+    }
+    if (!title) {
+      toast.error("Informe um título");
       return;
     }
     setSaving(true);
     const { error } = await supabase
       .from("portal_conteudo")
-      .update({ image_url: url })
+      .update({ image_url: url, title })
       .eq("id", editing.id);
     setSaving(false);
     if (error) {
       toast.error("Erro ao salvar: " + error.message);
       return;
     }
-    toast.success("Imagem atualizada!");
+    toast.success("Artigo atualizado!");
     setArticles((prev) =>
-      prev.map((a) => (a.id === editing.id ? { ...a, image_url: url } : a))
+      prev.map((a) => (a.id === editing.id ? { ...a, image_url: url, title } : a))
     );
     closeEdit();
+  };
+
+  const startInlineEdit = (article: Article, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setInlineEditId(article.id);
+    setInlineTitle(article.title);
+  };
+
+  const cancelInlineEdit = () => {
+    setInlineEditId(null);
+    setInlineTitle("");
+  };
+
+  const saveInlineTitle = async (article: Article) => {
+    const title = inlineTitle.trim();
+    if (!title) {
+      toast.error("Título não pode ficar vazio");
+      return;
+    }
+    if (title === article.title) {
+      cancelInlineEdit();
+      return;
+    }
+    setInlineSaving(true);
+    const { error } = await supabase
+      .from("portal_conteudo")
+      .update({ title })
+      .eq("id", article.id);
+    setInlineSaving(false);
+    if (error) {
+      toast.error("Erro ao salvar: " + error.message);
+      return;
+    }
+    toast.success("Título atualizado!");
+    setArticles((prev) => prev.map((a) => (a.id === article.id ? { ...a, title } : a)));
+    cancelInlineEdit();
   };
 
   const handleDelete = async (article: Article, fromDialog = false) => {
@@ -271,11 +320,60 @@ const AdminBlog = () => {
                       )}
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="text-xs font-medium text-foreground line-clamp-3">
-                        {a.title}
-                      </p>
+                      {inlineEditId === a.id ? (
+                        <div
+                          className="flex flex-col gap-1"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <Input
+                            autoFocus
+                            value={inlineTitle}
+                            onChange={(e) => setInlineTitle(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") saveInlineTitle(a);
+                              if (e.key === "Escape") cancelInlineEdit();
+                            }}
+                            className="h-7 text-xs"
+                            disabled={inlineSaving}
+                          />
+                          <div className="flex gap-1">
+                            <Button
+                              size="sm"
+                              className="h-6 px-2 text-xs"
+                              onClick={() => saveInlineTitle(a)}
+                              disabled={inlineSaving}
+                            >
+                              {inlineSaving ? <Loader2 className="w-3 h-3 animate-spin" /> : "Salvar"}
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className="h-6 px-2 text-xs"
+                              onClick={cancelInlineEdit}
+                              disabled={inlineSaving}
+                            >
+                              Cancelar
+                            </Button>
+                          </div>
+                        </div>
+                      ) : (
+                        <p className="text-xs font-medium text-foreground line-clamp-3">
+                          {a.title}
+                        </p>
+                      )}
                     </div>
                   </button>
+                  {inlineEditId !== a.id && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-7 w-7 shrink-0 opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity"
+                      onClick={(e) => startInlineEdit(a, e)}
+                      title="Editar título"
+                    >
+                      <Pencil className="w-4 h-4" />
+                    </Button>
+                  )}
                   <Button
                     variant="ghost"
                     size="icon"
@@ -303,7 +401,7 @@ const AdminBlog = () => {
       <Dialog open={!!editing} onOpenChange={(o) => !o && closeEdit()}>
         <DialogContent className="max-w-lg">
           <DialogHeader>
-            <DialogTitle>Editar imagem do artigo</DialogTitle>
+            <DialogTitle>Editar artigo</DialogTitle>
             <DialogDescription className="line-clamp-2">
               {editing?.title}
             </DialogDescription>
@@ -320,6 +418,17 @@ const AdminBlog = () => {
                 />
               </div>
             )}
+
+            {/* Title field */}
+            <div className="space-y-1.5">
+              <label className="text-xs font-medium text-foreground">Título</label>
+              <Input
+                value={newTitle}
+                onChange={(e) => setNewTitle(e.target.value)}
+                placeholder="Título do artigo"
+                className="text-sm"
+              />
+            </div>
 
             {/* URL field */}
             <div className="space-y-1.5">

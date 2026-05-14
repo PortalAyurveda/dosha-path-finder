@@ -416,6 +416,33 @@ export type Database = {
         }
         Relationships: []
       }
+      devlog: {
+        Row: {
+          criado_em: string | null
+          descricao: string | null
+          destaque: boolean | null
+          id: string
+          titulo: string
+          versao: string
+        }
+        Insert: {
+          criado_em?: string | null
+          descricao?: string | null
+          destaque?: boolean | null
+          id?: string
+          titulo: string
+          versao: string
+        }
+        Update: {
+          criado_em?: string | null
+          descricao?: string | null
+          destaque?: boolean | null
+          id?: string
+          titulo?: string
+          versao?: string
+        }
+        Relationships: []
+      }
       documents: {
         Row: {
           content: string | null
