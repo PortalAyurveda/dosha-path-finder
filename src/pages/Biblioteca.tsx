@@ -10,6 +10,7 @@ import AdvancedVideoCard from "@/components/biblioteca/AdvancedVideoCard";
 import AdvancedVideoResult from "@/components/biblioteca/AdvancedVideoResult";
 import { Skeleton } from "@/components/ui/skeleton";
 import PaginationControls from "@/components/PaginationControls";
+import Seo from "@/components/Seo";
 
 const PAGE_SIZE = 12;
 
@@ -123,6 +124,10 @@ const Biblioteca = () => {
 
   return (
     <>
+      <Seo
+        title="Biblioteca de Vídeos Ayurvédicos — Vata, Pitta e Kapha"
+        description="Centenas de vídeos sobre Ayurveda organizados por dosha e por tema: alimentação, rotinas, remédios e práticas avançadas."
+      />
       <DoshaSelector />
       <PageContainer
         title="Biblioteca — Sommelier Ayurveda"

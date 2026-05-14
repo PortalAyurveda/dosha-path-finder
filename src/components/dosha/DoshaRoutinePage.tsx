@@ -109,7 +109,7 @@ const DoshaRoutinePage = ({
       <Helmet>
         <title>{metaTitle} — Portal Ayurveda</title>
         <meta name="description" content={metaDescription} />
-        <link rel="canonical" href={`https://www.portalayurveda.com/horarios/${dosha}`} />
+        <link rel="canonical" href={`https://portalayurveda.com/horarios/${dosha}`} />
       </Helmet>
 
       {/* Hero */}

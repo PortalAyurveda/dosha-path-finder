@@ -563,8 +563,8 @@ const orgSchema = {
   "@context": "https://schema.org",
   "@type": "Organization",
   name: "Portal Ayurveda",
-  url: "https://www.portalayurveda.com",
-  logo: "https://www.portalayurveda.com/logo.png",
+  url: "https://portalayurveda.com",
+  logo: "https://portalayurveda.com/logo.png",
   description:
     "Portal Ayurveda Brasil: Descubra seu Dosha, entenda seu metabolismo e restaure sua saúde com nutrição e rotinas práticas de Medicina Ayurveda",
   sameAs: [

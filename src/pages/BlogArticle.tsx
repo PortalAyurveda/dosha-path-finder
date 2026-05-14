@@ -55,7 +55,20 @@ const BlogArticle = () => {
         {article.meta_description && (
           <meta name="description" content={article.meta_description} />
         )}
-        <link rel="canonical" href={`https://www.portalayurveda.com/blog/${article.link_do_artigo}`} />
+        <link rel="canonical" href={`https://portalayurveda.com/blog/${article.link_do_artigo}`} />
+        <meta property="og:type" content="article" />
+        <meta property="og:title" content={`${article.title} | Portal Ayurveda`} />
+        {article.meta_description && (
+          <meta property="og:description" content={article.meta_description} />
+        )}
+        <meta property="og:url" content={`https://portalayurveda.com/blog/${article.link_do_artigo}`} />
+        <meta property="og:image" content={article.image_url || "https://portalayurveda.com/og-image.jpg"} />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={article.title} />
+        {article.meta_description && (
+          <meta name="twitter:description" content={article.meta_description} />
+        )}
+        <meta name="twitter:image" content={article.image_url || "https://portalayurveda.com/og-image.jpg"} />
       </Helmet>
 
       <article className="max-w-3xl mx-auto px-4 py-8">

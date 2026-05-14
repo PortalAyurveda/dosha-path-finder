@@ -36,7 +36,7 @@ const Formacao = () => {
         <meta property="og:description" content={data.meta.description} />
         <meta property="og:image" content={data.branding.bulletSvg} />
         <meta property="og:type" content="website" />
-        <link rel="canonical" href="https://www.portalayurveda.com/curso/formacao" />
+        <link rel="canonical" href="https://portalayurveda.com/curso/formacao" />
       </Helmet>
 
       <main>
