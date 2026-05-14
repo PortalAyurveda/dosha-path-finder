@@ -52,7 +52,13 @@ const AdminBlog = () => {
   // Edit dialog
   const [editing, setEditing] = useState<Article | null>(null);
   const [newUrl, setNewUrl] = useState("");
+  const [newTitle, setNewTitle] = useState("");
   const [saving, setSaving] = useState(false);
+
+  // Inline title edit (card)
+  const [inlineEditId, setInlineEditId] = useState<string | null>(null);
+  const [inlineTitle, setInlineTitle] = useState("");
+  const [inlineSaving, setInlineSaving] = useState(false);
 
   // Upload state inside dialog
   const [buckets, setBuckets] = useState<string[]>(FALLBACK_BUCKETS);
