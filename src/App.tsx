@@ -32,6 +32,8 @@ import TermosDeUso from "./pages/TermosDeUso";
 import NotFound from "./pages/NotFound";
 import Admin from "./pages/Admin";
 import AdminBlog from "./pages/AdminBlog";
+import AdminMensagens from "./pages/AdminMensagens";
+import Contato from "./pages/Contato";
 import AdminAkasha from "./pages/AdminAkasha";
 import AdminTeste from "./pages/AdminTeste";
 import AdminTesteRegistros from "./pages/AdminTesteRegistros";
