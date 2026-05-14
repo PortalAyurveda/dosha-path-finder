@@ -40,6 +40,7 @@ import AdminTesteRegistros from "./pages/AdminTesteRegistros";
 import AdminRoute from "./components/admin/AdminRoute";
 import AdminLoja from "./pages/AdminLoja";
 import AdminLojaVendas from "./pages/AdminLojaVendas";
+import AdminVendasAkasha from "./pages/AdminVendasAkasha";
 import AdminLojaVendaDetalhe from "./pages/AdminLojaVendaDetalhe";
 import AdminBiblioteca from "./pages/AdminBiblioteca";
 import AdminTerapeutas from "./pages/AdminTerapeutas";
