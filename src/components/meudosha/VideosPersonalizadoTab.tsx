@@ -58,7 +58,8 @@ function normalizeForSearch(text: string): string {
 }
 
 const TABLES = ["portal_lives", "portal_oficial", "portal_receitas"] as const;
-const MAX_VIDEOS = 3;
+const MAX_VIDEOS = 6;
+const ITEMS_PER_PAGE = 6;
 
 const VideosPersonalizadoTab = ({
   agravVataTags,
