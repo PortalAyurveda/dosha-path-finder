@@ -1900,6 +1900,7 @@ export type Database = {
           id: string
           kapha: number | null
           nugget_json: Json | null
+          periodo: string | null
           pitta: number | null
           revisado: boolean | null
           score: number | null
@@ -1907,6 +1908,7 @@ export type Database = {
           tags: string[] | null
           tipo: string | null
           titulo: string
+          uso_externo: boolean | null
           vata: number | null
           video_id: string
           video_timestamp: string | null
@@ -1919,6 +1921,7 @@ export type Database = {
           id?: string
           kapha?: number | null
           nugget_json?: Json | null
+          periodo?: string | null
           pitta?: number | null
           revisado?: boolean | null
           score?: number | null
@@ -1926,6 +1929,7 @@ export type Database = {
           tags?: string[] | null
           tipo?: string | null
           titulo: string
+          uso_externo?: boolean | null
           vata?: number | null
           video_id: string
           video_timestamp?: string | null
@@ -1938,6 +1942,7 @@ export type Database = {
           id?: string
           kapha?: number | null
           nugget_json?: Json | null
+          periodo?: string | null
           pitta?: number | null
           revisado?: boolean | null
           score?: number | null
@@ -1945,6 +1950,7 @@ export type Database = {
           tags?: string[] | null
           tipo?: string | null
           titulo?: string
+          uso_externo?: boolean | null
           vata?: number | null
           video_id?: string
           video_timestamp?: string | null
