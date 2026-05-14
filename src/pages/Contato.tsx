@@ -61,10 +61,9 @@ const Contato = () => {
       return;
     }
     setSubmitting(true);
-    const { error } = await supabase.from("mensagens").insert({
-      user_id: user?.id ?? null,
-      ...parsed.data,
-    });
+    const { error } = await supabase.from("mensagens").insert([
+      { user_id: user?.id ?? null, ...parsed.data },
+    ]);
     setSubmitting(false);
     if (error) {
       toast.error("Não foi possível enviar. Tente novamente.");
