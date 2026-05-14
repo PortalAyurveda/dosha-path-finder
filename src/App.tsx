@@ -49,6 +49,7 @@ import Aula from "./pages/Aula";
 import Blog from "./pages/Blog";
 import BlogArticle from "./pages/BlogArticle";
 import Metricas from "./pages/Metricas";
+import Devlog from "./pages/Devlog";
 import MetricasGraficos from "./pages/MetricasGraficos";
 import MetricasAkasha from "./pages/MetricasAkasha";
 import RegistroAkashico from "./pages/RegistroAkashico";
