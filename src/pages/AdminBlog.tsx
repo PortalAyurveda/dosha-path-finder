@@ -419,6 +419,17 @@ const AdminBlog = () => {
               </div>
             )}
 
+            {/* Title field */}
+            <div className="space-y-1.5">
+              <label className="text-xs font-medium text-foreground">Título</label>
+              <Input
+                value={newTitle}
+                onChange={(e) => setNewTitle(e.target.value)}
+                placeholder="Título do artigo"
+                className="text-sm"
+              />
+            </div>
+
             {/* URL field */}
             <div className="space-y-1.5">
               <label className="text-xs font-medium text-foreground">URL da imagem</label>
