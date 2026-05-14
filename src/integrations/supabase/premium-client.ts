@@ -46,7 +46,7 @@ export interface ObjetivoTratamento {
   narrativa_clinica: {
     bloco_1_situacao?: string;
     bloco_2_causas?: string;
-    bloco_3_sabores?: string;
-    bloco_4_proximos?: string;
+    bloco_3_caminhos?: string;
   } | null;
+  deficit_doshas: string[] | null;
 }
