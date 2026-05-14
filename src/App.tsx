@@ -49,6 +49,7 @@ import Aula from "./pages/Aula";
 import Blog from "./pages/Blog";
 import BlogArticle from "./pages/BlogArticle";
 import Metricas from "./pages/Metricas";
+import Devlog from "./pages/Devlog";
 import MetricasGraficos from "./pages/MetricasGraficos";
 import MetricasAkasha from "./pages/MetricasAkasha";
 import RegistroAkashico from "./pages/RegistroAkashico";
@@ -127,6 +128,7 @@ const RoutedApp = () => {
               <Route path="/biblioteca/horarios" element={<Horarios />} />
               <Route path="/blog" element={<Blog />} />
               <Route path="/blog/:slug" element={<BlogArticle />} />
+              <Route path="/devlog" element={<Devlog />} />
               <Route path="/metricas" element={<Metricas />} />
               <Route path="/metricas/graficos" element={<MetricasGraficos />} />
               <Route path="/metricas/akasha" element={<MetricasAkasha />} />
