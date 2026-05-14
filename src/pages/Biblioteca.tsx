@@ -123,6 +123,10 @@ const Biblioteca = () => {
 
   return (
     <>
+      <Seo
+        title="Biblioteca de Vídeos Ayurvédicos — Vata, Pitta e Kapha"
+        description="Centenas de vídeos sobre Ayurveda organizados por dosha e por tema: alimentação, rotinas, remédios e práticas avançadas."
+      />
       <DoshaSelector />
       <PageContainer
         title="Biblioteca — Sommelier Ayurveda"
