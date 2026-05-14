@@ -96,15 +96,13 @@ async function dynamicEntries(): Promise<SitemapEntry[]> {
     });
   }
 
-  // Terapeutas: o slug fica numa coluna chamada "terapeutas(dinamica)"
-  const terapeutasCol = encodeURIComponent("terapeutas(dinamica)");
-  const updatedCol = encodeURIComponent("updated date");
-  const terapeutas = await fetchRest<Record<string, string>>(
-    `portal_terapeutas?select=${terapeutasCol},${updatedCol}&status=eq.aprovado`
+  // Terapeutas: as colunas têm parênteses/espaços, então pegamos tudo
+  const terapeutas = await fetchRest<Record<string, any>>(
+    `portal_terapeutas?select=*&status=eq.aprovado`
   );
   for (const t of terapeutas) {
     const slug = t["terapeutas(dinamica)"];
-    if (!slug) continue;
+    if (!slug || typeof slug !== "string") continue;
     entries.push({
       path: `/terapeutas-do-brasil/${slug}`,
       lastmod: iso(t["updated date"]),
