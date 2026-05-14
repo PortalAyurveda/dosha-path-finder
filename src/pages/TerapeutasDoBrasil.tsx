@@ -17,6 +17,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import Seo from "@/components/Seo";
 
 const TerapeutasDoBrasil = () => {
   const [search, setSearch] = useState("");
@@ -194,6 +195,7 @@ const TerapeutasDoBrasil = () => {
         </Link>
       </section>
     </PageContainer>
+    </>
   );
 };
 
