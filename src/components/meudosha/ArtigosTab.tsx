@@ -351,7 +351,20 @@ const ArtigosTab = ({ agravVataTags, agravPittaTags, agravKaphaTags, doshaprinci
                 </div>
               );
             })}
-          </div>
+                </div>
+                {totalPages > 1 && (
+                  <PaginationControls
+                    page={safePage}
+                    totalPages={totalPages}
+                    onPageChange={(p) => {
+                      setPage(p);
+                      window.scrollTo({ top: 0, behavior: "smooth" });
+                    }}
+                  />
+                )}
+              </>
+            );
+          })()
         )
       ) : filteredGeneralArticles.length === 0 ? (
         <div className="text-center p-8 rounded-2xl bg-surface-sun border border-border">
