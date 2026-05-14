@@ -53,6 +53,54 @@ export type Database = {
         }
         Relationships: []
       }
+      assinaturas: {
+        Row: {
+          canceled_at: string | null
+          created_at: string
+          email: string
+          id: string
+          nome: string | null
+          plano: string
+          status: string
+          stripe_customer_id: string | null
+          stripe_session_id: string | null
+          stripe_subscription_id: string | null
+          updated_at: string
+          user_id: string | null
+          valor: number
+        }
+        Insert: {
+          canceled_at?: string | null
+          created_at?: string
+          email: string
+          id?: string
+          nome?: string | null
+          plano: string
+          status?: string
+          stripe_customer_id?: string | null
+          stripe_session_id?: string | null
+          stripe_subscription_id?: string | null
+          updated_at?: string
+          user_id?: string | null
+          valor: number
+        }
+        Update: {
+          canceled_at?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          nome?: string | null
+          plano?: string
+          status?: string
+          stripe_customer_id?: string | null
+          stripe_session_id?: string | null
+          stripe_subscription_id?: string | null
+          updated_at?: string
+          user_id?: string | null
+          valor?: number
+        }
+        Relationships: []
+      }
       assistaliment: {
         Row: {
           id: number
