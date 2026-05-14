@@ -113,17 +113,31 @@ const Footer = () => {
           >
             © {new Date().getFullYear()} portalayurveda.com — Todos os direitos reservados.
           </p>
-          <Link
-            to="/politica-de-privacidade"
-            className="mt-2 inline-block text-xs hover:underline"
-            style={
-              isSamkhya
-                ? { color: textColor, opacity: 0.7 }
-                : { color: "rgba(255,255,255,0.6)" }
-            }
-          >
-            Política de Privacidade
-          </Link>
+          <div className="mt-2 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-xs">
+            <Link
+              to="/contato"
+              className="hover:underline"
+              style={
+                isSamkhya
+                  ? { color: textColor, opacity: 0.7 }
+                  : { color: "rgba(255,255,255,0.6)" }
+              }
+            >
+              Contato & Sugestões
+            </Link>
+            <span style={{ color: "rgba(255,255,255,0.3)" }}>·</span>
+            <Link
+              to="/politica-de-privacidade"
+              className="hover:underline"
+              style={
+                isSamkhya
+                  ? { color: textColor, opacity: 0.7 }
+                  : { color: "rgba(255,255,255,0.6)" }
+              }
+            >
+              Política de Privacidade
+            </Link>
+          </div>
         </div>
       </div>
     </footer>

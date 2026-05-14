@@ -32,6 +32,8 @@ import TermosDeUso from "./pages/TermosDeUso";
 import NotFound from "./pages/NotFound";
 import Admin from "./pages/Admin";
 import AdminBlog from "./pages/AdminBlog";
+import AdminMensagens from "./pages/AdminMensagens";
+import Contato from "./pages/Contato";
 import AdminAkasha from "./pages/AdminAkasha";
 import AdminTeste from "./pages/AdminTeste";
 import AdminTesteRegistros from "./pages/AdminTesteRegistros";
@@ -132,6 +134,8 @@ const RoutedApp = () => {
               <Route path="/assinar" element={<Assinar />} />
               <Route path="/politica-de-privacidade" element={<PoliticaDePrivacidade />} />
               <Route path="/termos-de-uso" element={<TermosDeUso />} />
+              <Route path="/contato" element={<Contato />} />
+              <Route path="/admin/mensagens" element={<AdminRoute><AdminMensagens /></AdminRoute>} />
               <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />
               <Route path="/admin/blog" element={<AdminRoute><AdminBlog /></AdminRoute>} />
               <Route path="/admin/akasha" element={<AdminRoute><AdminAkasha /></AdminRoute>} />
