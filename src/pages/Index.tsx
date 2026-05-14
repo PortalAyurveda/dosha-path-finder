@@ -26,7 +26,7 @@ import RegistrosAkashikos from "@/components/index/RegistrosAkashikos";
 import Hero from "@/components/home/Hero";
 import LoggedHero from "@/components/home/LoggedHero";
 import SamkhyaBanner from "@/components/home/SamkhyaBanner";
-import AulaAoVivoBanner from "@/components/home/AulaAoVivoBanner";
+
 
 /* ---------- Design tokens (scoped to this page) ---------- */
 const C = {
@@ -603,7 +603,7 @@ const Index = () => {
         <script type="application/ld+json">{JSON.stringify(orgSchema)}</script>
       </Helmet>
 
-      <AulaAoVivoBanner />
+      
       {shouldWait ? (
         <div className="min-h-[420px] flex items-center justify-center">
           <div className="h-8 w-8 rounded-full border-2 border-primary/20 border-t-primary animate-spin" />
