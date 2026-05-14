@@ -1,106 +1,47 @@
-## Diagnóstico
+## Plano: Sistema de Contato e Sugestões
 
-Hoje o `index.html` tem título/descrição/OG genéricos, `og:image` aponta pra cache do Lovable, favicon vem do Supabase, não há sitemap, e nenhuma rota é prerenderizada — então qualquer link colado no WhatsApp/LinkedIn mostra a mesma OG (a do `index.html`), e o Google demora mais pra indexar.
+A tabela `public.mensagens` já existe com as colunas corretas (`user_id`, `nome`, `email`, `tipo`, `assunto`, `mensagem`, `status`, `resposta_admin`, `created_at`, `updated_at`). O trigger `notify_mensagem_n8n` já dispara um webhook ao inserir uma nova mensagem.
 
-A solução completa tem **4 camadas**: OG sitewide caprichada, Helmet por rota, sitemap+robots, e **prerender estático** que renderiza o HTML de cada rota pública no build.
+### 1. Migration (RLS para admin)
 
-## O que vou fazer
+Hoje só existe `INSERT` público e `SELECT` do dono. Falta:
+- Policy `SELECT` para admin (usando `is_admin()` já existente)
+- Policy `UPDATE` para admin (marcar como lido / responder)
 
-### 1. Imagem OG da marca (1200×630)
+### 2. Footer
 
-Gerar `public/og-image.jpg` (servida do próprio domínio):
-- Fundo `#352F54` com leve gradiente para `#1f1a3a`
-- `simbolo-positivo` da marca em destaque
-- Wordmark "Portal Ayurveda" em Roboto Serif itálico
-- Tagline "Descubra seu Dosha · Viva o Ayurveda"
+Em `src/components/Footer.tsx`, adicionar link **"Contato & Sugestões"** apontando para `/contato`, ao lado do link de Política de Privacidade na linha de baixo (mesmo estilo, agrupados com separador).
 
-### 2. Favicon próprio + ícones de plataforma
+### 3. Página `/contato` (`src/pages/Contato.tsx`)
 
-Baixar `simbolo-positivo.svg` do bucket `portal_images` para `public/favicon.svg`. Gerar via ImageMagick:
-- `public/favicon.ico` (32×32, fallback de browser antigo / `/favicon.ico` padrão)
-- `public/apple-touch-icon.png` (180×180, iOS)
-- `public/icon-192.png` e `public/icon-512.png` (Android/PWA)
-- `public/site.webmanifest` mínimo
+- Usa `Layout` herdado pelo App, `<Seo>` com título "Contato & Sugestões — Portal Ayurveda"
+- Carrega `useUser()`; se logado, busca `nome_completo || nome` e `email` em `user_profiles` para pré-preencher
+- Form com shadcn (`Input`, `Textarea`, `Select`, `Button`, `Label`)
+- Validação com `zod`: nome (1-100), email válido (≤255), tipo enum, assunto (1-150), mensagem (1-2000)
+- Tipos no select: `Sugestão`, `Contato`, `Bug`, `Elogio`
+- Submit → `supabase.from('mensagens').insert({ user_id: user?.id ?? null, nome, email, tipo, assunto, mensagem })`
+- Sucesso → `toast.success("Mensagem enviada!")` + reset do form
+- Erro → `toast.error(...)`
 
-Atualizar `<link rel="icon">` no `index.html` cobrindo todos.
+### 4. Página `/admin/mensagens` (`src/pages/AdminMensagens.tsx`)
 
-### 3. Reescrever o `<head>` do `index.html`
+- Envolvida por `<AdminRoute>` em `App.tsx`
+- Adiciona link "Mensagens" em `src/components/admin/AdminNav.tsx`
+- Lista via `supabase.from('mensagens').select('*').order('created_at', { ascending: false })`
+- Tabela (shadcn `Table`): Data (formatada pt-BR), Nome, Email, Tipo (badge colorido por tipo), Assunto, Status (badge: `novo` cinza, `lido` azul, `respondido` verde)
+- Click na linha → `Dialog` mostrando mensagem completa, com:
+  - Botão "Marcar como lido" → `UPDATE status='lido'` (some quando já lido/respondido)
+  - `Textarea` "Resposta interna" + botão "Salvar resposta" → `UPDATE resposta_admin=..., status='respondido'`
+- Após qualquer update, refetch da lista
+- Sem paginação no v1 (pode ficar para depois se passar de 100 mensagens)
 
-- `<title>`: "Portal Ayurveda — Teste de Dosha, Vídeos, Artigos e Akasha IA"
-- `<meta name="description">` persuasiva (~150 chars)
-- OG completas (`og:title/description/url/type/site_name/locale/image` com width/height)
-- Twitter card `summary_large_image`
-- Remover `<link rel="canonical">` estático (o hook `useCanonical` já injeta dinâmico — hoje há duplicidade)
-- JSON-LD `Organization` + `WebSite` (com `SearchAction` apontando pro `/blog`)
-- `<meta name="theme-color" content="#352F54">`
+### 5. Routing
 
-### 4. Helmet por rota nas páginas-chave
+Adicionar em `src/App.tsx`:
+- `<Route path="/contato" element={<Contato />} />`
+- `<Route path="/admin/mensagens" element={<AdminRoute><AdminMensagens /></AdminRoute>} />`
 
-Título + description + canonical + og + JSON-LD por rota:
-
-- `/` (Index)
-- `/teste-de-dosha`
-- `/blog` (lista) e `/blog/:slug` (Article: headline, datePublished, image, author)
-- `/biblioteca` e `/biblioteca/{vata,pitta,kapha}` (com subabas)
-- `/terapeutas-do-brasil` e `/terapeutas-do-brasil/:slug` (Person)
-- `/samkhya`, `/samkhya/produto/:slug` (Product), `/samkhya/categoria/:slug`, `/samkhya/kits`, `/samkhya/kits/:slug`
-- `/curso/{alimentacao,formacao,rotinas}` (Course)
-- `/assinar` (já tem)
-- `/politica-de-privacidade`, `/termos-de-uso`
-
-Páginas privadas/admin (`/meu-dosha`, `/metricas/*`, `/admin/*`, `/entrar`, `/aovivo`, `/registros/:id`) ganham `<meta name="robots" content="noindex,nofollow">`.
-
-### 5. Sitemap dinâmico + robots
-
-Criar `scripts/generate-sitemap.ts` (rodando via `predev` e `prebuild`) que monta `public/sitemap.xml` com:
-- Rotas estáticas públicas
-- Posts publicados de `blog_posts` → `/blog/{slug}`
-- Terapeutas ativos → `/terapeutas-do-brasil/{slug}`
-- Produtos publicados Samkhya → `/samkhya/produto/{slug}`, kits, categorias
-- `lastmod` baseado em `updated_at` de cada registro
-
-Atualizar `public/robots.txt` com `Sitemap:` apontando para o sitemap e `Disallow: /admin`, `/meu-dosha`, `/entrar`, `/metricas`.
-
-### 6. Prerender estático no build (a parte nova)
-
-Adicionar **`react-snap`** (headless Chromium que crawla o app após `vite build`):
-
-- Roda automaticamente no `postbuild`
-- Visita cada rota pública listada (mesma fonte do sitemap)
-- Espera o React renderizar com dados do Supabase
-- Salva HTML pronto em `dist/<rota>/index.html`
-- Resultado: WhatsApp/LinkedIn/Facebook/Google leem HTML completo com OG/título/conteúdo corretos por rota
-
-Ajustes no app:
-- `main.tsx` usa `hydrateRoot` quando `document.getElementById("root")` já tem conteúdo (HTML prerenderizado), `createRoot` quando não
-- Componentes que tocam `window`/`document` no top-level recebem guards (`typeof window !== 'undefined'`) — auditarei e corrijo onde precisar
-- Rotas com auth/conteúdo dinâmico (`/meu-dosha`, `/admin/*`, `/metricas/*`) ficam **fora** da lista de prerender — só o JS roda
-- Loaders client-only (Akasha, métricas) já carregam após hidratação — não viram parte do snapshot
-
-### 7. Verificações finais
-
-Após deploy:
-- Testar 3 URLs no Facebook Sharing Debugger e LinkedIn Post Inspector (`/`, `/assinar`, um post do blog) — confirmar que cada uma mostra OG própria
-- Submeter sitemap no Google Search Console
-- Rodar Lighthouse SEO em 3 rotas — meta de 100/100
-
-## Detalhes técnicos
-
-- Imagem OG via `imagegen` (model `premium` — texto legível), salva direto em `public/og-image.jpg`
-- Favicon: ImageMagick via `nix run nixpkgs#imagemagick`
-- `react-snap` configurado no `package.json` com `reactSnap: { source: "dist", include: [...rotas...], puppeteerArgs: ["--no-sandbox"] }`
-- Sitemap script usa o cliente Supabase com a anon key (já disponível em env)
-- BASE_URL = `https://portalayurveda.com`
-- HelmetProvider já existe — só adiciono `<Helmet>` em cada página
-
-## Trade-offs aceitos
-
-- **Build +30s a +2min** dependendo de quantos posts/produtos existirem — aceitável
-- Conteúdo novo do blog/Samkhya só aparece no snapshot após o próximo `Update` no Lovable — comportamento esperado pra blog/loja
-- Algumas libs podem precisar de pequenos guards SSR — corrijo durante a implementação se aparecer
-
-## Fora do escopo
-
-- SSR completo com servidor Node (overkill — prerender estático resolve)
-- Tradução de meta tags (mantém pt-BR)
-- Imagens OG dinâmicas por post/produto (próximo passo se quiser depois)
+### Observações técnicas
+- O webhook n8n já é disparado pelo trigger existente — sem trabalho extra
+- Badges de tipo: Sugestão (roxo/primary), Contato (azul), Bug (vermelho/destructive), Elogio (verde)
+- Tudo usa tokens semânticos do design system, sem cores hardcoded
