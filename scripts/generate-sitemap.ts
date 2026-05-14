@@ -96,55 +96,20 @@ async function dynamicEntries(): Promise<SitemapEntry[]> {
     });
   }
 
-  const terapeutas = await fetchRest<{ slug: string; updated_at?: string }>(
-    "portal_terapeutas?select=slug,updated_at&status=eq.aprovado&slug=not.is.null"
+  // Terapeutas: o slug fica numa coluna chamada "terapeutas(dinamica)"
+  const terapeutasCol = encodeURIComponent("terapeutas(dinamica)");
+  const updatedCol = encodeURIComponent("updated date");
+  const terapeutas = await fetchRest<Record<string, string>>(
+    `portal_terapeutas?select=${terapeutasCol},${updatedCol}&status=eq.aprovado`
   );
   for (const t of terapeutas) {
-    if (!t.slug) continue;
+    const slug = t["terapeutas(dinamica)"];
+    if (!slug) continue;
     entries.push({
-      path: `/terapeutas-do-brasil/${t.slug}`,
-      lastmod: iso(t.updated_at),
+      path: `/terapeutas-do-brasil/${slug}`,
+      lastmod: iso(t["updated date"]),
       changefreq: "monthly",
       priority: "0.6",
-    });
-  }
-
-  const produtos = await fetchRest<{ slug: string; updated_at?: string }>(
-    "produtos?select=slug,updated_at&ativo=eq.true&slug=not.is.null"
-  );
-  for (const p of produtos) {
-    if (!p.slug) continue;
-    entries.push({
-      path: `/samkhya/produto/${p.slug}`,
-      lastmod: iso(p.updated_at),
-      changefreq: "weekly",
-      priority: "0.6",
-    });
-  }
-
-  const kits = await fetchRest<{ slug: string; updated_at?: string }>(
-    "kits?select=slug,updated_at&ativo=eq.true&slug=not.is.null"
-  );
-  for (const k of kits) {
-    if (!k.slug) continue;
-    entries.push({
-      path: `/samkhya/kits/${k.slug}`,
-      lastmod: iso(k.updated_at),
-      changefreq: "weekly",
-      priority: "0.6",
-    });
-  }
-
-  const categorias = await fetchRest<{ slug: string; updated_at?: string }>(
-    "categorias?select=slug,updated_at&slug=not.is.null"
-  );
-  for (const c of categorias) {
-    if (!c.slug) continue;
-    entries.push({
-      path: `/samkhya/categoria/${c.slug}`,
-      lastmod: iso(c.updated_at),
-      changefreq: "weekly",
-      priority: "0.5",
     });
   }
 
