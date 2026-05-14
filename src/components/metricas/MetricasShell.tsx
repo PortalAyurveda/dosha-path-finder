@@ -27,7 +27,8 @@ const MetricasShell = ({ children, title, description, canonicalPath }: Metricas
       <Helmet>
         <title>{title}</title>
         <meta name="description" content={description} />
-        <link rel="canonical" href={`https://www.portalayurveda.com${canonicalPath}`} />
+        <link rel="canonical" href={`https://portalayurveda.com${canonicalPath}`} />
+        <meta name="robots" content="noindex,nofollow" />
       </Helmet>
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 md:py-12 space-y-8">

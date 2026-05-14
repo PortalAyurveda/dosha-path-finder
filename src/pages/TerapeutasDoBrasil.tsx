@@ -69,6 +69,17 @@ const TerapeutasDoBrasil = () => {
   }, [terapeutas, search, locationMode, sortBy]);
 
   return (
+    <>
+    <Seo
+      title="Terapeutas Ayurvédicos do Brasil — Diretório Completo"
+      description="Encontre terapeutas ayurvédicos qualificados em todo o Brasil. Perfis com especialidade, formação, cidade e contato direto."
+      jsonLd={{
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        name: "Terapeutas do Brasil",
+        url: "https://portalayurveda.com/terapeutas-do-brasil",
+      }}
+    />
     <PageContainer
       title="Terapeutas do Brasil"
       description="Encontre terapeutas ayurvédicos qualificados no Brasil. Diretório completo com perfis, especialidades e contatos."
