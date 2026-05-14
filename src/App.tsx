@@ -128,6 +128,7 @@ const RoutedApp = () => {
               <Route path="/biblioteca/horarios" element={<Horarios />} />
               <Route path="/blog" element={<Blog />} />
               <Route path="/blog/:slug" element={<BlogArticle />} />
+              <Route path="/devlog" element={<Devlog />} />
               <Route path="/metricas" element={<Metricas />} />
               <Route path="/metricas/graficos" element={<MetricasGraficos />} />
               <Route path="/metricas/akasha" element={<MetricasAkasha />} />
