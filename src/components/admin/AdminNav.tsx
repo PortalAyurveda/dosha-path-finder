@@ -11,6 +11,7 @@ const links = [
   { to: "/admin/teste/registros", label: "Teste — Registros", icon: ListChecks },
   { to: "/admin/loja", label: "Loja Samkhya", icon: Store },
   { to: "/admin/loja/vendas", label: "Vendas", icon: ShoppingCart },
+  { to: "/admin/vendas/akasha", label: "Assinaturas Premium", icon: Crown },
   { to: "/admin/biblioteca", label: "Biblioteca", icon: Library },
   { to: "/admin/terapeutas", label: "Terapeutas", icon: Users },
   { to: "/admin/aula", label: "Aulas", icon: Video },
