@@ -10,8 +10,7 @@ interface Props {
 const NARR_LABELS: Record<string, string> = {
   bloco_1_situacao: "Situação atual",
   bloco_2_causas: "Causas",
-  bloco_3_sabores: "Sabores",
-  bloco_4_proximos: "Próximos passos",
+  bloco_3_caminhos: "Caminhos para melhorar",
 };
 
 export default function ObjetivosPremiumBlock({ objetivo, isPremium }: Props) {

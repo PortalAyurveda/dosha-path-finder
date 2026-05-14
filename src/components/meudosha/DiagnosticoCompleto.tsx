@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { Loader2, Lock } from "lucide-react";
+import { Loader2, Lock, Stethoscope, GitBranch, Compass, TrendingUp, type LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { premiumSupabase, type ObjetivoTratamento } from "@/integrations/supabase/premium-client";
 import { lojaSupabase } from "@/integrations/supabase/loja-client";
@@ -278,88 +278,58 @@ const AkashaPlaceholder = ({ cor }: { cor: string }) => (
 );
 
 // ============ SEÇÃO 1 — Diagnóstico ============
+const DiagnosticoCard = ({
+  Icon,
+  label,
+  cor,
+  children,
+}: {
+  Icon: LucideIcon;
+  label: string;
+  cor: string;
+  children: React.ReactNode;
+}) => (
+  <div
+    className={cn("p-5 space-y-3 transition-opacity duration-500", LEAF)}
+    style={{
+      backgroundColor: "#FFFFFF",
+      border: `1px solid ${COLOR.cardBorder}`,
+      borderLeftWidth: 4,
+      borderLeftColor: cor,
+    }}
+  >
+    <div className="flex items-center gap-2">
+      <Icon className="w-5 h-5 shrink-0" style={{ color: cor }} />
+      <p
+        className="text-[12px] font-semibold uppercase tracking-wider"
+        style={{ color: cor, fontFamily: "'DM Sans', sans-serif" }}
+      >
+        {label}
+      </p>
+    </div>
+    {children}
+  </div>
+);
+
 const Diagnostico = ({
   analise,
-  glossario,
   doshaPrincipal,
   doshaPrincipalCompleto,
 }: {
   analise: ObjetivoTratamento;
-  glossario: PortalGlossario | null;
   doshaPrincipal: string;
   doshaPrincipalCompleto: string;
 }) => {
   const cor = corDosha(doshaPrincipal);
   const narr = analise.narrativa_clinica;
 
-  const blocosDireita = [
-    { label: "Sua situação atual", texto: narr?.bloco_1_situacao },
-    { label: "O que te trouxe aqui", texto: narr?.bloco_2_causas },
-    { label: "Por que esses sabores pra você", texto: narr?.bloco_3_sabores },
-    { label: "Seus próximos 30 dias", texto: narr?.bloco_4_proximos },
+  const blocos: { label: string; texto: string | undefined; Icon: LucideIcon }[] = [
+    { label: "Sua Situação Atual", texto: narr?.bloco_1_situacao, Icon: Stethoscope },
+    { label: "O Que Te Trouxe Aqui", texto: narr?.bloco_2_causas, Icon: GitBranch },
+    { label: "Seus Caminhos para Melhorar", texto: narr?.bloco_3_caminhos, Icon: Compass },
   ];
 
-  const blocosEsquerda = [
-    {
-      label: `Sobre ${doshaPrincipal} agravado`,
-      render: () => (
-        <>
-          {glossario?.resumo_curto && (
-            <p
-              className="text-base italic font-medium leading-snug"
-              style={{ color: COLOR.textoSec, fontFamily: "'DM Sans', sans-serif" }}
-            >
-              {stripHtml(glossario.resumo_curto)}
-            </p>
-          )}
-          {glossario?.resumo_curto && glossario?.oque && (
-            <hr style={{ borderColor: COLOR.cardBorder }} />
-          )}
-          {glossario?.oque && (
-            <p
-              className="text-sm leading-relaxed whitespace-pre-line"
-              style={{ color: COLOR.texto, fontFamily: "'DM Sans', sans-serif", lineHeight: 1.7 }}
-            >
-              {trunc(glossario.oque, 400)}
-            </p>
-          )}
-        </>
-      ),
-    },
-    {
-      label: `O que agrava ${doshaPrincipal}`,
-      render: () => (
-        <p
-          className="text-sm leading-relaxed whitespace-pre-line"
-          style={{ color: COLOR.texto, fontFamily: "'DM Sans', sans-serif", lineHeight: 1.7 }}
-        >
-          {trunc(glossario?.alimentosEvitar, 350)}
-        </p>
-      ),
-    },
-    {
-      label: "Alimentos que ajudam",
-      render: () => (
-        <p
-          className="text-sm leading-relaxed whitespace-pre-line"
-          style={{ color: COLOR.texto, fontFamily: "'DM Sans', sans-serif", lineHeight: 1.7 }}
-        >
-          {trunc(glossario?.alimentosPriorizar, 350)}
-        </p>
-      ),
-    },
-    {
-      label: "Rotinas que equilibram",
-      render: () => (
-        <p
-          className="text-sm leading-relaxed whitespace-pre-line"
-          style={{ color: COLOR.texto, fontFamily: "'DM Sans', sans-serif", lineHeight: 1.7 }}
-        >
-          {trunc(glossario?.rotinasEquilibrar, 350)}
-        </p>
-      ),
-    },
-  ];
+  const deficits = (analise.deficit_doshas ?? []).filter(Boolean);
 
   return (
     <section className="space-y-6">
@@ -370,32 +340,32 @@ const Diagnostico = ({
         Seu Diagnóstico: <span style={{ color: cor }}>{doshaPrincipalCompleto}</span>
       </h2>
 
-      <div className="space-y-6">
-        {blocosEsquerda.map((bloco, idx) => {
-          const direita = blocosDireita[idx];
-          return (
-            <div key={idx} className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-              {/* No mobile, coluna direita (pessoal) aparece primeiro */}
-              <div className="order-2 md:order-1">
-                <LeftCard label={bloco.label}>{bloco.render()}</LeftCard>
-              </div>
-              <div className="order-1 md:order-2">
-                <RightCard label={direita.label} cor={cor}>
-                  {direita.texto ? (
-                    <p
-                      className="text-[15px] leading-relaxed"
-                      style={{ color: COLOR.texto, fontFamily: "'DM Sans', sans-serif", lineHeight: 1.7 }}
-                    >
-                      {direita.texto}
-                    </p>
-                  ) : (
-                    <AkashaPlaceholder cor={cor} />
-                  )}
-                </RightCard>
-              </div>
-            </div>
-          );
-        })}
+      <div className="space-y-4">
+        {blocos.map((b, idx) => (
+          <DiagnosticoCard key={idx} Icon={b.Icon} label={b.label} cor={cor}>
+            {b.texto ? (
+              <p
+                className="text-[15px] leading-relaxed"
+                style={{ color: COLOR.texto, fontFamily: "'DM Sans', sans-serif", lineHeight: 1.7 }}
+              >
+                {b.texto}
+              </p>
+            ) : (
+              <AkashaPlaceholder cor={cor} />
+            )}
+          </DiagnosticoCard>
+        ))}
+
+        {deficits.map((d, idx) => (
+          <DiagnosticoCard key={`def-${idx}`} Icon={TrendingUp} label="Dosha em Déficit" cor={cor}>
+            <p
+              className="text-[15px] leading-relaxed"
+              style={{ color: COLOR.texto, fontFamily: "'DM Sans', sans-serif", lineHeight: 1.7 }}
+            >
+              {d}
+            </p>
+          </DiagnosticoCard>
+        ))}
       </div>
     </section>
   );
@@ -719,7 +689,6 @@ const DiagnosticoCompleto = ({
     <div className="space-y-0 pt-12 pb-12">
       <Diagnostico
         analise={analise}
-        glossario={glossario || null}
         doshaPrincipal={doshaPrincipal}
         doshaPrincipalCompleto={doshaPrincipalCompleto}
       />
