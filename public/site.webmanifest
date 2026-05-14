@@ -1,0 +1,13 @@
+{
+  "name": "Portal Ayurveda",
+  "short_name": "Ayurveda",
+  "description": "Descubra seu dosha e viva o Ayurveda.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#352F54",
+  "theme_color": "#352F54",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
