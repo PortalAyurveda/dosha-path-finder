@@ -877,7 +877,7 @@ const Rotinas = () => {
         />
         <meta property="og:image" content={LOGO} />
         <meta property="og:type" content="website" />
-        <link rel="canonical" href="https://www.portalayurveda.com/cursos/rotinas" />
+        <link rel="canonical" href="https://portalayurveda.com/cursos/rotinas" />
       </Helmet>
 
       <main>

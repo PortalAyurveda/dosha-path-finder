@@ -55,7 +55,7 @@ const BlogArticle = () => {
         {article.meta_description && (
           <meta name="description" content={article.meta_description} />
         )}
-        <link rel="canonical" href={`https://www.portalayurveda.com/blog/${article.link_do_artigo}`} />
+        <link rel="canonical" href={`https://portalayurveda.com/blog/${article.link_do_artigo}`} />
       </Helmet>
 
       <article className="max-w-3xl mx-auto px-4 py-8">
