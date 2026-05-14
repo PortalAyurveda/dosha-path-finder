@@ -1,7 +1,13 @@
 import PageContainer from "@/components/PageContainer";
+import Seo from "@/components/Seo";
 
 const TermosDeUso = () => {
   return (
+    <>
+    <Seo
+      title="Termos de Uso"
+      description="Termos de uso do Portal Ayurveda — Samkhya Ayurveda LTDA."
+    />
     <PageContainer
       title="Termos de Uso"
       description="Termos de uso do Portal Ayurveda — Samkhya Ayurveda LTDA."
@@ -35,6 +41,7 @@ const TermosDeUso = () => {
         </p>
       </div>
     </PageContainer>
+    </>
   );
 };
 

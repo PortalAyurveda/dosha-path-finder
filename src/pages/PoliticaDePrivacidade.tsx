@@ -1,7 +1,13 @@
 import PageContainer from "@/components/PageContainer";
+import Seo from "@/components/Seo";
 
 const PoliticaDePrivacidade = () => {
   return (
+    <>
+    <Seo
+      title="Política de Privacidade"
+      description="Saiba como o Portal Ayurveda coleta, usa e protege seus dados pessoais."
+    />
     <PageContainer
       title="Política de Privacidade"
       description="Saiba como o Portal Ayurveda trata seus dados pessoais."
@@ -43,6 +49,7 @@ const PoliticaDePrivacidade = () => {
         </p>
       </div>
     </PageContainer>
+    </>
   );
 };
 
