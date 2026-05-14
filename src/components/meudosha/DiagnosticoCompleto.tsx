@@ -689,7 +689,6 @@ const DiagnosticoCompleto = ({
     <div className="space-y-0 pt-12 pb-12">
       <Diagnostico
         analise={analise}
-        glossario={glossario || null}
         doshaPrincipal={doshaPrincipal}
         doshaPrincipalCompleto={doshaPrincipalCompleto}
       />
