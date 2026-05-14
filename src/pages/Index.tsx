@@ -291,13 +291,18 @@ const BibliotecaSection = () => {
   });
 
   const artigoQ = useQuery({
-    queryKey: ["index_artigo_do_dia"],
+    queryKey: ["index_artigo_ultimo"],
     queryFn: async () => {
-      const { data, error } = await supabase.rpc("artigo_do_dia");
+      const { data, error } = await supabase
+        .from("portal_conteudo")
+        .select("id,title,meta_description,image_url,link_do_artigo,tags")
+        .not("link_do_artigo", "is", null)
+        .not("image_url", "is", null)
+        .order("created_at", { ascending: false })
+        .limit(1);
       if (error) throw error;
       return ((data ?? []) as ArticleRow[])[0] ?? null;
     },
-    staleTime: 60 * 60 * 1000,
   });
 
   return (
