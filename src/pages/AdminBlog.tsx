@@ -23,7 +23,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import PaginationControls from "@/components/PaginationControls";
-import { ArrowLeft, Search, Loader2, Upload, Save, Copy, Trash2 } from "lucide-react";
+import { ArrowLeft, Search, Loader2, Upload, Save, Copy, Trash2, Pencil } from "lucide-react";
 import { sanitizeSlug } from "@/lib/sanitizeSlug";
 import AdminNav from "@/components/admin/AdminNav";
 
