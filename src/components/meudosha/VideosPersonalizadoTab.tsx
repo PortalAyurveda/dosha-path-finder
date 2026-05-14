@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
@@ -6,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Sparkles } from "lucide-react";
 import { useUser } from "@/contexts/UserContext";
+import PaginationControls from "@/components/PaginationControls";
 
 interface VideosPersonalizadoTabProps {
   agravVataTags: string | null;
@@ -56,7 +58,8 @@ function normalizeForSearch(text: string): string {
 }
 
 const TABLES = ["portal_lives", "portal_oficial", "portal_receitas"] as const;
-const MAX_VIDEOS = 3;
+const MAX_VIDEOS = 6;
+const ITEMS_PER_PAGE = 6;
 
 const VideosPersonalizadoTab = ({
   agravVataTags,
@@ -67,6 +70,7 @@ const VideosPersonalizadoTab = ({
   const navigate = useNavigate();
   const { user } = useUser();
   const queryClient = useQueryClient();
+  const [page, setPage] = useState(1);
 
   const allSymptoms: { symptom: string; dosha: string }[] = [
     ...parseSymptoms(agravVataTags).map(s => ({ symptom: s, dosha: "Vata" })),
@@ -162,7 +166,7 @@ const VideosPersonalizadoTab = ({
         matchesBySymptom.set(symptomKey, symptomMatches);
       }
 
-      // Round-robin: 1 per symptom, then 2, then 3... until 12
+      // Round-robin: 1 per symptom, then 2, then 3... until MAX_VIDEOS
       const result: MatchedVideo[] = [];
       const symptomKeys = Array.from(matchesBySymptom.keys());
       const symptomIndexes = new Map<string, number>();
@@ -259,9 +263,14 @@ const VideosPersonalizadoTab = ({
     );
   }
 
+  const totalPages = Math.max(1, Math.ceil(matchedVideos.length / ITEMS_PER_PAGE));
+  const safePage = Math.min(page, totalPages);
+  const start = (safePage - 1) * ITEMS_PER_PAGE;
+  const pageItems = matchedVideos.slice(start, start + ITEMS_PER_PAGE);
+
   return (
     <div className="space-y-4">
-      {matchedVideos.map((video) => {
+      {pageItems.map((video) => {
         const doshaColor = video.matchedDosha === "Vata" ? "text-vata" : video.matchedDosha === "Pitta" ? "text-pitta" : "text-kapha";
 
         const handleClick = () => {
@@ -316,6 +325,16 @@ const VideosPersonalizadoTab = ({
           </div>
         );
       })}
+      {totalPages > 1 && (
+        <PaginationControls
+          page={safePage}
+          totalPages={totalPages}
+          onPageChange={(p) => {
+            setPage(p);
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          }}
+        />
+      )}
     </div>
   );
 };

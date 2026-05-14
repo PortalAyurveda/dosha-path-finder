@@ -54,7 +54,8 @@ function normalizeForSearch(text: string): string {
     .replace(/[^a-z0-9\s]/g, " ");
 }
 
-const MAX_PERSONALIZED = 3;
+const MAX_PERSONALIZED = 6;
+const PERSONALIZED_PER_PAGE = 6;
 
 const ArtigosTab = ({ agravVataTags, agravPittaTags, agravKaphaTags, doshaprincipal, initialMode = "geral" }: ArtigosTabProps) => {
   const [subTab, setSubTab] = useState<SubTab>(initialMode);
@@ -296,8 +297,15 @@ const ArtigosTab = ({ agravVataTags, agravPittaTags, agravKaphaTags, doshaprinci
             </p>
           </div>
         ) : (
-          <div className="space-y-4">
-            {personalizedArticles.map((article) => {
+          (() => {
+            const totalPages = Math.max(1, Math.ceil(personalizedArticles.length / PERSONALIZED_PER_PAGE));
+            const safePage = Math.min(page, totalPages);
+            const start = (safePage - 1) * PERSONALIZED_PER_PAGE;
+            const pageItems = personalizedArticles.slice(start, start + PERSONALIZED_PER_PAGE);
+            return (
+              <>
+                <div className="space-y-4">
+                  {pageItems.map((article) => {
               const doshaColor =
                 article.matchedDosha === "Vata" ? "text-vata" :
                 article.matchedDosha === "Pitta" ? "text-pitta" : "text-kapha";
@@ -343,7 +351,20 @@ const ArtigosTab = ({ agravVataTags, agravPittaTags, agravKaphaTags, doshaprinci
                 </div>
               );
             })}
-          </div>
+                </div>
+                {totalPages > 1 && (
+                  <PaginationControls
+                    page={safePage}
+                    totalPages={totalPages}
+                    onPageChange={(p) => {
+                      setPage(p);
+                      window.scrollTo({ top: 0, behavior: "smooth" });
+                    }}
+                  />
+                )}
+              </>
+            );
+          })()
         )
       ) : filteredGeneralArticles.length === 0 ? (
         <div className="text-center p-8 rounded-2xl bg-surface-sun border border-border">
