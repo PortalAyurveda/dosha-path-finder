@@ -123,35 +123,78 @@ const AdminBlog = () => {
   const openEdit = (article: Article) => {
     setEditing(article);
     setNewUrl(article.image_url || "");
+    setNewTitle(article.title || "");
   };
 
   const closeEdit = () => {
     setEditing(null);
     setNewUrl("");
+    setNewTitle("");
   };
 
   const handleSave = async () => {
     if (!editing) return;
     const url = newUrl.trim();
+    const title = newTitle.trim();
     if (!url) {
       toast.error("Informe uma URL de imagem");
+      return;
+    }
+    if (!title) {
+      toast.error("Informe um título");
       return;
     }
     setSaving(true);
     const { error } = await supabase
       .from("portal_conteudo")
-      .update({ image_url: url })
+      .update({ image_url: url, title })
       .eq("id", editing.id);
     setSaving(false);
     if (error) {
       toast.error("Erro ao salvar: " + error.message);
       return;
     }
-    toast.success("Imagem atualizada!");
+    toast.success("Artigo atualizado!");
     setArticles((prev) =>
-      prev.map((a) => (a.id === editing.id ? { ...a, image_url: url } : a))
+      prev.map((a) => (a.id === editing.id ? { ...a, image_url: url, title } : a))
     );
     closeEdit();
+  };
+
+  const startInlineEdit = (article: Article, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setInlineEditId(article.id);
+    setInlineTitle(article.title);
+  };
+
+  const cancelInlineEdit = () => {
+    setInlineEditId(null);
+    setInlineTitle("");
+  };
+
+  const saveInlineTitle = async (article: Article) => {
+    const title = inlineTitle.trim();
+    if (!title) {
+      toast.error("Título não pode ficar vazio");
+      return;
+    }
+    if (title === article.title) {
+      cancelInlineEdit();
+      return;
+    }
+    setInlineSaving(true);
+    const { error } = await supabase
+      .from("portal_conteudo")
+      .update({ title })
+      .eq("id", article.id);
+    setInlineSaving(false);
+    if (error) {
+      toast.error("Erro ao salvar: " + error.message);
+      return;
+    }
+    toast.success("Título atualizado!");
+    setArticles((prev) => prev.map((a) => (a.id === article.id ? { ...a, title } : a)));
+    cancelInlineEdit();
   };
 
   const handleDelete = async (article: Article, fromDialog = false) => {
