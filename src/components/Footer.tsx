@@ -137,6 +137,18 @@ const Footer = () => {
             >
               Política de Privacidade
             </Link>
+            <span style={{ color: "rgba(255,255,255,0.3)" }}>·</span>
+            <Link
+              to="/devlog"
+              className="hover:underline"
+              style={
+                isSamkhya
+                  ? { color: textColor, opacity: 0.7 }
+                  : { color: "rgba(255,255,255,0.6)" }
+              }
+            >
+              Devlog
+            </Link>
           </div>
         </div>
       </div>
