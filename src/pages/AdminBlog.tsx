@@ -401,7 +401,7 @@ const AdminBlog = () => {
       <Dialog open={!!editing} onOpenChange={(o) => !o && closeEdit()}>
         <DialogContent className="max-w-lg">
           <DialogHeader>
-            <DialogTitle>Editar imagem do artigo</DialogTitle>
+            <DialogTitle>Editar artigo</DialogTitle>
             <DialogDescription className="line-clamp-2">
               {editing?.title}
             </DialogDescription>
