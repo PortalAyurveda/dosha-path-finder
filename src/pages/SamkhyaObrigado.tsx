@@ -5,12 +5,14 @@ import { CheckCircle2 } from "lucide-react";
 import SamkhyaLayout from "@/components/samkhya/SamkhyaLayout";
 import { samkhyaTokens } from "@/components/samkhya/tokens";
 import { useCart } from "@/contexts/CartContext";
+import { trackPixel } from "@/lib/metaPixel";
 
 const SamkhyaObrigado = () => {
   const { limparCarrinho } = useCart();
 
   useEffect(() => {
     limparCarrinho();
+    trackPixel("Purchase", { currency: "BRL", content_type: "product" });
   }, [limparCarrinho]);
 
   return (

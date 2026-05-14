@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { useNavigate } from "react-router-dom";
+import { trackPixel } from "@/lib/metaPixel";
 import { Brain, BookOpen, Video, RefreshCw, CalendarDays, MessageCircle, ShieldCheck, Check } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/contexts/UserContext";
@@ -28,11 +29,16 @@ const Assinar = () => {
   const navigate = useNavigate();
   const [loadingPlan, setLoadingPlan] = useState<"mensal" | "anual" | null>(null);
 
+  useEffect(() => {
+    trackPixel("ViewContent", { content_name: "Pagina Assinar" });
+  }, []);
+
   const handleAssinar = async (plano: "mensal" | "anual") => {
     if (!user) {
       navigate("/entrar?redirect=/assinar");
       return;
     }
+    trackPixel("InitiateCheckout", { content_type: "subscription" });
     setLoadingPlan(plano);
     try {
       const { data, error } = await supabase.functions.invoke("create-subscription-checkout", {

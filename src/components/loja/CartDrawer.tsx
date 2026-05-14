@@ -11,6 +11,7 @@ import { useCart } from "@/contexts/CartContext";
 import { useUser } from "@/contexts/UserContext";
 import { samkhyaTokens } from "@/components/samkhya/tokens";
 import { supabase } from "@/integrations/supabase/client";
+import { trackPixel } from "@/lib/metaPixel";
 
 type FreteOpcao = {
   id: string | number;
@@ -197,6 +198,7 @@ const CartDrawer = () => {
     }
     if (!freteSelecionado) return toast.error("Selecione uma opção de frete");
 
+    trackPixel("InitiateCheckout", { content_type: "product" });
     setEnviando(true);
     try {
       // Salva dados do comprador no perfil quando logado

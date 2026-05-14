@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { trackPixel } from "@/lib/metaPixel";
 import PageContainer from "@/components/PageContainer";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2, ChevronDown, ChevronUp } from "lucide-react";
@@ -500,6 +501,15 @@ const MeuDosha = () => {
     pais: registroRaw.pais,
   } : null;
   const registroUuid = registroRaw?.id || null;
+
+  // Meta Pixel: dispara CompleteRegistration uma única vez quando os resultados carregam
+  const pixelTestePixelFiredRef = useRef(false);
+  useEffect(() => {
+    if (result && !pixelTestePixelFiredRef.current) {
+      pixelTestePixelFiredRef.current = true;
+      trackPixel("CompleteRegistration", { content_name: "Teste de Dosha" });
+    }
+  }, [result]);
 
   // (Glossário antigo removido — substituído por DiagnosticoCompleto)
 
