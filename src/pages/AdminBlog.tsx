@@ -320,11 +320,60 @@ const AdminBlog = () => {
                       )}
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="text-xs font-medium text-foreground line-clamp-3">
-                        {a.title}
-                      </p>
+                      {inlineEditId === a.id ? (
+                        <div
+                          className="flex flex-col gap-1"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <Input
+                            autoFocus
+                            value={inlineTitle}
+                            onChange={(e) => setInlineTitle(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") saveInlineTitle(a);
+                              if (e.key === "Escape") cancelInlineEdit();
+                            }}
+                            className="h-7 text-xs"
+                            disabled={inlineSaving}
+                          />
+                          <div className="flex gap-1">
+                            <Button
+                              size="sm"
+                              className="h-6 px-2 text-xs"
+                              onClick={() => saveInlineTitle(a)}
+                              disabled={inlineSaving}
+                            >
+                              {inlineSaving ? <Loader2 className="w-3 h-3 animate-spin" /> : "Salvar"}
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className="h-6 px-2 text-xs"
+                              onClick={cancelInlineEdit}
+                              disabled={inlineSaving}
+                            >
+                              Cancelar
+                            </Button>
+                          </div>
+                        </div>
+                      ) : (
+                        <p className="text-xs font-medium text-foreground line-clamp-3">
+                          {a.title}
+                        </p>
+                      )}
                     </div>
                   </button>
+                  {inlineEditId !== a.id && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-7 w-7 shrink-0 opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity"
+                      onClick={(e) => startInlineEdit(a, e)}
+                      title="Editar título"
+                    >
+                      <Pencil className="w-4 h-4" />
+                    </Button>
+                  )}
                   <Button
                     variant="ghost"
                     size="icon"
