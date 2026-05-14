@@ -8,6 +8,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Sparkles } from "lucide-react";
 import { useUser } from "@/contexts/UserContext";
 import PaginationControls from "@/components/PaginationControls";
+import HeartButton from "@/components/HeartButton";
+import MarkAsReadButton from "@/components/meudosha/MarkAsReadButton";
 
 interface VideosPersonalizadoTabProps {
   agravVataTags: string | null;
@@ -287,7 +289,7 @@ const VideosPersonalizadoTab = ({
         };
 
         return (
-          <div key={video.video_id} className="rounded-xl border border-border bg-card overflow-hidden">
+          <div key={video.video_id} className="rounded-xl border border-border bg-card overflow-hidden relative">
             {/* Context label */}
             <div className="px-4 py-2 bg-akasha/10 border-b border-border flex items-center gap-2">
               <Sparkles className="h-4 w-4 text-akasha shrink-0" />
@@ -306,7 +308,7 @@ const VideosPersonalizadoTab = ({
                 className="w-full sm:w-48 aspect-video object-cover rounded-lg shrink-0"
                 loading="lazy"
               />
-              <div className="flex-1 space-y-2">
+              <div className="flex-1 space-y-2 pr-20">
                 <h3 className="font-serif text-base font-semibold text-primary line-clamp-2">
                   {video.novo_titulo || "Sem título"}
                 </h3>
@@ -322,6 +324,13 @@ const VideosPersonalizadoTab = ({
                 )}
               </div>
             </button>
+            <div
+              className="absolute top-12 right-3 flex items-center gap-1 bg-background/90 backdrop-blur-sm rounded-full px-2 py-1 shadow-sm"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <HeartButton contentType="video" contentId={video.video_id} />
+              <MarkAsReadButton contentType="video" contentId={video.video_id} />
+            </div>
           </div>
         );
       })}
