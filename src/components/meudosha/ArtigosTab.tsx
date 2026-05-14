@@ -54,7 +54,8 @@ function normalizeForSearch(text: string): string {
     .replace(/[^a-z0-9\s]/g, " ");
 }
 
-const MAX_PERSONALIZED = 3;
+const MAX_PERSONALIZED = 6;
+const PERSONALIZED_PER_PAGE = 6;
 
 const ArtigosTab = ({ agravVataTags, agravPittaTags, agravKaphaTags, doshaprincipal, initialMode = "geral" }: ArtigosTabProps) => {
   const [subTab, setSubTab] = useState<SubTab>(initialMode);
