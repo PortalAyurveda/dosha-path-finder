@@ -297,8 +297,15 @@ const ArtigosTab = ({ agravVataTags, agravPittaTags, agravKaphaTags, doshaprinci
             </p>
           </div>
         ) : (
-          <div className="space-y-4">
-            {personalizedArticles.map((article) => {
+          (() => {
+            const totalPages = Math.max(1, Math.ceil(personalizedArticles.length / PERSONALIZED_PER_PAGE));
+            const safePage = Math.min(page, totalPages);
+            const start = (safePage - 1) * PERSONALIZED_PER_PAGE;
+            const pageItems = personalizedArticles.slice(start, start + PERSONALIZED_PER_PAGE);
+            return (
+              <>
+                <div className="space-y-4">
+                  {pageItems.map((article) => {
               const doshaColor =
                 article.matchedDosha === "Vata" ? "text-vata" :
                 article.matchedDosha === "Pitta" ? "text-pitta" : "text-kapha";
