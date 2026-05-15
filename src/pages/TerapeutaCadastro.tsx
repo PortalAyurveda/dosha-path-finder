@@ -16,6 +16,7 @@ import { TERAPEUTA_ESPECIALIDADES, ANO_FORMACAO_MIN, ANO_FORMACAO_MAX } from "@/
 import { fetchEstados, fetchMunicipios, type IbgeEstado, type IbgeMunicipio } from "@/lib/ibge";
 import { slugify } from "@/lib/slugify";
 import { getTherapistProfilePath } from "@/lib/terapeutas";
+import { optimizeImageToWebP, formatBytes } from "@/lib/imageOptimize";
 
 interface FormState {
   nome: string;
