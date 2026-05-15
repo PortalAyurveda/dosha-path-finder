@@ -155,15 +155,13 @@ const Hero = () => {
       </div>
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 pt-8 md:pt-12">
-        <div className="bg-card/80 backdrop-blur-sm rounded-3xl p-4 md:p-6 border border-border shadow-lg">
-          <img
-            src="https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/banner0.svg"
-            alt="Banner Portal Ayurveda"
-            className="block w-full h-auto rounded-2xl"
-            width={1920}
-            height={400}
-          />
-        </div>
+        <img
+          src="https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/banner0.svg"
+          alt="Banner Portal Ayurveda"
+          className="block w-full h-auto rounded-3xl"
+          width={1920}
+          height={400}
+        />
       </div>
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-8 md:py-12">
