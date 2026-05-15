@@ -100,9 +100,13 @@ const RegistrosAkashikos = () => {
               className="px-5 py-3 border-b border-border"
               style={{ background: `${AKASHA}08` }}
             >
-              <p className="font-sans text-xs font-bold uppercase tracking-wider" style={{ color: AKASHA }}>
+              <Link
+                to="/registros"
+                className="font-sans text-xs font-bold uppercase tracking-wider hover:underline"
+                style={{ color: AKASHA }}
+              >
                 Registros Akashikos
-              </p>
+              </Link>
             </div>
 
             <ul className="divide-y divide-border">
