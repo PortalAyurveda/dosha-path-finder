@@ -1977,6 +1977,7 @@ export type Database = {
           id: number
           nuggets_extraidos: number | null
           processado: boolean | null
+          qualificado: boolean | null
           topico: string | null
           video_id_extraido: string | null
         }
@@ -1990,6 +1991,7 @@ export type Database = {
           id?: number
           nuggets_extraidos?: number | null
           processado?: boolean | null
+          qualificado?: boolean | null
           topico?: string | null
           video_id_extraido?: string | null
         }
@@ -2003,6 +2005,7 @@ export type Database = {
           id?: number
           nuggets_extraidos?: number | null
           processado?: boolean | null
+          qualificado?: boolean | null
           topico?: string | null
           video_id_extraido?: string | null
         }
