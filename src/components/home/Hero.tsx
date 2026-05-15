@@ -156,7 +156,7 @@ const Hero = () => {
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 pt-8 md:pt-12">
         <img
-          src="https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/banner0.svg"
+          src="https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/banner0-1.svg"
           alt="Banner Portal Ayurveda"
           className="block w-full h-auto rounded-3xl"
           width={1920}
