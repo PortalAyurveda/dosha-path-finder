@@ -319,30 +319,54 @@ const Admin = () => {
                   {pendingFiles.length} arquivo(s) selecionado(s)
                 </p>
 
-                <div className="space-y-2 max-h-64 overflow-y-auto">
-                  {pendingFiles.map((pf, index) => (
-                    <div key={index} className="flex items-center gap-2 bg-muted/50 rounded-lg p-2">
-                      <img
-                        src={URL.createObjectURL(pf.file)}
-                        alt={pf.file.name}
-                        className="w-10 h-10 rounded object-cover shrink-0"
-                      />
-                      <Input
-                        value={pf.slugName}
-                        onChange={(e) => updateSlug(index, e.target.value)}
-                        className="flex-1 h-8 text-xs"
-                        placeholder="nome-do-arquivo.jpg"
-                      />
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-8 w-8 p-0 text-muted-foreground hover:text-destructive"
-                        onClick={() => removePending(index)}
-                      >
-                        <X className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  ))}
+                <div className="space-y-2 max-h-80 overflow-y-auto">
+                  {pendingFiles.map((pf, index) => {
+                    const pct =
+                      pf.optimizedSize != null && pf.originalSize > 0
+                        ? Math.round((1 - pf.optimizedSize / pf.originalSize) * 100)
+                        : null;
+                    return (
+                      <div key={index} className="flex items-center gap-2 bg-muted/50 rounded-lg p-2">
+                        <img
+                          src={URL.createObjectURL(pf.file)}
+                          alt={pf.file.name}
+                          className="w-10 h-10 rounded object-cover shrink-0"
+                        />
+                        <div className="flex-1 min-w-0 space-y-1">
+                          <Input
+                            value={pf.slugName}
+                            onChange={(e) => updateSlug(index, e.target.value)}
+                            className="h-8 text-xs"
+                            placeholder="nome-do-arquivo.webp"
+                          />
+                          <p className="text-[11px] text-muted-foreground">
+                            {pf.optimizing ? (
+                              <span className="inline-flex items-center gap-1">
+                                <Loader2 className="w-3 h-3 animate-spin" /> otimizando…
+                              </span>
+                            ) : pf.optimizedSize != null ? (
+                              <>
+                                {formatBytes(pf.originalSize)} → {formatBytes(pf.optimizedSize)}
+                                {pct !== null && pct > 0 && (
+                                  <span className="text-primary ml-1">(-{pct}%)</span>
+                                )}
+                              </>
+                            ) : (
+                              formatBytes(pf.originalSize)
+                            )}
+                          </p>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-8 w-8 p-0 text-muted-foreground hover:text-destructive"
+                          onClick={() => removePending(index)}
+                        >
+                          <X className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    );
+                  })}
                 </div>
 
                 {uploading && (
@@ -352,7 +376,11 @@ const Admin = () => {
                 <div className="flex gap-2">
                   <Button
                     onClick={handleUploadAll}
-                    disabled={uploading || pendingFiles.every((p) => !p.slugName.trim())}
+                    disabled={
+                      uploading ||
+                      pendingFiles.some((p) => p.optimizing) ||
+                      pendingFiles.every((p) => !p.slugName.trim())
+                    }
                     className="gap-2"
                   >
                     {uploading ? (
