@@ -608,7 +608,14 @@ const Index = () => {
         <script type="application/ld+json">{JSON.stringify(orgSchema)}</script>
       </Helmet>
 
-      
+      <img
+        src="https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/banner0.svg"
+        alt="Banner Portal Ayurveda"
+        className="block w-full h-auto"
+        width={1920}
+        height={400}
+      />
+
       {shouldWait ? (
         <div className="min-h-[420px] flex items-center justify-center">
           <div className="h-8 w-8 rounded-full border-2 border-primary/20 border-t-primary animate-spin" />
