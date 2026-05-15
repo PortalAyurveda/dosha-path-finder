@@ -106,18 +106,43 @@ const Admin = () => {
     fetchFiles(bucket);
   }, [bucket, fetchFiles]);
 
-  // Add files to pending list
-  const addFiles = (fileList: FileList | File[]) => {
-    const newFiles: PendingFile[] = Array.from(fileList)
-      .filter((f) => f.type.startsWith("image/"))
-      .map((f) => ({ file: f, slugName: sanitizeSlug(f.name) }));
+  // Add files to pending list, then optimize each in background
+  const addFiles = async (fileList: FileList | File[]) => {
+    const incoming = Array.from(fileList).filter((f) => f.type.startsWith("image/"));
 
-    if (newFiles.length === 0) {
+    if (incoming.length === 0) {
       toast.error("Nenhuma imagem válida selecionada");
       return;
     }
 
+    const startIndex = pendingFiles.length;
+    const newFiles: PendingFile[] = incoming.map((f) => ({
+      file: f,
+      optimizedFile: null,
+      slugName: `${sanitizeSlug(f.name.replace(/\.[^.]+$/, ""))}.webp`,
+      originalSize: f.size,
+      optimizedSize: null,
+      optimizing: true,
+    }));
+
     setPendingFiles((prev) => [...prev, ...newFiles]);
+
+    // Otimiza cada arquivo
+    incoming.forEach(async (f, i) => {
+      const result = await optimizeImageToWebP(f, { maxWidth: 1600, quality: 0.85 });
+      setPendingFiles((prev) =>
+        prev.map((p, idx) =>
+          idx === startIndex + i
+            ? {
+                ...p,
+                optimizedFile: result.file,
+                optimizedSize: result.optimizedSize,
+                optimizing: false,
+              }
+            : p,
+        ),
+      );
+    });
   };
 
   const handleDrop = (e: React.DragEvent) => {
