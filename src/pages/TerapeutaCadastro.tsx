@@ -199,22 +199,33 @@ const TerapeutaCadastro = () => {
 
   const handleFileUpload = async (file: File) => {
     if (!file) return;
-    if (file.size > 5 * 1024 * 1024) {
-      toast({ title: "Arquivo muito grande", description: "Máximo 5MB.", variant: "destructive" });
+    if (file.size > 10 * 1024 * 1024) {
+      toast({ title: "Arquivo muito grande", description: "Máximo 10MB.", variant: "destructive" });
       return;
     }
     setUploading(true);
     try {
-      const ext = file.name.split(".").pop() || "jpg";
+      const optimized = await optimizeImageToWebP(file, { maxWidth: 1600, quality: 0.85 });
+      const uploadFile = optimized.file;
+      const ext = uploadFile.type === "image/webp" ? "webp" : (file.name.split(".").pop() || "jpg");
       const path = `${slugify(user!.email!)}-${Date.now()}.${ext}`;
-      const { error } = await supabase.storage.from("terapeutas").upload(path, file, {
+      const { error } = await supabase.storage.from("terapeutas").upload(path, uploadFile, {
         cacheControl: "3600",
         upsert: true,
+        contentType: uploadFile.type,
       });
       if (error) throw error;
       const { data } = supabase.storage.from("terapeutas").getPublicUrl(path);
       setForm((f) => ({ ...f, imagem: data.publicUrl }));
-      toast({ title: "Foto enviada!", description: "Imagem carregada com sucesso." });
+      const pct = optimized.optimized && optimized.originalSize > 0
+        ? Math.round((1 - optimized.optimizedSize / optimized.originalSize) * 100)
+        : 0;
+      toast({
+        title: "Foto enviada!",
+        description: optimized.optimized
+          ? `${formatBytes(optimized.originalSize)} → ${formatBytes(optimized.optimizedSize)}${pct > 0 ? ` (-${pct}%)` : ""}`
+          : "Imagem carregada com sucesso.",
+      });
     } catch (err: any) {
       toast({ title: "Erro no upload", description: err.message, variant: "destructive" });
     } finally {
