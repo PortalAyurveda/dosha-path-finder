@@ -143,7 +143,7 @@ const RegistrosAkashikos = () => {
 
             <div className="px-5 py-3 border-t border-border text-right">
               <Link
-                to="/metricas"
+                to="/registros"
                 className="inline-flex items-center gap-1 text-xs font-semibold transition-colors hover:opacity-80"
                 style={{ color: AKASHA }}
               >
