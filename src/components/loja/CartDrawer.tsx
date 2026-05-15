@@ -16,6 +16,7 @@ import { trackPixel } from "@/lib/metaPixel";
 type FreteOpcao = {
   id: string | number;
   nome: string;
+  empresa?: string;
   preco: number;
   prazo_dias: number;
 };
