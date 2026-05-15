@@ -70,11 +70,13 @@ const RegistrosAkashikos = () => {
               className="w-12 h-12 md:w-14 md:h-14 object-contain shrink-0 mt-1"
               loading="lazy"
             />
-            <span>
-              Registros de Akasha,
-              <br />
-              <span style={{ color: AKASHA }}>nossa I.A.</span>
-            </span>
+            <Link to="/registros" className="hover:opacity-80 transition-opacity">
+              <span>
+                Registros de Akasha,
+                <br />
+                <span style={{ color: AKASHA }}>nossa I.A.</span>
+              </span>
+            </Link>
           </h2>
           <p className="text-muted-foreground text-base mb-4 leading-relaxed">
             Memória viva das perguntas da comunidade. Cada linha é um momento real de busca por
