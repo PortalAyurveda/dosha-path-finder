@@ -72,7 +72,7 @@ const RegistroAkashico = () => {
       <main className="bg-background min-h-screen">
         <article className="max-w-3xl mx-auto px-4 sm:px-6 py-10 md:py-14">
           <Link
-            to="/metricas"
+            to="/registros"
             className="inline-flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground mb-6"
           >
             <ArrowLeft className="h-3.5 w-3.5" /> Voltar aos registros
@@ -92,7 +92,7 @@ const RegistroAkashico = () => {
             <div className="text-center py-16">
               <p className="text-muted-foreground">Registro não encontrado.</p>
               <Link
-                to="/metricas"
+                to="/registros"
                 className="inline-flex items-center gap-1 text-sm font-semibold mt-4"
                 style={{ color: AKASHA }}
               >

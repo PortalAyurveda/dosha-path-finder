@@ -70,11 +70,13 @@ const RegistrosAkashikos = () => {
               className="w-12 h-12 md:w-14 md:h-14 object-contain shrink-0 mt-1"
               loading="lazy"
             />
-            <span>
-              Registros de Akasha,
-              <br />
-              <span style={{ color: AKASHA }}>nossa I.A.</span>
-            </span>
+            <Link to="/registros" className="hover:opacity-80 transition-opacity">
+              <span>
+                Registros de Akasha,
+                <br />
+                <span style={{ color: AKASHA }}>nossa I.A.</span>
+              </span>
+            </Link>
           </h2>
           <p className="text-muted-foreground text-base mb-4 leading-relaxed">
             Memória viva das perguntas da comunidade. Cada linha é um momento real de busca por
@@ -98,9 +100,13 @@ const RegistrosAkashikos = () => {
               className="px-5 py-3 border-b border-border"
               style={{ background: `${AKASHA}08` }}
             >
-              <p className="font-sans text-xs font-bold uppercase tracking-wider" style={{ color: AKASHA }}>
+              <Link
+                to="/registros"
+                className="font-sans text-xs font-bold uppercase tracking-wider hover:underline"
+                style={{ color: AKASHA }}
+              >
                 Registros Akashikos
-              </p>
+              </Link>
             </div>
 
             <ul className="divide-y divide-border">
@@ -143,7 +149,7 @@ const RegistrosAkashikos = () => {
 
             <div className="px-5 py-3 border-t border-border text-right">
               <Link
-                to="/metricas"
+                to="/registros"
                 className="inline-flex items-center gap-1 text-xs font-semibold transition-colors hover:opacity-80"
                 style={{ color: AKASHA }}
               >
