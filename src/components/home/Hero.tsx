@@ -158,9 +158,15 @@ const Hero = () => {
         <img
           src="https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/banner0-1.svg"
           alt="Banner Portal Ayurveda"
-          className="block w-full h-auto rounded-3xl"
+          className="block w-full h-auto"
           width={1920}
           height={400}
+          style={{
+            WebkitMaskImage:
+              "radial-gradient(ellipse 95% 85% at center, black 55%, transparent 100%)",
+            maskImage:
+              "radial-gradient(ellipse 95% 85% at center, black 55%, transparent 100%)",
+          }}
         />
       </div>
 
