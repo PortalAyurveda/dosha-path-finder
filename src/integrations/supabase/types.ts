@@ -1966,51 +1966,6 @@ export type Database = {
         }
         Relationships: []
       }
-      rotina_extracao_fila: {
-        Row: {
-          arquivo: string | null
-          created_at: string | null
-          doc_id_antes: number | null
-          doc_id_central: number
-          doc_id_depois: number | null
-          erro: string | null
-          id: number
-          nuggets_extraidos: number | null
-          processado: boolean | null
-          qualificado: boolean | null
-          topico: string | null
-          video_id_extraido: string | null
-        }
-        Insert: {
-          arquivo?: string | null
-          created_at?: string | null
-          doc_id_antes?: number | null
-          doc_id_central: number
-          doc_id_depois?: number | null
-          erro?: string | null
-          id?: number
-          nuggets_extraidos?: number | null
-          processado?: boolean | null
-          qualificado?: boolean | null
-          topico?: string | null
-          video_id_extraido?: string | null
-        }
-        Update: {
-          arquivo?: string | null
-          created_at?: string | null
-          doc_id_antes?: number | null
-          doc_id_central?: number
-          doc_id_depois?: number | null
-          erro?: string | null
-          id?: number
-          nuggets_extraidos?: number | null
-          processado?: boolean | null
-          qualificado?: boolean | null
-          topico?: string | null
-          video_id_extraido?: string | null
-        }
-        Relationships: []
-      }
       rotina_nuggets: {
         Row: {
           categoria: string | null

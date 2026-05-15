@@ -154,17 +154,7 @@ const Hero = () => {
         />
       </div>
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 pt-8 md:pt-12">
-        <img
-          src="https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/banner0-1.svg"
-          alt="Banner Portal Ayurveda"
-          className="block w-full h-auto rounded-3xl"
-          width={1920}
-          height={400}
-        />
-      </div>
-
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-8 md:py-12">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-12 md:py-16">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center">
           {/* Left: Preview teaser — equilibrado com card da direita (sem máscara fade) */}
           <div className="hidden lg:flex lg:col-span-7 items-center justify-center">
