@@ -178,12 +178,16 @@ const Admin = () => {
     let errorCount = 0;
 
     for (let i = 0; i < valid.length; i++) {
-      const { file, slugName } = valid[i];
-      const finalName = sanitizeSlug(slugName);
+      const { file, optimizedFile, slugName } = valid[i];
+      const uploadFile = optimizedFile ?? file;
+      // Garante extensão .webp quando otimizado
+      const baseSlug = sanitizeSlug(slugName.replace(/\.[^.]+$/, ""));
+      const ext = uploadFile.type === "image/webp" ? "webp" : (uploadFile.name.split(".").pop() || "jpg");
+      const finalName = `${baseSlug}.${ext}`;
 
-      const { error } = await supabase.storage.from(bucket).upload(finalName, file, {
+      const { error } = await supabase.storage.from(bucket).upload(finalName, uploadFile, {
         upsert: true,
-        contentType: file.type,
+        contentType: uploadFile.type,
       });
 
       if (error) {
