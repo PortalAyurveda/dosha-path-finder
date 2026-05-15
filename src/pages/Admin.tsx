@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useUser } from "@/contexts/UserContext";
 import { supabase } from "@/integrations/supabase/client";
 import { sanitizeSlug } from "@/lib/sanitizeSlug";
+import { optimizeImageToWebP, formatBytes } from "@/lib/imageOptimize";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
@@ -32,7 +33,11 @@ interface StorageFile {
 
 interface PendingFile {
   file: File;
+  optimizedFile: File | null;
   slugName: string;
+  originalSize: number;
+  optimizedSize: number | null;
+  optimizing: boolean;
 }
 
 const Admin = () => {
@@ -101,18 +106,43 @@ const Admin = () => {
     fetchFiles(bucket);
   }, [bucket, fetchFiles]);
 
-  // Add files to pending list
-  const addFiles = (fileList: FileList | File[]) => {
-    const newFiles: PendingFile[] = Array.from(fileList)
-      .filter((f) => f.type.startsWith("image/"))
-      .map((f) => ({ file: f, slugName: sanitizeSlug(f.name) }));
+  // Add files to pending list, then optimize each in background
+  const addFiles = async (fileList: FileList | File[]) => {
+    const incoming = Array.from(fileList).filter((f) => f.type.startsWith("image/"));
 
-    if (newFiles.length === 0) {
+    if (incoming.length === 0) {
       toast.error("Nenhuma imagem válida selecionada");
       return;
     }
 
+    const startIndex = pendingFiles.length;
+    const newFiles: PendingFile[] = incoming.map((f) => ({
+      file: f,
+      optimizedFile: null,
+      slugName: `${sanitizeSlug(f.name.replace(/\.[^.]+$/, ""))}.webp`,
+      originalSize: f.size,
+      optimizedSize: null,
+      optimizing: true,
+    }));
+
     setPendingFiles((prev) => [...prev, ...newFiles]);
+
+    // Otimiza cada arquivo
+    incoming.forEach(async (f, i) => {
+      const result = await optimizeImageToWebP(f, { maxWidth: 1600, quality: 0.85 });
+      setPendingFiles((prev) =>
+        prev.map((p, idx) =>
+          idx === startIndex + i
+            ? {
+                ...p,
+                optimizedFile: result.file,
+                optimizedSize: result.optimizedSize,
+                optimizing: false,
+              }
+            : p,
+        ),
+      );
+    });
   };
 
   const handleDrop = (e: React.DragEvent) => {
@@ -148,12 +178,16 @@ const Admin = () => {
     let errorCount = 0;
 
     for (let i = 0; i < valid.length; i++) {
-      const { file, slugName } = valid[i];
-      const finalName = sanitizeSlug(slugName);
+      const { file, optimizedFile, slugName } = valid[i];
+      const uploadFile = optimizedFile ?? file;
+      // Garante extensão .webp quando otimizado
+      const baseSlug = sanitizeSlug(slugName.replace(/\.[^.]+$/, ""));
+      const ext = uploadFile.type === "image/webp" ? "webp" : (uploadFile.name.split(".").pop() || "jpg");
+      const finalName = `${baseSlug}.${ext}`;
 
-      const { error } = await supabase.storage.from(bucket).upload(finalName, file, {
+      const { error } = await supabase.storage.from(bucket).upload(finalName, uploadFile, {
         upsert: true,
-        contentType: file.type,
+        contentType: uploadFile.type,
       });
 
       if (error) {
@@ -285,30 +319,54 @@ const Admin = () => {
                   {pendingFiles.length} arquivo(s) selecionado(s)
                 </p>
 
-                <div className="space-y-2 max-h-64 overflow-y-auto">
-                  {pendingFiles.map((pf, index) => (
-                    <div key={index} className="flex items-center gap-2 bg-muted/50 rounded-lg p-2">
-                      <img
-                        src={URL.createObjectURL(pf.file)}
-                        alt={pf.file.name}
-                        className="w-10 h-10 rounded object-cover shrink-0"
-                      />
-                      <Input
-                        value={pf.slugName}
-                        onChange={(e) => updateSlug(index, e.target.value)}
-                        className="flex-1 h-8 text-xs"
-                        placeholder="nome-do-arquivo.jpg"
-                      />
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-8 w-8 p-0 text-muted-foreground hover:text-destructive"
-                        onClick={() => removePending(index)}
-                      >
-                        <X className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  ))}
+                <div className="space-y-2 max-h-80 overflow-y-auto">
+                  {pendingFiles.map((pf, index) => {
+                    const pct =
+                      pf.optimizedSize != null && pf.originalSize > 0
+                        ? Math.round((1 - pf.optimizedSize / pf.originalSize) * 100)
+                        : null;
+                    return (
+                      <div key={index} className="flex items-center gap-2 bg-muted/50 rounded-lg p-2">
+                        <img
+                          src={URL.createObjectURL(pf.file)}
+                          alt={pf.file.name}
+                          className="w-10 h-10 rounded object-cover shrink-0"
+                        />
+                        <div className="flex-1 min-w-0 space-y-1">
+                          <Input
+                            value={pf.slugName}
+                            onChange={(e) => updateSlug(index, e.target.value)}
+                            className="h-8 text-xs"
+                            placeholder="nome-do-arquivo.webp"
+                          />
+                          <p className="text-[11px] text-muted-foreground">
+                            {pf.optimizing ? (
+                              <span className="inline-flex items-center gap-1">
+                                <Loader2 className="w-3 h-3 animate-spin" /> otimizando…
+                              </span>
+                            ) : pf.optimizedSize != null ? (
+                              <>
+                                {formatBytes(pf.originalSize)} → {formatBytes(pf.optimizedSize)}
+                                {pct !== null && pct > 0 && (
+                                  <span className="text-primary ml-1">(-{pct}%)</span>
+                                )}
+                              </>
+                            ) : (
+                              formatBytes(pf.originalSize)
+                            )}
+                          </p>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-8 w-8 p-0 text-muted-foreground hover:text-destructive"
+                          onClick={() => removePending(index)}
+                        >
+                          <X className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    );
+                  })}
                 </div>
 
                 {uploading && (
@@ -318,7 +376,11 @@ const Admin = () => {
                 <div className="flex gap-2">
                   <Button
                     onClick={handleUploadAll}
-                    disabled={uploading || pendingFiles.every((p) => !p.slugName.trim())}
+                    disabled={
+                      uploading ||
+                      pendingFiles.some((p) => p.optimizing) ||
+                      pendingFiles.every((p) => !p.slugName.trim())
+                    }
                     className="gap-2"
                   >
                     {uploading ? (
