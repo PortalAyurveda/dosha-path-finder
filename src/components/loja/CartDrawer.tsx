@@ -16,6 +16,7 @@ import { trackPixel } from "@/lib/metaPixel";
 type FreteOpcao = {
   id: string | number;
   nome: string;
+  empresa?: string;
   preco: number;
   prazo_dias: number;
 };
@@ -382,7 +383,7 @@ const CartDrawer = () => {
                         <RadioGroupItem value={String(op.id)} id={`frete-${op.id}`} />
                         <div className="flex-1 flex justify-between items-center">
                           <div>
-                            <p className="text-sm" style={{ color: samkhyaTokens.texto }}>{op.nome}</p>
+                            <p className="text-sm" style={{ color: samkhyaTokens.texto }}>{op.empresa ? `${op.empresa} ${op.nome}` : op.nome}</p>
                             <p className="text-xs" style={{ color: samkhyaTokens.textoSec }}>
                               {op.prazo_dias} {op.prazo_dias === 1 ? "dia útil" : "dias úteis"}
                             </p>
