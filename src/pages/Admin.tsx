@@ -33,7 +33,11 @@ interface StorageFile {
 
 interface PendingFile {
   file: File;
+  optimizedFile: File | null;
   slugName: string;
+  originalSize: number;
+  optimizedSize: number | null;
+  optimizing: boolean;
 }
 
 const Admin = () => {
