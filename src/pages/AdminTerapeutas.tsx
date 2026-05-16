@@ -206,6 +206,7 @@ const AdminTerapeutas = () => {
                             <Link
                               to={getTherapistProfilePath(slug)}
                               target="_blank"
+                              rel="noopener noreferrer"
                               className="text-xs inline-flex items-center gap-1 text-primary hover:underline"
                             >
                               <ExternalLink className="h-3 w-3" /> ver público
