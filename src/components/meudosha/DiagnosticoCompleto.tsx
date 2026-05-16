@@ -643,7 +643,6 @@ const ProximosPassos = ({
           descricao={`Vídeos e conteúdos selecionados para o seu dosha ${label}`}
           ctaLabel="Acessar →"
           href={`/biblioteca/${top}`}
-          accentColor={cor}
         />
         <ProximoPassoCard
           icone="⏰"
@@ -651,7 +650,6 @@ const ProximosPassos = ({
           descricao={`A rotina ideal de horários para equilibrar ${label}`}
           ctaLabel="Ver horários →"
           href={`/biblioteca/${top}/horarios`}
-          accentColor={cor}
         />
         <ProximoPassoCard
           icone="https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/logo-akasha.svg"
