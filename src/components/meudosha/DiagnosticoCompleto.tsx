@@ -334,7 +334,7 @@ const Diagnostico = ({
   return (
     <section className="space-y-6">
       <h2
-        className="font-serif font-bold text-2xl md:text-3xl text-center"
+        className="font-serif font-bold text-2xl md:text-3xl text-left"
         style={{ color: COLOR.primary, fontFamily: "'Roboto Serif', serif" }}
       >
         Seu Diagnóstico: <span style={{ color: cor }}>{doshaPrincipalCompleto}</span>
@@ -389,7 +389,7 @@ const ProtocoloSamkhya = ({
 
   return (
     <section className="space-y-4 pt-12">
-      <div className="space-y-1 text-center md:text-left">
+      <div className="space-y-1 text-left">
         <h2
           className="font-serif font-bold text-xl md:text-2xl"
           style={{ color: COLOR.primary, fontFamily: "'Roboto Serif', serif" }}
@@ -595,49 +595,79 @@ const ProximoPassoCard = ({
   );
 };
 
-const ProximosPassos = ({ refazerTeste }: { refazerTeste: () => void }) => (
-  <section className="space-y-4 pt-12">
-    <h2
-      className="font-serif font-bold text-xl md:text-2xl text-center"
-      style={{ color: COLOR.primary, fontFamily: "'Roboto Serif', serif" }}
-    >
-      Próximos Passos
-    </h2>
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-      <ProximoPassoCard
-        icone="https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/logo-rotinas-3.svg"
-        titulo="Curso de Rotinas Diárias"
-        descricao="Construa hábitos ayurvédicos no dia a dia"
-        preco="R$ 99"
-        ctaLabel="Conhecer →"
-        href="https://www.portalayurveda.com/curso-rotinas"
-        externo
-      />
-      <ProximoPassoCard
-        icone="https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/logo-alimentacao2.svg"
-        titulo="Curso de Alimentação Ayurvédica"
-        descricao="A base do seu tratamento"
-        preco="R$ 397"
-        ctaLabel="Conhecer →"
-        href="https://www.portalayurveda.com/promocao-alimentacao"
-        externo
-      />
-      <ProximoPassoCard
-        icone="https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/ativo-20.svg"
-        titulo="Ver produtos Samkhya"
-        descricao="Produtos curativos personalizados"
-        ctaLabel="Ver loja →"
-        href="/samkhya"
-      />
-    </div>
+interface DoshaScores {
+  vata: number;
+  pitta: number;
+  kapha: number;
+}
 
-    <div className="pt-4 flex justify-center">
-      <Button variant="outline" onClick={refazerTeste} className="text-sm">
-        Refazer Teste
-      </Button>
-    </div>
-  </section>
-);
+const topDoshaSlug = (scores: DoshaScores): "vata" | "pitta" | "kapha" => {
+  const arr: { k: "vata" | "pitta" | "kapha"; v: number }[] = [
+    { k: "vata", v: scores.vata },
+    { k: "pitta", v: scores.pitta },
+    { k: "kapha", v: scores.kapha },
+  ];
+  arr.sort((a, b) => b.v - a.v);
+  return arr[0].k;
+};
+
+const DOSHA_LABEL: Record<"vata" | "pitta" | "kapha", string> = {
+  vata: "Vata",
+  pitta: "Pitta",
+  kapha: "Kapha",
+};
+
+const ProximosPassos = ({
+  refazerTeste,
+  scores,
+}: {
+  refazerTeste: () => void;
+  scores: DoshaScores;
+}) => {
+  const top = topDoshaSlug(scores);
+  const label = DOSHA_LABEL[top];
+  const cor = corDosha(label);
+
+  return (
+    <section className="space-y-4 pt-12">
+      <h2
+        className="font-serif font-bold text-xl md:text-2xl text-left"
+        style={{ color: COLOR.primary, fontFamily: "'Roboto Serif', serif" }}
+      >
+        Próximos Passos
+      </h2>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <ProximoPassoCard
+          icone="📚"
+          titulo={`Biblioteca ${label}`}
+          descricao={`Vídeos e conteúdos selecionados para o seu dosha ${label}`}
+          ctaLabel="Acessar →"
+          href={`/biblioteca/${top}`}
+        />
+        <ProximoPassoCard
+          icone="⏰"
+          titulo={`Horários ${label}`}
+          descricao={`A rotina ideal de horários para equilibrar ${label}`}
+          ctaLabel="Ver horários →"
+          href={`/biblioteca/${top}/horarios`}
+        />
+        <ProximoPassoCard
+          icone="https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/logo-akasha.svg"
+          titulo="Akasha"
+          descricao="Sua consultora de Ayurveda 24h. Tire dúvidas sobre seu dosha."
+          ctaLabel="Conversar →"
+          href="/meu-dosha?tab=akasha"
+        />
+      </div>
+
+      <div className="pt-4 flex justify-center">
+        <Button variant="outline" onClick={refazerTeste} className="text-sm">
+          Refazer Teste
+        </Button>
+      </div>
+    </section>
+  );
+};
 
 // ============ Componente principal ============
 interface DiagnosticoCompletoProps {
@@ -645,6 +675,7 @@ interface DiagnosticoCompletoProps {
   doshaPrincipal: string;
   doshaPrincipalCompleto: string;
   refazerTeste: () => void;
+  scores: DoshaScores;
 }
 
 const DiagnosticoCompleto = ({
@@ -652,6 +683,7 @@ const DiagnosticoCompleto = ({
   doshaPrincipal,
   doshaPrincipalCompleto,
   refazerTeste,
+  scores,
 }: DiagnosticoCompletoProps) => {
   const { analise, analiseLoading, analiseTimeout } = useAnalise(email);
   const { data: produtos } = useProdutosPrescritos(analise);
@@ -682,7 +714,7 @@ const DiagnosticoCompleto = ({
               : "Akasha está preparando sua análise..."}
           </p>
         </div>
-        <ProximosPassos refazerTeste={refazerTeste} />
+        <ProximosPassos refazerTeste={refazerTeste} scores={scores} />
       </div>
     );
   }
@@ -694,7 +726,7 @@ const DiagnosticoCompleto = ({
         doshaPrincipal={doshaPrincipal}
         doshaPrincipalCompleto={doshaPrincipalCompleto}
       />
-      <ProximosPassos refazerTeste={refazerTeste} />
+      <ProximosPassos refazerTeste={refazerTeste} scores={scores} />
       <Plano30DiasBloqueado />
       {!!produtos?.length && <ProtocoloSamkhya analise={analise} produtos={produtos} />}
     </div>

@@ -766,6 +766,11 @@ const MeuDosha = () => {
 
             {/* ===== Diagnóstico clínico completo (substitui glossário + Refazer Teste) ===== */}
             <DiagnosticoCompleto
+              scores={{
+                vata: result.vatascore || 0,
+                pitta: result.pittascore || 0,
+                kapha: result.kaphascore || 0,
+              }}
               email={result.email}
               doshaPrincipal={primaryDosha}
               doshaPrincipalCompleto={result.doshaprincipal || primaryDosha}
