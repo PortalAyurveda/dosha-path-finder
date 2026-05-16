@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
@@ -6,66 +7,66 @@ import { Toaster } from "@/components/ui/toaster";
 import { UserProvider } from "@/contexts/UserContext";
 import { useCanonical } from "@/hooks/useCanonical";
 import Layout from "@/components/Layout";
-import Index from "./pages/Index";
-// preserved for launch mode — re-enable by routing "/" to <LaunchPage />
-import LaunchPage from "./pages/LaunchPage";
-import PreviewLoading from "./pages/PreviewLoading";
-import TesteDeDosha from "./pages/TesteDeDosha";
-import MeuDosha from "./pages/MeuDosha";
-import Biblioteca from "./pages/Biblioteca";
-import CursoAlimentacao from "./pages/curso/Alimentacao";
-import CursoFormacao from "./pages/curso/Formacao";
-import CursoFormacaoLive from "./pages/curso/FormacaoLive";
-import CursoRotinas from "./pages/curso/Rotinas";
-import TerapeutasDoBrasil from "./pages/TerapeutasDoBrasil";
-import TerapeutaPerfil from "./pages/TerapeutaPerfil";
-import TerapeutaCadastro from "./pages/TerapeutaCadastro";
-
-import Video from "./pages/Video";
-import DoshaVata from "./pages/DoshaVata";
-import DoshaPitta from "./pages/DoshaPitta";
-import DoshaKapha from "./pages/DoshaKapha";
-import Horarios from "./pages/Horarios";
-import Auth from "./pages/Auth";
-import Assinar from "./pages/Assinar";
-import PoliticaDePrivacidade from "./pages/PoliticaDePrivacidade";
-import TermosDeUso from "./pages/TermosDeUso";
-import NotFound from "./pages/NotFound";
-import Admin from "./pages/Admin";
-import AdminBlog from "./pages/AdminBlog";
-import AdminMensagens from "./pages/AdminMensagens";
-import Contato from "./pages/Contato";
-import AdminAkasha from "./pages/AdminAkasha";
-import AdminTeste from "./pages/AdminTeste";
-import AdminTesteRegistros from "./pages/AdminTesteRegistros";
+import AnalyticsLoader from "@/components/AnalyticsLoader";
 import AdminRoute from "./components/admin/AdminRoute";
-import AdminLoja from "./pages/AdminLoja";
-import AdminLojaVendas from "./pages/AdminLojaVendas";
-import AdminVendasAkasha from "./pages/AdminVendasAkasha";
-import AdminLojaVendaDetalhe from "./pages/AdminLojaVendaDetalhe";
-import AdminBiblioteca from "./pages/AdminBiblioteca";
-import AdminTerapeutas from "./pages/AdminTerapeutas";
-import AdminAula from "./pages/AdminAula";
-import AdminDevlog from "./pages/AdminDevlog";
-import Aula from "./pages/Aula";
-import Blog from "./pages/Blog";
-import BlogArticle from "./pages/BlogArticle";
-import Metricas from "./pages/Metricas";
-import Devlog from "./pages/Devlog";
-import MetricasGraficos from "./pages/MetricasGraficos";
-import MetricasAkasha from "./pages/MetricasAkasha";
-import RegistroAkashico from "./pages/RegistroAkashico";
-import RegistrosAkashikos from "./pages/RegistrosAkashikos";
-import Samkhya from "./pages/Samkhya";
-import SamkhyaProduto from "./pages/SamkhyaProduto";
-import SamkhyaKit from "./pages/SamkhyaKit";
-import SamkhyaCategoria from "./pages/SamkhyaCategoria";
-import SamkhyaKits from "./pages/SamkhyaKits";
-import SamkhyaTodos from "./pages/SamkhyaTodos";
-import SamkhyaObrigado from "./pages/SamkhyaObrigado";
-import Pesquisa from "./pages/Pesquisa";
 import { CartProvider } from "./contexts/CartContext";
 import CartDrawer from "./components/loja/CartDrawer";
+
+const Index = lazy(() => import("./pages/Index"));
+const LaunchPage = lazy(() => import("./pages/LaunchPage"));
+const PreviewLoading = lazy(() => import("./pages/PreviewLoading"));
+const TesteDeDosha = lazy(() => import("./pages/TesteDeDosha"));
+const MeuDosha = lazy(() => import("./pages/MeuDosha"));
+const Biblioteca = lazy(() => import("./pages/Biblioteca"));
+const CursoAlimentacao = lazy(() => import("./pages/curso/Alimentacao"));
+const CursoFormacao = lazy(() => import("./pages/curso/Formacao"));
+const CursoFormacaoLive = lazy(() => import("./pages/curso/FormacaoLive"));
+const CursoRotinas = lazy(() => import("./pages/curso/Rotinas"));
+const TerapeutasDoBrasil = lazy(() => import("./pages/TerapeutasDoBrasil"));
+const TerapeutaPerfil = lazy(() => import("./pages/TerapeutaPerfil"));
+const TerapeutaCadastro = lazy(() => import("./pages/TerapeutaCadastro"));
+const Video = lazy(() => import("./pages/Video"));
+const DoshaVata = lazy(() => import("./pages/DoshaVata"));
+const DoshaPitta = lazy(() => import("./pages/DoshaPitta"));
+const DoshaKapha = lazy(() => import("./pages/DoshaKapha"));
+const Horarios = lazy(() => import("./pages/Horarios"));
+const Auth = lazy(() => import("./pages/Auth"));
+const Assinar = lazy(() => import("./pages/Assinar"));
+const PoliticaDePrivacidade = lazy(() => import("./pages/PoliticaDePrivacidade"));
+const TermosDeUso = lazy(() => import("./pages/TermosDeUso"));
+const NotFound = lazy(() => import("./pages/NotFound"));
+const Admin = lazy(() => import("./pages/Admin"));
+const AdminBlog = lazy(() => import("./pages/AdminBlog"));
+const AdminMensagens = lazy(() => import("./pages/AdminMensagens"));
+const Contato = lazy(() => import("./pages/Contato"));
+const AdminAkasha = lazy(() => import("./pages/AdminAkasha"));
+const AdminTeste = lazy(() => import("./pages/AdminTeste"));
+const AdminTesteRegistros = lazy(() => import("./pages/AdminTesteRegistros"));
+const AdminLoja = lazy(() => import("./pages/AdminLoja"));
+const AdminLojaVendas = lazy(() => import("./pages/AdminLojaVendas"));
+const AdminVendasAkasha = lazy(() => import("./pages/AdminVendasAkasha"));
+const AdminLojaVendaDetalhe = lazy(() => import("./pages/AdminLojaVendaDetalhe"));
+const AdminBiblioteca = lazy(() => import("./pages/AdminBiblioteca"));
+const AdminTerapeutas = lazy(() => import("./pages/AdminTerapeutas"));
+const AdminAula = lazy(() => import("./pages/AdminAula"));
+const AdminDevlog = lazy(() => import("./pages/AdminDevlog"));
+const Aula = lazy(() => import("./pages/Aula"));
+const Blog = lazy(() => import("./pages/Blog"));
+const BlogArticle = lazy(() => import("./pages/BlogArticle"));
+const Metricas = lazy(() => import("./pages/Metricas"));
+const Devlog = lazy(() => import("./pages/Devlog"));
+const MetricasGraficos = lazy(() => import("./pages/MetricasGraficos"));
+const MetricasAkasha = lazy(() => import("./pages/MetricasAkasha"));
+const RegistroAkashico = lazy(() => import("./pages/RegistroAkashico"));
+const RegistrosAkashikos = lazy(() => import("./pages/RegistrosAkashikos"));
+const Samkhya = lazy(() => import("./pages/Samkhya"));
+const SamkhyaProduto = lazy(() => import("./pages/SamkhyaProduto"));
+const SamkhyaKit = lazy(() => import("./pages/SamkhyaKit"));
+const SamkhyaCategoria = lazy(() => import("./pages/SamkhyaCategoria"));
+const SamkhyaKits = lazy(() => import("./pages/SamkhyaKits"));
+const SamkhyaTodos = lazy(() => import("./pages/SamkhyaTodos"));
+const SamkhyaObrigado = lazy(() => import("./pages/SamkhyaObrigado"));
+const Pesquisa = lazy(() => import("./pages/Pesquisa"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -83,6 +84,12 @@ const LayoutOrBare = ({ children }: { children: React.ReactNode }) => {
   return <Layout>{children}</Layout>;
 };
 
+const RouteFallback = () => (
+  <div className="flex min-h-[60vh] items-center justify-center bg-background">
+    <div className="h-10 w-10 animate-spin rounded-full border-2 border-primary/20 border-t-primary" aria-label="Carregando" />
+  </div>
+);
+
 const RoutedApp = () => {
   useCanonical();
   return (
@@ -90,6 +97,7 @@ const RoutedApp = () => {
       <CartProvider>
       <CartDrawer />
       <LayoutOrBare>
+            <Suspense fallback={<RouteFallback />}>
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/preview-loading" element={<PreviewLoading />} />
@@ -185,7 +193,8 @@ const RoutedApp = () => {
               <Route path="/pesquisa" element={<Pesquisa />} />
 
               <Route path="*" element={<NotFound />} />
-      </Routes>
+            </Routes>
+            </Suspense>
       </LayoutOrBare>
       </CartProvider>
     </UserProvider>
@@ -199,6 +208,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <RoutedApp />
+        <AnalyticsLoader />
       </BrowserRouter>
     </QueryClientProvider>
   </HelmetProvider>
