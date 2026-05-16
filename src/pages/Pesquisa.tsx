@@ -139,25 +139,33 @@ const Pesquisa = () => {
             <Empty term={debounced} />
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {data!.produtos.map((p: any) => (
-                <button
-                  key={p.slug}
-                  onClick={() => navigate(`/samkhya/produto/${p.slug}`)}
-                  className="flex items-center gap-3 p-3 rounded-xl border border-border bg-card hover:shadow-md text-left transition-all"
-                >
-                  {p.imagem_url ? (
-                    <img src={getTransformedImageUrl(p.imagem_url)} alt="" className="w-16 h-16 rounded-lg object-cover" />
-                  ) : (
-                    <div className="w-16 h-16 rounded-lg bg-muted" />
-                  )}
-                  <div className="flex-1 min-w-0">
-                    <p className="font-medium text-sm line-clamp-2">{p.nome_display}</p>
-                    {p.resumo_curto && (
-                      <p className="text-xs text-muted-foreground line-clamp-1 mt-0.5">{p.resumo_curto}</p>
+              {data!.produtos.map((p: any) => {
+                const preco = p.preco_pix ?? p.preco_normal;
+                return (
+                  <button
+                    key={p.slug}
+                    onClick={() => navigate(`/samkhya/produto/${p.slug}`)}
+                    className="flex items-start gap-3 p-3 rounded-xl border border-border bg-card hover:shadow-md text-left transition-all"
+                  >
+                    {p.imagem_url ? (
+                      <img src={getTransformedImageUrl(p.imagem_url)} alt="" className="w-16 h-16 rounded-lg object-cover shrink-0" />
+                    ) : (
+                      <div className="w-16 h-16 rounded-lg bg-muted shrink-0" />
                     )}
-                  </div>
-                </button>
-              ))}
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium text-sm line-clamp-2">{p.nome_display}</p>
+                      {p.resumo_curto && (
+                        <p className="text-xs text-muted-foreground line-clamp-2 mt-0.5">{p.resumo_curto}</p>
+                      )}
+                      {preco != null && (
+                        <p className="text-sm font-semibold text-primary mt-1">
+                          {Number(preco).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+                        </p>
+                      )}
+                    </div>
+                  </button>
+                );
+              })}
             </div>
           )
         ) : tab === "videos" ? (
@@ -174,9 +182,16 @@ const Pesquisa = () => {
                   className="flex items-center gap-3 p-3 rounded-xl border border-border bg-card hover:shadow-md text-left transition-all"
                 >
                   <img
-                    src={`https://i.ytimg.com/vi/${v.video_id}/mqdefault.jpg`}
+                    src={`https://img.youtube.com/vi/${v.video_id}/mqdefault.jpg`}
+                    onError={(e) => {
+                      const img = e.currentTarget;
+                      if (!img.dataset.fb) {
+                        img.dataset.fb = "1";
+                        img.src = `https://i.ytimg.com/vi/${v.video_id}/hqdefault.jpg`;
+                      }
+                    }}
                     alt=""
-                    className="w-24 h-16 rounded-lg object-cover bg-muted"
+                    className="w-24 h-16 rounded-lg object-cover bg-muted shrink-0"
                   />
                   <div className="flex-1 min-w-0">
                     <p className="font-medium text-sm line-clamp-2">{v.novo_titulo}</p>
