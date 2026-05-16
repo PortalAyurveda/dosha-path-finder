@@ -334,7 +334,7 @@ const Diagnostico = ({
   return (
     <section className="space-y-6">
       <h2
-        className="font-serif font-bold text-2xl md:text-3xl text-center"
+        className="font-serif font-bold text-2xl md:text-3xl text-left"
         style={{ color: COLOR.primary, fontFamily: "'Roboto Serif', serif" }}
       >
         Seu Diagnóstico: <span style={{ color: cor }}>{doshaPrincipalCompleto}</span>
