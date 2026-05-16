@@ -661,7 +661,7 @@ const MeuDosha = () => {
         >
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4">
             <h2 className="font-serif text-lg md:text-xl font-bold text-foreground">
-              Desbloqueie toda potência do Portal Ayurveda
+              Desbloqueie todo Portal Ayurveda
             </h2>
             <p className="text-sm font-semibold text-muted-foreground whitespace-nowrap">
               A partir de <span className="text-foreground">R$ 49,75/mês</span>
