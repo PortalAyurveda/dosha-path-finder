@@ -1,15 +1,30 @@
-## Fix do menu superior da biblioteca no mobile
+## Substituir Magic Link por OTP de 6 dígitos em `/entrar`
 
-### Diagnóstico (image-48)
-A 390px o menu corta "Sommelier" ("Sor…") e a Vata ativa fica fora à esquerda. Causa: o container usa `justify-center` dentro de `overflow-x-auto`. Quando a fileira é mais larga que a tela, `justify-center` empurra o início para fora da viewport e o usuário não consegue rolar até o item ativo.
+Refatorar `src/pages/Auth.tsx` para usar código OTP em duas etapas, mantendo o login Google intacto.
 
-A segunda barra de navegação (image-49 — Principal/Horários/Alimentação) já está OK e o conteúdo aparece logo abaixo dela ✅.
+### Etapa 1 — Email
+- Campo email + botão "Enviar código"
+- Chama `supabase.auth.signInWithOtp({ email, options: { shouldCreateUser: true } })` (sem `emailRedirectTo`, pois OTP não usa redirect)
+- Em sucesso, avança para etapa 2 (state `step: "email" | "code"`)
+- Toast de erro em falha
 
-### Mudança
-Em `src/components/dosha/DoshaSelector.tsx`:
-- Trocar `justify-center` por `justify-start sm:justify-center` para que no mobile a barra role naturalmente da esquerda.
-- Reduzir levemente o padding/tamanho dos pills no mobile (`px-2 py-1`, `text-[11px]`) para caber mais conteúdo sem rolar.
-- Ao montar/trocar de rota, fazer `scrollIntoView` no pill ativo (block:'nearest', inline:'center') para que o item correspondente à página atual fique visível na barra.
+### Etapa 2 — Código
+- Texto: "Digite o código de 6 dígitos enviado para **{email}**"
+- Input OTP de 6 dígitos usando o componente `InputOTP` já existente em `src/components/ui/input-otp.tsx` (6 slots, apenas números via `pattern`)
+- Botão "Entrar" (desabilitado até 6 dígitos preenchidos)
+- Link "Reenviar código" → re-chama `signInWithOtp` e mostra toast "Código reenviado"
+- Link "Voltar" → volta para etapa 1, limpa código
+- Ao confirmar: `supabase.auth.verifyOtp({ email, token: code, type: 'email' })`
+- Em sucesso, o `useEffect` existente cuida do redirect para `/meu-dosha?id=...`
+- Em erro: toast "Código inválido ou expirado" e mantém na etapa 2
 
-### Fora de escopo
-Segunda barra (DoshaNavPills) e conteúdo abaixo — já estão alinhados conforme image-49.
+### Manter intacto
+- Botão Google login e separador "ou"
+- Lógica de `waitingForDosha` / redirect pós-login
+- `pendingClaimIdPublico` via searchParams
+- Header, card, copy de privacidade
+
+### Notas técnicas
+- Remover state `magicSent` e bloco "Link enviado!"
+- Novo state: `step`, `code`, `resending`
+- Avisar usuário: no painel Supabase Auth, o template "Magic Link" deve conter `{{ .Token }}` para que o código de 6 dígitos seja enviado no email (Supabase envia ambos no mesmo template). Sem isso, o usuário recebe apenas o link e não o código.

@@ -6,14 +6,16 @@ import { useUser } from "@/contexts/UserContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Mail, Sparkles } from "lucide-react";
-import { Helmet } from "react-helmet-async";
+import { Loader2, Mail, Sparkles, ArrowLeft } from "lucide-react";
 
 const Auth = () => {
   const [email, setEmail] = useState("");
+  const [code, setCode] = useState("");
+  const [step, setStep] = useState<"email" | "code">("email");
   const [loading, setLoading] = useState(false);
-  const [magicSent, setMagicSent] = useState(false);
+  const [resending, setResending] = useState(false);
   const [waitingForDosha, setWaitingForDosha] = useState(false);
 
   const navigate = useNavigate();
@@ -21,7 +23,6 @@ const Auth = () => {
   const { user, doshaResult } = useUser();
   const { toast } = useToast();
 
-  // When user logs in, wait briefly for doshaResult then redirect
   useEffect(() => {
     if (user && !waitingForDosha) {
       setWaitingForDosha(true);
@@ -34,7 +35,6 @@ const Auth = () => {
       navigate(`/meu-dosha?id=${doshaResult.idPublico}`, { replace: true });
       return;
     }
-    // Fallback: if no dosha result after 3s, go to home
     const timer = setTimeout(() => {
       navigate("/", { replace: true });
     }, 3000);
@@ -66,34 +66,62 @@ const Auth = () => {
     }
   };
 
-  const handleMagicLink = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-
-    const storedDoshaId = localStorage.getItem("activeDoshaId");
-    const redirectUrl = storedDoshaId
-      ? `${window.location.origin}/meu-dosha?id=${storedDoshaId}`
-      : window.location.origin;
-
+  const sendOtp = async () => {
     const { error } = await supabase.auth.signInWithOtp({
       email,
-      options: { emailRedirectTo: redirectUrl },
+      options: { shouldCreateUser: true },
     });
+    if (error) throw error;
+  };
 
-    if (error) {
-      toast({ title: "Erro", description: error.message, variant: "destructive" });
-    } else {
-      setMagicSent(true);
+  const handleSendCode = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      await sendOtp();
+      setStep("code");
+      setCode("");
+    } catch (err: any) {
+      toast({ title: "Erro", description: err.message, variant: "destructive" });
     }
     setLoading(false);
   };
 
+  const handleResend = async () => {
+    setResending(true);
+    try {
+      await sendOtp();
+      toast({ title: "Código reenviado", description: `Verifique seu e-mail ${email}.` });
+    } catch (err: any) {
+      toast({ title: "Erro", description: err.message, variant: "destructive" });
+    }
+    setResending(false);
+  };
+
+  const handleVerify = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (code.length !== 6) return;
+    setLoading(true);
+    const { error } = await supabase.auth.verifyOtp({
+      email,
+      token: code,
+      type: "email",
+    });
+    if (error) {
+      toast({
+        title: "Código inválido",
+        description: "Código inválido ou expirado. Tente novamente.",
+        variant: "destructive",
+      });
+      setLoading(false);
+    }
+    // sucesso: useEffect cuida do redirect
+  };
 
   return (
     <PageContainer title="Entrar" description="Acesse sua conta no Portal Ayurveda para acompanhar seus doshas e evolução.">
       <div className="flex items-center justify-center min-h-[70vh]">
         <div className="w-full max-w-md space-y-6">
-          {/* Header */}
           <div className="text-center space-y-2">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium">
               <Sparkles className="w-4 h-4" />
@@ -107,28 +135,10 @@ const Auth = () => {
             </p>
           </div>
 
-          {/* Card */}
           <div className="bg-card border border-border rounded-xl p-6 space-y-5">
-            {magicSent ? (
-              <div className="text-center space-y-3 py-4">
-                <Mail className="w-12 h-12 mx-auto text-primary" />
-                <p className="text-foreground font-medium">Link enviado!</p>
-                <p className="text-muted-foreground text-sm">
-                  Verifique seu e-mail e clique no link para entrar automaticamente.
-                </p>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setMagicSent(false)}
-                  className="mt-2"
-                >
-                  Tentar outro e-mail
-                </Button>
-              </div>
-            ) : (
+            {step === "email" ? (
               <>
-                {/* Magic Link form */}
-                <form onSubmit={handleMagicLink} className="space-y-4">
+                <form onSubmit={handleSendCode} className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="magic-email">E-mail</Label>
                     <div className="relative">
@@ -146,7 +156,7 @@ const Auth = () => {
                   </div>
                   <Button type="submit" className="w-full" disabled={loading}>
                     {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-                    Enviar link de acesso
+                    Enviar código
                   </Button>
                 </form>
 
@@ -175,6 +185,59 @@ const Auth = () => {
                   Login com Google
                 </Button>
               </>
+            ) : (
+              <form onSubmit={handleVerify} className="space-y-5">
+                <div className="text-center space-y-2">
+                  <Mail className="w-10 h-10 mx-auto text-primary" />
+                  <p className="text-sm text-foreground">
+                    Digite o código de 6 dígitos enviado para
+                  </p>
+                  <p className="text-sm font-medium text-foreground break-all">{email}</p>
+                </div>
+
+                <div className="flex justify-center">
+                  <InputOTP
+                    maxLength={6}
+                    value={code}
+                    onChange={setCode}
+                    pattern="^[0-9]+$"
+                    inputMode="numeric"
+                  >
+                    <InputOTPGroup>
+                      {[0, 1, 2, 3, 4, 5].map((i) => (
+                        <InputOTPSlot key={i} index={i} />
+                      ))}
+                    </InputOTPGroup>
+                  </InputOTP>
+                </div>
+
+                <Button type="submit" className="w-full" disabled={loading || code.length !== 6}>
+                  {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                  Entrar
+                </Button>
+
+                <div className="flex items-center justify-between text-sm">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setStep("email");
+                      setCode("");
+                    }}
+                    className="inline-flex items-center gap-1 text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    <ArrowLeft className="w-3 h-3" />
+                    Voltar
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleResend}
+                    disabled={resending}
+                    className="text-primary hover:underline disabled:opacity-50"
+                  >
+                    {resending ? "Reenviando..." : "Reenviar código"}
+                  </button>
+                </div>
+              </form>
             )}
           </div>
 
