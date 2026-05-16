@@ -714,7 +714,7 @@ const DiagnosticoCompleto = ({
               : "Akasha está preparando sua análise..."}
           </p>
         </div>
-        <ProximosPassos refazerTeste={refazerTeste} />
+        <ProximosPassos refazerTeste={refazerTeste} scores={scores} />
       </div>
     );
   }
@@ -726,7 +726,7 @@ const DiagnosticoCompleto = ({
         doshaPrincipal={doshaPrincipal}
         doshaPrincipalCompleto={doshaPrincipalCompleto}
       />
-      <ProximosPassos refazerTeste={refazerTeste} />
+      <ProximosPassos refazerTeste={refazerTeste} scores={scores} />
       <Plano30DiasBloqueado />
       {!!produtos?.length && <ProtocoloSamkhya analise={analise} produtos={produtos} />}
     </div>
