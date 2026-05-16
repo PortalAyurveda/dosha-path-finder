@@ -28,11 +28,8 @@ const SearchHeader = ({ searchTerm, onSearchChange, isAdvanced, onAdvancedChange
   const { profile } = useUser();
   const isPremium = profile?.is_premium === true;
 
-  const handlePremiumGate = (label: string) => {
-    toast.info(`${label} é um recurso Premium`, {
-      description: "Assine o Portal Ayurveda para liberar.",
-      action: { label: "Assinar", onClick: () => navigate("/assinar") },
-    });
+  const handlePremiumGate = () => {
+    navigate("/assinar");
   };
 
   return (
@@ -53,7 +50,7 @@ const SearchHeader = ({ searchTerm, onSearchChange, isAdvanced, onAdvancedChange
               <button
                 key={cat.key}
                 onClick={() => {
-                  if (locked) return handlePremiumGate(cat.label);
+                  if (locked) return handlePremiumGate();
                   onCategoryChange(cat.key);
                 }}
                 className={`flex items-center gap-1.5 px-4 py-2 rounded-tl-xl rounded-br-xl rounded-tr-sm rounded-bl-sm text-sm font-medium transition-all border ${
@@ -89,7 +86,7 @@ const SearchHeader = ({ searchTerm, onSearchChange, isAdvanced, onAdvancedChange
           checked={isAdvanced}
           disabled={!isPremium}
           onCheckedChange={(v) => {
-            if (!isPremium) return handlePremiumGate("Busca Avançada");
+            if (!isPremium) return handlePremiumGate();
             onAdvancedChange(v);
           }}
         />
@@ -99,7 +96,7 @@ const SearchHeader = ({ searchTerm, onSearchChange, isAdvanced, onAdvancedChange
           onClick={(e) => {
             if (!isPremium) {
               e.preventDefault();
-              handlePremiumGate("Busca Avançada");
+              handlePremiumGate();
             }
           }}
         >
