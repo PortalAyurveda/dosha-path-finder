@@ -389,7 +389,7 @@ const ProtocoloSamkhya = ({
 
   return (
     <section className="space-y-4 pt-12">
-      <div className="space-y-1 text-center md:text-left">
+      <div className="space-y-1 text-left">
         <h2
           className="font-serif font-bold text-xl md:text-2xl"
           style={{ color: COLOR.primary, fontFamily: "'Roboto Serif', serif" }}
