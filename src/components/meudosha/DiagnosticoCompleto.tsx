@@ -519,81 +519,49 @@ const Plano30DiasBloqueado = () => (
 
 // ============ SEÇÃO 4 — Próximos Passos ============
 const ProximoPassoCard = ({
-  icone,
+  children,
   titulo,
   descricao,
-  preco,
-  ctaLabel,
   href,
-  externo,
+  tint,
 }: {
-  icone: string;
+  children: React.ReactNode;
   titulo: string;
   descricao: string;
-  preco?: string;
-  ctaLabel: string;
   href: string;
-  externo?: boolean;
-}) => {
-  const isImg = icone.startsWith("http");
-  const isSamkhya = icone.includes("samkhya") || icone.includes("ativo-20");
-  const imgClass = isSamkhya ? "w-28 h-28" : "w-20 h-20";
-  const cardInner = (
+  tint: string;
+}) => (
+  <Link
+    to={href}
+    className={cn(
+      "group block bg-white p-4 aspect-square flex flex-col items-center justify-center text-center gap-2 transition-all hover:-translate-y-0.5",
+      LEAF,
+    )}
+    style={{
+      border: `1px solid ${COLOR.cardBorder}`,
+      boxShadow: "0 1px 8px rgba(53,47,84,0.08)",
+    }}
+  >
     <div
-      className={cn("bg-white p-6 flex flex-col gap-3 h-full", LEAF)}
-      style={{ border: `1px solid ${COLOR.cardBorder}`, boxShadow: "0 1px 8px rgba(53,47,84,0.08)" }}
+      className="w-14 h-14 rounded-full flex items-center justify-center shrink-0"
+      style={{ backgroundColor: `${tint}26`, border: `2px solid ${tint}` }}
     >
-      <div className="text-5xl text-center">
-        {isImg ? (
-          <img src={icone} alt={titulo} className={`${imgClass} object-contain mx-auto`} />
-        ) : (
-          icone
-        )}
-      </div>
-      <h3
-        className="font-serif font-bold text-base text-center"
-        style={{ color: COLOR.primary, fontFamily: "'Roboto Serif', serif" }}
-      >
-        {titulo}
-      </h3>
-      <p
-        className="text-[13px] text-center leading-snug flex-1"
-        style={{ color: COLOR.textoSec, fontFamily: "'DM Sans', sans-serif" }}
-      >
-        {descricao}
-      </p>
-      {preco ? (
-        <p
-          className="font-bold text-lg text-center"
-          style={{ color: COLOR.ouro, fontFamily: "'DM Sans', sans-serif" }}
-        >
-          {preco}
-        </p>
-      ) : (
-        <div className="h-7" aria-hidden="true" />
-      )}
-      <span
-        className={cn("block text-center py-2.5 px-4 text-white font-medium text-sm", LEAF)}
-        style={{ backgroundColor: COLOR.secondary, fontFamily: "'DM Sans', sans-serif" }}
-      >
-        {ctaLabel}
-      </span>
+      {children}
     </div>
-  );
-
-  if (externo) {
-    return (
-      <a href={href} target="_blank" rel="noopener noreferrer" className="block">
-        {cardInner}
-      </a>
-    );
-  }
-  return (
-    <Link to={href} className="block">
-      {cardInner}
-    </Link>
-  );
-};
+    <h3
+      className="font-serif font-bold text-sm leading-tight"
+      style={{ color: COLOR.primary, fontFamily: "'Roboto Serif', serif" }}
+    >
+      {titulo}
+    </h3>
+    <p
+      className="text-[12px] leading-snug"
+      style={{ color: COLOR.textoSec, fontFamily: "'DM Sans', sans-serif" }}
+    >
+      {descricao}
+    </p>
+  </Link>
+);
 
 interface DoshaScores {
   vata: number;
@@ -636,28 +604,35 @@ const ProximosPassos = ({
       >
         Próximos Passos
       </h2>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-3 gap-3 md:gap-4 max-w-2xl">
         <ProximoPassoCard
-          icone="📚"
           titulo={`Biblioteca ${label}`}
-          descricao={`Vídeos e conteúdos selecionados para o seu dosha ${label}`}
-          ctaLabel="Acessar →"
+          descricao="Vídeos e conteúdos do seu dosha"
           href={`/biblioteca/${top}`}
-        />
+          tint={cor}
+        >
+          <BookOpen className="w-7 h-7" style={{ color: cor }} strokeWidth={1.75} />
+        </ProximoPassoCard>
         <ProximoPassoCard
-          icone="⏰"
           titulo={`Horários ${label}`}
-          descricao={`A rotina ideal de horários para equilibrar ${label}`}
-          ctaLabel="Ver horários →"
+          descricao="Rotina ideal para equilibrar"
           href={`/biblioteca/${top}/horarios`}
-        />
+          tint={cor}
+        >
+          <Clock className="w-7 h-7" style={{ color: cor }} strokeWidth={1.75} />
+        </ProximoPassoCard>
         <ProximoPassoCard
-          icone="https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/logo-akasha.svg"
           titulo="Akasha"
-          descricao="Sua consultora de Ayurveda 24h. Tire dúvidas sobre seu dosha."
-          ctaLabel="Conversar →"
+          descricao="Sua consultora de Ayurveda 24h"
           href="/meu-dosha?tab=akasha"
-        />
+          tint={COLOR.primary}
+        >
+          <img
+            src="https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/logo-akasha.svg"
+            alt="Akasha"
+            className="w-7 h-7 object-contain"
+          />
+        </ProximoPassoCard>
       </div>
 
       <div className="pt-4 flex justify-center">
