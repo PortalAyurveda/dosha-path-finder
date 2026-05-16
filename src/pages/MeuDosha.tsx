@@ -641,6 +641,23 @@ const MeuDosha = () => {
 
   const hasAgrav = result.agravVataTags || result.agravPittaTags || result.agravKaphaTags;
 
+  const handleRefazerTeste = () => {
+    if (result) {
+      localStorage.setItem('dosha_test_info', JSON.stringify({
+        nome: result.nome || '',
+        idade: result.idade?.toString() || '',
+        nivel: result.conhecimentoAyurveda || 'Iniciante',
+        email: result.email || '',
+        altura: result.altura || '',
+        peso: result.peso || '',
+        estado: result.estado || '',
+        cidade: result.cidade || '',
+        paisCidade: result.pais || '',
+      }));
+    }
+    window.location.href = '/teste-de-dosha';
+  };
+
   const formattedNome = result.nome
     ? result.nome
         .split(" ")
@@ -759,6 +776,15 @@ const MeuDosha = () => {
                       <p className="text-xs text-muted-foreground">{result.agniPrincipal}</p>
                     </div>
                   )}
+                  <div className="w-full mt-3 flex justify-start">
+                    <button
+                      type="button"
+                      onClick={handleRefazerTeste}
+                      className="text-xs text-muted-foreground underline underline-offset-2 hover:text-foreground transition-colors"
+                    >
+                      Refazer teste
+                    </button>
+                  </div>
                 </div>
                 <ClinicalThermometer doshaScores={doshaScores} />
               </div>
@@ -774,22 +800,7 @@ const MeuDosha = () => {
               email={result.email}
               doshaPrincipal={primaryDosha}
               doshaPrincipalCompleto={result.doshaprincipal || primaryDosha}
-              refazerTeste={() => {
-                if (result) {
-                  localStorage.setItem('dosha_test_info', JSON.stringify({
-                    nome: result.nome || '',
-                    idade: result.idade?.toString() || '',
-                    nivel: result.conhecimentoAyurveda || 'Iniciante',
-                    email: result.email || '',
-                    altura: result.altura || '',
-                    peso: result.peso || '',
-                    estado: result.estado || '',
-                    cidade: result.cidade || '',
-                    paisCidade: result.pais || '',
-                  }));
-                }
-                window.location.href = '/teste-de-dosha';
-              }}
+              refazerTeste={handleRefazerTeste}
             />
           </TabsContent>
 
