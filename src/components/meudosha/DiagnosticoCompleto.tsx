@@ -636,7 +636,8 @@ const ProximosPassos = ({
           titulo="Alimentação"
           descricao="Aprenda a comer de acordo com seus Doshas"
           href={`/biblioteca/${top}/alimentacao`}
-          iconScale={1.55}
+          iconScale={1.35}
+          iconOffsetY={4}
         />
         <ProximoPassoCard
           iconSrc={ICON_ROTINAS}
