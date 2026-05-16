@@ -46,6 +46,7 @@ import AdminLojaVendaDetalhe from "./pages/AdminLojaVendaDetalhe";
 import AdminBiblioteca from "./pages/AdminBiblioteca";
 import AdminTerapeutas from "./pages/AdminTerapeutas";
 import AdminAula from "./pages/AdminAula";
+import AdminDevlog from "./pages/AdminDevlog";
 import Aula from "./pages/Aula";
 import Blog from "./pages/Blog";
 import BlogArticle from "./pages/BlogArticle";
@@ -165,6 +166,7 @@ const RoutedApp = () => {
               <Route path="/admin/biblioteca" element={<AdminRoute><AdminBiblioteca /></AdminRoute>} />
               <Route path="/admin/terapeutas" element={<AdminRoute><AdminTerapeutas /></AdminRoute>} />
               <Route path="/admin/aula" element={<AdminRoute><AdminAula /></AdminRoute>} />
+              <Route path="/admin/devlog" element={<AdminRoute><AdminDevlog /></AdminRoute>} />
 
               {/* Aulas ao vivo */}
               <Route path="/aula/:slug" element={<Aula />} />
