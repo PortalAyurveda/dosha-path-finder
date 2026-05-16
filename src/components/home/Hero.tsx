@@ -155,18 +155,20 @@ const Hero = () => {
       </div>
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-12 md:py-16">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-stretch">
           {/* Left: Preview teaser + banner abaixo, alinhado pelo topo com a coluna da direita */}
-          <div className="hidden lg:flex lg:col-span-7 flex-col items-center justify-start gap-4">
+          <div className="hidden lg:flex lg:col-span-7 flex-col items-center justify-start gap-4 h-full">
             <div className="bg-card/80 backdrop-blur-sm rounded-3xl px-8 py-10 xl:px-10 xl:py-12 border border-border shadow-lg w-full max-w-xl mx-auto">
               <DoshaPreview />
             </div>
-            <img
-              src="https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/banner-zero-sf300x.webp"
-              alt="Banner Portal Ayurveda — acessos rápidos"
-              loading="lazy"
-              className="w-[calc(100%+28px)] max-w-[calc(36rem+28px)] -mx-[14px] h-auto rounded-3xl object-contain"
-            />
+            <div className="flex-1 min-h-0 w-full max-w-[calc(36rem+28px)] -mx-[14px] mx-auto flex items-stretch justify-center">
+              <img
+                src="https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/banner-zero-sf300x.webp"
+                alt="Banner Portal Ayurveda — acessos rápidos"
+                loading="lazy"
+                className="h-full w-auto max-w-full object-contain rounded-3xl"
+              />
+            </div>
           </div>
 
           {/* Right: Heading + Form */}
