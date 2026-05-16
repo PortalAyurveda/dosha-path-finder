@@ -540,17 +540,13 @@ const ProximoPassoCard = ({
   titulo,
   descricao,
   href,
-  tint,
-  iconSize = 36,
-  showRing = true,
+  iconScale = 1,
 }: {
   iconSrc: string;
   titulo: string;
   descricao: string;
   href: string;
-  tint: string;
-  iconSize?: number;
-  showRing?: boolean;
+  iconScale?: number;
 }) => (
   <Link
     to={href}
@@ -563,18 +559,14 @@ const ProximoPassoCard = ({
       boxShadow: "0 1px 8px rgba(53,47,84,0.08)",
     }}
   >
-    {showRing ? (
-      <div
-        className="w-14 h-14 rounded-full flex items-center justify-center shrink-0"
-        style={{ backgroundColor: `${tint}26`, border: `2px solid ${tint}` }}
-      >
-        <img src={iconSrc} alt="" style={{ width: iconSize, height: iconSize }} className="object-contain" />
-      </div>
-    ) : (
-      <div className="h-14 flex items-center justify-center shrink-0">
-        <img src={iconSrc} alt="" style={{ width: iconSize, height: iconSize }} className="object-contain" />
-      </div>
-    )}
+    <div className="w-16 h-16 flex items-center justify-center shrink-0">
+      <img
+        src={iconSrc}
+        alt=""
+        className="w-full h-full object-contain"
+        style={{ transform: `scale(${iconScale})` }}
+      />
+    </div>
     <h3
       className="font-serif font-bold text-sm leading-tight"
       style={{ color: COLOR.primary, fontFamily: "'Roboto Serif', serif" }}
@@ -642,30 +634,25 @@ const ProximosPassos = ({
           titulo="Alimentação"
           descricao="Comer de acordo com seus doshas é o melhor remédio"
           href={`/biblioteca/${top}/alimentacao`}
-          tint={cor}
         />
         <ProximoPassoCard
           iconSrc={ICON_ROTINAS}
           titulo="Horários"
           descricao="A rotina ideal começa em pequenas mudanças"
           href={`/biblioteca/${top}/horarios`}
-          tint={cor}
         />
         <ProximoPassoCard
           iconSrc={ICON_ALQUIMIA}
           titulo="Alquimia"
           descricao="Aprenda a tratar a raiz, não o sintoma"
           href={`/biblioteca/${top}/alquimia`}
-          tint={cor}
         />
         <ProximoPassoCard
           iconSrc={ICON_AKASHA}
           titulo="Akasha"
           descricao="Sua consultora de Ayurveda 24h"
           href="/meu-dosha?tab=akasha"
-          tint={COLOR.primary}
-          iconSize={56}
-          showRing={false}
+          iconScale={0.85}
         />
       </div>
     </section>
