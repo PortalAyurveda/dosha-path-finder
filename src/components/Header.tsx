@@ -83,6 +83,8 @@ const Header = () => {
 
   const isActive = (path: string) => location.pathname === path;
 
+  const isPremium = profile?.is_premium === true;
+
   const navLinks = [
     { label: "Portal", to: "/" },
     { label: "Loja Samkhya", to: "/samkhya" },
@@ -91,6 +93,7 @@ const Header = () => {
     { label: "Cursos", to: "/cursos" },
     { label: "Terapeutas", to: "/terapeutas-do-brasil" },
     { label: "Métricas", to: "/metricas" },
+    ...(!isPremium ? [{ label: "Assinar", to: "/assinar" }] : []),
   ];
 
   const firstName = doshaResult?.nome?.split(" ")[0] 
