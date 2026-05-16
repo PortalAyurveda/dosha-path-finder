@@ -40,7 +40,7 @@ const Pesquisa = () => {
       const [prod, art, ...vids] = await Promise.all([
         lojaSupabase
           .from("produtos")
-          .select("slug, nome_display, imagem_url, resumo_curto")
+          .select("slug, nome_display, imagem_url, resumo_curto, preco_normal, preco_pix")
           .ilike("nome_display", `%${t}%`)
           .eq("ativo", true)
           .limit(LIMIT),
