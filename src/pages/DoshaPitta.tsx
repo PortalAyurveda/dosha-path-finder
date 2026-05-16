@@ -20,6 +20,8 @@ import NutritionHabits from "@/components/dosha/NutritionHabits";
 import CollapsibleSubdoshaCard from "@/components/dosha/CollapsibleSubdoshaCard";
 import AdoecimentoSubdoshaCard from "@/components/dosha/AdoecimentoSubdoshaCard";
 import { AlertTriangle, Droplets } from "lucide-react";
+import PremiumGateSection from "@/components/dosha/PremiumGateSection";
+import { useUser } from "@/contexts/UserContext";
 
 interface DoshaPittaProps {
   defaultTab?: DoshaTab;
