@@ -694,8 +694,8 @@ const DiagnosticoCompleto = ({
         doshaPrincipal={doshaPrincipal}
         doshaPrincipalCompleto={doshaPrincipalCompleto}
       />
-      {!!produtos?.length && <ProtocoloSamkhya analise={analise} produtos={produtos} />}
       <Plano30DiasBloqueado />
+      {!!produtos?.length && <ProtocoloSamkhya analise={analise} produtos={produtos} />}
       <ProximosPassos refazerTeste={refazerTeste} />
     </div>
   );
