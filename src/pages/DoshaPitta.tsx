@@ -142,6 +142,8 @@ const DoshaPitta = ({ defaultTab = "principal" }: DoshaPittaProps) => {
         </>
       ) : activeTab === "horarios" ? (
         <DoshaRoutineContent dosha="pitta" {...pittaRoutineData} />
+      ) : !isPremium ? (
+        <PremiumGateSection />
       ) : (
         <>
           <DoshaSection icon="🔍" title="Sinais Diagnósticos">
