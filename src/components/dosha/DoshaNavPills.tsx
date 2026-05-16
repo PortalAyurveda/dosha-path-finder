@@ -51,12 +51,13 @@ const DoshaNavPills = ({ dosha, activeTab, onTabChange }: DoshaNavPillsProps) =>
 
   const handleClick = (id: DoshaTab) => {
     if (id === "avancado" && !isPremium) {
-      toast.info("Avançado é um recurso Premium", {
-        description: "Assine o Portal Ayurveda para liberar.",
-        action: { label: "Assinar", onClick: () => navigate("/assinar") },
-      });
+      navigate("/assinar");
       return;
     }
+    onTabChange(id);
+    const path = `/biblioteca/${dosha}${tabRoutes[id]}`;
+    navigate(path);
+  };
     onTabChange(id);
     const path = `/biblioteca/${dosha}${tabRoutes[id]}`;
     navigate(path);
