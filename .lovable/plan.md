@@ -1,40 +1,29 @@
-## Auditoria
+## Plano — Restaurar Métricas personalizadas + reorganizar hero
 
-Comparei os 4 SVGs/PNG usados nos cards de Próximos Passos:
+### Contexto
+- A engine de regras (`src/data/metricasRules.ts`, 49 regras) e o card-folha (`src/components/meudosha/MetricasCard.tsx`) **continuam preservados** no repositório. O conteúdo só foi removido do `MetricasTab.tsx`, que hoje renderiza apenas o gráfico de evolução (timeline + Agni + Objetivo Premium).
+- Precisamos: (1) trazer os cards de volta para a aba **Métricas**, (2) tirar o timeline dali e disponibilizá-lo como modal/sheet acionado por um novo botão **"Gráficos"** no hero do `/meu-dosha`, ao lado do **"Refazer teste"**, ambos abaixo do bloco "Fogo Digestivo (Agni)". O botão "Gráficos" fica trancado para usuários não-premium (cadeado).
 
-| Ícone | viewBox / proporção |
-|---|---|
-| Alimentação | 359 × 449 (retrato, ~0.80) |
-| Horários | 283 × 288 (≈ quadrado) |
-| Alquimia (PNG) | quadrado |
-| Akasha | 868 × 885 (≈ quadrado) |
+### Mudanças
 
-**Causa raiz:** o SVG de Alimentação é o único em formato retrato (mais alto que largo). Como a caixa é quadrada (`w-16 h-16`) com `object-contain`, ele se ajusta pela altura e ocupa toda a vertical da caixa — por isso o topo (e/ou rodapé) parece "sair" do alinhamento dos demais, que têm folga natural acima/abaixo. O `iconScale={1.55}` atual amplifica isso.
+**1. `src/components/meudosha/MetricasTab.tsx` — reescrever**
+- Voltar à versão "rules-based": busca `doshas_registros` por `registroUuid`, busca `metricas_snapshot` na `data_calculo` mais recente, conta total de registros, roda `evaluateRules(ctx)` e renderiza os cards agrupados por categoria (Diagnóstico, Crítico, Alerta, Estrutural…).
+- Reaproveitar `MetricasCard` como está (sem footer "entre N pessoas", já removido).
+- Skeleton + estado vazio mantidos. Sem dependência de `objetivos_tratamento` nem de `agni*Chart`.
 
-Além disso, o conteúdo desenhado dentro do PNG embutido no SVG não é perfeitamente centralizado — há mais "ar" embaixo do que em cima, o que faz o ícone parecer empurrado para cima.
+**2. Novo `src/components/meudosha/EvolucaoSheet.tsx`**
+- Mover todo o conteúdo "timeline" hoje em `MetricasTab.tsx` (DoshasEvolutionChart + AgniMiniChart + AgniIndicator + ObjetivosPremiumBlock) para um `Sheet`/`Dialog` shadcn aberto pelo botão "Gráficos". Recebe `registroUuid` e `isPremium`.
 
-## Mudança proposta (somente Alimentação)
+**3. `src/pages/MeuDosha.tsx` — hero**
+- Abaixo do card "Fogo Digestivo (Agni)" trocar a área que hoje só tem "Refazer teste" por uma linha com **dois botões lado a lado**:
+  - **Esquerda:** `Refazer teste` (mantém estilo atual, link sutil ou outline).
+  - **Direita:** `Gráficos` com ícone `LineChart` (lucide). Se `!isPremium` → ícone de cadeado (`Lock`) e onClick abre o paywall já existente (ou navega para `/assinar`); se premium → abre o `EvolucaoSheet`.
+- Remover a passagem de `insights`/`insightsLoading` para `MetricasTab` (props legadas viram opcionais e ficam ignoradas).
 
-No `ProximoPassoCard`, permitir um deslocamento vertical opcional e ajustar o ícone de Alimentação:
+**4. Limpeza**
+- `MetricasTab` deixa de importar `premiumSupabase`, `DoshasEvolutionChart`, `AgniMiniChart`, `AgniIndicator`, `ObjetivosPremiumBlock`, `doshaScale` — esses passam a ser usados só pelo `EvolucaoSheet`.
 
-1. Adicionar prop opcional `iconOffsetY` (em px) ao `ProximoPassoCard`, aplicada no `transform` junto com o `scale`.
-2. Reduzir `iconScale` de `1.55` → `1.35` (para o ícone parar de "estourar" a caixa por cima/baixo) e aplicar `iconOffsetY={4}` para empurrá-lo levemente para baixo, alinhando o centro óptico com os demais.
-3. Nenhum outro card é alterado.
-
-## Detalhes técnicos
-
-Em `src/components/meudosha/DiagnosticoCompleto.tsx`:
-
-```tsx
-// ProximoPassoCard
-style={{ transform: `translateY(${iconOffsetY}px) scale(${iconScale})` }}
-
-// Alimentação card
-<ProximoPassoCard
-  ...
-  iconScale={1.35}
-  iconOffsetY={4}
-/>
-```
-
-Se após a aplicação ainda parecer alto, ajustamos `iconOffsetY` em incrementos de 2px.
+### Fora de escopo
+- Mexer em outras abas (Perfil, Artigos, Vídeos, Akasha).
+- Reescrever a engine de regras ou o copy dos cards.
+- Mudar o paywall existente — apenas reaproveitar o fluxo já em uso para o cadeado do botão Gráficos.
