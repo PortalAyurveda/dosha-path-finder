@@ -604,7 +604,7 @@ const ProximosPassos = ({
       >
         Próximos Passos
       </h2>
-      <div className="grid grid-cols-3 gap-3 md:gap-4 max-w-2xl">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 max-w-3xl">
         <ProximoPassoCard
           titulo={`Biblioteca ${label}`}
           descricao="Vídeos e conteúdos do seu dosha"
@@ -622,6 +622,14 @@ const ProximosPassos = ({
           <Clock className="w-7 h-7" style={{ color: cor }} strokeWidth={1.75} />
         </ProximoPassoCard>
         <ProximoPassoCard
+          titulo="Vídeos"
+          descricao="Aulas e vídeos personalizados"
+          href="/meu-dosha?tab=videos"
+          tint={COLOR.secondary}
+        >
+          <Play className="w-7 h-7" style={{ color: COLOR.secondary }} strokeWidth={1.75} />
+        </ProximoPassoCard>
+        <ProximoPassoCard
           titulo="Akasha"
           descricao="Sua consultora de Ayurveda 24h"
           href="/meu-dosha?tab=akasha"
@@ -633,12 +641,6 @@ const ProximosPassos = ({
             className="w-7 h-7 object-contain"
           />
         </ProximoPassoCard>
-      </div>
-
-      <div className="pt-4 flex justify-center">
-        <Button variant="outline" onClick={refazerTeste} className="text-sm">
-          Refazer Teste
-        </Button>
       </div>
     </section>
   );
