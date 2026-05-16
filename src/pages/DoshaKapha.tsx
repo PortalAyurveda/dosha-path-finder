@@ -31,6 +31,8 @@ const DoshaKapha = ({ defaultTab = "principal" }: DoshaKaphaProps) => {
   const [searchParams] = useSearchParams();
   const tabFromUrl = searchParams.get("tab") as DoshaTab | null;
   const [activeTab, setActiveTab] = useState<DoshaTab>(tabFromUrl || defaultTab);
+  const { profile } = useUser();
+  const isPremium = profile?.is_premium === true;
 
   return (
     <>
