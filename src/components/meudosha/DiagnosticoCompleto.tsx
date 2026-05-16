@@ -541,12 +541,14 @@ const ProximoPassoCard = ({
   descricao,
   href,
   iconScale = 1,
+  iconOffsetY = 0,
 }: {
   iconSrc: string;
   titulo: string;
   descricao: string;
   href: string;
   iconScale?: number;
+  iconOffsetY?: number;
 }) => (
   <Link
     to={href}
@@ -564,7 +566,7 @@ const ProximoPassoCard = ({
         src={iconSrc}
         alt=""
         className="w-full h-full object-contain"
-        style={{ transform: `scale(${iconScale})` }}
+        style={{ transform: `translateY(${iconOffsetY}px) scale(${iconScale})` }}
       />
     </div>
     <h3

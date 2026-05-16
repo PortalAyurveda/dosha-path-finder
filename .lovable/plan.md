@@ -1,12 +1,40 @@
-## Próximos Passos — uniformizar ícones
+## Auditoria
 
-**Problema:** Akasha parece maior porque os SVGs de Alimentação/Horários/Alquimia já trazem uma "moldura" circular colorida dentro do próprio arquivo, ocupando parte da área útil. Akasha não tem essa moldura, então o desenho ocupa o quadrado inteiro.
+Comparei os 4 SVGs/PNG usados nos cards de Próximos Passos:
 
-**Solução (apenas visual, em `src/components/meudosha/DiagnosticoCompleto.tsx`):**
+| Ícone | viewBox / proporção |
+|---|---|
+| Alimentação | 359 × 449 (retrato, ~0.80) |
+| Horários | 283 × 288 (≈ quadrado) |
+| Alquimia (PNG) | quadrado |
+| Akasha | 868 × 885 (≈ quadrado) |
 
-1. Remover o prop `showRing` e o `tint` do `ProximoPassoCard` — nenhum card terá mais a rodela externa nem variação por dosha.
-2. Renderizar os 4 ícones diretamente, sem container colorido, todos com o mesmo tamanho de caixa (ex: `w-16 h-16`, `object-contain`).
-3. Manter a logo da Akasha um pouco maior dentro da mesma caixa (ela é o único sem padding interno no SVG) — ou aplicar um leve `scale-90` nela para compensar e igualar visualmente aos demais que já têm padding embutido.
-4. Limpar props/variáveis não usadas (`tint`, `iconSize`, `showRing`, `corDosha` aqui).
+**Causa raiz:** o SVG de Alimentação é o único em formato retrato (mais alto que largo). Como a caixa é quadrada (`w-16 h-16`) com `object-contain`, ele se ajusta pela altura e ocupa toda a vertical da caixa — por isso o topo (e/ou rodapé) parece "sair" do alinhamento dos demais, que têm folga natural acima/abaixo. O `iconScale={1.55}` atual amplifica isso.
 
-Resultado: 4 ícones com mesma "footprint" visual, sem rodela, mesmo alinhamento.
+Além disso, o conteúdo desenhado dentro do PNG embutido no SVG não é perfeitamente centralizado — há mais "ar" embaixo do que em cima, o que faz o ícone parecer empurrado para cima.
+
+## Mudança proposta (somente Alimentação)
+
+No `ProximoPassoCard`, permitir um deslocamento vertical opcional e ajustar o ícone de Alimentação:
+
+1. Adicionar prop opcional `iconOffsetY` (em px) ao `ProximoPassoCard`, aplicada no `transform` junto com o `scale`.
+2. Reduzir `iconScale` de `1.55` → `1.35` (para o ícone parar de "estourar" a caixa por cima/baixo) e aplicar `iconOffsetY={4}` para empurrá-lo levemente para baixo, alinhando o centro óptico com os demais.
+3. Nenhum outro card é alterado.
+
+## Detalhes técnicos
+
+Em `src/components/meudosha/DiagnosticoCompleto.tsx`:
+
+```tsx
+// ProximoPassoCard
+style={{ transform: `translateY(${iconOffsetY}px) scale(${iconScale})` }}
+
+// Alimentação card
+<ProximoPassoCard
+  ...
+  iconScale={1.35}
+  iconOffsetY={4}
+/>
+```
+
+Se após a aplicação ainda parecer alto, ajustamos `iconOffsetY` em incrementos de 2px.
