@@ -15,6 +15,7 @@ import DiagnosticoCompleto from "@/components/meudosha/DiagnosticoCompleto";
 import VideosTab from "@/components/meudosha/VideosTab";
 import AkashaTab from "@/components/meudosha/AkashaTab";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
+import { useUser } from "@/contexts/UserContext";
 
 interface DoshaResult {
   nome: string | null;
@@ -461,6 +462,8 @@ const MeuDosha = () => {
     : 'perfil';
   const initialMode = modeParam === 'personalizado' ? 'personalizado' : 'gerais';
   const queryClient = useQueryClient();
+  const { profile } = useUser();
+  const isPremium = !!profile?.is_premium;
 
   // ── Registro (doshas_registros) ──
   const { data: registroRaw, isLoading: registroLoading } = useQuery({
@@ -670,7 +673,8 @@ const MeuDosha = () => {
     <PageContainer title={`Meu Dosha — ${formattedNome}`} description={`Resultado do teste de dosha de ${formattedNome}: ${result.doshaprincipal}`}>
       <div className="max-w-3xl mx-auto space-y-6">
 
-        {/* ===== HEADER: Premium banner (compact) ===== */}
+        {/* ===== HEADER: Premium banner (compact) — só para não-premium ===== */}
+        {!isPremium && (
         <Link
           to="/assinar"
           aria-label="Conheça o Portal Premium"
@@ -715,6 +719,7 @@ const MeuDosha = () => {
             ))}
           </div>
         </Link>
+        )}
 
 
         {/* ===== TABS ===== */}
@@ -801,6 +806,7 @@ const MeuDosha = () => {
               doshaPrincipal={primaryDosha}
               doshaPrincipalCompleto={result.doshaprincipal || primaryDosha}
               refazerTeste={handleRefazerTeste}
+              isPremium={isPremium}
             />
           </TabsContent>
 
