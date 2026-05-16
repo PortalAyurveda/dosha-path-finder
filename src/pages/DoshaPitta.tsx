@@ -20,6 +20,8 @@ import NutritionHabits from "@/components/dosha/NutritionHabits";
 import CollapsibleSubdoshaCard from "@/components/dosha/CollapsibleSubdoshaCard";
 import AdoecimentoSubdoshaCard from "@/components/dosha/AdoecimentoSubdoshaCard";
 import { AlertTriangle, Droplets } from "lucide-react";
+import PremiumGateSection from "@/components/dosha/PremiumGateSection";
+import { useUser } from "@/contexts/UserContext";
 
 interface DoshaPittaProps {
   defaultTab?: DoshaTab;
@@ -29,6 +31,8 @@ const DoshaPitta = ({ defaultTab = "principal" }: DoshaPittaProps) => {
   const [searchParams] = useSearchParams();
   const tabFromUrl = searchParams.get("tab") as DoshaTab | null;
   const [activeTab, setActiveTab] = useState<DoshaTab>(tabFromUrl || defaultTab);
+  const { profile } = useUser();
+  const isPremium = profile?.is_premium === true;
 
   return (
     <>
@@ -138,6 +142,8 @@ const DoshaPitta = ({ defaultTab = "principal" }: DoshaPittaProps) => {
         </>
       ) : activeTab === "horarios" ? (
         <DoshaRoutineContent dosha="pitta" {...pittaRoutineData} />
+      ) : !isPremium ? (
+        <PremiumGateSection />
       ) : (
         <>
           <DoshaSection icon="🔍" title="Sinais Diagnósticos">

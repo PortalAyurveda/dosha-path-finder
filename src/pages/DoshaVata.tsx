@@ -19,6 +19,8 @@ import { vataRoutineData } from "@/data/routineData";
 import { vataFoodData } from "@/data/foodData";
 import { vataRemediesData } from "@/data/remediesData";
 import { type DoshaTab } from "@/components/dosha/DoshaNavPills";
+import PremiumGateSection from "@/components/dosha/PremiumGateSection";
+import { useUser } from "@/contexts/UserContext";
 import { AlertTriangle, Droplets } from "lucide-react";
 
 interface DoshaVataProps {
@@ -29,6 +31,8 @@ const DoshaVata = ({ defaultTab = "principal" }: DoshaVataProps) => {
   const [searchParams] = useSearchParams();
   const tabFromUrl = searchParams.get("tab") as DoshaTab | null;
   const [activeTab, setActiveTab] = useState<DoshaTab>(tabFromUrl || defaultTab);
+  const { profile } = useUser();
+  const isPremium = profile?.is_premium === true;
 
   return (
     <>
@@ -139,6 +143,8 @@ const DoshaVata = ({ defaultTab = "principal" }: DoshaVataProps) => {
         </>
       ) : activeTab === "horarios" ? (
         <DoshaRoutineContent dosha="vata" {...vataRoutineData} />
+      ) : !isPremium ? (
+        <PremiumGateSection />
       ) : (
         <>
           {/* AVANÇADO */}
