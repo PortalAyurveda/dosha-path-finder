@@ -4,6 +4,7 @@ import { Menu, LogIn, LogOut, ShoppingBag, Home } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { useUser } from "@/contexts/UserContext";
+import { useCart } from "@/contexts/CartContext";
 import { samkhyaTokens } from "@/components/samkhya/tokens";
 import samkhyaLogo from "@/assets/samkhya-logo-cropped.png";
 
