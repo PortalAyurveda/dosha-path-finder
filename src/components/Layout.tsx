@@ -10,7 +10,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
       <div className="flex min-h-screen flex-col">
         <ScrollToTop />
         <Header />
-        <div className="flex-1">{children}</div>
+        <div className="flex-1 min-h-screen">{children}</div>
         <Footer />
       </div>
     </HeaderCtaProvider>

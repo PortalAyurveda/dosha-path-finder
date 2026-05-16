@@ -13,6 +13,11 @@ export default defineConfig(({ mode }) => ({
     },
   },
   plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
+  build: {
+    target: "es2020",
+    cssCodeSplit: true,
+    reportCompressedSize: false,
+  },
   optimizeDeps: {
     include: ["react-dom", "react-dom/client", "@radix-ui/react-tooltip", "@radix-ui/react-portal"],
   },
