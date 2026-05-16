@@ -870,6 +870,7 @@ const MeuDosha = () => {
           </TabsContent>
         </Tabs>
       </div>
+      <EvolucaoSheet open={evolucaoOpen} onOpenChange={setEvolucaoOpen} registroUuid={registroUuid} />
     </PageContainer>
   );
 };
