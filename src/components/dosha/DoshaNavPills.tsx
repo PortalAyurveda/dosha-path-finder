@@ -28,7 +28,7 @@ const tabRoutes: Record<DoshaTab, string> = {
   principal: "",
   horarios: "/horarios",
   alimentacao: "/alimentacao",
-  remedios: "/remedios",
+  remedios: "/alquimia",
   videos: "/videos",
   avancado: "/avancado",
 };
