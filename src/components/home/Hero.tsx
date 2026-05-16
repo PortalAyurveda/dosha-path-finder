@@ -167,7 +167,7 @@ const Hero = () => {
                   { Icon: Calendar, title: "Rotinas Diárias", subtitle: "Dinacharya personalizada", color: "#6B7FF2" },
                   { Icon: Play, title: "Artigos e Vídeos", subtitle: "Conteúdo atualizado diariamente", color: "#6B7FF2" },
                   { Icon: BookOpen, title: "Aulas Exclusivas", subtitle: "Escolha a próxima aula que quer no Portal", color: "#6B7FF2" },
-                  { Icon: Brain, title: "Akasha, sua consultora", subtitle: "Assistente de Ayurveda 24h", color: "#F28888" },
+                  { Icon: Brain, title: "Akasha consultora", subtitle: "Assistente de Ayurveda 24h", color: "#F28888" },
                 ].map(({ Icon, title, subtitle, color }) => (
                   <div key={title} className="flex items-center gap-3 px-4 py-5">
                     <Icon className="h-6 w-6 shrink-0" style={{ color }} aria-hidden />
