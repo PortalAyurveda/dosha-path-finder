@@ -490,8 +490,8 @@ const ProtocoloSamkhya = ({
   );
 };
 
-// ============ SEÇÃO 3 — Plano 30 Dias 🔒 ============
-const Plano30DiasBloqueado = () => (
+// ============ SEÇÃO 3 — Plano 30 Dias ============
+const Plano30Dias = ({ isPremium }: { isPremium: boolean }) => (
   <section className="space-y-4 pt-12">
     <h2
       className="font-serif font-bold text-xl md:text-2xl"
@@ -500,19 +500,36 @@ const Plano30DiasBloqueado = () => (
       Seu Plano de 30 Dias
     </h2>
 
-    <Link
-      to="/assinar"
-      aria-label="Conheça o Portal Premium"
-      className={cn("block overflow-hidden hover:opacity-95 transition-opacity", LEAF)}
-    >
-      <img
-        src="https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/banner-um-sf300x.webp"
-        alt="Desbloqueie seu plano personalizado de 30 dias no Portal Premium"
-        loading="lazy"
-        className="block w-full h-auto"
-        style={{ transform: "scale(1.03)", transformOrigin: "center" }}
-      />
-    </Link>
+    {isPremium ? (
+      <div
+        className={cn("p-6 md:p-8 text-center", LEAF)}
+        style={{
+          background: `linear-gradient(135deg, ${COLOR.surfaceSun} 0%, #FFFFFF 100%)`,
+          border: `1px solid ${COLOR.cardBorder}`,
+        }}
+      >
+        <p
+          className="text-base md:text-lg font-medium"
+          style={{ color: COLOR.primary, fontFamily: "'Roboto Serif', serif" }}
+        >
+          Em breve liberado para você,
+          <br />
+          <span style={{ color: COLOR.ouro }}>assinante Premium do Portal Ayurveda</span>.
+        </p>
+      </div>
+    ) : (
+      <Link
+        to="/assinar"
+        aria-label="Conheça o Portal Premium"
+        className={cn("block overflow-hidden hover:opacity-95 transition-opacity", LEAF)}
+      >
+        <img
+          src="https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/banner-um-sf300x.webp"
+          alt="Desbloqueie seu plano personalizado de 30 dias no Portal Premium"
+          className="block w-full h-auto"
+        />
+      </Link>
+    )}
   </section>
 );
 
