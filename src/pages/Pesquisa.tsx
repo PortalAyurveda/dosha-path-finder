@@ -84,7 +84,7 @@ const Pesquisa = () => {
   ];
 
   return (
-    <PageContainer>
+    <PageContainer title={`Pesquisa${debounced ? `: ${debounced}` : ""}`} description="Pesquise produtos, vídeos e artigos.">
       <Seo title={`Pesquisa: ${debounced || ""}`} description="Pesquise produtos, vídeos e artigos." />
       <div className="max-w-4xl mx-auto py-6">
         <h1 className="font-serif text-2xl md:text-3xl font-bold text-primary mb-4">Pesquisa</h1>
