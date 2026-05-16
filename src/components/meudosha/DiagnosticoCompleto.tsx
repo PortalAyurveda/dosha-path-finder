@@ -675,6 +675,7 @@ interface DiagnosticoCompletoProps {
   doshaPrincipal: string;
   doshaPrincipalCompleto: string;
   refazerTeste: () => void;
+  scores: DoshaScores;
 }
 
 const DiagnosticoCompleto = ({
@@ -682,6 +683,7 @@ const DiagnosticoCompleto = ({
   doshaPrincipal,
   doshaPrincipalCompleto,
   refazerTeste,
+  scores,
 }: DiagnosticoCompletoProps) => {
   const { analise, analiseLoading, analiseTimeout } = useAnalise(email);
   const { data: produtos } = useProdutosPrescritos(analise);
