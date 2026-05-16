@@ -46,8 +46,17 @@ const pills = [
 
 const DoshaNavPills = ({ dosha, activeTab, onTabChange }: DoshaNavPillsProps) => {
   const navigate = useNavigate();
+  const { profile } = useUser();
+  const isPremium = profile?.is_premium === true;
 
   const handleClick = (id: DoshaTab) => {
+    if (id === "avancado" && !isPremium) {
+      toast.info("Avançado é um recurso Premium", {
+        description: "Assine o Portal Ayurveda para liberar.",
+        action: { label: "Assinar", onClick: () => navigate("/assinar") },
+      });
+      return;
+    }
     onTabChange(id);
     const path = `/biblioteca/${dosha}${tabRoutes[id]}`;
     navigate(path);
@@ -61,16 +70,18 @@ const DoshaNavPills = ({ dosha, activeTab, onTabChange }: DoshaNavPillsProps) =>
         {pills.map((p) => {
           const Icon = p.icon;
           const isActive = p.id === activeTab;
+          const locked = p.id === "avancado" && !isPremium;
           return (
             <button
               key={p.id}
               onClick={() => handleClick(p.id)}
               className={`flex items-center gap-1 px-3 sm:px-4 py-2 rounded-full border font-semibold text-xs sm:text-sm transition-all whitespace-nowrap shrink-0 ${
                 isActive ? colors.active : colors.inactive
-              }`}
+              } ${locked ? "opacity-70" : ""}`}
             >
               <Icon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
               {p.label}
+              {locked && <Lock className="h-3 w-3 ml-0.5" />}
             </button>
           );
         })}
