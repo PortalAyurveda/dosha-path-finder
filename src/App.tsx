@@ -15,6 +15,7 @@ import MeuDosha from "./pages/MeuDosha";
 import Biblioteca from "./pages/Biblioteca";
 import CursoAlimentacao from "./pages/curso/Alimentacao";
 import CursoFormacao from "./pages/curso/Formacao";
+import CursoFormacaoLive from "./pages/curso/FormacaoLive";
 import CursoRotinas from "./pages/curso/Rotinas";
 import TerapeutasDoBrasil from "./pages/TerapeutasDoBrasil";
 import TerapeutaPerfil from "./pages/TerapeutaPerfil";
