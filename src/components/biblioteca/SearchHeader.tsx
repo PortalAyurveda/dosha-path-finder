@@ -28,11 +28,8 @@ const SearchHeader = ({ searchTerm, onSearchChange, isAdvanced, onAdvancedChange
   const { profile } = useUser();
   const isPremium = profile?.is_premium === true;
 
-  const handlePremiumGate = (label: string) => {
-    toast.info(`${label} é um recurso Premium`, {
-      description: "Assine o Portal Ayurveda para liberar.",
-      action: { label: "Assinar", onClick: () => navigate("/assinar") },
-    });
+  const handlePremiumGate = () => {
+    navigate("/assinar");
   };
 
   return (
