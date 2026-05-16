@@ -96,7 +96,7 @@ const Footer = () => {
 
         {/* Bottom row: copyright */}
         <div
-          className="mt-8 pt-6 border-t text-center"
+          className="mt-4 pt-3 md:mt-8 md:pt-6 border-t text-center"
           style={{
             borderColor: isSamkhya
               ? "rgba(255,255,255,0.15)"
