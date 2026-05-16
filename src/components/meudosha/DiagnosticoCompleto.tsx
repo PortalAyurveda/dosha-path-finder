@@ -500,20 +500,22 @@ const Plano30DiasBloqueado = () => (
       Seu Plano de 30 Dias
     </h2>
 
-    <div
-      className={cn("p-10 flex flex-col items-center text-center gap-4", LEAF)}
-      style={{ backgroundColor: COLOR.surfaceSun, border: `1px solid ${COLOR.cardBorder}` }}
+    <Link
+      to="/assinar"
+      aria-label="Conheça o Portal Premium"
+      className={cn("block overflow-hidden hover:opacity-95 transition-opacity", LEAF)}
     >
-      <Lock className="w-10 h-10" style={{ color: COLOR.primary }} strokeWidth={1.5} />
-      <p
-        className="text-base font-medium max-w-md"
-        style={{ color: COLOR.primary, fontFamily: "'DM Sans', sans-serif" }}
-      >
-        Em breve: plano personalizado de rotinas para assinantes
-      </p>
-    </div>
+      <img
+        src="https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/banner-um-sf300x.webp"
+        alt="Desbloqueie seu plano personalizado de 30 dias no Portal Premium"
+        loading="lazy"
+        className="block w-full h-auto"
+        style={{ transform: "scale(1.03)", transformOrigin: "center" }}
+      />
+    </Link>
   </section>
 );
+
 
 // ============ SEÇÃO 4 — Próximos Passos ============
 const ProximoPassoCard = ({
