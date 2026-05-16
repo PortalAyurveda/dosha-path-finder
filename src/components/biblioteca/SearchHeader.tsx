@@ -1,7 +1,10 @@
-import { Search, Star, UtensilsCrossed, Radio, Sparkles } from "lucide-react";
+import { Search, Star, UtensilsCrossed, Radio, Sparkles, Lock } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { useUser } from "@/contexts/UserContext";
+import { toast } from "sonner";
 
 export type VideoCategory = "selecao" | "receitas" | "lives";
 
@@ -14,13 +17,24 @@ interface SearchHeaderProps {
   onCategoryChange: (category: VideoCategory) => void;
 }
 
-const categories: { key: VideoCategory; label: string; icon: React.ReactNode }[] = [
+const categories: { key: VideoCategory; label: string; icon: React.ReactNode; premium?: boolean }[] = [
   { key: "selecao", label: "Seleção", icon: <Star className="h-4 w-4" /> },
   { key: "lives", label: "Lives do Almoço", icon: <Radio className="h-4 w-4" /> },
-  { key: "receitas", label: "Receitas", icon: <UtensilsCrossed className="h-4 w-4" /> },
+  { key: "receitas", label: "Receitas", icon: <UtensilsCrossed className="h-4 w-4" />, premium: true },
 ];
 
 const SearchHeader = ({ searchTerm, onSearchChange, isAdvanced, onAdvancedChange, category, onCategoryChange }: SearchHeaderProps) => {
+  const navigate = useNavigate();
+  const { profile } = useUser();
+  const isPremium = profile?.is_premium === true;
+
+  const handlePremiumGate = (label: string) => {
+    toast.info(`${label} é um recurso Premium`, {
+      description: "Assine o Portal Ayurveda para liberar.",
+      action: { label: "Assinar", onClick: () => navigate("/assinar") },
+    });
+  };
+
   return (
     <div className="bg-surface-sun rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm p-8 md:p-12 mb-8 md:mb-12 text-center">
       <h1 className="font-serif text-3xl md:text-4xl lg:text-5xl font-bold text-primary mb-3">
@@ -33,20 +47,29 @@ const SearchHeader = ({ searchTerm, onSearchChange, isAdvanced, onAdvancedChange
       {/* Category buttons */}
       {!isAdvanced && (
         <div className="flex flex-wrap items-center justify-center gap-2 mb-5">
-          {categories.map((cat) => (
-            <button
-              key={cat.key}
-              onClick={() => onCategoryChange(cat.key)}
-              className={`flex items-center gap-1.5 px-4 py-2 rounded-tl-xl rounded-br-xl rounded-tr-sm rounded-bl-sm text-sm font-medium transition-all border ${
-                category === cat.key
-                  ? "bg-primary text-primary-foreground border-primary shadow-md"
-                  : "bg-background text-muted-foreground border-border hover:border-primary/40 hover:text-primary"
-              }`}
-            >
-              {cat.icon}
-              {cat.label}
-            </button>
-          ))}
+          {categories.map((cat) => {
+            const locked = cat.premium && !isPremium;
+            return (
+              <button
+                key={cat.key}
+                onClick={() => {
+                  if (locked) return handlePremiumGate(cat.label);
+                  onCategoryChange(cat.key);
+                }}
+                className={`flex items-center gap-1.5 px-4 py-2 rounded-tl-xl rounded-br-xl rounded-tr-sm rounded-bl-sm text-sm font-medium transition-all border ${
+                  category === cat.key
+                    ? "bg-primary text-primary-foreground border-primary shadow-md"
+                    : locked
+                    ? "bg-background text-muted-foreground/70 border-border hover:border-primary/40"
+                    : "bg-background text-muted-foreground border-border hover:border-primary/40 hover:text-primary"
+                }`}
+              >
+                {cat.icon}
+                {cat.label}
+                {locked && <Lock className="h-3 w-3 ml-0.5" />}
+              </button>
+            );
+          })}
         </div>
       )}
 
@@ -64,11 +87,25 @@ const SearchHeader = ({ searchTerm, onSearchChange, isAdvanced, onAdvancedChange
         <Switch
           id="advanced-search"
           checked={isAdvanced}
-          onCheckedChange={onAdvancedChange}
+          disabled={!isPremium}
+          onCheckedChange={(v) => {
+            if (!isPremium) return handlePremiumGate("Busca Avançada");
+            onAdvancedChange(v);
+          }}
         />
-        <Label htmlFor="advanced-search" className="text-sm font-sans text-muted-foreground cursor-pointer flex items-center gap-1.5">
+        <Label
+          htmlFor="advanced-search"
+          className="text-sm font-sans text-muted-foreground cursor-pointer flex items-center gap-1.5"
+          onClick={(e) => {
+            if (!isPremium) {
+              e.preventDefault();
+              handlePremiumGate("Busca Avançada");
+            }
+          }}
+        >
           <Sparkles className="h-3.5 w-3.5" />
           Busca Avançada (em todas as categorias)
+          {!isPremium && <Lock className="h-3 w-3 ml-0.5" />}
         </Label>
       </div>
     </div>
