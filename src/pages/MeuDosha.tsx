@@ -4,7 +4,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { trackPixel } from "@/lib/metaPixel";
 import PageContainer from "@/components/PageContainer";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, ChevronDown, ChevronUp } from "lucide-react";
+import { Loader2, ChevronDown, ChevronUp, Calendar, Play, BookOpen, Brain } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
@@ -653,13 +653,47 @@ const MeuDosha = () => {
     <PageContainer title={`Meu Dosha — ${formattedNome}`} description={`Resultado do teste de dosha de ${formattedNome}: ${result.doshaprincipal}`}>
       <div className="max-w-3xl mx-auto space-y-6">
 
-        {/* ===== HEADER ===== */}
-        <div className="text-center space-y-2">
-          <h1 className="font-serif text-2xl md:text-3xl font-bold text-foreground">
-            Seu Dosha principal é: <span style={{ color: PIE_COLORS[primaryDosha] }}>{result.doshaprincipal}</span>
-          </h1>
-          <p className="text-muted-foreground text-sm">O que isso significa, {formattedNome}?</p>
-        </div>
+        {/* ===== HEADER: Premium banner ===== */}
+        <Link
+          to="/assinar"
+          aria-label="Conheça o Portal Premium"
+          className="block bg-card rounded-2xl border border-border shadow-sm hover:shadow-md transition-shadow p-5 md:p-6"
+        >
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4">
+            <h2 className="font-serif text-lg md:text-xl font-bold text-foreground">
+              Desbloqueie toda potência do Portal Ayurveda
+            </h2>
+            <p className="text-sm font-semibold text-muted-foreground whitespace-nowrap">
+              A partir de <span className="text-foreground">R$ 49,75/mês</span>
+            </p>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-border border-y border-border">
+            {[
+              { Icon: Calendar, title: "Rotinas Diárias", subtitle: "Dinacharya personalizada", color: "#6B7FF2" },
+              { Icon: Play, title: "Artigos e Vídeos", subtitle: "Conteúdo atualizado diariamente", color: "#6B7FF2" },
+              { Icon: BookOpen, title: "Aulas Exclusivas", subtitle: "Escolha a próxima aula que quer no Portal", color: "#6B7FF2" },
+              { Icon: Brain, title: "Akasha consultora", subtitle: "Assistente de Ayurveda 24h", color: "#F28888" },
+            ].map(({ Icon, title, subtitle, color }) => (
+              <div key={title} className="flex flex-col items-center text-center gap-2 px-3 py-4">
+                <div
+                  className="flex h-11 w-11 items-center justify-center rounded-full border"
+                  style={{ borderColor: color, backgroundColor: `${color}14` }}
+                >
+                  <Icon className="h-5 w-5" style={{ color }} aria-hidden />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold text-foreground leading-tight">{title}</p>
+                  <p className="text-xs text-muted-foreground leading-snug mt-1">{subtitle}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="flex justify-center mt-5">
+            <span className="inline-flex items-center justify-center rounded-full bg-primary text-primary-foreground font-semibold text-sm px-6 py-2.5 shadow-sm">
+              Conheça o Portal Premium
+            </span>
+          </div>
+        </Link>
 
         {/* ===== TABS ===== */}
         <Tabs defaultValue={initialTab} className="w-full">
@@ -696,7 +730,9 @@ const MeuDosha = () => {
             <div className="bg-card rounded-xl border border-border p-4 space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-[1.2fr_1fr] gap-4">
                 <div className="flex flex-col items-center">
-                  <h2 className="font-serif font-bold text-foreground text-base mb-2 text-center">Pontuação dos Doshas</h2>
+                  <h2 className="font-serif font-bold text-foreground text-base mb-2 text-center">
+                    Seu Dosha agravado é: <span style={{ color: PIE_COLORS[primaryDosha] }}>{result.doshaprincipal}</span>
+                  </h2>
                   <div className="w-full" style={{ height: 240 }}>
                     <ResponsiveContainer width="100%" height="100%">
                       <PieChart margin={{ top: 20, right: 60, bottom: 20, left: 60 }}>
