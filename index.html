@@ -10,34 +10,7 @@
     <meta name="description" content="Descubra seu dosha em 5 minutos e receba um portal de Ayurveda personalizado: vídeos, artigos, rotinas, alimentação e a inteligência Akasha guiando seus próximos passos." />
     <meta name="author" content="Portal Ayurveda" />
 
-    <!-- Google Analytics 4 -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-VN454LL7QF"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-VN454LL7QF');
-    </script>
-
-    <!-- Meta Pixel -->
-    <script>
-      !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-      n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
-      n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
-      t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script',
-      'https://connect.facebook.net/en_US/fbevents.js');
-      fbq('init', '727901213560105');
-      fbq('track', 'PageView');
-    </script>
-
-    <!-- Microsoft Clarity -->
-    <script type="text/javascript">
-      (function(c,l,a,r,i,t,y){
-        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-      })(window, document, "clarity", "script", "wqrw7kj8n1");
-    </script>
+    <!-- Analytics (GA4, Meta Pixel, Clarity) are loaded after mount via src/components/AnalyticsLoader.tsx -->
 
     <!-- Favicon e ícones -->
     <link rel="icon" href="/favicon.ico" sizes="any" />
@@ -66,9 +39,8 @@
     <meta name="twitter:description" content="Teste gratuito de dosha, vídeos, artigos e rotinas ayurvédicas. Conheça-se e viva melhor com o Portal Ayurveda." />
     <meta name="twitter:image" content="https://portalayurveda.com/og-image.jpg" />
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&family=Roboto+Serif:ital,opsz,wght@0,8..144,400;0,8..144,700;1,8..144,400;1,8..144,700&display=swap" rel="stylesheet" />
+    <!-- Fonts servidas localmente via src/styles/fonts.css -->
+
 
     <!-- JSON-LD: Organization + WebSite -->
     <script type="application/ld+json">
