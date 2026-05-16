@@ -806,6 +806,7 @@ const MeuDosha = () => {
               doshaPrincipal={primaryDosha}
               doshaPrincipalCompleto={result.doshaprincipal || primaryDosha}
               refazerTeste={handleRefazerTeste}
+              isPremium={isPremium}
             />
           </TabsContent>
 
