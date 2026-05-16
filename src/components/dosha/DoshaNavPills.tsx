@@ -1,5 +1,7 @@
 import { useNavigate } from "react-router-dom";
-import { Clock, UtensilsCrossed, Pill, Bird, Home, Video } from "lucide-react";
+import { Clock, UtensilsCrossed, Pill, Bird, Home, Video, Lock } from "lucide-react";
+import { useUser } from "@/contexts/UserContext";
+import { toast } from "sonner";
 
 export type DoshaTab = "principal" | "horarios" | "alimentacao" | "remedios" | "videos" | "avancado";
 
