@@ -63,6 +63,7 @@ import SamkhyaCategoria from "./pages/SamkhyaCategoria";
 import SamkhyaKits from "./pages/SamkhyaKits";
 import SamkhyaTodos from "./pages/SamkhyaTodos";
 import SamkhyaObrigado from "./pages/SamkhyaObrigado";
+import Pesquisa from "./pages/Pesquisa";
 import { CartProvider } from "./contexts/CartContext";
 import CartDrawer from "./components/loja/CartDrawer";
 
@@ -180,6 +181,8 @@ const RoutedApp = () => {
               <Route path="/samkhya/todos" element={<SamkhyaTodos />} />
               <Route path="/samkhya/categoria/:slug" element={<SamkhyaCategoria />} />
               <Route path="/samkhya/obrigado" element={<SamkhyaObrigado />} />
+
+              <Route path="/pesquisa" element={<Pesquisa />} />
 
               <Route path="*" element={<NotFound />} />
       </Routes>

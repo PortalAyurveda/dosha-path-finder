@@ -7,6 +7,7 @@ import { useUser } from "@/contexts/UserContext";
 import { useCart } from "@/contexts/CartContext";
 import { samkhyaTokens } from "@/components/samkhya/tokens";
 import samkhyaLogo from "@/assets/samkhya-logo-cropped.png";
+import GlobalSearch from "@/components/GlobalSearch";
 
 const PIE_COLORS: Record<string, string> = {
   Vata: '#4F75FF',
@@ -199,6 +200,7 @@ const Header = () => {
 
         {/* RIGHT — Profile with pie favicon */}
         <div className="flex items-center gap-1.5 justify-self-end">
+          <GlobalSearch />
           <button
             type="button"
             onClick={abrirCarrinho}
