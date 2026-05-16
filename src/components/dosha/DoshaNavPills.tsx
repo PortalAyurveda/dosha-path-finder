@@ -57,6 +57,14 @@ const DoshaNavPills = ({ dosha, activeTab, onTabChange }: DoshaNavPillsProps) =>
     onTabChange(id);
     const path = `/biblioteca/${dosha}${tabRoutes[id]}`;
     navigate(path);
+    // Rola para o início do conteúdo (logo abaixo do nav de pills), respeitando o header sticky (~64px)
+    requestAnimationFrame(() => {
+      const el = document.getElementById("dosha-content");
+      if (el) {
+        const y = el.getBoundingClientRect().top + window.scrollY - 72;
+        window.scrollTo({ top: y, behavior: "smooth" });
+      }
+    });
   };
 
   const colors = doshaColors[dosha];
