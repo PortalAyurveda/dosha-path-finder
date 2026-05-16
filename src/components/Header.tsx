@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Menu, LogIn, LogOut, ShoppingBag, Home } from "lucide-react";
+import { Menu, LogIn, LogOut, ShoppingBag, ShoppingCart, Home } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { useUser } from "@/contexts/UserContext";
@@ -196,22 +196,23 @@ const Header = () => {
 
         {/* RIGHT — Profile with pie favicon */}
         <div className="flex items-center gap-1.5 justify-self-end">
-          {totalItens > 0 && (
-            <Button
-              size="sm"
-              onClick={abrirCarrinho}
-              aria-label={`Abrir carrinho (${totalItens} itens)`}
-              className="relative bg-white text-primary font-semibold hover:bg-white/90 hover:text-primary gap-1.5 px-2.5"
-            >
-              <ShoppingBag className="h-4 w-4" />
+          <button
+            type="button"
+            onClick={abrirCarrinho}
+            aria-label={`Abrir carrinho (${totalItens} itens)`}
+            className="relative flex items-center justify-center w-9 h-9 rounded-full bg-white hover:bg-white/90 transition-colors shadow-sm"
+            style={buttonTextColor ? { color: buttonTextColor } : { color: "hsl(var(--primary))" }}
+          >
+            <ShoppingCart className="h-[18px] w-[18px]" strokeWidth={2.2} />
+            {totalItens > 0 && (
               <span
                 className="absolute -top-1 -right-1 min-w-[18px] h-[18px] rounded-full text-[10px] font-bold flex items-center justify-center px-1 text-white"
                 style={{ background: samkhyaTokens.ouro }}
               >
                 {totalItens}
               </span>
-            </Button>
-          )}
+            )}
+          </button>
           {doshaResult ? (
             <Link
               to={profileLink}
