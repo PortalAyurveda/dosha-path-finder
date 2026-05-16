@@ -581,20 +581,6 @@ const ProximoPassoCard = ({
     </p>
   </Link>
 );
-    <h3
-      className="font-serif font-bold text-sm leading-tight"
-      style={{ color: COLOR.primary, fontFamily: "'Roboto Serif', serif" }}
-    >
-      {titulo}
-    </h3>
-    <p
-      className="text-[12px] leading-snug"
-      style={{ color: COLOR.textoSec, fontFamily: "'DM Sans', sans-serif" }}
-    >
-      {descricao}
-    </p>
-  </Link>
-);
 
 interface DoshaScores {
   vata: number;
