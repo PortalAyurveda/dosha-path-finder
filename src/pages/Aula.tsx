@@ -175,7 +175,7 @@ const Aula = () => {
                   size="lg"
                   className="bg-secondary hover:bg-secondary/90 text-white font-body text-base px-8 py-6 rounded-full shadow-md"
                 >
-                  <a href={aula.button_url!} target="_blank" rel="noreferrer">
+                  <a href={aula.button_url!} target="_blank" rel="noopener noreferrer">
                     {aula.button_text}
                   </a>
                 </Button>
