@@ -56,30 +56,30 @@ const Footer = () => {
           </div>
 
           {/* Right: socials */}
-          <div className="flex flex-col sm:flex-row justify-center md:justify-end items-center gap-3 sm:gap-5">
+          <div className="flex flex-row justify-center md:justify-end items-center gap-4 sm:gap-5">
             <a
               href="https://www.youtube.com/@portalayurveda"
               target="_blank"
               rel="noopener noreferrer"
+              aria-label="YouTube"
               className={linkClass}
               style={linkStyle}
               onMouseEnter={socialEnter}
               onMouseLeave={socialLeave}
             >
               <Youtube className="h-5 w-5" />
-              YouTube
             </a>
             <a
               href="https://www.instagram.com/edson_ayurveda"
               target="_blank"
               rel="noopener noreferrer"
+              aria-label="Instagram"
               className={linkClass}
               style={linkStyle}
               onMouseEnter={socialEnter}
               onMouseLeave={socialLeave}
             >
               <Instagram className="h-5 w-5" />
-              Instagram
             </a>
             <Link
               to="/samkhya"
