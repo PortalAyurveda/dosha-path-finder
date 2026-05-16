@@ -653,47 +653,52 @@ const MeuDosha = () => {
     <PageContainer title={`Meu Dosha — ${formattedNome}`} description={`Resultado do teste de dosha de ${formattedNome}: ${result.doshaprincipal}`}>
       <div className="max-w-3xl mx-auto space-y-6">
 
-        {/* ===== HEADER: Premium banner ===== */}
+        {/* ===== HEADER: Premium banner (compact) ===== */}
         <Link
           to="/assinar"
           aria-label="Conheça o Portal Premium"
-          className="block bg-card rounded-2xl border border-border shadow-sm hover:shadow-md transition-shadow p-5 md:p-6"
+          className="group relative block overflow-hidden rounded-2xl border border-border shadow-sm hover:shadow-md transition-all p-3 md:p-4"
+          style={{
+            background:
+              "linear-gradient(110deg, hsl(228 70% 96%) 0%, hsl(0 70% 97%) 55%, hsl(48 80% 95%) 100%)",
+          }}
         >
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4">
-            <h2 className="font-serif text-lg md:text-xl font-bold text-foreground">
+          {/* Soft decorative blobs */}
+          <div className="pointer-events-none absolute inset-0 opacity-40">
+            <div className="absolute -top-10 -left-10 h-32 w-32 rounded-full blur-3xl" style={{ background: "#6B7FF2" }} />
+            <div className="absolute -bottom-12 -right-8 h-32 w-32 rounded-full blur-3xl" style={{ background: "#F28888" }} />
+          </div>
+
+          <div className="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 mb-2">
+            <h2 className="font-serif text-base md:text-lg font-bold text-primary leading-tight">
               Desbloqueie todo Portal Ayurveda
             </h2>
-            <p className="text-sm font-semibold text-muted-foreground whitespace-nowrap">
+            <p className="text-xs font-semibold text-muted-foreground whitespace-nowrap">
               A partir de <span className="text-foreground">R$ 49,75/mês</span>
+              <span className="hidden sm:inline ml-2 text-primary group-hover:translate-x-0.5 transition-transform">→</span>
             </p>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-border border-y border-border">
+
+          <div className="relative grid grid-cols-4 gap-1">
             {[
-              { Icon: Calendar, title: "Rotinas Diárias", subtitle: "Dinacharya personalizada", color: "#6B7FF2" },
-              { Icon: Play, title: "Artigos e Vídeos", subtitle: "Conteúdo atualizado diariamente", color: "#6B7FF2" },
-              { Icon: BookOpen, title: "Aulas Exclusivas", subtitle: "Escolha a próxima aula que quer no Portal", color: "#6B7FF2" },
-              { Icon: Brain, title: "Akasha consultora", subtitle: "Assistente de Ayurveda 24h", color: "#F28888" },
-            ].map(({ Icon, title, subtitle, color }) => (
-              <div key={title} className="flex flex-col items-center text-center gap-2 px-3 py-4">
+              { Icon: Calendar, title: "Rotinas Diárias", color: "#6B7FF2" },
+              { Icon: Play, title: "Artigos e Vídeos", color: "#6B7FF2" },
+              { Icon: BookOpen, title: "Aulas Exclusivas", color: "#6B7FF2" },
+              { Icon: Brain, title: "Akasha consultora", color: "#F28888" },
+            ].map(({ Icon, title, color }) => (
+              <div key={title} className="flex flex-col items-center text-center gap-1 px-1 py-1.5">
                 <div
-                  className="flex h-11 w-11 items-center justify-center rounded-full border"
-                  style={{ borderColor: color, backgroundColor: `${color}14` }}
+                  className="flex h-8 w-8 items-center justify-center rounded-full border bg-card/70 backdrop-blur-sm"
+                  style={{ borderColor: color }}
                 >
-                  <Icon className="h-5 w-5" style={{ color }} aria-hidden />
+                  <Icon className="h-4 w-4" style={{ color }} aria-hidden />
                 </div>
-                <div className="min-w-0">
-                  <p className="text-sm font-semibold text-foreground leading-tight">{title}</p>
-                  <p className="text-xs text-muted-foreground leading-snug mt-1">{subtitle}</p>
-                </div>
+                <p className="text-[11px] font-semibold text-foreground leading-tight">{title}</p>
               </div>
             ))}
           </div>
-          <div className="flex justify-center mt-5">
-            <span className="inline-flex items-center justify-center rounded-full bg-primary text-primary-foreground font-semibold text-sm px-6 py-2.5 shadow-sm">
-              Conheça o Portal Premium
-            </span>
-          </div>
         </Link>
+
 
         {/* ===== TABS ===== */}
         <Tabs defaultValue={initialTab} className="w-full">
