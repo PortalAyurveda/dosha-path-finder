@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { Loader2, Lock, Stethoscope, GitBranch, Compass, TrendingUp, BookOpen, Clock, Play, type LucideIcon } from "lucide-react";
+import { Loader2, Lock, Stethoscope, GitBranch, Compass, TrendingUp, type LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { premiumSupabase, type ObjetivoTratamento } from "@/integrations/supabase/premium-client";
 import { lojaSupabase } from "@/integrations/supabase/loja-client";
@@ -536,17 +536,21 @@ const Plano30Dias = ({ isPremium }: { isPremium: boolean }) => (
 
 // ============ SEÇÃO 4 — Próximos Passos ============
 const ProximoPassoCard = ({
-  children,
+  iconSrc,
   titulo,
   descricao,
   href,
   tint,
+  iconSize = 36,
+  showRing = true,
 }: {
-  children: React.ReactNode;
+  iconSrc: string;
   titulo: string;
   descricao: string;
   href: string;
   tint: string;
+  iconSize?: number;
+  showRing?: boolean;
 }) => (
   <Link
     to={href}
@@ -559,12 +563,18 @@ const ProximoPassoCard = ({
       boxShadow: "0 1px 8px rgba(53,47,84,0.08)",
     }}
   >
-    <div
-      className="w-14 h-14 rounded-full flex items-center justify-center shrink-0"
-      style={{ backgroundColor: `${tint}26`, border: `2px solid ${tint}` }}
-    >
-      {children}
-    </div>
+    {showRing ? (
+      <div
+        className="w-14 h-14 rounded-full flex items-center justify-center shrink-0"
+        style={{ backgroundColor: `${tint}26`, border: `2px solid ${tint}` }}
+      >
+        <img src={iconSrc} alt="" style={{ width: iconSize, height: iconSize }} className="object-contain" />
+      </div>
+    ) : (
+      <div className="h-14 flex items-center justify-center shrink-0">
+        <img src={iconSrc} alt="" style={{ width: iconSize, height: iconSize }} className="object-contain" />
+      </div>
+    )}
     <h3
       className="font-serif font-bold text-sm leading-tight"
       style={{ color: COLOR.primary, fontFamily: "'Roboto Serif', serif" }}
@@ -602,6 +612,11 @@ const DOSHA_LABEL: Record<"vata" | "pitta" | "kapha", string> = {
   kapha: "Kapha",
 };
 
+const ICON_ALIMENTACAO = "https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/logo-alimentacao2.svg";
+const ICON_ROTINAS = "https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/logo-rotinas.svg";
+const ICON_ALQUIMIA = "https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/logo-remedios-2.png";
+const ICON_AKASHA = "https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/logo-akasha.svg";
+
 const ProximosPassos = ({
   refazerTeste,
   scores,
@@ -623,41 +638,35 @@ const ProximosPassos = ({
       </h2>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 max-w-3xl">
         <ProximoPassoCard
-          titulo={`Biblioteca ${label}`}
-          descricao="Vídeos e conteúdos do seu dosha"
-          href={`/biblioteca/${top}`}
+          iconSrc={ICON_ALIMENTACAO}
+          titulo="Alimentação"
+          descricao="Comer de acordo com seus doshas é o melhor remédio"
+          href={`/biblioteca/${top}/alimentacao`}
           tint={cor}
-        >
-          <BookOpen className="w-7 h-7" style={{ color: cor }} strokeWidth={1.75} />
-        </ProximoPassoCard>
+        />
         <ProximoPassoCard
-          titulo={`Horários ${label}`}
-          descricao="Rotina ideal para equilibrar"
+          iconSrc={ICON_ROTINAS}
+          titulo="Horários"
+          descricao="A rotina ideal começa em pequenas mudanças"
           href={`/biblioteca/${top}/horarios`}
           tint={cor}
-        >
-          <Clock className="w-7 h-7" style={{ color: cor }} strokeWidth={1.75} />
-        </ProximoPassoCard>
+        />
         <ProximoPassoCard
-          titulo="Vídeos"
-          descricao="Aulas e vídeos personalizados"
-          href="/meu-dosha?tab=videos"
-          tint={COLOR.secondary}
-        >
-          <Play className="w-7 h-7" style={{ color: COLOR.secondary }} strokeWidth={1.75} />
-        </ProximoPassoCard>
+          iconSrc={ICON_ALQUIMIA}
+          titulo="Alquimia"
+          descricao="Aprenda a tratar a raiz, não o sintoma"
+          href={`/biblioteca/${top}/alquimia`}
+          tint={cor}
+        />
         <ProximoPassoCard
+          iconSrc={ICON_AKASHA}
           titulo="Akasha"
           descricao="Sua consultora de Ayurveda 24h"
           href="/meu-dosha?tab=akasha"
           tint={COLOR.primary}
-        >
-          <img
-            src="https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/logo-akasha.svg"
-            alt="Akasha"
-            className="w-7 h-7 object-contain"
-          />
-        </ProximoPassoCard>
+          iconSize={56}
+          showRing={false}
+        />
       </div>
     </section>
   );

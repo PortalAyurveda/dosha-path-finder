@@ -111,6 +111,7 @@ const RoutedApp = () => {
               <Route path="/biblioteca/vata" element={<DoshaVata />} />
               <Route path="/biblioteca/vata/horarios" element={<DoshaVata defaultTab="horarios" />} />
               <Route path="/biblioteca/vata/alimentacao" element={<DoshaVata defaultTab="alimentacao" />} />
+              <Route path="/biblioteca/vata/alquimia" element={<DoshaVata defaultTab="remedios" />} />
               <Route path="/biblioteca/vata/remedios" element={<DoshaVata defaultTab="remedios" />} />
               <Route path="/biblioteca/vata/videos" element={<DoshaVata defaultTab="videos" />} />
               <Route path="/biblioteca/vata/avancado" element={<DoshaVata defaultTab="avancado" />} />
@@ -121,6 +122,7 @@ const RoutedApp = () => {
               <Route path="/biblioteca/pitta" element={<DoshaPitta />} />
               <Route path="/biblioteca/pitta/horarios" element={<DoshaPitta defaultTab="horarios" />} />
               <Route path="/biblioteca/pitta/alimentacao" element={<DoshaPitta defaultTab="alimentacao" />} />
+              <Route path="/biblioteca/pitta/alquimia" element={<DoshaPitta defaultTab="remedios" />} />
               <Route path="/biblioteca/pitta/remedios" element={<DoshaPitta defaultTab="remedios" />} />
               <Route path="/biblioteca/pitta/videos" element={<DoshaPitta defaultTab="videos" />} />
               <Route path="/biblioteca/pitta/avancado" element={<DoshaPitta defaultTab="avancado" />} />
@@ -130,6 +132,7 @@ const RoutedApp = () => {
               <Route path="/biblioteca/kapha" element={<DoshaKapha />} />
               <Route path="/biblioteca/kapha/horarios" element={<DoshaKapha defaultTab="horarios" />} />
               <Route path="/biblioteca/kapha/alimentacao" element={<DoshaKapha defaultTab="alimentacao" />} />
+              <Route path="/biblioteca/kapha/alquimia" element={<DoshaKapha defaultTab="remedios" />} />
               <Route path="/biblioteca/kapha/remedios" element={<DoshaKapha defaultTab="remedios" />} />
               <Route path="/biblioteca/kapha/videos" element={<DoshaKapha defaultTab="videos" />} />
               <Route path="/biblioteca/kapha/avancado" element={<DoshaKapha defaultTab="avancado" />} />
