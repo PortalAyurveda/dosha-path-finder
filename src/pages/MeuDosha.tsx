@@ -673,7 +673,8 @@ const MeuDosha = () => {
     <PageContainer title={`Meu Dosha — ${formattedNome}`} description={`Resultado do teste de dosha de ${formattedNome}: ${result.doshaprincipal}`}>
       <div className="max-w-3xl mx-auto space-y-6">
 
-        {/* ===== HEADER: Premium banner (compact) ===== */}
+        {/* ===== HEADER: Premium banner (compact) — só para não-premium ===== */}
+        {!isPremium && (
         <Link
           to="/assinar"
           aria-label="Conheça o Portal Premium"
