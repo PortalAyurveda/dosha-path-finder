@@ -169,11 +169,16 @@ const Hero = () => {
                   { Icon: BookOpen, title: "Aulas Exclusivas", subtitle: "Escolha a próxima aula que quer no Portal", color: "#6B7FF2" },
                   { Icon: Brain, title: "Akasha consultora", subtitle: "Assistente de Ayurveda 24h", color: "#F28888" },
                 ].map(({ Icon, title, subtitle, color }) => (
-                  <div key={title} className="flex items-center gap-3 px-4 py-5">
-                    <Icon className="h-6 w-6 shrink-0" style={{ color }} aria-hidden />
+                  <div key={title} className="flex flex-col items-center text-center gap-2 px-3 py-5">
+                    <div
+                      className="flex h-11 w-11 items-center justify-center rounded-full border"
+                      style={{ borderColor: color, backgroundColor: `${color}14` }}
+                    >
+                      <Icon className="h-5 w-5" style={{ color }} aria-hidden />
+                    </div>
                     <div className="min-w-0">
                       <p className="text-sm font-semibold text-foreground leading-tight">{title}</p>
-                      <p className="text-xs text-muted-foreground leading-snug mt-0.5">{subtitle}</p>
+                      <p className="text-xs text-muted-foreground leading-snug mt-1">{subtitle}</p>
                     </div>
                   </div>
                 ))}
