@@ -172,6 +172,7 @@ const Header = () => {
               </nav>
             </SheetContent>
           </Sheet>
+          <GlobalSearch />
         </div>
 
         {/* CENTER — Logo (swap when in /samkhya/*) */}
@@ -200,7 +201,6 @@ const Header = () => {
 
         {/* RIGHT — Profile with pie favicon */}
         <div className="flex items-center gap-1.5 justify-self-end">
-          <GlobalSearch />
           <button
             type="button"
             onClick={abrirCarrinho}
