@@ -27,9 +27,9 @@ const Footer = () => {
       className={`mt-16 text-primary-foreground ${isSamkhya ? "" : "bg-primary"}`}
       style={bgStyle}
     >
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-5 md:py-10">
         {/* Top row: 3 columns */}
-        <div className="grid grid-cols-1 md:grid-cols-3 items-center gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 items-center gap-4 md:gap-8">
           {/* Left: tagline */}
           <div className="text-center md:text-left">
             <p
@@ -51,35 +51,35 @@ const Footer = () => {
               alt="Portal Ayurveda"
               width={180}
               height={48}
-              className="h-12 w-auto brightness-0 invert"
+              className="h-9 md:h-12 w-auto brightness-0 invert"
             />
           </div>
 
           {/* Right: socials */}
-          <div className="flex flex-col sm:flex-row justify-center md:justify-end items-center gap-3 sm:gap-5">
+          <div className="flex flex-row justify-center md:justify-end items-center gap-4 sm:gap-5">
             <a
               href="https://www.youtube.com/@portalayurveda"
               target="_blank"
               rel="noopener noreferrer"
+              aria-label="YouTube"
               className={linkClass}
               style={linkStyle}
               onMouseEnter={socialEnter}
               onMouseLeave={socialLeave}
             >
               <Youtube className="h-5 w-5" />
-              YouTube
             </a>
             <a
               href="https://www.instagram.com/edson_ayurveda"
               target="_blank"
               rel="noopener noreferrer"
+              aria-label="Instagram"
               className={linkClass}
               style={linkStyle}
               onMouseEnter={socialEnter}
               onMouseLeave={socialLeave}
             >
               <Instagram className="h-5 w-5" />
-              Instagram
             </a>
             <Link
               to="/samkhya"
@@ -96,7 +96,7 @@ const Footer = () => {
 
         {/* Bottom row: copyright */}
         <div
-          className="mt-8 pt-6 border-t text-center"
+          className="mt-4 pt-3 md:mt-8 md:pt-6 border-t text-center"
           style={{
             borderColor: isSamkhya
               ? "rgba(255,255,255,0.15)"
