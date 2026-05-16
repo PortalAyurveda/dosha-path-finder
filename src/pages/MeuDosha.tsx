@@ -466,6 +466,8 @@ const MeuDosha = () => {
   const queryClient = useQueryClient();
   const { profile } = useUser();
   const isPremium = !!profile?.is_premium;
+  const navigate = useNavigate();
+  const [evolucaoOpen, setEvolucaoOpen] = useState(false);
 
   // ── Registro (doshas_registros) ──
   const { data: registroRaw, isLoading: registroLoading } = useQuery({
