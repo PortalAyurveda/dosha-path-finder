@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Wind, Flame, Mountain, Clock, BookOpen } from "lucide-react";
 
@@ -36,9 +37,15 @@ const DoshaSelector = () => {
         ? path.split("/")[2]
         : undefined;
 
+  const activeRef = useRef<HTMLAnchorElement>(null);
+
+  useEffect(() => {
+    activeRef.current?.scrollIntoView({ block: "nearest", inline: "center" });
+  }, [currentDosha]);
+
   return (
     <div className="w-full px-2 sm:px-4 pt-4 pb-1">
-      <div className="flex justify-center overflow-x-auto scrollbar-hide -mx-2 px-2">
+      <div className="flex justify-start sm:justify-center overflow-x-auto scrollbar-hide -mx-2 px-2">
         <div className="flex gap-1 sm:gap-2">
           {doshas.map((d) => {
             const isActive = currentDosha === d.key;
@@ -46,8 +53,9 @@ const DoshaSelector = () => {
             return (
               <Link
                 key={d.key}
+                ref={isActive ? activeRef : undefined}
                 to={d.path}
-                className={`flex items-center gap-1 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-full border-2 text-xs sm:text-sm font-semibold transition-all whitespace-nowrap shrink-0 ${
+                className={`flex items-center gap-1 px-2 sm:px-3 py-1 sm:py-2 rounded-full border-2 text-[11px] sm:text-sm font-semibold transition-all whitespace-nowrap shrink-0 ${
                   isActive ? activeStyles[d.key] : inactiveStyles[d.key]
                 }`}
               >
