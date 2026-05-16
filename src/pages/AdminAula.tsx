@@ -321,7 +321,7 @@ const AdminAula = () => {
                       <a
                         href={`/aula/${a.slug}`}
                         target="_blank"
-                        rel="noreferrer"
+                        rel="noopener noreferrer"
                         className="inline-flex items-center gap-1 text-primary hover:underline"
                       >
                         /aula/{a.slug} <ExternalLink className="w-3 h-3" />
