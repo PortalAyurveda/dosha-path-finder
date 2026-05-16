@@ -122,6 +122,7 @@ const RoutedApp = () => {
               <Route path="/biblioteca/pitta" element={<DoshaPitta />} />
               <Route path="/biblioteca/pitta/horarios" element={<DoshaPitta defaultTab="horarios" />} />
               <Route path="/biblioteca/pitta/alimentacao" element={<DoshaPitta defaultTab="alimentacao" />} />
+              <Route path="/biblioteca/pitta/alquimia" element={<DoshaPitta defaultTab="remedios" />} />
               <Route path="/biblioteca/pitta/remedios" element={<DoshaPitta defaultTab="remedios" />} />
               <Route path="/biblioteca/pitta/videos" element={<DoshaPitta defaultTab="videos" />} />
               <Route path="/biblioteca/pitta/avancado" element={<DoshaPitta defaultTab="avancado" />} />
