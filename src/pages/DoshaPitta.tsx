@@ -55,6 +55,7 @@ const DoshaPitta = ({ defaultTab = "principal" }: DoshaPittaProps) => {
         onTabChange={setActiveTab}
       />
 
+      <div id="dosha-content" />
       {activeTab === "alimentacao" ? (
         <DoshaFoodContent dosha="pitta" {...pittaFoodData} />
       ) : activeTab === "remedios" ? (
