@@ -64,7 +64,14 @@ import SamkhyaObrigado from "./pages/SamkhyaObrigado";
 import { CartProvider } from "./contexts/CartContext";
 import CartDrawer from "./components/loja/CartDrawer";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      staleTime: 5 * 60 * 1000,
+    },
+  },
+});
 
 const LayoutOrBare = ({ children }: { children: React.ReactNode }) => {
   const { pathname } = useLocation();
