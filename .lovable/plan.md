@@ -1,35 +1,25 @@
-## Alteração no Hero do Index
+## Ajuste fino do banner no Hero
 
-Vamos reorganizar a coluna esquerda do hero (`src/components/home/Hero.tsx`) para acomodar um novo banner abaixo do card de preview, sem aumentar a altura total do hero.
+O banner já está com `max-w-xl` (mesmo do card acima), mas a imagem `banner-zero-sf300x.webp` tem **padding/margem branco embutido no próprio arquivo**, fazendo o conteúdo visível parecer mais estreito que o card de cima (~12px de cada lado).
 
-### Mudanças
+Como não vamos editar o asset, a correção é **alargar visualmente a tag `<img>`** para compensar esse padding interno, mantendo o conteúdo central alinhado com as bordas do card.
 
-**1. Alinhamento topo-a-topo das duas colunas**
-- No grid `lg:grid-cols-12`, trocar `items-center` por `items-start` para que o card "Faça o teste para desbloquear seu mapa biológico" (esquerda) alinhe pelo topo com o card "Seu guia completo para saúde e longevidade" (direita).
-- Resultado: como o card esquerdo é mais curto que o direito, sobra um espaço vazio embaixo dele.
+### Mudança
 
-**2. Novo banner abaixo do card esquerdo**
-- Adicionar, na mesma coluna `lg:col-span-7`, um wrapper flex-col vertical contendo:
-  - O card atual do `DoshaPreview` (mantido como está, `max-w-xl mx-auto`).
-  - Um novo `<img>` com `src="https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/banner-zero-sf300x.webp"`, com a MESMA largura do card de preview (`max-w-xl mx-auto w-full`), `h-auto`, `rounded-3xl`, `alt` descritivo, `loading="lazy"`.
-  - Espaçamento entre os dois (`space-y-4` ou `gap-4`).
-- A imagem original tem 1600px de largura mas será exibida limitada por `max-w-xl` (≈576px) com `h-auto`, então fica visualmente reduzida ao mesmo width do card de cima — sem precisar reprocessar o asset.
+Em `src/components/home/Hero.tsx`, no `<img>` do banner:
 
-**3. Garantir que a altura total do hero não aumente**
-- A coluna direita já é mais alta que o card de preview sozinho (form com vários campos). O espaço liberado pelo `items-start` é exatamente onde o banner vai entrar.
-- Se o conjunto (preview + banner) ficar mais alto que o card direito em alguma resolução, o hero cresce no mobile/desktop. Para evitar isso, o `<img>` recebe `object-contain` e o wrapper esquerdo herda a altura natural; o ganho de altura ficará dentro da margem que o card direito já ocupa em desktop (lg+).
-- O bloco esquerdo só aparece em `lg+` (já é `hidden lg:flex`), então no mobile nada muda.
+- Trocar `max-w-xl mx-auto` por uma largura ~28px maior que o card, usando estilo inline:
+  ```
+  className="w-[calc(100%+28px)] max-w-[calc(36rem+28px)] -mx-[14px] h-auto rounded-3xl object-contain"
+  ```
+  (`max-w-xl` = 36rem = 576px; vamos para 604px e usamos margem negativa de 14px para manter o centro alinhado).
 
-**4. Sem alterações em**
-- Coluna direita (formulário) — intocada.
-- Decorações de fundo, gradientes, container externo.
-- Lógica do componente.
+- Remover `mx-auto` (substituído pela margem negativa simétrica).
 
-### Arquivo afetado
-- `src/components/home/Hero.tsx` (somente JSX/classes; nenhum estado novo).
+Resultado: o conteúdo visível do banner passa a ter aproximadamente a mesma largura aparente que o card de preview acima.
 
-### Pontos de atenção (lições das tentativas anteriores)
-- NÃO mexer no `DoshaPreview` interno nem nos overlays de "Lock".
-- NÃO redimensionar o card direito.
-- NÃO trocar `hidden lg:flex` por `flex` — manteria o preview no mobile.
-- Banner deve ficar EMBAIXO do card de preview, ainda dentro do `lg:col-span-7`, alinhado pela mesma `max-w-xl mx-auto` para casar a largura.
+### Pontos de atenção
+
+- Não mexer em mais nada do hero.
+- Se 14px não for suficiente, ajusto para 16-20px depois — é um número fácil de tunar.
+- O `rounded-3xl` continua, mas como o asset já tem fundo claro, a borda arredondada não aparece visivelmente — é só uma salvaguarda.

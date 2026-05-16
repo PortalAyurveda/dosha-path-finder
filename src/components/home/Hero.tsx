@@ -165,7 +165,7 @@ const Hero = () => {
               src="https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/banner-zero-sf300x.webp"
               alt="Banner Portal Ayurveda — acessos rápidos"
               loading="lazy"
-              className="w-full max-w-xl mx-auto h-auto rounded-3xl object-contain"
+              className="w-[calc(100%+28px)] max-w-[calc(36rem+28px)] -mx-[14px] h-auto rounded-3xl object-contain"
             />
           </div>
 
