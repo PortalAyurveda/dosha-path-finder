@@ -48,6 +48,24 @@ const Auth = () => {
     }
   }, [searchParams]);
 
+  const handleGoogleLogin = async () => {
+    setLoading(true);
+    const storedDoshaId = localStorage.getItem("activeDoshaId");
+    const redirectUrl = storedDoshaId
+      ? `${window.location.origin}/meu-dosha?id=${storedDoshaId}`
+      : window.location.origin;
+
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: redirectUrl },
+    });
+
+    if (error) {
+      toast({ title: "Erro", description: error.message, variant: "destructive" });
+      setLoading(false);
+    }
+  };
+
   const handleMagicLink = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
