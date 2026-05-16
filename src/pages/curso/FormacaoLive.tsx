@@ -7,7 +7,7 @@ const DARK = "#352F54";
 const SALMON = "#f7b2b7";
 const CREAM = "#FFF8EE";
 const PHOTO_URL =
-  "https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/gemini-generated-image-w7evrdw7evrdw7ev.webp";
+  "https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/foto-sem-fundo.webp";
 const WHATSAPP_URL = "https://chat.whatsapp.com/HbADqLfLGPL5IibnRFQLiI";
 
 const FormacaoLive = () => {
