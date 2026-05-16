@@ -1,68 +1,39 @@
-# Plano: corrigir CLS do lazy loading + ganhos extras
+# Ajuste de Cache-Control do index.html
+
+## Resposta curta
+Sim, é possível — e o caminho é justamente o arquivo `public/_headers` que já existe no projeto. A hospedagem do Lovable respeita esse arquivo (mesmo formato do Netlify), então basta sobrescrever o header padrão `no-cache, must-revalidate, max-age=0` que o servidor está mandando hoje.
 
 ## Diagnóstico
+- Hoje o `public/_headers` define para `/` e `/index.html`:
+  ```
+  Cache-Control: public, max-age=0, must-revalidate
+  ```
+  Isso instrui qualquer proxy (incluindo Cloudflare) a **não** cachear na borda → TTFB ~700ms toda visita.
+- Os assets hasheados (`/assets/*`, `/fonts/*`, `*.woff2`) já estão com `max-age=31536000, immutable`, então não precisam mexer.
+- O risco de cachear o `index.html` na borda é deploy: se a borda servir um HTML antigo, ele pode referenciar bundles JS que ainda existem (Vite usa hash, então arquivos antigos continuam válidos), mas o usuário só vê a versão nova quando o cache da borda expira.
 
-O `Header` e `Footer` já estão **fora** do `Suspense` (vivem dentro de `Layout`, que envolve o `<Suspense>` em `src/App.tsx`). Então tecnicamente eles montam antes — mas o fallback atual (`RouteFallback`) é um `div min-h-[60vh]` com spinner centralizado. Quando o chunk da rota carrega:
+## Mudança proposta
+Em `public/_headers`, trocar as duas entradas de `/` e `/index.html` para:
 
-- a página real tem altura maior que 60vh → o footer "cai" pra baixo (shift do footer)
-- o conteúdo real (h1, section) aparece num lugar diferente do spinner → shift dos elementos da home
-- o header sticky reflui porque o `<body>` muda de altura → shift do header
+```
+/
+  Cache-Control: public, max-age=60, s-maxage=3600, must-revalidate
 
-## Mudanças (mínimas, só CLS)
-
-### 1. `src/components/Layout.tsx`
-Adicionar `min-h-screen` no wrapper do conteúdo entre Header e Footer, para o Footer nunca subir:
-- trocar `<div className="flex-1">{children}</div>` por `<div className="flex-1 min-h-screen">{children}</div>`
-
-### 2. `src/App.tsx` — `RouteFallback`
-Substituir o spinner por um **skeleton genérico** com altura reservada que cubra a viewport:
-- container: `min-h-screen w-full` (sem `flex items-center`, sem `60vh`)
-- conteúdo: blocos `bg-muted/40 animate-pulse rounded` simulando hero (barra alta) + grid de cards, dentro de `max-w-6xl mx-auto px-4 sm:px-6 py-8`
-- sem texto, sem spinner flutuante — só blocos neutros usando tokens do design system
-
-Isso garante que o espaço ocupado pelo fallback ≥ espaço médio de uma página, eliminando o empurrão do footer e o reflow do header sticky.
-
-### 3. `index.html`
-Adicionar no `<head>` para evitar shift do header sticky no primeiro paint (antes do React montar):
-```html
-<style>
-  #root { min-height: 100vh; }
-</style>
+/index.html
+  Cache-Control: public, max-age=60, s-maxage=3600, must-revalidate
 ```
 
-## Extras de performance (baixo risco, alto retorno)
+Significado:
+- `max-age=60` → browser cacheia 1 minuto (revalida rápido após deploy).
+- `s-maxage=3600` → Cloudflare/proxies cacheiam até 1 hora (TTFB cai drasticamente nas visitas repetidas via CDN).
+- `must-revalidate` → quando expirar, força revalidação antes de servir.
 
-Sugiro incluir junto, já que mexem em arquivos próximos:
-
-### A. Preconnect ao Supabase
-No `<head>` do `index.html`, adicionar:
-```html
-<link rel="preconnect" href="https://<project>.supabase.co" crossorigin />
-```
-Reduz latência da primeira chamada de auth/dados em ~100-300ms.
-
-### B. `vite.config.ts` — `build.target` e CSS code split
-Já vem ligado por default no Vite, mas vale travar:
-```ts
-build: { target: 'es2020', cssCodeSplit: true, reportCompressedSize: false }
-```
-`reportCompressedSize: false` acelera o build sem afetar runtime.
-
-### C. Preload do chunk da home
-Como `Index` é a rota mais visitada, adicionar `<link rel="modulepreload">` para ela quebraria o ganho de code splitting nas outras rotas. **Não recomendo** — manter como está.
-
-### D. Lazy de ícones do `lucide-react`
-Já são tree-shaken por named import — nada a fazer.
-
-### E. Imagens com `width`/`height`
-Fora do escopo deste prompt (causa CLS em páginas individuais, não no shell). Posso atacar num prompt separado se quiser.
+## Observações
+- O `site.webmanifest` fica como está (`max-age=300`).
+- Após publicar, dá pra confirmar no DevTools → Network → `index.html` → response header `cache-control` e `cf-cache-status` (deve passar de `DYNAMIC`/`BYPASS` para `HIT` após a 2ª visita).
+- Se em algum deploy você precisar invalidar a borda imediatamente, pode purgar pelo painel da Cloudflare (caso esteja usando uma zona própria) ou aguardar a 1h.
+- Importante: o Lovable serve o app no domínio `*.lovable.app` por trás da infra deles; o `_headers` controla o que sai da origem. Se você está usando Cloudflare como proxy no seu domínio custom (`portalayurveda.com`), a regra `s-maxage` é exatamente o que a Cloudflare lê para decidir TTL da borda.
 
 ## O que NÃO muda
-- Lazy loading das rotas (mantido)
-- Header, Footer, providers, `AnalyticsLoader`, fontes locais, cache headers
-- Qualquer lógica de auth, dados ou visual das páginas reais
-
-## Ordem
-1 (Layout) → 2 (RouteFallback skeleton) → 3 (style no index.html) → A (preconnect) → B (vite config). Build valida ao final.
-
-Quer que eu inclua os extras (A, B) ou prefere só o fix de CLS (1, 2, 3)?
+- Nenhum código JS/TS, componente, rota, lógica ou visual.
+- Headers de `/assets/*`, `/fonts/*`, `*.woff2` permanecem iguais.
