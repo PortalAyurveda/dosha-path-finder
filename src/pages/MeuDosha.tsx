@@ -15,6 +15,7 @@ import DiagnosticoCompleto from "@/components/meudosha/DiagnosticoCompleto";
 import VideosTab from "@/components/meudosha/VideosTab";
 import AkashaTab from "@/components/meudosha/AkashaTab";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
+import { useUser } from "@/contexts/UserContext";
 
 interface DoshaResult {
   nome: string | null;
