@@ -632,7 +632,7 @@ const ProximosPassos = ({
         <ProximoPassoCard
           iconSrc={ICON_ALIMENTACAO}
           titulo="Alimentação"
-          descricao="Comer de acordo com seus doshas é o melhor remédio"
+          descricao="Aprenda a comer de acordo com seus Doshas"
           href={`/biblioteca/${top}/alimentacao`}
           iconScale={1.55}
         />
