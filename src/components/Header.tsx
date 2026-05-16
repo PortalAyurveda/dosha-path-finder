@@ -123,8 +123,8 @@ const Header = () => {
       style={headerBg}
     >
       <div className="max-w-6xl mx-auto grid h-16 grid-cols-[1fr_auto_1fr] items-center gap-3 px-4 sm:px-6">
-        {/* LEFT — Hamburger menu */}
-        <div className="justify-self-start">
+        {/* LEFT — Hamburger menu + lupa */}
+        <div className="flex items-center gap-1.5 justify-self-start">
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
               <Button
@@ -172,6 +172,7 @@ const Header = () => {
               </nav>
             </SheetContent>
           </Sheet>
+          <GlobalSearch />
         </div>
 
         {/* CENTER — Logo (swap when in /samkhya/*) */}
@@ -200,7 +201,6 @@ const Header = () => {
 
         {/* RIGHT — Profile with pie favicon */}
         <div className="flex items-center gap-1.5 justify-self-end">
-          <GlobalSearch />
           <button
             type="button"
             onClick={abrirCarrinho}
