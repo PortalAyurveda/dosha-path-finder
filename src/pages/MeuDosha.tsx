@@ -462,6 +462,8 @@ const MeuDosha = () => {
     : 'perfil';
   const initialMode = modeParam === 'personalizado' ? 'personalizado' : 'gerais';
   const queryClient = useQueryClient();
+  const { profile } = useUser();
+  const isPremium = !!profile?.is_premium;
 
   // ── Registro (doshas_registros) ──
   const { data: registroRaw, isLoading: registroLoading } = useQuery({
