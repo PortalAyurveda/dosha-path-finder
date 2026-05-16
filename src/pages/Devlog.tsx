@@ -21,6 +21,8 @@ const formatDate = (iso: string) =>
     year: "numeric",
   });
 
+const cleanVersao = (v: string) => v.replace(/^v\s*/i, "").trim();
+
 const Devlog = () => {
   const [items, setItems] = useState<DevlogItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -36,16 +38,19 @@ const Devlog = () => {
     })();
   }, []);
 
-  // Group by versao preserving order
+  // Group by normalized versao preserving order
   const groups: { versao: string; date: string | null; items: DevlogItem[] }[] = [];
   const idx = new Map<string, number>();
   for (const it of items) {
-    if (!idx.has(it.versao)) {
-      idx.set(it.versao, groups.length);
-      groups.push({ versao: it.versao, date: it.criado_em, items: [] });
+    const key = cleanVersao(it.versao);
+    if (!idx.has(key)) {
+      idx.set(key, groups.length);
+      groups.push({ versao: key, date: it.criado_em, items: [] });
     }
-    groups[idx.get(it.versao)!].items.push(it);
+    groups[idx.get(key)!].items.push(it);
   }
+  // Destaque first inside each group
+  groups.forEach((g) => g.items.sort((a, b) => Number(!!b.destaque) - Number(!!a.destaque)));
 
   return (
     <PageContainer
@@ -65,7 +70,7 @@ const Devlog = () => {
           {groups.map((g) => (
             <section key={g.versao}>
               <header className="mb-4 border-b border-border pb-3">
-                <h2 className="text-2xl font-semibold text-foreground">{g.versao}</h2>
+                <h2 className="text-2xl font-semibold text-foreground">Update v{g.versao}</h2>
                 {g.date && (
                   <p className="text-sm text-muted-foreground mt-1">
                     {formatDate(g.date)}
