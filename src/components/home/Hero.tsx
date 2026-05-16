@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowRight, Lock } from "lucide-react";
+import { ArrowRight, BookOpen, Brain, Calendar, Lock, Play } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -161,13 +161,23 @@ const Hero = () => {
             <div className="bg-card/80 backdrop-blur-sm rounded-3xl px-8 py-10 xl:px-10 xl:py-12 border border-border shadow-lg w-full max-w-xl mx-auto">
               <DoshaPreview />
             </div>
-            <div className="flex-1 min-h-0 w-full max-w-[calc(36rem+28px)] -mx-[14px] mx-auto flex items-stretch justify-center">
-              <img
-                src="https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/banner-zero-sf300x.webp"
-                alt="Banner Portal Ayurveda — acessos rápidos"
-                loading="lazy"
-                className="h-full w-auto max-w-full object-contain rounded-3xl"
-              />
+            <div className="bg-card/80 backdrop-blur-sm rounded-3xl border border-border shadow-lg w-full max-w-xl mx-auto flex-1 min-h-0 flex items-stretch overflow-hidden">
+              <div className="grid grid-cols-4 divide-x divide-border w-full">
+                {[
+                  { Icon: Calendar, title: "Rotinas Diárias", subtitle: "Dinacharya personalizada", color: "#6B7FF2" },
+                  { Icon: Play, title: "Artigos e Vídeos", subtitle: "Conteúdo atualizado diariamente", color: "#6B7FF2" },
+                  { Icon: BookOpen, title: "Aulas Exclusivas", subtitle: "Escolha a próxima aula que quer no Portal", color: "#6B7FF2" },
+                  { Icon: Brain, title: "Akasha, sua consultora", subtitle: "Assistente de Ayurveda 24h", color: "#F28888" },
+                ].map(({ Icon, title, subtitle, color }) => (
+                  <div key={title} className="flex items-center gap-3 px-4 py-5">
+                    <Icon className="h-6 w-6 shrink-0" style={{ color }} aria-hidden />
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold text-foreground leading-tight">{title}</p>
+                      <p className="text-xs text-muted-foreground leading-snug mt-0.5">{subtitle}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 
