@@ -641,6 +641,23 @@ const MeuDosha = () => {
 
   const hasAgrav = result.agravVataTags || result.agravPittaTags || result.agravKaphaTags;
 
+  const handleRefazerTeste = () => {
+    if (result) {
+      localStorage.setItem('dosha_test_info', JSON.stringify({
+        nome: result.nome || '',
+        idade: result.idade?.toString() || '',
+        nivel: result.conhecimentoAyurveda || 'Iniciante',
+        email: result.email || '',
+        altura: result.altura || '',
+        peso: result.peso || '',
+        estado: result.estado || '',
+        cidade: result.cidade || '',
+        paisCidade: result.pais || '',
+      }));
+    }
+    window.location.href = '/teste-de-dosha';
+  };
+
   const formattedNome = result.nome
     ? result.nome
         .split(" ")
