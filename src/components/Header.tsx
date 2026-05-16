@@ -219,7 +219,7 @@ const Header = () => {
           {doshaResult ? (
             <Link
               to={profileLink}
-              className="flex items-center gap-2 pl-3 pr-2.5 py-1 rounded-full bg-white hover:bg-white/90 transition-colors border border-border/30 shadow-sm"
+              className="flex items-center gap-2 h-9 pl-3 pr-2.5 rounded-full bg-white hover:bg-white/90 transition-colors border border-border/30 shadow-sm"
             >
               <span className="text-xs sm:text-sm font-semibold text-foreground truncate max-w-[80px] sm:max-w-[120px] leading-none">
                 {firstName}
