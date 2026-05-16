@@ -50,7 +50,7 @@ const SearchHeader = ({ searchTerm, onSearchChange, isAdvanced, onAdvancedChange
               <button
                 key={cat.key}
                 onClick={() => {
-                  if (locked) return handlePremiumGate(cat.label);
+                  if (locked) return handlePremiumGate();
                   onCategoryChange(cat.key);
                 }}
                 className={`flex items-center gap-1.5 px-4 py-2 rounded-tl-xl rounded-br-xl rounded-tr-sm rounded-bl-sm text-sm font-medium transition-all border ${
