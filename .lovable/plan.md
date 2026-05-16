@@ -1,37 +1,19 @@
-## Verificação
+## Trocar foto e tratar como camada sobre o fundo
 
-Conferi o uso de refetch automático no projeto:
+Em `src/pages/curso/FormacaoLive.tsx`:
 
-- **AkashaTab** (`src/components/meudosha/AkashaTab.tsx:143`) — já tem `refetchOnWindowFocus: false`. **Não depende do refetch on focus.**
-- **Métricas** (`src/components/metricas/useMetricasData.ts:72`) — único lugar que explicitamente pede `refetchOnWindowFocus: true` (provavelmente o que você lembrava dos gráficos em tempo real).
-- **Aula ao vivo banner** — usa `refetchInterval: 60_000` (polling por tempo, não por foco). Não é afetado.
-- Todos os outros lugares (MeuDosha, VideosTab, ArtigosTab, DiagnosticoCompleto, HeartButton, useViewedContent) **já passam `false` localmente** — pegando o padrão atual do React Query (`true`) só sobraria o que não foi configurado individualmente.
+1. **Atualizar `PHOTO_URL`** para `https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/gemini-generated-image-w7evrdw7evrdw7ev.webp` (também no `og:image`).
 
-Conclusão: ninguém depende do padrão `true`. Métricas mantém `true` explicitamente, então sobrevive a qualquer mudança global. Akasha não é afetada.
+2. **Remover o "card" da foto** (sombra, bordas arredondadas assimétricas, blur halo atrás, gradiente escuro na base, `overflow-hidden`). Como o fundo da imagem já é creme igual ao site, ela deve flutuar livre sobre o `#FFF8EE`, sem moldura.
 
-## Correção
+3. **Trocar `object-cover` por `object-contain`** para não recortar a figura, mantendo altura responsiva (~520–620px) e `drop-shadow` sutil opcional para dar leve profundidade sem criar caixa.
 
-Definir o padrão global como `false` em `src/App.tsx`:
+4. **Adicionar formas decorativas atrás/sobre a foto** no lado direito, aproveitando que agora ela é "recortada":
+   - Um círculo grande em `PRIMARY` (azul) atrás da figura, semi-transparente.
+   - Um círculo menor salmão sobreposto em um canto.
+   - Um arco/anel fino em `DARK`.
+   - Todos posicionados absolutamente, com `z-index` controlado: círculo grande atrás da imagem, círculo pequeno e anel à frente em cantos que não cubram o rosto.
 
-```ts
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      refetchOnWindowFocus: false,
-      staleTime: 5 * 60 * 1000,
-    },
-  },
-});
-```
+5. **Manter** todo o resto da página intacto (texto, CTA WhatsApp, badges, SEO, animações).
 
-- Métricas continua refetchando ao focar (override local vence).
-- Akasha não é impactada (já estava desativada).
-- Resto do app para de piscar ao voltar para a aba.
-
-## Limpeza opcional (não vou fazer agora salvo se você pedir)
-
-Os `refetchOnWindowFocus: false` espalhados pelos componentes ficam redundantes após a mudança global. Podem ser removidos depois para limpar — mas não atrapalham e podem ficar como estão.
-
-## Arquivos afetados
-
-- `src/App.tsx` — instanciação do `QueryClient`.
+Nenhuma outra rota, dado ou componente é tocado.

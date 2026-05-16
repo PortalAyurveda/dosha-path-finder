@@ -7,7 +7,7 @@ const DARK = "#352F54";
 const SALMON = "#f7b2b7";
 const CREAM = "#FFF8EE";
 const PHOTO_URL =
-  "https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/72caf882-7991-415b-86ca-7293b55525b2.webp";
+  "https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/gemini-generated-image-w7evrdw7evrdw7ev.webp";
 const WHATSAPP_URL = "https://chat.whatsapp.com/HbADqLfLGPL5IibnRFQLiI";
 
 const FormacaoLive = () => {
@@ -139,26 +139,42 @@ const FormacaoLive = () => {
               initial={{ opacity: 0, scale: 0.96 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.7 }}
-              className="order-1 md:order-2 relative"
+              className="order-1 md:order-2 relative flex items-center justify-center min-h-[420px] md:min-h-[560px]"
             >
+              {/* Círculo grande atrás */}
               <div
-                className="absolute -inset-4 md:-inset-6 rounded-tl-[3rem] rounded-br-[3rem] rounded-tr-md rounded-bl-md opacity-25 blur-2xl"
-                style={{ background: `linear-gradient(135deg, ${SALMON}, ${PRIMARY})` }}
+                className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[320px] h-[320px] md:w-[440px] md:h-[440px] rounded-full opacity-30"
+                style={{ background: PRIMARY }}
                 aria-hidden
               />
-              <div className="relative rounded-tl-[3rem] rounded-br-[3rem] rounded-tr-md rounded-bl-md overflow-hidden shadow-2xl">
-                <img
-                  src={PHOTO_URL}
-                  alt="Edson Osorio, professor da Formação em Ayurveda"
-                  className="w-full h-[420px] md:h-[560px] object-cover"
-                  loading="eager"
-                />
-                <div
-                  className="absolute inset-x-0 bottom-0 h-1/3 pointer-events-none"
-                  style={{ background: `linear-gradient(to top, ${DARK}cc, transparent)` }}
-                  aria-hidden
-                />
-              </div>
+              {/* Anel fino */}
+              <div
+                className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[380px] h-[380px] md:w-[520px] md:h-[520px] rounded-full border-2 opacity-40"
+                style={{ borderColor: DARK }}
+                aria-hidden
+              />
+
+              {/* Foto sem moldura */}
+              <img
+                src={PHOTO_URL}
+                alt="Edson Osorio, professor da Formação em Ayurveda"
+                className="relative z-10 w-full h-[420px] md:h-[560px] object-contain"
+                style={{ filter: "drop-shadow(0 20px 30px rgba(53,47,84,0.18))" }}
+                loading="eager"
+              />
+
+              {/* Bolinha salmão à frente */}
+              <div
+                className="absolute z-20 top-6 right-2 md:top-10 md:right-6 w-16 h-16 md:w-24 md:h-24 rounded-full opacity-90 shadow-lg"
+                style={{ background: SALMON }}
+                aria-hidden
+              />
+              {/* Bolinha pequena escura */}
+              <div
+                className="absolute z-20 bottom-10 left-2 md:bottom-16 md:left-4 w-8 h-8 md:w-12 md:h-12 rounded-full"
+                style={{ background: DARK, opacity: 0.85 }}
+                aria-hidden
+              />
             </motion.div>
           </div>
         </section>
