@@ -72,6 +72,7 @@ const Header = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, doshaResult, profile, signOut } = useUser();
+  const { totalItens, abrirCarrinho } = useCart();
 
   const isSamkhya = location.pathname.startsWith("/samkhya");
 
