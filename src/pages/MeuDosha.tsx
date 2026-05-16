@@ -783,13 +783,25 @@ const MeuDosha = () => {
                       <p className="text-xs text-muted-foreground">{result.agniPrincipal}</p>
                     </div>
                   )}
-                  <div className="w-full mt-3 flex justify-start">
+                  <div className="w-full mt-3 flex items-center justify-between gap-2">
                     <button
                       type="button"
                       onClick={handleRefazerTeste}
                       className="text-xs text-muted-foreground underline underline-offset-2 hover:text-foreground transition-colors"
                     >
                       Refazer teste
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (isPremium) setEvolucaoOpen(true);
+                        else navigate("/assinar");
+                      }}
+                      className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full border border-border bg-card hover:bg-muted transition-colors text-foreground"
+                      aria-label={isPremium ? "Ver gráficos de evolução" : "Recurso premium — gráficos de evolução"}
+                    >
+                      {isPremium ? <LineChart className="w-3.5 h-3.5" /> : <Lock className="w-3.5 h-3.5" />}
+                      Gráficos
                     </button>
                   </div>
                 </div>
