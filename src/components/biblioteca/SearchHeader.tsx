@@ -86,7 +86,7 @@ const SearchHeader = ({ searchTerm, onSearchChange, isAdvanced, onAdvancedChange
           checked={isAdvanced}
           disabled={!isPremium}
           onCheckedChange={(v) => {
-            if (!isPremium) return handlePremiumGate("Busca Avançada");
+            if (!isPremium) return handlePremiumGate();
             onAdvancedChange(v);
           }}
         />
@@ -96,7 +96,7 @@ const SearchHeader = ({ searchTerm, onSearchChange, isAdvanced, onAdvancedChange
           onClick={(e) => {
             if (!isPremium) {
               e.preventDefault();
-              handlePremiumGate("Busca Avançada");
+              handlePremiumGate();
             }
           }}
         >
