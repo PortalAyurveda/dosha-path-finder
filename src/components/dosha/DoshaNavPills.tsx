@@ -58,10 +58,6 @@ const DoshaNavPills = ({ dosha, activeTab, onTabChange }: DoshaNavPillsProps) =>
     const path = `/biblioteca/${dosha}${tabRoutes[id]}`;
     navigate(path);
   };
-    onTabChange(id);
-    const path = `/biblioteca/${dosha}${tabRoutes[id]}`;
-    navigate(path);
-  };
 
   const colors = doshaColors[dosha];
 
