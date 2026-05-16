@@ -51,7 +51,7 @@ const Footer = () => {
               alt="Portal Ayurveda"
               width={180}
               height={48}
-              className="h-12 w-auto brightness-0 invert"
+              className="h-9 md:h-12 w-auto brightness-0 invert"
             />
           </div>
 
