@@ -298,9 +298,9 @@ const AkashaTab = ({
   const tokens = profile?.tokens_akasha ?? 10;
 
   return (
-    <div className="flex flex-col mt-4" style={{ minHeight: "50vh" }}>
+    <div className="flex flex-col mt-4">
       {/* Messages - scrolls only inside this container */}
-      <div ref={chatContainerRef} className="flex-1 overflow-y-auto space-y-3 pb-4 px-1 max-h-[60vh]">
+      <div ref={chatContainerRef} className="flex-1 overflow-y-auto overscroll-contain space-y-3 pb-4 px-1 h-[calc(100dvh-260px)] md:h-auto md:max-h-[60vh]">
         {/* Akasha Header */}
         <div className="flex flex-col items-center gap-2 pb-4 pt-2">
           <img src={AKASHA_LOGO} alt="Akasha IA" className="w-12 h-12 object-contain" />
