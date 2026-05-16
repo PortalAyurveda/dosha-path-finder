@@ -1,29 +1,15 @@
-## Ajustes no Footer e Akasha mobile
+## Fix do menu superior da biblioteca no mobile
 
-### 1. Footer — remover textos "YouTube" e "Instagram"
-Em `src/components/Footer.tsx`:
-- Manter apenas os ícones (`<Youtube />`, `<Instagram />`) nos links sociais, removendo o texto adjacente.
-- Manter o link "Loja Samkhya" intacto (ícone + texto).
-- Ajustar o `gap` da coluna de socials para ficar visualmente equilibrado com só os ícones.
-- Adicionar `aria-label` em cada link para acessibilidade ("YouTube", "Instagram").
+### Diagnóstico (image-48)
+A 390px o menu corta "Sommelier" ("Sor…") e a Vata ativa fica fora à esquerda. Causa: o container usa `justify-center` dentro de `overflow-x-auto`. Quando a fileira é mais larga que a tela, `justify-center` empurra o início para fora da viewport e o usuário não consegue rolar até o item ativo.
 
-### 2. Footer — versão mobile mais compacta
-Em `src/components/Footer.tsx`:
-- Reduzir paddings verticais no mobile: `py-10` → `py-6 md:py-10`.
-- Reduzir gaps: `gap-8` → `gap-5 md:gap-8`; `mt-8 pt-6` → `mt-5 pt-4 md:mt-8 md:pt-6`.
-- Reduzir tamanho do logo no mobile (h-10 md:h-12).
-- Tagline e copyright com `text-xs` no mobile.
+A segunda barra de navegação (image-49 — Principal/Horários/Alimentação) já está OK e o conteúdo aparece logo abaixo dela ✅.
 
-### 3. Aba Akasha (mobile) — chat com rolagem isolada
-Investigar `src/components/meudosha/AkashaTab.tsx` para entender a estrutura atual do chat. Objetivo:
-- Garantir que a área de mensagens tenha sua própria altura limitada (ex.: `max-h-[calc(100vh-Xpx)]`) e `overflow-y-auto` próprio, para que a rolagem do chat não force a rolagem da página inteira no mobile.
-- Fixar o input/textarea de envio na base do container do chat (sticky bottom dentro do container, não da viewport, para não conflitar com o footer reduzido).
-- Reduzir paddings/espaçamentos internos do chat no mobile para ganhar área útil.
-- Considerar `overscroll-contain` na lista de mensagens para evitar "bounce" arrastando a página.
-
-### Arquivos afetados
-- `src/components/Footer.tsx` (itens 1 e 2)
-- `src/components/meudosha/AkashaTab.tsx` (item 3) — exato ajuste depende de ler o arquivo na implementação.
+### Mudança
+Em `src/components/dosha/DoshaSelector.tsx`:
+- Trocar `justify-center` por `justify-start sm:justify-center` para que no mobile a barra role naturalmente da esquerda.
+- Reduzir levemente o padding/tamanho dos pills no mobile (`px-2 py-1`, `text-[11px]`) para caber mais conteúdo sem rolar.
+- Ao montar/trocar de rota, fazer `scrollIntoView` no pill ativo (block:'nearest', inline:'center') para que o item correspondente à página atual fique visível na barra.
 
 ### Fora de escopo
-- Mudanças em outras abas, lógica de negócio do chat, ou no Header.
+Segunda barra (DoshaNavPills) e conteúdo abaixo — já estão alinhados conforme image-49.
