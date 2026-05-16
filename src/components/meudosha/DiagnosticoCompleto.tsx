@@ -634,30 +634,25 @@ const ProximosPassos = ({
           titulo="Alimentação"
           descricao="Comer de acordo com seus doshas é o melhor remédio"
           href={`/biblioteca/${top}/alimentacao`}
-          tint={cor}
         />
         <ProximoPassoCard
           iconSrc={ICON_ROTINAS}
           titulo="Horários"
           descricao="A rotina ideal começa em pequenas mudanças"
           href={`/biblioteca/${top}/horarios`}
-          tint={cor}
         />
         <ProximoPassoCard
           iconSrc={ICON_ALQUIMIA}
           titulo="Alquimia"
           descricao="Aprenda a tratar a raiz, não o sintoma"
           href={`/biblioteca/${top}/alquimia`}
-          tint={cor}
         />
         <ProximoPassoCard
           iconSrc={ICON_AKASHA}
           titulo="Akasha"
           descricao="Sua consultora de Ayurveda 24h"
           href="/meu-dosha?tab=akasha"
-          tint={COLOR.primary}
-          iconSize={56}
-          showRing={false}
+          iconScale={0.85}
         />
       </div>
     </section>
