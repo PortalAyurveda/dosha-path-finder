@@ -85,8 +85,17 @@ const LayoutOrBare = ({ children }: { children: React.ReactNode }) => {
 };
 
 const RouteFallback = () => (
-  <div className="flex min-h-[60vh] items-center justify-center bg-background">
-    <div className="h-10 w-10 animate-spin rounded-full border-2 border-primary/20 border-t-primary" aria-label="Carregando" />
+  <div className="min-h-screen w-full bg-background" aria-busy="true" aria-label="Carregando">
+    <div className="mx-auto max-w-6xl px-4 sm:px-6 py-8 md:py-12 space-y-6">
+      <div className="h-10 w-2/3 rounded bg-muted/60 animate-pulse" />
+      <div className="h-4 w-1/2 rounded bg-muted/40 animate-pulse" />
+      <div className="h-64 w-full rounded-lg bg-muted/40 animate-pulse" />
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="h-40 rounded-lg bg-muted/40 animate-pulse" />
+        <div className="h-40 rounded-lg bg-muted/40 animate-pulse" />
+        <div className="h-40 rounded-lg bg-muted/40 animate-pulse" />
+      </div>
+    </div>
   </div>
 );
 
