@@ -1,6 +1,6 @@
 import { lazy, Suspense } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes, useLocation, useParams } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
@@ -82,6 +82,11 @@ const LayoutOrBare = ({ children }: { children: React.ReactNode }) => {
   const bare = pathname === "/aovivo";
   if (bare) return <>{children}</>;
   return <Layout>{children}</Layout>;
+};
+
+const TerapeutaPerfilRedirect = () => {
+  const { slug } = useParams();
+  return <Navigate to={`/terapeutas-do-brasil/${slug ?? ""}`} replace />;
 };
 
 const RouteFallback = () => (
