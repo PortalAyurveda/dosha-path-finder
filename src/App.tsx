@@ -117,12 +117,12 @@ const RoutedApp = () => {
               <Route path="/curso/alimentacao" element={<CursoAlimentacao />} />
               <Route path="/curso/formacao" element={<CursoFormacao />} />
               <Route path="/curso/formacao/live" element={<CursoFormacaoLive />} />
-              <Route path="/cursos/rotinas" element={<CursoRotinas />} />
+              <Route path="/cursos/rotinas" element={<Navigate to="/curso/rotinas" replace />} />
               <Route path="/curso/rotinas" element={<CursoRotinas />} />
               <Route path="/terapeutas-do-brasil" element={<TerapeutasDoBrasil />} />
               <Route path="/terapeutas-do-brasil/cadastro" element={<TerapeutaCadastro />} />
               <Route path="/terapeutas-do-brasil/:slug" element={<TerapeutaPerfil />} />
-              <Route path="/terapeutas/:slug" element={<TerapeutaPerfil />} />
+              <Route path="/terapeutas/:slug" element={<TerapeutaPerfilRedirect />} />
               <Route path="/akasha" element={<Navigate to="/meu-dosha" replace />} />
               <Route path="/video/:slug" element={<Video />} />
 
@@ -130,32 +130,32 @@ const RoutedApp = () => {
               <Route path="/biblioteca/vata" element={<DoshaVata />} />
               <Route path="/biblioteca/vata/horarios" element={<DoshaVata defaultTab="horarios" />} />
               <Route path="/biblioteca/vata/alimentacao" element={<DoshaVata defaultTab="alimentacao" />} />
-              <Route path="/biblioteca/vata/alquimia" element={<DoshaVata defaultTab="remedios" />} />
+              <Route path="/biblioteca/vata/alquimia" element={<Navigate to="/biblioteca/vata/remedios" replace />} />
               <Route path="/biblioteca/vata/remedios" element={<DoshaVata defaultTab="remedios" />} />
               <Route path="/biblioteca/vata/videos" element={<DoshaVata defaultTab="videos" />} />
               <Route path="/biblioteca/vata/avancado" element={<DoshaVata defaultTab="avancado" />} />
               {/* Legacy redirect */}
-              <Route path="/biblioteca/vata/adoecimento" element={<DoshaVata defaultTab="avancado" />} />
+              <Route path="/biblioteca/vata/adoecimento" element={<Navigate to="/biblioteca/vata/avancado" replace />} />
 
               {/* Pitta */}
               <Route path="/biblioteca/pitta" element={<DoshaPitta />} />
               <Route path="/biblioteca/pitta/horarios" element={<DoshaPitta defaultTab="horarios" />} />
               <Route path="/biblioteca/pitta/alimentacao" element={<DoshaPitta defaultTab="alimentacao" />} />
-              <Route path="/biblioteca/pitta/alquimia" element={<DoshaPitta defaultTab="remedios" />} />
+              <Route path="/biblioteca/pitta/alquimia" element={<Navigate to="/biblioteca/pitta/remedios" replace />} />
               <Route path="/biblioteca/pitta/remedios" element={<DoshaPitta defaultTab="remedios" />} />
               <Route path="/biblioteca/pitta/videos" element={<DoshaPitta defaultTab="videos" />} />
               <Route path="/biblioteca/pitta/avancado" element={<DoshaPitta defaultTab="avancado" />} />
-              <Route path="/biblioteca/pitta/adoecimento" element={<DoshaPitta defaultTab="avancado" />} />
+              <Route path="/biblioteca/pitta/adoecimento" element={<Navigate to="/biblioteca/pitta/avancado" replace />} />
 
               {/* Kapha */}
               <Route path="/biblioteca/kapha" element={<DoshaKapha />} />
               <Route path="/biblioteca/kapha/horarios" element={<DoshaKapha defaultTab="horarios" />} />
               <Route path="/biblioteca/kapha/alimentacao" element={<DoshaKapha defaultTab="alimentacao" />} />
-              <Route path="/biblioteca/kapha/alquimia" element={<DoshaKapha defaultTab="remedios" />} />
+              <Route path="/biblioteca/kapha/alquimia" element={<Navigate to="/biblioteca/kapha/remedios" replace />} />
               <Route path="/biblioteca/kapha/remedios" element={<DoshaKapha defaultTab="remedios" />} />
               <Route path="/biblioteca/kapha/videos" element={<DoshaKapha defaultTab="videos" />} />
               <Route path="/biblioteca/kapha/avancado" element={<DoshaKapha defaultTab="avancado" />} />
-              <Route path="/biblioteca/kapha/adoecimento" element={<DoshaKapha defaultTab="avancado" />} />
+              <Route path="/biblioteca/kapha/adoecimento" element={<Navigate to="/biblioteca/kapha/avancado" replace />} />
 
               <Route path="/biblioteca/horarios" element={<Horarios />} />
               <Route path="/blog" element={<Blog />} />
