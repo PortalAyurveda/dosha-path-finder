@@ -69,35 +69,6 @@ const BlogArticle = () => {
           <meta name="twitter:description" content={article.meta_description} />
         )}
         <meta name="twitter:image" content={article.image_url || "https://portalayurveda.com/og-image.jpg"} />
-        <script type="application/ld+json">
-          {JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "Article",
-            headline: article.title,
-            description: article.meta_description ?? undefined,
-            image: article.image_url || "https://portalayurveda.com/og-image.jpg",
-            datePublished: (article as any).created_at,
-            dateModified: (article as any).updated_at ?? (article as any).created_at,
-            author: { "@type": "Organization", name: "Portal Ayurveda" },
-            publisher: {
-              "@type": "Organization",
-              name: "Portal Ayurveda",
-              logo: { "@type": "ImageObject", url: "https://portalayurveda.com/icon-512.png" },
-            },
-            mainEntityOfPage: `https://portalayurveda.com/blog/${article.link_do_artigo}`,
-          })}
-        </script>
-        <script type="application/ld+json">
-          {JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "BreadcrumbList",
-            itemListElement: [
-              { "@type": "ListItem", position: 1, name: "Início", item: "https://portalayurveda.com/" },
-              { "@type": "ListItem", position: 2, name: "Blog", item: "https://portalayurveda.com/blog" },
-              { "@type": "ListItem", position: 3, name: article.title, item: `https://portalayurveda.com/blog/${article.link_do_artigo}` },
-            ],
-          })}
-        </script>
       </Helmet>
 
       <article className="max-w-3xl mx-auto px-4 py-8">

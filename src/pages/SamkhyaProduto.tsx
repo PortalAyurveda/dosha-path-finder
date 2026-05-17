@@ -78,41 +78,10 @@ const SamkhyaProduto = () => {
       <Helmet>
         <title>{produto ? `${produto.nome_display} — Loja Samkhya` : "Produto — Loja Samkhya"}</title>
         {produto && (
-          <>
-            <meta
-              name="description"
-              content={`${produto.nome_display} — produto Ayurvédico Samkhya. Compre via WhatsApp.`}
-            />
-            <link rel="canonical" href={`https://portalayurveda.com/samkhya/produto/${produto.slug}`} />
-            <meta property="og:type" content="product" />
-            <meta property="og:title" content={`${produto.nome_display} — Loja Samkhya`} />
-            <meta property="og:url" content={`https://portalayurveda.com/samkhya/produto/${produto.slug}`} />
-            {(produto.imagens?.[0] || produto.imagem_url) && (
-              <meta property="og:image" content={produto.imagens?.[0] || produto.imagem_url || ""} />
-            )}
-            <script type="application/ld+json">
-              {JSON.stringify({
-                "@context": "https://schema.org",
-                "@type": "Product",
-                name: produto.nome_display,
-                description: (produto as any).descricao || `${produto.nome_display} — produto Ayurvédico Samkhya.`,
-                image: produto.imagens?.length ? produto.imagens : (produto.imagem_url ? [produto.imagem_url] : undefined),
-                sku: produto.slug,
-                brand: { "@type": "Brand", name: "Samkhya" },
-                offers: (produto as any).preco
-                  ? {
-                      "@type": "Offer",
-                      price: String((produto as any).preco),
-                      priceCurrency: "BRL",
-                      availability: produto.ativo
-                        ? "https://schema.org/InStock"
-                        : "https://schema.org/OutOfStock",
-                      url: `https://portalayurveda.com/samkhya/produto/${produto.slug}`,
-                    }
-                  : undefined,
-              })}
-            </script>
-          </>
+          <meta
+            name="description"
+            content={`${produto.nome_display} — produto Ayurvédico Samkhya. Compre via WhatsApp.`}
+          />
         )}
       </Helmet>
 

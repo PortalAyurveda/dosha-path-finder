@@ -127,45 +127,6 @@ const TerapeutaPerfil = () => {
           name="description"
           content={`${displayName}, terapeuta ayurvédico em ${[terapeuta.cidade, terapeuta.estado].map((item) => item?.trim()).filter(Boolean).join(", ")}. ${bioParagraphs[0]?.slice(0, 120) || ""}`}
         />
-        <link rel="canonical" href={`https://portalayurveda.com/terapeutas-do-brasil/${terapeuta["terapeutas(dinamica)"] ?? requestedSlug}`} />
-        <meta property="og:type" content="profile" />
-        <meta property="og:title" content={`${displayName} — Terapeuta Ayurvédico`} />
-        <meta property="og:url" content={`https://portalayurveda.com/terapeutas-do-brasil/${terapeuta["terapeutas(dinamica)"] ?? requestedSlug}`} />
-        {imageUrl && <meta property="og:image" content={imageUrl} />}
-        <script type="application/ld+json">
-          {JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "Person",
-            name: displayName,
-            jobTitle: "Terapeuta Ayurvédico",
-            description: bioParagraphs[0]?.slice(0, 300) || undefined,
-            image: imageUrl || undefined,
-            address: location
-              ? {
-                  "@type": "PostalAddress",
-                  addressLocality: terapeuta.cidade ?? undefined,
-                  addressRegion: terapeuta.estado ?? undefined,
-                  addressCountry: "BR",
-                }
-              : undefined,
-            knowsAbout: especialidades.length ? especialidades : undefined,
-            sameAs: hasInstagram && instagramHandle
-              ? [`https://instagram.com/${instagramHandle.replace(/^@/, "")}`]
-              : undefined,
-            url: `https://portalayurveda.com/terapeutas-do-brasil/${terapeuta["terapeutas(dinamica)"] ?? requestedSlug}`,
-          })}
-        </script>
-        <script type="application/ld+json">
-          {JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "BreadcrumbList",
-            itemListElement: [
-              { "@type": "ListItem", position: 1, name: "Início", item: "https://portalayurveda.com/" },
-              { "@type": "ListItem", position: 2, name: "Terapeutas do Brasil", item: "https://portalayurveda.com/terapeutas-do-brasil" },
-              { "@type": "ListItem", position: 3, name: displayName, item: `https://portalayurveda.com/terapeutas-do-brasil/${terapeuta["terapeutas(dinamica)"] ?? requestedSlug}` },
-            ],
-          })}
-        </script>
       </Helmet>
 
       <main className={cn("max-w-3xl mx-auto px-4 py-8 md:py-12", themeClass)}>
