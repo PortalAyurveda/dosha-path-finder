@@ -1303,30 +1303,6 @@ export type Database = {
         }
         Relationships: []
       }
-      n8n_backups: {
-        Row: {
-          arquivo_nome: string
-          created_at: string
-          hash: string
-          id: string
-          total_workflows: number
-        }
-        Insert: {
-          arquivo_nome: string
-          created_at?: string
-          hash: string
-          id?: string
-          total_workflows: number
-        }
-        Update: {
-          arquivo_nome?: string
-          created_at?: string
-          hash?: string
-          id?: string
-          total_workflows?: number
-        }
-        Relationships: []
-      }
       perfis: {
         Row: {
           created_at: string | null

@@ -1,12 +1,23 @@
-Sitemap: https://portalayurveda.com/sitemap.xml
+User-agent: facebookexternalhit
+Allow: /
+
+User-agent: Twitterbot
+Allow: /
+
+User-agent: LinkedInBot
+Allow: /
 
 User-agent: *
 Allow: /
 Disallow: /admin
+Disallow: /admin/
 Disallow: /metricas
+Disallow: /metricas/
 Disallow: /meu-dosha
 Disallow: /entrar
-Disallow: /registros
+Disallow: /registros/
 Disallow: /preview-loading
 Disallow: /aovivo
 Disallow: /samkhya/obrigado
+
+Sitemap: https://portalayurveda.com/sitemap.xml

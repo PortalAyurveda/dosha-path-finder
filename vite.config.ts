@@ -17,21 +17,6 @@ export default defineConfig(({ mode }) => ({
     target: "es2020",
     cssCodeSplit: true,
     reportCompressedSize: false,
-    rollupOptions: {
-      output: {
-        manualChunks: (id) => {
-          if (!id.includes("node_modules")) return;
-          if (id.includes("react-router")) return "react-vendor";
-          if (id.match(/[\\/]react(-dom)?[\\/]/) || id.includes("scheduler")) return "react-vendor";
-          if (id.includes("@radix-ui")) return "radix";
-          if (id.includes("@tanstack")) return "query";
-          if (id.includes("recharts") || id.includes("d3-")) return "charts";
-          if (id.includes("@supabase")) return "supabase";
-          if (id.includes("framer-motion") || id.includes("motion")) return "motion";
-          if (id.includes("lucide-react")) return "icons";
-        },
-      },
-    },
   },
   optimizeDeps: {
     include: ["react-dom", "react-dom/client", "@radix-ui/react-tooltip", "@radix-ui/react-portal"],
