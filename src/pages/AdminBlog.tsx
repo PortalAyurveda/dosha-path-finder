@@ -93,7 +93,7 @@ const AdminBlog = () => {
 
     let q = supabase
       .from("portal_conteudo")
-      .select("id, title, image_url, created_at", { count: "exact" })
+      .select("id, title, image_url, created_at, destaque_index, destaque_ordem", { count: "exact" })
       .order("created_at", { ascending: false })
       .range(from, to);
 
