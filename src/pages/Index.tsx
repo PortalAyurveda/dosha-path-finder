@@ -306,7 +306,7 @@ const BibliotecaSection = () => {
   });
 
   return (
-    <section className="max-w-6xl mx-auto px-4 sm:px-6 py-16 md:py-20">
+    <section className="max-w-6xl mx-auto px-4 sm:px-6 py-8 md:py-10">
       <div className="flex flex-col items-center text-center gap-2 mb-10">
         <h2
           className="font-serif italic font-bold text-3xl md:text-4xl"
