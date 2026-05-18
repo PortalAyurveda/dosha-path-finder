@@ -13,6 +13,7 @@ import { resolve, dirname } from "path";
 const BASE_URL = "https://portalayurveda.com";
 const DEFAULT_OG = `${BASE_URL}/og-image.jpg`;
 const SUPABASE_URL = "https://api.portalayurveda.com";
+const SITEMAP_SOURCE = `${SUPABASE_URL}/functions/v1/sitemap`;
 const SUPABASE_ANON =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3ZXprYXNqZmd1YXJqbWp4aWZoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjgyNDI3MjEsImV4cCI6MjA4MzgxODcyMX0.sceKx2-SX8HZT_UaI2cHPnqkFZUmVPXaZwI9051Mzms";
 
@@ -190,6 +191,29 @@ async function dynamicRoutes(): Promise<Route[]> {
   return routes;
 }
 
+async function writeSitemap(distDir: string): Promise<void> {
+  try {
+    const res = await fetch(SITEMAP_SOURCE, {
+      headers: { Accept: "application/xml,text/xml,*/*" },
+    });
+    const xml = await res.text();
+    const urlCount = (xml.match(/<url>/g) || []).length;
+    const articleCount = (xml.match(/<loc>https:\/\/portalayurveda\.com\/blog\//g) || []).length;
+
+    if (!res.ok || urlCount < 250 || articleCount < 250) {
+      console.warn(
+        `[prerender] sitemap dinâmico incompleto (${res.status}, ${urlCount} URLs, ${articleCount} artigos). Mantendo fallback estático se existir.`
+      );
+      return;
+    }
+
+    writeFileSync(resolve(distDir, "sitemap.xml"), xml);
+    console.log(`[prerender] sitemap.xml escrito (${urlCount} URLs, ${articleCount} artigos)`);
+  } catch (err) {
+    console.warn("[prerender] falha ao gerar sitemap.xml dinâmico", err);
+  }
+}
+
 function renderHtml(template: string, route: Route): string {
   const url = `${BASE_URL}${route.path}`;
   const title = escapeHtml(route.title);
@@ -301,6 +325,8 @@ async function main() {
   if (home) {
     writeFileSync(templatePath, renderHtml(template, home));
   }
+
+  await writeSitemap(distDir);
 
   console.log(
     `[prerender] ${written} rotas escritas (${staticRoutes.length - 1} estáticas + ${dynamic.length} dinâmicas)`
