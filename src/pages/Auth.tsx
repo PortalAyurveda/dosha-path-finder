@@ -50,7 +50,7 @@ const Auth = () => {
   }, [searchParams]);
 
   const handleGoogleLogin = async () => {
-    setLoading(true);
+    setGoogleLoading(true);
     const storedDoshaId = localStorage.getItem("activeDoshaId");
     const redirectUrl = storedDoshaId
       ? `${window.location.origin}/meu-dosha?id=${storedDoshaId}`
@@ -63,7 +63,7 @@ const Auth = () => {
 
     if (error) {
       toast({ title: "Erro", description: error.message, variant: "destructive" });
-      setLoading(false);
+      setGoogleLoading(false);
     }
   };
 
