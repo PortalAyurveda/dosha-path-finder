@@ -15,6 +15,7 @@ const Auth = () => {
   const [code, setCode] = useState("");
   const [step, setStep] = useState<"email" | "code">("email");
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
   const [resending, setResending] = useState(false);
   const [waitingForDosha, setWaitingForDosha] = useState(false);
 
