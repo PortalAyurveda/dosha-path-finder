@@ -96,10 +96,11 @@ const AdminBlog = () => {
     fetchFeatured();
   }, [fetchFeatured]);
 
+  // Persiste 1-based (1, 2, 3...) para casar com a numeração exibida
   const persistFeaturedOrder = async (list: FeaturedArticle[]) => {
     const results = await Promise.all(
       list.map((a, i) =>
-        supabase.from("portal_conteudo").update({ destaque_ordem: i }).eq("id", a.id)
+        supabase.from("portal_conteudo").update({ destaque_ordem: i + 1 }).eq("id", a.id)
       )
     );
     const failed = results.find((r) => r.error);
@@ -145,13 +146,37 @@ const AdminBlog = () => {
   };
 
   const saveOrderManually = async () => {
+    if (savingOrder) return;
     setSavingOrder(true);
+    const expectedIds = featured.map((a) => a.id);
     const ok = await persistFeaturedOrder(featured);
+    if (!ok) {
+      setSavingOrder(false);
+      return;
+    }
+    // Re-fetch e verifica se a ordem persistida bate com a enviada
+    const { data, error } = await supabase
+      .from("portal_conteudo")
+      .select("id, title, image_url, destaque_ordem, created_at")
+      .eq("destaque_index", true)
+      .order("destaque_ordem", { ascending: true, nullsFirst: false })
+      .order("created_at", { ascending: false })
+      .limit(20);
     setSavingOrder(false);
-    if (ok) {
+    if (error) {
+      toast.error("Salvou, mas falhou ao verificar: " + error.message);
+      return;
+    }
+    const persistedIds = (data || []).map((r) => r.id);
+    const matches =
+      persistedIds.length === expectedIds.length &&
+      expectedIds.every((id, i) => id === persistedIds[i]);
+    setFeatured((data || []) as FeaturedArticle[]);
+    if (matches) {
       setOrderDirty(false);
-      toast.success("Ordem salva");
-      fetchFeatured();
+      toast.success("Ordem salva e confirmada no banco");
+    } else {
+      toast.error("A ordem no banco não bateu com a enviada. Tente novamente.");
     }
   };
 
@@ -161,7 +186,7 @@ const AdminBlog = () => {
     const newVal = !a.destaque_index;
     const updates: { destaque_index: boolean; destaque_ordem: number | null } = {
       destaque_index: newVal,
-      destaque_ordem: newVal ? featured.length : null,
+      destaque_ordem: newVal ? featured.length + 1 : null,
     };
     const { error } = await supabase
       .from("portal_conteudo")
@@ -178,7 +203,7 @@ const AdminBlog = () => {
     if (newVal) {
       setFeatured((prev) => [
         ...prev,
-        { id: a.id, title: a.title, image_url: a.image_url, destaque_ordem: prev.length },
+        { id: a.id, title: a.title, image_url: a.image_url, destaque_ordem: prev.length + 1 },
       ]);
       toast.success("Adicionado aos destaques");
     } else {
