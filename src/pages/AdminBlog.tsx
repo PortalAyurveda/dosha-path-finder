@@ -363,6 +363,85 @@ const AdminBlog = () => {
             </div>
           </div>
 
+          {/* Destaques do Index */}
+          <div className="space-y-3 border border-border rounded-lg p-4 bg-card/50">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-lg font-heading font-bold text-foreground flex items-center gap-2">
+                  <Star className="w-4 h-4 fill-yellow-400 text-yellow-500" />
+                  Destaques no Index
+                </h2>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  Aparecem em "Fundamentos do Ayurveda" na home, na ordem abaixo (3×3).
+                </p>
+              </div>
+              <span className="text-xs text-muted-foreground">{featured.length} selecionado(s)</span>
+            </div>
+
+            {featuredLoading ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <Skeleton key={i} className="h-20 rounded-lg" />
+                ))}
+              </div>
+            ) : featured.length === 0 ? (
+              <p className="text-sm text-muted-foreground py-4 text-center">
+                Nenhum artigo marcado como destaque. Clique na estrela em um card abaixo para adicionar.
+              </p>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                {featured.map((f, idx) => (
+                  <div
+                    key={f.id}
+                    className="flex items-center gap-2 bg-background border border-border rounded-lg p-2"
+                  >
+                    <span className="text-xs font-bold text-muted-foreground w-5 text-center">
+                      {idx + 1}
+                    </span>
+                    <div className="w-12 h-12 shrink-0 rounded overflow-hidden bg-muted">
+                      {f.image_url && (
+                        <img src={f.image_url} alt={f.title} className="w-full h-full object-cover" loading="lazy" />
+                      )}
+                    </div>
+                    <p className="text-xs font-medium text-foreground flex-1 line-clamp-2">{f.title}</p>
+                    <div className="flex flex-col gap-0.5">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-5 w-5"
+                        onClick={() => moveFeatured(idx, -1)}
+                        disabled={idx === 0}
+                        title="Subir"
+                      >
+                        <ArrowUp className="w-3 h-3" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-5 w-5"
+                        onClick={() => moveFeatured(idx, 1)}
+                        disabled={idx === featured.length - 1}
+                        title="Descer"
+                      >
+                        <ArrowDown className="w-3 h-3" />
+                      </Button>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-6 w-6 text-destructive hover:bg-destructive/10"
+                      onClick={() => toggleDestaque({ id: f.id, title: f.title, image_url: f.image_url, destaque_index: true })}
+                      disabled={togglingId === f.id}
+                      title="Remover dos destaques"
+                    >
+                      {togglingId === f.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <Star className="w-3.5 h-3.5 fill-yellow-400 text-yellow-500" />}
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
           {/* Grid */}
           {loading ? (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
