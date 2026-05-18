@@ -229,9 +229,22 @@ export function UserProvider({ children }: { children: ReactNode }) {
       void syncAuthState(null, existingSession);
     });
 
+    // Em iOS/Safari, quando a aba fica em background por muito tempo, o
+    // auto-refresh do token para. Ao voltar a ficar visível, forçamos um
+    // refresh para evitar que o usuário "apareça deslogado" por token expirado.
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        void supabase.auth.refreshSession().catch(() => {
+          // silencioso — se o refresh falhar, onAuthStateChange cuida do estado
+        });
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
     return () => {
       isMounted = false;
       subscription.unsubscribe();
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
   }, []);
 
