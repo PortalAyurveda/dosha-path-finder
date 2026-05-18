@@ -23,7 +23,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import PaginationControls from "@/components/PaginationControls";
-import { ArrowLeft, Search, Loader2, Upload, Save, Copy, Trash2, Pencil, Star, ArrowUp, ArrowDown } from "lucide-react";
+import { ArrowLeft, Search, Loader2, Upload, Save, Copy, Trash2, Pencil, Star, GripVertical } from "lucide-react";
 import { sanitizeSlug } from "@/lib/sanitizeSlug";
 import AdminNav from "@/components/admin/AdminNav";
 
@@ -97,22 +97,60 @@ const AdminBlog = () => {
   }, [fetchFeatured]);
 
   const persistFeaturedOrder = async (list: FeaturedArticle[]) => {
-    await Promise.all(
+    const results = await Promise.all(
       list.map((a, i) =>
         supabase.from("portal_conteudo").update({ destaque_ordem: i }).eq("id", a.id)
       )
     );
+    const failed = results.find((r) => r.error);
+    if (failed?.error) {
+      toast.error("Erro ao salvar ordem: " + failed.error.message);
+      return false;
+    }
+    return true;
   };
 
-  const moveFeatured = async (index: number, dir: -1 | 1) => {
-    const next = [...featured];
-    const target = index + dir;
-    if (target < 0 || target >= next.length) return;
-    [next[index], next[target]] = [next[target], next[index]];
-    setFeatured(next);
-    await persistFeaturedOrder(next);
-    toast.success("Ordem atualizada");
+  // Drag-and-drop reordering
+  const [dragIndex, setDragIndex] = useState<number | null>(null);
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
+  const [savingOrder, setSavingOrder] = useState(false);
+
+  const handleDragStart = (idx: number) => (e: React.DragEvent) => {
+    setDragIndex(idx);
+    e.dataTransfer.effectAllowed = "move";
   };
+  const handleDragOver = (idx: number) => (e: React.DragEvent) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+    if (dragOverIndex !== idx) setDragOverIndex(idx);
+  };
+  const handleDragEnd = () => {
+    setDragIndex(null);
+    setDragOverIndex(null);
+  };
+  const handleDrop = (idx: number) => async (e: React.DragEvent) => {
+    e.preventDefault();
+    const from = dragIndex;
+    setDragIndex(null);
+    setDragOverIndex(null);
+    if (from == null || from === idx) return;
+    const next = [...featured];
+    const [moved] = next.splice(from, 1);
+    next.splice(idx, 0, moved);
+    setFeatured(next);
+    setSavingOrder(true);
+    const ok = await persistFeaturedOrder(next);
+    setSavingOrder(false);
+    if (ok) toast.success("Ordem salva");
+  };
+
+  const saveOrderManually = async () => {
+    setSavingOrder(true);
+    const ok = await persistFeaturedOrder(featured);
+    setSavingOrder(false);
+    if (ok) toast.success("Ordem salva");
+  };
+
 
   const toggleDestaque = async (a: { id: string; title: string; image_url: string | null; destaque_index?: boolean | null }) => {
     setTogglingId(a.id);
@@ -372,10 +410,21 @@ const AdminBlog = () => {
                   Destaques no Index
                 </h2>
                 <p className="text-xs text-muted-foreground mt-0.5">
-                  Aparecem em "Fundamentos do Ayurveda" na home, na ordem abaixo (3×3).
+                  Arraste pelo ícone <GripVertical className="inline w-3 h-3" /> para reordenar. Aparecem em "Conheça Ayurveda por aqui" na home (3×3).
                 </p>
               </div>
-              <span className="text-xs text-muted-foreground">{featured.length} selecionado(s)</span>
+              <div className="flex items-center gap-3">
+                <span className="text-xs text-muted-foreground">{featured.length} selecionado(s)</span>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={saveOrderManually}
+                  disabled={savingOrder || featured.length === 0}
+                >
+                  {savingOrder ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> : <Save className="w-3 h-3 mr-1" />}
+                  Salvar ordem
+                </Button>
+              </div>
             </div>
 
             {featuredLoading ? (
@@ -393,8 +442,27 @@ const AdminBlog = () => {
                 {featured.map((f, idx) => (
                   <div
                     key={f.id}
-                    className="flex items-center gap-2 bg-background border border-border rounded-lg p-2"
+                    draggable
+                    onDragStart={handleDragStart(idx)}
+                    onDragOver={handleDragOver(idx)}
+                    onDrop={handleDrop(idx)}
+                    onDragEnd={handleDragEnd}
+                    className={`flex items-center gap-2 bg-background border rounded-lg p-2 transition-all ${
+                      dragIndex === idx ? "opacity-40" : ""
+                    } ${
+                      dragOverIndex === idx && dragIndex !== idx
+                        ? "border-primary ring-2 ring-primary/30"
+                        : "border-border"
+                    }`}
                   >
+                    <button
+                      type="button"
+                      className="cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground p-0.5"
+                      title="Arrastar para reordenar"
+                      aria-label="Arrastar"
+                    >
+                      <GripVertical className="w-4 h-4" />
+                    </button>
                     <span className="text-xs font-bold text-muted-foreground w-5 text-center">
                       {idx + 1}
                     </span>
@@ -404,28 +472,6 @@ const AdminBlog = () => {
                       )}
                     </div>
                     <p className="text-xs font-medium text-foreground flex-1 line-clamp-2">{f.title}</p>
-                    <div className="flex flex-col gap-0.5">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-5 w-5"
-                        onClick={() => moveFeatured(idx, -1)}
-                        disabled={idx === 0}
-                        title="Subir"
-                      >
-                        <ArrowUp className="w-3 h-3" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-5 w-5"
-                        onClick={() => moveFeatured(idx, 1)}
-                        disabled={idx === featured.length - 1}
-                        title="Descer"
-                      >
-                        <ArrowDown className="w-3 h-3" />
-                      </Button>
-                    </div>
                     <Button
                       variant="ghost"
                       size="icon"
