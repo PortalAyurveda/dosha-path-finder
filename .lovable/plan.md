@@ -1,39 +1,29 @@
-# Ajuste de Cache-Control do index.html
+## Problema
+Na tabela `doshas_registros` existem 2 policies de SELECT:
+- `anon`: `USING (true)` ✅ libera tudo
+- `authenticated`: `USING (is_admin() OR email = jwt.email)` ❌ só deixa ver o próprio registro
 
-## Resposta curta
-Sim, é possível — e o caminho é justamente o arquivo `public/_headers` que já existe no projeto. A hospedagem do Lovable respeita esse arquivo (mesmo formato do Netlify), então basta sobrescrever o header padrão `no-cache, must-revalidate, max-age=0` que o servidor está mandando hoje.
+Quando você está logado e abre `/meu-dosha?id=...` de outra pessoa, cai na regra de `authenticated` → bloqueado.
 
-## Diagnóstico
-- Hoje o `public/_headers` define para `/` e `/index.html`:
-  ```
-  Cache-Control: public, max-age=0, must-revalidate
-  ```
-  Isso instrui qualquer proxy (incluindo Cloudflare) a **não** cachear na borda → TTFB ~700ms toda visita.
-- Os assets hasheados (`/assets/*`, `/fonts/*`, `*.woff2`) já estão com `max-age=31536000, immutable`, então não precisam mexer.
-- O risco de cachear o `index.html` na borda é deploy: se a borda servir um HTML antigo, ele pode referenciar bundles JS que ainda existem (Vite usa hash, então arquivos antigos continuam válidos), mas o usuário só vê a versão nova quando o cache da borda expira.
+## Mudança
+Migration para trocar a policy de SELECT de `authenticated` por uma equivalente à de `anon`:
 
-## Mudança proposta
-Em `public/_headers`, trocar as duas entradas de `/` e `/index.html` para:
+```sql
+DROP POLICY "Authenticated reads own or admin reads all" ON public.doshas_registros;
 
-```
-/
-  Cache-Control: public, max-age=60, s-maxage=3600, must-revalidate
-
-/index.html
-  Cache-Control: public, max-age=60, s-maxage=3600, must-revalidate
+CREATE POLICY "Authenticated can read all dosha registros"
+ON public.doshas_registros
+FOR SELECT
+TO authenticated
+USING (true);
 ```
 
-Significado:
-- `max-age=60` → browser cacheia 1 minuto (revalida rápido após deploy).
-- `s-maxage=3600` → Cloudflare/proxies cacheiam até 1 hora (TTFB cai drasticamente nas visitas repetidas via CDN).
-- `must-revalidate` → quando expirar, força revalidação antes de servir.
-
-## Observações
-- O `site.webmanifest` fica como está (`max-age=300`).
-- Após publicar, dá pra confirmar no DevTools → Network → `index.html` → response header `cache-control` e `cf-cache-status` (deve passar de `DYNAMIC`/`BYPASS` para `HIT` após a 2ª visita).
-- Se em algum deploy você precisar invalidar a borda imediatamente, pode purgar pelo painel da Cloudflare (caso esteja usando uma zona própria) ou aguardar a 1h.
-- Importante: o Lovable serve o app no domínio `*.lovable.app` por trás da infra deles; o `_headers` controla o que sai da origem. Se você está usando Cloudflare como proxy no seu domínio custom (`portalayurveda.com`), a regra `s-maxage` é exatamente o que a Cloudflare lê para decidir TTL da borda.
+Resultado: qualquer pessoa (logada ou não) consegue abrir qualquer página `/meu-dosha`, como já acontece quando deslogado.
 
 ## O que NÃO muda
-- Nenhum código JS/TS, componente, rota, lógica ou visual.
-- Headers de `/assets/*`, `/fonts/*`, `*.woff2` permanecem iguais.
+- INSERT continua aberto para anon/authenticated (como já era)
+- DELETE continua restrito a admin
+- Nenhum código frontend precisa mudar
+
+## Consideração de segurança
+A tabela `doshas_registros` passa a ser 100% pública de leitura. Ela contém email, nome, idade, IMC e respostas do teste de dosha. Se você quiser manter privacidade desses campos no futuro, o caminho seria criar uma view pública só com os campos visíveis na página. Mas pelo que você descreveu, o objetivo é exatamente que qualquer um veja qualquer página — então a migration acima resolve.
