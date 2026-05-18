@@ -13,5 +13,9 @@
 /index.html
   Cache-Control: public, max-age=60, s-maxage=3600, must-revalidate
 
+/sitemap.xml
+  Cache-Control: public, max-age=600, must-revalidate
+
+
 /site.webmanifest
   Cache-Control: public, max-age=300

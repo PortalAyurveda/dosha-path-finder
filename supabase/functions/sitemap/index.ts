@@ -72,22 +72,32 @@ function renderUrl(e: Entry): string {
     .join("\n");
 }
 
-async function dynamicEntries(): Promise<Entry[]> {
+type DynResult = { entries: Entry[]; complete: boolean };
+
+async function dynamicEntries(): Promise<DynResult> {
+  // Usa service role para bypass de RLS e garantir leitura consistente
   const supabase = createClient(
     Deno.env.get("SUPABASE_URL")!,
-    Deno.env.get("SUPABASE_ANON_KEY")!,
+    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? Deno.env.get("SUPABASE_ANON_KEY")!,
   );
   const entries: Entry[] = [];
+  let complete = true;
 
   // Artigos publicados
   try {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from("portal_conteudo")
       .select("link_do_artigo, created_at")
       .eq("status", "published")
       .not("link_do_artigo", "is", null)
-      .limit(2000);
-    for (const row of data ?? []) {
+      .limit(5000);
+    if (error) throw error;
+    const rows = data ?? [];
+    if (rows.length === 0) {
+      console.warn("portal_conteudo retornou 0 linhas — marcando resposta como incompleta");
+      complete = false;
+    }
+    for (const row of rows) {
       if (!row.link_do_artigo) continue;
       entries.push({
         path: `/blog/${row.link_do_artigo}`,
@@ -98,14 +108,16 @@ async function dynamicEntries(): Promise<Entry[]> {
     }
   } catch (err) {
     console.error("portal_conteudo error", err);
+    complete = false;
   }
 
   // Aulas ao vivo
   try {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from("aulas_ao_vivo")
       .select("slug, created_at")
       .limit(500);
+    if (error) throw error;
     for (const row of data ?? []) {
       if (!row.slug) continue;
       entries.push({
@@ -117,15 +129,17 @@ async function dynamicEntries(): Promise<Entry[]> {
     }
   } catch (err) {
     console.error("aulas_ao_vivo error", err);
+    complete = false;
   }
 
   // Terapeutas aprovados (mantém URLs já indexadas)
   try {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from("portal_terapeutas")
       .select("*")
       .eq("status", "aprovado")
       .limit(2000);
+    if (error) throw error;
     for (const t of (data ?? []) as Record<string, unknown>[]) {
       const slug = t["terapeutas(dinamica)"];
       if (!slug || typeof slug !== "string") continue;
@@ -138,9 +152,10 @@ async function dynamicEntries(): Promise<Entry[]> {
     }
   } catch (err) {
     console.error("portal_terapeutas error", err);
+    complete = false;
   }
 
-  return entries;
+  return { entries, complete };
 }
 
 Deno.serve(async (req) => {
@@ -148,7 +163,7 @@ Deno.serve(async (req) => {
     return new Response("ok", { headers: corsHeaders });
   }
 
-  const dyn = await dynamicEntries();
+  const { entries: dyn, complete } = await dynamicEntries();
   const all = [...staticEntries, ...dyn];
   const xml = [
     '<?xml version="1.0" encoding="UTF-8"?>',
@@ -157,11 +172,16 @@ Deno.serve(async (req) => {
     "</urlset>",
   ].join("\n");
 
+  // Se algo falhou ou veio vazio, NÃO permitir que a CDN cache a resposta capenga.
+  const cacheControl = complete
+    ? "public, max-age=600, s-maxage=600, stale-while-revalidate=3600"
+    : "no-store";
+
   return new Response(xml, {
     headers: {
       ...corsHeaders,
       "Content-Type": "application/xml; charset=utf-8",
-      "Cache-Control": "public, max-age=3600",
+      "Cache-Control": cacheControl,
     },
   });
 });
