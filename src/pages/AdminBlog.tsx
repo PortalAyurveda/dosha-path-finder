@@ -96,21 +96,6 @@ const AdminBlog = () => {
     fetchFeatured();
   }, [fetchFeatured]);
 
-  // Persiste 1-based (1, 2, 3...) para casar com a numeração exibida
-  const persistFeaturedOrder = async (list: FeaturedArticle[]) => {
-    const results = await Promise.all(
-      list.map((a, i) =>
-        supabase.from("portal_conteudo").update({ destaque_ordem: i + 1 }).eq("id", a.id)
-      )
-    );
-    const failed = results.find((r) => r.error);
-    if (failed?.error) {
-      toast.error("Erro ao salvar ordem: " + failed.error.message);
-      return false;
-    }
-    return true;
-  };
-
   // Drag-and-drop reordering (local only — só persiste ao clicar "Salvar ordem")
   const [dragIndex, setDragIndex] = useState<number | null>(null);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
@@ -145,73 +130,64 @@ const AdminBlog = () => {
     setOrderDirty(true);
   };
 
+  // Persiste via RPC transacional (só admin) e valida com re-fetch
   const saveOrderManually = async () => {
     if (savingOrder) return;
     setSavingOrder(true);
     const expectedIds = featured.map((a) => a.id);
-    const ok = await persistFeaturedOrder(featured);
-    if (!ok) {
+    const { data: rpcData, error: rpcError } = await (supabase as any).rpc(
+      "admin_set_portal_conteudo_destaques",
+      { _ids: expectedIds }
+    );
+    if (rpcError) {
       setSavingOrder(false);
+      toast.error("Erro ao salvar: " + rpcError.message);
       return;
     }
-    // Re-fetch e verifica se a ordem persistida bate com a enviada
-    const { data, error } = await supabase
-      .from("portal_conteudo")
-      .select("id, title, image_url, destaque_ordem, created_at")
-      .eq("destaque_index", true)
-      .order("destaque_ordem", { ascending: true, nullsFirst: false })
-      .order("created_at", { ascending: false })
-      .limit(20);
-    setSavingOrder(false);
-    if (error) {
-      toast.error("Salvou, mas falhou ao verificar: " + error.message);
-      return;
-    }
-    const persistedIds = (data || []).map((r) => r.id);
+    const persistedIds = ((rpcData || []) as { id: string; destaque_ordem: number }[])
+      .sort((a, b) => (a.destaque_ordem ?? 0) - (b.destaque_ordem ?? 0))
+      .map((r) => r.id);
     const matches =
       persistedIds.length === expectedIds.length &&
       expectedIds.every((id, i) => id === persistedIds[i]);
-    setFeatured((data || []) as FeaturedArticle[]);
+
+    // Reflete o estado real do banco na tela
+    await fetchFeatured();
+    setSavingOrder(false);
     if (matches) {
       setOrderDirty(false);
-      toast.success("Ordem salva e confirmada no banco");
+      toast.success("Destaques salvos e confirmados no banco");
     } else {
-      toast.error("A ordem no banco não bateu com a enviada. Tente novamente.");
+      toast.error("O banco não confirmou a ordem exatamente. Verifique permissões.");
     }
   };
 
+  // Remover da lista local (sem persistir) — só salva ao clicar "Salvar ordem"
+  const removeFromFeaturedLocal = (id: string) => {
+    setFeatured((prev) => prev.filter((f) => f.id !== id));
+    setOrderDirty(true);
+  };
 
-  const toggleDestaque = async (a: { id: string; title: string; image_url: string | null; destaque_index?: boolean | null }) => {
-    setTogglingId(a.id);
-    const newVal = !a.destaque_index;
-    const updates: { destaque_index: boolean; destaque_ordem: number | null } = {
-      destaque_index: newVal,
-      destaque_ordem: newVal ? featured.length + 1 : null,
-    };
-    const { error } = await supabase
-      .from("portal_conteudo")
-      .update(updates)
-      .eq("id", a.id);
-    setTogglingId(null);
-    if (error) {
-      toast.error("Erro: " + error.message);
-      return;
-    }
-    setArticles((prev) =>
-      prev.map((x) => (x.id === a.id ? { ...x, destaque_index: newVal } : x))
-    );
-    if (newVal) {
-      setFeatured((prev) => [
-        ...prev,
-        { id: a.id, title: a.title, image_url: a.image_url, destaque_ordem: prev.length + 1 },
-      ]);
-      toast.success("Adicionado aos destaques");
+  // Adicionar à lista local (sem persistir)
+  const addToFeaturedLocal = (a: { id: string; title: string; image_url: string | null }) => {
+    setFeatured((prev) => {
+      if (prev.some((f) => f.id === a.id)) return prev;
+      return [...prev, { id: a.id, title: a.title, image_url: a.image_url, destaque_ordem: prev.length + 1 }];
+    });
+    setOrderDirty(true);
+  };
+
+  const toggleDestaque = (a: { id: string; title: string; image_url: string | null; destaque_index?: boolean | null }) => {
+    const isFeatured = featured.some((f) => f.id === a.id);
+    if (isFeatured) {
+      removeFromFeaturedLocal(a.id);
     } else {
-      const remaining = featured.filter((f) => f.id !== a.id);
-      setFeatured(remaining);
-      await persistFeaturedOrder(remaining);
-      toast.success("Removido dos destaques");
+      addToFeaturedLocal(a);
     }
+    // Reflete na grid imediatamente (visual; só persiste ao salvar)
+    setArticles((prev) =>
+      prev.map((x) => (x.id === a.id ? { ...x, destaque_index: !isFeatured } : x))
+    );
   };
 
 
