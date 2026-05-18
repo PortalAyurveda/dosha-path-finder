@@ -18,6 +18,7 @@ export const lojaSupabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY,
   auth: {
     persistSession: false, // auth handled by main client
     autoRefreshToken: false,
+    storageKey: 'sb-loja-noauth',
   },
 });
 
