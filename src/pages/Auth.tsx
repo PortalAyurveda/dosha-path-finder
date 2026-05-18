@@ -66,6 +66,11 @@ const Auth = () => {
     }
   };
 
+  // ⚠️ Fluxo OTP-only (código de 6 dígitos). NÃO adicionar `emailRedirectTo`
+  // aqui — isso reativaria o magic link no email enviado pelo Supabase e o
+  // usuário acabaria alternando entre os dois métodos. Mantenha o template
+  // de email no painel Supabase apenas com `{{ .Token }}`, sem
+  // `{{ .ConfirmationURL }}`.
   const sendOtp = async () => {
     const { error } = await supabase.auth.signInWithOtp({
       email,
