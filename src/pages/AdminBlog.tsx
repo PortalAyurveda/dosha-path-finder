@@ -442,8 +442,27 @@ const AdminBlog = () => {
                 {featured.map((f, idx) => (
                   <div
                     key={f.id}
-                    className="flex items-center gap-2 bg-background border border-border rounded-lg p-2"
+                    draggable
+                    onDragStart={handleDragStart(idx)}
+                    onDragOver={handleDragOver(idx)}
+                    onDrop={handleDrop(idx)}
+                    onDragEnd={handleDragEnd}
+                    className={`flex items-center gap-2 bg-background border rounded-lg p-2 transition-all ${
+                      dragIndex === idx ? "opacity-40" : ""
+                    } ${
+                      dragOverIndex === idx && dragIndex !== idx
+                        ? "border-primary ring-2 ring-primary/30"
+                        : "border-border"
+                    }`}
                   >
+                    <button
+                      type="button"
+                      className="cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground p-0.5"
+                      title="Arrastar para reordenar"
+                      aria-label="Arrastar"
+                    >
+                      <GripVertical className="w-4 h-4" />
+                    </button>
                     <span className="text-xs font-bold text-muted-foreground w-5 text-center">
                       {idx + 1}
                     </span>
@@ -453,28 +472,6 @@ const AdminBlog = () => {
                       )}
                     </div>
                     <p className="text-xs font-medium text-foreground flex-1 line-clamp-2">{f.title}</p>
-                    <div className="flex flex-col gap-0.5">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-5 w-5"
-                        onClick={() => moveFeatured(idx, -1)}
-                        disabled={idx === 0}
-                        title="Subir"
-                      >
-                        <ArrowUp className="w-3 h-3" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-5 w-5"
-                        onClick={() => moveFeatured(idx, 1)}
-                        disabled={idx === featured.length - 1}
-                        title="Descer"
-                      >
-                        <ArrowDown className="w-3 h-3" />
-                      </Button>
-                    </div>
                     <Button
                       variant="ghost"
                       size="icon"
