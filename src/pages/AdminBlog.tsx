@@ -110,10 +110,11 @@ const AdminBlog = () => {
     return true;
   };
 
-  // Drag-and-drop reordering
+  // Drag-and-drop reordering (local only — só persiste ao clicar "Salvar ordem")
   const [dragIndex, setDragIndex] = useState<number | null>(null);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
   const [savingOrder, setSavingOrder] = useState(false);
+  const [orderDirty, setOrderDirty] = useState(false);
 
   const handleDragStart = (idx: number) => (e: React.DragEvent) => {
     setDragIndex(idx);
@@ -128,27 +129,30 @@ const AdminBlog = () => {
     setDragIndex(null);
     setDragOverIndex(null);
   };
-  const handleDrop = (idx: number) => async (e: React.DragEvent) => {
+  const handleDrop = (idx: number) => (e: React.DragEvent) => {
     e.preventDefault();
     const from = dragIndex;
     setDragIndex(null);
     setDragOverIndex(null);
     if (from == null || from === idx) return;
-    const next = [...featured];
-    const [moved] = next.splice(from, 1);
-    next.splice(idx, 0, moved);
-    setFeatured(next);
-    setSavingOrder(true);
-    const ok = await persistFeaturedOrder(next);
-    setSavingOrder(false);
-    if (ok) toast.success("Ordem salva");
+    setFeatured((prev) => {
+      const next = [...prev];
+      const [moved] = next.splice(from, 1);
+      next.splice(idx, 0, moved);
+      return next;
+    });
+    setOrderDirty(true);
   };
 
   const saveOrderManually = async () => {
     setSavingOrder(true);
     const ok = await persistFeaturedOrder(featured);
     setSavingOrder(false);
-    if (ok) toast.success("Ordem salva");
+    if (ok) {
+      setOrderDirty(false);
+      toast.success("Ordem salva");
+      fetchFeatured();
+    }
   };
 
 
