@@ -163,7 +163,7 @@ const Hero = () => {
             </div>
             <div className="rounded-3xl overflow-hidden w-full max-w-xl mx-auto flex-1 min-h-0 flex items-end justify-center">
               <img
-                src="https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/banner-dois-sf-2.webp"
+                src="https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/banner-um-comf-1.webp"
                 alt="Portal Ayurveda — Rotinas, Artigos, Aulas e Akasha"
                 decoding="async"
                 className="w-full h-full object-contain object-bottom"
