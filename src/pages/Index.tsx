@@ -620,7 +620,7 @@ const Index = () => {
       )}
       <FeedSocial />
       <BibliotecaSection />
-      <RegistrosAkashikos />
+      <FundamentosAyurveda />
       <SommelierArtigos />
       <SamkhyaBanner />
     </>
