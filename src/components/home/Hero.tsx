@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowRight, BookOpen, Brain, Calendar, Lock, Play } from "lucide-react";
+import { ArrowRight, Lock } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -161,28 +161,13 @@ const Hero = () => {
             <div className="bg-card/80 backdrop-blur-sm rounded-3xl px-8 py-10 xl:px-10 xl:py-12 border border-border shadow-lg w-full max-w-xl mx-auto">
               <DoshaPreview />
             </div>
-            <div className="bg-card/80 backdrop-blur-sm rounded-3xl border border-border shadow-lg w-full max-w-xl mx-auto flex-1 min-h-0 flex items-stretch overflow-hidden">
-              <div className="grid grid-cols-4 divide-x divide-border w-full">
-                {[
-                  { Icon: Calendar, title: "Rotinas Diárias", subtitle: "Dinacharya personalizada", color: "#6B7FF2" },
-                  { Icon: Play, title: "Artigos e Vídeos", subtitle: "Conteúdo atualizado diariamente", color: "#6B7FF2" },
-                  { Icon: BookOpen, title: "Aulas Exclusivas", subtitle: "Escolha a próxima aula que quer no Portal", color: "#6B7FF2" },
-                  { Icon: Brain, title: "Akasha consultora", subtitle: "Assistente de Ayurveda 24h", color: "#F28888" },
-                ].map(({ Icon, title, subtitle, color }) => (
-                  <div key={title} className="flex flex-col items-center text-center gap-2 px-3 py-5">
-                    <div
-                      className="flex h-11 w-11 items-center justify-center rounded-full border"
-                      style={{ borderColor: color, backgroundColor: `${color}14` }}
-                    >
-                      <Icon className="h-5 w-5" style={{ color }} aria-hidden />
-                    </div>
-                    <div className="min-w-0">
-                      <p className="text-sm font-semibold text-foreground leading-tight">{title}</p>
-                      <p className="text-xs text-muted-foreground leading-snug mt-1">{subtitle}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
+            <div className="rounded-3xl overflow-hidden w-full max-w-xl mx-auto flex-1 min-h-0 flex items-end justify-center">
+              <img
+                src="https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/banner-dois-sf-2.webp"
+                alt="Portal Ayurveda — Rotinas, Artigos, Aulas e Akasha"
+                decoding="async"
+                className="w-full h-full object-contain object-bottom"
+              />
             </div>
           </div>
 
