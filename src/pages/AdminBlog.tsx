@@ -410,10 +410,21 @@ const AdminBlog = () => {
                   Destaques no Index
                 </h2>
                 <p className="text-xs text-muted-foreground mt-0.5">
-                  Aparecem em "Fundamentos do Ayurveda" na home, na ordem abaixo (3×3).
+                  Arraste pelo ícone <GripVertical className="inline w-3 h-3" /> para reordenar. Aparecem em "Conheça Ayurveda por aqui" na home (3×3).
                 </p>
               </div>
-              <span className="text-xs text-muted-foreground">{featured.length} selecionado(s)</span>
+              <div className="flex items-center gap-3">
+                <span className="text-xs text-muted-foreground">{featured.length} selecionado(s)</span>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={saveOrderManually}
+                  disabled={savingOrder || featured.length === 0}
+                >
+                  {savingOrder ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> : <Save className="w-3 h-3 mr-1" />}
+                  Salvar ordem
+                </Button>
+              </div>
             </div>
 
             {featuredLoading ? (
