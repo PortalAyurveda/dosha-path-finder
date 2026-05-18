@@ -56,7 +56,7 @@ const BlogArticle = () => {
   return (
     <>
       <Helmet>
-        <title>{article.title} | Blog Portal Ayurveda</title>
+        <title>{article.title} | Portal Ayurveda</title>
         {article.meta_description && (
           <meta name="description" content={article.meta_description} />
         )}
