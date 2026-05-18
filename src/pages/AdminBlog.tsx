@@ -526,6 +526,25 @@ const AdminBlog = () => {
                     <Button
                       variant="ghost"
                       size="icon"
+                      className={`h-7 w-7 shrink-0 transition-opacity ${a.destaque_index ? "opacity-100" : "opacity-0 group-hover:opacity-100 focus:opacity-100"}`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleDestaque(a);
+                      }}
+                      disabled={togglingId === a.id}
+                      title={a.destaque_index ? "Remover do destaque" : "Marcar como destaque"}
+                    >
+                      {togglingId === a.id ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <Star className={`w-4 h-4 ${a.destaque_index ? "fill-yellow-400 text-yellow-500" : "text-muted-foreground"}`} />
+                      )}
+                    </Button>
+                  )}
+                  {inlineEditId !== a.id && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
                       className="h-7 w-7 shrink-0 opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity"
                       onClick={(e) => startInlineEdit(a, e)}
                       title="Editar título"
