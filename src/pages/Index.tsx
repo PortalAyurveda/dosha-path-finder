@@ -22,7 +22,7 @@ import { Badge } from "@/components/ui/badge";
 import { BLOG_TAGS } from "@/data/blogTags";
 import { cn } from "@/lib/utils";
 import { slugify } from "@/lib/slugify";
-import RegistrosAkashikos from "@/components/index/RegistrosAkashikos";
+import FundamentosAyurveda from "@/components/index/FundamentosAyurveda";
 import Hero from "@/components/home/Hero";
 import LoggedHero from "@/components/home/LoggedHero";
 import SamkhyaBanner from "@/components/home/SamkhyaBanner";
