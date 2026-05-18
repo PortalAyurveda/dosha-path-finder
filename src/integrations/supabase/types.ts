@@ -2486,6 +2486,13 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_set_portal_conteudo_destaques: {
+        Args: { _ids: string[] }
+        Returns: {
+          destaque_ordem: number
+          id: string
+        }[]
+      }
       akasha_distribuicao_horas: {
         Args: never
         Returns: {
