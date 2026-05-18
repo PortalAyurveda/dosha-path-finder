@@ -149,7 +149,10 @@ export function UserProvider({ children }: { children: ReactNode }) {
     setProfile(null);
     setDoshaResult(null);
     setRole(null);
-    await supabase.auth.signOut();
+    // scope: 'local' → desloga apenas neste dispositivo/navegador.
+    // Sem isso, o signOut é global e invalida o refresh token de TODOS os
+    // dispositivos do usuário, causando logouts inesperados em outras sessões.
+    await supabase.auth.signOut({ scope: 'local' });
   };
 
   useEffect(() => {
