@@ -1,38 +1,36 @@
-## Diagnóstico
+Pelo que auditei, eu não criaria uma nova coluna genérica `ordem` agora: a tabela `portal_conteudo` já tem a coluna certa para isso, `destaque_ordem`, e a home já lê por ela.
 
-- A tela `/admin/blog` já tem drag-and-drop, mas hoje ela salva automaticamente no `drop`.
-- Isso explica vários avisos “Ordem salva” aparecendo um atrás do outro, sem clicar em salvar.
-- No banco, os 9 artigos destacados estão com `destaque_ordem = null`, então a ordem não está persistindo de verdade.
-- A home (`FundamentosAyurveda`) já tenta ordenar por `destaque_ordem`, mas como está tudo `null`, ela cai para `created_at desc`, parecendo que a ordem escolhida não foi respeitada.
+Achados:
+- `portal_conteudo.destaque_ordem` já existe.
+- Os 9 artigos destacados estão com ordem preenchida, hoje em `0–8`.
+- A home (`Conheça Ayurveda por aqui`) já ordena por `destaque_ordem`.
+- Não encontrei artigos com tag contendo `especiaria`; então o problema parece ser a seção de destaques do index, não uma categoria/tag chamada “especiarias”.
 
-## Plano de correção
+Plano de correção:
 
-1. **Separar arrastar de salvar**
-   - Ao arrastar um artigo, atualizar apenas a ordem local da lista.
-   - Marcar a ordem como “alterações pendentes”.
-   - Não chamar Supabase automaticamente no `drop`.
-   - Não mostrar toast “Ordem salva” ao arrastar.
+1. Ajustar a ordem para ser humana no banco
+   - Trocar a persistência de `0–8` para `1–9` em `destaque_ordem`.
+   - Normalizar os registros atuais para `1, 2, 3...`, mantendo a ordem visual atual.
 
-2. **Salvar somente pelo botão “Salvar ordem”**
-   - O botão será o único ponto que grava `destaque_ordem` no banco.
-   - Depois de salvar, recarregar os destaques do Supabase para confirmar a ordem persistida.
-   - Mostrar “Ordem salva” só depois da gravação bem-sucedida.
+2. Reforçar o salvamento no admin
+   - Manter apenas o botão “Salvar ordem” como ponto de gravação.
+   - Ao salvar, gravar `destaque_ordem = posição visual` começando em 1.
+   - Depois de salvar, recarregar do Supabase e comparar a ordem retornada com a ordem que foi enviada.
+   - Só mostrar “Ordem salva” se a comparação bater.
+   - Se não bater, mostrar erro claro em vez de sucesso falso.
 
-3. **Evitar salvamentos concorrentes e estados confusos**
-   - Desabilitar o botão enquanto estiver salvando.
-   - Mostrar visualmente quando há alterações não salvas.
-   - Evitar múltiplos toasts acumulados.
+3. Melhorar a tela para evitar ambiguidade
+   - Mostrar a ordem real do banco como `1, 2, 3...` nos cards destacados.
+   - Deixar claro quando há alterações não salvas.
+   - Impedir múltiplos salvamentos simultâneos.
 
-4. **Normalizar a ordem atual no banco**
-   - Como todos os destaques atuais estão com `destaque_ordem = null`, criar uma migração para preencher uma ordem inicial `0..8` baseada na ordem atual exibida.
-   - Assim a home deixa de depender de `created_at` como fallback.
+4. Se você realmente quiser ordenar uma categoria/tag específica como “especiarias”
+   - Aí sim faz sentido criar outra coluna, mas eu não chamaria só `ordem`.
+   - Eu sugeriria algo mais específico, como `blog_ordem` ou `categoria_ordem`, para não confundir com `destaque_ordem`.
+   - Mas para a seção atual de destaques, `destaque_ordem` é a coluna correta.
 
-5. **Ajustar remoção/adição de destaque**
-   - Ao adicionar um novo destaque, colocar no fim da lista.
-   - Ao remover, reordenar localmente e deixar o botão salvar gravar a sequência final.
-   - Se preferirmos manter remoção imediata no banco, ela ainda deve normalizar a ordem restante sem gerar toast repetido.
-
-6. **Validar**
-   - Conferir via consulta no Supabase que `destaque_ordem` ficou preenchido e sequencial.
-   - Conferir que a query da home retorna os 9 artigos na ordem salva.
-   - Conferir que arrastar não dispara mais “Ordem salva” automaticamente.
+Validação antes de eu te retornar:
+- Consultar o Supabase e confirmar que os destacados estão com `destaque_ordem` sequencial começando em 1.
+- Conferir que a query da home retorna na mesma ordem.
+- Conferir no código que nenhum drag/drop salva sozinho.
+- Conferir que o botão só dá sucesso após recarregar e validar a ordem salva.
