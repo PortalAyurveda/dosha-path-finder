@@ -23,7 +23,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import PaginationControls from "@/components/PaginationControls";
-import { ArrowLeft, Search, Loader2, Upload, Save, Copy, Trash2, Pencil } from "lucide-react";
+import { ArrowLeft, Search, Loader2, Upload, Save, Copy, Trash2, Pencil, Star, ArrowUp, ArrowDown } from "lucide-react";
 import { sanitizeSlug } from "@/lib/sanitizeSlug";
 import AdminNav from "@/components/admin/AdminNav";
 
@@ -35,6 +35,15 @@ interface Article {
   title: string;
   image_url: string | null;
   created_at: string;
+  destaque_index?: boolean | null;
+  destaque_ordem?: number | null;
+}
+
+interface FeaturedArticle {
+  id: string;
+  title: string;
+  image_url: string | null;
+  destaque_ordem: number | null;
 }
 
 const AdminBlog = () => {
