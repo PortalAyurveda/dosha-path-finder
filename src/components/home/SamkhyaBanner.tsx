@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
 const BANNER_URL =
-  "https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/banner-samkhya-portal.jpg";
+  "https://api.portalayurveda.com/storage/v1/object/public/portal_images/banner-samkhya-portal.jpg";
 
 const PURPLE = "#352F54";
 

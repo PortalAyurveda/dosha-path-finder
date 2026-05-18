@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
 const PORTAL_LOGO =
-  "https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/simbolo-positivo.svg";
+  "https://api.portalayurveda.com/storage/v1/object/public/portal_images/simbolo-positivo.svg";
 
 const SLUG = "aovivolancamento";
 

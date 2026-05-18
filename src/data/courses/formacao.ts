@@ -115,7 +115,7 @@ export const formacaoData: FormacaoData = {
     lightColor: "#E0E7FF",
     accentColor: "#FCA5A5",
     bulletSvg:
-      "https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/simbolo-positivo.svg",
+      "https://api.portalayurveda.com/storage/v1/object/public/portal_images/simbolo-positivo.svg",
     portalLogo:
       "https://static.wixstatic.com/media/b8f47f_6144676c30ec476dbc1f8c5c8812eb1d~mv2.png",
   },
@@ -490,7 +490,7 @@ export const formacaoData: FormacaoData = {
     name: "Edson Osorío",
     role: "Terapeuta Ayurveda | Professor | Fundador do Portal Ayurveda",
     photo:
-      "https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/b8f47f-5f003e6165b44645b7163ec3dd646d32mv2-1.jpg",
+      "https://api.portalayurveda.com/storage/v1/object/public/portal_images/b8f47f-5f003e6165b44645b7163ec3dd646d32mv2-1.jpg",
     bullets: [
       "15 anos de prática clínica ativa",
       "13 anos de sala de aula",

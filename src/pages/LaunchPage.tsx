@@ -33,7 +33,7 @@ const LaunchPage = () => {
   return (
     <div className="relative min-h-screen flex flex-col justify-center items-center bg-surface-sun px-4 text-center">
       <img
-        src="https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/simbolo-positivo.svg"
+        src="https://api.portalayurveda.com/storage/v1/object/public/portal_images/simbolo-positivo.svg"
         alt="Portal Ayurveda"
         className="max-w-[200px] mb-8"
       />
