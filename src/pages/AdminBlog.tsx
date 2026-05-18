@@ -153,7 +153,6 @@ const AdminBlog = () => {
 
     // Reflete o estado real do banco na tela
     await fetchFeatured();
-    await fetchArticlesRef.current?.();
     setSavingOrder(false);
     if (matches) {
       setOrderDirty(false);
