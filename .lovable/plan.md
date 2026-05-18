@@ -1,29 +1,26 @@
-## Problema
-Na tabela `doshas_registros` existem 2 policies de SELECT:
-- `anon`: `USING (true)` ✅ libera tudo
-- `authenticated`: `USING (is_admin() OR email = jwt.email)` ❌ só deixa ver o próprio registro
+## Correção do cálculo de IMC no Teste de Dosha
 
-Quando você está logado e abre `/meu-dosha?id=...` de outra pessoa, cai na regra de `authenticated` → bloqueado.
+**Arquivo:** `src/pages/TesteDeDosha.tsx` (linhas 219–223)
 
-## Mudança
-Migration para trocar a policy de SELECT de `authenticated` por uma equivalente à de `anon`:
+Trocar o parse atual da altura para aceitar vírgula como separador decimal.
 
-```sql
-DROP POLICY "Authenticated reads own or admin reads all" ON public.doshas_registros;
-
-CREATE POLICY "Authenticated can read all dosha registros"
-ON public.doshas_registros
-FOR SELECT
-TO authenticated
-USING (true);
+**De:**
+```ts
+// IMC modifier
+let altura = parseFloat(info.altura);
+const peso = parseFloat(info.peso);
+if (altura > 3) altura = altura / 100; // cm to m
+const imc = peso / (altura * altura);
 ```
 
-Resultado: qualquer pessoa (logada ou não) consegue abrir qualquer página `/meu-dosha`, como já acontece quando deslogado.
+**Para:**
+```ts
+// IMC modifier
+const alturaStr = String(info.altura).trim().replace(',', '.');
+const alturaNum = parseFloat(alturaStr);
+const altura = alturaNum > 3 ? alturaNum / 100 : alturaNum;
+const peso = parseFloat(info.peso);
+const imc = peso / (altura * altura);
+```
 
-## O que NÃO muda
-- INSERT continua aberto para anon/authenticated (como já era)
-- DELETE continua restrito a admin
-- Nenhum código frontend precisa mudar
-
-## Consideração de segurança
-A tabela `doshas_registros` passa a ser 100% pública de leitura. Ela contém email, nome, idade, IMC e respostas do teste de dosha. Se você quiser manter privacidade desses campos no futuro, o caminho seria criar uma view pública só com os campos visíveis na página. Mas pelo que você descreveu, o objetivo é exatamente que qualquer um veja qualquer página — então a migration acima resolve.
+Aceita `1,62`, `1.62` e `162`. Nenhuma outra lógica do teste é alterada.

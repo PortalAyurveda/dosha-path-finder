@@ -217,7 +217,8 @@ const [step, setStep] = useState(0);
     else if (idade >= 1) k += 2;
 
     // IMC modifier
-    let altura = parseFloat(info.altura);
+    const alturaStr = String(info.altura).trim().replace(',', '.');
+    let altura = parseFloat(alturaStr);
     const peso = parseFloat(info.peso);
     if (altura > 3) altura = altura / 100; // cm to m
     const imc = peso / (altura * altura);
