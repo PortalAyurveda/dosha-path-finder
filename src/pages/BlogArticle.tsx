@@ -27,15 +27,20 @@ const BlogArticle = () => {
 
   if (isLoading) {
     return (
-      <div className="max-w-3xl mx-auto px-4 py-12 animate-pulse space-y-6">
-        <div className="h-8 bg-muted rounded w-3/4" />
-        <div className="aspect-video bg-muted rounded-xl" />
-        <div className="space-y-3">
-          <div className="h-4 bg-muted rounded w-full" />
-          <div className="h-4 bg-muted rounded w-5/6" />
-          <div className="h-4 bg-muted rounded w-2/3" />
+      <>
+        <Helmet>
+          <title>Carregando... | Portal Ayurveda</title>
+        </Helmet>
+        <div className="max-w-3xl mx-auto px-4 py-12 animate-pulse space-y-6">
+          <div className="h-8 bg-muted rounded w-3/4" />
+          <div className="aspect-video bg-muted rounded-xl" />
+          <div className="space-y-3">
+            <div className="h-4 bg-muted rounded w-full" />
+            <div className="h-4 bg-muted rounded w-5/6" />
+            <div className="h-4 bg-muted rounded w-2/3" />
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
