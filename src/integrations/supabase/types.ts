@@ -1430,6 +1430,7 @@ export type Database = {
         Row: {
           created_at: string
           destaque_index: boolean | null
+          destaque_ordem: number | null
           id: string
           image_url: string | null
           link_do_artigo: string | null
@@ -1444,6 +1445,7 @@ export type Database = {
         Insert: {
           created_at?: string
           destaque_index?: boolean | null
+          destaque_ordem?: number | null
           id?: string
           image_url?: string | null
           link_do_artigo?: string | null
@@ -1458,6 +1460,7 @@ export type Database = {
         Update: {
           created_at?: string
           destaque_index?: boolean | null
+          destaque_ordem?: number | null
           id?: string
           image_url?: string | null
           link_do_artigo?: string | null
@@ -2504,6 +2507,7 @@ export type Database = {
         Returns: {
           created_at: string
           destaque_index: boolean | null
+          destaque_ordem: number | null
           id: string
           image_url: string | null
           link_do_artigo: string | null
