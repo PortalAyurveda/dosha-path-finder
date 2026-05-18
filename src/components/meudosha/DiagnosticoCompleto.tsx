@@ -524,7 +524,7 @@ const Plano30Dias = ({ isPremium }: { isPremium: boolean }) => (
         className={cn("block overflow-hidden hover:opacity-95 transition-opacity", LEAF)}
       >
         <img
-          src="https://api.portalayurveda.com/storage/v1/object/public/portal_images/banner-um-sf300x.webp"
+          src="https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/banner-premium-sf300x.webp"
           alt="Desbloqueie seu plano personalizado de 30 dias no Portal Premium"
           className="block w-full h-auto"
         />
