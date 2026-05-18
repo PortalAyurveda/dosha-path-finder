@@ -1429,6 +1429,7 @@ export type Database = {
       portal_conteudo: {
         Row: {
           created_at: string
+          destaque_index: boolean | null
           id: string
           image_url: string | null
           link_do_artigo: string | null
@@ -1442,6 +1443,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          destaque_index?: boolean | null
           id?: string
           image_url?: string | null
           link_do_artigo?: string | null
@@ -1455,6 +1457,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          destaque_index?: boolean | null
           id?: string
           image_url?: string | null
           link_do_artigo?: string | null
@@ -2500,6 +2503,7 @@ export type Database = {
         Args: never
         Returns: {
           created_at: string
+          destaque_index: boolean | null
           id: string
           image_url: string | null
           link_do_artigo: string | null
