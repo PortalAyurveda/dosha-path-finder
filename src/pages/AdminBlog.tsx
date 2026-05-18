@@ -97,22 +97,60 @@ const AdminBlog = () => {
   }, [fetchFeatured]);
 
   const persistFeaturedOrder = async (list: FeaturedArticle[]) => {
-    await Promise.all(
+    const results = await Promise.all(
       list.map((a, i) =>
         supabase.from("portal_conteudo").update({ destaque_ordem: i }).eq("id", a.id)
       )
     );
+    const failed = results.find((r) => r.error);
+    if (failed?.error) {
+      toast.error("Erro ao salvar ordem: " + failed.error.message);
+      return false;
+    }
+    return true;
   };
 
-  const moveFeatured = async (index: number, dir: -1 | 1) => {
-    const next = [...featured];
-    const target = index + dir;
-    if (target < 0 || target >= next.length) return;
-    [next[index], next[target]] = [next[target], next[index]];
-    setFeatured(next);
-    await persistFeaturedOrder(next);
-    toast.success("Ordem atualizada");
+  // Drag-and-drop reordering
+  const [dragIndex, setDragIndex] = useState<number | null>(null);
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
+  const [savingOrder, setSavingOrder] = useState(false);
+
+  const handleDragStart = (idx: number) => (e: React.DragEvent) => {
+    setDragIndex(idx);
+    e.dataTransfer.effectAllowed = "move";
   };
+  const handleDragOver = (idx: number) => (e: React.DragEvent) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+    if (dragOverIndex !== idx) setDragOverIndex(idx);
+  };
+  const handleDragEnd = () => {
+    setDragIndex(null);
+    setDragOverIndex(null);
+  };
+  const handleDrop = (idx: number) => async (e: React.DragEvent) => {
+    e.preventDefault();
+    const from = dragIndex;
+    setDragIndex(null);
+    setDragOverIndex(null);
+    if (from == null || from === idx) return;
+    const next = [...featured];
+    const [moved] = next.splice(from, 1);
+    next.splice(idx, 0, moved);
+    setFeatured(next);
+    setSavingOrder(true);
+    const ok = await persistFeaturedOrder(next);
+    setSavingOrder(false);
+    if (ok) toast.success("Ordem salva");
+  };
+
+  const saveOrderManually = async () => {
+    setSavingOrder(true);
+    const ok = await persistFeaturedOrder(featured);
+    setSavingOrder(false);
+    if (ok) toast.success("Ordem salva");
+  };
+
 
   const toggleDestaque = async (a: { id: string; title: string; image_url: string | null; destaque_index?: boolean | null }) => {
     setTogglingId(a.id);
