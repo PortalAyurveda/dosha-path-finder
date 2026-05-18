@@ -186,7 +186,7 @@ const AdminBlog = () => {
     const newVal = !a.destaque_index;
     const updates: { destaque_index: boolean; destaque_ordem: number | null } = {
       destaque_index: newVal,
-      destaque_ordem: newVal ? featured.length : null,
+      destaque_ordem: newVal ? featured.length + 1 : null,
     };
     const { error } = await supabase
       .from("portal_conteudo")
