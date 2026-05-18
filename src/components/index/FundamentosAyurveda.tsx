@@ -19,10 +19,11 @@ const FundamentosAyurveda = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("portal_conteudo")
-        .select("title, meta_description, image_url, link_do_artigo")
+        .select("title, meta_description, image_url, link_do_artigo, destaque_ordem, created_at")
         .eq("destaque_index", true)
         .eq("status", "published")
         .not("link_do_artigo", "is", null)
+        .order("destaque_ordem", { ascending: true, nullsFirst: false })
         .order("created_at", { ascending: false })
         .limit(9);
       if (error) throw error;

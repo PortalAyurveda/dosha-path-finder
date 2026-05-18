@@ -1,0 +1,2 @@
+ALTER TABLE public.portal_conteudo ADD COLUMN IF NOT EXISTS destaque_ordem integer;
+CREATE INDEX IF NOT EXISTS idx_portal_conteudo_destaque_ordem ON public.portal_conteudo(destaque_ordem) WHERE destaque_index = true;

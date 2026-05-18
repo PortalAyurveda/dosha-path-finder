@@ -23,7 +23,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import PaginationControls from "@/components/PaginationControls";
-import { ArrowLeft, Search, Loader2, Upload, Save, Copy, Trash2, Pencil } from "lucide-react";
+import { ArrowLeft, Search, Loader2, Upload, Save, Copy, Trash2, Pencil, Star, ArrowUp, ArrowDown } from "lucide-react";
 import { sanitizeSlug } from "@/lib/sanitizeSlug";
 import AdminNav from "@/components/admin/AdminNav";
 
@@ -35,6 +35,15 @@ interface Article {
   title: string;
   image_url: string | null;
   created_at: string;
+  destaque_index?: boolean | null;
+  destaque_ordem?: number | null;
+}
+
+interface FeaturedArticle {
+  id: string;
+  title: string;
+  image_url: string | null;
+  destaque_ordem: number | null;
 }
 
 const AdminBlog = () => {
@@ -65,7 +74,78 @@ const AdminBlog = () => {
   const [uploadBucket, setUploadBucket] = useState<string>(FALLBACK_BUCKETS[0]);
   const [uploading, setUploading] = useState(false);
 
-  // Auth guard removed: /admin is open during testing
+  // Featured (destaque_index) section
+  const [featured, setFeatured] = useState<FeaturedArticle[]>([]);
+  const [featuredLoading, setFeaturedLoading] = useState(true);
+  const [togglingId, setTogglingId] = useState<string | null>(null);
+
+  const fetchFeatured = useCallback(async () => {
+    setFeaturedLoading(true);
+    const { data, error } = await supabase
+      .from("portal_conteudo")
+      .select("id, title, image_url, destaque_ordem, created_at")
+      .eq("destaque_index", true)
+      .order("destaque_ordem", { ascending: true, nullsFirst: false })
+      .order("created_at", { ascending: false })
+      .limit(20);
+    if (!error) setFeatured((data || []) as FeaturedArticle[]);
+    setFeaturedLoading(false);
+  }, []);
+
+  useEffect(() => {
+    fetchFeatured();
+  }, [fetchFeatured]);
+
+  const persistFeaturedOrder = async (list: FeaturedArticle[]) => {
+    await Promise.all(
+      list.map((a, i) =>
+        supabase.from("portal_conteudo").update({ destaque_ordem: i }).eq("id", a.id)
+      )
+    );
+  };
+
+  const moveFeatured = async (index: number, dir: -1 | 1) => {
+    const next = [...featured];
+    const target = index + dir;
+    if (target < 0 || target >= next.length) return;
+    [next[index], next[target]] = [next[target], next[index]];
+    setFeatured(next);
+    await persistFeaturedOrder(next);
+    toast.success("Ordem atualizada");
+  };
+
+  const toggleDestaque = async (a: { id: string; title: string; image_url: string | null; destaque_index?: boolean | null }) => {
+    setTogglingId(a.id);
+    const newVal = !a.destaque_index;
+    const updates: { destaque_index: boolean; destaque_ordem: number | null } = {
+      destaque_index: newVal,
+      destaque_ordem: newVal ? featured.length : null,
+    };
+    const { error } = await supabase
+      .from("portal_conteudo")
+      .update(updates)
+      .eq("id", a.id);
+    setTogglingId(null);
+    if (error) {
+      toast.error("Erro: " + error.message);
+      return;
+    }
+    setArticles((prev) =>
+      prev.map((x) => (x.id === a.id ? { ...x, destaque_index: newVal } : x))
+    );
+    if (newVal) {
+      setFeatured((prev) => [
+        ...prev,
+        { id: a.id, title: a.title, image_url: a.image_url, destaque_ordem: prev.length },
+      ]);
+      toast.success("Adicionado aos destaques");
+    } else {
+      const remaining = featured.filter((f) => f.id !== a.id);
+      setFeatured(remaining);
+      await persistFeaturedOrder(remaining);
+      toast.success("Removido dos destaques");
+    }
+  };
 
 
   // Debounce search
@@ -84,7 +164,7 @@ const AdminBlog = () => {
 
     let q = supabase
       .from("portal_conteudo")
-      .select("id, title, image_url, created_at", { count: "exact" })
+      .select("id, title, image_url, created_at, destaque_index, destaque_ordem", { count: "exact" })
       .order("created_at", { ascending: false })
       .range(from, to);
 
@@ -283,6 +363,85 @@ const AdminBlog = () => {
             </div>
           </div>
 
+          {/* Destaques do Index */}
+          <div className="space-y-3 border border-border rounded-lg p-4 bg-card/50">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-lg font-heading font-bold text-foreground flex items-center gap-2">
+                  <Star className="w-4 h-4 fill-yellow-400 text-yellow-500" />
+                  Destaques no Index
+                </h2>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  Aparecem em "Fundamentos do Ayurveda" na home, na ordem abaixo (3×3).
+                </p>
+              </div>
+              <span className="text-xs text-muted-foreground">{featured.length} selecionado(s)</span>
+            </div>
+
+            {featuredLoading ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <Skeleton key={i} className="h-20 rounded-lg" />
+                ))}
+              </div>
+            ) : featured.length === 0 ? (
+              <p className="text-sm text-muted-foreground py-4 text-center">
+                Nenhum artigo marcado como destaque. Clique na estrela em um card abaixo para adicionar.
+              </p>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                {featured.map((f, idx) => (
+                  <div
+                    key={f.id}
+                    className="flex items-center gap-2 bg-background border border-border rounded-lg p-2"
+                  >
+                    <span className="text-xs font-bold text-muted-foreground w-5 text-center">
+                      {idx + 1}
+                    </span>
+                    <div className="w-12 h-12 shrink-0 rounded overflow-hidden bg-muted">
+                      {f.image_url && (
+                        <img src={f.image_url} alt={f.title} className="w-full h-full object-cover" loading="lazy" />
+                      )}
+                    </div>
+                    <p className="text-xs font-medium text-foreground flex-1 line-clamp-2">{f.title}</p>
+                    <div className="flex flex-col gap-0.5">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-5 w-5"
+                        onClick={() => moveFeatured(idx, -1)}
+                        disabled={idx === 0}
+                        title="Subir"
+                      >
+                        <ArrowUp className="w-3 h-3" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-5 w-5"
+                        onClick={() => moveFeatured(idx, 1)}
+                        disabled={idx === featured.length - 1}
+                        title="Descer"
+                      >
+                        <ArrowDown className="w-3 h-3" />
+                      </Button>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-6 w-6 text-destructive hover:bg-destructive/10"
+                      onClick={() => toggleDestaque({ id: f.id, title: f.title, image_url: f.image_url, destaque_index: true })}
+                      disabled={togglingId === f.id}
+                      title="Remover dos destaques"
+                    >
+                      {togglingId === f.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <Star className="w-3.5 h-3.5 fill-yellow-400 text-yellow-500" />}
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
           {/* Grid */}
           {loading ? (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
@@ -363,6 +522,25 @@ const AdminBlog = () => {
                       )}
                     </div>
                   </button>
+                  {inlineEditId !== a.id && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className={`h-7 w-7 shrink-0 transition-opacity ${a.destaque_index ? "opacity-100" : "opacity-0 group-hover:opacity-100 focus:opacity-100"}`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleDestaque(a);
+                      }}
+                      disabled={togglingId === a.id}
+                      title={a.destaque_index ? "Remover do destaque" : "Marcar como destaque"}
+                    >
+                      {togglingId === a.id ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <Star className={`w-4 h-4 ${a.destaque_index ? "fill-yellow-400 text-yellow-500" : "text-muted-foreground"}`} />
+                      )}
+                    </Button>
+                  )}
                   {inlineEditId !== a.id && (
                     <Button
                       variant="ghost"
