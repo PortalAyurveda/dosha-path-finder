@@ -448,7 +448,7 @@ const SommelierArtigos = () => {
 
   return (
     <section style={{ background: C.bgSoft }}>
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-16 md:py-20">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 md:py-10">
         <div className="text-center mb-8">
           <h2
             className="font-serif italic font-bold text-3xl md:text-4xl mb-3"
