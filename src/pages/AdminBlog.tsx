@@ -419,11 +419,14 @@ const AdminBlog = () => {
               </div>
               <div className="flex items-center gap-3">
                 <span className="text-xs text-muted-foreground">{featured.length} selecionado(s)</span>
+                {orderDirty && (
+                  <span className="text-xs font-medium text-amber-600">Alterações não salvas</span>
+                )}
                 <Button
                   size="sm"
-                  variant="outline"
+                  variant={orderDirty ? "default" : "outline"}
                   onClick={saveOrderManually}
-                  disabled={savingOrder || featured.length === 0}
+                  disabled={savingOrder || featured.length === 0 || !orderDirty}
                 >
                   {savingOrder ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> : <Save className="w-3 h-3 mr-1" />}
                   Salvar ordem
