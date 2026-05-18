@@ -203,7 +203,7 @@ const AdminBlog = () => {
     if (newVal) {
       setFeatured((prev) => [
         ...prev,
-        { id: a.id, title: a.title, image_url: a.image_url, destaque_ordem: prev.length },
+        { id: a.id, title: a.title, image_url: a.image_url, destaque_ordem: prev.length + 1 },
       ]);
       toast.success("Adicionado aos destaques");
     } else {
