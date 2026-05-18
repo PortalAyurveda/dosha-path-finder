@@ -41,9 +41,9 @@ const C = {
 const LEAF = "24px 4px 24px 4px";
 const LEAF_ALT = "4px 24px 4px 24px";
 
-const STORAGE = "https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_capas";
+const STORAGE = "https://api.portalayurveda.com/storage/v1/object/public/portal_capas";
 const AKASHA_LOGO =
-  "https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/logo-akasha.png";
+  "https://api.portalayurveda.com/storage/v1/object/public/portal_images/logo-akasha.png";
 
 /* ============================================================
    Feed Social — marquee dinâmico de métricas R##

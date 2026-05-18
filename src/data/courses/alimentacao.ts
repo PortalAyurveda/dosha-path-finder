@@ -8,7 +8,7 @@ export const alimentacaoData: CourseData = {
       "Aprenda a Lógica da Alimentação Ayurveda em 60+ aulas. Sistema completo com Tutor de IA, receitas terapêuticas e certificado de 40h.",
   },
   branding: {
-    logo: "https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/logo-alimentacao-extenso.svg",
+    logo: "https://api.portalayurveda.com/storage/v1/object/public/portal_images/logo-alimentacao-extenso.svg",
     primaryColor: "#CFEDC2",
     darkColor: "#A6D98F",
     lightColor: "#CFEDC2",
@@ -229,7 +229,7 @@ export const alimentacaoData: CourseData = {
   professor: {
     name: "Edson Osorio",
     photo:
-      "https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/b8f47f-5f003e6165b44645b7163ec3dd646d32mv2-1.jpg",
+      "https://api.portalayurveda.com/storage/v1/object/public/portal_images/b8f47f-5f003e6165b44645b7163ec3dd646d32mv2-1.jpg",
     bio: [
       "Terapeuta e professor há 15 anos. Mais de 6.000 alunos formados.",
       "Fui diagnosticado com TDAH cedo e recusei aceitar que viveria à base de remédios. Pesava 54kg com 1,74m. Comia salada, fazia jejum espiritual, tomava chá — e achava que estava fazendo certo. Estava destruindo meu sistema nervoso.",

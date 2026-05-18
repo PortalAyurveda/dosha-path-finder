@@ -47,7 +47,7 @@ const Alimentacao = () => {
           data={data.hero}
           branding={data.branding}
           onCtaClick={handleCtaClick("hero")}
-          heroImage="https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/timothy-newman-pbwmdofmxtu-unsplash.jpg"
+          heroImage="https://api.portalayurveda.com/storage/v1/object/public/portal_images/timothy-newman-pbwmdofmxtu-unsplash.jpg"
         />
         <ProblemSection data={data.problem} />
         {data.opportunity && <OpportunitySection data={data.opportunity} branding={data.branding} />}

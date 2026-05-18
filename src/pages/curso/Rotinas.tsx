@@ -35,9 +35,9 @@ import {
 
 const HOTMART = "https://pay.hotmart.com/F101182057Y";
 const LOGO =
-  "https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/lg-rotinas-extenso.svg";
+  "https://api.portalayurveda.com/storage/v1/object/public/portal_images/lg-rotinas-extenso.svg";
 const HERO_IMG =
-  "https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/adobestock-1889656601.jpeg";
+  "https://api.portalayurveda.com/storage/v1/object/public/portal_images/adobestock-1889656601.jpeg";
 
 const CREAM = "#fff4e0";
 const NAVY = "#1a2347";
@@ -575,7 +575,7 @@ const Professor = () => (
             style={{ border: `4px solid #FDF6DD` }}
           >
             <img
-              src="https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/870818ba-1815-4447-8ac2-b798b42e2074.jpg"
+              src="https://api.portalayurveda.com/storage/v1/object/public/portal_images/870818ba-1815-4447-8ac2-b798b42e2074.jpg"
               alt="Edson Osorio"
               className="w-full h-full object-cover"
               loading="lazy"

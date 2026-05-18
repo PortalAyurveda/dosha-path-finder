@@ -2,11 +2,11 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 
-const IMG1_URL = "https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/design-sem-nome-1.svg";
-const IMG2_URL = "https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/element-download-1778166966.png";
-const IMG3_URL = "https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/design-sem-nome-2.svg";
-const IMG4_URL = "https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/flor-1.svg";
-const IMG5_URL = "https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/logo-akasha.svg";
+const IMG1_URL = "https://api.portalayurveda.com/storage/v1/object/public/portal_images/design-sem-nome-1.svg";
+const IMG2_URL = "https://api.portalayurveda.com/storage/v1/object/public/portal_images/element-download-1778166966.png";
+const IMG3_URL = "https://api.portalayurveda.com/storage/v1/object/public/portal_images/design-sem-nome-2.svg";
+const IMG4_URL = "https://api.portalayurveda.com/storage/v1/object/public/portal_images/flor-1.svg";
+const IMG5_URL = "https://api.portalayurveda.com/storage/v1/object/public/portal_images/logo-akasha.svg";
 
 const ALL_IMAGES = [IMG1_URL, IMG2_URL, IMG3_URL, IMG4_URL, IMG5_URL];
 

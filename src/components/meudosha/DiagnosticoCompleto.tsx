@@ -524,7 +524,7 @@ const Plano30Dias = ({ isPremium }: { isPremium: boolean }) => (
         className={cn("block overflow-hidden hover:opacity-95 transition-opacity", LEAF)}
       >
         <img
-          src="https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/banner-um-sf300x.webp"
+          src="https://api.portalayurveda.com/storage/v1/object/public/portal_images/banner-um-sf300x.webp"
           alt="Desbloqueie seu plano personalizado de 30 dias no Portal Premium"
           className="block w-full h-auto"
         />
@@ -606,10 +606,10 @@ const DOSHA_LABEL: Record<"vata" | "pitta" | "kapha", string> = {
   kapha: "Kapha",
 };
 
-const ICON_ALIMENTACAO = "https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/logo-alimentacao2.svg";
-const ICON_ROTINAS = "https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/logo-rotinas.svg";
-const ICON_ALQUIMIA = "https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/logo-remedios-2.png";
-const ICON_AKASHA = "https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/logo-akasha.svg";
+const ICON_ALIMENTACAO = "https://api.portalayurveda.com/storage/v1/object/public/portal_images/logo-alimentacao2.svg";
+const ICON_ROTINAS = "https://api.portalayurveda.com/storage/v1/object/public/portal_images/logo-rotinas.svg";
+const ICON_ALQUIMIA = "https://api.portalayurveda.com/storage/v1/object/public/portal_images/logo-remedios-2.png";
+const ICON_AKASHA = "https://api.portalayurveda.com/storage/v1/object/public/portal_images/logo-akasha.svg";
 
 const ProximosPassos = ({
   refazerTeste,

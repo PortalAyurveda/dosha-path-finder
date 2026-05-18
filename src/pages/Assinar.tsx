@@ -8,7 +8,7 @@ import { useUser } from "@/contexts/UserContext";
 import { toast } from "@/hooks/use-toast";
 
 const AKASHA_LOGO =
-  "https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/logo-akasha.png";
+  "https://api.portalayurveda.com/storage/v1/object/public/portal_images/logo-akasha.png";
 
 const PRIMARY = "#352F54";
 const SALMAO = "#E8806A";
