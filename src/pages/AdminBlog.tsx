@@ -74,7 +74,78 @@ const AdminBlog = () => {
   const [uploadBucket, setUploadBucket] = useState<string>(FALLBACK_BUCKETS[0]);
   const [uploading, setUploading] = useState(false);
 
-  // Auth guard removed: /admin is open during testing
+  // Featured (destaque_index) section
+  const [featured, setFeatured] = useState<FeaturedArticle[]>([]);
+  const [featuredLoading, setFeaturedLoading] = useState(true);
+  const [togglingId, setTogglingId] = useState<string | null>(null);
+
+  const fetchFeatured = useCallback(async () => {
+    setFeaturedLoading(true);
+    const { data, error } = await supabase
+      .from("portal_conteudo")
+      .select("id, title, image_url, destaque_ordem, created_at")
+      .eq("destaque_index", true)
+      .order("destaque_ordem", { ascending: true, nullsFirst: false })
+      .order("created_at", { ascending: false })
+      .limit(20);
+    if (!error) setFeatured((data || []) as FeaturedArticle[]);
+    setFeaturedLoading(false);
+  }, []);
+
+  useEffect(() => {
+    fetchFeatured();
+  }, [fetchFeatured]);
+
+  const persistFeaturedOrder = async (list: FeaturedArticle[]) => {
+    await Promise.all(
+      list.map((a, i) =>
+        supabase.from("portal_conteudo").update({ destaque_ordem: i }).eq("id", a.id)
+      )
+    );
+  };
+
+  const moveFeatured = async (index: number, dir: -1 | 1) => {
+    const next = [...featured];
+    const target = index + dir;
+    if (target < 0 || target >= next.length) return;
+    [next[index], next[target]] = [next[target], next[index]];
+    setFeatured(next);
+    await persistFeaturedOrder(next);
+    toast.success("Ordem atualizada");
+  };
+
+  const toggleDestaque = async (a: { id: string; title: string; image_url: string | null; destaque_index?: boolean | null }) => {
+    setTogglingId(a.id);
+    const newVal = !a.destaque_index;
+    const updates: { destaque_index: boolean; destaque_ordem: number | null } = {
+      destaque_index: newVal,
+      destaque_ordem: newVal ? featured.length : null,
+    };
+    const { error } = await supabase
+      .from("portal_conteudo")
+      .update(updates)
+      .eq("id", a.id);
+    setTogglingId(null);
+    if (error) {
+      toast.error("Erro: " + error.message);
+      return;
+    }
+    setArticles((prev) =>
+      prev.map((x) => (x.id === a.id ? { ...x, destaque_index: newVal } : x))
+    );
+    if (newVal) {
+      setFeatured((prev) => [
+        ...prev,
+        { id: a.id, title: a.title, image_url: a.image_url, destaque_ordem: prev.length },
+      ]);
+      toast.success("Adicionado aos destaques");
+    } else {
+      const remaining = featured.filter((f) => f.id !== a.id);
+      setFeatured(remaining);
+      await persistFeaturedOrder(remaining);
+      toast.success("Removido dos destaques");
+    }
+  };
 
 
   // Debounce search
