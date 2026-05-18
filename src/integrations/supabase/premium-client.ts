@@ -12,6 +12,7 @@ export const premiumSupabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_K
   auth: {
     persistSession: false,
     autoRefreshToken: false,
+    storageKey: 'sb-premium-noauth',
   },
 });
 
