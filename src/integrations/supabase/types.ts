@@ -278,6 +278,30 @@ export type Database = {
         }
         Relationships: []
       }
+      bling_tokens: {
+        Row: {
+          access_token: string
+          expires_at: string
+          id: number
+          refresh_token: string
+          updated_at: string
+        }
+        Insert: {
+          access_token: string
+          expires_at: string
+          id?: number
+          refresh_token: string
+          updated_at?: string
+        }
+        Update: {
+          access_token?: string
+          expires_at?: string
+          id?: number
+          refresh_token?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       book_structure: {
         Row: {
           content: string | null
@@ -1300,6 +1324,30 @@ export type Database = {
           n_base?: number | null
           percentual?: number | null
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      n8n_backups: {
+        Row: {
+          arquivo_nome: string
+          created_at: string
+          hash: string
+          id: string
+          total_workflows: number
+        }
+        Insert: {
+          arquivo_nome: string
+          created_at?: string
+          hash: string
+          id?: string
+          total_workflows: number
+        }
+        Update: {
+          arquivo_nome?: string
+          created_at?: string
+          hash?: string
+          id?: string
+          total_workflows?: number
         }
         Relationships: []
       }
