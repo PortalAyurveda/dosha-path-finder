@@ -34,17 +34,14 @@ const FundamentosAyurveda = () => {
 
   return (
     <section className="bg-card">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-16 md:py-20">
-        <div className="text-center mb-10">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-6 md:pt-8 pb-16 md:pb-20">
+        <div className="text-center mb-6">
           <h2
-            className="font-serif italic font-bold text-3xl md:text-4xl mb-2"
+            className="font-serif italic font-bold text-3xl md:text-4xl"
             style={{ color: PRIMARY }}
           >
-            Fundamentos do Ayurveda
+            Conheça Ayurveda por aqui
           </h2>
-          <p className="text-sm md:text-base text-muted-foreground font-sans">
-            Artigos essenciais para começar
-          </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
