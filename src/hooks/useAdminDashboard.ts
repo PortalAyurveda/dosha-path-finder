@@ -102,10 +102,10 @@ export const useTestesRange = () =>
   useQuery({
     queryKey: ["admin-dash", "testes"],
     queryFn: async () => {
-      const r = await countRange("doshas_registros2", "created_at");
+      const r = await countRange("doshas_registros", "created_at");
       // Distribuição dosha últimos 7 dias
       const { data } = await supabase
-        .from("doshas_registros2")
+        .from("doshas_registros")
         .select("doshaprincipal, created_at")
         .gte("created_at", days7AgoISO())
         .limit(5000);
