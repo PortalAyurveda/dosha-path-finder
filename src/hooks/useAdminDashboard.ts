@@ -152,10 +152,10 @@ export const useVendasRange = () =>
           return row.status === "pago" || row.status === "enviado" || row.status === "entregue";
         }).length;
       return {
-        valorHoje: sum(hojeRes.data),
-        valorSemana: sum(semanaRes.data),
-        countHoje: cnt(hojeRes.data),
-        countSemana: cnt(semanaRes.data),
+        valorHoje: sum(hojeRes.data as unknown[] | null),
+        valorSemana: sum(semanaRes.data as unknown[] | null),
+        countHoje: cnt(hojeRes.data as unknown[] | null),
+        countSemana: cnt(semanaRes.data as unknown[] | null),
       };
     },
   });
