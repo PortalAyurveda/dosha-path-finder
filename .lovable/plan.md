@@ -1,54 +1,78 @@
-# Ajustes no Dashboard /admin
+# Edge function de saúde + correção da tabela de testes
 
-## 1. Limpeza
-- Remover do rodapé o link **"Ver métricas clínicas completas →"** (em `AdminDashboard.tsx`). Métricas clínicas são dos usuários, não do operador.
+## 1. Correção: tabela de testes
 
-## 2. Confirmação das fontes atuais (sem mudança)
-- **Testes feitos** → `doshas_registros2.created_at` (entradas novas de hoje / 7d). ✓
-- **Akasha mensagens/sessões** → `chat_histories` filtrando por `data_hora` (msgs novas + `distinct session_id`). ✓
+`doshas_registros2` está parada desde abril. A tabela ativa é `doshas_registros` (143 testes nos últimos 7d, último hoje).
 
-## 3. Nova seção: "Saúde do sistema"
+**Edit em `src/hooks/useAdminDashboard.ts`:**
+- `useTestesRange` → trocar `doshas_registros2` por `doshas_registros` (count e distribuição dosha).
+- `useConversaoTesteAssinatura` → trocar `doshas_registros2` por `doshas_registros`.
 
-Adicionar uma seção no final do dashboard (antes do rodapé) com cards de operação. Tudo via `supabase--analytics_query` chamado por uma edge function nova `admin-system-health` (não dá pra chamar essas tools direto do browser).
+Nada muda na UI nem no schema.
 
-| Card | Fonte | O que mostra |
-|---|---|---|
-| **Erros nas Edge Functions (24h)** | `function_edge_logs` filtrando `status_code >= 500` | Total + nome da função que mais errou |
-| **Erros do banco (24h)** | `postgres_logs` onde `error_severity in ('ERROR','FATAL')` | Total + última mensagem |
-| **Falhas de login (24h)** | `auth_logs` onde `status >= 400` ou `level='error'` | Total + tipo mais comum (ex: invalid_credentials) |
-| **Edge function mais lenta (24h)** | `function_edge_logs` média de `execution_time_ms` | Top 1 com tempo médio |
-| **Auditoria RAG pendente** | `auditoria_rag` onde `akasha_status='pendente'` | Total que precisa revisão |
-| **Mensagens da Akasha sem resposta?** | já temos "mensagens não-lidas" — manter |
+## 2. Edge function `admin-system-health`
 
-Cada card vira verde / amarelo / vermelho conforme limiar (ex: erros 5xx > 10 em 24h = vermelho).
+Consigo sim. A via é a **Management API do Supabase** (que cobre logs do Logflare), via uma edge function que segura o token. Da browser direto não dá — precisa do token do dono da conta.
 
-### Extras menores (cards rápidos, dados que já temos)
-- **Novos usuários (hoje / 7d)** — `perfis.created_at`. Falta hoje no dashboard.
-- **Conversão teste → assinatura (7d)** — `assinaturas` joinado por email com `doshas_registros2` da mesma janela. Útil pra ver se o teste tá puxando paid.
-- **Top tag de agravamento da semana** — mais frequente em `agravVataTags/PittaTags/KaphaTags` dos testes de 7d. Mostra qual desequilíbrio dominou.
+### Requisito: 1 secret novo
+- **`SUPABASE_ACCESS_TOKEN`** — Personal Access Token criado em https://supabase.com/dashboard/account/tokens. Vou pedir via add_secret depois de você aprovar o plano. (Sem isso a função retorna `{ disponivel: false }` e os cards mostram "configurar token").
+
+### O que a function retorna
+Chama `GET https://api.supabase.com/v1/projects/{ref}/analytics/endpoints/logs.all?sql=...` rodando 4 queries (window: 24h):
+
+| Métrica | SQL (Logflare) |
+|---|---|
+| `edgeErrors` | `select count(*) from function_edge_logs cross join unnest(metadata) m cross join unnest(m.response) r where r.status_code >= 500 and timestamp > timestamp_sub(current_timestamp(), interval 24 hour)` |
+| `edgeTopFn` | mesma query agrupando por `m.function_id` + `order by 2 desc limit 1` |
+| `dbErrors` | `select count(*), any_value(event_message) from postgres_logs cross join unnest(metadata) m cross join unnest(m.parsed) p where p.error_severity in ('ERROR','FATAL') and timestamp > timestamp_sub(current_timestamp(), interval 24 hour)` |
+| `authFailures` | `select count(*) from auth_logs cross join unnest(metadata) m where m.status >= '400' and timestamp > timestamp_sub(current_timestamp(), interval 24 hour)` |
+
+Resposta:
+```json
+{
+  "disponivel": true,
+  "janelaHoras": 24,
+  "edge": { "erros5xx": 3, "topFunction": "create-subscription-checkout" },
+  "db":   { "erros": 12, "ultimaMensagem": "duplicate key value..." },
+  "auth": { "falhas": 45 },
+  "geradoEm": "2026-05-19T..."
+}
+```
+
+### Segurança
+- `verify_jwt = false` (padrão Lovable), valida no código:
+  - Lê `Authorization: Bearer <jwt>` → `supabase.auth.getClaims(token)` → pega `sub` (user id).
+  - Chama RPC `is_admin()` no banco (ou consulta `perfis.role='admin'`).
+  - Não-admin → 403.
+- `SUPABASE_ACCESS_TOKEN` fica só no servidor.
+- Cache em memória de 60s pra não bater na Management API a cada render.
+- CORS habilitado.
+
+## 3. Frontend
+
+**Novo hook em `useAdminDashboard.ts`:**
+- `useSystemHealth()` → `supabase.functions.invoke('admin-system-health')`. `staleTime: 60_000`, `refetchInterval: 5min`.
+
+**Edit em `AdminDashboard.tsx`:**
+- Na seção "Saúde do sistema", adicionar 3 cards à frente dos atuais:
+  - **Erros edge (24h)** — vermelho se > 5, amarelo 1-5, verde se 0. Sublabel = top function que errou.
+  - **Erros banco (24h)** — vermelho > 10. Sublabel = última mensagem (truncada).
+  - **Falhas auth (24h)** — só amarelo se > 50 (login errado é normal).
+- Se `disponivel: false` (token não configurado), os 3 cards viram um único aviso com link pra criar o token.
 
 ## Arquitetura técnica
 
-**Nova edge function:** `supabase/functions/admin-system-health/index.ts`
-- Recebe nada, retorna JSON `{ edgeErrors, dbErrors, authFailures, slowestFn, ragPendente }`.
-- Internamente chama `supabase--analytics_query` (Logflare SQL) via API REST do projeto Supabase.
-- Cache 2 min (responde com `Cache-Control` e/ou guarda em memória).
-- Verifica `is_admin()` via JWT do caller — não exposta publicamente.
+**Novos arquivos:**
+- `supabase/functions/admin-system-health/index.ts`
 
-**Novo hook:** `useSystemHealth()` em `useAdminDashboard.ts` — chama a edge function via `supabase.functions.invoke('admin-system-health')`. Refetch a cada 5 min.
-
-**Novos componentes:**
-- `HealthCard.tsx` — card colorido com label + número grande + sub + ícone de status (✓ / ⚠ / ✗).
-
-**Edits em `AdminDashboard.tsx`:**
-- Remover o `<Link to="/metricas">` do rodapé.
-- Adicionar seção `<Section title="Saúde do sistema">` com grid 2x3 de `HealthCard`.
-- Adicionar 2 `StatCard` para "Novos usuários hoje" + "Conversão teste→assinatura".
+**Edits:**
+- `src/hooks/useAdminDashboard.ts` — fix tabela testes + novo `useSystemHealth`
+- `src/pages/AdminDashboard.tsx` — 3 cards novos na seção
 
 ## Fora do escopo
-- Não vou criar tabela de tracking de erros próprios (logs já existem em Supabase analytics).
-- Não vou criar alertas por e-mail/push — só visualização.
-- Sem mudanças de auth/RLS.
+- Sem mudança no schema.
+- Sem alertas por e-mail/push.
+- Não vou criar UI pra editar/rotacionar o token (gerencia no Supabase dashboard).
 
-## Pergunta antes de implementar
-Quer todas as 3 categorias da seção "Saúde do sistema" (erros + extras + conversão), ou prefere começar só com os 4 cards de erro/auditoria e a gente vê o resto depois?
+## Pergunta
+Topa eu já criar a edge function e te pedir o `SUPABASE_ACCESS_TOKEN` na sequência, ou quer que eu deixe a function pronta primeiro pra você revisar antes de gerar o token?
