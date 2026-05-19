@@ -125,14 +125,24 @@ export const useTestesRange = () =>
         .select("doshaprincipal, created_at")
         .gte("created_at", days7AgoISO())
         .limit(5000);
-      const dist = { vata: 0, pitta: 0, kapha: 0, outro: 0 };
+      const dist = { vata: 0, pitta: 0, kapha: 0, vata_pitta: 0, vata_kapha: 0, pitta_kapha: 0, outro: 0 };
       (data ?? []).forEach((row) => {
-        const d = (row.doshaprincipal || "").toLowerCase();
-        if (d.includes("vata") && !d.includes("pitta") && !d.includes("kapha")) dist.vata++;
-        else if (d.includes("pitta") && !d.includes("kapha") && !d.includes("vata")) dist.pitta++;
-        else if (d.includes("kapha") && !d.includes("vata") && !d.includes("pitta")) dist.kapha++;
-        else dist.outro++;
+        const raw = (row.doshaprincipal || "").toLowerCase().replace(/\s+/g, "");
+        const hasV = raw.includes("vata");
+        const hasP = raw.includes("pitta");
+        const hasK = raw.includes("kapha");
+        const count = (hasV ? 1 : 0) + (hasP ? 1 : 0) + (hasK ? 1 : 0);
+        if (count === 1) {
+          if (hasV) dist.vata++;
+          else if (hasP) dist.pitta++;
+          else dist.kapha++;
+        } else if (count === 2) {
+          if (hasV && hasP) dist.vata_pitta++;
+          else if (hasV && hasK) dist.vata_kapha++;
+          else dist.pitta_kapha++;
+        } else dist.outro++;
       });
+
       return { ...r, dist };
     },
   });
