@@ -234,7 +234,7 @@ export const useConversaoTesteAssinatura = () =>
       const week = days7AgoISO();
       const [testes, assinaturas] = await Promise.all([
         supabase
-          .from("doshas_registros2")
+          .from("doshas_registros")
           .select("email")
           .gte("created_at", week)
           .limit(5000),
