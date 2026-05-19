@@ -64,29 +64,41 @@ export const useAkashaHoje = () =>
     queryFn: async (): Promise<CountRange & { sessoesHoje: number; sessoesSemana: number }> => {
       const today = startOfTodayISO();
       const week = days7AgoISO();
-      const [hojeRes, semanaRes] = await Promise.all([
+      const [hojeCount, semanaCount, hojeSess, semanaSess] = await Promise.all([
         supabase
           .from("auditoria_rag")
-          .select("email_aluno, data_hora")
+          .select("*", { count: "exact", head: true })
+          .gte("data_hora", today),
+        supabase
+          .from("auditoria_rag")
+          .select("*", { count: "exact", head: true })
+          .gte("data_hora", week),
+        supabase
+          .from("auditoria_rag")
+          .select("email_aluno")
           .gte("data_hora", today)
           .limit(5000),
         supabase
           .from("auditoria_rag")
-          .select("email_aluno, data_hora")
+          .select("email_aluno")
           .gte("data_hora", week)
           .limit(20000),
       ]);
-      const hojeMsgs = hojeRes.data?.length ?? 0;
-      const semanaMsgs = semanaRes.data?.length ?? 0;
       const sessoesHoje = new Set(
-        (hojeRes.data ?? []).map((r) => (r.email_aluno || "").toLowerCase()).filter(Boolean),
+        (hojeSess.data ?? []).map((r) => (r.email_aluno || "").toLowerCase()).filter(Boolean),
       ).size;
       const sessoesSemana = new Set(
-        (semanaRes.data ?? []).map((r) => (r.email_aluno || "").toLowerCase()).filter(Boolean),
+        (semanaSess.data ?? []).map((r) => (r.email_aluno || "").toLowerCase()).filter(Boolean),
       ).size;
-      return { hoje: hojeMsgs, semana: semanaMsgs, sessoesHoje, sessoesSemana };
+      return {
+        hoje: hojeCount.count ?? 0,
+        semana: semanaCount.count ?? 0,
+        sessoesHoje,
+        sessoesSemana,
+      };
     },
   });
+
 
 export const useMensagensNaoLidas = () =>
   useQuery({
