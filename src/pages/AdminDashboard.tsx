@@ -67,6 +67,9 @@ const AdminDashboard = () => {
   const assinaturas = useAssinaturasRange();
   const terapeuta = useUltimoTerapeuta();
   const devlog = useUltimoDevlog();
+  const novosUsuarios = useNovosUsuarios();
+  const auditoria = useAuditoriaRagPendente();
+  const conversao = useConversaoTesteAssinatura();
 
   const distTotal =
     (testes.data?.dist.vata ?? 0) +
