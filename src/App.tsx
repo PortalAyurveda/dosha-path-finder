@@ -36,6 +36,7 @@ const PoliticaDePrivacidade = lazy(() => import("./pages/PoliticaDePrivacidade")
 const TermosDeUso = lazy(() => import("./pages/TermosDeUso"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const Admin = lazy(() => import("./pages/Admin"));
+const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
 const AdminBlog = lazy(() => import("./pages/AdminBlog"));
 const AdminMensagens = lazy(() => import("./pages/AdminMensagens"));
 const Contato = lazy(() => import("./pages/Contato"));
