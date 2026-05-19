@@ -64,29 +64,41 @@ export const useAkashaHoje = () =>
     queryFn: async (): Promise<CountRange & { sessoesHoje: number; sessoesSemana: number }> => {
       const today = startOfTodayISO();
       const week = days7AgoISO();
-      const [hojeRes, semanaRes] = await Promise.all([
+      const [hojeCount, semanaCount, hojeSess, semanaSess] = await Promise.all([
         supabase
           .from("auditoria_rag")
-          .select("email_aluno, data_hora")
+          .select("*", { count: "exact", head: true })
+          .gte("data_hora", today),
+        supabase
+          .from("auditoria_rag")
+          .select("*", { count: "exact", head: true })
+          .gte("data_hora", week),
+        supabase
+          .from("auditoria_rag")
+          .select("email_aluno")
           .gte("data_hora", today)
           .limit(5000),
         supabase
           .from("auditoria_rag")
-          .select("email_aluno, data_hora")
+          .select("email_aluno")
           .gte("data_hora", week)
           .limit(20000),
       ]);
-      const hojeMsgs = hojeRes.data?.length ?? 0;
-      const semanaMsgs = semanaRes.data?.length ?? 0;
       const sessoesHoje = new Set(
-        (hojeRes.data ?? []).map((r) => (r.email_aluno || "").toLowerCase()).filter(Boolean),
+        (hojeSess.data ?? []).map((r) => (r.email_aluno || "").toLowerCase()).filter(Boolean),
       ).size;
       const sessoesSemana = new Set(
-        (semanaRes.data ?? []).map((r) => (r.email_aluno || "").toLowerCase()).filter(Boolean),
+        (semanaSess.data ?? []).map((r) => (r.email_aluno || "").toLowerCase()).filter(Boolean),
       ).size;
-      return { hoje: hojeMsgs, semana: semanaMsgs, sessoesHoje, sessoesSemana };
+      return {
+        hoje: hojeCount.count ?? 0,
+        semana: semanaCount.count ?? 0,
+        sessoesHoje,
+        sessoesSemana,
+      };
     },
   });
+
 
 export const useMensagensNaoLidas = () =>
   useQuery({
@@ -113,14 +125,24 @@ export const useTestesRange = () =>
         .select("doshaprincipal, created_at")
         .gte("created_at", days7AgoISO())
         .limit(5000);
-      const dist = { vata: 0, pitta: 0, kapha: 0, outro: 0 };
+      const dist = { vata: 0, pitta: 0, kapha: 0, vata_pitta: 0, vata_kapha: 0, pitta_kapha: 0, outro: 0 };
       (data ?? []).forEach((row) => {
-        const d = (row.doshaprincipal || "").toLowerCase();
-        if (d.includes("vata") && !d.includes("pitta") && !d.includes("kapha")) dist.vata++;
-        else if (d.includes("pitta") && !d.includes("kapha") && !d.includes("vata")) dist.pitta++;
-        else if (d.includes("kapha") && !d.includes("vata") && !d.includes("pitta")) dist.kapha++;
-        else dist.outro++;
+        const raw = (row.doshaprincipal || "").toLowerCase().replace(/\s+/g, "");
+        const hasV = raw.includes("vata");
+        const hasP = raw.includes("pitta");
+        const hasK = raw.includes("kapha");
+        const count = (hasV ? 1 : 0) + (hasP ? 1 : 0) + (hasK ? 1 : 0);
+        if (count === 1) {
+          if (hasV) dist.vata++;
+          else if (hasP) dist.pitta++;
+          else dist.kapha++;
+        } else if (count === 2) {
+          if (hasV && hasP) dist.vata_pitta++;
+          else if (hasV && hasK) dist.vata_kapha++;
+          else dist.pitta_kapha++;
+        } else dist.outro++;
       });
+
       return { ...r, dist };
     },
   });
