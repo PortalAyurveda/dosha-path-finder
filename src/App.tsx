@@ -36,6 +36,7 @@ const PoliticaDePrivacidade = lazy(() => import("./pages/PoliticaDePrivacidade")
 const TermosDeUso = lazy(() => import("./pages/TermosDeUso"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const Admin = lazy(() => import("./pages/Admin"));
+const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
 const AdminBlog = lazy(() => import("./pages/AdminBlog"));
 const AdminMensagens = lazy(() => import("./pages/AdminMensagens"));
 const Contato = lazy(() => import("./pages/Contato"));
@@ -173,7 +174,8 @@ const RoutedApp = () => {
               <Route path="/termos-de-uso" element={<TermosDeUso />} />
               <Route path="/contato" element={<Contato />} />
               <Route path="/admin/mensagens" element={<AdminRoute><AdminMensagens /></AdminRoute>} />
-              <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />
+              <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
+              <Route path="/admin/imagens" element={<AdminRoute><Admin /></AdminRoute>} />
               <Route path="/admin/blog" element={<AdminRoute><AdminBlog /></AdminRoute>} />
               <Route path="/admin/akasha" element={<AdminRoute><AdminAkasha /></AdminRoute>} />
               <Route path="/admin/teste" element={<AdminRoute><AdminTeste /></AdminRoute>} />

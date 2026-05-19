@@ -1,55 +1,90 @@
-## Diagnóstico da auditoria
+# Dashboard /admin
 
-O problema mais provável está no frontend, não em RLS nem em Cloudflare neste momento.
+A rota `/admin` hoje abre direto em "Imagens". Vou transformá-la num **Dashboard** real (visão geral do portal), e mover Imagens pra `/admin/imagens` no AdminNav.
 
-Encontrei três pontos concretos que explicam o comportamento:
+## Layout
 
-1. `src/contexts/UserContext.tsx` usa `onAuthStateChange` e, ao mesmo tempo, chama `supabase.auth.getSession()` manualmente na inicialização. Isso cria uma corrida de estado: o app pode renderizar como deslogado antes do evento inicial estabilizar.
-2. O mesmo contexto força `supabase.auth.refreshSession()` toda vez que a aba volta a ficar visível. Isso bate exatamente com o relato de “troco de aba, volto e desloga” e também pode gerar eventos de token revogado em sequência.
-3. Existem clientes Supabase secundários (`loja-client.ts` e `premium-client.ts`). Eles estão com `persistSession: false` e `autoRefreshToken: false`, então não parecem disputar o token principal, mas ainda são instâncias extras. Vou deixá-los fora da correção principal para não alterar lógica de dados da loja/premium sem necessidade.
+Bento-grid responsivo, mobile-first, estilo Tray/Stripe:
 
-Também confirmei:
+```text
+┌──────────────────── HEADER ─────────────────────┐
+│  Dashboard · hoje 19/mai · últimos 7 dias       │
+├─────────────┬─────────────┬─────────────────────┤
+│ VISITAS HOJE│ LOGADOS HOJE│ ORIGEM (top 3)      │
+│ 1.245       │ 312         │ Instagram 58%       │
+│ 7d: 8.920   │ 7d: 2.104   │ Direto 22% · ...    │
+├─────────────┴─────────────┴─────────────────────┤
+│ CONTEÚDO                                         │
+│ ┌─ Última imagem ─┬─ Último artigo ────────────┐│
+│ │ [thumb]         │ "Título do artigo..."       ││
+│ │ há 3h           │ há 1d · ver →               ││
+│ └─────────────────┴─────────────────────────────┘│
+├──────────────────────────────────────────────────┤
+│ COMUNIDADE                                       │
+│ Akasha hoje · Mensagens não-lidas · Testes hoje │
+│ 47 conversas   · 3 não-lidas       · 28 testes  │
+│ 7d: 312        · "última: assunto" · 7d: 196    │
+├──────────────────────────────────────────────────┤
+│ VENDAS                                           │
+│ Vendas hoje · Assinaturas hoje · Último terapeuta│
+│ R$ 420      · 2 novas          · "Nome — cidade"│
+│ 7d: R$ 3.1k · 7d: 9            · há 5h          │
+├──────────────────────────────────────────────────┤
+│ SISTEMA                                          │
+│ Última versão devlog: v0.42 · "fix auth..."     │
+└──────────────────────────────────────────────────┘
+```
 
-- Só existe um `UserProvider` montado no app.
-- O cliente principal já fica em `src/integrations/supabase/client.ts`, mas pode ser reforçado como singleton global para evitar recriação por hot reload/remount.
-- As rotas admin já esperam `loading` antes de redirecionar.
-- Os logs do Supabase mostram `token_revoked` seguido de `login` para o mesmo usuário, coerente com disputa/refresh prematuro.
+Cada card: número grande (hoje) + linha menor com "7d: X" como contexto. Cards de "último item" mostram thumb/título + tempo relativo + link pra editar.
 
-## Plano de implementação
+## Métricas e fonte
 
-1. **Blindar o cliente Supabase principal como singleton absoluto**
-   - Alterar `src/integrations/supabase/client.ts` para reutilizar uma única instância global no browser.
-   - Manter o mesmo `storageKey`, `persistSession`, `autoRefreshToken`, `detectSessionInUrl` e `flowType` para não quebrar login atual.
-   - Não mexer no arquivo de types gerado.
+| Card | Fonte | Query |
+|---|---|---|
+| Visitas hoje / 7d | Lovable Analytics (`analytics--read_project_analytics`) | granularity daily, range = hoje e 7d |
+| Logados vs não-logados | Lovable Analytics não separa por auth → mostro só total + nota "via Lovable Analytics" |
+| Origem (Instagram/Direto/Google) | Lovable Analytics (referrer) | top 3 referrers |
+| Última imagem | `portal_conteudo` onde tem `image_url` | order by `created_at` desc limit 1 |
+| Último artigo | `portal_conteudo` onde status='published' | order by `created_at` desc limit 1 |
+| Akasha conversas hoje / 7d | `chat_histories` distinct `session_id` por dia | count distinct session_id where data_hora >= today |
+| Mensagens não-lidas | `mensagens` where status='novo' | count + última (assunto, nome) |
+| Testes hoje / 7d | `doshas_registros2` | count where created_at >= today |
+| Vendas hoje / 7d | tabela de vendas da loja (verificar nome real durante implementação) | sum(valor) |
+| Assinaturas hoje / 7d | `assinaturas` where status='active' | count where created_at >= today |
+| Último terapeuta | tabela de terapeutas (verificar nome) | order by created_at desc limit 1 |
+| Última versão devlog | `devlog` | order by criado_em desc limit 1 |
 
-2. **Reescrever a inicialização do `UserContext` sem corrida de sessão**
-   - Remover o `getSession()` paralelo da montagem do contexto.
-   - Usar `onAuthStateChange` como fonte única para sessão inicial e mudanças futuras.
-   - Tratar `INITIAL_SESSION` como o momento em que `loading` pode sair de `true`.
-   - Evitar `await` pesado dentro do callback de auth: atualizar `user/session/loading` primeiro e carregar perfil/role/dosha em tarefas assíncronas separadas, sem bloquear a estabilização da sessão.
+**Extras que sugiro adicionar** (úteis num dashboard de operação):
+- **Dosha dominante dos testes de hoje** — pequeno donut Vata/Pitta/Kapha (mostra "humor" da audiência do dia).
+- **Conversão teste→assinatura (7d)** — % de quem fez teste e virou assinante.
+- **Top tag de agravamento da semana** — qual desequilíbrio mais aparece nos testes (insight de conteúdo).
 
-3. **Remover refresh manual ao voltar para a aba**
-   - Excluir o listener de `visibilitychange` que chama `refreshSession()`.
-   - Deixar o SDK do Supabase controlar `autoRefreshToken`, que já é feito com lock interno.
-   - Isso ataca diretamente o bug relatado no desktop e celular.
+Posso incluir os 3 ou só o donut de dosha. Confirmo na implementação.
 
-4. **Evitar falso “deslogado” durante hidratação**
-   - Manter `loading=true` até `INITIAL_SESSION`.
-   - Quando não houver sessão real, só então limpar dados locais dependentes de login.
-   - Preservar a lógica de `activeDoshaId`, `pendingClaimIdPublico`, role, perfil e signOut, mas sem limpar estado antes da sessão inicial resolver.
+## Arquitetura técnica
 
-5. **Revisar redirects sensíveis após a mudança**
-   - Conferir páginas que mandam para `/entrar` (`AdminRoute`, `Assinar`, `TerapeutaCadastro`) para garantir que não redirecionem enquanto `loading` ainda estiver ativo.
-   - Ajustar apenas se houver caso real de redirect prematuro.
+**Novos arquivos:**
+- `src/pages/AdminDashboard.tsx` — página principal
+- `src/components/admin/dashboard/StatCard.tsx` — card numérico (hoje + 7d)
+- `src/components/admin/dashboard/LastItemCard.tsx` — card de "último item" (thumb + título + tempo)
+- `src/components/admin/dashboard/ReferrersCard.tsx` — top 3 origens
+- `src/components/admin/dashboard/DoshaDonut.tsx` — donut Vata/Pitta/Kapha do dia
+- `src/hooks/useAdminDashboard.ts` — React Query hooks agrupados (1 hook por card ou 1 hook agregado)
 
-6. **Validação antes de dizer que funcionou**
-   - Verificar no código que não sobrou `getSession()` paralelo no `UserContext` nem `refreshSession()` em `visibilitychange`.
-   - Checar console/dev-server para erro de runtime.
-   - Testar no preview: abrir app, autenticação inicial, trocar de aba/voltar e confirmar que o estado não vira deslogado.
-   - Se possível, comparar logs auth recentes depois do teste para ver se parou o padrão de refresh/token revogado em sequência.
+**Edits:**
+- `src/App.tsx` — rota `/admin` → `AdminDashboard`; nova rota `/admin/imagens` → componente atual de imagens
+- `src/components/admin/AdminNav.tsx` — primeiro link vira "Dashboard" (`/admin`, ícone `LayoutDashboard`), e adiciono "Imagens" (`/admin/imagens`)
+- `src/pages/Admin.tsx` — renomeio função/export se necessário ou movo conteúdo pra `AdminImagens.tsx`
 
-## Fora do escopo desta correção
+**Sem mudanças no banco.** Só leituras. Todas as queries já são permitidas pelas RLS existentes (admin via `is_admin()`).
 
-- Não vou alterar RLS, funções SQL, roles ou banco.
-- Não vou refatorar login OTP/Google além do necessário.
-- Não vou mexer em Cloudflare agora; só investigaria isso se o bug continuar depois de remover a corrida/refresh manual no app.
+**Lovable Analytics:** chamado client-side via `analytics--read_project_analytics` não existe no browser — vou usar a tool no server? Não existe server. Então:
+- Opção A: criar edge function `admin-analytics` que chama a API do Lovable Analytics (se houver endpoint público).
+- Opção B: mostrar placeholder "em breve" no card de visitas e seguir com o resto.
+
+Vou tentar Opção A primeiro; se a API do Lovable Analytics não for acessível via edge function, caio na Opção B e deixo o card de visitas marcado como "ative tracking" — sem bloquear o resto do dashboard.
+
+## Fora do escopo
+- Não mexo em auth, RLS, schema, ou nos outros painéis `/admin/*`.
+- Não crio tabela de page_views (você escolheu Lovable Analytics).
+- Não adiciono filtros de data customizados nessa primeira versão (só "hoje" e "7d").
