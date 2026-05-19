@@ -66,20 +66,24 @@ export const useAkashaHoje = () =>
       const week = days7AgoISO();
       const [hojeRes, semanaRes] = await Promise.all([
         supabase
-          .from("chat_histories")
-          .select("session_id, data_hora")
+          .from("auditoria_rag")
+          .select("email_aluno, data_hora")
           .gte("data_hora", today)
           .limit(5000),
         supabase
-          .from("chat_histories")
-          .select("session_id, data_hora")
+          .from("auditoria_rag")
+          .select("email_aluno, data_hora")
           .gte("data_hora", week)
           .limit(20000),
       ]);
       const hojeMsgs = hojeRes.data?.length ?? 0;
       const semanaMsgs = semanaRes.data?.length ?? 0;
-      const sessoesHoje = new Set((hojeRes.data ?? []).map((r) => r.session_id)).size;
-      const sessoesSemana = new Set((semanaRes.data ?? []).map((r) => r.session_id)).size;
+      const sessoesHoje = new Set(
+        (hojeRes.data ?? []).map((r) => (r.email_aluno || "").toLowerCase()).filter(Boolean),
+      ).size;
+      const sessoesSemana = new Set(
+        (semanaRes.data ?? []).map((r) => (r.email_aluno || "").toLowerCase()).filter(Boolean),
+      ).size;
       return { hoje: hojeMsgs, semana: semanaMsgs, sessoesHoje, sessoesSemana };
     },
   });
