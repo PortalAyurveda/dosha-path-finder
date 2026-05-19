@@ -94,11 +94,11 @@ const AdminDashboard = () => {
   const conversao = useConversaoTesteAssinatura();
   const health = useSystemHealth();
 
-  const distTotal =
-    (testes.data?.dist.vata ?? 0) +
-    (testes.data?.dist.pitta ?? 0) +
-    (testes.data?.dist.kapha ?? 0) +
-    (testes.data?.dist.outro ?? 0);
+  const distTotal = DOSHA_KEYS.reduce(
+    (sum, k) => sum + (testes.data?.dist[k] ?? 0),
+    0,
+  );
+
 
   return (
     <div className="min-h-screen bg-background">
