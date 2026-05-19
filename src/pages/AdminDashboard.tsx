@@ -191,38 +191,32 @@ const AdminDashboard = () => {
                   Distribuição dosha · últimos 7 dias ({distTotal} testes)
                 </span>
               </div>
-              <div className="flex h-3 rounded-full overflow-hidden bg-muted">
-                {(["vata", "pitta", "kapha", "outro"] as const).map((k) => {
-                  const v = testes.data!.dist[k];
-                  if (!v) return null;
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                {DOSHA_KEYS.map((k) => {
+                  const v = testes.data!.dist[k] ?? 0;
+                  const pct = distTotal > 0 ? (v / distTotal) * 100 : 0;
                   return (
-                    <div
-                      key={k}
-                      style={{ width: `${(v / distTotal) * 100}%`, background: DOSHA_COLORS[k] }}
-                      title={`${k}: ${v}`}
-                    />
-                  );
-                })}
-              </div>
-              <div className="flex flex-wrap gap-4 mt-3 text-xs" style={{ fontFamily: "'DM Sans', sans-serif" }}>
-                {(["vata", "pitta", "kapha", "outro"] as const).map((k) => {
-                  const v = testes.data!.dist[k];
-                  if (!v) return null;
-                  const pct = ((v / distTotal) * 100).toFixed(0);
-                  return (
-                    <div key={k} className="flex items-center gap-2">
+                    <div key={k} className="flex items-center gap-3 text-xs">
                       <span
-                        className="w-2.5 h-2.5 rounded-full"
+                        className="w-3 h-3 rounded-full shrink-0 border border-border"
                         style={{ background: DOSHA_COLORS[k] }}
                       />
-                      <span className="capitalize text-muted-foreground">{k}</span>
-                      <span className="font-semibold" style={{ color: "#352F54" }}>
-                        {pct}%
+                      <span className="text-muted-foreground w-20 shrink-0">{DOSHA_LABELS[k]}</span>
+                      <div className="flex-1 h-1.5 rounded-full bg-muted overflow-hidden">
+                        <div
+                          className="h-full rounded-full"
+                          style={{ width: `${pct}%`, background: DOSHA_COLORS[k] }}
+                        />
+                      </div>
+                      <span className="font-semibold tabular-nums w-10 text-right" style={{ color: "#352F54" }}>
+                        {pct.toFixed(0)}%
                       </span>
+                      <span className="text-muted-foreground tabular-nums w-8 text-right">{v}</span>
                     </div>
                   );
                 })}
               </div>
+
             </div>
           )}
         </Section>
