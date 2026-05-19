@@ -1,5 +1,4 @@
 import { Helmet } from "react-helmet-async";
-import { Link } from "react-router-dom";
 import AdminNav from "@/components/admin/AdminNav";
 import StatCard from "@/components/admin/dashboard/StatCard";
 import LastItemCard from "@/components/admin/dashboard/LastItemCard";
@@ -16,6 +15,9 @@ import {
   History,
   BarChart3,
   ExternalLink,
+  UserPlus,
+  ShieldAlert,
+  TrendingUp,
 } from "lucide-react";
 import {
   useUltimaImagem,
@@ -27,6 +29,9 @@ import {
   useAssinaturasRange,
   useUltimoTerapeuta,
   useUltimoDevlog,
+  useNovosUsuarios,
+  useAuditoriaRagPendente,
+  useConversaoTesteAssinatura,
 } from "@/hooks/useAdminDashboard";
 
 const DOSHA_COLORS = { vata: "#93C5FD", pitta: "#FCA5A5", kapha: "#86EFAC", outro: "#D4D4D8" };
