@@ -205,3 +205,66 @@ export const useUltimoDevlog = () =>
       return data;
     },
   });
+
+export const useNovosUsuarios = () =>
+  useQuery({
+    queryKey: ["admin-dash", "novos-usuarios"],
+    queryFn: async () => {
+      const r = await countRange("perfis", "created_at");
+      return r;
+    },
+  });
+
+export const useAuditoriaRagPendente = () =>
+  useQuery({
+    queryKey: ["admin-dash", "auditoria-rag"],
+    queryFn: async () => {
+      const { count } = await supabase
+        .from("auditoria_rag")
+        .select("*", { count: "exact", head: true })
+        .eq("akasha_status", "pendente");
+      return { pendente: count ?? 0 };
+    },
+  });
+
+export const useConversaoTesteAssinatura = () =>
+  useQuery({
+    queryKey: ["admin-dash", "conversao"],
+    queryFn: async () => {
+      const week = days7AgoISO();
+      const [testes, assinaturas] = await Promise.all([
+        supabase
+          .from("doshas_registros2")
+          .select("email")
+          .gte("created_at", week)
+          .limit(5000),
+        supabase
+          .from("assinaturas")
+          .select("email")
+          .gte("created_at", week)
+          .limit(5000),
+      ]);
+      const emailsTeste = new Set(
+        (testes.data ?? [])
+          .map((r) => (r.email || "").toLowerCase().trim())
+          .filter(Boolean),
+      );
+      const emailsAssin = new Set(
+        (assinaturas.data ?? [])
+          .map((r) => (r.email || "").toLowerCase().trim())
+          .filter(Boolean),
+      );
+      let cruzamento = 0;
+      emailsAssin.forEach((e) => {
+        if (emailsTeste.has(e)) cruzamento++;
+      });
+      const totalTestes = emailsTeste.size;
+      const pct = totalTestes > 0 ? (cruzamento / totalTestes) * 100 : 0;
+      return {
+        totalTestes,
+        totalAssinaturas: emailsAssin.size,
+        cruzamento,
+        pct: Math.round(pct * 10) / 10,
+      };
+    },
+  });
