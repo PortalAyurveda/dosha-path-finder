@@ -139,13 +139,16 @@ export const useVendasRange = () =>
           .gte("created_at", week)
           .limit(5000),
       ]);
-      const sum = (rows: unknown[] | null) =>
-        (rows ?? []).reduce((acc: number, r) => {
+      const sum = (rows: unknown[] | null): number => {
+        let total = 0;
+        for (const r of rows ?? []) {
           const row = r as { total?: number | string | null; status?: string };
-          if (row.status !== "pago" && row.status !== "enviado" && row.status !== "entregue") return acc;
-          const v = typeof row.total === "string" ? parseFloat(row.total) : row.total ?? 0;
-          return acc + (Number.isFinite(v) ? v : 0);
-        }, 0);
+          if (row.status !== "pago" && row.status !== "enviado" && row.status !== "entregue") continue;
+          const v = typeof row.total === "string" ? parseFloat(row.total) : Number(row.total ?? 0);
+          if (Number.isFinite(v)) total += v;
+        }
+        return total;
+      };
       const cnt = (rows: unknown[] | null) =>
         (rows ?? []).filter((r) => {
           const row = r as { status?: string };
