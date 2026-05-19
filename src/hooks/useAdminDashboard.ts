@@ -268,3 +268,28 @@ export const useConversaoTesteAssinatura = () =>
       };
     },
   });
+
+// ===== Saúde do sistema (edge function admin-system-health) =====
+export type SystemHealth =
+  | { disponivel: false; motivo?: string }
+  | {
+      disponivel: true;
+      janelaHoras: number;
+      edge: { erros5xx: number; topFunction: string | null };
+      db: { erros: number; ultimaMensagem: string | null };
+      auth: { falhas: number };
+      geradoEm: string;
+    };
+
+export const useSystemHealth = () =>
+  useQuery<SystemHealth>({
+    queryKey: ["admin-dash", "system-health"],
+    queryFn: async () => {
+      const { data, error } = await supabase.functions.invoke("admin-system-health");
+      if (error) throw error;
+      return data as SystemHealth;
+    },
+    staleTime: 60_000,
+    refetchInterval: 5 * 60_000,
+    retry: false,
+  });

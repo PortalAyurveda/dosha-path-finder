@@ -18,6 +18,9 @@ import {
   UserPlus,
   ShieldAlert,
   TrendingUp,
+  AlertTriangle,
+  Database,
+  KeyRound,
 } from "lucide-react";
 import {
   useUltimaImagem,
@@ -32,6 +35,7 @@ import {
   useNovosUsuarios,
   useAuditoriaRagPendente,
   useConversaoTesteAssinatura,
+  useSystemHealth,
 } from "@/hooks/useAdminDashboard";
 
 const DOSHA_COLORS = { vata: "#93C5FD", pitta: "#FCA5A5", kapha: "#86EFAC", outro: "#D4D4D8" };
@@ -70,6 +74,7 @@ const AdminDashboard = () => {
   const novosUsuarios = useNovosUsuarios();
   const auditoria = useAuditoriaRagPendente();
   const conversao = useConversaoTesteAssinatura();
+  const health = useSystemHealth();
 
   const distTotal =
     (testes.data?.dist.vata ?? 0) +
@@ -353,12 +358,78 @@ const AdminDashboard = () => {
               accent={(mensagens.data?.total ?? 0) > 0 ? "#D97706" : "#059669"}
             />
           </div>
-          <p
-            className="text-[11px] text-muted-foreground mt-2 px-1"
-            style={{ fontFamily: "'DM Sans', sans-serif" }}
-          >
-            Erros de edge functions, banco e auth ficam no painel do Supabase (precisam de acesso de logs).
-          </p>
+
+          {/* Erros via Management API */}
+          {health.data && health.data.disponivel === false ? (
+            <div className="mt-3 rounded-xl border border-dashed p-4 text-sm bg-muted/30">
+              <div className="flex items-center gap-2 font-medium" style={{ fontFamily: "'Roboto Serif', serif" }}>
+                <KeyRound className="w-4 h-4" /> Métricas de erro indisponíveis
+              </div>
+              <p className="text-muted-foreground mt-1" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                Configure um <code>SB_MGMT_ACCESS_TOKEN</code> (Personal Access Token do Supabase) para ver erros de edge functions, banco e auth aqui.
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mt-3">
+              <StatCard
+                label="Erros edge (24h)"
+                icon={<AlertTriangle className="w-4 h-4" />}
+                hoje={health.isLoading ? "—" : health.data && health.data.disponivel ? health.data.edge.erros5xx : "—"}
+                hojeSub={
+                  health.data && health.data.disponivel && health.data.edge.topFunction
+                    ? `Top: ${health.data.edge.topFunction}`
+                    : health.data && health.data.disponivel
+                    ? "nenhum 5xx"
+                    : undefined
+                }
+                accent={
+                  health.data && health.data.disponivel
+                    ? health.data.edge.erros5xx > 5
+                      ? "#DC2626"
+                      : health.data.edge.erros5xx > 0
+                      ? "#D97706"
+                      : "#059669"
+                    : "#71717A"
+                }
+              />
+              <StatCard
+                label="Erros banco (24h)"
+                icon={<Database className="w-4 h-4" />}
+                hoje={health.isLoading ? "—" : health.data && health.data.disponivel ? health.data.db.erros : "—"}
+                hojeSub={
+                  health.data && health.data.disponivel
+                    ? health.data.db.ultimaMensagem
+                      ? health.data.db.ultimaMensagem.slice(0, 60)
+                      : "sem erros"
+                    : undefined
+                }
+                accent={
+                  health.data && health.data.disponivel
+                    ? health.data.db.erros > 10
+                      ? "#DC2626"
+                      : health.data.db.erros > 0
+                      ? "#D97706"
+                      : "#059669"
+                    : "#71717A"
+                }
+              />
+              <StatCard
+                label="Falhas auth (24h)"
+                icon={<ShieldAlert className="w-4 h-4" />}
+                hoje={health.isLoading ? "—" : health.data && health.data.disponivel ? health.data.auth.falhas : "—"}
+                hojeSub={
+                  health.data && health.data.disponivel
+                    ? health.data.auth.falhas > 50
+                      ? "alto — investigar"
+                      : "dentro do normal"
+                    : undefined
+                }
+                accent={
+                  health.data && health.data.disponivel && health.data.auth.falhas > 50 ? "#D97706" : "#059669"
+                }
+              />
+            </div>
+          )}
         </Section>
       </div>
     </div>
