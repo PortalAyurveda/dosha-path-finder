@@ -35,6 +35,7 @@ import {
   useNovosUsuarios,
   useAuditoriaRagPendente,
   useConversaoTesteAssinatura,
+  useSystemHealth,
 } from "@/hooks/useAdminDashboard";
 
 const DOSHA_COLORS = { vata: "#93C5FD", pitta: "#FCA5A5", kapha: "#86EFAC", outro: "#D4D4D8" };
