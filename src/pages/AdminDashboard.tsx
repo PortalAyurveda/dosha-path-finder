@@ -18,6 +18,9 @@ import {
   UserPlus,
   ShieldAlert,
   TrendingUp,
+  AlertTriangle,
+  Database,
+  KeyRound,
 } from "lucide-react";
 import {
   useUltimaImagem,
