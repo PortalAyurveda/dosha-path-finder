@@ -124,7 +124,7 @@ export const useTestesRange = () =>
 export const useVendasRange = () =>
   useQuery({
     queryKey: ["admin-dash", "vendas"],
-    queryFn: async () => {
+    queryFn: async (): Promise<{ valorHoje: number; valorSemana: number; countHoje: number; countSemana: number }> => {
       const today = startOfTodayISO();
       const week = days7AgoISO();
       const [hojeRes, semanaRes] = await Promise.all([
