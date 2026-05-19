@@ -38,7 +38,25 @@ import {
   useSystemHealth,
 } from "@/hooks/useAdminDashboard";
 
-const DOSHA_COLORS = { vata: "#93C5FD", pitta: "#FCA5A5", kapha: "#86EFAC", outro: "#D4D4D8" };
+const DOSHA_COLORS = {
+  vata: "#93C5FD",
+  pitta: "#FCA5A5",
+  kapha: "#86EFAC",
+  vata_pitta: "linear-gradient(90deg,#93C5FD 0%,#FCA5A5 100%)",
+  vata_kapha: "linear-gradient(90deg,#93C5FD 0%,#86EFAC 100%)",
+  pitta_kapha: "linear-gradient(90deg,#FCA5A5 0%,#86EFAC 100%)",
+  outro: "#D4D4D8",
+};
+const DOSHA_LABELS: Record<string, string> = {
+  vata: "Vata",
+  pitta: "Pitta",
+  kapha: "Kapha",
+  vata_pitta: "Vata-Pitta",
+  vata_kapha: "Vata-Kapha",
+  pitta_kapha: "Pitta-Kapha",
+};
+const DOSHA_KEYS = ["vata", "pitta", "kapha", "vata_pitta", "vata_kapha", "pitta_kapha"] as const;
+
 
 const fmtBRL = (v: number) =>
   v.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
