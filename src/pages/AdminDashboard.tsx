@@ -74,6 +74,7 @@ const AdminDashboard = () => {
   const novosUsuarios = useNovosUsuarios();
   const auditoria = useAuditoriaRagPendente();
   const conversao = useConversaoTesteAssinatura();
+  const health = useSystemHealth();
 
   const distTotal =
     (testes.data?.dist.vata ?? 0) +
