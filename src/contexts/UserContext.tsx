@@ -158,30 +158,29 @@ export function UserProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     let isMounted = true;
 
-    const defer = (task: () => Promise<void>) =>
-      new Promise<void>((resolve) => {
-        setTimeout(() => {
-          void task().finally(resolve);
-        }, 0);
-      });
-
-    const hydrateAuthenticatedUser = async (currentUser: User) => {
-      await Promise.allSettled([
-        defer(() => fetchProfile(currentUser.id)),
-        defer(() => fetchRole(currentUser.id)),
-        currentUser.email ? defer(() => fetchDoshaByEmail(currentUser.email)) : Promise.resolve(),
-      ]);
+    // Hidrata dados secundários (perfil/role/dosha) de forma assíncrona,
+    // SEM bloquear o callback do onAuthStateChange. Bloquear o callback com
+    // await causa deadlock com o lock interno do GoTrue durante refresh.
+    const hydrateAuthenticatedUser = (currentUser: User) => {
+      void fetchProfile(currentUser.id);
+      void fetchRole(currentUser.id);
+      if (currentUser.email) {
+        void fetchDoshaByEmail(currentUser.email);
+      }
     };
 
-    const syncAuthState = async (event: string | null, nextSession: Session | null) => {
+    // Fonte ÚNICA de verdade de sessão: onAuthStateChange.
+    // O SDK dispara INITIAL_SESSION na inscrição com a sessão já hidratada
+    // do storage, então NÃO chamamos getSession() em paralelo (isso causava
+    // race condition e flash de "deslogado").
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, newSession) => {
       if (!isMounted) return;
 
-      setLoading(true);
-      setSession(nextSession);
-      setUser(nextSession?.user ?? null);
+      setSession(newSession);
+      setUser(newSession?.user ?? null);
 
-      if (nextSession?.user) {
-        await hydrateAuthenticatedUser(nextSession.user);
+      if (newSession?.user) {
+        hydrateAuthenticatedUser(newSession.user);
 
         if (event === "SIGNED_IN") {
           const pendingId = localStorage.getItem("pendingClaimIdPublico");
@@ -199,52 +198,30 @@ export function UserProvider({ children }: { children: ReactNode }) {
               await supabase
                 .from("user_profiles")
                 .update({ visitor_id: visitorId } as any)
-                .eq("id", nextSession.user.id);
+                .eq("id", newSession.user.id);
             }, 500);
           }
         }
-      } else {
+      } else if (event === "INITIAL_SESSION" || event === "SIGNED_OUT") {
+        // Só limpa estado dependente de login quando temos certeza de que
+        // não há sessão (sessão inicial resolvida sem usuário, ou signOut
+        // explícito). Evita falso "deslogado" durante eventos intermediários.
         setProfile(null);
         setRole(null);
         setRoleLoading(false);
-        // When there is no authenticated session, do NOT auto-restore the
-        // dosha result from localStorage. This was making the header show the
-        // user's name + pie chart even after sign out / on a fresh visit,
-        // without offering a "Sair" button. The dosha result is only shown
-        // for authenticated users now.
         localStorage.removeItem("activeDoshaId");
         setDoshaResult(null);
       }
 
-      if (isMounted) {
+      // loading só vira false quando o SDK confirmou a sessão inicial.
+      if (event === "INITIAL_SESSION") {
         setLoading(false);
       }
-    };
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, newSession) => {
-      void syncAuthState(event, newSession);
     });
-
-    void supabase.auth.getSession().then(({ data: { session: existingSession } }) => {
-      void syncAuthState(null, existingSession);
-    });
-
-    // Em iOS/Safari, quando a aba fica em background por muito tempo, o
-    // auto-refresh do token para. Ao voltar a ficar visível, forçamos um
-    // refresh para evitar que o usuário "apareça deslogado" por token expirado.
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === 'visible') {
-        void supabase.auth.refreshSession().catch(() => {
-          // silencioso — se o refresh falhar, onAuthStateChange cuida do estado
-        });
-      }
-    };
-    document.addEventListener('visibilitychange', handleVisibilityChange);
 
     return () => {
       isMounted = false;
       subscription.unsubscribe();
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
   }, []);
 
