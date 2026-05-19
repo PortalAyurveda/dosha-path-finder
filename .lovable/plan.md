@@ -1,90 +1,54 @@
-# Dashboard /admin
+# Ajustes no Dashboard /admin
 
-A rota `/admin` hoje abre direto em "Imagens". Vou transformá-la num **Dashboard** real (visão geral do portal), e mover Imagens pra `/admin/imagens` no AdminNav.
+## 1. Limpeza
+- Remover do rodapé o link **"Ver métricas clínicas completas →"** (em `AdminDashboard.tsx`). Métricas clínicas são dos usuários, não do operador.
 
-## Layout
+## 2. Confirmação das fontes atuais (sem mudança)
+- **Testes feitos** → `doshas_registros2.created_at` (entradas novas de hoje / 7d). ✓
+- **Akasha mensagens/sessões** → `chat_histories` filtrando por `data_hora` (msgs novas + `distinct session_id`). ✓
 
-Bento-grid responsivo, mobile-first, estilo Tray/Stripe:
+## 3. Nova seção: "Saúde do sistema"
 
-```text
-┌──────────────────── HEADER ─────────────────────┐
-│  Dashboard · hoje 19/mai · últimos 7 dias       │
-├─────────────┬─────────────┬─────────────────────┤
-│ VISITAS HOJE│ LOGADOS HOJE│ ORIGEM (top 3)      │
-│ 1.245       │ 312         │ Instagram 58%       │
-│ 7d: 8.920   │ 7d: 2.104   │ Direto 22% · ...    │
-├─────────────┴─────────────┴─────────────────────┤
-│ CONTEÚDO                                         │
-│ ┌─ Última imagem ─┬─ Último artigo ────────────┐│
-│ │ [thumb]         │ "Título do artigo..."       ││
-│ │ há 3h           │ há 1d · ver →               ││
-│ └─────────────────┴─────────────────────────────┘│
-├──────────────────────────────────────────────────┤
-│ COMUNIDADE                                       │
-│ Akasha hoje · Mensagens não-lidas · Testes hoje │
-│ 47 conversas   · 3 não-lidas       · 28 testes  │
-│ 7d: 312        · "última: assunto" · 7d: 196    │
-├──────────────────────────────────────────────────┤
-│ VENDAS                                           │
-│ Vendas hoje · Assinaturas hoje · Último terapeuta│
-│ R$ 420      · 2 novas          · "Nome — cidade"│
-│ 7d: R$ 3.1k · 7d: 9            · há 5h          │
-├──────────────────────────────────────────────────┤
-│ SISTEMA                                          │
-│ Última versão devlog: v0.42 · "fix auth..."     │
-└──────────────────────────────────────────────────┘
-```
+Adicionar uma seção no final do dashboard (antes do rodapé) com cards de operação. Tudo via `supabase--analytics_query` chamado por uma edge function nova `admin-system-health` (não dá pra chamar essas tools direto do browser).
 
-Cada card: número grande (hoje) + linha menor com "7d: X" como contexto. Cards de "último item" mostram thumb/título + tempo relativo + link pra editar.
-
-## Métricas e fonte
-
-| Card | Fonte | Query |
+| Card | Fonte | O que mostra |
 |---|---|---|
-| Visitas hoje / 7d | Lovable Analytics (`analytics--read_project_analytics`) | granularity daily, range = hoje e 7d |
-| Logados vs não-logados | Lovable Analytics não separa por auth → mostro só total + nota "via Lovable Analytics" |
-| Origem (Instagram/Direto/Google) | Lovable Analytics (referrer) | top 3 referrers |
-| Última imagem | `portal_conteudo` onde tem `image_url` | order by `created_at` desc limit 1 |
-| Último artigo | `portal_conteudo` onde status='published' | order by `created_at` desc limit 1 |
-| Akasha conversas hoje / 7d | `chat_histories` distinct `session_id` por dia | count distinct session_id where data_hora >= today |
-| Mensagens não-lidas | `mensagens` where status='novo' | count + última (assunto, nome) |
-| Testes hoje / 7d | `doshas_registros2` | count where created_at >= today |
-| Vendas hoje / 7d | tabela de vendas da loja (verificar nome real durante implementação) | sum(valor) |
-| Assinaturas hoje / 7d | `assinaturas` where status='active' | count where created_at >= today |
-| Último terapeuta | tabela de terapeutas (verificar nome) | order by created_at desc limit 1 |
-| Última versão devlog | `devlog` | order by criado_em desc limit 1 |
+| **Erros nas Edge Functions (24h)** | `function_edge_logs` filtrando `status_code >= 500` | Total + nome da função que mais errou |
+| **Erros do banco (24h)** | `postgres_logs` onde `error_severity in ('ERROR','FATAL')` | Total + última mensagem |
+| **Falhas de login (24h)** | `auth_logs` onde `status >= 400` ou `level='error'` | Total + tipo mais comum (ex: invalid_credentials) |
+| **Edge function mais lenta (24h)** | `function_edge_logs` média de `execution_time_ms` | Top 1 com tempo médio |
+| **Auditoria RAG pendente** | `auditoria_rag` onde `akasha_status='pendente'` | Total que precisa revisão |
+| **Mensagens da Akasha sem resposta?** | já temos "mensagens não-lidas" — manter |
 
-**Extras que sugiro adicionar** (úteis num dashboard de operação):
-- **Dosha dominante dos testes de hoje** — pequeno donut Vata/Pitta/Kapha (mostra "humor" da audiência do dia).
-- **Conversão teste→assinatura (7d)** — % de quem fez teste e virou assinante.
-- **Top tag de agravamento da semana** — qual desequilíbrio mais aparece nos testes (insight de conteúdo).
+Cada card vira verde / amarelo / vermelho conforme limiar (ex: erros 5xx > 10 em 24h = vermelho).
 
-Posso incluir os 3 ou só o donut de dosha. Confirmo na implementação.
+### Extras menores (cards rápidos, dados que já temos)
+- **Novos usuários (hoje / 7d)** — `perfis.created_at`. Falta hoje no dashboard.
+- **Conversão teste → assinatura (7d)** — `assinaturas` joinado por email com `doshas_registros2` da mesma janela. Útil pra ver se o teste tá puxando paid.
+- **Top tag de agravamento da semana** — mais frequente em `agravVataTags/PittaTags/KaphaTags` dos testes de 7d. Mostra qual desequilíbrio dominou.
 
 ## Arquitetura técnica
 
-**Novos arquivos:**
-- `src/pages/AdminDashboard.tsx` — página principal
-- `src/components/admin/dashboard/StatCard.tsx` — card numérico (hoje + 7d)
-- `src/components/admin/dashboard/LastItemCard.tsx` — card de "último item" (thumb + título + tempo)
-- `src/components/admin/dashboard/ReferrersCard.tsx` — top 3 origens
-- `src/components/admin/dashboard/DoshaDonut.tsx` — donut Vata/Pitta/Kapha do dia
-- `src/hooks/useAdminDashboard.ts` — React Query hooks agrupados (1 hook por card ou 1 hook agregado)
+**Nova edge function:** `supabase/functions/admin-system-health/index.ts`
+- Recebe nada, retorna JSON `{ edgeErrors, dbErrors, authFailures, slowestFn, ragPendente }`.
+- Internamente chama `supabase--analytics_query` (Logflare SQL) via API REST do projeto Supabase.
+- Cache 2 min (responde com `Cache-Control` e/ou guarda em memória).
+- Verifica `is_admin()` via JWT do caller — não exposta publicamente.
 
-**Edits:**
-- `src/App.tsx` — rota `/admin` → `AdminDashboard`; nova rota `/admin/imagens` → componente atual de imagens
-- `src/components/admin/AdminNav.tsx` — primeiro link vira "Dashboard" (`/admin`, ícone `LayoutDashboard`), e adiciono "Imagens" (`/admin/imagens`)
-- `src/pages/Admin.tsx` — renomeio função/export se necessário ou movo conteúdo pra `AdminImagens.tsx`
+**Novo hook:** `useSystemHealth()` em `useAdminDashboard.ts` — chama a edge function via `supabase.functions.invoke('admin-system-health')`. Refetch a cada 5 min.
 
-**Sem mudanças no banco.** Só leituras. Todas as queries já são permitidas pelas RLS existentes (admin via `is_admin()`).
+**Novos componentes:**
+- `HealthCard.tsx` — card colorido com label + número grande + sub + ícone de status (✓ / ⚠ / ✗).
 
-**Lovable Analytics:** chamado client-side via `analytics--read_project_analytics` não existe no browser — vou usar a tool no server? Não existe server. Então:
-- Opção A: criar edge function `admin-analytics` que chama a API do Lovable Analytics (se houver endpoint público).
-- Opção B: mostrar placeholder "em breve" no card de visitas e seguir com o resto.
-
-Vou tentar Opção A primeiro; se a API do Lovable Analytics não for acessível via edge function, caio na Opção B e deixo o card de visitas marcado como "ative tracking" — sem bloquear o resto do dashboard.
+**Edits em `AdminDashboard.tsx`:**
+- Remover o `<Link to="/metricas">` do rodapé.
+- Adicionar seção `<Section title="Saúde do sistema">` com grid 2x3 de `HealthCard`.
+- Adicionar 2 `StatCard` para "Novos usuários hoje" + "Conversão teste→assinatura".
 
 ## Fora do escopo
-- Não mexo em auth, RLS, schema, ou nos outros painéis `/admin/*`.
-- Não crio tabela de page_views (você escolheu Lovable Analytics).
-- Não adiciono filtros de data customizados nessa primeira versão (só "hoje" e "7d").
+- Não vou criar tabela de tracking de erros próprios (logs já existem em Supabase analytics).
+- Não vou criar alertas por e-mail/push — só visualização.
+- Sem mudanças de auth/RLS.
+
+## Pergunta antes de implementar
+Quer todas as 3 categorias da seção "Saúde do sistema" (erros + extras + conversão), ou prefere começar só com os 4 cards de erro/auditoria e a gente vê o resto depois?
