@@ -1,5 +1,4 @@
 import { Helmet } from "react-helmet-async";
-import { Link } from "react-router-dom";
 import AdminNav from "@/components/admin/AdminNav";
 import StatCard from "@/components/admin/dashboard/StatCard";
 import LastItemCard from "@/components/admin/dashboard/LastItemCard";
@@ -16,6 +15,9 @@ import {
   History,
   BarChart3,
   ExternalLink,
+  UserPlus,
+  ShieldAlert,
+  TrendingUp,
 } from "lucide-react";
 import {
   useUltimaImagem,
@@ -27,6 +29,9 @@ import {
   useAssinaturasRange,
   useUltimoTerapeuta,
   useUltimoDevlog,
+  useNovosUsuarios,
+  useAuditoriaRagPendente,
+  useConversaoTesteAssinatura,
 } from "@/hooks/useAdminDashboard";
 
 const DOSHA_COLORS = { vata: "#93C5FD", pitta: "#FCA5A5", kapha: "#86EFAC", outro: "#D4D4D8" };
@@ -62,6 +67,9 @@ const AdminDashboard = () => {
   const assinaturas = useAssinaturasRange();
   const terapeuta = useUltimoTerapeuta();
   const devlog = useUltimoDevlog();
+  const novosUsuarios = useNovosUsuarios();
+  const auditoria = useAuditoriaRagPendente();
+  const conversao = useConversaoTesteAssinatura();
 
   const distTotal =
     (testes.data?.dist.vata ?? 0) +
@@ -302,15 +310,56 @@ const AdminDashboard = () => {
           </div>
         </Section>
 
-        <div className="text-center pt-2">
-          <Link
-            to="/metricas"
-            className="text-xs text-muted-foreground hover:underline"
+        {/* SAÚDE DO SISTEMA */}
+        <Section title="Saúde do sistema">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <StatCard
+              label="Novos usuários"
+              icon={<UserPlus className="w-4 h-4" />}
+              hoje={novosUsuarios.isLoading ? "—" : novosUsuarios.data?.hoje ?? 0}
+              semana={novosUsuarios.isLoading ? "—" : novosUsuarios.data?.semana ?? 0}
+              accent="#0EA5E9"
+            />
+            <StatCard
+              label="Auditoria RAG"
+              icon={<ShieldAlert className="w-4 h-4" />}
+              hoje={auditoria.isLoading ? "—" : auditoria.data?.pendente ?? 0}
+              hojeSub={
+                (auditoria.data?.pendente ?? 0) > 0
+                  ? "pendente(s) de revisão"
+                  : "tudo revisado"
+              }
+              accent={(auditoria.data?.pendente ?? 0) > 0 ? "#DC2626" : "#059669"}
+            />
+            <StatCard
+              label="Conversão teste→assinante"
+              icon={<TrendingUp className="w-4 h-4" />}
+              hoje={conversao.isLoading ? "—" : `${conversao.data?.pct ?? 0}%`}
+              hojeSub={
+                conversao.data
+                  ? `${conversao.data.cruzamento}/${conversao.data.totalTestes} testes (7d)`
+                  : undefined
+              }
+              accent="#7c3aed"
+            />
+            <StatCard
+              label="Mensagens não lidas"
+              icon={<Inbox className="w-4 h-4" />}
+              hoje={mensagens.isLoading ? "—" : mensagens.data?.total ?? 0}
+              hojeSub={
+                (mensagens.data?.total ?? 0) > 0 ? "responder na inbox" : "inbox limpa"
+              }
+              to="/admin/mensagens"
+              accent={(mensagens.data?.total ?? 0) > 0 ? "#D97706" : "#059669"}
+            />
+          </div>
+          <p
+            className="text-[11px] text-muted-foreground mt-2 px-1"
             style={{ fontFamily: "'DM Sans', sans-serif" }}
           >
-            Ver métricas clínicas completas →
-          </Link>
-        </div>
+            Erros de edge functions, banco e auth ficam no painel do Supabase (precisam de acesso de logs).
+          </p>
+        </Section>
       </div>
     </div>
   );
