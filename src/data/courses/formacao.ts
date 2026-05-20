@@ -168,7 +168,7 @@ export const formacaoData: FormacaoData = {
   programa: {
     title: "Esta não é uma formação comum. É uma jornada completa.",
     intro:
-      "Ao longo de 1 ano e meio, você vai percorrer os 15 módulos que te transformam de praticante em terapeuta profissional. Mas isso vai muito além das 225 horas de aula ao vivo.",
+      "Ao longo de 1 ano e meio, você vai percorrer os 15 módulos que te transformam de praticante em terapeuta profissional. Mas isso vai muito além das 189 horas de aula ao vivo.",
     listIntro: "A cada módulo, você recebe:",
     benefits: [
       {
