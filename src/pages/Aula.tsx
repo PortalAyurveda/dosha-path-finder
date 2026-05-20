@@ -245,15 +245,15 @@ const Aula = () => {
           {/* Mobile: player + drawer */}
           <div className="md:hidden space-y-3">
             {PlayerBlock}
-            <Drawer>
+            <Drawer shouldScaleBackground={false}>
               <DrawerTrigger asChild>
                 <Button className="w-full gap-2" variant="secondary">
                   <MessageCircle className="h-4 w-4" />
                   Ver comentários
                 </Button>
               </DrawerTrigger>
-              <DrawerContent className="h-[60vh]">
-                <DrawerHeader className="pb-2">
+              <DrawerContent className="h-[75vh] flex flex-col">
+                <DrawerHeader className="pb-2 shrink-0">
                   <DrawerTitle>Chat ao vivo</DrawerTitle>
                 </DrawerHeader>
                 <div className="flex-1 min-h-0 px-3 pb-4">
