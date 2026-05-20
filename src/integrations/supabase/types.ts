@@ -1291,6 +1291,54 @@ export type Database = {
         }
         Relationships: []
       }
+      metricas_index: {
+        Row: {
+          akasha_hoje: number | null
+          atualizado_em: string | null
+          data_referencia: string | null
+          dosha_agravando: string | null
+          dosha_agravando_pct: number | null
+          dosha_aliviando: string | null
+          dosha_aliviando_pct: number | null
+          estacao: string | null
+          frase_nugget: string | null
+          historico_frases: Json | null
+          id: number
+          periodo_estacao: string | null
+          testes_7d: number | null
+        }
+        Insert: {
+          akasha_hoje?: number | null
+          atualizado_em?: string | null
+          data_referencia?: string | null
+          dosha_agravando?: string | null
+          dosha_agravando_pct?: number | null
+          dosha_aliviando?: string | null
+          dosha_aliviando_pct?: number | null
+          estacao?: string | null
+          frase_nugget?: string | null
+          historico_frases?: Json | null
+          id?: number
+          periodo_estacao?: string | null
+          testes_7d?: number | null
+        }
+        Update: {
+          akasha_hoje?: number | null
+          atualizado_em?: string | null
+          data_referencia?: string | null
+          dosha_agravando?: string | null
+          dosha_agravando_pct?: number | null
+          dosha_aliviando?: string | null
+          dosha_aliviando_pct?: number | null
+          estacao?: string | null
+          frase_nugget?: string | null
+          historico_frases?: Json | null
+          id?: number
+          periodo_estacao?: string | null
+          testes_7d?: number | null
+        }
+        Relationships: []
+      }
       metricas_snapshot: {
         Row: {
           categoria: string
