@@ -10,6 +10,8 @@ import {
   Brain,
   Calendar,
   MapPin,
+  ChevronLeft,
+  ChevronRight,
   type LucideIcon,
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -63,7 +65,7 @@ const fmtDec = (n: number | null | undefined) =>
 
 const CardShell = ({ children }: { children: React.ReactNode }) => (
   <div
-    className="bg-white p-2.5 flex flex-col gap-1.5 border"
+    className="bg-white p-2 flex flex-col gap-1 border items-center text-center"
     style={{
       borderRadius: LEAF,
       borderColor: C.border,
@@ -81,13 +83,8 @@ const CardHeader = ({
   icon: LucideIcon;
   label: string;
 }) => (
-  <div className="flex items-center gap-1.5">
-    <div
-      className="w-6 h-6 rounded-md flex items-center justify-center shrink-0"
-      style={{ background: `${C.primary}12` }}
-    >
-      <Icon size={13} color={C.primary} />
-    </div>
+  <div className="flex items-center justify-center gap-1.5 w-full">
+    <Icon size={13} color={C.primary} />
     <span
       className="text-[9px] font-bold uppercase tracking-wider truncate"
       style={{ color: C.muted }}
@@ -98,14 +95,14 @@ const CardHeader = ({
 );
 
 const BigNumber = ({ value, sub }: { value: string; sub: string }) => (
-  <div className="flex flex-col">
+  <div className="flex flex-col items-center text-center">
     <span
       className="text-2xl leading-none font-bold"
       style={{ color: C.primary, fontFamily: SERIF }}
     >
       {value}
     </span>
-    <span className="text-[10px] mt-1 leading-tight" style={{ color: C.muted }}>
+    <span className="text-[10px] mt-0.5 leading-tight" style={{ color: C.muted }}>
       {sub}
     </span>
   </div>
@@ -122,19 +119,17 @@ const DoshaLine = ({
   value: React.ReactNode;
   valueColor?: string;
 }) => (
-  <div className="flex items-center justify-between gap-1">
-    <div className="flex items-center gap-1 min-w-0">
-      <span
-        className="w-1.5 h-1.5 rounded-full shrink-0"
-        style={{ background: color }}
-      />
-      <span
-        className="text-[10px] font-medium truncate"
-        style={{ color: C.primary }}
-      >
-        {name}
-      </span>
-    </div>
+  <div className="flex items-center justify-center gap-1.5">
+    <span
+      className="w-1.5 h-1.5 rounded-full shrink-0"
+      style={{ background: color }}
+    />
+    <span
+      className="text-[10px] font-medium"
+      style={{ color: C.primary }}
+    >
+      {name}
+    </span>
     <span
       className="text-[10px] font-bold truncate"
       style={{ color: valueColor ?? C.primary }}
@@ -198,22 +193,14 @@ const SetA = ({ d }: { d: Row }) => (
           value={fmtPctSigned(d.var_kapha)}
           valueColor={(d.var_kapha ?? 0) >= 0 ? "#16a34a" : "#dc2626"}
         />
-      </div>
-      <span className="text-[9px]" style={{ color: C.muted }}>
-        vs 3 meses
-      </span>
-    </CardShell>
+      </div>    </CardShell>
     <CardShell>
       <CardHeader icon={Scale} label="IMC médio" />
       <div className="flex flex-col gap-0.5">
         <DoshaLine color={C.vata} name="V" value={fmtDec(d.imc_vata)} />
         <DoshaLine color={C.pitta} name="P" value={fmtDec(d.imc_pitta)} />
         <DoshaLine color={C.kapha} name="K" value={fmtDec(d.imc_kapha)} />
-      </div>
-      <span className="text-[9px]" style={{ color: C.muted }}>
-        top 20 / dosha
-      </span>
-    </CardShell>
+      </div>    </CardShell>
     <CardShell>
       <CardHeader icon={Sparkles} label="Akasha hoje" />
       <BigNumber value={fmtNum(d.akasha_hoje)} sub="consultas hoje" />
@@ -241,33 +228,21 @@ const SetB = ({ d }: { d: Row }) => (
           name="K"
           value={`${fmtDec(d.pct_kapha_dom)}%`}
         />
-      </div>
-      <span className="text-[9px]" style={{ color: C.muted }}>
-        no portal
-      </span>
-    </CardShell>
+      </div>    </CardShell>
     <CardShell>
       <CardHeader icon={Brain} label="Sintoma" />
       <div className="flex flex-col gap-0.5">
         <DoshaLine color={C.vata} name="V" value={d.sintoma_vata ?? "—"} />
         <DoshaLine color={C.pitta} name="P" value={d.sintoma_pitta ?? "—"} />
         <DoshaLine color={C.kapha} name="K" value={d.sintoma_kapha ?? "—"} />
-      </div>
-      <span className="text-[9px]" style={{ color: C.muted }}>
-        mais relatado
-      </span>
-    </CardShell>
+      </div>    </CardShell>
     <CardShell>
       <CardHeader icon={Calendar} label="Idade" />
       <div className="flex flex-col gap-0.5">
         <DoshaLine color={C.vata} name="V" value={`${fmtNum(d.idade_vata)}a`} />
         <DoshaLine color={C.pitta} name="P" value={`${fmtNum(d.idade_pitta)}a`} />
         <DoshaLine color={C.kapha} name="K" value={`${fmtNum(d.idade_kapha)}a`} />
-      </div>
-      <span className="text-[9px]" style={{ color: C.muted }}>
-        top 20 / dosha
-      </span>
-    </CardShell>
+      </div>    </CardShell>
     <CardShell>
       <CardHeader icon={MapPin} label="Terapeutas" />
       <BigNumber value={fmtNum(d.terapeutas)} sub="no portal" />
@@ -322,22 +297,26 @@ const MetricasMiniBanner = () => {
               {data.frase_nugget}
             </p>
           )}
-          <div>
+          <div className="relative">
             {active === 0 ? <SetA d={data} /> : <SetB d={data} />}
-          </div>
-          <div className="flex items-center justify-center gap-2 pt-2">
-            {[0, 1].map((i) => (
+            <div className="absolute -bottom-2 right-0 flex items-center gap-1">
               <button
-                key={i}
-                aria-label={`Set ${i === 0 ? "A" : "B"}`}
-                onClick={() => setActive(i as 0 | 1)}
-                className="w-2 h-2 rounded-full transition-all"
-                style={{
-                  background: active === i ? C.primary : "transparent",
-                  border: `1.5px solid ${C.primary}`,
-                }}
-              />
-            ))}
+                aria-label="Anterior"
+                onClick={() => setActive((active === 0 ? 1 : 0) as 0 | 1)}
+                className="w-5 h-5 rounded-full flex items-center justify-center hover:bg-black/5 transition"
+                style={{ color: C.primary }}
+              >
+                <ChevronLeft size={14} />
+              </button>
+              <button
+                aria-label="Próximo"
+                onClick={() => setActive((active === 0 ? 1 : 0) as 0 | 1)}
+                className="w-5 h-5 rounded-full flex items-center justify-center hover:bg-black/5 transition"
+                style={{ color: C.primary }}
+              >
+                <ChevronRight size={14} />
+              </button>
+            </div>
           </div>
         </>
       )}
