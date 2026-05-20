@@ -306,9 +306,9 @@ const MetricasMiniBanner = () => {
       {isLoading || !data ? (
         <div className="flex flex-col gap-3">
           <Skeleton className="h-4 w-3/4 mx-auto" />
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-4 gap-2">
             {Array.from({ length: 4 }).map((_, i) => (
-              <Skeleton key={i} className="h-24 w-full" style={{ borderRadius: LEAF }} />
+              <Skeleton key={i} className="h-20 w-full" style={{ borderRadius: LEAF }} />
             ))}
           </div>
         </div>
