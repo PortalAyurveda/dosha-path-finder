@@ -208,7 +208,7 @@ export const formacaoData: FormacaoData = {
             number: 1,
             title: "Cosmologia e Filosofia Samkhya",
             format: "Online",
-            date: "12-13 de Julho/2026",
+            date: "11-12 de Julho/2026",
             description:
               "A base de tudo: de onde vem o Ayurveda, como ele enxerga o universo e o ser humano.",
             details: [
