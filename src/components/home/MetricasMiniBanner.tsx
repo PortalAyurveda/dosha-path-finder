@@ -63,7 +63,7 @@ const fmtDec = (n: number | null | undefined) =>
 
 const CardShell = ({ children }: { children: React.ReactNode }) => (
   <div
-    className="bg-white p-4 flex flex-col gap-2 border"
+    className="bg-white p-2.5 flex flex-col gap-1.5 border"
     style={{
       borderRadius: LEAF,
       borderColor: C.border,
