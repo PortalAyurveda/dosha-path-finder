@@ -61,12 +61,19 @@ const fmtPctSigned = (n: number | null | undefined) => {
 const fmtDec = (n: number | null | undefined) =>
   n == null ? "—" : Number(n).toFixed(1).replace(".", ",");
 
-const CardShell = ({ children }: { children: React.ReactNode }) => (
+const CardShell = ({
+  children,
+  tint,
+}: {
+  children: React.ReactNode;
+  tint?: string;
+}) => (
   <div
-    className="bg-white p-2 flex flex-col gap-1 border items-center text-center"
+    className="p-2.5 flex flex-col gap-0.5 border items-center text-center"
     style={{
       borderRadius: LEAF,
       borderColor: C.border,
+      background: tint ?? "#FFFFFF",
       fontFamily: SANS,
     }}
   >
@@ -82,9 +89,9 @@ const CardHeader = ({
   label: string;
 }) => (
   <div className="flex items-center justify-center gap-1.5 w-full">
-    <Icon size={13} color={C.primary} />
+    <Icon size={16} color={C.primary} />
     <span
-      className="text-[9px] font-bold uppercase tracking-wider truncate"
+      className="text-[10px] font-bold uppercase tracking-wider truncate"
       style={{ color: C.muted }}
     >
       {label}
@@ -95,12 +102,12 @@ const CardHeader = ({
 const BigNumber = ({ value, sub }: { value: string; sub: string }) => (
   <div className="flex flex-col items-center text-center">
     <span
-      className="text-2xl leading-none font-bold"
+      className="text-[26px] leading-none font-bold"
       style={{ color: C.primary, fontFamily: SERIF }}
     >
       {value}
     </span>
-    <span className="text-[10px] mt-0.5 leading-tight" style={{ color: C.muted }}>
+    <span className="text-[11px] mt-0.5 leading-tight" style={{ color: C.muted }}>
       {sub}
     </span>
   </div>
