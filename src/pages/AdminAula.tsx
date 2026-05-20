@@ -32,6 +32,7 @@ interface Aula {
   button_text: string | null;
   button_url: string | null;
   button_delay_minutes: number | null;
+  destaque: boolean | null;
 }
 
 const SP_OFFSET = "-03:00"; // São Paulo is UTC-3 year-round (no DST)
