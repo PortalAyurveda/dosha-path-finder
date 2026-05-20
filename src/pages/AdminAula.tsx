@@ -335,6 +335,7 @@ const AdminAula = () => {
                   <TableHead>Slug</TableHead>
                   <TableHead>Início (SP)</TableHead>
                   <TableHead>Ativa</TableHead>
+                  <TableHead>Destaque</TableHead>
                   <TableHead className="text-right">Ações</TableHead>
                 </TableRow>
               </TableHeader>
@@ -363,6 +364,12 @@ const AdminAula = () => {
                       <Switch
                         checked={a.is_active}
                         onCheckedChange={() => handleToggleActive(a)}
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Switch
+                        checked={!!a.destaque}
+                        onCheckedChange={() => handleToggleDestaque(a)}
                       />
                     </TableCell>
                     <TableCell className="text-right space-x-2">
