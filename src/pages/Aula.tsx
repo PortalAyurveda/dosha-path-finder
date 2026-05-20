@@ -177,8 +177,12 @@ const Aula = () => {
 
   const youtubeWatchUrl = aula.youtube_url;
 
-  const PlayerBlock = (
-    <div className="relative w-full overflow-hidden rounded-xl shadow-lg bg-black aspect-video">
+  const renderPlayer = (fill = false) => (
+    <div
+      className={`relative w-full overflow-hidden rounded-xl shadow-lg bg-black ${
+        fill ? "h-full" : "aspect-video"
+      }`}
+    >
       {embed ? (
         <iframe
           src={embed}
@@ -203,6 +207,7 @@ const Aula = () => {
       </a>
     </div>
   );
+  const PlayerBlock = renderPlayer(false);
 
   // ============== DESTAQUE LAYOUT ==============
   if (isDestaque) {
