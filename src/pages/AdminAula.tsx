@@ -119,8 +119,8 @@ const AdminAula = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.titulo.trim() || !form.youtube_url.trim() || !form.slug.trim()) {
-      toast.error("Preencha título, URL e slug.");
+    if (!form.youtube_url.trim() || !form.slug.trim()) {
+      toast.error("Preencha URL e slug.");
       return;
     }
     setSaving(true);
@@ -252,7 +252,7 @@ const AdminAula = () => {
           </h2>
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="titulo">Título da Aula</Label>
+              <Label htmlFor="titulo">Título da Aula (opcional)</Label>
               <Input
                 id="titulo"
                 value={form.titulo}
@@ -284,7 +284,7 @@ const AdminAula = () => {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="starts_at">Início da aula (São Paulo)</Label>
+              <Label htmlFor="starts_at">Início da aula — São Paulo (opcional)</Label>
               <Input
                 id="starts_at"
                 type="datetime-local"
