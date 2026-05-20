@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Menu, LogIn, LogOut, ShoppingBag, ShoppingCart, Home } from "lucide-react";
+import { ArrowLeft, Menu, LogIn, LogOut, ShoppingBag, ShoppingCart, Home } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { useUser } from "@/contexts/UserContext";
 import { useCart } from "@/contexts/CartContext";
+import { useImmersive } from "@/contexts/ImmersiveContext";
 import { samkhyaTokens } from "@/components/samkhya/tokens";
 import samkhyaLogo from "@/assets/samkhya-logo-cropped.png";
 import GlobalSearch from "@/components/GlobalSearch";
