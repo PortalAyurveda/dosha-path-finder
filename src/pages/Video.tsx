@@ -62,7 +62,8 @@ const Video = () => {
           const { data, error } = await supabase
             .from(table)
             .select("video_id, novo_titulo, nova_descricao, mini_resumo, tags, texto_para_embedding, criado_em")
-            .limit(200);
+            .order("criado_em", { ascending: false, nullsFirst: false })
+            .limit(1000);
           if (error) continue;
           if (data) {
             const match = data.find((v) => slugify(v.novo_titulo || "") === slug);
