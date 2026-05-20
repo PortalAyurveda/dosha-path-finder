@@ -18,11 +18,11 @@ const Formacao = () => {
   const handleEmBreve = useCallback(
     (origin: string) => () => {
       // eslint-disable-next-line no-console
-      console.log("[formacao-cta]", { origin, ts: Date.now(), status: "em-breve" });
-      const target = document.getElementById("investimento");
-      if (target && origin !== "investimento") {
-        target.scrollIntoView({ behavior: "smooth", block: "start" });
-      }
+      console.log("[formacao-cta]", { origin, ts: Date.now(), status: "whatsapp" });
+      const text = encodeURIComponent(
+        "Olá quero saber mais sobre o curso de Formação com o prof Edson",
+      );
+      window.open(`https://wa.me/5511998076111?text=${text}`, "_blank", "noopener,noreferrer");
     },
     [],
   );
