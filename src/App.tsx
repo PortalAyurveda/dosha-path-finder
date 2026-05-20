@@ -52,6 +52,7 @@ const AdminTerapeutas = lazy(() => import("./pages/AdminTerapeutas"));
 const AdminAula = lazy(() => import("./pages/AdminAula"));
 const AdminDevlog = lazy(() => import("./pages/AdminDevlog"));
 const AdminRotinas = lazy(() => import("./pages/AdminRotinas"));
+const AdminEstoque = lazy(() => import("./pages/AdminEstoque"));
 const Aula = lazy(() => import("./pages/Aula"));
 const Blog = lazy(() => import("./pages/Blog"));
 const BlogArticle = lazy(() => import("./pages/BlogArticle"));
@@ -189,6 +190,7 @@ const RoutedApp = () => {
               <Route path="/admin/aula" element={<AdminRoute><AdminAula /></AdminRoute>} />
               <Route path="/admin/devlog" element={<AdminRoute><AdminDevlog /></AdminRoute>} />
               <Route path="/admin/rotinas" element={<AdminRoute><AdminRotinas /></AdminRoute>} />
+              <Route path="/admin/estoque" element={<AdminRoute><AdminEstoque /></AdminRoute>} />
 
               {/* Aulas ao vivo */}
               <Route path="/aula/:slug" element={<Aula />} />
