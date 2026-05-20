@@ -10,6 +10,7 @@ import {
   Brain,
   Calendar,
   MapPin,
+  type LucideIcon,
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
