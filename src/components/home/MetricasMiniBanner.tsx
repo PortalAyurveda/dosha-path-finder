@@ -316,13 +316,13 @@ const MetricasMiniBanner = () => {
         <>
           {data.frase_nugget && (
             <p
-              className="text-center italic text-[12px] leading-snug mb-3 px-2"
+              className="text-center italic text-[11px] leading-snug mb-2 px-2"
               style={{ color: C.primary, fontFamily: SERIF }}
             >
               {data.frase_nugget}
             </p>
           )}
-          <div className="flex-1 min-h-0">
+          <div>
             {active === 0 ? <SetA d={data} /> : <SetB d={data} />}
           </div>
           <div className="flex items-center justify-center gap-2 pt-3">
