@@ -13,9 +13,33 @@ interface ChatMessage {
   user_id: string | null;
   created_at: string;
   fonte: string | null;
+  youtube_msg_id?: string | null;
 }
 
 const LS_NAME_KEY = "chat_aula_nome";
+const YOUTUBE_CHAT_SLUG = "aula-ao-vivo";
+
+function messageKey(message: ChatMessage) {
+  if (message.fonte === "youtube" && message.youtube_msg_id) {
+    return `youtube:${message.youtube_msg_id}`;
+  }
+  return `portal:${message.id}`;
+}
+
+function normalizeMessages(items: ChatMessage[]) {
+  const seen = new Set<string>();
+  return [...items]
+    .sort(
+      (a, b) =>
+        new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+    )
+    .filter((message) => {
+      const key = messageKey(message);
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+}
 
 function formatHora(iso: string) {
   const d = new Date(iso);
