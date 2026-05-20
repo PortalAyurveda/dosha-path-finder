@@ -12,6 +12,7 @@ interface ChatMessage {
   mensagem: string;
   user_id: string | null;
   created_at: string;
+  fonte: string | null;
 }
 
 const LS_NAME_KEY = "chat_aula_nome";
