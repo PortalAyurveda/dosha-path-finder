@@ -194,13 +194,17 @@ const LiveChat = ({ slug }: Props) => {
                 i % 2 === 0 ? "bg-transparent" : "bg-muted/40"
               }`}
             >
-              <div className="flex items-baseline gap-2 flex-wrap">
-                <span className="font-semibold text-primary text-[13px]">{m.nome}</span>
-                {m.fonte === "youtube" && (
-                  <span className="inline-flex items-center gap-0.5 text-[9px] font-bold uppercase tracking-wide bg-red-600 text-white px-1.5 py-0.5 rounded">
-                    ▶ YT
-                  </span>
+              <div className="flex items-center gap-1.5 flex-wrap">
+                {m.fonte === "youtube" ? (
+                  <Youtube className="h-3.5 w-3.5 text-red-600 shrink-0" aria-label="YouTube" />
+                ) : (
+                  <img
+                    src="/favicon.svg"
+                    alt="Portal Ayurveda"
+                    className="h-3.5 w-3.5 shrink-0"
+                  />
                 )}
+                <span className="font-semibold text-primary text-[13px]">{m.nome}</span>
                 <span className="text-[10px] text-muted-foreground">
                   {formatHora(m.created_at)}
                 </span>
