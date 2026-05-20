@@ -78,7 +78,7 @@ const CardHeader = ({
   icon: Icon,
   label,
 }: {
-  icon: React.ComponentType<{ size?: number; color?: string }>;
+  icon: LucideIcon;
   label: string;
 }) => (
   <div className="flex items-center gap-2">
