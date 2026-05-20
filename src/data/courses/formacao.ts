@@ -126,7 +126,7 @@ export const formacaoData: FormacaoData = {
       "Para quem já sentiu na pele o poder do Ayurveda — e agora quer dominar essa ciência de verdade, com autonomia para cuidar de si e transformar vidas ao seu redor.",
     details:
       "400 horas de certificação<br>15 módulos ao longo de 1 ano e meio<br>12 encontros online ao vivo + 3 imersões presenciais em SP",
-    startDate: "Início: 12 e 13 de Julho de 2026",
+    startDate: "Início: 11 e 12 de Julho de 2026",
     endDate: "Término: 06 e 07 de Novembro de 2027",
     ctaText: "Inscrições abrem início de maio",
     ctaSubtext: "Apenas 50 vagas.",
