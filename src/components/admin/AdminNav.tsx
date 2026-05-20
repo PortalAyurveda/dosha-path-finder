@@ -4,21 +4,21 @@ import { ImageIcon, FileText, Store, Library, MessageCircle, Users, ClipboardLis
 
 const links = [
   { to: "/admin", label: "Dashboard", icon: LayoutDashboard },
-  { to: "/admin/imagens", label: "Imagens", icon: ImageIcon },
-  { to: "/admin/blog", label: "Artigos", icon: FileText },
   { to: "/admin/akasha", label: "Akasha", icon: MessageCircle },
+  { to: "/admin/blog", label: "Artigos", icon: FileText },
+  { to: "/admin/vendas/akasha", label: "Assinaturas Premium", icon: Crown },
+  { to: "/admin/aula", label: "Aulas", icon: Video },
+  { to: "/admin/biblioteca", label: "Biblioteca", icon: Library },
+  { to: "/admin/devlog", label: "Devlog", icon: History },
+  { to: "/admin/estoque", label: "Estoque & Produção", icon: Package },
+  { to: "/admin/imagens", label: "Imagens", icon: ImageIcon },
+  { to: "/admin/loja", label: "Loja Samkhya", icon: Store },
   { to: "/admin/mensagens", label: "Mensagens", icon: Inbox },
+  { to: "/admin/rotinas", label: "Rotinas", icon: Soup },
+  { to: "/admin/terapeutas", label: "Terapeutas", icon: Users },
   { to: "/admin/teste", label: "Teste — Conteúdo", icon: ClipboardList },
   { to: "/admin/teste/registros", label: "Teste — Registros", icon: ListChecks },
-  { to: "/admin/loja", label: "Loja Samkhya", icon: Store },
-  { to: "/admin/estoque", label: "Estoque & Produção", icon: Package },
   { to: "/admin/loja/vendas", label: "Vendas", icon: ShoppingCart },
-  { to: "/admin/vendas/akasha", label: "Assinaturas Premium", icon: Crown },
-  { to: "/admin/biblioteca", label: "Biblioteca", icon: Library },
-  { to: "/admin/terapeutas", label: "Terapeutas", icon: Users },
-  { to: "/admin/aula", label: "Aulas", icon: Video },
-  { to: "/admin/rotinas", label: "Rotinas", icon: Soup },
-  { to: "/admin/devlog", label: "Devlog", icon: History },
 ];
 
 const AdminNav = () => {
