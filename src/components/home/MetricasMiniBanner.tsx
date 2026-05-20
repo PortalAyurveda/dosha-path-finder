@@ -63,7 +63,7 @@ const fmtDec = (n: number | null | undefined) =>
 
 const CardShell = ({ children }: { children: React.ReactNode }) => (
   <div
-    className="bg-white p-2.5 flex flex-col gap-1.5 border"
+    className="bg-white p-2 flex flex-col gap-1 border items-center text-center"
     style={{
       borderRadius: LEAF,
       borderColor: C.border,
@@ -81,13 +81,8 @@ const CardHeader = ({
   icon: LucideIcon;
   label: string;
 }) => (
-  <div className="flex items-center gap-1.5">
-    <div
-      className="w-6 h-6 rounded-md flex items-center justify-center shrink-0"
-      style={{ background: `${C.primary}12` }}
-    >
-      <Icon size={13} color={C.primary} />
-    </div>
+  <div className="flex items-center justify-center gap-1.5 w-full">
+    <Icon size={13} color={C.primary} />
     <span
       className="text-[9px] font-bold uppercase tracking-wider truncate"
       style={{ color: C.muted }}
@@ -98,14 +93,14 @@ const CardHeader = ({
 );
 
 const BigNumber = ({ value, sub }: { value: string; sub: string }) => (
-  <div className="flex flex-col">
+  <div className="flex flex-col items-center text-center">
     <span
       className="text-2xl leading-none font-bold"
       style={{ color: C.primary, fontFamily: SERIF }}
     >
       {value}
     </span>
-    <span className="text-[10px] mt-1 leading-tight" style={{ color: C.muted }}>
+    <span className="text-[10px] mt-0.5 leading-tight" style={{ color: C.muted }}>
       {sub}
     </span>
   </div>
