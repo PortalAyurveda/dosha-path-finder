@@ -166,6 +166,36 @@ const AdminAula = () => {
     else fetchAulas();
   };
 
+  const extractYoutubeId = (url: string): string => {
+    if (!url) return "";
+    try {
+      const u = new URL(url);
+      const v = u.searchParams.get("v");
+      if (v) return v;
+      const parts = u.pathname.split("/").filter(Boolean);
+      return parts[parts.length - 1] || "";
+    } catch {
+      const parts = url.split("/").filter(Boolean);
+      return parts[parts.length - 1]?.split("?")[0] || "";
+    }
+  };
+
+  const notifyN8nLiveConfig = async (payload: {
+    slug: string;
+    video_id: string;
+    ativo: boolean;
+  }) => {
+    try {
+      await fetch("https://n8n.portalayurveda.com/webhook/live-config", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+    } catch (err) {
+      console.error("Falha ao notificar n8n live-config:", err);
+    }
+  };
+
   const handleToggleDestaque = async (a: Aula) => {
     const turnOn = !a.destaque;
     if (turnOn) {
@@ -183,11 +213,17 @@ const AdminAula = () => {
       .from("aulas_ao_vivo")
       .update({ destaque: turnOn })
       .eq("id", a.id);
-    if (error) toast.error(error.message);
-    else {
-      toast.success(turnOn ? "Aula em destaque" : "Destaque removido");
-      fetchAulas();
+    if (error) {
+      toast.error(error.message);
+      return;
     }
+    await notifyN8nLiveConfig({
+      slug: a.slug,
+      video_id: turnOn ? extractYoutubeId(a.youtube_url) : "",
+      ativo: turnOn,
+    });
+    toast.success(turnOn ? "Aula em destaque" : "Destaque removido");
+    fetchAulas();
   };
 
   return (

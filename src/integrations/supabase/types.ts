@@ -455,6 +455,33 @@ export type Database = {
         }
         Relationships: []
       }
+      config_live: {
+        Row: {
+          ativo: boolean | null
+          aula_slug: string | null
+          id: number
+          page_token: string | null
+          updated_at: string | null
+          video_id: string | null
+        }
+        Insert: {
+          ativo?: boolean | null
+          aula_slug?: string | null
+          id?: number
+          page_token?: string | null
+          updated_at?: string | null
+          video_id?: string | null
+        }
+        Update: {
+          ativo?: boolean | null
+          aula_slug?: string | null
+          id?: number
+          page_token?: string | null
+          updated_at?: string | null
+          video_id?: string | null
+        }
+        Relationships: []
+      }
       content_likes: {
         Row: {
           content_id: string
