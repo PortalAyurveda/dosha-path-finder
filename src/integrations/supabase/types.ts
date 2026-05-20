@@ -159,6 +159,7 @@ export type Database = {
           button_url: string | null
           created_at: string
           descricao: string | null
+          destaque: boolean | null
           id: string
           is_active: boolean
           slug: string
@@ -173,6 +174,7 @@ export type Database = {
           button_url?: string | null
           created_at?: string
           descricao?: string | null
+          destaque?: boolean | null
           id?: string
           is_active?: boolean
           slug: string
@@ -187,6 +189,7 @@ export type Database = {
           button_url?: string | null
           created_at?: string
           descricao?: string | null
+          destaque?: boolean | null
           id?: string
           is_active?: boolean
           slug?: string
@@ -365,6 +368,33 @@ export type Database = {
           ORDEM?: number | null
           PITTA?: string | null
           VATA?: string | null
+        }
+        Relationships: []
+      }
+      chat_aula: {
+        Row: {
+          created_at: string | null
+          id: string
+          mensagem: string
+          nome: string
+          slug: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          mensagem: string
+          nome: string
+          slug: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          mensagem?: string
+          nome?: string
+          slug?: string
+          user_id?: string | null
         }
         Relationships: []
       }
