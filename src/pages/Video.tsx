@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ArrowLeft, Clock, Play } from "lucide-react";
 import HeartButton from "@/components/HeartButton";
+import Comments from "@/components/Comments";
 
 const ALL_TABLES = ["portal_oficial", "portal_receitas", "portal_lives", "portal_vata", "portal_pitta", "portal_kapha"] as const;
 
@@ -144,73 +145,81 @@ const Video = () => {
       </Helmet>
 
       <PageContainer title={title} description={description.slice(0, 160)}>
-        <div className="max-w-4xl mx-auto space-y-6">
+        <div className="max-w-6xl mx-auto space-y-6">
           <Button variant="ghost" size="sm" onClick={() => navigate(-1)} className="text-muted-foreground hover:text-foreground">
             <ArrowLeft className="h-4 w-4 mr-2" /> Voltar
           </Button>
 
-          {/* Player */}
-          {videoId && (
-            <div className="aspect-video w-full rounded-2xl overflow-hidden border border-border shadow-lg">
-              <iframe
-                key={startSeconds ?? "init"}
-                src={iframeSrc}
-                title={title}
-                className="w-full h-full"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              />
-            </div>
-          )}
+          <div className="grid lg:grid-cols-3 gap-6 items-start">
+            <div className="space-y-6 lg:col-span-2">
+              {/* Player */}
+              {videoId && (
+                <div className="aspect-video w-full rounded-2xl overflow-hidden border border-border shadow-lg">
+                  <iframe
+                    key={startSeconds ?? "init"}
+                    src={iframeSrc}
+                    title={title}
+                    className="w-full h-full"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
+                </div>
+              )}
 
-          {/* Title & Tags & Heart */}
-          <div className="space-y-3">
-            <div className="flex items-start justify-between gap-3">
-              <h1 className="font-serif text-2xl md:text-3xl font-bold text-primary">{title}</h1>
-              {videoId && <HeartButton contentType="video" contentId={videoId} className="mt-1 shrink-0" />}
-            </div>
-            {tagList.length > 0 && (
-              <div className="flex flex-wrap gap-2">
-                {tagList.map((tag) => (
-                  <Badge key={tag} variant="outline" className="text-xs">
-                    {tag}
-                  </Badge>
-                ))}
+              {/* Title & Tags & Heart */}
+              <div className="space-y-3">
+                <div className="flex items-start justify-between gap-3">
+                  <h1 className="font-serif text-2xl md:text-3xl font-bold text-primary">{title}</h1>
+                  {videoId && <HeartButton contentType="video" contentId={videoId} className="mt-1 shrink-0" />}
+                </div>
+                {tagList.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {tagList.map((tag) => (
+                      <Badge key={tag} variant="outline" className="text-xs">
+                        {tag}
+                      </Badge>
+                    ))}
+                  </div>
+                )}
               </div>
-            )}
+
+              {/* Timestamps */}
+              {timestamps.length > 0 && (
+                <div className="rounded-xl border border-border bg-surface-sun p-4">
+                  <h2 className="font-sans text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-2">
+                    <Clock className="h-4 w-4" />
+                    Índice de Minutos
+                  </h2>
+                  <div className="space-y-1">
+                    {timestamps.map((entry) => (
+                      <button
+                        key={entry.timestamp}
+                        onClick={() => setStartSeconds(entry.seconds)}
+                        className="w-full text-left flex items-start gap-3 px-3 py-2 rounded-lg hover:bg-primary/10 transition-colors group"
+                      >
+                        <span className="flex items-center gap-1 text-secondary font-mono text-sm font-semibold whitespace-nowrap mt-0.5">
+                          <Play className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                          {entry.timestamp}
+                        </span>
+                        <span className="text-sm text-foreground leading-relaxed">{entry.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Description */}
+              {description && (
+                <article className="prose prose-sm max-w-none text-muted-foreground font-sans whitespace-pre-line leading-relaxed">
+                  {description}
+                </article>
+              )}
+            </div>
+
+            <aside className="lg:col-span-1 lg:sticky lg:top-4">
+              <Comments slug={canonicalSlug} title="O que você achou do vídeo?" />
+            </aside>
           </div>
-
-          {/* Timestamps */}
-          {timestamps.length > 0 && (
-            <div className="rounded-xl border border-border bg-surface-sun p-4">
-              <h2 className="font-sans text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-2">
-                <Clock className="h-4 w-4" />
-                Índice de Minutos
-              </h2>
-              <div className="space-y-1">
-                {timestamps.map((entry) => (
-                  <button
-                    key={entry.timestamp}
-                    onClick={() => setStartSeconds(entry.seconds)}
-                    className="w-full text-left flex items-start gap-3 px-3 py-2 rounded-lg hover:bg-primary/10 transition-colors group"
-                  >
-                    <span className="flex items-center gap-1 text-secondary font-mono text-sm font-semibold whitespace-nowrap mt-0.5">
-                      <Play className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-                      {entry.timestamp}
-                    </span>
-                    <span className="text-sm text-foreground leading-relaxed">{entry.label}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Description */}
-          {description && (
-            <article className="prose prose-sm max-w-none text-muted-foreground font-sans whitespace-pre-line leading-relaxed">
-              {description}
-            </article>
-          )}
         </div>
       </PageContainer>
     </>
