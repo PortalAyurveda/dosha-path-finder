@@ -306,6 +306,23 @@ const AdminAula = () => {
               />
             </div>
           </div>
+          {editingId && (
+            <div className="flex items-center gap-3 p-3 rounded-lg border border-border bg-muted/40">
+              <Switch
+                checked={!!aulas.find((x) => x.id === editingId)?.destaque}
+                onCheckedChange={() => {
+                  const a = aulas.find((x) => x.id === editingId);
+                  if (a) handleToggleDestaque(a);
+                }}
+              />
+              <div>
+                <Label className="cursor-pointer">Aula em Destaque (modo imersivo + chat ao vivo)</Label>
+                <p className="text-xs text-muted-foreground">
+                  Apenas uma aula pode estar em destaque por vez.
+                </p>
+              </div>
+            </div>
+          )}
           <div className="flex gap-2">
             <Button type="submit" disabled={saving}>
               {editingId ? <Save className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
