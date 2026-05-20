@@ -414,13 +414,14 @@ export const formacaoData: FormacaoData = {
     ],
     cargaTitle: "Carga horária total: 400 horas certificadas",
     cargaItems: [
-      "225 horas de aulas ao vivo (online + presencial)",
-      "175 horas de atividades obrigatórias:",
+      "189 horas de aulas ao vivo (online + presencial)",
+      "211 horas de atividades obrigatórias:",
       "→ 30h de questionários de avaliação (1 por módulo)",
       "→ 45h de prática pessoal (dinacharya e relatórios)",
       "→ 40h de leitura e pesquisa dirigida",
       "→ 30h de diário de evolução clínica e pessoal",
-      "→ 30h de TCC (trabalho de conclusão de curso)",
+      "→ 50h de TCC (trabalho de conclusão de curso)",
+      "→ 36h de Estágio Supervisionado (mínimo 12 atendimentos clínicos documentados com ficha por paciente)",
     ],
     extrasTitle: "Você também recebe",
     extras: [
