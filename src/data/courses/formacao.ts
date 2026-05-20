@@ -519,8 +519,8 @@ export const formacaoData: FormacaoData = {
     condicoesNote: "Após 12 de junho, o valor volta ao preço cheio.",
     inclusoTitle: "O que está incluso",
     incluso: [
-      "225 horas de aulas ao vivo (online + presencial)",
-      "175 horas de atividades obrigatórias",
+      "189 horas de aulas ao vivo (online + presencial)",
+      "211 horas de atividades obrigatórias",
       "Acesso vitalício às gravações",
       "Motor de Teste de Dosha + Guia de Alimentação e Nutrição + Guia de Dravya Guna",
       "Protocolo de Atendimento Zero",
