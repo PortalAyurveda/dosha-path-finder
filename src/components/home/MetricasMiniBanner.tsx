@@ -122,21 +122,21 @@ const DoshaLine = ({
   value: React.ReactNode;
   valueColor?: string;
 }) => (
-  <div className="flex items-center justify-between gap-2">
-    <div className="flex items-center gap-1.5 min-w-0">
+  <div className="flex items-center justify-between gap-1">
+    <div className="flex items-center gap-1 min-w-0">
       <span
-        className="w-2 h-2 rounded-full shrink-0"
+        className="w-1.5 h-1.5 rounded-full shrink-0"
         style={{ background: color }}
       />
       <span
-        className="text-[12px] font-medium truncate"
+        className="text-[10px] font-medium truncate"
         style={{ color: C.primary }}
       >
         {name}
       </span>
     </div>
     <span
-      className="text-[12px] font-bold"
+      className="text-[10px] font-bold truncate"
       style={{ color: valueColor ?? C.primary }}
     >
       {value}
