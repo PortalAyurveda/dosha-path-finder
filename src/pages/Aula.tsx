@@ -177,8 +177,12 @@ const Aula = () => {
 
   const youtubeWatchUrl = aula.youtube_url;
 
-  const PlayerBlock = (
-    <div className="relative w-full overflow-hidden rounded-xl shadow-lg bg-black aspect-video">
+  const renderPlayer = (fill = false) => (
+    <div
+      className={`relative w-full overflow-hidden rounded-xl shadow-lg bg-black ${
+        fill ? "h-full" : "aspect-video"
+      }`}
+    >
       {embed ? (
         <iframe
           src={embed}
@@ -203,6 +207,7 @@ const Aula = () => {
       </a>
     </div>
   );
+  const PlayerBlock = renderPlayer(false);
 
   // ============== DESTAQUE LAYOUT ==============
   if (isDestaque) {
@@ -229,13 +234,11 @@ const Aula = () => {
 
           {startTs && now < startTs && <Countdown target={startTs} />}
 
-          {/* Desktop: 70/30 */}
-          <div className="hidden md:grid md:grid-cols-10 gap-4 items-stretch">
-            <div className="md:col-span-7">{PlayerBlock}</div>
-            <div className="md:col-span-3 min-h-0">
-              <div className="aspect-video md:aspect-auto md:h-full">
-                <LiveChat slug={aula.slug} />
-              </div>
+          {/* Desktop: 70/30 — altura travada na viewport para o chat rolar internamente */}
+          <div className="hidden md:grid md:grid-cols-10 gap-4 md:h-[calc(100vh-9rem)] md:sticky md:top-4">
+            <div className="md:col-span-7 h-full">{renderPlayer(true)}</div>
+            <div className="md:col-span-3 h-full min-h-0">
+              <LiveChat slug={aula.slug} />
             </div>
           </div>
 
