@@ -67,6 +67,7 @@ const LiveChat = ({ slug }: Props) => {
 
   const loggedName = profile?.nome || user?.email?.split("@")[0] || "";
   const displayName = user ? loggedName : guestName;
+  const chatSlugs = useMemo(() => [slug, YOUTUBE_CHAT_SLUG], [slug]);
 
   // Initial fetch
   useEffect(() => {
@@ -75,32 +76,27 @@ const LiveChat = ({ slug }: Props) => {
       const { data } = await supabase
         .from("chat_aula")
         .select("*")
-        .eq("slug", slug)
+        .in("slug", chatSlugs)
         .order("created_at", { ascending: false })
         .limit(50);
       if (active && data) {
-        setMessages((data as ChatMessage[]).slice().reverse());
+        setMessages(normalizeMessages(data as ChatMessage[]));
       }
     })();
     return () => {
       active = false;
     };
-  }, [slug]);
+  }, [chatSlugs]);
 
   // Realtime subscription + polling fallback (n8n batch inserts podem escapar do realtime)
   useEffect(() => {
     const mergeIncoming = (incoming: ChatMessage[]) => {
       if (!incoming.length) return;
       setMessages((prev) => {
-        const ids = new Set(prev.map((m) => m.id));
-        const novos = incoming.filter((m) => !ids.has(m.id));
+        const keys = new Set(prev.map(messageKey));
+        const novos = incoming.filter((m) => !keys.has(messageKey(m)));
         if (!novos.length) return prev;
-        const todas = [...prev, ...novos];
-        todas.sort(
-          (a, b) =>
-            new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
-        );
-        return todas;
+        return normalizeMessages([...prev, ...novos]);
       });
     };
 
