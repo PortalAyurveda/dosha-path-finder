@@ -290,36 +290,42 @@ const Aula = () => {
           content={aula.descricao || aula.titulo}
         />
       </Helmet>
-      <main className="w-full max-w-4xl mx-auto px-4 sm:px-6 py-10 md:py-16">
-        <article className="space-y-6">
-          <h1 className="font-heading text-3xl md:text-4xl font-bold text-primary text-center">
-            {aula.titulo}
-          </h1>
+      <main className="w-full max-w-6xl mx-auto px-4 sm:px-6 py-10 md:py-16">
+        <h1 className="font-heading text-3xl md:text-4xl font-bold text-primary text-center mb-6">
+          {aula.titulo}
+        </h1>
 
-          {startTs && now < startTs && <Countdown target={startTs} />}
+        {startTs && now < startTs && <Countdown target={startTs} />}
 
-          {PlayerBlock}
+        <div className="grid lg:grid-cols-3 gap-6 items-start">
+          <article className="space-y-6 lg:col-span-2">
+            {PlayerBlock}
 
-          {aula.descricao && (
-            <p className="font-body text-base md:text-lg text-foreground/90 whitespace-pre-line leading-relaxed">
-              {aula.descricao}
-            </p>
-          )}
+            {aula.descricao && (
+              <p className="font-body text-base md:text-lg text-foreground/90 whitespace-pre-line leading-relaxed">
+                {aula.descricao}
+              </p>
+            )}
 
-          {showButton && (
-            <div className="flex justify-center pt-2 animate-in fade-in slide-in-from-bottom-2 duration-500">
-              <Button
-                asChild
-                size="lg"
-                className="bg-secondary hover:bg-secondary/90 text-white font-body text-base px-8 py-6 rounded-full shadow-md"
-              >
-                <a href={aula.button_url!} target="_blank" rel="noopener noreferrer">
-                  {aula.button_text}
-                </a>
-              </Button>
-            </div>
-          )}
-        </article>
+            {showButton && (
+              <div className="flex justify-center pt-2 animate-in fade-in slide-in-from-bottom-2 duration-500">
+                <Button
+                  asChild
+                  size="lg"
+                  className="bg-secondary hover:bg-secondary/90 text-white font-body text-base px-8 py-6 rounded-full shadow-md"
+                >
+                  <a href={aula.button_url!} target="_blank" rel="noopener noreferrer">
+                    {aula.button_text}
+                  </a>
+                </Button>
+              </div>
+            )}
+          </article>
+
+          <aside className="lg:col-span-1 lg:sticky lg:top-4">
+            <Comments slug={aula.slug} />
+          </aside>
+        </div>
       </main>
     </div>
   );
