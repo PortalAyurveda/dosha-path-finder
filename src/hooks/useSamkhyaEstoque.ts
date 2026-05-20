@@ -24,7 +24,10 @@ export function useEstoque() {
       const { data, error } = await samkhyaSupabase
         .from("v_estoque_ingredientes")
         .select("*");
-      if (error) throw error;
+      if (error) {
+        console.error("[samkhya] v_estoque_ingredientes:", error);
+        throw error;
+      }
       return (data ?? []) as SkEstoqueRow[];
     },
   });
