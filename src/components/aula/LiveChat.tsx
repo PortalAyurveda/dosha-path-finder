@@ -12,6 +12,7 @@ interface ChatMessage {
   mensagem: string;
   user_id: string | null;
   created_at: string;
+  fonte: string | null;
 }
 
 const LS_NAME_KEY = "chat_aula_nome";
@@ -51,9 +52,11 @@ const LiveChat = ({ slug }: Props) => {
         .from("chat_aula")
         .select("*")
         .eq("slug", slug)
-        .order("created_at", { ascending: true })
-        .limit(500);
-      if (active && data) setMessages(data as ChatMessage[]);
+        .order("created_at", { ascending: false })
+        .limit(50);
+      if (active && data) {
+        setMessages((data as ChatMessage[]).slice().reverse());
+      }
     })();
     return () => {
       active = false;
@@ -115,6 +118,7 @@ const LiveChat = ({ slug }: Props) => {
       nome: name,
       mensagem: msg,
       user_id: user?.id ?? null,
+      fonte: "portal",
     });
     if (!error) setText("");
     setSending(false);
@@ -154,6 +158,11 @@ const LiveChat = ({ slug }: Props) => {
             >
               <div className="flex items-baseline gap-2 flex-wrap">
                 <span className="font-semibold text-primary text-[13px]">{m.nome}</span>
+                {m.fonte === "youtube" && (
+                  <span className="inline-flex items-center gap-0.5 text-[9px] font-bold uppercase tracking-wide bg-red-600 text-white px-1.5 py-0.5 rounded">
+                    ▶ YT
+                  </span>
+                )}
                 <span className="text-[10px] text-muted-foreground">
                   {formatHora(m.created_at)}
                 </span>

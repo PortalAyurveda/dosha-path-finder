@@ -374,27 +374,33 @@ export type Database = {
       chat_aula: {
         Row: {
           created_at: string | null
+          fonte: string | null
           id: string
           mensagem: string
           nome: string
           slug: string
           user_id: string | null
+          youtube_msg_id: string | null
         }
         Insert: {
           created_at?: string | null
+          fonte?: string | null
           id?: string
           mensagem: string
           nome: string
           slug: string
           user_id?: string | null
+          youtube_msg_id?: string | null
         }
         Update: {
           created_at?: string | null
+          fonte?: string | null
           id?: string
           mensagem?: string
           nome?: string
           slug?: string
           user_id?: string | null
+          youtube_msg_id?: string | null
         }
         Relationships: []
       }
