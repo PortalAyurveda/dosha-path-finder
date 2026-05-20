@@ -107,7 +107,7 @@ export const formacaoData: FormacaoData = {
     slug: "formacao",
     title: "Formação Profissionalizante em Ayurveda | Portal Ayurveda",
     description:
-      "Torne-se Terapeuta Ayurveda. 400h de certificação | 15 módulos em 1,5 ano | Online + 3 imersões em SP. Início em 12 e 13 de Julho de 2026.",
+      "Torne-se Terapeuta Ayurveda. 400h de certificação | 15 módulos em 1,5 ano | Online + 3 imersões em SP. Início em 11 e 12 de Julho de 2026.",
   },
   branding: {
     primaryColor: "#6B7FF2",
@@ -126,7 +126,7 @@ export const formacaoData: FormacaoData = {
       "Para quem já sentiu na pele o poder do Ayurveda — e agora quer dominar essa ciência de verdade, com autonomia para cuidar de si e transformar vidas ao seu redor.",
     details:
       "400 horas de certificação<br>15 módulos ao longo de 1 ano e meio<br>12 encontros online ao vivo + 3 imersões presenciais em SP",
-    startDate: "Início: 12 e 13 de Julho de 2026",
+    startDate: "Início: 11 e 12 de Julho de 2026",
     endDate: "Término: 06 e 07 de Novembro de 2027",
     ctaText: "Inscrições abrem início de maio",
     ctaSubtext: "Apenas 50 vagas.",
@@ -168,7 +168,7 @@ export const formacaoData: FormacaoData = {
   programa: {
     title: "Esta não é uma formação comum. É uma jornada completa.",
     intro:
-      "Ao longo de 1 ano e meio, você vai percorrer os 15 módulos que te transformam de praticante em terapeuta profissional. Mas isso vai muito além das 225 horas de aula ao vivo.",
+      "Ao longo de 1 ano e meio, você vai percorrer os 15 módulos que te transformam de praticante em terapeuta profissional. Mas isso vai muito além das 189 horas de aula ao vivo.",
     listIntro: "A cada módulo, você recebe:",
     benefits: [
       {
@@ -208,7 +208,7 @@ export const formacaoData: FormacaoData = {
             number: 1,
             title: "Cosmologia e Filosofia Samkhya",
             format: "Online",
-            date: "12-13 de Julho/2026",
+            date: "11-12 de Julho/2026",
             description:
               "A base de tudo: de onde vem o Ayurveda, como ele enxerga o universo e o ser humano.",
             details: [
@@ -414,13 +414,14 @@ export const formacaoData: FormacaoData = {
     ],
     cargaTitle: "Carga horária total: 400 horas certificadas",
     cargaItems: [
-      "225 horas de aulas ao vivo (online + presencial)",
-      "175 horas de atividades obrigatórias:",
+      "189 horas de aulas ao vivo (online + presencial)",
+      "211 horas de atividades obrigatórias:",
       "→ 30h de questionários de avaliação (1 por módulo)",
       "→ 45h de prática pessoal (dinacharya e relatórios)",
       "→ 40h de leitura e pesquisa dirigida",
       "→ 30h de diário de evolução clínica e pessoal",
-      "→ 30h de TCC (trabalho de conclusão de curso)",
+      "→ 50h de TCC (trabalho de conclusão de curso)",
+      "→ 36h de Estágio Supervisionado (mínimo 12 atendimentos clínicos documentados com ficha por paciente)",
     ],
     extrasTitle: "Você também recebe",
     extras: [
@@ -518,8 +519,8 @@ export const formacaoData: FormacaoData = {
     condicoesNote: "Após 12 de junho, o valor volta ao preço cheio.",
     inclusoTitle: "O que está incluso",
     incluso: [
-      "225 horas de aulas ao vivo (online + presencial)",
-      "175 horas de atividades obrigatórias",
+      "189 horas de aulas ao vivo (online + presencial)",
+      "211 horas de atividades obrigatórias",
       "Acesso vitalício às gravações",
       "Motor de Teste de Dosha + Guia de Alimentação e Nutrição + Guia de Dravya Guna",
       "Protocolo de Atendimento Zero",
@@ -577,7 +578,7 @@ export const formacaoData: FormacaoData = {
   },
   finalCta: {
     title: "Esta é a sua chance",
-    body: "Você já sabe que Ayurveda funciona. Você já experimentou na pele. Você já sentiu a diferença na saúde, na energia, na clareza.\n\nAgora é a hora de ir além. De sair de espectadora para protagonista. De deixar de ser paciente para se tornar terapeuta. De transformar sua própria vida — e a vida de outras pessoas.\n\nEsta é a primeira turma oficial de Terapeutas Ayurveda formada pelo Portal Ayurveda. São apenas 50 vagas. O desconto de 10% é válido até 12 de junho. A primeira aula começa em 12 de julho de 2026.",
+    body: "Você já sabe que Ayurveda funciona. Você já experimentou na pele. Você já sentiu a diferença na saúde, na energia, na clareza.\n\nAgora é a hora de ir além. De sair de espectadora para protagonista. De deixar de ser paciente para se tornar terapeuta. De transformar sua própria vida — e a vida de outras pessoas.\n\nEsta é a primeira turma oficial de Terapeutas Ayurveda formada pelo Portal Ayurveda. São apenas 50 vagas. O desconto de 10% é válido até 12 de junho. A primeira aula começa em 11 de julho de 2026.",
     primaryCta: "Inscrições abrem início de maio",
     primarySub: "Apenas 50 vagas.",
     secondaryCta: "",
