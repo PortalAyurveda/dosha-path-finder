@@ -17,7 +17,6 @@ interface ChatMessage {
 }
 
 const LS_NAME_KEY = "chat_aula_nome";
-const YOUTUBE_CHAT_SLUG = "aula-ao-vivo";
 
 function messageKey(message: ChatMessage) {
   if (message.fonte === "youtube" && message.youtube_msg_id) {
@@ -67,7 +66,6 @@ const LiveChat = ({ slug }: Props) => {
 
   const loggedName = profile?.nome || user?.email?.split("@")[0] || "";
   const displayName = user ? loggedName : guestName;
-  const chatSlugs = useMemo(() => [slug, YOUTUBE_CHAT_SLUG], [slug]);
 
   // Initial fetch
   useEffect(() => {
@@ -76,7 +74,7 @@ const LiveChat = ({ slug }: Props) => {
       const { data } = await supabase
         .from("chat_aula")
         .select("*")
-        .in("slug", chatSlugs)
+        .eq("slug", slug)
         .order("created_at", { ascending: false })
         .limit(50);
       if (active && data) {
@@ -86,7 +84,7 @@ const LiveChat = ({ slug }: Props) => {
     return () => {
       active = false;
     };
-  }, [chatSlugs]);
+  }, [slug]);
 
   // Realtime subscription + polling fallback (n8n batch inserts podem escapar do realtime)
   useEffect(() => {
@@ -112,16 +110,6 @@ const LiveChat = ({ slug }: Props) => {
         },
         (payload) => mergeIncoming([payload.new as ChatMessage])
       )
-      .on(
-        "postgres_changes",
-        {
-          event: "INSERT",
-          schema: "public",
-          table: "chat_aula",
-          filter: `slug=eq.${YOUTUBE_CHAT_SLUG}`,
-        },
-        (payload) => mergeIncoming([payload.new as ChatMessage])
-      )
       .subscribe();
 
     // Polling de segurança a cada 4s — relê o estado atual da tabela
@@ -129,7 +117,7 @@ const LiveChat = ({ slug }: Props) => {
       const { data } = await supabase
         .from("chat_aula")
         .select("*")
-        .in("slug", chatSlugs)
+        .eq("slug", slug)
         .order("created_at", { ascending: false })
         .limit(50);
       if (data && data.length) mergeIncoming(data as ChatMessage[]);
@@ -139,7 +127,7 @@ const LiveChat = ({ slug }: Props) => {
       clearInterval(poll);
       supabase.removeChannel(channel);
     };
-  }, [chatSlugs, slug]);
+  }, [slug]);
 
   // Auto-scroll
   useEffect(() => {
