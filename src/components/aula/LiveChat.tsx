@@ -112,6 +112,16 @@ const LiveChat = ({ slug }: Props) => {
         },
         (payload) => mergeIncoming([payload.new as ChatMessage])
       )
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "chat_aula",
+          filter: `slug=eq.${YOUTUBE_CHAT_SLUG}`,
+        },
+        (payload) => mergeIncoming([payload.new as ChatMessage])
+      )
       .subscribe();
 
     // Polling de segurança a cada 4s — busca o que entrou depois da última msg
@@ -134,7 +144,7 @@ const LiveChat = ({ slug }: Props) => {
       const { data } = await supabase
         .from("chat_aula")
         .select("*")
-        .eq("slug", slug)
+        .in("slug", chatSlugs)
         .gt("created_at", sinceIso)
         .order("created_at", { ascending: true })
         .limit(100);
@@ -145,7 +155,7 @@ const LiveChat = ({ slug }: Props) => {
       clearInterval(poll);
       supabase.removeChannel(channel);
     };
-  }, [slug]);
+  }, [chatSlugs, slug]);
 
   // Auto-scroll
   useEffect(() => {
