@@ -1,81 +1,51 @@
-## /admin/estoque — Gestão de produção Samkhya
+## Diagnóstico
 
-Nova área administrativa para gerenciar ingredientes, produções e vendas da marca Samkhya, lendo do schema `samkhya` no Supabase.
+Verifiquei o estado atual:
 
-### 1. Backend — expor o schema `samkhya` via REST
+- **Rota existe** em `src/App.tsx` (`/admin/estoque` → `AdminEstoque`, protegida por `AdminRoute`).
+- **Link existe** em `src/components/admin/AdminNav.tsx` como "Estoque & Produção" (ícone Package).
+- **Migration foi aplicada** no banco: schema `samkhya` está em `pgrst.db_schemas`, RLS ativa em todas as tabelas e policies `admin_all` usando `public.is_admin()` criadas.
+- **Views existem** (`v_estoque_ingredientes`, `v_necessidade_ingredientes`).
 
-Hoje o schema `samkhya` existe no banco mas **não está exposto** na API REST do Supabase (a config `pgrst.db_schemas` lista apenas `public, graphql_public, loja, premium`). Sem esse passo, qualquer query do frontend devolve "schema not found".
+Ou seja, código e DB estão no lugar. Os sintomas relatados ("não carrega" e "não aparece em /admin") apontam para uma destas três causas:
 
-Migration:
+1. **Preview com cache** — o build anterior ainda está em memória e o usuário não viu o novo link/rota. Resolve com hard reload.
+2. **Erro de runtime na página** que faz o React quebrar silenciosamente (a barra de nav aparece mas o conteúdo não renderiza). Suspeitos:
+   - O `samkhyaSupabase` é criado com `db.schema: "samkhya"` cast como `never`. Em runtime funciona, mas se o PostgREST ainda não tiver feito reload completo do `pgrst.db_schemas`, as queries respondem 404.
+   - As views podem não estar como `security_invoker=on` — nesse caso, dependendo do owner, RLS pode bloquear retorno mesmo com admin.
+3. **Policy `is_admin()` retornando false** para o usuário logado — sem dados, a página mostra tabelas vazias (não "não carrega"), mas vale validar.
+
+## Plano
+
+1. **Forçar reload do PostgREST e validar acesso de fato**
+   - Disparar `NOTIFY pgrst, 'reload schema'` (além do reload de config já feito).
+   - Garantir `ALTER VIEW samkhya.v_estoque_ingredientes SET (security_invoker = on);` e o mesmo para `v_necessidade_ingredientes`, para que as policies de admin se apliquem.
+   - Garantir `GRANT SELECT` explícito nas duas views para `authenticated`.
+
+2. **Blindar a página contra erro de runtime**
+   - Em `AdminEstoque.tsx`, envolver o conteúdo em um error boundary leve (ou try/catch nos hooks) e mostrar a mensagem de erro do Supabase em tela em vez de quebrar silenciosamente.
+   - Em `useSamkhyaEstoque.ts`, logar `error.message` no `console.error` quando uma query falha, para facilitar debug futuro.
+
+3. **Confirmar visualmente o link no /admin**
+   - Após o reload, abrir `/admin` e checar que "Estoque & Produção" aparece no `AdminNav`. Se não aparecer, é cache do browser/preview (Ctrl+Shift+R).
+
+4. **Validar as 3 abas carregando**
+   - Abrir `/admin/estoque`, conferir Estoque (lista vinda de `v_estoque_ingredientes`), Produção (planejadas + necessidade), Vendas (form + tabela).
+   - Se alguma query retornar erro 404/PGRST106, ajustar nome do schema/tabela; se 401/permission, ajustar GRANT/policy.
+
+## Detalhes técnicos
+
+SQL planejado:
 ```sql
-ALTER ROLE authenticator
-  SET pgrst.db_schemas = 'public, graphql_public, loja, premium, samkhya';
+ALTER VIEW samkhya.v_estoque_ingredientes SET (security_invoker = on);
+ALTER VIEW samkhya.v_necessidade_ingredientes SET (security_invoker = on);
+GRANT SELECT ON samkhya.v_estoque_ingredientes, samkhya.v_necessidade_ingredientes TO authenticated;
+NOTIFY pgrst, 'reload schema';
 NOTIFY pgrst, 'reload config';
 ```
 
-As tabelas `samkhya.ingredientes`, `producoes`, `vendas`, `produtos`, `receitas` e as views `v_estoque_ingredientes` e `v_necessidade_ingredientes` já existem. Vou habilitar RLS em todas com policy de leitura/escrita liberada para **role `admin`** (usando `public.is_admin()` que já existe), seguindo o mesmo padrão do schema `loja`. Sem auth, ninguém edita — a página `/admin/estoque` já fica dentro de `AdminRoute`, então só admin acessa.
+Arquivos a tocar (mínimo):
+- `src/hooks/useSamkhyaEstoque.ts` — adicionar `console.error` nas queries para diagnóstico.
+- `src/pages/AdminEstoque.tsx` — exibir estado de erro por aba (já temos toasts, mas faltam fallbacks visíveis quando a query falha sem mutação).
 
-### 2. Cliente Supabase dedicado
-
-Criar `src/integrations/supabase/samkhya-client.ts` com `db.schema='samkhya'` (igual ao `loja-client.ts`). Toda a página de estoque usa esse cliente.
-
-### 3. Estrutura de páginas/componentes
-
-```text
-src/pages/AdminEstoque.tsx              # rota /admin/estoque, monta 3 tabs
-src/components/admin/estoque/
-  EstoqueTab.tsx                        # aba 1
-  ProducaoTab.tsx                       # aba 2
-  VendasTab.tsx                         # aba 3
-  IngredienteFormDialog.tsx             # modal novo/editar ingrediente
-  NovaProducaoDialog.tsx                # modal nova produção
-src/hooks/useSamkhyaEstoque.ts          # hooks com React Query para
-                                        # estoque, producoes, necessidade,
-                                        # vendas, produtos
-```
-
-Rota adicionada em `src/App.tsx` dentro do bloco admin, e link "Estoque" em `src/components/admin/AdminNav.tsx` (ícone `Package`).
-
-### 4. Aba 1 — Estoque de ingredientes
-
-- Lista `samkhya.v_estoque_ingredientes`, render em `<Table>` shadcn.
-- Colunas: Nome, Categoria, Estoque (g), Estoque (kg), Preço/kg, Valor em estoque (R$), Notas, Atualizado em.
-- Headers clicáveis ordenam por Nome (A-Z/Z-A), Estoque g (asc/desc), Atualizado em (recente/antigo). Estado local de ordenação.
-- Linha com `qnt_estoque_g = 0` recebe `bg-muted/40 text-muted-foreground`.
-- Botão "Editar" por linha abre `IngredienteFormDialog` em modo edição (campos: `qnt_estoque_g`, `preco_kg`, `categoria`, `notas`). Submit faz `update` em `samkhya.ingredientes` por `id`.
-- Botão "Novo ingrediente" abre o mesmo dialog em modo criação (`nome` + os 4 campos). Submit faz `insert`.
-- Após salvar, invalida queries e mostra toast (sonner).
-
-### 5. Aba 2 — Produção
-
-Grid 2 colunas no desktop (`md:grid-cols-2`), empilha no mobile.
-
-**Esquerda — Produções planejadas:**
-- Lista `samkhya.producoes` com `status='planejada'`, join leve com `produtos(nome)`.
-- Cada card: produto, unidades desejadas, criado_em. Botões "Confirmar" (update `status='confirmada'`, `confirmado_em=now()`) e "Cancelar" (update `status='cancelada'` — soft cancel; se preferir DELETE me avisa).
-- Clique no card seleciona aquela produção (estado local) e popula a coluna direita.
-- Botão "Nova produção" abre `NovaProducaoDialog`: dropdown de produtos `ativo=true` + input numérico de unidades. Submit insere em `producoes` com `status='planejada'`.
-
-**Direita — Necessidade de ingredientes da produção selecionada:**
-- A view `v_necessidade_ingredientes` **não tem `produto_id`** (verifiquei o schema), então não dá pra filtrar a view por produção. Calcular client-side a partir de `samkhya.receitas` daquele `produto_id` + estoque atual:
-  - Necessário = `receita.quantidade_g * producao.unidades_desejadas`
-  - Em estoque = `ingredientes.qnt_estoque_g`
-  - Saldo = estoque − necessário; status ✅ se saldo ≥ 0, ❌ caso contrário.
-- Tabela com colunas: Nome, Necessário (g), Em estoque (g), Saldo (g), Status. Linhas com falta: `bg-destructive/10`.
-- Se preferir que eu crie/altere a view para aceitar `produto_id` em vez de calcular no client, me diga.
-
-### 6. Aba 3 — Vendas
-
-- Form (`react-hook-form` + `zod`): produto (dropdown produtos ativos), quantidade, preço unitário, canal (select: loja_online / kit / terapeuta / aluno / outro), data (default hoje), observações (textarea). Submit insere em `samkhya.vendas`.
-- Abaixo, `<Table>` com últimas 50 vendas (`order by data desc limit 50`), join `produtos(nome)`. Colunas: data, produto, quantidade, preço unit., canal, total (calculado `qtd*preço`).
-- Após inserir: invalida query, limpa form, toast de sucesso.
-
-### 7. Identidade visual
-
-Reuso de tokens do portal admin (mesma cara das outras telas `/admin/*`) — fundo `bg-background`, cards `bg-card`, primary `#352F54`. **Não** uso os tokens roxo/ouro da loja Samkhya: essa tela é admin interno, não vitrine. Se preferir aplicar a paleta da loja (roxo `#7b4963` + ouro `#C8922A`) aqui também, me avise.
-
-### 8. Pontos abertos pra confirmar
-
-1. **Cancelar produção** = soft (`status='cancelada'`) ou hard delete?
-2. **Schema da tabela `vendas`** — não inspecionei os nomes exatos das colunas; vou ler antes de implementar e ajustar o form aos nomes reais (provavelmente `produto_id, quantidade, preco_unit, canal, data, observacoes`).
-3. **Identidade visual**: padrão admin (recomendado) ou paleta da loja Samkhya?
+Sem mudanças em escopo funcional — só destravar e dar visibilidade ao erro.
