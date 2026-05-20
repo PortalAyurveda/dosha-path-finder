@@ -216,12 +216,16 @@ const Aula = () => {
           />
         </Helmet>
         <main className="w-full max-w-[1600px] mx-auto px-3 sm:px-6 py-4 md:py-6">
-          <div className="flex items-center justify-between mb-3 gap-3 flex-wrap">
-            <h1 className="font-heading text-lg md:text-2xl font-bold text-primary line-clamp-1">
-              {aula.titulo}
-            </h1>
-            <CopyLinkButton />
-          </div>
+          {(aula.titulo || true) && (
+            <div className="flex items-center justify-between mb-3 gap-3 flex-wrap">
+              {aula.titulo ? (
+                <h1 className="font-heading text-lg md:text-2xl font-bold text-primary line-clamp-1">
+                  {aula.titulo}
+                </h1>
+              ) : <span />}
+              <CopyLinkButton />
+            </div>
+          )}
 
           {startTs && now < startTs && <Countdown target={startTs} />}
 
