@@ -119,6 +119,37 @@ const Header = () => {
     : undefined;
   const buttonTextColor = isSamkhya ? samkhyaTokens.roxo : undefined;
 
+  if (immersive) {
+    return (
+      <header
+        className={`sticky top-0 z-50 w-full text-primary-foreground shadow-md ${isSamkhya ? "" : "bg-primary"}`}
+        style={headerBg}
+      >
+        <div className="max-w-6xl mx-auto grid h-12 grid-cols-[1fr_auto_1fr] items-center gap-3 px-4 sm:px-6">
+          <div className="justify-self-start">
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => navigate(-1)}
+              className="text-white hover:bg-white/10 hover:text-white gap-1.5 px-2"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              <span className="text-sm">Voltar</span>
+            </Button>
+          </div>
+          <div className="justify-self-center flex items-center h-full">
+            <img
+              src="https://api.portalayurveda.com/storage/v1/object/public/portal_images/simbolo-positivo.svg"
+              alt="Portal Ayurveda"
+              className="h-7 w-auto"
+            />
+          </div>
+          <div className="justify-self-end" />
+        </div>
+      </header>
+    );
+  }
+
   return (
     <header
       className={`sticky top-0 z-50 w-full text-primary-foreground shadow-md ${isSamkhya ? "" : "bg-primary"}`}
