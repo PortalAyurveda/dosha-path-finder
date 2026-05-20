@@ -32,6 +32,7 @@ interface Aula {
   button_text: string | null;
   button_url: string | null;
   button_delay_minutes: number | null;
+  destaque: boolean | null;
 }
 
 const SP_OFFSET = "-03:00"; // São Paulo is UTC-3 year-round (no DST)
@@ -163,6 +164,30 @@ const AdminAula = () => {
       .eq("id", a.id);
     if (error) toast.error(error.message);
     else fetchAulas();
+  };
+
+  const handleToggleDestaque = async (a: Aula) => {
+    const turnOn = !a.destaque;
+    if (turnOn) {
+      // Exclusive: clear all others first
+      const { error: e1 } = await supabase
+        .from("aulas_ao_vivo")
+        .update({ destaque: false })
+        .neq("id", a.id);
+      if (e1) {
+        toast.error(e1.message);
+        return;
+      }
+    }
+    const { error } = await supabase
+      .from("aulas_ao_vivo")
+      .update({ destaque: turnOn })
+      .eq("id", a.id);
+    if (error) toast.error(error.message);
+    else {
+      toast.success(turnOn ? "Aula em destaque" : "Destaque removido");
+      fetchAulas();
+    }
   };
 
   return (
@@ -310,6 +335,7 @@ const AdminAula = () => {
                   <TableHead>Slug</TableHead>
                   <TableHead>Início (SP)</TableHead>
                   <TableHead>Ativa</TableHead>
+                  <TableHead>Destaque</TableHead>
                   <TableHead className="text-right">Ações</TableHead>
                 </TableRow>
               </TableHeader>
@@ -338,6 +364,12 @@ const AdminAula = () => {
                       <Switch
                         checked={a.is_active}
                         onCheckedChange={() => handleToggleActive(a)}
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Switch
+                        checked={!!a.destaque}
+                        onCheckedChange={() => handleToggleDestaque(a)}
                       />
                     </TableCell>
                     <TableCell className="text-right space-x-2">
