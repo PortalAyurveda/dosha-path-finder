@@ -17,7 +17,6 @@ interface ChatMessage {
 }
 
 const LS_NAME_KEY = "chat_aula_nome";
-const YOUTUBE_CHAT_SLUG = "aula-ao-vivo";
 
 function messageKey(message: ChatMessage) {
   if (message.fonte === "youtube" && message.youtube_msg_id) {
