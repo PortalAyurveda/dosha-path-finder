@@ -13,9 +13,33 @@ interface ChatMessage {
   user_id: string | null;
   created_at: string;
   fonte: string | null;
+  youtube_msg_id?: string | null;
 }
 
 const LS_NAME_KEY = "chat_aula_nome";
+const YOUTUBE_CHAT_SLUG = "aula-ao-vivo";
+
+function messageKey(message: ChatMessage) {
+  if (message.fonte === "youtube" && message.youtube_msg_id) {
+    return `youtube:${message.youtube_msg_id}`;
+  }
+  return `portal:${message.id}`;
+}
+
+function normalizeMessages(items: ChatMessage[]) {
+  const seen = new Set<string>();
+  return [...items]
+    .sort(
+      (a, b) =>
+        new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+    )
+    .filter((message) => {
+      const key = messageKey(message);
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+}
 
 function formatHora(iso: string) {
   const d = new Date(iso);
@@ -43,6 +67,7 @@ const LiveChat = ({ slug }: Props) => {
 
   const loggedName = profile?.nome || user?.email?.split("@")[0] || "";
   const displayName = user ? loggedName : guestName;
+  const chatSlugs = useMemo(() => [slug, YOUTUBE_CHAT_SLUG], [slug]);
 
   // Initial fetch
   useEffect(() => {
@@ -51,32 +76,27 @@ const LiveChat = ({ slug }: Props) => {
       const { data } = await supabase
         .from("chat_aula")
         .select("*")
-        .eq("slug", slug)
+        .in("slug", chatSlugs)
         .order("created_at", { ascending: false })
         .limit(50);
       if (active && data) {
-        setMessages((data as ChatMessage[]).slice().reverse());
+        setMessages(normalizeMessages(data as ChatMessage[]));
       }
     })();
     return () => {
       active = false;
     };
-  }, [slug]);
+  }, [chatSlugs]);
 
   // Realtime subscription + polling fallback (n8n batch inserts podem escapar do realtime)
   useEffect(() => {
     const mergeIncoming = (incoming: ChatMessage[]) => {
       if (!incoming.length) return;
       setMessages((prev) => {
-        const ids = new Set(prev.map((m) => m.id));
-        const novos = incoming.filter((m) => !ids.has(m.id));
+        const keys = new Set(prev.map(messageKey));
+        const novos = incoming.filter((m) => !keys.has(messageKey(m)));
         if (!novos.length) return prev;
-        const todas = [...prev, ...novos];
-        todas.sort(
-          (a, b) =>
-            new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
-        );
-        return todas;
+        return normalizeMessages([...prev, ...novos]);
       });
     };
 
@@ -92,32 +112,26 @@ const LiveChat = ({ slug }: Props) => {
         },
         (payload) => mergeIncoming([payload.new as ChatMessage])
       )
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "chat_aula",
+          filter: `slug=eq.${YOUTUBE_CHAT_SLUG}`,
+        },
+        (payload) => mergeIncoming([payload.new as ChatMessage])
+      )
       .subscribe();
 
-    // Polling de segurança a cada 4s — busca o que entrou depois da última msg
+    // Polling de segurança a cada 4s — relê o estado atual da tabela
     const poll = setInterval(async () => {
-      const last = (() => {
-        // pega o created_at mais recente conhecido
-        let max = 0;
-        setMessages((prev) => {
-          for (const m of prev) {
-            const t = new Date(m.created_at).getTime();
-            if (t > max) max = t;
-          }
-          return prev;
-        });
-        return max;
-      })();
-      const sinceIso = last
-        ? new Date(last).toISOString()
-        : new Date(Date.now() - 60 * 60 * 1000).toISOString();
       const { data } = await supabase
         .from("chat_aula")
         .select("*")
-        .eq("slug", slug)
-        .gt("created_at", sinceIso)
-        .order("created_at", { ascending: true })
-        .limit(100);
+        .in("slug", chatSlugs)
+        .order("created_at", { ascending: false })
+        .limit(50);
       if (data && data.length) mergeIncoming(data as ChatMessage[]);
     }, 4000);
 
@@ -125,7 +139,7 @@ const LiveChat = ({ slug }: Props) => {
       clearInterval(poll);
       supabase.removeChannel(channel);
     };
-  }, [slug]);
+  }, [chatSlugs, slug]);
 
   // Auto-scroll
   useEffect(() => {
