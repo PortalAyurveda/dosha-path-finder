@@ -171,13 +171,15 @@ const DoshaPie = ({
   );
 };
 
+const TINTS = ["#EEF2FF", "#FFF1F1", "#FFFBEB", "#F4EEFA"];
+
 const SetA = ({ d }: { d: Row }) => (
   <div className="grid grid-cols-4 gap-2">
-    <CardShell>
+    <CardShell tint={TINTS[0]}>
       <CardHeader icon={Users} label="Semana" />
       <BigNumber value={fmtNum(d.testes_7d)} sub="testes 7d" />
     </CardShell>
-    <CardShell>
+    <CardShell tint={TINTS[1]}>
       <CardHeader icon={Activity} label="Variação" />
       <div className="flex flex-col gap-0.5">
         <DoshaLine
@@ -198,15 +200,17 @@ const SetA = ({ d }: { d: Row }) => (
           value={fmtPctSigned(d.var_kapha)}
           valueColor={(d.var_kapha ?? 0) >= 0 ? "#16a34a" : "#dc2626"}
         />
-      </div>    </CardShell>
-    <CardShell>
+      </div>
+    </CardShell>
+    <CardShell tint={TINTS[2]}>
       <CardHeader icon={Scale} label="IMC médio" />
       <div className="flex flex-col gap-0.5">
         <DoshaLine color={C.vata} name="V" value={fmtDec(d.imc_vata)} />
         <DoshaLine color={C.pitta} name="P" value={fmtDec(d.imc_pitta)} />
         <DoshaLine color={C.kapha} name="K" value={fmtDec(d.imc_kapha)} />
-      </div>    </CardShell>
-    <CardShell>
+      </div>
+    </CardShell>
+    <CardShell tint={TINTS[3]}>
       <CardHeader icon={Sparkles} label="Akasha hoje" />
       <BigNumber value={fmtNum(d.akasha_hoje)} sub="consultas hoje" />
     </CardShell>
@@ -215,40 +219,31 @@ const SetA = ({ d }: { d: Row }) => (
 
 const SetB = ({ d }: { d: Row }) => (
   <div className="grid grid-cols-4 gap-2">
-    <CardShell>
+    <CardShell tint={TINTS[0]}>
       <CardHeader icon={PieChart} label="Dominante" />
       <div className="flex flex-col gap-0.5">
-        <DoshaLine
-          color={C.vata}
-          name="V"
-          value={`${fmtDec(d.pct_vata_dom)}%`}
-        />
-        <DoshaLine
-          color={C.pitta}
-          name="P"
-          value={`${fmtDec(d.pct_pitta_dom)}%`}
-        />
-        <DoshaLine
-          color={C.kapha}
-          name="K"
-          value={`${fmtDec(d.pct_kapha_dom)}%`}
-        />
-      </div>    </CardShell>
-    <CardShell>
+        <DoshaLine color={C.vata} name="V" value={`${fmtDec(d.pct_vata_dom)}%`} />
+        <DoshaLine color={C.pitta} name="P" value={`${fmtDec(d.pct_pitta_dom)}%`} />
+        <DoshaLine color={C.kapha} name="K" value={`${fmtDec(d.pct_kapha_dom)}%`} />
+      </div>
+    </CardShell>
+    <CardShell tint={TINTS[1]}>
       <CardHeader icon={Brain} label="Sintoma" />
       <div className="flex flex-col gap-0.5">
         <DoshaLine color={C.vata} name="V" value={d.sintoma_vata ?? "—"} />
         <DoshaLine color={C.pitta} name="P" value={d.sintoma_pitta ?? "—"} />
         <DoshaLine color={C.kapha} name="K" value={d.sintoma_kapha ?? "—"} />
-      </div>    </CardShell>
-    <CardShell>
+      </div>
+    </CardShell>
+    <CardShell tint={TINTS[2]}>
       <CardHeader icon={Calendar} label="Idade" />
       <div className="flex flex-col gap-0.5">
         <DoshaLine color={C.vata} name="V" value={`${fmtNum(d.idade_vata)}a`} />
         <DoshaLine color={C.pitta} name="P" value={`${fmtNum(d.idade_pitta)}a`} />
         <DoshaLine color={C.kapha} name="K" value={`${fmtNum(d.idade_kapha)}a`} />
-      </div>    </CardShell>
-    <CardShell>
+      </div>
+    </CardShell>
+    <CardShell tint={TINTS[3]}>
       <CardHeader icon={MapPin} label="Terapeutas" />
       <BigNumber value={fmtNum(d.terapeutas)} sub="no portal" />
     </CardShell>
