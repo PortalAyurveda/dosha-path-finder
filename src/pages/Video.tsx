@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ArrowLeft, Clock, Play } from "lucide-react";
 import HeartButton from "@/components/HeartButton";
+import Comments from "@/components/Comments";
 
 const ALL_TABLES = ["portal_oficial", "portal_receitas", "portal_lives", "portal_vata", "portal_pitta", "portal_kapha"] as const;
 
