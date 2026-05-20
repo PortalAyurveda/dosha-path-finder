@@ -118,6 +118,7 @@ const LiveChat = ({ slug }: Props) => {
       nome: name,
       mensagem: msg,
       user_id: user?.id ?? null,
+      fonte: "portal",
     });
     if (!error) setText("");
     setSending(false);
