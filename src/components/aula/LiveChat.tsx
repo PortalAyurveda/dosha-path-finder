@@ -52,9 +52,11 @@ const LiveChat = ({ slug }: Props) => {
         .from("chat_aula")
         .select("*")
         .eq("slug", slug)
-        .order("created_at", { ascending: true })
-        .limit(500);
-      if (active && data) setMessages(data as ChatMessage[]);
+        .order("created_at", { ascending: false })
+        .limit(50);
+      if (active && data) {
+        setMessages((data as ChatMessage[]).slice().reverse());
+      }
     })();
     return () => {
       active = false;
