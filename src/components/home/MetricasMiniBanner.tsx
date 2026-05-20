@@ -126,17 +126,17 @@ const DoshaLine = ({
 }) => (
   <div className="flex items-center justify-center gap-1.5">
     <span
-      className="w-1.5 h-1.5 rounded-full shrink-0"
+      className="w-2 h-2 rounded-full shrink-0"
       style={{ background: color }}
     />
     <span
-      className="text-[10px] font-medium"
+      className="text-[11px] font-medium"
       style={{ color: C.primary }}
     >
       {name}
     </span>
     <span
-      className="text-[10px] font-bold truncate"
+      className="text-[11px] font-bold truncate"
       style={{ color: valueColor ?? C.primary }}
     >
       {value}
