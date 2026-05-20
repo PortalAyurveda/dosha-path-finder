@@ -190,6 +190,7 @@ const RoutedApp = () => {
               <Route path="/admin/aula" element={<AdminRoute><AdminAula /></AdminRoute>} />
               <Route path="/admin/devlog" element={<AdminRoute><AdminDevlog /></AdminRoute>} />
               <Route path="/admin/rotinas" element={<AdminRoute><AdminRotinas /></AdminRoute>} />
+              <Route path="/admin/estoque" element={<AdminRoute><AdminEstoque /></AdminRoute>} />
 
               {/* Aulas ao vivo */}
               <Route path="/aula/:slug" element={<Aula />} />
