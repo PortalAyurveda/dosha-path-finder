@@ -252,7 +252,7 @@ const AdminAula = () => {
           </h2>
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="titulo">Título da Aula</Label>
+              <Label htmlFor="titulo">Título da Aula (opcional)</Label>
               <Input
                 id="titulo"
                 value={form.titulo}
