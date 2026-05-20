@@ -158,6 +158,11 @@ const LiveChat = ({ slug }: Props) => {
             >
               <div className="flex items-baseline gap-2 flex-wrap">
                 <span className="font-semibold text-primary text-[13px]">{m.nome}</span>
+                {m.fonte === "youtube" && (
+                  <span className="inline-flex items-center gap-0.5 text-[9px] font-bold uppercase tracking-wide bg-red-600 text-white px-1.5 py-0.5 rounded">
+                    ▶ YT
+                  </span>
+                )}
                 <span className="text-[10px] text-muted-foreground">
                   {formatHora(m.created_at)}
                 </span>
