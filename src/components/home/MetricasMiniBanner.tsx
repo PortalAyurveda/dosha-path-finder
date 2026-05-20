@@ -300,7 +300,7 @@ const MetricasMiniBanner = () => {
 
   return (
     <div
-      className="w-full max-w-xl mx-auto flex-1 min-h-0 bg-card/80 backdrop-blur-sm rounded-3xl border border-border shadow-lg p-5 flex flex-col"
+      className="w-full max-w-xl mx-auto bg-card/80 backdrop-blur-sm rounded-3xl border border-border shadow-lg p-4 flex flex-col"
       style={{ overflow: "hidden" }}
     >
       {isLoading || !data ? (
