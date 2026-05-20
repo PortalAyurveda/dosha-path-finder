@@ -119,8 +119,8 @@ const AdminAula = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.titulo.trim() || !form.youtube_url.trim() || !form.slug.trim()) {
-      toast.error("Preencha título, URL e slug.");
+    if (!form.youtube_url.trim() || !form.slug.trim()) {
+      toast.error("Preencha URL e slug.");
       return;
     }
     setSaving(true);
