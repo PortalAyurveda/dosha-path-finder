@@ -107,7 +107,7 @@ export const formacaoData: FormacaoData = {
     slug: "formacao",
     title: "Formação Profissionalizante em Ayurveda | Portal Ayurveda",
     description:
-      "Torne-se Terapeuta Ayurveda. 400h de certificação | 15 módulos em 1,5 ano | Online + 3 imersões em SP. Início em 12 e 13 de Julho de 2026.",
+      "Torne-se Terapeuta Ayurveda. 400h de certificação | 15 módulos em 1,5 ano | Online + 3 imersões em SP. Início em 11 e 12 de Julho de 2026.",
   },
   branding: {
     primaryColor: "#6B7FF2",
