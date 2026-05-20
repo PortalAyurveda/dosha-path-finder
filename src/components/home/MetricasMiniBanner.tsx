@@ -10,8 +10,6 @@ import {
   Brain,
   Calendar,
   MapPin,
-  ChevronLeft,
-  ChevronRight,
   type LucideIcon,
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -63,12 +61,19 @@ const fmtPctSigned = (n: number | null | undefined) => {
 const fmtDec = (n: number | null | undefined) =>
   n == null ? "—" : Number(n).toFixed(1).replace(".", ",");
 
-const CardShell = ({ children }: { children: React.ReactNode }) => (
+const CardShell = ({
+  children,
+  tint,
+}: {
+  children: React.ReactNode;
+  tint?: string;
+}) => (
   <div
-    className="bg-white p-2 flex flex-col gap-1 border items-center text-center"
+    className="p-2.5 flex flex-col gap-0.5 border items-center text-center"
     style={{
       borderRadius: LEAF,
       borderColor: C.border,
+      background: tint ?? "#FFFFFF",
       fontFamily: SANS,
     }}
   >
@@ -84,9 +89,9 @@ const CardHeader = ({
   label: string;
 }) => (
   <div className="flex items-center justify-center gap-1.5 w-full">
-    <Icon size={13} color={C.primary} />
+    <Icon size={16} color={C.primary} />
     <span
-      className="text-[9px] font-bold uppercase tracking-wider truncate"
+      className="text-[10px] font-bold uppercase tracking-wider truncate"
       style={{ color: C.muted }}
     >
       {label}
@@ -97,12 +102,12 @@ const CardHeader = ({
 const BigNumber = ({ value, sub }: { value: string; sub: string }) => (
   <div className="flex flex-col items-center text-center">
     <span
-      className="text-2xl leading-none font-bold"
+      className="text-[26px] leading-none font-bold"
       style={{ color: C.primary, fontFamily: SERIF }}
     >
       {value}
     </span>
-    <span className="text-[10px] mt-0.5 leading-tight" style={{ color: C.muted }}>
+    <span className="text-[11px] mt-0.5 leading-tight" style={{ color: C.muted }}>
       {sub}
     </span>
   </div>
@@ -121,17 +126,17 @@ const DoshaLine = ({
 }) => (
   <div className="flex items-center justify-center gap-1.5">
     <span
-      className="w-1.5 h-1.5 rounded-full shrink-0"
+      className="w-2 h-2 rounded-full shrink-0"
       style={{ background: color }}
     />
     <span
-      className="text-[10px] font-medium"
+      className="text-[11px] font-medium"
       style={{ color: C.primary }}
     >
       {name}
     </span>
     <span
-      className="text-[10px] font-bold truncate"
+      className="text-[11px] font-bold truncate"
       style={{ color: valueColor ?? C.primary }}
     >
       {value}
@@ -166,13 +171,15 @@ const DoshaPie = ({
   );
 };
 
+const TINTS = ["#EEF2FF", "#FFF1F1", "#FFFBEB", "#F4EEFA"];
+
 const SetA = ({ d }: { d: Row }) => (
   <div className="grid grid-cols-4 gap-2">
-    <CardShell>
+    <CardShell tint={TINTS[0]}>
       <CardHeader icon={Users} label="Semana" />
       <BigNumber value={fmtNum(d.testes_7d)} sub="testes 7d" />
     </CardShell>
-    <CardShell>
+    <CardShell tint={TINTS[1]}>
       <CardHeader icon={Activity} label="Variação" />
       <div className="flex flex-col gap-0.5">
         <DoshaLine
@@ -193,15 +200,17 @@ const SetA = ({ d }: { d: Row }) => (
           value={fmtPctSigned(d.var_kapha)}
           valueColor={(d.var_kapha ?? 0) >= 0 ? "#16a34a" : "#dc2626"}
         />
-      </div>    </CardShell>
-    <CardShell>
+      </div>
+    </CardShell>
+    <CardShell tint={TINTS[2]}>
       <CardHeader icon={Scale} label="IMC médio" />
       <div className="flex flex-col gap-0.5">
         <DoshaLine color={C.vata} name="V" value={fmtDec(d.imc_vata)} />
         <DoshaLine color={C.pitta} name="P" value={fmtDec(d.imc_pitta)} />
         <DoshaLine color={C.kapha} name="K" value={fmtDec(d.imc_kapha)} />
-      </div>    </CardShell>
-    <CardShell>
+      </div>
+    </CardShell>
+    <CardShell tint={TINTS[3]}>
       <CardHeader icon={Sparkles} label="Akasha hoje" />
       <BigNumber value={fmtNum(d.akasha_hoje)} sub="consultas hoje" />
     </CardShell>
@@ -210,40 +219,31 @@ const SetA = ({ d }: { d: Row }) => (
 
 const SetB = ({ d }: { d: Row }) => (
   <div className="grid grid-cols-4 gap-2">
-    <CardShell>
+    <CardShell tint={TINTS[0]}>
       <CardHeader icon={PieChart} label="Dominante" />
       <div className="flex flex-col gap-0.5">
-        <DoshaLine
-          color={C.vata}
-          name="V"
-          value={`${fmtDec(d.pct_vata_dom)}%`}
-        />
-        <DoshaLine
-          color={C.pitta}
-          name="P"
-          value={`${fmtDec(d.pct_pitta_dom)}%`}
-        />
-        <DoshaLine
-          color={C.kapha}
-          name="K"
-          value={`${fmtDec(d.pct_kapha_dom)}%`}
-        />
-      </div>    </CardShell>
-    <CardShell>
+        <DoshaLine color={C.vata} name="V" value={`${fmtDec(d.pct_vata_dom)}%`} />
+        <DoshaLine color={C.pitta} name="P" value={`${fmtDec(d.pct_pitta_dom)}%`} />
+        <DoshaLine color={C.kapha} name="K" value={`${fmtDec(d.pct_kapha_dom)}%`} />
+      </div>
+    </CardShell>
+    <CardShell tint={TINTS[1]}>
       <CardHeader icon={Brain} label="Sintoma" />
       <div className="flex flex-col gap-0.5">
         <DoshaLine color={C.vata} name="V" value={d.sintoma_vata ?? "—"} />
         <DoshaLine color={C.pitta} name="P" value={d.sintoma_pitta ?? "—"} />
         <DoshaLine color={C.kapha} name="K" value={d.sintoma_kapha ?? "—"} />
-      </div>    </CardShell>
-    <CardShell>
+      </div>
+    </CardShell>
+    <CardShell tint={TINTS[2]}>
       <CardHeader icon={Calendar} label="Idade" />
       <div className="flex flex-col gap-0.5">
         <DoshaLine color={C.vata} name="V" value={`${fmtNum(d.idade_vata)}a`} />
         <DoshaLine color={C.pitta} name="P" value={`${fmtNum(d.idade_pitta)}a`} />
         <DoshaLine color={C.kapha} name="K" value={`${fmtNum(d.idade_kapha)}a`} />
-      </div>    </CardShell>
-    <CardShell>
+      </div>
+    </CardShell>
+    <CardShell tint={TINTS[3]}>
       <CardHeader icon={MapPin} label="Terapeutas" />
       <BigNumber value={fmtNum(d.terapeutas)} sub="no portal" />
     </CardShell>
@@ -297,27 +297,7 @@ const MetricasMiniBanner = () => {
               {data.frase_nugget}
             </p>
           )}
-          <div className="relative">
-            {active === 0 ? <SetA d={data} /> : <SetB d={data} />}
-            <div className="absolute -bottom-2 right-0 flex items-center gap-1">
-              <button
-                aria-label="Anterior"
-                onClick={() => setActive((active === 0 ? 1 : 0) as 0 | 1)}
-                className="w-5 h-5 rounded-full flex items-center justify-center hover:bg-black/5 transition"
-                style={{ color: C.primary }}
-              >
-                <ChevronLeft size={14} />
-              </button>
-              <button
-                aria-label="Próximo"
-                onClick={() => setActive((active === 0 ? 1 : 0) as 0 | 1)}
-                className="w-5 h-5 rounded-full flex items-center justify-center hover:bg-black/5 transition"
-                style={{ color: C.primary }}
-              >
-                <ChevronRight size={14} />
-              </button>
-            </div>
-          </div>
+          {active === 0 ? <SetA d={data} /> : <SetB d={data} />}
         </>
       )}
     </div>
