@@ -131,9 +131,10 @@ const Aula = () => {
   const isDestaque = !!aula?.destaque;
 
   useEffect(() => {
-    setImmersive(isDestaque);
+    // Sempre oculta rodapé em qualquer aula
+    setImmersive(true);
     return () => setImmersive(false);
-  }, [isDestaque, setImmersive]);
+  }, [setImmersive]);
 
   const embed = aula ? getYouTubeEmbedUrl(aula.youtube_url) : null;
   const startTs = useMemo(
