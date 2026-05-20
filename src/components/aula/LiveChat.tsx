@@ -63,8 +63,23 @@ const LiveChat = ({ slug }: Props) => {
     };
   }, [slug]);
 
-  // Realtime subscription
+  // Realtime subscription + polling fallback (n8n batch inserts podem escapar do realtime)
   useEffect(() => {
+    const mergeIncoming = (incoming: ChatMessage[]) => {
+      if (!incoming.length) return;
+      setMessages((prev) => {
+        const ids = new Set(prev.map((m) => m.id));
+        const novos = incoming.filter((m) => !ids.has(m.id));
+        if (!novos.length) return prev;
+        const todas = [...prev, ...novos];
+        todas.sort(
+          (a, b) =>
+            new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+        );
+        return todas;
+      });
+    };
+
     const channel = supabase
       .channel(`chat_aula_${slug}`)
       .on(
@@ -75,16 +90,39 @@ const LiveChat = ({ slug }: Props) => {
           table: "chat_aula",
           filter: `slug=eq.${slug}`,
         },
-        (payload) => {
-          setMessages((prev) => {
-            const incoming = payload.new as ChatMessage;
-            if (prev.some((m) => m.id === incoming.id)) return prev;
-            return [...prev, incoming];
-          });
-        }
+        (payload) => mergeIncoming([payload.new as ChatMessage])
       )
       .subscribe();
+
+    // Polling de segurança a cada 4s — busca o que entrou depois da última msg
+    const poll = setInterval(async () => {
+      const last = (() => {
+        // pega o created_at mais recente conhecido
+        let max = 0;
+        setMessages((prev) => {
+          for (const m of prev) {
+            const t = new Date(m.created_at).getTime();
+            if (t > max) max = t;
+          }
+          return prev;
+        });
+        return max;
+      })();
+      const sinceIso = last
+        ? new Date(last).toISOString()
+        : new Date(Date.now() - 60 * 60 * 1000).toISOString();
+      const { data } = await supabase
+        .from("chat_aula")
+        .select("*")
+        .eq("slug", slug)
+        .gt("created_at", sinceIso)
+        .order("created_at", { ascending: true })
+        .limit(100);
+      if (data && data.length) mergeIncoming(data as ChatMessage[]);
+    }, 4000);
+
     return () => {
+      clearInterval(poll);
       supabase.removeChannel(channel);
     };
   }, [slug]);
