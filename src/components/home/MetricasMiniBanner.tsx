@@ -172,132 +172,105 @@ const DoshaPie = ({
 };
 
 const SetA = ({ d }: { d: Row }) => (
-  <div className="grid grid-cols-2 gap-2">
+  <div className="grid grid-cols-4 gap-2">
     <CardShell>
-      <CardHeader icon={Users} label="Esta semana" />
-      <BigNumber value={fmtNum(d.testes_7d)} sub="testes esta semana" />
+      <CardHeader icon={Users} label="Semana" />
+      <BigNumber value={fmtNum(d.testes_7d)} sub="testes 7d" />
     </CardShell>
     <CardShell>
       <CardHeader icon={Activity} label="Variação" />
       <div className="flex flex-col gap-0.5">
         <DoshaLine
           color={C.vata}
-          name="Vata"
+          name="V"
           value={fmtPctSigned(d.var_vata)}
           valueColor={(d.var_vata ?? 0) >= 0 ? "#16a34a" : "#dc2626"}
         />
         <DoshaLine
           color={C.pitta}
-          name="Pitta"
+          name="P"
           value={fmtPctSigned(d.var_pitta)}
           valueColor={(d.var_pitta ?? 0) >= 0 ? "#16a34a" : "#dc2626"}
         />
         <DoshaLine
           color={C.kapha}
-          name="Kapha"
+          name="K"
           value={fmtPctSigned(d.var_kapha)}
           valueColor={(d.var_kapha ?? 0) >= 0 ? "#16a34a" : "#dc2626"}
         />
       </div>
-      <span className="text-[10px]" style={{ color: C.muted }}>
-        vs 3 meses atrás
+      <span className="text-[9px]" style={{ color: C.muted }}>
+        vs 3 meses
       </span>
     </CardShell>
     <CardShell>
       <CardHeader icon={Scale} label="IMC médio" />
       <div className="flex flex-col gap-0.5">
-        <DoshaLine color={C.vata} name="Vata" value={fmtDec(d.imc_vata)} />
-        <DoshaLine color={C.pitta} name="Pitta" value={fmtDec(d.imc_pitta)} />
-        <DoshaLine color={C.kapha} name="Kapha" value={fmtDec(d.imc_kapha)} />
+        <DoshaLine color={C.vata} name="V" value={fmtDec(d.imc_vata)} />
+        <DoshaLine color={C.pitta} name="P" value={fmtDec(d.imc_pitta)} />
+        <DoshaLine color={C.kapha} name="K" value={fmtDec(d.imc_kapha)} />
       </div>
-      <span className="text-[10px]" style={{ color: C.muted }}>
-        top 20 por dosha
+      <span className="text-[9px]" style={{ color: C.muted }}>
+        top 20 / dosha
       </span>
     </CardShell>
     <CardShell>
       <CardHeader icon={Sparkles} label="Akasha hoje" />
-      <BigNumber value={fmtNum(d.akasha_hoje)} sub="consultas à Akasha hoje" />
+      <BigNumber value={fmtNum(d.akasha_hoje)} sub="consultas hoje" />
     </CardShell>
   </div>
 );
 
 const SetB = ({ d }: { d: Row }) => (
-  <div className="grid grid-cols-2 gap-2">
+  <div className="grid grid-cols-4 gap-2">
     <CardShell>
-      <CardHeader icon={PieChart} label="Dosha dominante" />
-      <div className="flex items-center gap-2">
-        <DoshaPie
-          vata={d.pct_vata_dom ?? 0}
-          pitta={d.pct_pitta_dom ?? 0}
-          kapha={d.pct_kapha_dom ?? 0}
+      <CardHeader icon={PieChart} label="Dominante" />
+      <div className="flex flex-col gap-0.5">
+        <DoshaLine
+          color={C.vata}
+          name="V"
+          value={`${fmtDec(d.pct_vata_dom)}%`}
         />
-        <div className="flex-1 flex flex-col gap-0.5">
-          <DoshaLine
-            color={C.vata}
-            name="Vata"
-            value={`${fmtDec(d.pct_vata_dom)}%`}
-          />
-          <DoshaLine
-            color={C.pitta}
-            name="Pitta"
-            value={`${fmtDec(d.pct_pitta_dom)}%`}
-          />
-          <DoshaLine
-            color={C.kapha}
-            name="Kapha"
-            value={`${fmtDec(d.pct_kapha_dom)}%`}
-          />
-        </div>
+        <DoshaLine
+          color={C.pitta}
+          name="P"
+          value={`${fmtDec(d.pct_pitta_dom)}%`}
+        />
+        <DoshaLine
+          color={C.kapha}
+          name="K"
+          value={`${fmtDec(d.pct_kapha_dom)}%`}
+        />
       </div>
-      <span className="text-[10px]" style={{ color: C.muted }}>
+      <span className="text-[9px]" style={{ color: C.muted }}>
         no portal
       </span>
     </CardShell>
     <CardShell>
       <CardHeader icon={Brain} label="Sintoma" />
       <div className="flex flex-col gap-0.5">
-        <DoshaLine color={C.vata} name="Vata" value={d.sintoma_vata ?? "—"} />
-        <DoshaLine
-          color={C.pitta}
-          name="Pitta"
-          value={d.sintoma_pitta ?? "—"}
-        />
-        <DoshaLine
-          color={C.kapha}
-          name="Kapha"
-          value={d.sintoma_kapha ?? "—"}
-        />
+        <DoshaLine color={C.vata} name="V" value={d.sintoma_vata ?? "—"} />
+        <DoshaLine color={C.pitta} name="P" value={d.sintoma_pitta ?? "—"} />
+        <DoshaLine color={C.kapha} name="K" value={d.sintoma_kapha ?? "—"} />
       </div>
-      <span className="text-[10px]" style={{ color: C.muted }}>
+      <span className="text-[9px]" style={{ color: C.muted }}>
         mais relatado
       </span>
     </CardShell>
     <CardShell>
-      <CardHeader icon={Calendar} label="Idade média" />
+      <CardHeader icon={Calendar} label="Idade" />
       <div className="flex flex-col gap-0.5">
-        <DoshaLine
-          color={C.vata}
-          name="Vata"
-          value={`${fmtNum(d.idade_vata)} anos`}
-        />
-        <DoshaLine
-          color={C.pitta}
-          name="Pitta"
-          value={`${fmtNum(d.idade_pitta)} anos`}
-        />
-        <DoshaLine
-          color={C.kapha}
-          name="Kapha"
-          value={`${fmtNum(d.idade_kapha)} anos`}
-        />
+        <DoshaLine color={C.vata} name="V" value={`${fmtNum(d.idade_vata)}a`} />
+        <DoshaLine color={C.pitta} name="P" value={`${fmtNum(d.idade_pitta)}a`} />
+        <DoshaLine color={C.kapha} name="K" value={`${fmtNum(d.idade_kapha)}a`} />
       </div>
-      <span className="text-[10px]" style={{ color: C.muted }}>
-        top 20 por dosha
+      <span className="text-[9px]" style={{ color: C.muted }}>
+        top 20 / dosha
       </span>
     </CardShell>
     <CardShell>
       <CardHeader icon={MapPin} label="Terapeutas" />
-      <BigNumber value={fmtNum(d.terapeutas)} sub="terapeutas no portal" />
+      <BigNumber value={fmtNum(d.terapeutas)} sub="no portal" />
     </CardShell>
   </div>
 );
