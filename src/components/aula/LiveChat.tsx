@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Send, Users } from "lucide-react";
+import { Send, Users, Youtube } from "lucide-react";
 import { useUser } from "@/contexts/UserContext";
 
 interface ChatMessage {
