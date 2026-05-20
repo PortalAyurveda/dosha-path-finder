@@ -2725,6 +2725,18 @@ export type Database = {
         Args: { dosha: string; score: number }
         Returns: string
       }
+      find_video_by_slug: {
+        Args: { _slug: string }
+        Returns: {
+          criado_em: string
+          mini_resumo: string
+          nova_descricao: string
+          novo_titulo: string
+          tags: string
+          texto_para_embedding: string
+          video_id: string
+        }[]
+      }
       gerar_insights_ayurvedicos: {
         Args: { p_registro_id: string }
         Returns: Json
@@ -2936,6 +2948,7 @@ export type Database = {
         Returns: undefined
       }
       text_to_bytea: { Args: { data: string }; Returns: string }
+      unaccent: { Args: { "": string }; Returns: string }
       urlencode:
         | { Args: { data: Json }; Returns: string }
         | {
