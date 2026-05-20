@@ -5,12 +5,17 @@ import { createClient } from "@supabase/supabase-js";
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
 const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string;
 
+// IMPORTANT: must share the same storageKey as the main client so the admin
+// session is reused. With a different storageKey this client would have no
+// session and queries would run as `anon`, failing all `is_admin()` RLS checks.
 export const samkhyaSupabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
   db: { schema: "samkhya" as never },
   auth: {
+    storage: typeof window !== "undefined" ? localStorage : undefined,
     persistSession: true,
-    autoRefreshToken: true,
-    storageKey: "sb-samkhya-prod",
+    autoRefreshToken: false, // refresh is handled by the main client
+    detectSessionInUrl: false,
+    storageKey: "sb-portalayurveda-auth",
   },
 });
 
