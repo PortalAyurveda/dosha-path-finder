@@ -379,6 +379,7 @@ export type Database = {
           mensagem: string
           nome: string
           slug: string
+          tipo: string | null
           user_id: string | null
           youtube_msg_id: string | null
         }
@@ -389,6 +390,7 @@ export type Database = {
           mensagem: string
           nome: string
           slug: string
+          tipo?: string | null
           user_id?: string | null
           youtube_msg_id?: string | null
         }
@@ -399,6 +401,7 @@ export type Database = {
           mensagem?: string
           nome?: string
           slug?: string
+          tipo?: string | null
           user_id?: string | null
           youtube_msg_id?: string | null
         }
