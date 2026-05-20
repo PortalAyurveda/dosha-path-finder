@@ -284,7 +284,7 @@ const AdminAula = () => {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="starts_at">Início da aula (São Paulo)</Label>
+              <Label htmlFor="starts_at">Início da aula — São Paulo (opcional)</Label>
               <Input
                 id="starts_at"
                 type="datetime-local"
