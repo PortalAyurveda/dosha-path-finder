@@ -297,27 +297,7 @@ const MetricasMiniBanner = () => {
               {data.frase_nugget}
             </p>
           )}
-          <div className="relative">
-            {active === 0 ? <SetA d={data} /> : <SetB d={data} />}
-            <div className="absolute -bottom-2 right-0 flex items-center gap-1">
-              <button
-                aria-label="Anterior"
-                onClick={() => setActive((active === 0 ? 1 : 0) as 0 | 1)}
-                className="w-5 h-5 rounded-full flex items-center justify-center hover:bg-black/5 transition"
-                style={{ color: C.primary }}
-              >
-                <ChevronLeft size={14} />
-              </button>
-              <button
-                aria-label="Próximo"
-                onClick={() => setActive((active === 0 ? 1 : 0) as 0 | 1)}
-                className="w-5 h-5 rounded-full flex items-center justify-center hover:bg-black/5 transition"
-                style={{ color: C.primary }}
-              >
-                <ChevronRight size={14} />
-              </button>
-            </div>
-          </div>
+          {active === 0 ? <SetA d={data} /> : <SetB d={data} />}
         </>
       )}
     </div>
