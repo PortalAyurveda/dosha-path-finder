@@ -1304,8 +1304,25 @@ export type Database = {
           frase_nugget: string | null
           historico_frases: Json | null
           id: number
+          idade_kapha: number | null
+          idade_pitta: number | null
+          idade_vata: number | null
+          imc_kapha: number | null
+          imc_pitta: number | null
+          imc_vata: number | null
+          pct_kapha_dom: number | null
+          pct_pitta_dom: number | null
+          pct_vata_dom: number | null
           periodo_estacao: string | null
+          set_ativo: number | null
+          sintoma_kapha: string | null
+          sintoma_pitta: string | null
+          sintoma_vata: string | null
+          terapeutas: number | null
           testes_7d: number | null
+          var_kapha: number | null
+          var_pitta: number | null
+          var_vata: number | null
         }
         Insert: {
           akasha_hoje?: number | null
@@ -1319,8 +1336,25 @@ export type Database = {
           frase_nugget?: string | null
           historico_frases?: Json | null
           id?: number
+          idade_kapha?: number | null
+          idade_pitta?: number | null
+          idade_vata?: number | null
+          imc_kapha?: number | null
+          imc_pitta?: number | null
+          imc_vata?: number | null
+          pct_kapha_dom?: number | null
+          pct_pitta_dom?: number | null
+          pct_vata_dom?: number | null
           periodo_estacao?: string | null
+          set_ativo?: number | null
+          sintoma_kapha?: string | null
+          sintoma_pitta?: string | null
+          sintoma_vata?: string | null
+          terapeutas?: number | null
           testes_7d?: number | null
+          var_kapha?: number | null
+          var_pitta?: number | null
+          var_vata?: number | null
         }
         Update: {
           akasha_hoje?: number | null
@@ -1334,8 +1368,25 @@ export type Database = {
           frase_nugget?: string | null
           historico_frases?: Json | null
           id?: number
+          idade_kapha?: number | null
+          idade_pitta?: number | null
+          idade_vata?: number | null
+          imc_kapha?: number | null
+          imc_pitta?: number | null
+          imc_vata?: number | null
+          pct_kapha_dom?: number | null
+          pct_pitta_dom?: number | null
+          pct_vata_dom?: number | null
           periodo_estacao?: string | null
+          set_ativo?: number | null
+          sintoma_kapha?: string | null
+          sintoma_pitta?: string | null
+          sintoma_vata?: string | null
+          terapeutas?: number | null
           testes_7d?: number | null
+          var_kapha?: number | null
+          var_pitta?: number | null
+          var_vata?: number | null
         }
         Relationships: []
       }

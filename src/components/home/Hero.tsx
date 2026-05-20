@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import MetricasMiniBanner from "./MetricasMiniBanner";
 
 const DoshaPreview = () => (
   <div className="relative select-none pointer-events-none">
@@ -161,14 +162,8 @@ const Hero = () => {
             <div className="bg-card/80 backdrop-blur-sm rounded-3xl px-8 py-10 xl:px-10 xl:py-12 border border-border shadow-lg w-full max-w-xl mx-auto">
               <DoshaPreview />
             </div>
-            <div className="rounded-3xl overflow-hidden w-full max-w-xl mx-auto flex-1 min-h-0 flex items-end justify-center">
-              <img
-                src="https://api.portalayurveda.com/storage/v1/object/public/portal_images/banner-um-comf-1.webp"
-                alt="Portal Ayurveda — Rotinas, Artigos, Aulas e Akasha"
-                decoding="async"
-                className="w-full h-full object-contain object-bottom"
-              />
-            </div>
+            <MetricasMiniBanner />
+
           </div>
 
           {/* Right: Heading + Form */}
