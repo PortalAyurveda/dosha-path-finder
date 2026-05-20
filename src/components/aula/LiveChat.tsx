@@ -66,7 +66,6 @@ const LiveChat = ({ slug }: Props) => {
 
   const loggedName = profile?.nome || user?.email?.split("@")[0] || "";
   const displayName = user ? loggedName : guestName;
-  const chatSlugs = useMemo(() => [slug, YOUTUBE_CHAT_SLUG], [slug]);
 
   // Initial fetch
   useEffect(() => {
