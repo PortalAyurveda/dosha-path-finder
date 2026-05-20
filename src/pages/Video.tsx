@@ -47,9 +47,9 @@ const Video = () => {
   const { data: video, isLoading } = useQuery({
     queryKey: ["video-page", slug, stateVideoId],
     queryFn: async () => {
-      for (const table of ALL_TABLES) {
-        // If we have the videoId from state, use it directly
-        if (stateVideoId) {
+      // Internal navigation passes the videoId — look it up directly across tables
+      if (stateVideoId) {
+        for (const table of ALL_TABLES) {
           const { data, error } = await supabase
             .from(table)
             .select("video_id, novo_titulo, nova_descricao, mini_resumo, tags, texto_para_embedding, criado_em")
@@ -57,20 +57,18 @@ const Video = () => {
             .maybeSingle();
           if (error) continue;
           if (data) return data;
-        } else {
-          // Direct URL access: fetch all and match by slug
-          const { data, error } = await supabase
-            .from(table)
-            .select("video_id, novo_titulo, nova_descricao, mini_resumo, tags, texto_para_embedding, criado_em")
-            .order("criado_em", { ascending: false, nullsFirst: false })
-            .limit(1000);
-          if (error) continue;
-          if (data) {
-            const match = data.find((v) => slugify(v.novo_titulo || "") === slug);
-            if (match) return match;
-          }
         }
+        return null;
       }
+
+      // Direct URL access (deslogado / link compartilhado): resolve via server-side RPC
+      // que casa por slug em todas as tabelas, independente do número de registros.
+      const { data, error } = await supabase.rpc("find_video_by_slug", { _slug: slug! });
+      if (error) {
+        console.error("find_video_by_slug error:", error);
+        return null;
+      }
+      if (Array.isArray(data) && data.length > 0) return data[0];
       return null;
     },
     enabled: !!slug,
