@@ -166,6 +166,30 @@ const AdminAula = () => {
     else fetchAulas();
   };
 
+  const handleToggleDestaque = async (a: Aula) => {
+    const turnOn = !a.destaque;
+    if (turnOn) {
+      // Exclusive: clear all others first
+      const { error: e1 } = await supabase
+        .from("aulas_ao_vivo")
+        .update({ destaque: false })
+        .neq("id", a.id);
+      if (e1) {
+        toast.error(e1.message);
+        return;
+      }
+    }
+    const { error } = await supabase
+      .from("aulas_ao_vivo")
+      .update({ destaque: turnOn })
+      .eq("id", a.id);
+    if (error) toast.error(error.message);
+    else {
+      toast.success(turnOn ? "Aula em destaque" : "Destaque removido");
+      fetchAulas();
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Helmet>
