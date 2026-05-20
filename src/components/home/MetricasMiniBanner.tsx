@@ -100,12 +100,12 @@ const CardHeader = ({
 const BigNumber = ({ value, sub }: { value: string; sub: string }) => (
   <div className="flex flex-col">
     <span
-      className="text-3xl leading-none font-bold"
+      className="text-2xl leading-none font-bold"
       style={{ color: C.primary, fontFamily: SERIF }}
     >
       {value}
     </span>
-    <span className="text-[11px] mt-1" style={{ color: C.muted }}>
+    <span className="text-[10px] mt-1 leading-tight" style={{ color: C.muted }}>
       {sub}
     </span>
   </div>
