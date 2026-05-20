@@ -81,15 +81,15 @@ const CardHeader = ({
   icon: LucideIcon;
   label: string;
 }) => (
-  <div className="flex items-center gap-2">
+  <div className="flex items-center gap-1.5">
     <div
-      className="w-7 h-7 rounded-md flex items-center justify-center shrink-0"
+      className="w-6 h-6 rounded-md flex items-center justify-center shrink-0"
       style={{ background: `${C.primary}12` }}
     >
-      <Icon size={15} color={C.primary} />
+      <Icon size={13} color={C.primary} />
     </div>
     <span
-      className="text-[10px] font-bold uppercase tracking-wider"
+      className="text-[9px] font-bold uppercase tracking-wider truncate"
       style={{ color: C.muted }}
     >
       {label}
