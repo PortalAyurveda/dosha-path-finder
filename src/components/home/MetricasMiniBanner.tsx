@@ -289,14 +289,12 @@ const MetricasMiniBanner = () => {
         </div>
       ) : (
         <>
-          {data.frase_nugget && (
-            <p
-              className="text-center italic text-[11px] leading-snug mb-2 px-2"
-              style={{ color: C.primary, fontFamily: SERIF }}
-            >
-              {data.frase_nugget}
-            </p>
-          )}
+          <p
+            className="text-center italic text-[11px] leading-snug mb-2 px-2"
+            style={{ color: C.primary, fontFamily: SERIF }}
+          >
+            Acompanhe nossas métricas para entender como os Doshas funcionam nas diferentes estações do ano, para cada um de nós. Consegue se reconhecer aqui?
+          </p>
           {active === 0 ? <SetA d={data} /> : <SetB d={data} />}
         </>
       )}
