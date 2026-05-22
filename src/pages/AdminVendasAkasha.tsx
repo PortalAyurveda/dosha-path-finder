@@ -1,10 +1,14 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import AdminNav from "@/components/admin/AdminNav";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
 import Seo from "@/components/Seo";
 
 interface Assinatura {
@@ -53,16 +57,131 @@ const AdminVendasAkasha = () => {
   const [data, setData] = useState<Assinatura[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    (async () => {
-      const { data, error } = await supabase
-        .from("assinaturas")
-        .select("id, nome, email, plano, valor, status, created_at")
-        .order("created_at", { ascending: false });
-      if (!error && data) setData(data as Assinatura[]);
-      setLoading(false);
-    })();
+  const loadAssinaturas = useCallback(async () => {
+    setLoading(true);
+    const { data, error } = await supabase
+      .from("assinaturas")
+      .select("id, nome, email, plano, valor, status, created_at")
+      .order("created_at", { ascending: false });
+    if (!error && data) setData(data as Assinatura[]);
+    setLoading(false);
   }, []);
+
+  useEffect(() => {
+    loadAssinaturas();
+  }, [loadAssinaturas]);
+
+  // ----- Manual premium activation panel -----
+  const [searchEmail, setSearchEmail] = useState("");
+  const [searching, setSearching] = useState(false);
+  const [foundUser, setFoundUser] = useState<{
+    nome: string;
+    email: string;
+    is_premium: boolean;
+    subscription_status: string | null;
+  } | null>(null);
+  const [planoSel, setPlanoSel] = useState<"mensal" | "anual">("mensal");
+  const [activating, setActivating] = useState(false);
+
+  const handleBuscar = async () => {
+    const email = searchEmail.trim().toLowerCase();
+    if (!email) {
+      toast.error("Informe um email");
+      return;
+    }
+    setSearching(true);
+    setFoundUser(null);
+    const [profileRes, doshaRes] = await Promise.all([
+      supabase
+        .from("user_profiles")
+        .select("nome, nome_completo, email, is_premium, subscription_status")
+        .ilike("email", email)
+        .maybeSingle(),
+      supabase
+        .from("doshas_registros")
+        .select("nome, email, created_at")
+        .ilike("email", email)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle(),
+    ]);
+    setSearching(false);
+
+    const profile = profileRes.data as any;
+    const dosha = doshaRes.data as any;
+
+    if (!profile && !dosha) {
+      toast.error("Usuário não encontrado");
+      return;
+    }
+
+    const nome =
+      profile?.nome_completo || profile?.nome || dosha?.nome || email;
+
+    setFoundUser({
+      nome,
+      email,
+      is_premium: !!profile?.is_premium,
+      subscription_status: profile?.subscription_status ?? null,
+    });
+
+    if (profile?.is_premium) {
+      toast.warning(`${nome} já é premium (${profile.subscription_status ?? "ativo"})`);
+    } else {
+      toast.success(`Usuário encontrado: ${nome}`);
+    }
+  };
+
+  const handleAtivar = async () => {
+    if (!foundUser) return;
+    setActivating(true);
+    const now = new Date();
+    const until = new Date(now);
+    if (planoSel === "mensal") {
+      until.setMonth(until.getMonth() + 1);
+    } else {
+      until.setMonth(until.getMonth() + 12);
+    }
+
+    const { error } = await supabase
+      .from("user_profiles")
+      .update({
+        is_premium: true,
+        subscription_status: "active",
+        premium_since: now.toISOString(),
+        premium_until: until.toISOString(),
+        stripe_subscription_id: "manual",
+      })
+      .ilike("email", foundUser.email);
+
+    if (error) {
+      setActivating(false);
+      toast.error(`Erro ao ativar: ${error.message}`);
+      return;
+    }
+
+    // Fire-and-forget webhook
+    try {
+      await fetch("https://n8n.portalayurveda.com/webhook/samkhya-pedido", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          tipo: "premium",
+          email: foundUser.email,
+          nome: foundUser.nome,
+          plano: planoSel,
+        }),
+      });
+    } catch (e) {
+      console.error("Webhook n8n falhou", e);
+    }
+
+    toast.success(`Premium ativado para ${foundUser.nome}`);
+    setActivating(false);
+    setFoundUser(null);
+    setSearchEmail("");
+    loadAssinaturas();
+  };
 
   const ativos = data.filter((a) => a.status === "active");
   const mensaisAtivos = ativos.filter((a) => a.plano?.toLowerCase() === "mensal").length;
@@ -105,6 +224,79 @@ const AdminVendasAkasha = () => {
             </CardContent>
           </Card>
         </div>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg">Ativar Premium Manualmente</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex flex-col sm:flex-row gap-2 sm:items-end">
+              <div className="flex-1 space-y-1.5">
+                <Label htmlFor="manual-premium-email">Email do usuário</Label>
+                <Input
+                  id="manual-premium-email"
+                  type="email"
+                  placeholder="usuario@exemplo.com"
+                  value={searchEmail}
+                  onChange={(e) => {
+                    setSearchEmail(e.target.value);
+                    setFoundUser(null);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") handleBuscar();
+                  }}
+                />
+              </div>
+              <Button onClick={handleBuscar} disabled={searching}>
+                {searching ? "Buscando..." : "Buscar"}
+              </Button>
+            </div>
+
+            {foundUser && (
+              <div className="rounded-md border bg-muted/30 p-4 space-y-3">
+                <div className="text-sm">
+                  <p className="font-medium text-foreground">{foundUser.nome}</p>
+                  <p className="text-muted-foreground">{foundUser.email}</p>
+                  {foundUser.is_premium ? (
+                    <p className="mt-1 text-yellow-600 font-medium">
+                      ⚠ Já é premium (status: {foundUser.subscription_status ?? "active"})
+                    </p>
+                  ) : (
+                    <p className="mt-1 text-muted-foreground">Status: não premium</p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Plano</Label>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    {([
+                      { v: "mensal", label: "Mensal — R$ 79,90/mês", sub: "+ 1 mês" },
+                      { v: "anual", label: "Anual — R$ 597,00/ano", sub: "+ 12 meses" },
+                    ] as const).map((opt) => (
+                      <button
+                        key={opt.v}
+                        type="button"
+                        onClick={() => setPlanoSel(opt.v)}
+                        className={`text-left rounded-md border p-3 transition-colors ${
+                          planoSel === opt.v
+                            ? "border-primary bg-primary/5"
+                            : "border-input hover:bg-accent"
+                        }`}
+                      >
+                        <p className="text-sm font-medium text-foreground">{opt.label}</p>
+                        <p className="text-xs text-muted-foreground">premium_until = now() {opt.sub}</p>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <Button onClick={handleAtivar} disabled={activating} className="w-full sm:w-auto">
+                  {activating ? "Ativando..." : "Ativar Premium"}
+                </Button>
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
         <Card>
           <CardContent className="p-0">
