@@ -198,21 +198,6 @@ const AdminVendasAkasha = () => {
       return;
     }
 
-    // Cria registro em assinaturas para aparecer na tabela como os demais
-    const valor = planoSel === "mensal" ? 79.9 : 597.0;
-    const { error: assinError } = await supabase.from("assinaturas").insert({
-      user_id: (updated[0] as any).id ?? null,
-      email: foundUser.email,
-      nome: foundUser.nome,
-      plano: planoSel,
-      valor,
-      status: "active",
-      stripe_subscription_id: "manual",
-    });
-    if (assinError) {
-      console.error("Falha ao inserir assinatura:", assinError);
-      toast.warning(`Premium ativado, mas falhou registrar assinatura: ${assinError.message}`);
-    }
 
     // Fire-and-forget webhook
     try {
