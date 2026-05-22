@@ -298,17 +298,20 @@ const AkashaTab = ({
   const tokens = profile?.tokens_akasha ?? 10;
 
   return (
-    <div className="flex flex-col mt-4">
+    <div className="flex flex-col mt-2">
       {/* Messages - scrolls only inside this container */}
-      <div ref={chatContainerRef} className="flex-1 overflow-y-auto overscroll-contain space-y-3 pb-4 px-1 h-[calc(100dvh-260px)] md:h-auto md:max-h-[60vh]">
-        {/* Akasha Header */}
-        <div className="flex flex-col items-center gap-2 pb-4 pt-2">
-          <img src={AKASHA_LOGO} alt="Akasha IA" className="w-12 h-12 object-contain" />
-          <h2 className="font-serif text-lg font-bold text-akasha">Akasha IA</h2>
-          <p className="text-xs text-muted-foreground">
-            {isPremium ? "Conversas ilimitadas ✨" : tokens > 0 ? `${tokens} conversas restantes` : "Tokens esgotados"}
-          </p>
+      <div ref={chatContainerRef} className="flex-1 overflow-y-auto overscroll-contain space-y-3 pb-3 px-1 min-h-[50vh]">
+        {/* Akasha Header - compacto */}
+        <div className="flex items-center justify-center gap-2 pb-2 pt-1">
+          <img src={AKASHA_LOGO} alt="Akasha IA" className="w-7 h-7 object-contain shrink-0" />
+          <div className="flex flex-col leading-tight">
+            <h2 className="font-serif text-sm font-bold text-akasha">Akasha IA</h2>
+            <p className="text-[10px] text-muted-foreground/80">
+              {isPremium ? "Conversas ilimitadas ✨" : tokens > 0 ? `${tokens} conversas restantes` : "Tokens esgotados"}
+            </p>
+          </div>
         </div>
+
 
         {loadingHistory && (
           <div className="flex items-center justify-center py-6">
@@ -359,8 +362,11 @@ const AkashaTab = ({
         )}
       </div>
 
-      {/* Input ou bloqueio de tokens */}
-      <div className="pt-2 pb-2">
+      {/* Input ou bloqueio de tokens — sticky para nunca sumir no mobile */}
+      <div
+        className="sticky bottom-0 z-10 bg-background pt-2 pb-2"
+        style={{ paddingBottom: "calc(0.5rem + env(safe-area-inset-bottom))" }}
+      >
         {(isPremium || tokens > 0) ? (
           <div className="flex items-center gap-2 bg-card border border-border rounded-full px-4 py-2 shadow-lg shadow-akasha/5">
             <input
@@ -368,8 +374,14 @@ const AkashaTab = ({
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
+              onFocus={(e) => {
+                // Garante que o input não fique escondido atrás do teclado no mobile
+                setTimeout(() => e.currentTarget?.scrollIntoView({ block: "nearest", behavior: "smooth" }), 200);
+              }}
               placeholder="Pergunte à Akasha..."
               disabled={sending}
+              enterKeyHint="send"
+              autoComplete="off"
               className="flex-1 bg-transparent border-none outline-none text-foreground placeholder:text-muted-foreground text-base"
               style={{ fontSize: "16px" }}
             />
@@ -377,10 +389,12 @@ const AkashaTab = ({
               onClick={sendMessage}
               disabled={sending || !input.trim()}
               className="shrink-0 w-9 h-9 rounded-full bg-akasha text-white flex items-center justify-center disabled:opacity-40 transition-opacity hover:opacity-90"
+              aria-label="Enviar"
             >
               {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
             </button>
           </div>
+
         ) : (
           <div
             className="rounded-2xl border p-5 flex flex-col items-center text-center gap-3"
