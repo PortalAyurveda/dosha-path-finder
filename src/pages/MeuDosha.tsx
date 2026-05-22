@@ -737,7 +737,15 @@ const MeuDosha = () => {
 
 
         {/* ===== TABS ===== */}
-        <Tabs defaultValue={initialTab} className="w-full">
+        <Tabs
+          value={initialTab}
+          onValueChange={(v) => {
+            const params = new URLSearchParams(searchParams);
+            params.set('tab', v);
+            navigate(`/meu-dosha?${params.toString()}`, { replace: true });
+          }}
+          className="w-full"
+        >
           <div className="sticky top-16 z-40 py-2 flex justify-center">
           <TabsList className="grid grid-cols-5 h-auto max-w-6xl w-full mx-4 rounded-full bg-muted/95 backdrop-blur-sm shadow-sm gap-0.5 sm:gap-0 p-1">
             <TabsTrigger value="perfil" className="text-xs sm:text-sm py-1 flex items-center gap-1 bg-[#E8EEFF] sm:bg-transparent text-[#352F54] rounded-full">
