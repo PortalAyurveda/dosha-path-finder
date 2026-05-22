@@ -774,7 +774,7 @@ const MeuDosha = () => {
           </div>
 
           {/* ===== TAB: PERFIL ===== */}
-          <TabsContent value="perfil" className="space-y-6 mt-4" tabIndex={-1}>
+          <TabsContent forceMount value="perfil" className="space-y-6 mt-4 data-[state=inactive]:hidden" tabIndex={-1}>
             {/* Clinical Dashboard */}
             <div className="bg-card rounded-xl border border-border p-4 space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-[1.2fr_1fr] gap-4">
@@ -845,12 +845,12 @@ const MeuDosha = () => {
           </TabsContent>
 
           {/* ===== TAB: MÉTRICAS ===== */}
-          <TabsContent value="metricas" tabIndex={-1}>
+          <TabsContent forceMount value="metricas" className="data-[state=inactive]:hidden" tabIndex={-1}>
             <MetricasTab registroUuid={registroUuid} insights={insights} isLoading={insightsLoading} />
           </TabsContent>
 
           {/* ===== TAB: ARTIGOS ===== */}
-          <TabsContent value="artigos" tabIndex={-1}>
+          <TabsContent forceMount value="artigos" className="data-[state=inactive]:hidden" tabIndex={-1}>
             <ArtigosTab
               doshaprincipal={result.doshaprincipal}
               agravVataTags={result.agravVataTags}
@@ -861,7 +861,7 @@ const MeuDosha = () => {
           </TabsContent>
 
           {/* ===== TAB: VÍDEOS ===== */}
-          <TabsContent value="videos" tabIndex={-1}>
+          <TabsContent forceMount value="videos" className="data-[state=inactive]:hidden" tabIndex={-1}>
             <VideosTab
               doshaprincipal={result.doshaprincipal}
               agravVataTags={result.agravVataTags}
@@ -872,7 +872,7 @@ const MeuDosha = () => {
           </TabsContent>
 
           {/* ===== TAB: AKASHA ===== */}
-          <TabsContent value="akasha" tabIndex={-1}>
+          <TabsContent forceMount value="akasha" className="data-[state=inactive]:hidden" tabIndex={-1}>
             <AkashaTab
               idPublico={id}
               nome={result.nome}
