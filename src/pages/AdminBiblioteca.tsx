@@ -74,6 +74,8 @@ const AdminBiblioteca = () => {
   const navigate = useNavigate();
   const { user, role, loading: authLoading, roleLoading } = useUser();
   const accessLoading = authLoading || (!!user && roleLoading);
+  const [tab, setTab] = useHashTab("videos");
+
 
   // Auth guard removed: /admin is open during testing
 

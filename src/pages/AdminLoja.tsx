@@ -501,6 +501,8 @@ const AdminLoja = () => {
   const [loadingProdutos, setLoadingProdutos] = useState(true);
   const [loadingKits, setLoadingKits] = useState(true);
   const [filtro, setFiltro] = useState("");
+  const [lojaTab, setLojaTab] = useHashTab("produtos");
+
 
   // Auth guard removed: /admin is open during testing
 
