@@ -226,6 +226,79 @@ const AdminVendasAkasha = () => {
         </div>
 
         <Card>
+          <CardHeader>
+            <CardTitle className="text-lg">Ativar Premium Manualmente</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex flex-col sm:flex-row gap-2 sm:items-end">
+              <div className="flex-1 space-y-1.5">
+                <Label htmlFor="manual-premium-email">Email do usuário</Label>
+                <Input
+                  id="manual-premium-email"
+                  type="email"
+                  placeholder="usuario@exemplo.com"
+                  value={searchEmail}
+                  onChange={(e) => {
+                    setSearchEmail(e.target.value);
+                    setFoundUser(null);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") handleBuscar();
+                  }}
+                />
+              </div>
+              <Button onClick={handleBuscar} disabled={searching}>
+                {searching ? "Buscando..." : "Buscar"}
+              </Button>
+            </div>
+
+            {foundUser && (
+              <div className="rounded-md border bg-muted/30 p-4 space-y-3">
+                <div className="text-sm">
+                  <p className="font-medium text-foreground">{foundUser.nome}</p>
+                  <p className="text-muted-foreground">{foundUser.email}</p>
+                  {foundUser.is_premium ? (
+                    <p className="mt-1 text-yellow-600 font-medium">
+                      ⚠ Já é premium (status: {foundUser.subscription_status ?? "active"})
+                    </p>
+                  ) : (
+                    <p className="mt-1 text-muted-foreground">Status: não premium</p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Plano</Label>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    {([
+                      { v: "mensal", label: "Mensal — R$ 79,90/mês", sub: "+ 1 mês" },
+                      { v: "anual", label: "Anual — R$ 597,00/ano", sub: "+ 12 meses" },
+                    ] as const).map((opt) => (
+                      <button
+                        key={opt.v}
+                        type="button"
+                        onClick={() => setPlanoSel(opt.v)}
+                        className={`text-left rounded-md border p-3 transition-colors ${
+                          planoSel === opt.v
+                            ? "border-primary bg-primary/5"
+                            : "border-input hover:bg-accent"
+                        }`}
+                      >
+                        <p className="text-sm font-medium text-foreground">{opt.label}</p>
+                        <p className="text-xs text-muted-foreground">premium_until = now() {opt.sub}</p>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <Button onClick={handleAtivar} disabled={activating} className="w-full sm:w-auto">
+                  {activating ? "Ativando..." : "Ativar Premium"}
+                </Button>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card>
           <CardContent className="p-0">
             {loading ? (
               <div className="p-6 space-y-3">
