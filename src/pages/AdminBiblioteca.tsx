@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { useUser } from "@/contexts/UserContext";
+import { useHashTab } from "@/hooks/useHashTab";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -74,6 +75,8 @@ const AdminBiblioteca = () => {
   const navigate = useNavigate();
   const { user, role, loading: authLoading, roleLoading } = useUser();
   const accessLoading = authLoading || (!!user && roleLoading);
+  const [tab, setTab] = useHashTab("videos");
+
 
   // Auth guard removed: /admin is open during testing
 
@@ -106,7 +109,7 @@ const AdminBiblioteca = () => {
             </h1>
           </div>
 
-          <Tabs defaultValue="videos" className="w-full">
+          <Tabs value={tab} onValueChange={setTab} className="w-full">
             <TabsList>
               <TabsTrigger value="videos" className="gap-2">
                 <VideoIcon className="w-4 h-4" />
@@ -118,11 +121,11 @@ const AdminBiblioteca = () => {
               </TabsTrigger>
             </TabsList>
 
-            <TabsContent value="videos" className="mt-4">
+            <TabsContent forceMount value="videos" className="mt-4 data-[state=inactive]:hidden">
               <VideosPanel />
             </TabsContent>
 
-            <TabsContent value="artigos" className="mt-4">
+            <TabsContent forceMount value="artigos" className="mt-4 data-[state=inactive]:hidden">
               <ArtigosPanel />
             </TabsContent>
           </Tabs>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -33,14 +33,31 @@ export default function VendasTab() {
   const { data: vendas, isLoading } = useVendas();
   const create = useNovaVenda();
 
-  const [form, setForm] = useState({
-    produto_id: "",
-    quantidade: "1",
-    preco_unitario: "",
-    canal: "loja_online",
-    data_venda: today(),
-    notas: "",
+  const DRAFT_KEY = "samkhya:vendas:draft";
+  const [form, setForm] = useState(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const raw = sessionStorage.getItem(DRAFT_KEY);
+        if (raw) return JSON.parse(raw);
+      } catch {}
+    }
+    return {
+      produto_id: "",
+      quantidade: "1",
+      preco_unitario: "",
+      canal: "loja_online",
+      data_venda: today(),
+      notas: "",
+    };
   });
+
+  // Autosave do rascunho — evita perder dados ao trocar de aba do navegador
+  // ou ao haver remount da página por refresh de sessão.
+  useEffect(() => {
+    try {
+      sessionStorage.setItem(DRAFT_KEY, JSON.stringify(form));
+    } catch {}
+  }, [form]);
 
   const ativos = (produtos ?? []).filter((p) => p.ativo !== false);
 
@@ -60,7 +77,9 @@ export default function VendasTab() {
         notas: form.notas.trim() || null,
       });
       toast.success("Venda registrada");
-      setForm({ ...form, quantidade: "1", preco_unitario: "", notas: "" });
+      const reset = { ...form, quantidade: "1", preco_unitario: "", notas: "" };
+      setForm(reset);
+      try { sessionStorage.removeItem(DRAFT_KEY); } catch {}
     } catch (e: any) {
       toast.error(e?.message ?? "Erro ao registrar venda");
     }

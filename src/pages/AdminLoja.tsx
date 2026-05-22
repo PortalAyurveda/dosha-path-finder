@@ -4,6 +4,7 @@ import { Helmet } from "react-helmet-async";
 import { toast } from "sonner";
 import { ShieldCheck, ArrowLeft, Loader2, Save, Upload, X, GripVertical, ImageIcon } from "lucide-react";
 import AdminNav from "@/components/admin/AdminNav";
+import { useHashTab } from "@/hooks/useHashTab";
 
 import { useUser } from "@/contexts/UserContext";
 import { lojaSupabase, type LojaProduto, type LojaKit } from "@/integrations/supabase/loja-client";
@@ -501,6 +502,8 @@ const AdminLoja = () => {
   const [loadingProdutos, setLoadingProdutos] = useState(true);
   const [loadingKits, setLoadingKits] = useState(true);
   const [filtro, setFiltro] = useState("");
+  const [lojaTab, setLojaTab] = useHashTab("produtos");
+
 
   // Auth guard removed: /admin is open during testing
 
@@ -601,7 +604,7 @@ const AdminLoja = () => {
             className="max-w-md"
           />
 
-          <Tabs defaultValue="produtos" className="space-y-4">
+          <Tabs value={lojaTab} onValueChange={setLojaTab} className="space-y-4">
             <TabsList>
               <TabsTrigger value="produtos">
                 Produtos ({produtos.length})
@@ -609,7 +612,7 @@ const AdminLoja = () => {
               <TabsTrigger value="kits">Kits ({kits.length})</TabsTrigger>
             </TabsList>
 
-            <TabsContent value="produtos" className="space-y-3">
+            <TabsContent forceMount value="produtos" className="space-y-3 data-[state=inactive]:hidden">
               {loadingProdutos ? (
                 Array.from({ length: 4 }).map((_, i) => (
                   <Skeleton key={i} className="h-20 w-full" />
@@ -633,7 +636,7 @@ const AdminLoja = () => {
               )}
             </TabsContent>
 
-            <TabsContent value="kits" className="space-y-3">
+            <TabsContent forceMount value="kits" className="space-y-3 data-[state=inactive]:hidden">
               {loadingKits ? (
                 Array.from({ length: 4 }).map((_, i) => (
                   <Skeleton key={i} className="h-20 w-full" />
