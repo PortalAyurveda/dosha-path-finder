@@ -362,13 +362,13 @@ const AdminVendasAkasha = () => {
                 </TableHeader>
                 <TableBody>
                   {data.map((a) => (
-                    <TableRow key={a.id}>
-                      <TableCell className="whitespace-nowrap">{formatDate(a.created_at)}</TableCell>
+                    <TableRow key={a.email}>
+                      <TableCell className="whitespace-nowrap">{formatDate(a.premium_since)}</TableCell>
                       <TableCell>{a.nome || "—"}</TableCell>
                       <TableCell className="text-muted-foreground">{a.email}</TableCell>
                       <TableCell>{planoBadge(a.plano)}</TableCell>
                       <TableCell>{formatBRL(Number(a.valor))}</TableCell>
-                      <TableCell>{statusBadge(a.status)}</TableCell>
+                      <TableCell>{statusBadge(a.subscription_status)}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
