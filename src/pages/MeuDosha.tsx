@@ -464,10 +464,20 @@ const MeuDosha = () => {
     : 'perfil';
   const initialMode = modeParam === 'personalizado' ? 'personalizado' : 'gerais';
   const queryClient = useQueryClient();
-  const { profile } = useUser();
+  const { profile, doshaResult } = useUser();
   const isPremium = !!profile?.is_premium;
   const navigate = useNavigate();
   const [evolucaoOpen, setEvolucaoOpen] = useState(false);
+
+  // Se o usuário logado caiu em /meu-dosha sem ?id, redireciona para o id do
+  // seu teste personalizado, preservando outros parâmetros (tab, mode).
+  useEffect(() => {
+    if (!id && doshaResult?.idPublico) {
+      const params = new URLSearchParams(searchParams);
+      params.set('id', doshaResult.idPublico);
+      navigate(`/meu-dosha?${params.toString()}`, { replace: true });
+    }
+  }, [id, doshaResult?.idPublico]);
 
   // ── Registro (doshas_registros) ──
   const { data: registroRaw, isLoading: registroLoading } = useQuery({
