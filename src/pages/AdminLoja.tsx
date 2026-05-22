@@ -4,6 +4,7 @@ import { Helmet } from "react-helmet-async";
 import { toast } from "sonner";
 import { ShieldCheck, ArrowLeft, Loader2, Save, Upload, X, GripVertical, ImageIcon } from "lucide-react";
 import AdminNav from "@/components/admin/AdminNav";
+import { useHashTab } from "@/hooks/useHashTab";
 
 import { useUser } from "@/contexts/UserContext";
 import { lojaSupabase, type LojaProduto, type LojaKit } from "@/integrations/supabase/loja-client";
