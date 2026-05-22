@@ -11,20 +11,21 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import Seo from "@/components/Seo";
 
-interface Assinatura {
-  id: string;
+interface Assinante {
   nome: string | null;
   email: string;
-  plano: string;
+  subscription_status: string | null;
+  premium_since: string | null;
+  premium_until: string | null;
+  plano: "mensal" | "anual";
   valor: number;
-  status: string;
-  created_at: string;
 }
 
 const formatBRL = (v: number) =>
   new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(v);
 
-const formatDate = (s: string) => {
+const formatDate = (s: string | null) => {
+  if (!s) return "—";
   const d = new Date(s);
   return d.toLocaleString("pt-BR", {
     day: "2-digit",
@@ -35,6 +36,19 @@ const formatDate = (s: string) => {
   });
 };
 
+const derivarPlano = (
+  premium_since: string | null,
+  premium_until: string | null,
+): { plano: "mensal" | "anual"; valor: number } => {
+  if (premium_since && premium_until) {
+    const since = new Date(premium_since).getTime();
+    const until = new Date(premium_until).getTime();
+    const dias = (until - since) / (1000 * 60 * 60 * 24);
+    if (dias >= 360) return { plano: "anual", valor: 597.0 };
+  }
+  return { plano: "mensal", valor: 79.9 };
+};
+
 const planoBadge = (plano: string) => {
   const p = plano?.toLowerCase();
   if (p === "anual")
@@ -42,7 +56,7 @@ const planoBadge = (plano: string) => {
   return <Badge className="bg-blue-500 hover:bg-blue-600 text-white border-transparent">mensal</Badge>;
 };
 
-const statusBadge = (status: string) => {
+const statusBadge = (status: string | null) => {
   const s = status?.toLowerCase();
   if (s === "active")
     return <Badge className="bg-green-500 hover:bg-green-600 text-white border-transparent">active</Badge>;
@@ -50,20 +64,35 @@ const statusBadge = (status: string) => {
     return <Badge className="bg-red-500 hover:bg-red-600 text-white border-transparent">canceled</Badge>;
   if (s === "past_due")
     return <Badge className="bg-yellow-500 hover:bg-yellow-600 text-white border-transparent">past_due</Badge>;
-  return <Badge variant="outline">{status}</Badge>;
+  return <Badge variant="outline">{status ?? "—"}</Badge>;
 };
 
 const AdminVendasAkasha = () => {
-  const [data, setData] = useState<Assinatura[]>([]);
+  const [data, setData] = useState<Assinante[]>([]);
   const [loading, setLoading] = useState(true);
 
   const loadAssinaturas = useCallback(async () => {
     setLoading(true);
     const { data, error } = await supabase
-      .from("assinaturas")
-      .select("id, nome, email, plano, valor, status, created_at")
-      .order("created_at", { ascending: false });
-    if (!error && data) setData(data as Assinatura[]);
+      .from("user_profiles")
+      .select("nome, nome_completo, email, subscription_status, premium_since, premium_until, is_premium")
+      .eq("is_premium", true)
+      .order("premium_since", { ascending: false, nullsFirst: false });
+    if (!error && data) {
+      const rows: Assinante[] = (data as any[]).map((r) => {
+        const { plano, valor } = derivarPlano(r.premium_since, r.premium_until);
+        return {
+          nome: r.nome_completo || r.nome || null,
+          email: r.email,
+          subscription_status: r.subscription_status ?? null,
+          premium_since: r.premium_since ?? null,
+          premium_until: r.premium_until ?? null,
+          plano,
+          valor,
+        };
+      });
+      setData(rows);
+    }
     setLoading(false);
   }, []);
 
