@@ -298,17 +298,20 @@ const AkashaTab = ({
   const tokens = profile?.tokens_akasha ?? 10;
 
   return (
-    <div className="flex flex-col mt-4">
+    <div className="flex flex-col mt-2">
       {/* Messages - scrolls only inside this container */}
-      <div ref={chatContainerRef} className="flex-1 overflow-y-auto overscroll-contain space-y-3 pb-4 px-1 h-[calc(100dvh-260px)] md:h-auto md:max-h-[60vh]">
-        {/* Akasha Header */}
-        <div className="flex flex-col items-center gap-2 pb-4 pt-2">
-          <img src={AKASHA_LOGO} alt="Akasha IA" className="w-12 h-12 object-contain" />
-          <h2 className="font-serif text-lg font-bold text-akasha">Akasha IA</h2>
-          <p className="text-xs text-muted-foreground">
-            {isPremium ? "Conversas ilimitadas ✨" : tokens > 0 ? `${tokens} conversas restantes` : "Tokens esgotados"}
-          </p>
+      <div ref={chatContainerRef} className="flex-1 overflow-y-auto overscroll-contain space-y-3 pb-3 px-1 min-h-[50vh]">
+        {/* Akasha Header - compacto */}
+        <div className="flex items-center justify-center gap-2 pb-2 pt-1">
+          <img src={AKASHA_LOGO} alt="Akasha IA" className="w-7 h-7 object-contain shrink-0" />
+          <div className="flex flex-col leading-tight">
+            <h2 className="font-serif text-sm font-bold text-akasha">Akasha IA</h2>
+            <p className="text-[10px] text-muted-foreground/80">
+              {isPremium ? "Conversas ilimitadas ✨" : tokens > 0 ? `${tokens} conversas restantes` : "Tokens esgotados"}
+            </p>
+          </div>
         </div>
+
 
         {loadingHistory && (
           <div className="flex items-center justify-center py-6">

@@ -1,51 +1,49 @@
-## Diagnóstico
+## Problema
 
-Verifiquei o estado atual:
+Na aba **Akasha** de `/meu-dosha`, em alguns celulares (Instagram in-app browser, Safari com barra dinâmica, etc.) o **input "Pergunte à Akasha…" não aparece**. O usuário não consegue digitar.
 
-- **Rota existe** em `src/App.tsx` (`/admin/estoque` → `AdminEstoque`, protegida por `AdminRoute`).
-- **Link existe** em `src/components/admin/AdminNav.tsx` como "Estoque & Produção" (ícone Package).
-- **Migration foi aplicada** no banco: schema `samkhya` está em `pgrst.db_schemas`, RLS ativa em todas as tabelas e policies `admin_all` usando `public.is_admin()` criadas.
-- **Views existem** (`v_estoque_ingredientes`, `v_necessidade_ingredientes`).
+## Causa-raiz (auditoria)
 
-Ou seja, código e DB estão no lugar. Os sintomas relatados ("não carrega" e "não aparece em /admin") apontam para uma destas três causas:
+Em `src/components/meudosha/AkashaTab.tsx`:
 
-1. **Preview com cache** — o build anterior ainda está em memória e o usuário não viu o novo link/rota. Resolve com hard reload.
-2. **Erro de runtime na página** que faz o React quebrar silenciosamente (a barra de nav aparece mas o conteúdo não renderiza). Suspeitos:
-   - O `samkhyaSupabase` é criado com `db.schema: "samkhya"` cast como `never`. Em runtime funciona, mas se o PostgREST ainda não tiver feito reload completo do `pgrst.db_schemas`, as queries respondem 404.
-   - As views podem não estar como `security_invoker=on` — nesse caso, dependendo do owner, RLS pode bloquear retorno mesmo com admin.
-3. **Policy `is_admin()` retornando false** para o usuário logado — sem dados, a página mostra tabelas vazias (não "não carrega"), mas vale validar.
+1. A área de mensagens usa altura fixa estimada: `h-[calc(100dvh-260px)]` no mobile. Esse `260px` é um chute — não bate com a altura real acima (header sticky + DiagnosticoCompleto + abas + paddings do PageContainer). Em vários aparelhos a soma passa de 260px, então a div de mensagens fica mais alta que o espaço disponível e **empurra o input para fora do viewport**.
+2. `100dvh` no Instagram WebView e em alguns Androids antigos não funciona corretamente — cai para `100vh` que inclui a barra do navegador.
+3. O input fica em um `<div>` comum no fluxo (não sticky/fixed). Quando o conteúdo acima estoura, ele simplesmente some abaixo da dobra.
+4. O header da Akasha (logo 48px + título + linha de tokens) consome ~110px só no topo do chat, agravando a falta de espaço.
+5. Sem `padding-bottom` para safe-area do iOS — o input pode ficar atrás da barra inferior do sistema.
 
-## Plano
+## Plano (apenas UI, sem mexer em lógica)
 
-1. **Forçar reload do PostgREST e validar acesso de fato**
-   - Disparar `NOTIFY pgrst, 'reload schema'` (além do reload de config já feito).
-   - Garantir `ALTER VIEW samkhya.v_estoque_ingredientes SET (security_invoker = on);` e o mesmo para `v_necessidade_ingredientes`, para que as policies de admin se apliquem.
-   - Garantir `GRANT SELECT` explícito nas duas views para `authenticated`.
+Editar **somente** `src/components/meudosha/AkashaTab.tsx`:
 
-2. **Blindar a página contra erro de runtime**
-   - Em `AdminEstoque.tsx`, envolver o conteúdo em um error boundary leve (ou try/catch nos hooks) e mostrar a mensagem de erro do Supabase em tela em vez de quebrar silenciosamente.
-   - Em `useSamkhyaEstoque.ts`, logar `error.message` no `console.error` quando uma query falha, para facilitar debug futuro.
+### 1. Reestruturar o layout para o input sempre estar visível
+- Trocar a estratégia de altura fixa por **input sticky no rodapé**:
+  - Wrapper externo: `flex flex-col` sem altura calculada.
+  - Mensagens: `flex-1 overflow-y-auto` com `min-h-[50vh]` (garante área mínima de leitura) e **sem** `h-[calc(...)]`.
+  - Input: `sticky bottom-0 z-10` com fundo sólido (`bg-background`) e `pb-[env(safe-area-inset-bottom)]` para respeitar a safe-area do iOS.
+- Resultado: mesmo se o cálculo de altura falhar, o input gruda no rodapé do viewport ao rolar.
 
-3. **Confirmar visualmente o link no /admin**
-   - Após o reload, abrir `/admin` e checar que "Estoque & Produção" aparece no `AdminNav`. Se não aparecer, é cache do browser/preview (Ctrl+Shift+R).
+### 2. Compactar o header da Akasha (mais espaço para o chat)
+- Logo: `w-12 h-12` → `w-8 h-8`.
+- Título "Akasha IA": `text-lg` → `text-sm`.
+- Linha "Conversas ilimitadas / X conversas restantes": `text-xs` → `text-[10px]` e `text-muted-foreground/80`.
+- Reduzir gaps/paddings do bloco header: `gap-2 pb-4 pt-2` → `gap-1 pb-2 pt-1`.
+- Layout do header em linha (logo à esquerda, texto à direita) no mobile para ocupar menos altura vertical.
 
-4. **Validar as 3 abas carregando**
-   - Abrir `/admin/estoque`, conferir Estoque (lista vinda de `v_estoque_ingredientes`), Produção (planejadas + necessidade), Vendas (form + tabela).
-   - Se alguma query retornar erro 404/PGRST106, ajustar nome do schema/tabela; se 401/permission, ajustar GRANT/policy.
+### 3. Garantir digitação no mobile
+- Manter `fontSize: 16px` no input (já existe — previne zoom do iOS).
+- Adicionar `enterKeyHint="send"` e `autoComplete="off"`.
+- No `onFocus` do input, chamar `scrollIntoView({ block: 'nearest' })` para garantir que o teclado não cubra a barra.
+- Aumentar levemente o toque do botão enviar (área 36×36 mínimo já ok).
 
-## Detalhes técnicos
+### 4. Bloco "tokens esgotados"
+- Aplicar o mesmo padrão sticky para que o card de upgrade também não suma.
 
-SQL planejado:
-```sql
-ALTER VIEW samkhya.v_estoque_ingredientes SET (security_invoker = on);
-ALTER VIEW samkhya.v_necessidade_ingredientes SET (security_invoker = on);
-GRANT SELECT ON samkhya.v_estoque_ingredientes, samkhya.v_necessidade_ingredientes TO authenticated;
-NOTIFY pgrst, 'reload schema';
-NOTIFY pgrst, 'reload config';
-```
+## Não será alterado
+- Lógica de envio, webhook, tokens, React Query, histórico.
+- Demais arquivos (`MeuDosha.tsx`, abas, layout global).
 
-Arquivos a tocar (mínimo):
-- `src/hooks/useSamkhyaEstoque.ts` — adicionar `console.error` nas queries para diagnóstico.
-- `src/pages/AdminEstoque.tsx` — exibir estado de erro por aba (já temos toasts, mas faltam fallbacks visíveis quando a query falha sem mutação).
-
-Sem mudanças em escopo funcional — só destravar e dar visibilidade ao erro.
+## Validação
+- Testar no preview em viewport mobile (375×812 e 360×800).
+- Confirmar que input aparece com chat vazio, com 1 mensagem e com chat longo.
+- Confirmar que ao rolar mensagens antigas, o input continua visível no rodapé.
