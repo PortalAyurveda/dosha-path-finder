@@ -601,7 +601,7 @@ const AdminLoja = () => {
             className="max-w-md"
           />
 
-          <Tabs defaultValue="produtos" className="space-y-4">
+          <Tabs value={lojaTab} onValueChange={setLojaTab} className="space-y-4">
             <TabsList>
               <TabsTrigger value="produtos">
                 Produtos ({produtos.length})
@@ -609,7 +609,7 @@ const AdminLoja = () => {
               <TabsTrigger value="kits">Kits ({kits.length})</TabsTrigger>
             </TabsList>
 
-            <TabsContent value="produtos" className="space-y-3">
+            <TabsContent forceMount value="produtos" className="space-y-3 data-[state=inactive]:hidden">
               {loadingProdutos ? (
                 Array.from({ length: 4 }).map((_, i) => (
                   <Skeleton key={i} className="h-20 w-full" />
@@ -633,7 +633,7 @@ const AdminLoja = () => {
               )}
             </TabsContent>
 
-            <TabsContent value="kits" className="space-y-3">
+            <TabsContent forceMount value="kits" className="space-y-3 data-[state=inactive]:hidden">
               {loadingKits ? (
                 Array.from({ length: 4 }).map((_, i) => (
                   <Skeleton key={i} className="h-20 w-full" />

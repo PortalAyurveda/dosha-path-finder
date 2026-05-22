@@ -106,7 +106,7 @@ const AdminBiblioteca = () => {
             </h1>
           </div>
 
-          <Tabs defaultValue="videos" className="w-full">
+          <Tabs value={tab} onValueChange={setTab} className="w-full">
             <TabsList>
               <TabsTrigger value="videos" className="gap-2">
                 <VideoIcon className="w-4 h-4" />
@@ -118,11 +118,11 @@ const AdminBiblioteca = () => {
               </TabsTrigger>
             </TabsList>
 
-            <TabsContent value="videos" className="mt-4">
+            <TabsContent forceMount value="videos" className="mt-4 data-[state=inactive]:hidden">
               <VideosPanel />
             </TabsContent>
 
-            <TabsContent value="artigos" className="mt-4">
+            <TabsContent forceMount value="artigos" className="mt-4 data-[state=inactive]:hidden">
               <ArtigosPanel />
             </TabsContent>
           </Tabs>
