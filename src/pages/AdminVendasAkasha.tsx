@@ -143,7 +143,7 @@ const AdminVendasAkasha = () => {
       until.setMonth(until.getMonth() + 12);
     }
 
-    const { error } = await supabase
+    const { data: updated, error } = await supabase
       .from("user_profiles")
       .update({
         is_premium: true,
@@ -152,12 +152,37 @@ const AdminVendasAkasha = () => {
         premium_until: until.toISOString(),
         stripe_subscription_id: "manual",
       })
-      .ilike("email", foundUser.email);
+      .ilike("email", foundUser.email)
+      .select("id, email");
 
     if (error) {
       setActivating(false);
       toast.error(`Erro ao ativar: ${error.message}`);
       return;
+    }
+
+    if (!updated || updated.length === 0) {
+      setActivating(false);
+      toast.error(
+        `Nenhum perfil atualizado para ${foundUser.email}. Verifique se o usuário existe em user_profiles.`,
+      );
+      return;
+    }
+
+    // Cria registro em assinaturas para aparecer na tabela como os demais
+    const valor = planoSel === "mensal" ? 79.9 : 597.0;
+    const { error: assinError } = await supabase.from("assinaturas").insert({
+      user_id: (updated[0] as any).id ?? null,
+      email: foundUser.email,
+      nome: foundUser.nome,
+      plano: planoSel,
+      valor,
+      status: "active",
+      stripe_subscription_id: "manual",
+    });
+    if (assinError) {
+      console.error("Falha ao inserir assinatura:", assinError);
+      toast.warning(`Premium ativado, mas falhou registrar assinatura: ${assinError.message}`);
     }
 
     // Fire-and-forget webhook
@@ -176,7 +201,8 @@ const AdminVendasAkasha = () => {
       console.error("Webhook n8n falhou", e);
     }
 
-    toast.success(`Premium ativado para ${foundUser.nome}`);
+    toast.success(`Premium ${planoSel} ativado para ${foundUser.nome}`);
+
     setActivating(false);
     setFoundUser(null);
     setSearchEmail("");
