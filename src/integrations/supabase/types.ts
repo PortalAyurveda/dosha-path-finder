@@ -2470,6 +2470,7 @@ export type Database = {
           nivel_evolucao: string
           nome: string | null
           nome_completo: string | null
+          plano: string | null
           pontos_ojas: number
           premium_since: string | null
           premium_until: string | null
@@ -2489,6 +2490,7 @@ export type Database = {
           nivel_evolucao?: string
           nome?: string | null
           nome_completo?: string | null
+          plano?: string | null
           pontos_ojas?: number
           premium_since?: string | null
           premium_until?: string | null
@@ -2508,6 +2510,7 @@ export type Database = {
           nivel_evolucao?: string
           nome?: string | null
           nome_completo?: string | null
+          plano?: string | null
           pontos_ojas?: number
           premium_since?: string | null
           premium_until?: string | null
