@@ -63,7 +63,13 @@ export function UserProvider({ children }: { children: ReactNode }) {
   };
 
   const fetchRole = async (userId: string) => {
-    setRoleLoading(true);
+    // Só ativa loading na primeira busca (quando ainda não temos role).
+    // Em revalidações (TOKEN_REFRESHED, foco da aba), mantemos o role
+    // anterior visível para evitar remount das páginas admin.
+    setRole((prev) => {
+      if (prev === null) setRoleLoading(true);
+      return prev;
+    });
 
     const { data, error } = await supabase
       .from("perfis")
