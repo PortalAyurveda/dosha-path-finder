@@ -57,16 +57,131 @@ const AdminVendasAkasha = () => {
   const [data, setData] = useState<Assinatura[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    (async () => {
-      const { data, error } = await supabase
-        .from("assinaturas")
-        .select("id, nome, email, plano, valor, status, created_at")
-        .order("created_at", { ascending: false });
-      if (!error && data) setData(data as Assinatura[]);
-      setLoading(false);
-    })();
+  const loadAssinaturas = useCallback(async () => {
+    setLoading(true);
+    const { data, error } = await supabase
+      .from("assinaturas")
+      .select("id, nome, email, plano, valor, status, created_at")
+      .order("created_at", { ascending: false });
+    if (!error && data) setData(data as Assinatura[]);
+    setLoading(false);
   }, []);
+
+  useEffect(() => {
+    loadAssinaturas();
+  }, [loadAssinaturas]);
+
+  // ----- Manual premium activation panel -----
+  const [searchEmail, setSearchEmail] = useState("");
+  const [searching, setSearching] = useState(false);
+  const [foundUser, setFoundUser] = useState<{
+    nome: string;
+    email: string;
+    is_premium: boolean;
+    subscription_status: string | null;
+  } | null>(null);
+  const [planoSel, setPlanoSel] = useState<"mensal" | "anual">("mensal");
+  const [activating, setActivating] = useState(false);
+
+  const handleBuscar = async () => {
+    const email = searchEmail.trim().toLowerCase();
+    if (!email) {
+      toast.error("Informe um email");
+      return;
+    }
+    setSearching(true);
+    setFoundUser(null);
+    const [profileRes, doshaRes] = await Promise.all([
+      supabase
+        .from("user_profiles")
+        .select("nome, nome_completo, email, is_premium, subscription_status")
+        .ilike("email", email)
+        .maybeSingle(),
+      supabase
+        .from("doshas_registros")
+        .select("nome, email, created_at")
+        .ilike("email", email)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle(),
+    ]);
+    setSearching(false);
+
+    const profile = profileRes.data as any;
+    const dosha = doshaRes.data as any;
+
+    if (!profile && !dosha) {
+      toast.error("Usuário não encontrado");
+      return;
+    }
+
+    const nome =
+      profile?.nome_completo || profile?.nome || dosha?.nome || email;
+
+    setFoundUser({
+      nome,
+      email,
+      is_premium: !!profile?.is_premium,
+      subscription_status: profile?.subscription_status ?? null,
+    });
+
+    if (profile?.is_premium) {
+      toast.warning(`${nome} já é premium (${profile.subscription_status ?? "ativo"})`);
+    } else {
+      toast.success(`Usuário encontrado: ${nome}`);
+    }
+  };
+
+  const handleAtivar = async () => {
+    if (!foundUser) return;
+    setActivating(true);
+    const now = new Date();
+    const until = new Date(now);
+    if (planoSel === "mensal") {
+      until.setMonth(until.getMonth() + 1);
+    } else {
+      until.setMonth(until.getMonth() + 12);
+    }
+
+    const { error } = await supabase
+      .from("user_profiles")
+      .update({
+        is_premium: true,
+        subscription_status: "active",
+        premium_since: now.toISOString(),
+        premium_until: until.toISOString(),
+        stripe_subscription_id: "manual",
+      })
+      .ilike("email", foundUser.email);
+
+    if (error) {
+      setActivating(false);
+      toast.error(`Erro ao ativar: ${error.message}`);
+      return;
+    }
+
+    // Fire-and-forget webhook
+    try {
+      await fetch("https://n8n.portalayurveda.com/webhook/samkhya-pedido", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          tipo: "premium",
+          email: foundUser.email,
+          nome: foundUser.nome,
+          plano: planoSel,
+        }),
+      });
+    } catch (e) {
+      console.error("Webhook n8n falhou", e);
+    }
+
+    toast.success(`Premium ativado para ${foundUser.nome}`);
+    setActivating(false);
+    setFoundUser(null);
+    setSearchEmail("");
+    loadAssinaturas();
+  };
 
   const ativos = data.filter((a) => a.status === "active");
   const mensaisAtivos = ativos.filter((a) => a.plano?.toLowerCase() === "mensal").length;
