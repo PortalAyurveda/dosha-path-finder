@@ -223,7 +223,7 @@ const AdminVendasAkasha = () => {
     loadAssinaturas();
   };
 
-  const ativos = data.filter((a) => a.status === "active");
+  const ativos = data.filter((a) => a.subscription_status === "active");
   const mensaisAtivos = ativos.filter((a) => a.plano?.toLowerCase() === "mensal").length;
   const anuaisAtivos = ativos.filter((a) => a.plano?.toLowerCase() === "anual").length;
   const mrr = mensaisAtivos * 79.9 + anuaisAtivos * 49.75;
