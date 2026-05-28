@@ -1,53 +1,21 @@
-## Objetivo
+## Mudanças no Hero (mobile)
 
-Reescrever a fonte de dados da página `/admin/vendas-akasha` para usar exclusivamente `user_profiles` (onde `is_premium = true`), removendo a dependência da tabela `assinaturas`.
+**Arquivo:** `src/components/home/Hero.tsx`
 
-## Mudanças em `src/pages/AdminVendasAkasha.tsx`
+1. **Esconder título e subtítulo no mobile**
+   - Envolver o bloco com `<h1>Seu guia completo...</h1>` + `<p>Descubra e cuide...</p>` (linhas 175–182) e o `<hr>` (linha 184) em `className="hidden lg:block"`.
+   - No mobile o card começa direto em "Comece seu Teste de Dosha Gratuito", reduzindo a altura.
+   - SEO: mover o `<h1>` para visualmente oculto (`sr-only`) no mobile para preservar semântica.
 
-### 1. Nova query (substitui o select de `assinaturas`)
+2. **Mostrar MetricasMiniBanner no mobile, abaixo do card do formulário**
+   - Hoje o `<MetricasMiniBanner />` só aparece na coluna esquerda escondida no mobile (linha 161 `hidden lg:flex`).
+   - Adicionar uma segunda instância **fora** do grid, dentro do container do hero, com `className="lg:hidden mt-6"` para aparecer apenas no mobile/tablet, logo abaixo do botão "Começar".
 
-```ts
-supabase
-  .from("user_profiles")
-  .select("nome, nome_completo, email, subscription_status, premium_since, premium_until, is_premium")
-  .eq("is_premium", true)
-  .order("premium_since", { ascending: false, nullsFirst: false });
-```
+**Arquivo:** `src/components/home/MetricasMiniBanner.tsx`
 
-### 2. Derivação do plano (mensal vs anual)
+3. **Layout 2×2 no mobile**
+   - Em `SetA` e `SetB` (e nos skeletons), trocar `grid-cols-4` por `grid-cols-2 sm:grid-cols-2 lg:grid-cols-4`.
+   - Resultado: 2 nuggets por linha, 2 linhas, totalizando 4 cards. Título (frase_nugget) acima e rodapé itálico abaixo permanecem.
+   - Ajustar tamanhos para mobile: aumentar levemente padding dos `CardShell` e manter ícone de fundo proporcional. O `max-w-xl` do container já garante boa largura no celular.
 
-Para cada registro, calcular a diferença em meses entre `premium_until` e `premium_since`:
-
-- Se `>= 12 meses` (ou ~360 dias) → `anual`, valor R$ 597,00
-- Caso contrário → `mensal`, valor R$ 79,90
-- Se `premium_until` ou `premium_since` faltarem → fallback `mensal`
-
-Helper local `derivarPlano(premium_since, premium_until)` retornando `{ plano: "mensal"|"anual", valor: number }`.
-
-### 3. Colunas da tabela
-
-| Coluna | Origem |
-|---|---|
-| Data | `premium_since` (formatado pt-BR) |
-| Nome | `nome_completo ?? nome ?? "—"` |
-| Email | `email` |
-| Plano | badge derivado (`planoBadge`) |
-| Valor | `formatBRL(valor derivado)` |
-| Status | `subscription_status` via `statusBadge` |
-
-### 4. Cards do topo
-
-- **Assinantes ativos** = `count(is_premium && subscription_status === "active")`
-- **Total de assinaturas** = `data.length` (todos com `is_premium = true`)
-- **MRR** = `mensaisAtivos * 79.9 + anuaisAtivos * 49.75` (apenas entre os ativos, mesma fórmula atual mas usando o plano derivado)
-
-### 5. Limpeza
-
-- Remover a interface `Assinatura` antiga e o tipo de retorno baseado em `assinaturas`.
-- Manter o painel "Ativar Premium Manualmente" intacto (já escreve em `user_profiles`); `loadAssinaturas` continua sendo chamado após ativação para refletir o novo premium.
-- Remover o insert em `assinaturas` que foi adicionado no fluxo de ativação manual (não é mais necessário, já que a tabela lê de `user_profiles`).
-
-## Fora de escopo
-
-- Schema do banco, webhooks, RLS — sem mudanças.
-- Página `/admin/assinaturas` ou outras páginas que possam ler de `assinaturas`.
+Sem mudanças em desktop — o banner lateral continua igual.
