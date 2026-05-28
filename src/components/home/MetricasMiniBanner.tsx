@@ -64,12 +64,14 @@ const fmtDec = (n: number | null | undefined) =>
 const CardShell = ({
   children,
   tint,
+  icon: Icon,
 }: {
   children: React.ReactNode;
   tint?: string;
+  icon?: LucideIcon;
 }) => (
   <div
-    className="p-2.5 flex flex-col gap-0.5 border items-center text-center"
+    className="p-2.5 flex flex-col gap-0.5 border items-center text-center relative overflow-hidden"
     style={{
       borderRadius: LEAF,
       borderColor: C.border,
@@ -77,27 +79,31 @@ const CardShell = ({
       fontFamily: SANS,
     }}
   >
-    {children}
+    {Icon && (
+      <Icon
+        size={72}
+        strokeWidth={1.25}
+        className="absolute -bottom-3 -right-3 pointer-events-none"
+        style={{ color: C.primary, opacity: 0.08 }}
+      />
+    )}
+    <div className="relative z-10 flex flex-col gap-0.5 items-center w-full">
+      {children}
+    </div>
   </div>
 );
 
-const CardHeader = ({
-  icon: Icon,
-  label,
-}: {
-  icon: LucideIcon;
-  label: string;
-}) => (
-  <div className="flex items-center justify-center gap-1.5 w-full">
-    <Icon size={16} color={C.primary} />
+const CardHeader = ({ label }: { label: string }) => (
+  <div className="w-full px-0.5">
     <span
-      className="text-[10px] font-bold uppercase tracking-wider truncate"
+      className="block text-[10px] font-bold uppercase tracking-wider leading-tight break-words"
       style={{ color: C.muted }}
     >
       {label}
     </span>
   </div>
 );
+
 
 const BigNumber = ({ value, sub }: { value: string; sub: string }) => (
   <div className="flex flex-col items-center text-center">
