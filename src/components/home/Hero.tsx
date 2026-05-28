@@ -246,6 +246,7 @@ const Hero = () => {
               >
                 Começar <ArrowRight className="ml-2 h-6 w-6 md:h-7 md:w-7" />
               </Button>
+            </div>
           </div>
         </div>
 
@@ -254,8 +255,6 @@ const Hero = () => {
         </div>
       </div>
 
-        </div>
-      </div>
 
       <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-background to-transparent" />
     </section>
