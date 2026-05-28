@@ -288,7 +288,9 @@ const MetricasMiniBanner = () => {
               <Skeleton key={i} className="h-20 w-full" style={{ borderRadius: LEAF }} />
             ))}
           </div>
+        </div>
       ) : (
+
         <>
           <p
             className="text-center text-[13px] leading-snug mb-2 px-2 font-semibold"
