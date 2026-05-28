@@ -172,15 +172,15 @@ const DoshaPie = ({
 };
 
 const TINTS = ["#EEF2FF", "#FFF1F1", "#FFFBEB", "#F4EEFA"];
+
+const SetA = ({ d }: { d: Row }) => (
+  <div className="grid grid-cols-4 gap-2">
     <CardShell tint={TINTS[0]}>
       <CardHeader icon={Users} label="Testes da semana" />
       <BigNumber value={fmtNum(d.testes_7d)} sub="testes 7d" />
     </CardShell>
     <CardShell tint={TINTS[1]}>
       <CardHeader icon={Activity} label="Tendência sazonal" />
-
-    <CardShell tint={TINTS[1]}>
-      <CardHeader icon={Activity} label="Variação" />
       <div className="flex flex-col gap-0.5">
         <DoshaLine
           color={C.vata}
@@ -203,7 +203,7 @@ const TINTS = ["#EEF2FF", "#FFF1F1", "#FFFBEB", "#F4EEFA"];
       </div>
     </CardShell>
     <CardShell tint={TINTS[2]}>
-      <CardHeader icon={Scale} label="IMC médio" />
+      <CardHeader icon={Scale} label="Biometria do Dosha" />
       <div className="flex flex-col gap-0.5">
         <DoshaLine color={C.vata} name="V" value={fmtDec(d.imc_vata)} />
         <DoshaLine color={C.pitta} name="P" value={fmtDec(d.imc_pitta)} />
@@ -211,11 +211,12 @@ const TINTS = ["#EEF2FF", "#FFF1F1", "#FFFBEB", "#F4EEFA"];
       </div>
     </CardShell>
     <CardShell tint={TINTS[3]}>
-      <CardHeader icon={Sparkles} label="Akasha hoje" />
+      <CardHeader icon={Sparkles} label="Consultas Akasha" />
       <BigNumber value={fmtNum(d.akasha_hoje)} sub="consultas hoje" />
     </CardShell>
   </div>
 );
+
 
 const SetB = ({ d }: { d: Row }) => (
   <div className="grid grid-cols-4 gap-2">
