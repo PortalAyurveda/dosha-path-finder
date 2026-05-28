@@ -221,7 +221,7 @@ const SetA = ({ d }: { d: Row }) => (
 const SetB = ({ d }: { d: Row }) => (
   <div className="grid grid-cols-4 gap-2">
     <CardShell tint={TINTS[0]}>
-      <CardHeader icon={PieChart} label="Dominante" />
+      <CardHeader icon={PieChart} label="Perfil predominante" />
       <div className="flex flex-col gap-0.5">
         <DoshaLine color={C.vata} name="V" value={`${fmtDec(d.pct_vata_dom)}%`} />
         <DoshaLine color={C.pitta} name="P" value={`${fmtDec(d.pct_pitta_dom)}%`} />
@@ -229,7 +229,7 @@ const SetB = ({ d }: { d: Row }) => (
       </div>
     </CardShell>
     <CardShell tint={TINTS[1]}>
-      <CardHeader icon={Brain} label="Sintoma" />
+      <CardHeader icon={Brain} label="Sintomas principais" />
       <div className="flex flex-col gap-0.5">
         <DoshaLine color={C.vata} name="V" value={d.sintoma_vata ?? "—"} />
         <DoshaLine color={C.pitta} name="P" value={d.sintoma_pitta ?? "—"} />
@@ -237,7 +237,7 @@ const SetB = ({ d }: { d: Row }) => (
       </div>
     </CardShell>
     <CardShell tint={TINTS[2]}>
-      <CardHeader icon={Calendar} label="Idade" />
+      <CardHeader icon={Calendar} label="Perfil etário" />
       <div className="flex flex-col gap-0.5">
         <DoshaLine color={C.vata} name="V" value={`${fmtNum(d.idade_vata)}a`} />
         <DoshaLine color={C.pitta} name="P" value={`${fmtNum(d.idade_pitta)}a`} />
@@ -245,7 +245,8 @@ const SetB = ({ d }: { d: Row }) => (
       </div>
     </CardShell>
     <CardShell tint={TINTS[3]}>
-      <CardHeader icon={MapPin} label="Terapeutas" />
+      <CardHeader icon={MapPin} label="Terapeutas no Portal" />
+
       <BigNumber value={fmtNum(d.terapeutas)} sub="no portal" />
     </CardShell>
   </div>
