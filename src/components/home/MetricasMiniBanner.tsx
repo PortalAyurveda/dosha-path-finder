@@ -252,7 +252,8 @@ const SetB = ({ d }: { d: Row }) => (
     </CardShell>
     <CardShell tint={TINTS[3]} icon={MapPin}>
       <CardHeader label="Terapeutas no Portal" />
-      <BigNumber value={fmtNum(d.terapeterapeutas ?? d.terapeutas)} sub="no portal" />
+      <BigNumber value={fmtNum(d.terapeutas)} sub="no portal" />
+
     </CardShell>
   </div>
 );
