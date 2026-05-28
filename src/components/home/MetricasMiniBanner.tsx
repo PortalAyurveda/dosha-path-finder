@@ -181,12 +181,12 @@ const TINTS = ["#EEF2FF", "#FFF1F1", "#FFFBEB", "#F4EEFA"];
 
 const SetA = ({ d }: { d: Row }) => (
   <div className="grid grid-cols-4 gap-2">
-    <CardShell tint={TINTS[0]}>
-      <CardHeader icon={Users} label="Testes da semana" />
+    <CardShell tint={TINTS[0]} icon={Users}>
+      <CardHeader label="Testes da semana" />
       <BigNumber value={fmtNum(d.testes_7d)} sub="testes 7d" />
     </CardShell>
-    <CardShell tint={TINTS[1]}>
-      <CardHeader icon={Activity} label="Tendência sazonal" />
+    <CardShell tint={TINTS[1]} icon={Activity}>
+      <CardHeader label="Tendência sazonal" />
       <div className="flex flex-col gap-0.5">
         <DoshaLine
           color={C.vata}
@@ -208,16 +208,16 @@ const SetA = ({ d }: { d: Row }) => (
         />
       </div>
     </CardShell>
-    <CardShell tint={TINTS[2]}>
-      <CardHeader icon={Scale} label="Biometria do Dosha" />
+    <CardShell tint={TINTS[2]} icon={Scale}>
+      <CardHeader label="Biometria do Dosha" />
       <div className="flex flex-col gap-0.5">
         <DoshaLine color={C.vata} name="V" value={fmtDec(d.imc_vata)} />
         <DoshaLine color={C.pitta} name="P" value={fmtDec(d.imc_pitta)} />
         <DoshaLine color={C.kapha} name="K" value={fmtDec(d.imc_kapha)} />
       </div>
     </CardShell>
-    <CardShell tint={TINTS[3]}>
-      <CardHeader icon={Sparkles} label="Consultas Akasha" />
+    <CardShell tint={TINTS[3]} icon={Sparkles}>
+      <CardHeader label="Consultas Akasha" />
       <BigNumber value={fmtNum(d.akasha_hoje)} sub="consultas hoje" />
     </CardShell>
   </div>
@@ -226,37 +226,37 @@ const SetA = ({ d }: { d: Row }) => (
 
 const SetB = ({ d }: { d: Row }) => (
   <div className="grid grid-cols-4 gap-2">
-    <CardShell tint={TINTS[0]}>
-      <CardHeader icon={PieChart} label="Perfil predominante" />
+    <CardShell tint={TINTS[0]} icon={PieChart}>
+      <CardHeader label="Perfil predominante" />
       <div className="flex flex-col gap-0.5">
         <DoshaLine color={C.vata} name="V" value={`${fmtDec(d.pct_vata_dom)}%`} />
         <DoshaLine color={C.pitta} name="P" value={`${fmtDec(d.pct_pitta_dom)}%`} />
         <DoshaLine color={C.kapha} name="K" value={`${fmtDec(d.pct_kapha_dom)}%`} />
       </div>
     </CardShell>
-    <CardShell tint={TINTS[1]}>
-      <CardHeader icon={Brain} label="Sintomas principais" />
+    <CardShell tint={TINTS[1]} icon={Brain}>
+      <CardHeader label="Sintomas principais" />
       <div className="flex flex-col gap-0.5">
         <DoshaLine color={C.vata} name="V" value={d.sintoma_vata ?? "—"} />
         <DoshaLine color={C.pitta} name="P" value={d.sintoma_pitta ?? "—"} />
         <DoshaLine color={C.kapha} name="K" value={d.sintoma_kapha ?? "—"} />
       </div>
     </CardShell>
-    <CardShell tint={TINTS[2]}>
-      <CardHeader icon={Calendar} label="Perfil etário" />
+    <CardShell tint={TINTS[2]} icon={Calendar}>
+      <CardHeader label="Perfil etário" />
       <div className="flex flex-col gap-0.5">
         <DoshaLine color={C.vata} name="V" value={`${fmtNum(d.idade_vata)}a`} />
         <DoshaLine color={C.pitta} name="P" value={`${fmtNum(d.idade_pitta)}a`} />
         <DoshaLine color={C.kapha} name="K" value={`${fmtNum(d.idade_kapha)}a`} />
       </div>
     </CardShell>
-    <CardShell tint={TINTS[3]}>
-      <CardHeader icon={MapPin} label="Terapeutas no Portal" />
-
-      <BigNumber value={fmtNum(d.terapeutas)} sub="no portal" />
+    <CardShell tint={TINTS[3]} icon={MapPin}>
+      <CardHeader label="Terapeutas no Portal" />
+      <BigNumber value={fmtNum(d.terapeterapeutas ?? d.terapeutas)} sub="no portal" />
     </CardShell>
   </div>
 );
+
 
 const MetricasMiniBanner = () => {
   const { data, isLoading, error } = useQuery({
