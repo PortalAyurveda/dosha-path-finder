@@ -180,7 +180,7 @@ const DoshaPie = ({
 const TINTS = ["#EEF2FF", "#FFF1F1", "#FFFBEB", "#F4EEFA"];
 
 const SetA = ({ d }: { d: Row }) => (
-  <div className="grid grid-cols-4 gap-2">
+  <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
     <CardShell tint={TINTS[0]} icon={Users}>
       <CardHeader label="Testes da semana" />
       <BigNumber value={fmtNum(d.testes_7d)} sub="testes 7d" />
@@ -225,7 +225,7 @@ const SetA = ({ d }: { d: Row }) => (
 
 
 const SetB = ({ d }: { d: Row }) => (
-  <div className="grid grid-cols-4 gap-2">
+  <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
     <CardShell tint={TINTS[0]} icon={PieChart}>
       <CardHeader label="Perfil predominante" />
       <div className="flex flex-col gap-0.5">
@@ -290,7 +290,7 @@ const MetricasMiniBanner = () => {
       {isLoading || !data ? (
         <div className="flex flex-col gap-3">
           <Skeleton className="h-4 w-3/4 mx-auto" />
-          <div className="grid grid-cols-4 gap-2">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
             {Array.from({ length: 4 }).map((_, i) => (
               <Skeleton key={i} className="h-20 w-full" style={{ borderRadius: LEAF }} />
             ))}
