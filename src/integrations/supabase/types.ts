@@ -1015,6 +1015,36 @@ export type Database = {
         }
         Relationships: []
       }
+      error_logs: {
+        Row: {
+          contexto: Json | null
+          created_at: string
+          erro: string
+          funcao: string
+          id: string
+          notificado: boolean | null
+          user_id: string | null
+        }
+        Insert: {
+          contexto?: Json | null
+          created_at?: string
+          erro: string
+          funcao: string
+          id?: string
+          notificado?: boolean | null
+          user_id?: string | null
+        }
+        Update: {
+          contexto?: Json | null
+          created_at?: string
+          erro?: string
+          funcao?: string
+          id?: string
+          notificado?: boolean | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       feed_resultados: {
         Row: {
           created_at: string | null

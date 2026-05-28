@@ -172,13 +172,13 @@ const DoshaPie = ({
 };
 
 const TINTS = ["#EEF2FF", "#FFF1F1", "#FFFBEB", "#F4EEFA"];
-
-const SetA = ({ d }: { d: Row }) => (
-  <div className="grid grid-cols-4 gap-2">
     <CardShell tint={TINTS[0]}>
-      <CardHeader icon={Users} label="Semana" />
+      <CardHeader icon={Users} label="Testes da semana" />
       <BigNumber value={fmtNum(d.testes_7d)} sub="testes 7d" />
     </CardShell>
+    <CardShell tint={TINTS[1]}>
+      <CardHeader icon={Activity} label="Tendência sazonal" />
+
     <CardShell tint={TINTS[1]}>
       <CardHeader icon={Activity} label="Variação" />
       <div className="flex flex-col gap-0.5">
