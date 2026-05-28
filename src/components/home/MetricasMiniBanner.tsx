@@ -176,11 +176,11 @@ const TINTS = ["#EEF2FF", "#FFF1F1", "#FFFBEB", "#F4EEFA"];
 const SetA = ({ d }: { d: Row }) => (
   <div className="grid grid-cols-4 gap-2">
     <CardShell tint={TINTS[0]}>
-      <CardHeader icon={Users} label="Semana" />
+      <CardHeader icon={Users} label="Testes da semana" />
       <BigNumber value={fmtNum(d.testes_7d)} sub="testes 7d" />
     </CardShell>
     <CardShell tint={TINTS[1]}>
-      <CardHeader icon={Activity} label="Variação" />
+      <CardHeader icon={Activity} label="Tendência sazonal" />
       <div className="flex flex-col gap-0.5">
         <DoshaLine
           color={C.vata}
@@ -203,7 +203,7 @@ const SetA = ({ d }: { d: Row }) => (
       </div>
     </CardShell>
     <CardShell tint={TINTS[2]}>
-      <CardHeader icon={Scale} label="IMC médio" />
+      <CardHeader icon={Scale} label="Biometria do Dosha" />
       <div className="flex flex-col gap-0.5">
         <DoshaLine color={C.vata} name="V" value={fmtDec(d.imc_vata)} />
         <DoshaLine color={C.pitta} name="P" value={fmtDec(d.imc_pitta)} />
@@ -211,16 +211,17 @@ const SetA = ({ d }: { d: Row }) => (
       </div>
     </CardShell>
     <CardShell tint={TINTS[3]}>
-      <CardHeader icon={Sparkles} label="Akasha hoje" />
+      <CardHeader icon={Sparkles} label="Consultas Akasha" />
       <BigNumber value={fmtNum(d.akasha_hoje)} sub="consultas hoje" />
     </CardShell>
   </div>
 );
 
+
 const SetB = ({ d }: { d: Row }) => (
   <div className="grid grid-cols-4 gap-2">
     <CardShell tint={TINTS[0]}>
-      <CardHeader icon={PieChart} label="Dominante" />
+      <CardHeader icon={PieChart} label="Perfil predominante" />
       <div className="flex flex-col gap-0.5">
         <DoshaLine color={C.vata} name="V" value={`${fmtDec(d.pct_vata_dom)}%`} />
         <DoshaLine color={C.pitta} name="P" value={`${fmtDec(d.pct_pitta_dom)}%`} />
@@ -228,7 +229,7 @@ const SetB = ({ d }: { d: Row }) => (
       </div>
     </CardShell>
     <CardShell tint={TINTS[1]}>
-      <CardHeader icon={Brain} label="Sintoma" />
+      <CardHeader icon={Brain} label="Sintomas principais" />
       <div className="flex flex-col gap-0.5">
         <DoshaLine color={C.vata} name="V" value={d.sintoma_vata ?? "—"} />
         <DoshaLine color={C.pitta} name="P" value={d.sintoma_pitta ?? "—"} />
@@ -236,7 +237,7 @@ const SetB = ({ d }: { d: Row }) => (
       </div>
     </CardShell>
     <CardShell tint={TINTS[2]}>
-      <CardHeader icon={Calendar} label="Idade" />
+      <CardHeader icon={Calendar} label="Perfil etário" />
       <div className="flex flex-col gap-0.5">
         <DoshaLine color={C.vata} name="V" value={`${fmtNum(d.idade_vata)}a`} />
         <DoshaLine color={C.pitta} name="P" value={`${fmtNum(d.idade_pitta)}a`} />
@@ -244,7 +245,8 @@ const SetB = ({ d }: { d: Row }) => (
       </div>
     </CardShell>
     <CardShell tint={TINTS[3]}>
-      <CardHeader icon={MapPin} label="Terapeutas" />
+      <CardHeader icon={MapPin} label="Terapeutas no Portal" />
+
       <BigNumber value={fmtNum(d.terapeutas)} sub="no portal" />
     </CardShell>
   </div>
@@ -288,16 +290,24 @@ const MetricasMiniBanner = () => {
           </div>
         </div>
       ) : (
+
         <>
           <p
-            className="text-center italic text-[11px] leading-snug mb-2 px-2"
+            className="text-center text-[13px] leading-snug mb-2 px-2 font-semibold"
             style={{ color: C.primary, fontFamily: SERIF }}
           >
-            Acompanhe nossas métricas para entender como os Doshas funcionam nas diferentes estações do ano, para cada um de nós. Consegue se reconhecer aqui?
+            {data.frase_nugget ?? "Métricas do Portal Ayurveda"}
           </p>
           {active === 0 ? <SetA d={data} /> : <SetB d={data} />}
+          <p
+            className="text-center italic text-[10px] mt-2 px-2"
+            style={{ color: C.muted, fontFamily: SANS }}
+          >
+            Métricas calculadas diariamente com base no nosso banco de dados.
+          </p>
         </>
       )}
+
     </div>
   );
 };
