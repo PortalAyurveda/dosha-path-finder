@@ -172,7 +172,7 @@ const Hero = () => {
               className="animate-fade-in bg-card/80 backdrop-blur-sm rounded-3xl p-6 xl:p-8 border border-border shadow-lg flex flex-col justify-center space-y-5 h-full"
               style={{ animationDelay: "0.25s" }}
             >
-              <div className="text-center not-italic">
+              <div className="text-center not-italic hidden lg:block">
                 <h1 className="mb-2 text-2xl md:text-3xl font-semibold lg:text-[22px] leading-snug not-italic">
                   Seu guia completo para saúde e longevidade.
                 </h1>
@@ -180,8 +180,10 @@ const Hero = () => {
                   Descubra e cuide dos seus Doshas por meio da medicina milenar.
                 </p>
               </div>
+              <h1 className="sr-only lg:hidden">Seu guia completo para saúde e longevidade.</h1>
 
-              <hr className="border-border" />
+              <hr className="border-border hidden lg:block" />
+
 
               <p className="font-serif font-semibold text-foreground text-base text-center">
                 Comece seu Teste de Dosha Gratuito
