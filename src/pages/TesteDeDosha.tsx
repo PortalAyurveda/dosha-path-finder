@@ -640,7 +640,17 @@ const [step, setStep] = useState(0);
   }
 
   return (
-    <PageContainer title="Teste de Dosha" description="Descubra seu dosha predominante com nosso teste personalizado baseado no Ayurveda.">
+    <>
+      <Helmet>
+        <title>Teste de Dosha | Descubra se você é Vata, Pitta ou Kapha</title>
+        <meta name="description" content="Descubra seu Dosha e cuide da sua saúde de forma individual. Crie sua dieta e rotina com o resultado imediato gerado para você." />
+        <link rel="canonical" href="https://portalayurveda.com/teste-de-dosha" />
+        <meta property="og:title" content="Teste de Dosha | Portal Ayurveda" />
+        <meta property="og:description" content="Descubra seu Dosha. Análise personalizada e, alimentação e rotina ayurvédica." />
+        <meta property="og:url" content="https://portalayurveda.com/teste-de-dosha" />
+        <meta property="og:image" content="https://api.portalayurveda.com/storage/v1/object/public/portal_images/logo-positivo.png" />
+      </Helmet>
+      <PageContainer title="Teste de Dosha" description="Descubra seu dosha predominante com nosso teste personalizado baseado no Ayurveda.">
       <div className="max-w-2xl mx-auto">
         {/* Progress */}
         <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm pb-3 pt-1">
