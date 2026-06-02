@@ -163,7 +163,7 @@ const Webinar = ({ data }: { data: WebinarRow }) => {
           </div>
 
 
-          <div className="grid md:grid-cols-[1fr_340px] gap-3 md:gap-4 items-start mt-3">
+          <div className="grid md:grid-cols-[1fr_320px] gap-3 md:gap-6 items-stretch mt-3">
 
             <div>
               {dataFmt && (
@@ -212,8 +212,8 @@ const Webinar = ({ data }: { data: WebinarRow }) => {
                 <Button
                   type="submit"
                   disabled={submitting}
-                  className="w-full font-sans font-bold text-base py-6 rounded-full text-white border-0 tracking-wide"
-                  style={{ background: green }}
+                  className="w-full font-sans font-bold text-base py-6 rounded-full border-0 tracking-wide"
+                  style={{ background: greenDark, color: NAVY }}
                 >
                   {submitting ? (
                     <>
@@ -235,11 +235,17 @@ const Webinar = ({ data }: { data: WebinarRow }) => {
             </div>
 
             {data.foto_url && (
-              <div className="flex justify-center md:justify-end items-end order-first md:order-last md:self-end">
+              <div className="flex justify-center md:justify-end items-stretch order-first md:order-last h-full">
                 <img
                   src={data.foto_url}
                   alt={data.titulo_evento}
-                  className="w-[260px] md:w-[300px] h-auto select-none block"
+                  className="w-[280px] md:w-full md:h-full max-h-[520px] object-contain object-bottom select-none block"
+                  style={{
+                    WebkitMaskImage:
+                      "linear-gradient(to bottom, black 0%, black 78%, transparent 100%)",
+                    maskImage:
+                      "linear-gradient(to bottom, black 0%, black 78%, transparent 100%)",
+                  }}
                   loading="lazy"
                 />
               </div>
