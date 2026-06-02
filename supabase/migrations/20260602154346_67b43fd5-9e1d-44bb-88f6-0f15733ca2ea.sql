@@ -1,0 +1,1 @@
+UPDATE public.aulas_webinar SET foto_url = 'https://api.portalayurveda.com/storage/v1/object/public/portal_images/b8f47f-5f003e6165b44645b7163ec3dd646d32mv2-1.webp' WHERE slug = 'aula-secreta-alimentacao';

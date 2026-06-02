@@ -8,7 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { getPalette, type LandingPaletteKey } from "@/data/landingPalettes";
-import { Calendar, Loader2 } from "lucide-react";
+import { Mail, Loader2 } from "lucide-react";
 
 interface WebinarRow {
   id: string;
@@ -23,6 +23,7 @@ interface WebinarRow {
 }
 
 const N8N_WEBHOOK = "https://n8n.portalayurveda.com/webhook/samkhya-pedido";
+const NAVY = "#1e2547";
 
 function formatDateLong(iso: string | null): string | null {
   if (!iso) return null;
@@ -30,7 +31,7 @@ function formatDateLong(iso: string | null): string | null {
     const d = new Date(iso);
     const dia = d.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric" });
     const hora = d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
-    return `Dia ${dia} às ${hora}`;
+    return `Dia ${dia} às ${hora}h.`;
   } catch {
     return iso;
   }
@@ -43,6 +44,10 @@ const Webinar = ({ data }: { data: WebinarRow }) => {
     return getPalette(key) ?? getPalette("alimentacao-verde");
   }, [data.tema_paleta]);
   const branding = palette.branding;
+  // Always navy for legibility; verde acentua data, CTA e fundo de página
+  const ink = NAVY;
+  const green = branding.primaryColor;
+  const greenDark = branding.darkColor !== branding.primaryColor ? branding.darkColor : "#3f7a4f";
 
   const [email, setEmail] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
@@ -59,7 +64,6 @@ const Webinar = ({ data }: { data: WebinarRow }) => {
     }
     setSubmitting(true);
     try {
-      // Lookup dosha do último teste
       const { data: dosha } = await supabase
         .from("doshas_registros")
         .select("nome, doshaprincipal")
@@ -90,7 +94,6 @@ const Webinar = ({ data }: { data: WebinarRow }) => {
         return;
       }
 
-      // n8n notify (best-effort)
       try {
         await fetch(N8N_WEBHOOK, {
           method: "POST",
@@ -115,8 +118,8 @@ const Webinar = ({ data }: { data: WebinarRow }) => {
 
   return (
     <div
-      className="min-h-screen w-full py-10 md:py-16 px-4"
-      style={{ background: branding.warmBg ?? "#FAF9F6" }}
+      className="min-h-screen w-full py-8 md:py-16 px-4"
+      style={{ background: `${green}26` }}
     >
       <Helmet>
         <title>{`${data.titulo_evento} — Portal Ayurveda`}</title>
@@ -124,102 +127,126 @@ const Webinar = ({ data }: { data: WebinarRow }) => {
       </Helmet>
 
       <div
-        className="mx-auto w-full max-w-[560px] rounded-3xl shadow-xl overflow-hidden bg-white border"
-        style={{ borderColor: `${branding.primaryColor}55` }}
+        className="mx-auto w-full max-w-[640px] rounded-[2rem] shadow-xl overflow-hidden bg-white border"
+        style={{ borderColor: `${green}55` }}
       >
-        <div
-          className="px-6 pt-6 pb-4 text-center"
-          style={{ background: `${branding.primaryColor}30` }}
-        >
-          <h1
-            className="font-serif text-2xl md:text-3xl font-bold leading-tight"
-            style={{ color: branding.darkColor }}
-          >
-            {data.titulo_evento}
-          </h1>
-          {data.subtitulo && (
-            <p className="font-sans text-sm md:text-base mt-2" style={{ color: branding.darkColor }}>
-              {data.subtitulo}
-            </p>
-          )}
-          {dataFmt && (
-            <div
-              className="inline-flex items-center gap-2 mt-3 px-3 py-1.5 rounded-full text-xs font-medium"
-              style={{ background: "white", color: branding.darkColor }}
-            >
-              <Calendar className="h-3.5 w-3.5" />
-              {dataFmt}
+        <div className="grid md:grid-cols-[1fr_220px] gap-0">
+          <div className="p-6 md:p-8 order-1">
+            {/* Envelope icon */}
+            <div className="flex justify-center mb-3">
+              <div
+                className="w-12 h-12 rounded-full flex items-center justify-center"
+                style={{ background: `${green}33` }}
+              >
+                <Mail className="h-6 w-6" style={{ color: greenDark }} />
+              </div>
             </div>
-          )}
-        </div>
 
-        <div className="grid md:grid-cols-2 gap-0">
+            <h1
+              className="font-serif italic text-center text-[1.5rem] md:text-[1.75rem] font-bold leading-tight"
+              style={{ color: ink }}
+            >
+              {data.titulo_evento}
+            </h1>
+
+            {(data.subtitulo || data.copy_descricao) && (
+              <div className="mt-4 space-y-2 font-sans text-[0.95rem] leading-relaxed" style={{ color: ink }}>
+                {data.subtitulo && <p className="font-medium">{data.subtitulo}</p>}
+                {data.copy_descricao && (
+                  <p className="whitespace-pre-line opacity-90">{data.copy_descricao}</p>
+                )}
+              </div>
+            )}
+
+            {dataFmt && (
+              <p
+                className="font-serif italic font-bold text-center md:text-left mt-5 mb-1"
+                style={{ color: greenDark, letterSpacing: "0.18em", fontSize: "1.05rem" }}
+              >
+                {dataFmt}
+              </p>
+            )}
+
+            <form onSubmit={onSubmit} className="mt-5 space-y-4">
+              <div className="space-y-1.5">
+                <Label htmlFor="email" className="font-sans text-sm font-semibold" style={{ color: ink }}>
+                  Seu e-mail (para receber o link)
+                </Label>
+                <Input
+                  id="email"
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="digite seu e-mail aqui"
+                  className="h-11 rounded-md border-0"
+                  style={{ background: `${green}25`, color: ink }}
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="whatsapp" className="font-sans text-sm font-semibold" style={{ color: ink }}>
+                  Seu WhatsApp (com DDD)
+                </Label>
+                <Input
+                  id="whatsapp"
+                  type="tel"
+                  required
+                  value={whatsapp}
+                  onChange={(e) => setWhatsapp(e.target.value)}
+                  placeholder="(00) 00000-0000"
+                  className="h-11 rounded-md border-0"
+                  style={{ background: `${green}25`, color: ink }}
+                />
+              </div>
+
+              <Button
+                type="submit"
+                disabled={submitting}
+                className="w-full font-sans font-bold text-base py-6 rounded-full text-white border-0 tracking-wide"
+                style={{ background: green }}
+              >
+                {submitting ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                    ENVIANDO...
+                  </>
+                ) : (
+                  "CONFIRMAR PRESENÇA"
+                )}
+              </Button>
+
+              <p
+                className="text-center font-serif italic text-sm pt-1"
+                style={{ color: ink }}
+              >
+                Evento online e gratuito.
+              </p>
+            </form>
+          </div>
+
           {data.foto_url && (
-            <div className="order-2 md:order-2 md:min-h-[360px]">
+            <div className="order-2 hidden md:block bg-white">
               <img
                 src={data.foto_url}
                 alt={data.titulo_evento}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover object-center"
                 loading="lazy"
               />
             </div>
           )}
-
-          <form
-            onSubmit={onSubmit}
-            className={`p-6 space-y-4 order-1 md:order-1 ${!data.foto_url ? "md:col-span-2" : ""}`}
-          >
-            {data.copy_descricao && (
-              <p className="font-sans text-sm text-foreground/85 whitespace-pre-line leading-relaxed">
-                {data.copy_descricao}
-              </p>
-            )}
-
-            <div className="space-y-1.5">
-              <Label htmlFor="email" className="text-xs uppercase tracking-wide">
-                E-mail
-              </Label>
-              <Input
-                id="email"
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="seu@email.com"
-              />
-            </div>
-
-            <div className="space-y-1.5">
-              <Label htmlFor="whatsapp" className="text-xs uppercase tracking-wide">
-                WhatsApp
-              </Label>
-              <Input
-                id="whatsapp"
-                type="tel"
-                required
-                value={whatsapp}
-                onChange={(e) => setWhatsapp(e.target.value)}
-                placeholder="(11) 99999-9999"
-              />
-            </div>
-
-            <Button
-              type="submit"
-              disabled={submitting}
-              className="w-full font-sans font-bold text-base py-6 rounded-full text-white border-0"
-              style={{ background: branding.darkColor }}
-            >
-              {submitting ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                  Enviando...
-                </>
-              ) : (
-                "Quero participar"
-              )}
-            </Button>
-          </form>
         </div>
+
+        {data.foto_url && (
+          <div className="md:hidden">
+            <img
+              src={data.foto_url}
+              alt={data.titulo_evento}
+              className="w-full h-56 object-cover object-center"
+              loading="lazy"
+            />
+          </div>
+        )}
       </div>
     </div>
   );
@@ -250,7 +277,7 @@ const WebinarRoute = () => {
   if (loading) {
     return (
       <div className="min-h-screen w-full bg-background py-12 px-4">
-        <Skeleton className="mx-auto max-w-[560px] h-[480px] rounded-3xl" />
+        <Skeleton className="mx-auto max-w-[640px] h-[520px] rounded-3xl" />
       </div>
     );
   }
