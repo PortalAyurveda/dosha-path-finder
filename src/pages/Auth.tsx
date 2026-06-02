@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Helmet } from "react-helmet-async";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import PageContainer from "@/components/PageContainer";
 import { supabase } from "@/integrations/supabase/client";
