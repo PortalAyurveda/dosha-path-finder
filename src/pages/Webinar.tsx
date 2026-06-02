@@ -128,7 +128,7 @@ const Webinar = ({ data }: { data: WebinarRow }) => {
 
       <div className="mx-auto w-full max-w-[760px]">
         <div
-          className="rounded-[2rem] shadow-xl bg-white border p-5 md:p-8 overflow-hidden"
+          className="relative rounded-[2rem] shadow-xl bg-white border p-5 md:p-8 overflow-hidden"
           style={{ borderColor: `${green}55` }}
         >
           {/* Envelope icon */}
@@ -149,7 +149,7 @@ const Webinar = ({ data }: { data: WebinarRow }) => {
           </h1>
 
           <div
-            className="mt-3 space-y-1 font-sans text-[0.95rem] leading-relaxed text-left"
+            className="mt-3 space-y-1 font-sans text-[0.95rem] leading-relaxed text-left md:pr-[300px]"
             style={{ color: ink }}
           >
             {data.subtitulo && data.titulo_evento && (
@@ -162,95 +162,108 @@ const Webinar = ({ data }: { data: WebinarRow }) => {
             )}
           </div>
 
+          <div className="mt-3 md:pr-[300px]">
+            {dataFmt && (
+              <p
+                className="font-serif italic font-bold text-left mb-2"
+                style={{ color: greenDark, letterSpacing: "0.18em", fontSize: "1.05rem" }}
+              >
+                {dataFmt}
+              </p>
+            )}
 
-          <div className="grid md:grid-cols-[1fr_320px] gap-3 md:gap-6 items-stretch mt-3">
+            <form onSubmit={onSubmit} className="space-y-3">
+              <div className="space-y-1.5">
+                <Label htmlFor="email" className="font-sans text-sm font-semibold" style={{ color: ink }}>
+                  Seu e-mail (para receber o link)
+                </Label>
+                <Input
+                  id="email"
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="digite seu e-mail aqui"
+                  className="h-11 rounded-md border-0"
+                  style={{ background: `${green}25`, color: ink }}
+                />
+              </div>
 
-            <div>
-              {dataFmt && (
-                <p
-                  className="font-serif italic font-bold text-left mb-2"
-                  style={{ color: greenDark, letterSpacing: "0.18em", fontSize: "1.05rem" }}
-                >
-                  {dataFmt}
-                </p>
-              )}
+              <div className="space-y-1.5">
+                <Label htmlFor="whatsapp" className="font-sans text-sm font-semibold" style={{ color: ink }}>
+                  Seu WhatsApp (com DDD)
+                </Label>
+                <Input
+                  id="whatsapp"
+                  type="tel"
+                  required
+                  value={whatsapp}
+                  onChange={(e) => setWhatsapp(e.target.value)}
+                  placeholder="(00) 00000-0000"
+                  className="h-11 rounded-md border-0"
+                  style={{ background: `${green}25`, color: ink }}
+                />
+              </div>
 
-              <form onSubmit={onSubmit} className="space-y-3">
+              <Button
+                type="submit"
+                disabled={submitting}
+                className="w-full font-sans font-bold text-base py-6 rounded-full border-0 tracking-wide"
+                style={{ background: greenDark, color: NAVY }}
+              >
+                {submitting ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                    ENVIANDO...
+                  </>
+                ) : (
+                  "CONFIRMAR PRESENÇA"
+                )}
+              </Button>
 
-                <div className="space-y-1.5">
-                  <Label htmlFor="email" className="font-sans text-sm font-semibold" style={{ color: ink }}>
-                    Seu e-mail (para receber o link)
-                  </Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="digite seu e-mail aqui"
-                    className="h-11 rounded-md border-0"
-                    style={{ background: `${green}25`, color: ink }}
-                  />
-                </div>
+              <p
+                className="text-center font-serif italic text-sm pt-1"
+                style={{ color: ink }}
+              >
+                Evento online e gratuito.
+              </p>
+            </form>
+          </div>
 
-                <div className="space-y-1.5">
-                  <Label htmlFor="whatsapp" className="font-sans text-sm font-semibold" style={{ color: ink }}>
-                    Seu WhatsApp (com DDD)
-                  </Label>
-                  <Input
-                    id="whatsapp"
-                    type="tel"
-                    required
-                    value={whatsapp}
-                    onChange={(e) => setWhatsapp(e.target.value)}
-                    placeholder="(00) 00000-0000"
-                    className="h-11 rounded-md border-0"
-                    style={{ background: `${green}25`, color: ink }}
-                  />
-                </div>
-
-                <Button
-                  type="submit"
-                  disabled={submitting}
-                  className="w-full font-sans font-bold text-base py-6 rounded-full border-0 tracking-wide"
-                  style={{ background: greenDark, color: NAVY }}
-                >
-                  {submitting ? (
-                    <>
-                      <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                      ENVIANDO...
-                    </>
-                  ) : (
-                    "CONFIRMAR PRESENÇA"
-                  )}
-                </Button>
-
-                <p
-                  className="text-center font-serif italic text-sm pt-1"
-                  style={{ color: ink }}
-                >
-                  Evento online e gratuito.
-                </p>
-              </form>
-            </div>
-
-            {data.foto_url && (
-              <div className="flex justify-center md:justify-end items-stretch order-first md:order-last h-full">
+          {data.foto_url && (
+            <>
+              {/* Mobile: foto no fluxo, abaixo do form */}
+              <div className="md:hidden flex justify-center mt-4 -mb-5">
                 <img
                   src={data.foto_url}
                   alt={data.titulo_evento}
-                  className="w-[280px] md:w-full md:h-full max-h-[520px] object-contain object-bottom select-none block"
+                  className="w-[220px] object-contain object-bottom select-none block"
                   style={{
                     WebkitMaskImage:
-                      "linear-gradient(to bottom, black 0%, black 78%, transparent 100%)",
+                      "linear-gradient(to bottom, black 0%, black 80%, transparent 100%)",
                     maskImage:
-                      "linear-gradient(to bottom, black 0%, black 78%, transparent 100%)",
+                      "linear-gradient(to bottom, black 0%, black 80%, transparent 100%)",
                   }}
                   loading="lazy"
                 />
               </div>
-            )}
-          </div>
+
+              {/* Desktop: foto ancorada ao canto inferior direito do card */}
+              <img
+                src={data.foto_url}
+                alt=""
+                aria-hidden="true"
+                className="hidden md:block absolute bottom-0 right-0 w-[320px] h-[92%] object-contain object-bottom select-none pointer-events-none"
+                style={{
+                  WebkitMaskImage:
+                    "linear-gradient(to bottom, black 0%, black 82%, transparent 100%)",
+                  maskImage:
+                    "linear-gradient(to bottom, black 0%, black 82%, transparent 100%)",
+                }}
+                loading="lazy"
+              />
+            </>
+          )}
         </div>
       </div>
     </div>
