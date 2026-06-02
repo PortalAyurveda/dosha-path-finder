@@ -126,115 +126,112 @@ const Webinar = ({ data }: { data: WebinarRow }) => {
         <meta name="description" content={data.copy_descricao ?? data.titulo_evento} />
       </Helmet>
 
-      <div
-        className="mx-auto w-full max-w-[640px] rounded-[2rem] shadow-xl overflow-hidden bg-white border"
-        style={{ borderColor: `${green}55` }}
-      >
-        <div className="grid md:grid-cols-[1fr_220px] gap-0">
-          <div className="p-6 md:p-8 order-1">
-            {/* Envelope icon */}
-            <div className="flex justify-center mb-3">
-              <div
-                className="w-12 h-12 rounded-full flex items-center justify-center"
-                style={{ background: `${green}33` }}
-              >
-                <Mail className="h-6 w-6" style={{ color: greenDark }} />
-              </div>
-            </div>
+      <div className="relative mx-auto w-full max-w-[720px]">
+        {/* PNG sobreposto à direita (desktop) */}
+        {data.foto_url && (
+          <img
+            src={data.foto_url}
+            alt={data.titulo_evento}
+            className="hidden md:block absolute right-[-90px] bottom-0 w-[280px] h-auto z-10 pointer-events-none select-none"
+            loading="lazy"
+          />
+        )}
 
-            <h1
-              className="font-serif italic text-center text-[1.5rem] md:text-[1.75rem] font-bold leading-tight"
-              style={{ color: ink }}
+        <div
+          className="relative rounded-[2rem] shadow-xl bg-white border p-6 md:p-10 md:pr-32"
+          style={{ borderColor: `${green}55` }}
+        >
+          {/* Envelope icon */}
+          <div className="flex justify-center mb-3">
+            <div
+              className="w-12 h-12 rounded-full flex items-center justify-center"
+              style={{ background: `${green}33` }}
             >
-              {data.titulo_evento}
-            </h1>
-
-            {(data.subtitulo || data.copy_descricao) && (
-              <div className="mt-4 space-y-2 font-sans text-[0.95rem] leading-relaxed" style={{ color: ink }}>
-                {data.subtitulo && <p className="font-medium">{data.subtitulo}</p>}
-                {data.copy_descricao && (
-                  <p className="whitespace-pre-line opacity-90">{data.copy_descricao}</p>
-                )}
-              </div>
-            )}
-
-            {dataFmt && (
-              <p
-                className="font-serif italic font-bold text-center md:text-left mt-5 mb-1"
-                style={{ color: greenDark, letterSpacing: "0.18em", fontSize: "1.05rem" }}
-              >
-                {dataFmt}
-              </p>
-            )}
-
-            <form onSubmit={onSubmit} className="mt-5 space-y-4">
-              <div className="space-y-1.5">
-                <Label htmlFor="email" className="font-sans text-sm font-semibold" style={{ color: ink }}>
-                  Seu e-mail (para receber o link)
-                </Label>
-                <Input
-                  id="email"
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="digite seu e-mail aqui"
-                  className="h-11 rounded-md border-0"
-                  style={{ background: `${green}25`, color: ink }}
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <Label htmlFor="whatsapp" className="font-sans text-sm font-semibold" style={{ color: ink }}>
-                  Seu WhatsApp (com DDD)
-                </Label>
-                <Input
-                  id="whatsapp"
-                  type="tel"
-                  required
-                  value={whatsapp}
-                  onChange={(e) => setWhatsapp(e.target.value)}
-                  placeholder="(00) 00000-0000"
-                  className="h-11 rounded-md border-0"
-                  style={{ background: `${green}25`, color: ink }}
-                />
-              </div>
-
-              <Button
-                type="submit"
-                disabled={submitting}
-                className="w-full font-sans font-bold text-base py-6 rounded-full text-white border-0 tracking-wide"
-                style={{ background: green }}
-              >
-                {submitting ? (
-                  <>
-                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                    ENVIANDO...
-                  </>
-                ) : (
-                  "CONFIRMAR PRESENÇA"
-                )}
-              </Button>
-
-              <p
-                className="text-center font-serif italic text-sm pt-1"
-                style={{ color: ink }}
-              >
-                Evento online e gratuito.
-              </p>
-            </form>
+              <Mail className="h-6 w-6" style={{ color: greenDark }} />
+            </div>
           </div>
 
-          {data.foto_url && (
-            <div className="order-2 hidden md:block bg-white">
-              <img
-                src={data.foto_url}
-                alt={data.titulo_evento}
-                className="w-full h-full object-cover object-center"
-                loading="lazy"
-              />
+          <h1
+            className="font-serif italic text-center text-[1.5rem] md:text-[1.75rem] font-bold leading-tight"
+            style={{ color: ink }}
+          >
+            {data.titulo_evento}
+          </h1>
+
+          {(data.subtitulo || data.copy_descricao) && (
+            <div className="mt-4 space-y-2 font-sans text-[0.95rem] leading-relaxed text-center" style={{ color: ink }}>
+              {data.subtitulo && <p className="font-medium">{data.subtitulo}</p>}
+              {data.copy_descricao && (
+                <p className="whitespace-pre-line opacity-90">{data.copy_descricao}</p>
+              )}
             </div>
           )}
+
+          {dataFmt && (
+            <p
+              className="font-serif italic font-bold text-center mt-5 mb-1"
+              style={{ color: greenDark, letterSpacing: "0.18em", fontSize: "1.05rem" }}
+            >
+              {dataFmt}
+            </p>
+          )}
+
+          <form onSubmit={onSubmit} className="mt-5 space-y-4 max-w-md mx-auto md:mx-0 md:ml-auto">
+            <div className="space-y-1.5">
+              <Label htmlFor="email" className="font-sans text-sm font-semibold" style={{ color: ink }}>
+                Seu e-mail (para receber o link)
+              </Label>
+              <Input
+                id="email"
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="digite seu e-mail aqui"
+                className="h-11 rounded-md border-0"
+                style={{ background: `${green}25`, color: ink }}
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <Label htmlFor="whatsapp" className="font-sans text-sm font-semibold" style={{ color: ink }}>
+                Seu WhatsApp (com DDD)
+              </Label>
+              <Input
+                id="whatsapp"
+                type="tel"
+                required
+                value={whatsapp}
+                onChange={(e) => setWhatsapp(e.target.value)}
+                placeholder="(00) 00000-0000"
+                className="h-11 rounded-md border-0"
+                style={{ background: `${green}25`, color: ink }}
+              />
+            </div>
+
+            <Button
+              type="submit"
+              disabled={submitting}
+              className="w-full font-sans font-bold text-base py-6 rounded-full text-white border-0 tracking-wide"
+              style={{ background: green }}
+            >
+              {submitting ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                  ENVIANDO...
+                </>
+              ) : (
+                "CONFIRMAR PRESENÇA"
+              )}
+            </Button>
+
+            <p
+              className="text-center font-serif italic text-sm pt-1"
+              style={{ color: ink }}
+            >
+              Evento online e gratuito.
+            </p>
+          </form>
         </div>
 
         {data.foto_url && (
