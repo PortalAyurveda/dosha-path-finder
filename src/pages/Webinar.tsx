@@ -145,22 +145,23 @@ const Webinar = ({ data }: { data: WebinarRow }) => {
             className="font-serif italic text-center text-[1.5rem] md:text-[1.75rem] font-bold leading-tight"
             style={{ color: ink }}
           >
-            {data.titulo_evento}
+            {data.subtitulo || data.titulo_evento}
           </h1>
 
-          {(data.subtitulo || data.copy_descricao) && (
-            <div
-              className="mt-2 space-y-1 font-sans text-[0.95rem] leading-relaxed text-left"
-              style={{ color: ink }}
-            >
-              {data.subtitulo && <p className="font-medium">{data.subtitulo}</p>}
-              {data.copy_descricao && (
-                <p className="whitespace-pre-line opacity-90">
-                  {data.copy_descricao}
-                </p>
-              )}
-            </div>
-          )}
+          <div
+            className="mt-3 space-y-1 font-sans text-[0.95rem] leading-relaxed text-left"
+            style={{ color: ink }}
+          >
+            {data.subtitulo && data.titulo_evento && (
+              <p className="opacity-90">{data.titulo_evento}</p>
+            )}
+            {data.copy_descricao && (
+              <p className="whitespace-pre-line opacity-90">
+                {data.copy_descricao}
+              </p>
+            )}
+          </div>
+
 
           <div className="grid md:grid-cols-[1fr_340px] gap-3 md:gap-4 items-start mt-3">
 
@@ -234,11 +235,11 @@ const Webinar = ({ data }: { data: WebinarRow }) => {
             </div>
 
             {data.foto_url && (
-              <div className="flex justify-center md:justify-end items-end order-first md:order-last -mb-5 md:-mb-8 md:-mr-8 md:self-end">
+              <div className="flex justify-center md:justify-end items-end order-first md:order-last md:self-end">
                 <img
                   src={data.foto_url}
                   alt={data.titulo_evento}
-                  className="w-[280px] md:w-[380px] h-auto select-none block"
+                  className="w-[260px] md:w-[300px] h-auto select-none block"
                   loading="lazy"
                 />
               </div>
