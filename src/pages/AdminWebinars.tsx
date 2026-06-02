@@ -216,11 +216,12 @@ const AdminWebinars = () => {
       };
 
       let error;
-      const payloadAny = payload as unknown as Record<string, unknown>;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const client = supabase.from("aulas_webinar") as any;
       if (editing.id) {
-        ({ error } = await supabase.from("aulas_webinar").update(payloadAny).eq("id", editing.id));
+        ({ error } = await client.update(payload).eq("id", editing.id));
       } else {
-        ({ error } = await supabase.from("aulas_webinar").insert(payloadAny));
+        ({ error } = await client.insert(payload));
       }
       if (error) {
         toast.error("Erro ao salvar: " + error.message);
