@@ -216,10 +216,11 @@ const AdminWebinars = () => {
       };
 
       let error;
+      const payloadAny = payload as unknown as Record<string, unknown>;
       if (editing.id) {
-        ({ error } = await supabase.from("aulas_webinar").update(payload).eq("id", editing.id));
+        ({ error } = await supabase.from("aulas_webinar").update(payloadAny).eq("id", editing.id));
       } else {
-        ({ error } = await supabase.from("aulas_webinar").insert(payload));
+        ({ error } = await supabase.from("aulas_webinar").insert(payloadAny));
       }
       if (error) {
         toast.error("Erro ao salvar: " + error.message);
@@ -261,7 +262,7 @@ const AdminWebinars = () => {
   return (
     <>
       <AdminNav />
-      <PageContainer>
+      <PageContainer title="Webinars" description="CMS de landing pages de webinars">
         <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
           <h1 className="font-serif text-2xl md:text-3xl font-bold text-primary">Webinars</h1>
           {!editing && (
