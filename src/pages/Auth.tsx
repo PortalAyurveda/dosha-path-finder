@@ -262,6 +262,7 @@ const Auth = () => {
         </div>
       </div>
     </PageContainer>
+    </>
   );
 };
 
