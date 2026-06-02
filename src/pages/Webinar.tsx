@@ -176,7 +176,7 @@ const Webinar = ({ data }: { data: WebinarRow }) => {
             </p>
           )}
 
-          <form onSubmit={onSubmit} className="mt-5 space-y-4 max-w-md mx-auto md:mx-0 md:ml-auto">
+          <form onSubmit={onSubmit} className="mt-5 space-y-4 max-w-md mx-auto md:mx-0">
             <div className="space-y-1.5">
               <Label htmlFor="email" className="font-sans text-sm font-semibold" style={{ color: ink }}>
                 Seu e-mail (para receber o link)
