@@ -72,3 +72,15 @@ Criar todas as rotas com páginas placeholder estilizadas:
 - Instalar e configurar `react-helmet-async`.
 
 - Cada rota e página deve conter suas tags `<title>` e `<meta description>` pertinentes e otimizadas para busca orgânica.
+
+### 8. Paletas de landing pages (cursos, eventos, anúncios)
+
+- Catálogo único em [`src/data/landingPalettes.ts`](src/data/landingPalettes.ts), documentado em [`landing-palettes.md`](landing-palettes.md).
+
+- Toda landing nova (curso, aula, evento, anúncio) **deve** escolher uma `LandingPaletteKey` do registry via `getPalette('key')` / `getPaletteBranding('key')`.
+
+- É **proibido** hard-codar hex novo em landing page. Se precisar de tema novo, adicione antes em `LANDING_PALETTES` e atualize `landing-palettes.md`.
+
+- Os componentes em `src/components/course/*` já consomem `CourseBranding` — qualquer paleta do catálogo é plug-and-play.
+
+- O futuro CMS de landings consome `landingPaletteOptions` para popular o dropdown de tema.
