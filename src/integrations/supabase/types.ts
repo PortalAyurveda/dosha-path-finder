@@ -371,6 +371,39 @@ export type Database = {
         }
         Relationships: []
       }
+      captacao_aula_secreta: {
+        Row: {
+          created_at: string | null
+          dosha: string | null
+          email: string
+          email_enviado: boolean | null
+          evento: string | null
+          id: string
+          nome: string | null
+          whatsapp: string
+        }
+        Insert: {
+          created_at?: string | null
+          dosha?: string | null
+          email: string
+          email_enviado?: boolean | null
+          evento?: string | null
+          id?: string
+          nome?: string | null
+          whatsapp: string
+        }
+        Update: {
+          created_at?: string | null
+          dosha?: string | null
+          email?: string
+          email_enviado?: boolean | null
+          evento?: string | null
+          id?: string
+          nome?: string | null
+          whatsapp?: string
+        }
+        Relationships: []
+      }
       chat_aula: {
         Row: {
           created_at: string | null
