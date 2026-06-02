@@ -200,6 +200,63 @@ export type Database = {
         }
         Relationships: []
       }
+      aulas_webinar: {
+        Row: {
+          ativo: boolean | null
+          bullets: Json | null
+          copy_box_whatsapp: string | null
+          copy_confirmacao_subtitulo: string | null
+          copy_confirmacao_titulo: string | null
+          copy_descricao: string | null
+          created_at: string | null
+          data_hora: string | null
+          foto_url: string | null
+          id: string
+          link_whatsapp: string | null
+          slug: string
+          subtitulo: string | null
+          tema_paleta: string
+          titulo_evento: string
+          updated_at: string | null
+        }
+        Insert: {
+          ativo?: boolean | null
+          bullets?: Json | null
+          copy_box_whatsapp?: string | null
+          copy_confirmacao_subtitulo?: string | null
+          copy_confirmacao_titulo?: string | null
+          copy_descricao?: string | null
+          created_at?: string | null
+          data_hora?: string | null
+          foto_url?: string | null
+          id?: string
+          link_whatsapp?: string | null
+          slug: string
+          subtitulo?: string | null
+          tema_paleta?: string
+          titulo_evento: string
+          updated_at?: string | null
+        }
+        Update: {
+          ativo?: boolean | null
+          bullets?: Json | null
+          copy_box_whatsapp?: string | null
+          copy_confirmacao_subtitulo?: string | null
+          copy_confirmacao_titulo?: string | null
+          copy_descricao?: string | null
+          created_at?: string | null
+          data_hora?: string | null
+          foto_url?: string | null
+          id?: string
+          link_whatsapp?: string | null
+          slug?: string
+          subtitulo?: string | null
+          tema_paleta?: string
+          titulo_evento?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       bkp: {
         Row: {
           agniforte: number | null
@@ -403,6 +460,47 @@ export type Database = {
           whatsapp?: string
         }
         Relationships: []
+      }
+      captacao_webinar: {
+        Row: {
+          created_at: string | null
+          dosha: string | null
+          email: string
+          email_enviado: boolean | null
+          id: string
+          nome: string | null
+          webinar_id: string
+          whatsapp: string
+        }
+        Insert: {
+          created_at?: string | null
+          dosha?: string | null
+          email: string
+          email_enviado?: boolean | null
+          id?: string
+          nome?: string | null
+          webinar_id: string
+          whatsapp: string
+        }
+        Update: {
+          created_at?: string | null
+          dosha?: string | null
+          email?: string
+          email_enviado?: boolean | null
+          id?: string
+          nome?: string | null
+          webinar_id?: string
+          whatsapp?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "captacao_webinar_webinar_id_fkey"
+            columns: ["webinar_id"]
+            isOneToOne: false
+            referencedRelation: "aulas_webinar"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       chat_aula: {
         Row: {

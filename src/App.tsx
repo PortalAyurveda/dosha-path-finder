@@ -54,7 +54,10 @@ const AdminDevlog = lazy(() => import("./pages/AdminDevlog"));
 const AdminRotinas = lazy(() => import("./pages/AdminRotinas"));
 const AdminEstoque = lazy(() => import("./pages/AdminEstoque"));
 const AdminTags = lazy(() => import("./pages/AdminTags"));
-const Aula = lazy(() => import("./pages/Aula"));
+
+const AulaDispatcher = lazy(() => import("./pages/AulaDispatcher"));
+const WebinarConfirmado = lazy(() => import("./pages/WebinarConfirmado"));
+const AdminWebinars = lazy(() => import("./pages/AdminWebinars"));
 const Blog = lazy(() => import("./pages/Blog"));
 const BlogArticle = lazy(() => import("./pages/BlogArticle"));
 const Metricas = lazy(() => import("./pages/Metricas"));
@@ -194,9 +197,12 @@ const RoutedApp = () => {
               <Route path="/admin/estoque" element={<AdminRoute><AdminEstoque /></AdminRoute>} />
               <Route path="/admin/tags" element={<AdminRoute><AdminTags /></AdminRoute>} />
 
-              {/* Aulas ao vivo */}
-              <Route path="/aula/:slug" element={<Aula />} />
+              {/* Aulas ao vivo + webinars (CMS) */}
+              <Route path="/aula/:slug/confirmado" element={<WebinarConfirmado />} />
+              <Route path="/aula/:slug" element={<AulaDispatcher />} />
+              <Route path="/aula-secreta" element={<Navigate to="/aula/aula-secreta-alimentacao" replace />} />
               <Route path="/aovivo" element={<Navigate to="/aula/aovivo" replace />} />
+              <Route path="/admin/webinars" element={<AdminRoute><AdminWebinars /></AdminRoute>} />
 
               {/* Loja Samkhya */}
               <Route path="/samkhya" element={<Samkhya />} />
