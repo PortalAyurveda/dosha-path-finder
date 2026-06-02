@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Helmet } from "react-helmet-async";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import PageContainer from "@/components/PageContainer";
 import { supabase } from "@/integrations/supabase/client";
@@ -125,7 +126,11 @@ const Auth = () => {
   };
 
   return (
-    <PageContainer title="Entrar" description="Acesse sua conta no Portal Ayurveda para acompanhar seus doshas e evolução.">
+    <>
+      <Helmet>
+        <meta name="robots" content="noindex, nofollow" />
+      </Helmet>
+      <PageContainer title="Entrar" description="Acesse sua conta no Portal Ayurveda para acompanhar seus doshas e evolução.">
       <div className="flex items-center justify-center min-h-[70vh]">
         <div className="w-full max-w-md space-y-6">
           <div className="text-center space-y-2">
@@ -257,6 +262,7 @@ const Auth = () => {
         </div>
       </div>
     </PageContainer>
+    </>
   );
 };
 
