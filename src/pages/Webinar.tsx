@@ -235,11 +235,11 @@ const Webinar = ({ data }: { data: WebinarRow }) => {
             </div>
 
             {data.foto_url && (
-              <div className="flex justify-center md:justify-end items-end order-first md:order-last -mb-5 md:-mb-8 md:-mr-8 md:self-end">
+              <div className="flex justify-center md:justify-end items-end order-first md:order-last md:self-end">
                 <img
                   src={data.foto_url}
                   alt={data.titulo_evento}
-                  className="w-[280px] md:w-[380px] h-auto select-none block"
+                  className="w-[260px] md:w-[300px] h-auto select-none block"
                   loading="lazy"
                 />
               </div>
