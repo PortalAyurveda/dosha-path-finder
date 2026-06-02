@@ -83,16 +83,12 @@ const Webinar = ({ data }: { data: WebinarRow }) => {
         dosha: doshaPrincipal,
       });
 
-      if (error) {
-        if (error.code === "23505" || /duplicate|unique/i.test(error.message)) {
-          toast.info("Você já está inscrito! Verifique seu e-mail.");
-          setSubmitting(false);
-          return;
-        }
+      if (error && !(error.code === "23505" || /duplicate|unique/i.test(error.message))) {
         toast.error("Não foi possível inscrever. Tente novamente.");
         setSubmitting(false);
         return;
       }
+
 
       try {
         await fetch(N8N_WEBHOOK, {
