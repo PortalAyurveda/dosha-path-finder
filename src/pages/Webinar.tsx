@@ -126,19 +126,9 @@ const Webinar = ({ data }: { data: WebinarRow }) => {
         <meta name="description" content={data.copy_descricao ?? data.titulo_evento} />
       </Helmet>
 
-      <div className="relative mx-auto w-full max-w-[720px]">
-        {/* PNG sobreposto à direita (desktop) */}
-        {data.foto_url && (
-          <img
-            src={data.foto_url}
-            alt={data.titulo_evento}
-            className="hidden md:block absolute right-[-90px] bottom-0 w-[280px] h-auto z-10 pointer-events-none select-none"
-            loading="lazy"
-          />
-        )}
-
+      <div className="mx-auto w-full max-w-[760px]">
         <div
-          className="relative rounded-[2rem] shadow-xl bg-white border p-6 md:p-10 md:pr-32"
+          className="rounded-[2rem] shadow-xl bg-white border p-6 md:p-10"
           style={{ borderColor: `${green}55` }}
         >
           {/* Envelope icon */}
@@ -159,95 +149,105 @@ const Webinar = ({ data }: { data: WebinarRow }) => {
           </h1>
 
           {(data.subtitulo || data.copy_descricao) && (
-            <div className="mt-4 space-y-2 font-sans text-[0.95rem] leading-relaxed text-center" style={{ color: ink }}>
-              {data.subtitulo && <p className="font-medium">{data.subtitulo}</p>}
-              {data.copy_descricao && (
-                <p className="whitespace-pre-line opacity-90">{data.copy_descricao}</p>
-              )}
-            </div>
-          )}
-
-          {dataFmt && (
-            <p
-              className="font-serif italic font-bold text-center mt-5 mb-1"
-              style={{ color: greenDark, letterSpacing: "0.18em", fontSize: "1.05rem" }}
-            >
-              {dataFmt}
-            </p>
-          )}
-
-          <form onSubmit={onSubmit} className="mt-5 space-y-4 max-w-md mx-auto md:mx-0">
-            <div className="space-y-1.5">
-              <Label htmlFor="email" className="font-sans text-sm font-semibold" style={{ color: ink }}>
-                Seu e-mail (para receber o link)
-              </Label>
-              <Input
-                id="email"
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="digite seu e-mail aqui"
-                className="h-11 rounded-md border-0"
-                style={{ background: `${green}25`, color: ink }}
-              />
-            </div>
-
-            <div className="space-y-1.5">
-              <Label htmlFor="whatsapp" className="font-sans text-sm font-semibold" style={{ color: ink }}>
-                Seu WhatsApp (com DDD)
-              </Label>
-              <Input
-                id="whatsapp"
-                type="tel"
-                required
-                value={whatsapp}
-                onChange={(e) => setWhatsapp(e.target.value)}
-                placeholder="(00) 00000-0000"
-                className="h-11 rounded-md border-0"
-                style={{ background: `${green}25`, color: ink }}
-              />
-            </div>
-
-            <Button
-              type="submit"
-              disabled={submitting}
-              className="w-full font-sans font-bold text-base py-6 rounded-full text-white border-0 tracking-wide"
-              style={{ background: green }}
-            >
-              {submitting ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                  ENVIANDO...
-                </>
-              ) : (
-                "CONFIRMAR PRESENÇA"
-              )}
-            </Button>
-
-            <p
-              className="text-center font-serif italic text-sm pt-1"
+            <div
+              className="mt-4 space-y-2 font-sans text-[0.95rem] leading-relaxed text-center max-w-[560px] mx-auto"
               style={{ color: ink }}
             >
-              Evento online e gratuito.
-            </p>
-          </form>
-        </div>
+              {data.subtitulo && <p className="font-medium">{data.subtitulo}</p>}
+              {data.copy_descricao && (
+                <p className="whitespace-pre-line opacity-90 text-justify" style={{ textAlignLast: "center" }}>
+                  {data.copy_descricao}
+                </p>
+              )}
+            </div>
+          )}
 
-        {data.foto_url && (
-          <div className="md:hidden">
-            <img
-              src={data.foto_url}
-              alt={data.titulo_evento}
-              className="w-full h-56 object-cover object-center"
-              loading="lazy"
-            />
+          <div className="grid md:grid-cols-[1fr_240px] gap-6 md:gap-8 items-end mt-6">
+            <div>
+              {dataFmt && (
+                <p
+                  className="font-serif italic font-bold text-left mb-3"
+                  style={{ color: greenDark, letterSpacing: "0.18em", fontSize: "1.05rem" }}
+                >
+                  {dataFmt}
+                </p>
+              )}
+
+              <form onSubmit={onSubmit} className="space-y-4">
+                <div className="space-y-1.5">
+                  <Label htmlFor="email" className="font-sans text-sm font-semibold" style={{ color: ink }}>
+                    Seu e-mail (para receber o link)
+                  </Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="digite seu e-mail aqui"
+                    className="h-11 rounded-md border-0"
+                    style={{ background: `${green}25`, color: ink }}
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label htmlFor="whatsapp" className="font-sans text-sm font-semibold" style={{ color: ink }}>
+                    Seu WhatsApp (com DDD)
+                  </Label>
+                  <Input
+                    id="whatsapp"
+                    type="tel"
+                    required
+                    value={whatsapp}
+                    onChange={(e) => setWhatsapp(e.target.value)}
+                    placeholder="(00) 00000-0000"
+                    className="h-11 rounded-md border-0"
+                    style={{ background: `${green}25`, color: ink }}
+                  />
+                </div>
+
+                <Button
+                  type="submit"
+                  disabled={submitting}
+                  className="w-full font-sans font-bold text-base py-6 rounded-full text-white border-0 tracking-wide"
+                  style={{ background: green }}
+                >
+                  {submitting ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                      ENVIANDO...
+                    </>
+                  ) : (
+                    "CONFIRMAR PRESENÇA"
+                  )}
+                </Button>
+
+                <p
+                  className="text-center font-serif italic text-sm pt-1"
+                  style={{ color: ink }}
+                >
+                  Evento online e gratuito.
+                </p>
+              </form>
+            </div>
+
+            {data.foto_url && (
+              <div className="flex justify-center md:justify-end items-end order-first md:order-last">
+                <img
+                  src={data.foto_url}
+                  alt={data.titulo_evento}
+                  className="w-[220px] md:w-full max-w-[260px] h-auto select-none"
+                  loading="lazy"
+                />
+              </div>
+            )}
           </div>
-        )}
+        </div>
       </div>
     </div>
   );
 };
+
 
 const WebinarRoute = () => {
   const { slug } = useParams<{ slug: string }>();
