@@ -150,7 +150,7 @@ const Webinar = ({ data }: { data: WebinarRow }) => {
 
           {(data.subtitulo || data.copy_descricao) && (
             <div
-              className="mt-3 space-y-2 font-sans text-[0.95rem] leading-relaxed text-left"
+              className="mt-2 space-y-1 font-sans text-[0.95rem] leading-relaxed text-left"
               style={{ color: ink }}
             >
               {data.subtitulo && <p className="font-medium">{data.subtitulo}</p>}
@@ -162,19 +162,20 @@ const Webinar = ({ data }: { data: WebinarRow }) => {
             </div>
           )}
 
-          <div className="grid md:grid-cols-[1fr_280px] gap-4 md:gap-6 items-end mt-4">
+          <div className="grid md:grid-cols-[1fr_340px] gap-3 md:gap-4 items-start mt-3">
 
             <div>
               {dataFmt && (
                 <p
-                  className="font-serif italic font-bold text-left mb-3"
+                  className="font-serif italic font-bold text-left mb-2"
                   style={{ color: greenDark, letterSpacing: "0.18em", fontSize: "1.05rem" }}
                 >
                   {dataFmt}
                 </p>
               )}
 
-              <form onSubmit={onSubmit} className="space-y-4">
+              <form onSubmit={onSubmit} className="space-y-3">
+
                 <div className="space-y-1.5">
                   <Label htmlFor="email" className="font-sans text-sm font-semibold" style={{ color: ink }}>
                     Seu e-mail (para receber o link)
