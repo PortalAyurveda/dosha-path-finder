@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { getPalette, type LandingPaletteKey } from "@/data/landingPalettes";
-import { MessageCircle, Check } from "lucide-react";
+import { Monitor, BookOpen } from "lucide-react";
 
 interface WebinarRow {
   id: string;
@@ -24,6 +24,8 @@ interface Bullet {
   texto?: string;
 }
 
+const NAVY = "#1e2547";
+
 const parseBullets = (raw: unknown): Bullet[] => {
   if (!raw) return [];
   if (Array.isArray(raw)) return raw as Bullet[];
@@ -37,6 +39,9 @@ const parseBullets = (raw: unknown): Bullet[] => {
   }
   return [];
 };
+
+// "Inscrição Confirmada!" → "I n s c r i ç ã o   C o n f i r m a d a !"
+const spacedTitle = (s: string) => s.split("").join(" ");
 
 const WebinarConfirmado = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -64,6 +69,9 @@ const WebinarConfirmado = () => {
     return getPalette(key) ?? getPalette("alimentacao-verde");
   }, [data?.tema_paleta]);
   const branding = palette.branding;
+  const ink = NAVY;
+  const green = branding.primaryColor;
+  const greenDark = branding.darkColor !== branding.primaryColor ? branding.darkColor : "#3f7a4f";
   const bullets = useMemo(() => parseBullets(data?.bullets), [data?.bullets]);
 
   if (loading) {
@@ -81,17 +89,17 @@ const WebinarConfirmado = () => {
     );
   }
 
-  const titulo = data.copy_confirmacao_titulo ?? "Inscrição confirmada!";
+  const titulo = data.copy_confirmacao_titulo ?? "Inscrição Confirmada!";
   const subtitulo =
-    data.copy_confirmacao_subtitulo ?? "Agora o próximo passo é entrar no grupo.";
+    data.copy_confirmacao_subtitulo ?? "Sua inscrição está confirmada!";
   const box =
     data.copy_box_whatsapp ??
-    "O link da sala, o material de apoio e o acesso ao professor ficam todos lá.";
+    "Entre no grupo do WhatsApp e aguarde o material e o link da aula.";
 
   return (
     <div
-      className="min-h-screen w-full py-10 md:py-16 px-4"
-      style={{ background: branding.warmBg ?? "#FAF9F6" }}
+      className="min-h-screen w-full py-8 md:py-16 px-4"
+      style={{ background: `${green}26` }}
     >
       <Helmet>
         <title>{`${titulo} — ${data.titulo_evento}`}</title>
@@ -99,65 +107,72 @@ const WebinarConfirmado = () => {
       </Helmet>
 
       <div
-        className="mx-auto w-full max-w-[560px] rounded-3xl shadow-xl overflow-hidden bg-white border"
-        style={{ borderColor: `${branding.primaryColor}55` }}
+        className="mx-auto w-full max-w-[560px] rounded-[2rem] shadow-xl overflow-hidden bg-white border"
+        style={{ borderColor: `${green}55` }}
       >
-        <div className="px-6 pt-8 pb-4 text-center">
-          <div
-            className="mx-auto w-14 h-14 rounded-full flex items-center justify-center mb-3"
-            style={{ background: branding.primaryColor }}
-          >
-            <Check className="h-7 w-7 text-white" />
-          </div>
+        <div className="px-6 md:px-8 pt-8 pb-8 text-center">
           <h1
-            className="font-serif text-2xl md:text-3xl font-bold leading-tight"
-            style={{ color: branding.darkColor }}
+            className="font-serif italic font-bold text-[1.4rem] md:text-[1.7rem] leading-tight"
+            style={{ color: ink, letterSpacing: "0.05em" }}
           >
-            {titulo}
+            {spacedTitle(titulo)}
           </h1>
-          <p className="font-sans text-sm md:text-base mt-2 text-foreground/80">{subtitulo}</p>
-        </div>
 
-        <div className="px-6 pb-6 space-y-5">
-          {/* WhatsApp box — hero element */}
-          <div
-            className="rounded-2xl p-5 text-center space-y-3"
-            style={{ background: `${branding.primaryColor}30` }}
-          >
-            <p className="font-sans text-sm md:text-base" style={{ color: branding.darkColor }}>
-              {box}
-            </p>
-            {data.link_whatsapp && (
+          <div className="flex justify-center my-6">
+            <div
+              className="w-16 h-16 rounded-full flex items-center justify-center"
+              style={{ background: `${green}33` }}
+            >
+              <Monitor className="h-8 w-8" style={{ color: greenDark }} />
+            </div>
+          </div>
+
+          <p className="font-sans text-base font-semibold" style={{ color: ink }}>
+            {subtitulo}
+          </p>
+
+          {data.link_whatsapp && (
+            <div className="mt-6">
               <Button
                 asChild
                 size="lg"
-                className="w-full font-sans font-bold text-base py-6 rounded-full text-white border-0 shadow-md"
-                style={{ background: "#25D366" }}
+                className="font-sans font-bold text-base py-6 px-8 rounded-full border-0 shadow-md tracking-wide"
+                style={{ background: green, color: ink }}
               >
                 <a href={data.link_whatsapp} target="_blank" rel="noopener noreferrer">
-                  <MessageCircle className="h-5 w-5 mr-2" />
-                  Entrar no grupo do WhatsApp
+                  ENTRE NO GRUPO AQUI!
                 </a>
               </Button>
-            )}
+            </div>
+          )}
+
+          <p
+            className="font-sans font-semibold text-[0.95rem] mt-7 leading-relaxed max-w-[420px] mx-auto"
+            style={{ color: ink }}
+          >
+            {box}
+          </p>
+
+          <div className="flex justify-center mt-6">
+            <BookOpen className="h-10 w-10" style={{ color: greenDark }} strokeWidth={1.5} />
           </div>
 
           {bullets.length > 0 && (
-            <ul className="space-y-3">
+            <ul className="mt-7 space-y-3 text-left max-w-[440px] mx-auto">
               {bullets.map((b, i) => (
                 <li key={i} className="flex gap-3">
                   <div
-                    className="mt-1 shrink-0 w-2 h-2 rounded-full"
-                    style={{ background: branding.darkColor }}
+                    className="mt-2 shrink-0 w-1.5 h-1.5 rounded-full"
+                    style={{ background: greenDark }}
                   />
                   <div>
                     {b.titulo && (
-                      <p className="font-sans font-semibold text-sm" style={{ color: branding.darkColor }}>
+                      <p className="font-sans font-bold text-sm" style={{ color: ink }}>
                         {b.titulo}
                       </p>
                     )}
                     {b.texto && (
-                      <p className="font-sans text-sm text-foreground/80 leading-relaxed">
+                      <p className="font-sans text-sm leading-relaxed" style={{ color: ink, opacity: 0.85 }}>
                         {b.texto}
                       </p>
                     )}
