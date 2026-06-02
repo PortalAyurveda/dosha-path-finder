@@ -54,7 +54,7 @@ const AdminDevlog = lazy(() => import("./pages/AdminDevlog"));
 const AdminRotinas = lazy(() => import("./pages/AdminRotinas"));
 const AdminEstoque = lazy(() => import("./pages/AdminEstoque"));
 const AdminTags = lazy(() => import("./pages/AdminTags"));
-const Aula = lazy(() => import("./pages/Aula"));
+
 const AulaDispatcher = lazy(() => import("./pages/AulaDispatcher"));
 const WebinarConfirmado = lazy(() => import("./pages/WebinarConfirmado"));
 const AdminWebinars = lazy(() => import("./pages/AdminWebinars"));
