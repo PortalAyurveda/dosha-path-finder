@@ -163,7 +163,7 @@ const Webinar = ({ data }: { data: WebinarRow }) => {
           </div>
 
 
-          <div className="grid md:grid-cols-[1fr_340px] gap-3 md:gap-4 items-start mt-3">
+          <div className="grid md:grid-cols-[1fr_320px] gap-3 md:gap-6 items-stretch mt-3">
 
             <div>
               {dataFmt && (
