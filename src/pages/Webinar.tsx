@@ -128,16 +128,16 @@ const Webinar = ({ data }: { data: WebinarRow }) => {
 
       <div className="mx-auto w-full max-w-[760px]">
         <div
-          className="rounded-[2rem] shadow-xl bg-white border p-6 md:p-10"
+          className="rounded-[2rem] shadow-xl bg-white border p-5 md:p-8 overflow-hidden"
           style={{ borderColor: `${green}55` }}
         >
           {/* Envelope icon */}
-          <div className="flex justify-center mb-3">
+          <div className="flex justify-center mb-2">
             <div
-              className="w-12 h-12 rounded-full flex items-center justify-center"
+              className="w-11 h-11 rounded-full flex items-center justify-center"
               style={{ background: `${green}33` }}
             >
-              <Mail className="h-6 w-6" style={{ color: greenDark }} />
+              <Mail className="h-5 w-5" style={{ color: greenDark }} />
             </div>
           </div>
 
@@ -150,19 +150,20 @@ const Webinar = ({ data }: { data: WebinarRow }) => {
 
           {(data.subtitulo || data.copy_descricao) && (
             <div
-              className="mt-4 space-y-2 font-sans text-[0.95rem] leading-relaxed text-center max-w-[560px] mx-auto"
+              className="mt-3 space-y-2 font-sans text-[0.95rem] leading-relaxed text-left"
               style={{ color: ink }}
             >
               {data.subtitulo && <p className="font-medium">{data.subtitulo}</p>}
               {data.copy_descricao && (
-                <p className="whitespace-pre-line opacity-90 text-justify" style={{ textAlignLast: "center" }}>
+                <p className="whitespace-pre-line opacity-90">
                   {data.copy_descricao}
                 </p>
               )}
             </div>
           )}
 
-          <div className="grid md:grid-cols-[1fr_240px] gap-6 md:gap-8 items-end mt-6">
+          <div className="grid md:grid-cols-[1fr_280px] gap-4 md:gap-6 items-end mt-4">
+
             <div>
               {dataFmt && (
                 <p
@@ -232,11 +233,11 @@ const Webinar = ({ data }: { data: WebinarRow }) => {
             </div>
 
             {data.foto_url && (
-              <div className="flex justify-center md:justify-end items-end order-first md:order-last">
+              <div className="flex justify-center md:justify-end items-end order-first md:order-last -mb-5 md:-mb-8 md:-mr-8">
                 <img
                   src={data.foto_url}
                   alt={data.titulo_evento}
-                  className="w-[220px] md:w-full max-w-[260px] h-auto select-none"
+                  className="w-[260px] md:w-[320px] h-auto select-none block"
                   loading="lazy"
                 />
               </div>
