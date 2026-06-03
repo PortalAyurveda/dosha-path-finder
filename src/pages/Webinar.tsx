@@ -227,38 +227,19 @@ const Webinar = ({ data }: { data: WebinarRow }) => {
           </div>
 
           {data.foto_url && (
-            <>
-              {/* Mobile: foto no fluxo, abaixo do form */}
-              <div className="md:hidden flex justify-center mt-4 -mb-5">
-                <img
-                  src={data.foto_url}
-                  alt={data.titulo_evento}
-                  className="w-[220px] object-contain object-bottom select-none block"
-                  style={{
-                    WebkitMaskImage:
-                      "linear-gradient(to bottom, black 0%, black 80%, transparent 100%)",
-                    maskImage:
-                      "linear-gradient(to bottom, black 0%, black 80%, transparent 100%)",
-                  }}
-                  loading="lazy"
-                />
-              </div>
-
-              {/* Desktop: foto ancorada ao canto inferior direito do card */}
-              <img
-                src={data.foto_url}
-                alt=""
-                aria-hidden="true"
-                className="hidden md:block absolute bottom-0 right-0 w-[320px] h-[92%] object-contain object-bottom select-none pointer-events-none"
-                style={{
-                  WebkitMaskImage:
-                    "linear-gradient(to bottom, black 0%, black 82%, transparent 100%)",
-                  maskImage:
-                    "linear-gradient(to bottom, black 0%, black 82%, transparent 100%)",
-                }}
-                loading="lazy"
-              />
-            </>
+            <img
+              src={data.foto_url}
+              alt=""
+              aria-hidden="true"
+              className="absolute bottom-0 right-0 w-[130px] md:w-[320px] h-auto md:h-[92%] max-h-[55%] md:max-h-none object-contain object-bottom select-none pointer-events-none"
+              style={{
+                WebkitMaskImage:
+                  "linear-gradient(to bottom, black 0%, black 82%, transparent 100%)",
+                maskImage:
+                  "linear-gradient(to bottom, black 0%, black 82%, transparent 100%)",
+              }}
+              loading="lazy"
+            />
           )}
         </div>
       </div>
