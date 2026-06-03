@@ -204,7 +204,7 @@ const Webinar = ({ data }: { data: WebinarRow }) => {
               <Button
                 type="submit"
                 disabled={submitting}
-                className="w-full font-sans font-bold text-base py-6 rounded-full border-0 tracking-wide"
+                className="w-[62%] md:w-full font-sans font-bold text-sm md:text-base py-4 md:py-6 rounded-full border-0 tracking-wide"
                 style={{ background: greenDark, color: NAVY }}
               >
                 {submitting ? (
@@ -218,7 +218,7 @@ const Webinar = ({ data }: { data: WebinarRow }) => {
               </Button>
 
               <p
-                className="text-center font-serif italic text-sm pt-1"
+                className="text-left md:text-center font-serif italic text-xs md:text-sm pt-1 w-[62%] md:w-full"
                 style={{ color: ink }}
               >
                 Evento online e gratuito.
