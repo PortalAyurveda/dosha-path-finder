@@ -40,8 +40,6 @@ const parseBullets = (raw: unknown): Bullet[] => {
   return [];
 };
 
-// "Inscrição Confirmada!" → "I n s c r i ç ã o   C o n f i r m a d a !"
-const spacedTitle = (s: string) => s.split("").join(" ");
 
 const WebinarConfirmado = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -89,7 +87,7 @@ const WebinarConfirmado = () => {
     );
   }
 
-  const titulo = data.copy_confirmacao_titulo ?? "Inscrição Confirmada!";
+  const titulo = data.copy_confirmacao_titulo ?? "Inscrição confirmada!";
   const subtitulo =
     data.copy_confirmacao_subtitulo ?? "Sua inscrição está confirmada!";
   const box =
@@ -115,7 +113,7 @@ const WebinarConfirmado = () => {
             className="font-serif italic font-bold text-[1.4rem] md:text-[1.7rem] leading-tight"
             style={{ color: ink, letterSpacing: "0.05em" }}
           >
-            {spacedTitle(titulo)}
+            {titulo}
           </h1>
 
           <div className="flex justify-center my-6">
