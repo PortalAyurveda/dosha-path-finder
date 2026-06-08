@@ -82,6 +82,19 @@ const CartDrawer = () => {
   });
   const [enviando, setEnviando] = useState(false);
 
+  // Cupom de desconto
+  type CupomAplicado = {
+    cupom_id: string;
+    codigo: string;
+    tipo_desconto: string;
+    valor_desconto: number;
+    desconto_calculado: number;
+  };
+  const [cupomCodigo, setCupomCodigo] = useState("");
+  const [cupomAplicado, setCupomAplicado] = useState<CupomAplicado | null>(null);
+  const [cupomErro, setCupomErro] = useState<string | null>(null);
+  const [validandoCupom, setValidandoCupom] = useState(false);
+
   useEffect(() => {
     if (!isOpen) {
       setStep("cart");
@@ -120,7 +133,53 @@ const CartDrawer = () => {
   }, [itens]);
 
   const freteSelecionado = opcoesFrete.find((f) => String(f.id) === freteId) || null;
-  const total = subtotal + (freteSelecionado?.preco ?? 0);
+  // Recalcula o desconto se o subtotal mudar (itens alterados)
+  const descontoCupom = (() => {
+    if (!cupomAplicado) return 0;
+    if (cupomAplicado.tipo_desconto === "percentual") {
+      return Math.min(subtotal, (subtotal * Number(cupomAplicado.valor_desconto)) / 100);
+    }
+    return Math.min(subtotal, Number(cupomAplicado.valor_desconto));
+  })();
+  const total = Math.max(0, subtotal - descontoCupom) + (freteSelecionado?.preco ?? 0);
+
+  const handleAplicarCupom = async () => {
+    const codigo = cupomCodigo.trim().toUpperCase();
+    if (!codigo) return;
+    setValidandoCupom(true);
+    setCupomErro(null);
+    try {
+      const { data, error } = await supabase.functions.invoke("validar-cupom", {
+        body: {
+          codigo,
+          subtotal,
+          email_comprador: form.email || user?.email || null,
+          user_id: user?.id ?? null,
+          escopo: "loja",
+        },
+      });
+      if (error) throw new Error(error.message || "Erro ao validar cupom");
+      if (!data?.valido) {
+        setCupomErro(data?.erro || "Cupom inválido");
+        setCupomAplicado(null);
+        return;
+      }
+      setCupomAplicado(data.cupom);
+      setCupomErro(null);
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : "Erro ao validar cupom";
+      setCupomErro(msg);
+      setCupomAplicado(null);
+    } finally {
+      setValidandoCupom(false);
+    }
+  };
+
+  const handleRemoverCupom = () => {
+    setCupomAplicado(null);
+    setCupomCodigo("");
+    setCupomErro(null);
+  };
 
   const handleCalcularFrete = async () => {
     const cepLimpo = onlyDigits(cep);
