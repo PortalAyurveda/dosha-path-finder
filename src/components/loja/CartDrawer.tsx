@@ -307,6 +307,15 @@ const CartDrawer = () => {
             cidade: form.cidade,
             estado: form.estado,
           },
+          cupom: cupomAplicado
+            ? {
+                cupom_id: cupomAplicado.cupom_id,
+                codigo: cupomAplicado.codigo,
+                desconto_calculado: descontoCupom,
+                tipo_desconto: cupomAplicado.tipo_desconto,
+                valor_desconto: cupomAplicado.valor_desconto,
+              }
+            : null,
         },
       });
       if (error) throw error;
