@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
-import { lojaSupabase } from "@/integrations/supabase/loja-client";
+import { lojaAdminSupabase } from "@/integrations/supabase/loja-admin-client";
 import AdminNav from "@/components/admin/AdminNav";
 import Seo from "@/components/Seo";
 import { Button } from "@/components/ui/button";
@@ -128,7 +128,7 @@ const AdminCupons = () => {
 
   const load = async () => {
     setLoading(true);
-    const { data, error } = await lojaSupabase
+    const { data, error } = await lojaAdminSupabase
       .from("cupons")
       .select("*")
       .order("created_at", { ascending: false });
@@ -158,7 +158,7 @@ const AdminCupons = () => {
     setCupons((arr) =>
       arr.map((x) => (x.id === c.id ? { ...x, ativo: !prev } : x)),
     );
-    const { error } = await lojaSupabase
+    const { error } = await lojaAdminSupabase
       .from("cupons")
       .update({ ativo: !prev })
       .eq("id", c.id);
@@ -205,7 +205,7 @@ const AdminCupons = () => {
       ativo: form.ativo,
     };
 
-    const { error } = await lojaSupabase.from("cupons").insert(payload);
+    const { error } = await lojaAdminSupabase.from("cupons").insert(payload);
     setSaving(false);
     if (error) {
       toast.error(error.message || "Erro ao criar cupom");
@@ -220,7 +220,7 @@ const AdminCupons = () => {
   const openUsos = async (c: Cupom) => {
     setSelected(c);
     setLoadingUsos(true);
-    const { data, error } = await lojaSupabase
+    const { data, error } = await lojaAdminSupabase
       .from("cupom_usos")
       .select("*")
       .eq("cupom_id", c.id)
