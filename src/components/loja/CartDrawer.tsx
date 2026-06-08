@@ -548,6 +548,55 @@ const CartDrawer = () => {
                 <span style={{ color: samkhyaTokens.texto }}>{formatBRL(freteSelecionado.preco)}</span>
               </div>
             )}
+
+            {/* Cupom de desconto */}
+            <div className="pt-2 border-t" style={{ borderColor: samkhyaTokens.cardBorder }}>
+              {cupomAplicado ? (
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-emerald-700">
+                    Cupom {cupomAplicado.codigo} — −{formatBRL(descontoCupom)}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={handleRemoverCupom}
+                    className="text-xs underline"
+                    style={{ color: samkhyaTokens.textoSec }}
+                  >
+                    Remover
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <div className="flex gap-2">
+                    <Input
+                      placeholder="Código do cupom"
+                      value={cupomCodigo}
+                      onChange={(e) => setCupomCodigo(e.target.value.toUpperCase())}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          handleAplicarCupom();
+                        }
+                      }}
+                      className="h-9 text-sm"
+                    />
+                    <Button
+                      type="button"
+                      onClick={handleAplicarCupom}
+                      disabled={validandoCupom || !cupomCodigo.trim()}
+                      variant="outline"
+                      className="h-9"
+                    >
+                      {validandoCupom ? "..." : "Aplicar"}
+                    </Button>
+                  </div>
+                  {cupomErro && (
+                    <p className="text-xs mt-1 text-red-600">{cupomErro}</p>
+                  )}
+                </>
+              )}
+            </div>
+
             <div className="flex justify-between text-base font-medium pt-2 border-t" style={{ borderColor: samkhyaTokens.cardBorder }}>
               <span style={{ color: samkhyaTokens.texto }}>Total</span>
               <span style={{ color: samkhyaTokens.ouroDark }}>{formatBRL(total)}</span>
