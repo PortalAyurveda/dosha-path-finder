@@ -82,6 +82,19 @@ const CartDrawer = () => {
   });
   const [enviando, setEnviando] = useState(false);
 
+  // Cupom de desconto
+  type CupomAplicado = {
+    cupom_id: string;
+    codigo: string;
+    tipo_desconto: string;
+    valor_desconto: number;
+    desconto_calculado: number;
+  };
+  const [cupomCodigo, setCupomCodigo] = useState("");
+  const [cupomAplicado, setCupomAplicado] = useState<CupomAplicado | null>(null);
+  const [cupomErro, setCupomErro] = useState<string | null>(null);
+  const [validandoCupom, setValidandoCupom] = useState(false);
+
   useEffect(() => {
     if (!isOpen) {
       setStep("cart");
@@ -120,7 +133,53 @@ const CartDrawer = () => {
   }, [itens]);
 
   const freteSelecionado = opcoesFrete.find((f) => String(f.id) === freteId) || null;
-  const total = subtotal + (freteSelecionado?.preco ?? 0);
+  // Recalcula o desconto se o subtotal mudar (itens alterados)
+  const descontoCupom = (() => {
+    if (!cupomAplicado) return 0;
+    if (cupomAplicado.tipo_desconto === "percentual") {
+      return Math.min(subtotal, (subtotal * Number(cupomAplicado.valor_desconto)) / 100);
+    }
+    return Math.min(subtotal, Number(cupomAplicado.valor_desconto));
+  })();
+  const total = Math.max(0, subtotal - descontoCupom) + (freteSelecionado?.preco ?? 0);
+
+  const handleAplicarCupom = async () => {
+    const codigo = cupomCodigo.trim().toUpperCase();
+    if (!codigo) return;
+    setValidandoCupom(true);
+    setCupomErro(null);
+    try {
+      const { data, error } = await supabase.functions.invoke("validar-cupom", {
+        body: {
+          codigo,
+          subtotal,
+          email_comprador: form.email || user?.email || null,
+          user_id: user?.id ?? null,
+          escopo: "loja",
+        },
+      });
+      if (error) throw new Error(error.message || "Erro ao validar cupom");
+      if (!data?.valido) {
+        setCupomErro(data?.erro || "Cupom inválido");
+        setCupomAplicado(null);
+        return;
+      }
+      setCupomAplicado(data.cupom);
+      setCupomErro(null);
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : "Erro ao validar cupom";
+      setCupomErro(msg);
+      setCupomAplicado(null);
+    } finally {
+      setValidandoCupom(false);
+    }
+  };
+
+  const handleRemoverCupom = () => {
+    setCupomAplicado(null);
+    setCupomCodigo("");
+    setCupomErro(null);
+  };
 
   const handleCalcularFrete = async () => {
     const cepLimpo = onlyDigits(cep);
@@ -248,6 +307,15 @@ const CartDrawer = () => {
             cidade: form.cidade,
             estado: form.estado,
           },
+          cupom: cupomAplicado
+            ? {
+                cupom_id: cupomAplicado.cupom_id,
+                codigo: cupomAplicado.codigo,
+                desconto_calculado: descontoCupom,
+                tipo_desconto: cupomAplicado.tipo_desconto,
+                valor_desconto: cupomAplicado.valor_desconto,
+              }
+            : null,
         },
       });
       if (error) throw error;
@@ -480,6 +548,55 @@ const CartDrawer = () => {
                 <span style={{ color: samkhyaTokens.texto }}>{formatBRL(freteSelecionado.preco)}</span>
               </div>
             )}
+
+            {/* Cupom de desconto */}
+            <div className="pt-2 border-t" style={{ borderColor: samkhyaTokens.cardBorder }}>
+              {cupomAplicado ? (
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-emerald-700">
+                    Cupom {cupomAplicado.codigo} — −{formatBRL(descontoCupom)}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={handleRemoverCupom}
+                    className="text-xs underline"
+                    style={{ color: samkhyaTokens.textoSec }}
+                  >
+                    Remover
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <div className="flex gap-2">
+                    <Input
+                      placeholder="Código do cupom"
+                      value={cupomCodigo}
+                      onChange={(e) => setCupomCodigo(e.target.value.toUpperCase())}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          handleAplicarCupom();
+                        }
+                      }}
+                      className="h-9 text-sm"
+                    />
+                    <Button
+                      type="button"
+                      onClick={handleAplicarCupom}
+                      disabled={validandoCupom || !cupomCodigo.trim()}
+                      variant="outline"
+                      className="h-9"
+                    >
+                      {validandoCupom ? "..." : "Aplicar"}
+                    </Button>
+                  </div>
+                  {cupomErro && (
+                    <p className="text-xs mt-1 text-red-600">{cupomErro}</p>
+                  )}
+                </>
+              )}
+            </div>
+
             <div className="flex justify-between text-base font-medium pt-2 border-t" style={{ borderColor: samkhyaTokens.cardBorder }}>
               <span style={{ color: samkhyaTokens.texto }}>Total</span>
               <span style={{ color: samkhyaTokens.ouroDark }}>{formatBRL(total)}</span>
