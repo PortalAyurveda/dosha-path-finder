@@ -136,6 +136,10 @@ const CartDrawer = () => {
   // Recalcula o desconto se o subtotal mudar (itens alterados)
   const descontoCupom = (() => {
     if (!cupomAplicado) return 0;
+    // Prioriza valor calculado pela edge function
+    if (Number(cupomAplicado.desconto_calculado) > 0) {
+      return Math.min(subtotal, Number(cupomAplicado.desconto_calculado));
+    }
     if (cupomAplicado.tipo_desconto === "percentual") {
       return Math.min(subtotal, (subtotal * Number(cupomAplicado.valor_desconto)) / 100);
     }
@@ -164,7 +168,16 @@ const CartDrawer = () => {
         setCupomAplicado(null);
         return;
       }
-      setCupomAplicado(data.cupom);
+      // Aceita ambos formatos: { valido, cupom: {...} } OU { valido, ...campos no topo }
+      const src = (data.cupom && typeof data.cupom === "object") ? data.cupom : data;
+      const normalizado: CupomAplicado = {
+        cupom_id: String(src.cupom_id ?? src.id ?? ""),
+        codigo: String(src.codigo ?? codigo).toUpperCase(),
+        tipo_desconto: String(src.tipo_desconto ?? "percentual"),
+        valor_desconto: Number(src.valor_desconto ?? 0),
+        desconto_calculado: Number(src.desconto_calculado ?? 0),
+      };
+      setCupomAplicado(normalizado);
       setCupomErro(null);
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : "Erro ao validar cupom";
@@ -174,6 +187,7 @@ const CartDrawer = () => {
       setValidandoCupom(false);
     }
   };
+
 
   const handleRemoverCupom = () => {
     setCupomAplicado(null);
