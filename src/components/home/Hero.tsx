@@ -169,7 +169,7 @@ const Hero = () => {
           {/* Right: Heading + Form */}
           <div className="lg:col-span-5 flex flex-col">
             <div
-              className="animate-fade-in bg-card/80 backdrop-blur-sm rounded-3xl p-6 xl:p-7 border border-border shadow-lg flex flex-col space-y-4"
+              className="animate-fade-in bg-card/80 backdrop-blur-sm rounded-3xl p-6 xl:p-7 border border-border shadow-lg flex flex-col justify-between space-y-4 lg:h-full"
               style={{ animationDelay: "0.25s" }}
             >
               <div className="text-center not-italic hidden lg:block">
