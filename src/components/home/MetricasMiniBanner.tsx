@@ -306,12 +306,6 @@ const MetricasMiniBanner = () => {
             {data.frase_nugget ?? "Métricas do Portal Ayurveda"}
           </p>
           {active === 0 ? <SetA d={data} /> : <SetB d={data} />}
-          <p
-            className="text-center italic text-[10px] mt-2 px-2"
-            style={{ color: C.muted, fontFamily: SANS }}
-          >
-            Métricas calculadas diariamente com base no nosso banco de dados.
-          </p>
         </>
       )}
 
