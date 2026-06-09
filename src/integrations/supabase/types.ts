@@ -786,6 +786,7 @@ export type Database = {
           cidade: string | null
           conhecimentoAyurveda: string | null
           created_at: string
+          cupom_id: string | null
           diagn: string | null
           doshaprincipal: string | null
           email: string | null
@@ -826,6 +827,7 @@ export type Database = {
           cidade?: string | null
           conhecimentoAyurveda?: string | null
           created_at?: string
+          cupom_id?: string | null
           diagn?: string | null
           doshaprincipal?: string | null
           email?: string | null
@@ -866,6 +868,7 @@ export type Database = {
           cidade?: string | null
           conhecimentoAyurveda?: string | null
           created_at?: string
+          cupom_id?: string | null
           diagn?: string | null
           doshaprincipal?: string | null
           email?: string | null
@@ -2625,6 +2628,7 @@ export type Database = {
         Row: {
           cpf: string | null
           created_at: string
+          cupom_id: string | null
           email: string
           id: string
           is_premium: boolean | null
@@ -2645,6 +2649,7 @@ export type Database = {
         Insert: {
           cpf?: string | null
           created_at?: string
+          cupom_id?: string | null
           email: string
           id: string
           is_premium?: boolean | null
@@ -2665,6 +2670,7 @@ export type Database = {
         Update: {
           cpf?: string | null
           created_at?: string
+          cupom_id?: string | null
           email?: string
           id?: string
           is_premium?: boolean | null
@@ -2752,6 +2758,7 @@ export type Database = {
           mini_resumo: string | null
           nova_descricao: string | null
           novo_titulo: string | null
+          slug: string | null
           status: string | null
           tags: string | null
           texto_para_embedding: string | null
@@ -2766,6 +2773,7 @@ export type Database = {
           mini_resumo?: string | null
           nova_descricao?: string | null
           novo_titulo?: string | null
+          slug?: string | null
           status?: string | null
           tags?: string | null
           texto_para_embedding?: string | null
@@ -2780,6 +2788,7 @@ export type Database = {
           mini_resumo?: string | null
           nova_descricao?: string | null
           novo_titulo?: string | null
+          slug?: string | null
           status?: string | null
           tags?: string | null
           texto_para_embedding?: string | null
