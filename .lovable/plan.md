@@ -1,20 +1,17 @@
-## Problema
-No mobile, a foto do Edson está renderizada no fluxo, abaixo do formulário, criando um grande espaço em branco entre o botão "CONFIRMAR PRESENÇA" e a imagem.
+## Mudanças
 
-## Solução
-Tratar a foto no mobile como elemento absoluto ancorado no canto inferior direito do card (mesma lógica do desktop), mas em escala reduzida, deixando que ela "coma" um pouco do botão e da legenda — fazendo parte do anúncio, sem aumentar a altura do card.
+**1. `src/components/home/MetricasMiniBanner.tsx`**
+- Remover a linha "Métricas calculadas diariamente com base no nosso banco de dados." (rodapé do banner)
+- Remover também o padding/margem extra do container que ficaria sobrando, para que o banner encolha em altura.
 
-## Mudanças em `src/pages/Webinar.tsx`
+**2. `src/components/home/Hero.tsx` (coluna da direita — formulário "Comece seu Teste de Dosha Gratuito")**
 
-1. **Remover** o bloco mobile atual da foto (`<div className="md:hidden ...">` com a `<img>` no fluxo logo abaixo do form).
-2. **Unificar** num único `<img>` absoluto, ancorado em `bottom-0 right-0`, com classes responsivas:
-   - Mobile: `w-[140px]` (cerca de 1/3 da largura do card), `h-auto`, `max-h-[60%]`, posicionado em `right-0 bottom-0`, sobrepondo levemente o canto inferior direito do botão e da legenda "Evento online e gratuito".
-   - Desktop (`md:`): mantém `w-[320px] h-[92%]` como hoje.
-   - Mantém `pointer-events-none` e a máscara de fade no rodapé para integrar visualmente.
-3. **Garantir espaço para o botão não ficar 100% coberto**: a foto ocupa apenas a faixa direita; o texto da legenda já é centralizado e o botão é full-width, então o overlap visual fica natural (foto cobre ~30% direito da base do card).
-4. Manter `md:pr-[300px]` no bloco de descrição/form para o desktop; no mobile não há padding extra (a foto fica fora do fluxo, sobre o conteúdo apenas no rodapé direito).
+Hoje o card usa `justify-center` + `h-full`, então quando a coluna esquerda é alta ele estica e sobram faixas brancas no topo e no rodapé. Ajustes:
 
-## Resultado esperado mobile
-- Card termina logo após o botão + legenda (sem espaço vazio).
-- Foto do Edson aparece pequena, encostada no canto inferior direito, sobrepondo ligeiramente a borda do botão/legenda, como parte do anúncio.
-- Altura total do card diminui significativamente.
+- Trocar `justify-center` por `justify-between` no card, OU remover `h-full` e deixar o card com altura natural alinhado ao topo.
+- Reduzir o padding vertical interno (`p-6 xl:p-8` → `p-6 xl:p-7`) e o `space-y-5` se necessário, para o card respirar sem ficar vazio.
+- Diminuir levemente o botão "Começar" (`py-7 md:py-8` → `py-5 md:py-6`) já que ele estava exagerado no desktop ocupando o espaço vazio.
+
+Resultado esperado: banner da esquerda mais baixo (sem a frase), e card da direita sem faixas brancas a esmo no topo/rodapé, com proporções equilibradas no desktop. Mobile permanece igual em comportamento.
+
+Nenhuma mudança de lógica/funcionalidade — apenas presentation.

@@ -169,7 +169,7 @@ const Hero = () => {
           {/* Right: Heading + Form */}
           <div className="lg:col-span-5 flex flex-col">
             <div
-              className="animate-fade-in bg-card/80 backdrop-blur-sm rounded-3xl p-6 xl:p-8 border border-border shadow-lg flex flex-col justify-center space-y-5 h-full"
+              className="animate-fade-in bg-card/80 backdrop-blur-sm rounded-3xl p-6 xl:p-7 border border-border shadow-lg flex flex-col space-y-4"
               style={{ animationDelay: "0.25s" }}
             >
               <div className="text-center not-italic hidden lg:block">
@@ -241,7 +241,7 @@ const Hero = () => {
               <Button
                 onClick={handleStart}
                 disabled={!canStart}
-                className="w-full bg-primary text-primary-foreground hover:bg-primary/90 text-lg md:text-xl font-bold py-7 md:py-8 h-auto rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 hover:-translate-y-0.5 transition-all"
+                className="w-full bg-primary text-primary-foreground hover:bg-primary/90 text-lg md:text-xl font-bold py-5 md:py-6 h-auto rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 hover:-translate-y-0.5 transition-all"
                 size="lg"
               >
                 Começar <ArrowRight className="ml-2 h-6 w-6 md:h-7 md:w-7" />
