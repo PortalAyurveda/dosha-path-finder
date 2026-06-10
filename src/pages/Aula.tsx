@@ -6,7 +6,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Drawer, DrawerContent, DrawerTrigger, DrawerTitle, DrawerHeader } from "@/components/ui/drawer";
 import { ExternalLink, MessageCircle, Link2, Check } from "lucide-react";
-import { useImmersive } from "@/contexts/ImmersiveContext";
+
 import LiveChat from "@/components/aula/LiveChat";
 import { toast } from "sonner";
 
@@ -110,7 +110,6 @@ const Aula = () => {
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const now = useNow(1000);
-  const { setImmersive } = useImmersive();
 
   useEffect(() => {
     if (!slug) return;
@@ -129,12 +128,6 @@ const Aula = () => {
   }, [slug]);
 
   const isDestaque = !!aula?.destaque;
-
-  useEffect(() => {
-    // Sempre oculta rodapé em qualquer aula
-    setImmersive(true);
-    return () => setImmersive(false);
-  }, [setImmersive]);
 
   const embed = aula ? getYouTubeEmbedUrl(aula.youtube_url) : null;
   const startTs = useMemo(
