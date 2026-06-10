@@ -387,6 +387,35 @@ const CartDrawer = () => {
             </div>
           ) : step === "cart" ? (
             <div className="space-y-5">
+              {freteConfig?.frete_gratis_ativo && (() => {
+                const min = freteConfig.frete_gratis_minimo;
+                const desbloqueado = subtotal >= min;
+                const falta = Math.max(0, min - subtotal);
+                const pct = Math.min(100, (subtotal / min) * 100);
+                return (
+                  <div
+                    className="p-3 rounded-md"
+                    style={{
+                      background: desbloqueado ? "#E8F5E9" : samkhyaTokens.cardBg,
+                      border: `1px solid ${desbloqueado ? "#66BB6A" : samkhyaTokens.cardBorder}`,
+                    }}
+                  >
+                    <p className="text-sm font-medium" style={{ color: desbloqueado ? "#2E7D32" : samkhyaTokens.texto }}>
+                      {desbloqueado
+                        ? "🎉 Frete grátis desbloqueado!"
+                        : `Faltam ${formatBRL(falta)} para ganhar frete grátis`}
+                    </p>
+                    {!desbloqueado && (
+                      <div className="mt-2 h-1.5 w-full rounded-full overflow-hidden" style={{ background: samkhyaTokens.cardBorder }}>
+                        <div
+                          className="h-full transition-all"
+                          style={{ width: `${pct}%`, background: samkhyaTokens.ouro }}
+                        />
+                      </div>
+                    )}
+                  </div>
+                );
+              })()}
               <ul className="space-y-3">
                 {itens.map((it) => (
                   <li
