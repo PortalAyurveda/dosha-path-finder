@@ -98,7 +98,7 @@ export interface SkPedidoCompraItem {
 export interface SkPedidoCompra {
   id: number;
   criado_em: string | null;
-  status: "aberto" | "enviado" | "recebido" | "cancelado" | string;
+  status: "aberto" | "confirmado" | "cancelado" | string;
   itens: SkPedidoCompraItem[];
   total_estimado_r: number | null;
   notas: string | null;
