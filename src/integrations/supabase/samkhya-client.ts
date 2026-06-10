@@ -46,6 +46,60 @@ export interface SkProduto {
   preco_terapeuta_r: number | null;
   ativo: boolean | null;
   criado_em: string | null;
+  estimativa_3_meses: number | null;
+  estimativa_mensal: number | null;
+}
+
+export type SkSemaforo = "verde" | "amarelo" | "vermelho";
+
+export interface SkCapacidade {
+  id: number;
+  nome: string;
+  peso_unidade_g: number | null;
+  estimativa_3_meses: number | null;
+  estimativa_mensal: number | null;
+  meta_60_dias: number | null;
+  unidades_possiveis: number | null;
+  semaforo: SkSemaforo;
+}
+
+export interface SkSemaforoPotes {
+  tipo: string;
+  label: string;
+  qnt_estoque: number;
+  estimativa_mensal: number | null;
+  meta_60_dias: number | null;
+  dias_estoque: number | null;
+  semaforo: SkSemaforo;
+}
+
+export interface SkSemaforoEtiquetas {
+  produto_id: number;
+  produto_nome: string;
+  qnt_estoque: number;
+  estimativa_mensal: number | null;
+  meta_60_dias: number | null;
+  dias_estoque: number | null;
+  semaforo: SkSemaforo;
+}
+
+export interface SkPedidoCompraItem {
+  ingrediente_id: number;
+  ingrediente_nome: string;
+  qtd_necessaria_g: number;
+  qtd_arredondada_g: number;
+  qtd_display: string;
+  preco_estimado: number;
+}
+
+export interface SkPedidoCompra {
+  id: number;
+  criado_em: string | null;
+  status: "aberto" | "enviado" | "recebido" | "cancelado" | string;
+  itens: SkPedidoCompraItem[];
+  total_estimado_r: number | null;
+  notas: string | null;
+  atualizado_em: string | null;
 }
 
 export interface SkProducao {
