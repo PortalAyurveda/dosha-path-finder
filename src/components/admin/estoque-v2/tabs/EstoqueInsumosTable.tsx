@@ -19,11 +19,8 @@ const STATUS_STYLE: Record<string, { bg: string; label: string }> = {
 };
 
 function fmtPeso(g: number | null | undefined) {
-  const n = Number(g ?? 0);
-  if (Math.abs(n) >= 1000) {
-    return `${(n / 1000).toLocaleString("pt-BR", { maximumFractionDigits: 2 })} kg`;
-  }
-  return `${Math.round(n).toLocaleString("pt-BR")} g`;
+  const n = Math.round(Number(g ?? 0));
+  return `${n.toLocaleString("pt-BR")} g`;
 }
 
 export default function EstoqueInsumosTable() {
