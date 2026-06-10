@@ -12,6 +12,7 @@ import { useUser } from "@/contexts/UserContext";
 import { samkhyaTokens } from "@/components/samkhya/tokens";
 import { supabase } from "@/integrations/supabase/client";
 import { trackPixel } from "@/lib/metaPixel";
+import { useFreteGratisConfig } from "@/hooks/useFreteGratisConfig";
 
 type FreteOpcao = {
   id: string | number;
