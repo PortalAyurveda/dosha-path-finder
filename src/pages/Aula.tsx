@@ -8,7 +8,6 @@ import { Drawer, DrawerContent, DrawerTrigger, DrawerTitle, DrawerHeader } from 
 import { ExternalLink, MessageCircle, Link2, Check } from "lucide-react";
 import { useImmersive } from "@/contexts/ImmersiveContext";
 import LiveChat from "@/components/aula/LiveChat";
-import Comments from "@/components/Comments";
 import { toast } from "sonner";
 
 interface Aula {
