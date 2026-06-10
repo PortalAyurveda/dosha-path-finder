@@ -1,7 +1,6 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useCapacidadeProducao } from "@/hooks/useSamkhyaEstoque";
 import SemaforoBadge from "../SemaforoBadge";
-import EstoqueInsumosTable from "./EstoqueInsumosTable";
 
 export default function TabEstoqueProdutos() {
   const { data = [], isLoading, error } = useCapacidadeProducao();
@@ -46,8 +45,6 @@ export default function TabEstoqueProdutos() {
           </TableBody>
         </Table>
       </section>
-
-      <EstoqueInsumosTable />
     </div>
   );
 }
