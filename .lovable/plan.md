@@ -1,14 +1,15 @@
-## Plano
+## Goal
+Em `/aula/:slug` (e dependências via `AulaDispatcher` → `Aula.tsx`), o header atualmente entra em modo "immersive" e renderiza uma versão reduzida com botão "Voltar" branco sobre fundo escuro (cores ruins, conforme print). Trocar para o header padrão do site (Menu / lupa / logo / Entrar ou nome do usuário).
 
-1. Ajustar a leitura do retorno da Edge Function `validar-cupom` no `CartDrawer` para aceitar os dois formatos possíveis:
-   - `{ valido: true, cupom: { ... } }`
-   - `{ valido: true, desconto_calculado: X, codigo: "BENHUR", ... }`
+## Mudança
+Arquivo: `src/pages/Aula.tsx`
 
-2. Normalizar o cupom válido em um objeto local completo antes de salvar em `cupomAplicado`, garantindo que `codigo`, `cupom_id`, `tipo_desconto`, `valor_desconto` e `desconto_calculado` sejam preenchidos mesmo quando vierem no topo do JSON.
+1. Remover a chamada `setImmersive(true)` no `useEffect` (linhas ~135-137) e o import/uso do hook `useImmersive` se ficar órfão.
+2. Manter o restante da página intacto (player, countdown no rodapé do vídeo, etc.).
 
-3. Usar prioritariamente `cupomAplicado.desconto_calculado` para calcular/exibir o desconto verde, com fallback para recalcular percentual/fixo apenas se esse valor não vier.
+Resultado: o `Header` global renderiza seu layout padrão (já é compacto, h-16) em vez do branch `if (immersive)`. O `Footer` também volta a aparecer, o que é o comportamento padrão do site.
 
-4. Manter o frete intacto e recalcular o total como:
-   `subtotal + frete - desconto`
-
-5. Garantir que o payload enviado para `create-checkout` leve o mesmo cupom aplicado e o mesmo desconto mostrado na UI.
+## Escopo
+- Apenas `src/pages/Aula.tsx`.
+- Não alterar `Header.tsx`, `Layout.tsx` nem `ImmersiveContext` (continuam usáveis por outras páginas, ex.: `Webinar`).
+- Nenhuma mudança de lógica de negócio.
