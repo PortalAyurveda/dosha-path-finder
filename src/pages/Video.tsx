@@ -77,9 +77,17 @@ const Video = () => {
   const videoId = video?.video_id;
 
   const timestamps = useMemo(() => {
-    if (!video?.texto_para_embedding) return [];
-    return parseTimestamps(video.texto_para_embedding);
-  }, [video?.texto_para_embedding]);
+    const source = video?.texto_para_embedding || video?.nova_descricao || video?.mini_resumo || "";
+    if (!source) return [];
+    const parsed = parseTimestamps(source);
+    // dedupe by timestamp string, preserve order
+    const seen = new Set<string>();
+    return parsed.filter((e) => {
+      if (seen.has(e.timestamp)) return false;
+      seen.add(e.timestamp);
+      return true;
+    });
+  }, [video?.texto_para_embedding, video?.nova_descricao, video?.mini_resumo]);
 
   const tagList = parseTags(video?.tags ?? null);
 
