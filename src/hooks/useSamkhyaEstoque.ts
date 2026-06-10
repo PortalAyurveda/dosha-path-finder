@@ -192,6 +192,126 @@ export function useUpdateProducaoStatus() {
   });
 }
 
+// ===== Producoes histórico (todos status) =====
+export function useProducoesHistorico() {
+  return useQuery({
+    queryKey: ["samkhya", "producoes", "historico"],
+    queryFn: async () => {
+      const { data, error } = await samkhyaSupabase
+        .from("producoes")
+        .select("*, produtos(nome)")
+        .order("criado_em", { ascending: false });
+      if (error) throw error;
+      return (data ?? []) as SkProducao[];
+    },
+  });
+}
+
+function invalidateProducoes(qc: ReturnType<typeof useQueryClient>) {
+  qc.invalidateQueries({ queryKey: ["samkhya", "producoes"] });
+  qc.invalidateQueries({ queryKey: ["samkhya", "ingredientes"] });
+  qc.invalidateQueries({ queryKey: ["samkhya", "estoque"] });
+  qc.invalidateQueries({ queryKey: ["samkhya", "capacidade"] });
+}
+
+/** Cria várias produções planejadas (NÃO debita estoque). */
+export function useCriarProducoesPlanejadas() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (itens: { produto_id: number; unidades_desejadas: number }[]) => {
+      const linhas = itens.filter((i) => i.unidades_desejadas > 0);
+      if (linhas.length === 0) return;
+      const { error } = await samkhyaSupabase.from("producoes").insert(
+        linhas.map((p) => ({ ...p, status: "planejada" })),
+      );
+      if (error) throw error;
+    },
+    onSuccess: () => invalidateProducoes(qc),
+  });
+}
+
+/** Conclui uma produção: debita estoque (clamp em 0) + status='confirmada'. */
+export function useConcluirProducao() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (producao: SkProducao) => {
+      const { data: receitas, error: errR } = await samkhyaSupabase
+        .from("receitas")
+        .select("ingrediente_id, quantidade_g")
+        .eq("produto_id", producao.produto_id);
+      if (errR) throw errR;
+
+      // calcula gramas por ingrediente
+      const unidades = Number(producao.unidades_desejadas) || 0;
+      const recs = (receitas ?? []) as { ingrediente_id: number; quantidade_g: number }[];
+      const batchTotal = recs.reduce((s, r) => s + Number(r.quantidade_g || 0), 0);
+      const { data: prod, error: errP } = await samkhyaSupabase
+        .from("produtos")
+        .select("peso_unidade_g")
+        .eq("id", producao.produto_id)
+        .maybeSingle();
+      if (errP) throw errP;
+      const peso = Number(prod?.peso_unidade_g || 0);
+      if (batchTotal <= 0 || peso <= 0 || unidades <= 0) {
+        // sem receita: só marca confirmada
+        const { error } = await samkhyaSupabase
+          .from("producoes")
+          .update({ status: "confirmada", confirmado_em: new Date().toISOString() })
+          .eq("id", producao.id);
+        if (error) throw error;
+        return;
+      }
+      const mult = unidades / (batchTotal / peso);
+
+      for (const r of recs) {
+        const need = Number(r.quantidade_g) * mult;
+        const { data: cur, error: e1 } = await samkhyaSupabase
+          .from("ingredientes")
+          .select("qnt_estoque_g")
+          .eq("id", r.ingrediente_id)
+          .maybeSingle();
+        if (e1) throw e1;
+        const atual = Number(cur?.qnt_estoque_g ?? 0);
+        const novo = Math.max(0, atual - need);
+        const { error: e2 } = await samkhyaSupabase
+          .from("ingredientes")
+          .update({ qnt_estoque_g: novo, atualizado_em: new Date().toISOString() })
+          .eq("id", r.ingrediente_id);
+        if (e2) throw e2;
+      }
+
+      const { error } = await samkhyaSupabase
+        .from("producoes")
+        .update({ status: "confirmada", confirmado_em: new Date().toISOString() })
+        .eq("id", producao.id);
+      if (error) throw error;
+    },
+    onSuccess: () => invalidateProducoes(qc),
+  });
+}
+
+export function useExcluirProducao() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: number) => {
+      const { error } = await samkhyaSupabase.from("producoes").delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => invalidateProducoes(qc),
+  });
+}
+
+export function useLimparProducoesPlanejadas() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async () => {
+      const { error } = await samkhyaSupabase.from("producoes").delete().eq("status", "planejada");
+      if (error) throw error;
+    },
+    onSuccess: () => invalidateProducoes(qc),
+  });
+}
+
 export interface NecessidadeRow {
   ingrediente_id: number;
   nome: string;
