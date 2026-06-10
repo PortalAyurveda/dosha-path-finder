@@ -13,6 +13,7 @@ Loja Samkhya em /samkhya/* tem identidade própria (roxo #7b4963 + ouro) e usa c
 - [Design system](mem://design/system) — Full color tokens, typography, surfaces, component patterns
 - [Dosha test](mem://features/dosha-test) — Test flow, database table structure, scoring logic
 - [Routes](mem://features/routes) — All app routes and their purposes
+- [Frete grátis Samkhya](mem://features/samkhya-frete-gratis) — Regras frete grátis (R$350), config_frete, produtos.frete_gratis_sempre
 - [User accounts](mem://features/user-accounts) — user_profiles table, auth flow, claim test logic
 - [Akasha chat](mem://features/akasha-chat) — AI chatbot embedded in /meu-dosha, first-message logic, token system, personalized videos
 - [Loja Samkhya](mem://features/samkhya-loja) — E-commerce section /samkhya/*, schema loja, dedicated client, WhatsApp checkout
