@@ -58,9 +58,12 @@ export interface SkCapacidade {
   peso_unidade_g: number | null;
   estimativa_3_meses: number | null;
   estimativa_mensal: number | null;
+  estoque_atual: number | null;
   meta_60_dias: number | null;
   unidades_possiveis: number | null;
-  semaforo: SkSemaforo;
+  dias_estoque_atual: number | null;
+  semaforo_estoque: SkSemaforo;
+  semaforo_insumos: SkSemaforo;
 }
 
 export interface SkSemaforoPotes {
