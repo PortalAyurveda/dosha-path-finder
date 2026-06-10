@@ -12,6 +12,7 @@ import { useUser } from "@/contexts/UserContext";
 import { samkhyaTokens } from "@/components/samkhya/tokens";
 import { supabase } from "@/integrations/supabase/client";
 import { trackPixel } from "@/lib/metaPixel";
+import { useFreteGratisConfig } from "@/hooks/useFreteGratisConfig";
 
 type FreteOpcao = {
   id: string | number;
@@ -19,6 +20,7 @@ type FreteOpcao = {
   empresa?: string;
   preco: number;
   prazo_dias: number;
+  frete_gratis?: boolean;
 };
 
 const formatBRL = (v: number) =>
@@ -66,6 +68,7 @@ const CartDrawer = () => {
   const [calculandoFrete, setCalculandoFrete] = useState(false);
   const [opcoesFrete, setOpcoesFrete] = useState<FreteOpcao[]>([]);
   const [freteId, setFreteId] = useState<string>("");
+  const { data: freteConfig } = useFreteGratisConfig();
 
   // checkout form
   const [form, setForm] = useState({
@@ -211,6 +214,7 @@ const CartDrawer = () => {
       const { data, error } = await supabase.functions.invoke("calcular-frete", {
         body: {
           cep_destino: cepLimpo,
+          frete_gratis_cupom: cupomAplicado?.tipo_desconto === "frete_gratis",
           itens: itens.map((it) => ({
             slug: it.slug,
             quantidade: it.quantidade,
@@ -225,7 +229,8 @@ const CartDrawer = () => {
         toast.error("Nenhuma opção de frete encontrada");
       } else {
         setOpcoesFrete(opcoes);
-        setFreteId(String(opcoes[0].id));
+        const gratis = opcoes.find((o) => String(o.id) === "gratis" || o.frete_gratis);
+        setFreteId(String((gratis ?? opcoes[0]).id));
       }
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : "Erro ao calcular frete";
@@ -382,6 +387,35 @@ const CartDrawer = () => {
             </div>
           ) : step === "cart" ? (
             <div className="space-y-5">
+              {freteConfig?.frete_gratis_ativo && (() => {
+                const min = freteConfig.frete_gratis_minimo;
+                const desbloqueado = subtotal >= min;
+                const falta = Math.max(0, min - subtotal);
+                const pct = Math.min(100, (subtotal / min) * 100);
+                return (
+                  <div
+                    className="p-3 rounded-md"
+                    style={{
+                      background: desbloqueado ? "#E8F5E9" : samkhyaTokens.cardBg,
+                      border: `1px solid ${desbloqueado ? "#66BB6A" : samkhyaTokens.cardBorder}`,
+                    }}
+                  >
+                    <p className="text-sm font-medium" style={{ color: desbloqueado ? "#2E7D32" : samkhyaTokens.texto }}>
+                      {desbloqueado
+                        ? "🎉 Frete grátis desbloqueado!"
+                        : `Faltam ${formatBRL(falta)} para ganhar frete grátis`}
+                    </p>
+                    {!desbloqueado && (
+                      <div className="mt-2 h-1.5 w-full rounded-full overflow-hidden" style={{ background: samkhyaTokens.cardBorder }}>
+                        <div
+                          className="h-full transition-all"
+                          style={{ width: `${pct}%`, background: samkhyaTokens.ouro }}
+                        />
+                      </div>
+                    )}
+                  </div>
+                );
+              })()}
               <ul className="space-y-3">
                 {itens.map((it) => (
                   <li
@@ -454,6 +488,14 @@ const CartDrawer = () => {
                   </Button>
                 </div>
 
+                {opcoesFrete.some((o) => String(o.id) === "gratis" || o.frete_gratis) && (
+                  <div
+                    className="mt-3 p-2 rounded text-sm font-medium text-center"
+                    style={{ background: "#E8F5E9", border: "1px solid #66BB6A", color: "#2E7D32" }}
+                  >
+                    🎉 Seu pedido tem frete grátis!
+                  </div>
+                )}
                 {opcoesFrete.length > 0 && (
                   <RadioGroup value={freteId} onValueChange={setFreteId} className="mt-3 space-y-2">
                     {opcoesFrete.map((op) => (
@@ -559,7 +601,9 @@ const CartDrawer = () => {
             {freteSelecionado && (
               <div className="flex justify-between text-sm">
                 <span style={{ color: samkhyaTokens.textoSec }}>Frete</span>
-                <span style={{ color: samkhyaTokens.texto }}>{formatBRL(freteSelecionado.preco)}</span>
+                <span style={{ color: freteSelecionado.preco === 0 ? "#2E7D32" : samkhyaTokens.texto, fontWeight: freteSelecionado.preco === 0 ? 600 : 400 }}>
+                  {freteSelecionado.preco === 0 ? "Grátis" : formatBRL(freteSelecionado.preco)}
+                </span>
               </div>
             )}
 
