@@ -273,3 +273,192 @@ export function useNovaVenda() {
     onSuccess: () => qc.invalidateQueries({ queryKey: QK.vendas }),
   });
 }
+
+// ===== Estimativas =====
+export function useEstimativasVendas() {
+  return useQuery({
+    queryKey: ["samkhya", "produtos", "estimativas"],
+    queryFn: async () => {
+      const { data, error } = await samkhyaSupabase
+        .from("produtos")
+        .select("id, nome, estimativa_3_meses, estimativa_mensal, ativo")
+        .eq("ativo", true)
+        .order("estimativa_3_meses", { ascending: false, nullsFirst: false });
+      if (error) throw error;
+      return (data ?? []) as Pick<SkProduto, "id" | "nome" | "estimativa_3_meses" | "estimativa_mensal" | "ativo">[];
+    },
+  });
+}
+
+export function useUpdateEstimativa3Meses() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, total3m }: { id: number; total3m: number }) => {
+      const { error } = await samkhyaSupabase
+        .from("produtos")
+        .update({ estimativa_3_meses: total3m })
+        .eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["samkhya", "produtos"] });
+      qc.invalidateQueries({ queryKey: ["samkhya", "capacidade"] });
+      qc.invalidateQueries({ queryKey: ["samkhya", "semaforo"] });
+    },
+  });
+}
+
+// ===== Capacidade / Semáforos =====
+export function useCapacidadeProducao() {
+  return useQuery({
+    queryKey: ["samkhya", "capacidade"],
+    queryFn: async () => {
+      const { data, error } = await samkhyaSupabase
+        .from("v_capacidade_producao")
+        .select("*")
+        .order("nome");
+      if (error) throw error;
+      return (data ?? []) as SkCapacidade[];
+    },
+  });
+}
+
+export function useSemaforoPotes() {
+  return useQuery({
+    queryKey: ["samkhya", "semaforo", "potes"],
+    queryFn: async () => {
+      const { data, error } = await samkhyaSupabase.from("v_semaforo_potes").select("*").order("label");
+      if (error) throw error;
+      return (data ?? []) as SkSemaforoPotes[];
+    },
+  });
+}
+
+export function useSemaforoEtiquetas() {
+  return useQuery({
+    queryKey: ["samkhya", "semaforo", "etiquetas"],
+    queryFn: async () => {
+      const { data, error } = await samkhyaSupabase.from("v_semaforo_etiquetas").select("*").order("produto_nome");
+      if (error) throw error;
+      return (data ?? []) as SkSemaforoEtiquetas[];
+    },
+  });
+}
+
+export function useUpdatePoteEstoque() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ tipo, qnt }: { tipo: string; qnt: number }) => {
+      const { error } = await samkhyaSupabase
+        .from("potes_estoque")
+        .update({ qnt_estoque: qnt, atualizado_em: new Date().toISOString() })
+        .eq("tipo", tipo);
+      if (error) throw error;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["samkhya", "semaforo", "potes"] }),
+  });
+}
+
+export function useUpdateEtiquetaEstoque() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ produto_nome, qnt }: { produto_nome: string; qnt: number }) => {
+      const { error } = await samkhyaSupabase
+        .from("etiquetas_estoque")
+        .update({ qnt_estoque: qnt, atualizado_em: new Date().toISOString() })
+        .eq("produto_nome", produto_nome);
+      if (error) throw error;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["samkhya", "semaforo", "etiquetas"] }),
+  });
+}
+
+// ===== Ingredientes com preço (pro pedido de compra) =====
+export function useIngredientesCompletos() {
+  return useQuery({
+    queryKey: ["samkhya", "ingredientes", "completos"],
+    queryFn: async () => {
+      const { data, error } = await samkhyaSupabase
+        .from("ingredientes")
+        .select("id, nome, qnt_estoque_g, preco_kg")
+        .order("nome");
+      if (error) throw error;
+      return (data ?? []) as Pick<SkIngrediente, "id" | "nome" | "qnt_estoque_g" | "preco_kg">[];
+    },
+  });
+}
+
+// ===== Pedidos de Compra =====
+export function usePedidosCompra() {
+  return useQuery({
+    queryKey: ["samkhya", "pedidos_compra"],
+    queryFn: async () => {
+      const { data, error } = await samkhyaSupabase
+        .from("pedidos_compra")
+        .select("*")
+        .order("criado_em", { ascending: false });
+      if (error) throw error;
+      return (data ?? []) as SkPedidoCompra[];
+    },
+  });
+}
+
+export function useCriarPedidoCompra() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (input: { itens: SkPedidoCompraItem[]; total: number }) => {
+      const { error } = await samkhyaSupabase.from("pedidos_compra").insert({
+        status: "aberto",
+        itens: input.itens,
+        total_estimado_r: input.total,
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["samkhya", "pedidos_compra"] }),
+  });
+}
+
+export function useAtualizarStatusPedido() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({
+      pedido,
+      novoStatus,
+    }: {
+      pedido: SkPedidoCompra;
+      novoStatus: "enviado" | "recebido" | "cancelado";
+    }) => {
+      const { error } = await samkhyaSupabase
+        .from("pedidos_compra")
+        .update({ status: novoStatus, atualizado_em: new Date().toISOString() })
+        .eq("id", pedido.id);
+      if (error) throw error;
+
+      if (novoStatus === "recebido") {
+        // soma ao estoque de cada ingrediente
+        for (const item of pedido.itens ?? []) {
+          const { data: cur, error: e1 } = await samkhyaSupabase
+            .from("ingredientes")
+            .select("qnt_estoque_g")
+            .eq("id", item.ingrediente_id)
+            .maybeSingle();
+          if (e1) throw e1;
+          const atual = Number(cur?.qnt_estoque_g ?? 0);
+          const { error: e2 } = await samkhyaSupabase
+            .from("ingredientes")
+            .update({
+              qnt_estoque_g: atual + Number(item.qtd_arredondada_g || 0),
+              atualizado_em: new Date().toISOString(),
+            })
+            .eq("id", item.ingrediente_id);
+          if (e2) throw e2;
+        }
+      }
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["samkhya", "pedidos_compra"] });
+      qc.invalidateQueries({ queryKey: ["samkhya", "ingredientes"] });
+      qc.invalidateQueries({ queryKey: ["samkhya", "estoque"] });
+    },
+  });
+}
