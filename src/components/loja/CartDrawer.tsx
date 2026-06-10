@@ -68,6 +68,7 @@ const CartDrawer = () => {
   const [calculandoFrete, setCalculandoFrete] = useState(false);
   const [opcoesFrete, setOpcoesFrete] = useState<FreteOpcao[]>([]);
   const [freteId, setFreteId] = useState<string>("");
+  const { data: freteConfig } = useFreteGratisConfig();
 
   // checkout form
   const [form, setForm] = useState({
