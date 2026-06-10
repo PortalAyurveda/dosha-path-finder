@@ -131,3 +131,17 @@ export interface SkVenda {
   criado_em: string | null;
   produtos?: { nome: string } | null;
 }
+
+export type SkNecessidadeStatus = "ok" | "falta" | "sem_pedido";
+
+export interface SkNecessidadeIngrediente {
+  id: number;
+  nome: string;
+  categoria: string | null;
+  qnt_estoque_g: number | null;
+  qnt_necessaria_g: number | null;
+  saldo_g: number | null;
+  status: SkNecessidadeStatus | string;
+  preco_kg: number | null;
+  atualizado_em: string | null;
+}
