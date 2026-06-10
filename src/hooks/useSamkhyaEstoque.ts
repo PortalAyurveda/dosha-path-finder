@@ -462,3 +462,38 @@ export function useAtualizarStatusPedido() {
     },
   });
 }
+
+import type { SkNecessidadeIngrediente } from "@/integrations/supabase/samkhya-client";
+
+export function useNecessidadeIngredientes() {
+  return useQuery({
+    queryKey: ["samkhya", "necessidade", "ingredientes"],
+    queryFn: async () => {
+      const { data, error } = await samkhyaSupabase
+        .from("v_necessidade_ingredientes")
+        .select("*")
+        .order("nome");
+      if (error) throw error;
+      return (data ?? []) as SkNecessidadeIngrediente[];
+    },
+  });
+}
+
+export function useUpdateIngredienteEstoque() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, qnt }: { id: number; qnt: number }) => {
+      const { error } = await samkhyaSupabase
+        .from("ingredientes")
+        .update({ qnt_estoque_g: qnt, atualizado_em: new Date().toISOString() })
+        .eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["samkhya", "ingredientes"] });
+      qc.invalidateQueries({ queryKey: ["samkhya", "necessidade"] });
+      qc.invalidateQueries({ queryKey: ["samkhya", "estoque"] });
+      qc.invalidateQueries({ queryKey: ["samkhya", "capacidade"] });
+    },
+  });
+}
