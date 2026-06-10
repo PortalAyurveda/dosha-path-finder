@@ -436,48 +436,72 @@ export function useCriarPedidoCompra() {
   });
 }
 
-export function useAtualizarStatusPedido() {
+async function ajustarEstoqueIngredientes(
+  itens: SkPedidoCompraItem[],
+  sinal: 1 | -1,
+) {
+  for (const item of itens ?? []) {
+    const { data: cur, error: e1 } = await samkhyaSupabase
+      .from("ingredientes")
+      .select("qnt_estoque_g")
+      .eq("id", item.ingrediente_id)
+      .maybeSingle();
+    if (e1) throw e1;
+    const atual = Number(cur?.qnt_estoque_g ?? 0);
+    const delta = sinal * Number(item.qtd_arredondada_g || 0);
+    const novo = Math.max(0, atual + delta);
+    const { error: e2 } = await samkhyaSupabase
+      .from("ingredientes")
+      .update({ qnt_estoque_g: novo, atualizado_em: new Date().toISOString() })
+      .eq("id", item.ingrediente_id);
+    if (e2) throw e2;
+  }
+}
+
+function invalidatePedidoQueries(qc: ReturnType<typeof useQueryClient>) {
+  qc.invalidateQueries({ queryKey: ["samkhya", "pedidos_compra"] });
+  qc.invalidateQueries({ queryKey: ["samkhya", "ingredientes"] });
+  qc.invalidateQueries({ queryKey: ["samkhya", "estoque"] });
+}
+
+export function useConfirmarPedido() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async ({
-      pedido,
-      novoStatus,
-    }: {
-      pedido: SkPedidoCompra;
-      novoStatus: "enviado" | "recebido" | "cancelado";
-    }) => {
+    mutationFn: async (pedido: SkPedidoCompra) => {
+      await ajustarEstoqueIngredientes(pedido.itens ?? [], 1);
       const { error } = await samkhyaSupabase
         .from("pedidos_compra")
-        .update({ status: novoStatus, atualizado_em: new Date().toISOString() })
+        .update({ status: "confirmado", atualizado_em: new Date().toISOString() })
         .eq("id", pedido.id);
       if (error) throw error;
+    },
+    onSuccess: () => invalidatePedidoQueries(qc),
+  });
+}
 
-      if (novoStatus === "recebido") {
-        // soma ao estoque de cada ingrediente
-        for (const item of pedido.itens ?? []) {
-          const { data: cur, error: e1 } = await samkhyaSupabase
-            .from("ingredientes")
-            .select("qnt_estoque_g")
-            .eq("id", item.ingrediente_id)
-            .maybeSingle();
-          if (e1) throw e1;
-          const atual = Number(cur?.qnt_estoque_g ?? 0);
-          const { error: e2 } = await samkhyaSupabase
-            .from("ingredientes")
-            .update({
-              qnt_estoque_g: atual + Number(item.qtd_arredondada_g || 0),
-              atualizado_em: new Date().toISOString(),
-            })
-            .eq("id", item.ingrediente_id);
-          if (e2) throw e2;
-        }
-      }
+export function useCancelarPedido() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (pedido: SkPedidoCompra) => {
+      await ajustarEstoqueIngredientes(pedido.itens ?? [], -1);
+      const { error } = await samkhyaSupabase
+        .from("pedidos_compra")
+        .update({ status: "cancelado", atualizado_em: new Date().toISOString() })
+        .eq("id", pedido.id);
+      if (error) throw error;
     },
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["samkhya", "pedidos_compra"] });
-      qc.invalidateQueries({ queryKey: ["samkhya", "ingredientes"] });
-      qc.invalidateQueries({ queryKey: ["samkhya", "estoque"] });
+    onSuccess: () => invalidatePedidoQueries(qc),
+  });
+}
+
+export function useDeletarPedido() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: number) => {
+      const { error } = await samkhyaSupabase.from("pedidos_compra").delete().eq("id", id);
+      if (error) throw error;
     },
+    onSuccess: () => invalidatePedidoQueries(qc),
   });
 }
 
