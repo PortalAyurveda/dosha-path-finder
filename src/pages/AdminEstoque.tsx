@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { RESULTADO_EVENT } from "@/components/admin/estoque-v2/tabs/TabEstimativaVendas";
 import { X } from "lucide-react";
 import AdminNav from "@/components/admin/AdminNav";
 import Seo from "@/components/Seo";
@@ -31,6 +32,12 @@ export default function AdminEstoque() {
       else next.add(k);
       return next;
     });
+
+  useEffect(() => {
+    const handler = () => setOpen((s) => (s.has("resultado") ? s : new Set([...s, "resultado"])));
+    window.addEventListener(RESULTADO_EVENT, handler);
+    return () => window.removeEventListener(RESULTADO_EVENT, handler);
+  }, []);
 
   const openedInOrder = PANELS.filter((p) => open.has(p.key));
 
