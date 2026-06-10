@@ -601,7 +601,9 @@ const CartDrawer = () => {
             {freteSelecionado && (
               <div className="flex justify-between text-sm">
                 <span style={{ color: samkhyaTokens.textoSec }}>Frete</span>
-                <span style={{ color: samkhyaTokens.texto }}>{formatBRL(freteSelecionado.preco)}</span>
+                <span style={{ color: freteSelecionado.preco === 0 ? "#2E7D32" : samkhyaTokens.texto, fontWeight: freteSelecionado.preco === 0 ? 600 : 400 }}>
+                  {freteSelecionado.preco === 0 ? "Grátis" : formatBRL(freteSelecionado.preco)}
+                </span>
               </div>
             )}
 
