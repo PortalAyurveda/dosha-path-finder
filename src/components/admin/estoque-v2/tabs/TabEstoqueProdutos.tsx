@@ -45,8 +45,6 @@ export default function TabEstoqueProdutos() {
           </TableBody>
         </Table>
       </section>
-
-      <EstoqueInsumosTable />
     </div>
   );
 }
