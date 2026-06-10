@@ -214,6 +214,7 @@ const CartDrawer = () => {
       const { data, error } = await supabase.functions.invoke("calcular-frete", {
         body: {
           cep_destino: cepLimpo,
+          frete_gratis_cupom: cupomAplicado?.tipo_desconto === "frete_gratis",
           itens: itens.map((it) => ({
             slug: it.slug,
             quantidade: it.quantidade,
@@ -228,7 +229,8 @@ const CartDrawer = () => {
         toast.error("Nenhuma opção de frete encontrada");
       } else {
         setOpcoesFrete(opcoes);
-        setFreteId(String(opcoes[0].id));
+        const gratis = opcoes.find((o) => String(o.id) === "gratis" || o.frete_gratis);
+        setFreteId(String((gratis ?? opcoes[0]).id));
       }
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : "Erro ao calcular frete";
