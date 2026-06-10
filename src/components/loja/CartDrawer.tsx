@@ -20,6 +20,7 @@ type FreteOpcao = {
   empresa?: string;
   preco: number;
   prazo_dias: number;
+  frete_gratis?: boolean;
 };
 
 const formatBRL = (v: number) =>
