@@ -87,7 +87,10 @@ export default function TabEstimativaVendas() {
             {isLoading && (
               <TableRow><TableCell colSpan={3} className="text-muted-foreground">Carregando…</TableCell></TableRow>
             )}
-            {data.map((p) => {
+          {data
+            .slice()
+            .sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR"))
+            .map((p) => {
               const valor = Number(local[p.id] ?? 0);
               const media = valor / 3;
               return (
