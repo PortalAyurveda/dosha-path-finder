@@ -67,12 +67,7 @@ export default function EstoqueInsumosTable() {
       if (filtro === "ok") return r.status === "ok";
       return true;
     });
-    return [...filtered].sort((a, b) => {
-      const sa = STATUS_ORDER[a.status as string] ?? 99;
-      const sb = STATUS_ORDER[b.status as string] ?? 99;
-      if (sa !== sb) return sa - sb;
-      return a.nome.localeCompare(b.nome, "pt-BR");
-    });
+    return [...filtered].sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR"));
   }, [data, filtro]);
 
   if (error) return <div className="text-destructive text-sm">{(error as Error).message}</div>;

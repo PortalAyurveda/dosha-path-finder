@@ -73,7 +73,10 @@ export default function TabEstoqueEtiquetas() {
           </TableHeader>
           <TableBody>
             {potesQ.isLoading && <TableRow><TableCell colSpan={5} className="text-muted-foreground">Carregando…</TableCell></TableRow>}
-            {(potesQ.data ?? []).map((p) => (
+            {(potesQ.data ?? [])
+              .slice()
+              .sort((a, b) => a.label.localeCompare(b.label, "pt-BR"))
+              .map((p) => (
               <Linha
                 key={p.tipo}
                 nome={p.label}
@@ -107,7 +110,10 @@ export default function TabEstoqueEtiquetas() {
           </TableHeader>
           <TableBody>
             {etiqQ.isLoading && <TableRow><TableCell colSpan={5} className="text-muted-foreground">Carregando…</TableCell></TableRow>}
-            {(etiqQ.data ?? []).map((e) => (
+            {(etiqQ.data ?? [])
+              .slice()
+              .sort((a, b) => a.produto_nome.localeCompare(b.produto_nome, "pt-BR"))
+              .map((e) => (
               <Linha
                 key={e.produto_nome}
                 nome={e.produto_nome}

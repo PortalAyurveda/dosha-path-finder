@@ -63,7 +63,10 @@ export default function TabEstoqueProdutos() {
           {isLoading && (
             <TableRow><TableCell colSpan={7} className="text-muted-foreground">Carregando…</TableCell></TableRow>
           )}
-          {data.map((c) => (
+          {data
+            .slice()
+            .sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR"))
+            .map((c) => (
             <TableRow key={c.id}>
               <TableCell className="font-medium">{c.nome}</TableCell>
               <TableCell>
