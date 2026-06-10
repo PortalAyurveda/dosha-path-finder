@@ -184,12 +184,7 @@ const Biblioteca = () => {
                   textoParaEmbedding={v.texto_para_embedding || ""}
                   searchTerm={debouncedSearch}
                   onClick={(initialSeconds) =>
-                    setSelectedAdvancedVideo({
-                      video_id: v.video_id,
-                      novo_titulo: v.novo_titulo || "Sem título",
-                      texto_para_embedding: v.texto_para_embedding || "",
-                      initialSeconds,
-                    })
+                    navigate(`/video/${slugify(v.novo_titulo || "Sem título")}?t=${initialSeconds}`, { state: { videoId: v.video_id } })
                   }
                 />
               ))}
