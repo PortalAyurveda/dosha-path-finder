@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -11,6 +11,7 @@ import {
   useConfirmarProducao,
 } from "@/hooks/useSamkhyaEstoque";
 import { agregarNecessidade, montarResultado, fmtG, type Selecao } from "../calc";
+import { RESULTADO_SEED_KEY, RESULTADO_EVENT } from "./TabEstimativaVendas";
 
 export default function TabResultadoFinal() {
   const ingQ = useIngredientesRaw();
@@ -18,7 +19,26 @@ export default function TabResultadoFinal() {
   const recQ = useReceitasAll();
   const confirmar = useConfirmarProducao();
 
-  const [selecao, setSelecao] = useState<Selecao>({});
+  const [selecao, setSelecao] = useState<Selecao>(() => {
+    try {
+      const raw = sessionStorage.getItem(RESULTADO_SEED_KEY);
+      if (raw) {
+        sessionStorage.removeItem(RESULTADO_SEED_KEY);
+        const parsed = JSON.parse(raw);
+        return (parsed?.seed ?? {}) as Selecao;
+      }
+    } catch {}
+    return {};
+  });
+
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const seed = (e as CustomEvent).detail?.seed as Selecao | undefined;
+      if (seed) setSelecao(seed);
+    };
+    window.addEventListener(RESULTADO_EVENT, handler);
+    return () => window.removeEventListener(RESULTADO_EVENT, handler);
+  }, []);
 
   const ingredientes = ingQ.data ?? [];
   const produtos = prodQ.data ?? [];

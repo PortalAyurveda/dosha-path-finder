@@ -316,9 +316,27 @@ export function useCapacidadeProducao() {
       const { data, error } = await samkhyaSupabase
         .from("v_capacidade_producao")
         .select("*")
-        .order("nome");
+        .order("dias_estoque_atual", { ascending: true, nullsFirst: false });
       if (error) throw error;
       return (data ?? []) as SkCapacidade[];
+    },
+  });
+}
+
+export function useUpdateProdutoEstoque() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, estoque_atual }: { id: number; estoque_atual: number }) => {
+      const { error } = await samkhyaSupabase
+        .from("produtos")
+        .update({ estoque_atual })
+        .eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["samkhya", "capacidade"] });
+      qc.invalidateQueries({ queryKey: ["samkhya", "produtos"] });
+      qc.invalidateQueries({ queryKey: ["samkhya", "semaforo"] });
     },
   });
 }
