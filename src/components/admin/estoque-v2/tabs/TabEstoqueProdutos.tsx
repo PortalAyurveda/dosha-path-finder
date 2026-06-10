@@ -51,7 +51,7 @@ export default function TabEstoqueProdutos() {
         <TableHeader>
           <TableRow>
             <TableHead>Produto</TableHead>
-            <TableHead className="w-[120px]">Estoque atual</TableHead>
+            <TableHead className="w-[120px]">Unidades disponíveis</TableHead>
             <TableHead className="text-right">Dias rest.</TableHead>
             <TableHead className="w-[110px]">Semáforo estoque</TableHead>
             <TableHead className="text-right">Unid. produzíveis</TableHead>
