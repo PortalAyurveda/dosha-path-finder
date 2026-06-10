@@ -1,55 +1,59 @@
-# Plano: Gerador de Resultado Final + Estoque de Produtos por Capacidade
+# Confirmar Produção — foco em insumos + ciclo de vida do pedido
 
-## 1. Aba "Estimativa de Vendas" — toggle de meses + botão gerador
+## 1. Topo da aba: mostrar INSUMOS (não produtos)
 
-Acima da tabela existente em `TabEstimativaVendas.tsx`, adicionar uma barra:
+Hoje a tabela de cima lista produtos com "qtd a produzir". Vou inverter o foco:
 
-- **Toggle (ToggleGroup shadcn):** `[1 mês] [2 meses] [3 meses]` — default `2`. Estado local `meses: 1|2|3`.
-- **Botão "Gerar Resultado Final"** (cor primária, à direita).
+- Mantenho um cálculo interno do que produzir (semeado com `meta_60_dias`), mas **escondido** num accordion "Ajustar produção planejada" recolhido por padrão.
+- A tabela principal passa a ser **"Insumos a comprar"**, derivada desse plano via `montarPedido()`:
 
-Ao clicar:
-1. Para cada produto da lista: `a_produzir = max(0, ceil(estimativa_mensal × meses) - estoque_atual)`.
-2. Monta um objeto `{ [produto_id]: a_produzir }`.
-3. Persiste em `sessionStorage` com chave `samkhya:resultado-final:seed` (e timestamp).
-4. Dispara um `CustomEvent("samkhya:abrir-resultado")` no `window` com o payload.
-5. Toast: "Resultado Final gerado com base em X meses".
+  | Ingrediente | Necessário (g) | Em estoque (g) | A comprar | Preço est. | 🗑 |
 
-### Conexão com o painel "Resultado Final"
+- Coluna 🗑 remove a linha do pedido antes de gerar (estado local `removidos: Set<ingrediente_id>`).
+- Rodapé: total recalculado + botão **Gerar Pedido de Compra**.
 
-Em `AdminEstoque.tsx`:
-- Listener no `window` para `samkhya:abrir-resultado` → adiciona `"resultado"` ao `Set` de painéis abertos.
+## 2. Ciclo de vida do pedido
 
-Em `TabResultadoFinal.tsx`:
-- No mount, ler `sessionStorage["samkhya:resultado-final:seed"]` (se existir e não consumido). Hidratar o estado `selecao` com os valores. Consumir a chave (remover) para não re-aplicar.
-- Também escutar o `CustomEvent` para casos em que o painel já está montado (atualiza `selecao` substituindo).
-- O usuário continua podendo editar os valores normalmente.
+Status novos: `aberto` → `confirmado` → (opcional) `cancelado` → deletado.
+Removo `enviado`/`recebido` (substituídos por `confirmado`).
 
-## 2. Aba "Estoque de Produtos" — substituir tabela pela view v_capacidade_producao
+Regras de ação por status:
 
-A view já tem todas as colunas necessárias (confirmado): `id, nome, peso_unidade_g, estimativa_3_meses, estimativa_mensal, estoque_atual, meta_60_dias, unidades_possiveis, dias_estoque_atual, semaforo_estoque, semaforo_insumos`.
+| Status | Botões disponíveis | Efeito |
+|---|---|---|
+| aberto | **Confirmar**, **Deletar** | Confirmar = soma insumos ao estoque, vira `confirmado`. Deletar = remove a linha. |
+| confirmado | **Cancelar** | Subtrai do estoque o que tinha sido somado, vira `cancelado`. |
+| cancelado | **Deletar** | Remove a linha. |
 
-### Mudanças
+Cada card do histórico mostra **`#ID` + data + status (badge) + total**, com a lista de itens dentro.
 
-**`samkhya-client.ts`** — atualizar `SkCapacidade`:
-- Remover `semaforo`. Adicionar: `estoque_atual: number | null`, `dias_estoque_atual: number | null`, `semaforo_estoque: SkSemaforo`, `semaforo_insumos: SkSemaforo`.
+## 3. Banco
 
-**`useSamkhyaEstoque.ts`**:
-- `useCapacidadeProducao`: trocar `.order("nome")` por `.order("dias_estoque_atual", { ascending: true, nullsFirst: false })`.
-- Adicionar `useUpdateProdutoEstoque({ id, estoque_atual })` → `UPDATE produtos SET estoque_atual = $v`. Invalida `["samkhya","capacidade"]`, `["samkhya","produtos"]`, `["samkhya","semaforo"]`.
+Migration:
 
-**`TabEstoqueProdutos.tsx`** — reescrever a única tabela com colunas:
-1. **Produto** (nome)
-2. **Estoque atual** — `<Input type="number">` com debounce 600ms (mesmo padrão de `EstoqueInsumosTable`) chamando `useUpdateProdutoEstoque`.
-3. **Dias restantes** — `dias_estoque_atual` formatado (`—` se nulo, senão `N d`).
-4. **Semáforo estoque** — `<SemaforoBadge semaforo={semaforo_estoque} showLabel />`.
-5. **Unid. produzíveis** — `unidades_possiveis`.
-6. **Meta 60 dias** — `meta_60_dias`.
-7. **Semáforo insumos** — `<SemaforoBadge semaforo={semaforo_insumos} showLabel />`.
+- `ALTER TYPE` (ou check) do `pedidos_compra.status` para aceitar `aberto | confirmado | cancelado`.
+- Migrar registros existentes: `enviado`/`recebido` → `confirmado`.
+- Garantir que a tabela tenha `id serial` (já tem) — é o ID que aparece como `#42`.
+- Permissão de `DELETE` em `samkhya.pedidos_compra` para `authenticated` (revisar RLS — provavelmente já ok via `is_admin()`).
 
-Linhas de loading/erro mantidas.
+## 4. Código
 
-## Escopo
+**`src/hooks/useSamkhyaEstoque.ts`**
+- Substituir `useAtualizarStatusPedido` por:
+  - `useConfirmarPedido(pedido)` → status `confirmado` + soma `qtd_arredondada_g` em cada ingrediente.
+  - `useCancelarPedido(pedido)` → status `cancelado` + subtrai a mesma quantidade.
+  - `useDeletarPedido(id)` → `DELETE FROM pedidos_compra WHERE id=?`.
 
-- Sem migrations (view e coluna `produtos.estoque_atual` já existem).
-- Sem mudanças em outras abas / painéis / hooks não citados.
-- `EstoqueInsumosTable` (painel mestre) permanece intacto.
+**`src/integrations/supabase/samkhya-client.ts`**
+- Atualizar tipo `SkPedidoCompra.status` para `"aberto" | "confirmado" | "cancelado"`.
+
+**`src/components/admin/estoque-v2/tabs/TabConfirmarProducao.tsx`**
+- Reescrever:
+  1. Accordion "Plano de produção" (fechado) com a tabela atual de produtos + qtd.
+  2. Tabela "Insumos a comprar" (foco principal) com remoção por linha.
+  3. Histórico: cada item mostra `#ID`, status, ações conforme tabela acima, confirmações via `toast`/`window.confirm` para Deletar/Cancelar.
+
+## 5. Pontos a confirmar
+
+- OK marcar como **confirmado** já somar ao estoque (sem etapa separada de "recebido")? Pelo seu texto entendi que sim.
+- Ao **cancelar** um pedido confirmado, subtrair direto mesmo se o estoque já tiver sido usado em produção (pode ficar negativo) — é o comportamento desejado? Posso travar com erro se ficar negativo, se preferir.
