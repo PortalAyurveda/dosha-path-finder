@@ -7,6 +7,11 @@ import {
   type SkReceita,
   type SkIngrediente,
   type SkVenda,
+  type SkCapacidade,
+  type SkSemaforoPotes,
+  type SkSemaforoEtiquetas,
+  type SkPedidoCompra,
+  type SkPedidoCompraItem,
 } from "@/integrations/supabase/samkhya-client";
 
 const QK = {
