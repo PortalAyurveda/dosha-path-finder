@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { slugify } from "@/lib/slugify";
 import PageContainer from "@/components/PageContainer";
 import DoshaSelector from "@/components/dosha/DoshaSelector";
 import SearchHeader, { type VideoCategory } from "@/components/biblioteca/SearchHeader";
@@ -183,12 +184,7 @@ const Biblioteca = () => {
                   textoParaEmbedding={v.texto_para_embedding || ""}
                   searchTerm={debouncedSearch}
                   onClick={(initialSeconds) =>
-                    setSelectedAdvancedVideo({
-                      video_id: v.video_id,
-                      novo_titulo: v.novo_titulo || "Sem título",
-                      texto_para_embedding: v.texto_para_embedding || "",
-                      initialSeconds,
-                    })
+                    navigate(`/video/${slugify(v.novo_titulo || "Sem título")}?t=${initialSeconds}`, { state: { videoId: v.video_id } })
                   }
                 />
               ))}
