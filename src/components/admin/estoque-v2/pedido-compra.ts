@@ -63,8 +63,9 @@ export function montarPedido(
 
   for (const [ingId, nec] of necessario) {
     const ing = mapIng.get(ingId);
-    const estoque = Number(ing?.qnt_estoque_g ?? 0);
-    const falta = nec - estoque;
+    // estoque tratado como mínimo 0: nunca infla pedido por valor negativo
+    const estoque = Math.max(0, Number(ing?.qnt_estoque_g ?? 0));
+    const falta = Math.max(0, nec - estoque);
     const round = arredondar(falta);
     if (!round) continue;
     const precoKg = Number(ing?.preco_kg ?? 0);
