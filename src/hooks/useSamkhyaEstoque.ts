@@ -69,6 +69,82 @@ export function useProdutos() {
   });
 }
 
+export function useProdutosAtivos() {
+  return useQuery({
+    queryKey: ["samkhya", "produtos", "ativos"],
+    queryFn: async () => {
+      const { data, error } = await samkhyaSupabase
+        .from("produtos")
+        .select("*")
+        .eq("ativo", true)
+        .order("nome");
+      if (error) throw error;
+      return (data ?? []) as SkProduto[];
+    },
+  });
+}
+
+export function useReceitasAll() {
+  return useQuery({
+    queryKey: ["samkhya", "receitas", "all"],
+    queryFn: async () => {
+      const { data, error } = await samkhyaSupabase
+        .from("receitas")
+        .select("id, produto_id, ingrediente_id, quantidade_g");
+      if (error) throw error;
+      return (data ?? []) as SkReceita[];
+    },
+  });
+}
+
+export function useIngredientesRaw() {
+  return useQuery({
+    queryKey: ["samkhya", "ingredientes", "raw"],
+    queryFn: async () => {
+      const { data, error } = await samkhyaSupabase
+        .from("ingredientes")
+        .select("id, nome, qnt_estoque_g")
+        .order("nome");
+      if (error) throw error;
+      return (data ?? []) as Pick<SkIngrediente, "id" | "nome" | "qnt_estoque_g">[];
+    },
+  });
+}
+
+export function useConfirmarProducao() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (input: {
+      producoes: { produto_id: number; unidades_desejadas: number }[];
+      abates: { ingrediente_id: number; quantidade_g: number; novo_estoque: number }[];
+    }) => {
+      if (input.producoes.length > 0) {
+        const { error: e1 } = await samkhyaSupabase.from("producoes").insert(
+          input.producoes.map((p) => ({
+            produto_id: p.produto_id,
+            unidades_desejadas: p.unidades_desejadas,
+            status: "confirmada",
+            confirmado_em: new Date().toISOString(),
+          })),
+        );
+        if (e1) throw e1;
+      }
+      for (const a of input.abates) {
+        const { error: e2 } = await samkhyaSupabase
+          .from("ingredientes")
+          .update({ qnt_estoque_g: a.novo_estoque, atualizado_em: new Date().toISOString() })
+          .eq("id", a.ingrediente_id);
+        if (e2) throw e2;
+      }
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["samkhya", "estoque"] });
+      qc.invalidateQueries({ queryKey: ["samkhya", "ingredientes", "raw"] });
+      qc.invalidateQueries({ queryKey: ["samkhya", "producoes"] });
+    },
+  });
+}
+
 export function useProducoesPlanejadas() {
   return useQuery({
     queryKey: QK.producoes,
