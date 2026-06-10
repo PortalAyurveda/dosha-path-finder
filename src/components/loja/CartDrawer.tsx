@@ -488,6 +488,14 @@ const CartDrawer = () => {
                   </Button>
                 </div>
 
+                {opcoesFrete.some((o) => String(o.id) === "gratis" || o.frete_gratis) && (
+                  <div
+                    className="mt-3 p-2 rounded text-sm font-medium text-center"
+                    style={{ background: "#E8F5E9", border: "1px solid #66BB6A", color: "#2E7D32" }}
+                  >
+                    🎉 Seu pedido tem frete grátis!
+                  </div>
+                )}
                 {opcoesFrete.length > 0 && (
                   <RadioGroup value={freteId} onValueChange={setFreteId} className="mt-3 space-y-2">
                     {opcoesFrete.map((op) => (
