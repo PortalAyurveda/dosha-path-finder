@@ -5,6 +5,7 @@ import { ImageIcon, FileText, Store, Library, MessageCircle, Users, ClipboardLis
 const links = [
   { to: "/admin", label: "Dashboard", icon: LayoutDashboard },
   { to: "/admin/akasha", label: "Akasha", icon: MessageCircle },
+  { to: "/admin/alunos", label: "Alunos", icon: GraduationCap },
   { to: "/admin/blog", label: "Artigos", icon: FileText },
   { to: "/admin/vendas/akasha", label: "Assinaturas Premium", icon: Crown },
   { to: "/admin/aula", label: "Aulas", icon: Video },
