@@ -21,6 +21,7 @@ const Biblioteca = lazy(() => import("./pages/Biblioteca"));
 const CursoAlimentacao = lazy(() => import("./pages/curso/Alimentacao"));
 const CursoFormacao = lazy(() => import("./pages/curso/Formacao"));
 const CursoFormacaoLive = lazy(() => import("./pages/curso/FormacaoLive"));
+const CursoFormacaoInscricao = lazy(() => import("./pages/curso/FormacaoInscricao"));
 const CursoRotinas = lazy(() => import("./pages/curso/Rotinas"));
 const TerapeutasDoBrasil = lazy(() => import("./pages/TerapeutasDoBrasil"));
 const TerapeutaPerfil = lazy(() => import("./pages/TerapeutaPerfil"));
@@ -124,6 +125,7 @@ const RoutedApp = () => {
               <Route path="/cursos" element={<Navigate to="/curso/alimentacao" replace />} />
               <Route path="/curso/alimentacao" element={<CursoAlimentacao />} />
               <Route path="/curso/formacao" element={<CursoFormacao />} />
+              <Route path="/curso/formacao/inscricao" element={<CursoFormacaoInscricao />} />
               <Route path="/curso/formacao/live" element={<CursoFormacaoLive />} />
               <Route path="/cursos/rotinas" element={<CursoRotinas />} />
               <Route path="/curso/rotinas" element={<CursoRotinas />} />
