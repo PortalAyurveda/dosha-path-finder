@@ -27,14 +27,16 @@ Deno.serve(async (req) => {
       );
     }
 
+    const numeroPedido = extra_record?.numero_pedido;
     const html = `
       <div style="font-family: Arial, sans-serif; color:#352F54; line-height:1.6;">
         <p>Olá ${String(nome || "").split(" ")[0] || ""},</p>
+        ${numeroPedido ? `<p style="font-size:13px;color:#666;">Referente ao pedido <strong>#${numeroPedido}</strong></p>` : ""}
         <div>${String(message).replace(/\n/g, "<br/>")}</div>
         <hr style="border:none;border-top:1px solid #eee;margin:24px 0;" />
         <p style="font-size:12px;color:#888;">
-          Escola de Ayurveda — Portal Ayurveda<br/>
-          Esta mensagem foi enviada pelo Edson.
+          Portal Ayurveda<br/>
+          Esta mensagem foi enviada pela equipe do Portal Ayurveda.
         </p>
       </div>
     `;
