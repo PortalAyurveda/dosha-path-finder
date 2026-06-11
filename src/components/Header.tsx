@@ -271,8 +271,8 @@ const Header = () => {
           ) : user ? (
             <Link
               to="/meu-dosha"
-              className="flex items-center justify-center w-9 h-9 rounded-full bg-white font-bold text-sm hover:bg-white/90 transition-colors"
-              style={buttonTextColor ? { color: buttonTextColor } : undefined}
+              className="flex items-center justify-center w-9 h-9 rounded-full bg-white font-bold text-sm hover:bg-white/90 transition-colors shadow-sm"
+              style={buttonTextColor ? { color: buttonTextColor } : { color: "hsl(var(--primary))" }}
             >
               {userInitial.toUpperCase()}
             </Link>
