@@ -339,7 +339,7 @@ const FormacaoInscricao = () => {
 
             {/* Como conheceu */}
             <div className="space-y-2">
-              <Label htmlFor="conheceu">Como você conheceu Ayurveda? Sinta-se livre pra se apresentar.</Label>
+              <Label htmlFor="conheceu">Como você conheceu Ayurveda? Sinta-se livre pra se apresentar, falar de suas formações prévias e o que quiser compartilhar.</Label>
               <Textarea
                 id="conheceu"
                 rows={3}
