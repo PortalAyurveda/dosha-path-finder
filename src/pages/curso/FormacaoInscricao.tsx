@@ -11,7 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { fetchEstados, fetchMunicipios, type IbgeEstado, type IbgeMunicipio } from "@/lib/ibge";
 
 const ROXO = "#7b4963";
-const TURMA_NOME = "2026/2027";
+const TURMA_ID = "28aceb41-ad27-427c-94b2-c61063e97252";
 
 type DoshaInfo = {
   registro_id: string;
