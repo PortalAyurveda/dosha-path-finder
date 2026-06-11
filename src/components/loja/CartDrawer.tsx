@@ -224,10 +224,27 @@ const CartDrawer = () => {
         },
       });
       if (error) throw error;
-      const opcoes: FreteOpcao[] = (data?.opcoes || data?.fretes || data || []) as FreteOpcao[];
+      let opcoes: FreteOpcao[] = (data?.opcoes || data?.fretes || data || []) as FreteOpcao[];
       if (!Array.isArray(opcoes) || opcoes.length === 0) {
         toast.error("Nenhuma opção de frete encontrada");
       } else {
+        // Quando o subtotal atinge o mínimo de frete grátis, consolidamos as
+        // opções da API em uma única linha "Samkhya Frete Grátis" — evita
+        // mostrar várias transportadoras com valor R$ 0,00.
+        const minGratis = freteConfig?.frete_gratis_minimo ?? 350;
+        const gratisAtivo = freteConfig?.frete_gratis_ativo ?? true;
+        const cupomFreteGratis = cupomAplicado?.tipo_desconto === "frete_gratis";
+        if ((gratisAtivo && subtotal >= minGratis) || cupomFreteGratis) {
+          const prazoMax = opcoes.reduce((m, o) => Math.max(m, o.prazo_dias || 0), 0) || 7;
+          opcoes = [{
+            id: "gratis",
+            nome: "Samkhya Frete Grátis",
+            empresa: "Samkhya",
+            preco: 0,
+            prazo_dias: prazoMax,
+            frete_gratis: true,
+          }];
+        }
         setOpcoesFrete(opcoes);
         const gratis = opcoes.find((o) => String(o.id) === "gratis" || o.frete_gratis);
         setFreteId(String((gratis ?? opcoes[0]).id));

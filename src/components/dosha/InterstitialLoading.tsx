@@ -10,7 +10,7 @@ const IMG5_URL = "https://api.portalayurveda.com/storage/v1/object/public/portal
 
 const ALL_IMAGES = [IMG1_URL, IMG2_URL, IMG3_URL, IMG4_URL, IMG5_URL];
 
-const SCENE_DURATION = 2500;
+const SCENE_DURATION = 3500;
 
 interface Props {
   redirectTo: string;

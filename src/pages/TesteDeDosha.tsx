@@ -27,7 +27,7 @@ const INTERESSE_OPTIONS = [
 const TesteDeDosha = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { setDoshaResultFromId } = useUser();
+  const { setDoshaResultFromId, user, profile } = useUser();
   const { content: doshaContent, loading: contentLoading } = useDoshaTestContent();
 
   const FOOD_TAGS = doshaContent?.foodTags ?? [];
@@ -85,6 +85,37 @@ const [step, setStep] = useState(0);
       .then(data => setEstados(data.map((e: any) => ({ sigla: e.sigla, nome: e.nome }))))
       .catch(() => {});
   }, []);
+
+  // Pré-preenche dados a partir do usuário logado e do último teste salvo (por e-mail)
+  useEffect(() => {
+    if (!user?.email) return;
+    let cancelled = false;
+    setInfo(prev => ({
+      ...prev,
+      email: prev.email || user.email || '',
+      nome: prev.nome || profile?.nome || '',
+    }));
+    (async () => {
+      const { data } = await supabase
+        .from('doshas_registros')
+        .select('nome, idade, altura, peso, estado, cidade')
+        .eq('email', user.email!.toLowerCase())
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (cancelled || !data) return;
+      setInfo(prev => ({
+        ...prev,
+        nome: prev.nome || (data as any).nome || '',
+        idade: prev.idade || ((data as any).idade != null ? String((data as any).idade) : ''),
+        altura: prev.altura || ((data as any).altura != null ? String((data as any).altura) : ''),
+        peso: prev.peso || ((data as any).peso != null ? String((data as any).peso) : ''),
+        estado: prev.estado || (data as any).estado || '',
+        cidade: prev.cidade || (data as any).cidade || '',
+      }));
+    })();
+    return () => { cancelled = true; };
+  }, [user?.email, profile?.nome]);
 
   // Fetch cidades when estado changes — preserve pre-filled cidade on first load
   const isFirstCidadesFetch = useRef(true);
