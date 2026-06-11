@@ -136,17 +136,8 @@ const FormacaoInscricao = () => {
     }
     setSubmitting(true);
     try {
-      // Buscar turma_id
-      const { data: turma, error: turmaErr } = await (supabase as any)
-        .schema("escola")
-        .from("turmas")
-        .select("id")
-        .eq("nome", TURMA_NOME)
-        .maybeSingle();
-      if (turmaErr || !turma) throw new Error("Turma não encontrada.");
-
       const payload = {
-        turma_id: turma.id,
+        turma_id: TURMA_ID,
         email: email.trim().toLowerCase(),
         nome_completo: nome.trim(),
         cpf: cpf.trim() || null,
