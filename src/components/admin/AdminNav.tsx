@@ -1,10 +1,11 @@
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ImageIcon, FileText, Store, Library, MessageCircle, Users, ClipboardList, Video, ListChecks, ShoppingCart, Inbox, Crown, History, Soup, LayoutDashboard, Package, Tag, Megaphone, Ticket } from "lucide-react";
+import { ImageIcon, FileText, Store, Library, MessageCircle, Users, ClipboardList, Video, ListChecks, ShoppingCart, Inbox, Crown, History, Soup, LayoutDashboard, Package, Tag, Megaphone, Ticket, GraduationCap } from "lucide-react";
 
 const links = [
   { to: "/admin", label: "Dashboard", icon: LayoutDashboard },
   { to: "/admin/akasha", label: "Akasha", icon: MessageCircle },
+  { to: "/admin/alunos", label: "Alunos", icon: GraduationCap },
   { to: "/admin/blog", label: "Artigos", icon: FileText },
   { to: "/admin/vendas/akasha", label: "Assinaturas Premium", icon: Crown },
   { to: "/admin/aula", label: "Aulas", icon: Video },
