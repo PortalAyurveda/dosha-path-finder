@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { Loader2, ExternalLink, Save, ArrowLeft, MapPin, Mail } from "lucide-react";
 import AdminNav from "@/components/admin/AdminNav";
 import { lojaSupabase } from "@/integrations/supabase/loja-client";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -165,26 +166,18 @@ const AdminLojaVendaDetalhe = () => {
     }
     setSendingEmail(true);
     try {
-      const payload = {
-        tipo: "manual",
-        assunto_custom: emailAssunto.trim(),
-        mensagem_custom: emailMensagem.trim(),
-        record: {
-          id: pedido.id,
-          numero_pedido: pedido.numero_pedido || "",
-          comprador_email: pedido.comprador_email,
-          comprador_nome: pedido.comprador_nome,
-          frete_servico: pedido.frete_servico || "",
-          frete_prazo_dias: pedido.frete_prazo_dias ?? "",
-          total: pedido.total,
+      const { data, error } = await supabase.functions.invoke("send-aluno-email", {
+        body: {
+          to: pedido.comprador_email,
+          nome: pedido.comprador_nome,
+          subject: emailAssunto.trim(),
+          message: emailMensagem.trim(),
+          extra_record: { numero_pedido: pedido.numero_pedido },
         },
-      };
-      const res = await fetch("https://n8n.portalayurveda.com/webhook/samkhya-pedido", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
       });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      if (error || (data as any)?.error) {
+        throw new Error((data as any)?.error || error?.message || "Erro");
+      }
       toast.success("Email enviado com sucesso!");
       setEmailAssunto("");
       setEmailMensagem("");
