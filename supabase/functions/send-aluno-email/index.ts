@@ -7,7 +7,7 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
   try {
-    const { to, nome, subject, message } = await req.json();
+    const { to, nome, subject, message, extra_record } = await req.json();
     if (!to || !subject || !message) {
       return new Response(JSON.stringify({ error: "Campos obrigatórios faltando" }), {
         status: 400,
