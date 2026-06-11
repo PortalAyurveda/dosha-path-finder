@@ -13,6 +13,7 @@ import { samkhyaTokens } from "@/components/samkhya/tokens";
 import { supabase } from "@/integrations/supabase/client";
 import { trackPixel } from "@/lib/metaPixel";
 import { useFreteGratisConfig } from "@/hooks/useFreteGratisConfig";
+import { useCupomUsuario } from "@/hooks/useCupomUsuario";
 
 type FreteOpcao = {
   id: string | number;
@@ -97,6 +98,8 @@ const CartDrawer = () => {
   const [cupomAplicado, setCupomAplicado] = useState<CupomAplicado | null>(null);
   const [cupomErro, setCupomErro] = useState<string | null>(null);
   const [validandoCupom, setValidandoCupom] = useState(false);
+  const { cupom: cupomDoUsuario } = useCupomUsuario();
+  const autoAplicadoRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (!isOpen) {
