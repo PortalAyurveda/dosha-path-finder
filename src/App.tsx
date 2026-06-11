@@ -125,6 +125,7 @@ const RoutedApp = () => {
               <Route path="/cursos" element={<Navigate to="/curso/alimentacao" replace />} />
               <Route path="/curso/alimentacao" element={<CursoAlimentacao />} />
               <Route path="/curso/formacao" element={<CursoFormacao />} />
+              <Route path="/curso/formacao/inscricao" element={<CursoFormacaoInscricao />} />
               <Route path="/curso/formacao/live" element={<CursoFormacaoLive />} />
               <Route path="/cursos/rotinas" element={<CursoRotinas />} />
               <Route path="/curso/rotinas" element={<CursoRotinas />} />
