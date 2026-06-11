@@ -1179,6 +1179,266 @@ export type Database = {
         }
         Relationships: []
       }
+      escola_alunos: {
+        Row: {
+          aprovado_em: string | null
+          aprovado_por: string | null
+          cidade: string | null
+          como_conheceu: string | null
+          cpf: string | null
+          created_at: string | null
+          dosha_k: number | null
+          dosha_p: number | null
+          dosha_registro_id: string | null
+          dosha_resultado: string | null
+          dosha_v: number | null
+          eh_bolsista: boolean | null
+          email: string
+          estado: string | null
+          foto_url: string | null
+          id: string
+          matricula: string | null
+          nome_completo: string
+          notas_internas: string | null
+          objetivo: string | null
+          percentual_bolsa: number | null
+          plano_descricao: string | null
+          plano_pagamento: string
+          status: string
+          turma_id: string | null
+          updated_at: string | null
+          valor_mensalidade: number | null
+          whatsapp: string
+        }
+        Insert: {
+          aprovado_em?: string | null
+          aprovado_por?: string | null
+          cidade?: string | null
+          como_conheceu?: string | null
+          cpf?: string | null
+          created_at?: string | null
+          dosha_k?: number | null
+          dosha_p?: number | null
+          dosha_registro_id?: string | null
+          dosha_resultado?: string | null
+          dosha_v?: number | null
+          eh_bolsista?: boolean | null
+          email: string
+          estado?: string | null
+          foto_url?: string | null
+          id?: string
+          matricula?: string | null
+          nome_completo: string
+          notas_internas?: string | null
+          objetivo?: string | null
+          percentual_bolsa?: number | null
+          plano_descricao?: string | null
+          plano_pagamento?: string
+          status?: string
+          turma_id?: string | null
+          updated_at?: string | null
+          valor_mensalidade?: number | null
+          whatsapp: string
+        }
+        Update: {
+          aprovado_em?: string | null
+          aprovado_por?: string | null
+          cidade?: string | null
+          como_conheceu?: string | null
+          cpf?: string | null
+          created_at?: string | null
+          dosha_k?: number | null
+          dosha_p?: number | null
+          dosha_registro_id?: string | null
+          dosha_resultado?: string | null
+          dosha_v?: number | null
+          eh_bolsista?: boolean | null
+          email?: string
+          estado?: string | null
+          foto_url?: string | null
+          id?: string
+          matricula?: string | null
+          nome_completo?: string
+          notas_internas?: string | null
+          objetivo?: string | null
+          percentual_bolsa?: number | null
+          plano_descricao?: string | null
+          plano_pagamento?: string
+          status?: string
+          turma_id?: string | null
+          updated_at?: string | null
+          valor_mensalidade?: number | null
+          whatsapp?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "escola_alunos_turma_id_fkey"
+            columns: ["turma_id"]
+            isOneToOne: false
+            referencedRelation: "escola_turmas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      escola_anotacoes: {
+        Row: {
+          aluno_id: string
+          autor: string | null
+          conteudo: string
+          created_at: string | null
+          id: string
+        }
+        Insert: {
+          aluno_id: string
+          autor?: string | null
+          conteudo: string
+          created_at?: string | null
+          id?: string
+        }
+        Update: {
+          aluno_id?: string
+          autor?: string | null
+          conteudo?: string
+          created_at?: string | null
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "escola_anotacoes_aluno_id_fkey"
+            columns: ["aluno_id"]
+            isOneToOne: false
+            referencedRelation: "escola_alunos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      escola_modulos: {
+        Row: {
+          apostila_url: string | null
+          carga_horaria: number
+          created_at: string | null
+          data_fim: string
+          data_inicio: string
+          descricao: string | null
+          id: string
+          numero: number
+          tipo: string
+          titulo: string
+          turma_id: string | null
+        }
+        Insert: {
+          apostila_url?: string | null
+          carga_horaria: number
+          created_at?: string | null
+          data_fim: string
+          data_inicio: string
+          descricao?: string | null
+          id?: string
+          numero: number
+          tipo: string
+          titulo: string
+          turma_id?: string | null
+        }
+        Update: {
+          apostila_url?: string | null
+          carga_horaria?: number
+          created_at?: string | null
+          data_fim?: string
+          data_inicio?: string
+          descricao?: string | null
+          id?: string
+          numero?: number
+          tipo?: string
+          titulo?: string
+          turma_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "escola_modulos_turma_id_fkey"
+            columns: ["turma_id"]
+            isOneToOne: false
+            referencedRelation: "escola_turmas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      escola_pagamentos: {
+        Row: {
+          aluno_id: string
+          created_at: string | null
+          criado_por: string | null
+          data_pagamento: string | null
+          id: string
+          mes_referencia: string
+          observacao: string | null
+          status: string
+          valor_esperado: number | null
+          valor_pago: number | null
+        }
+        Insert: {
+          aluno_id: string
+          created_at?: string | null
+          criado_por?: string | null
+          data_pagamento?: string | null
+          id?: string
+          mes_referencia: string
+          observacao?: string | null
+          status?: string
+          valor_esperado?: number | null
+          valor_pago?: number | null
+        }
+        Update: {
+          aluno_id?: string
+          created_at?: string | null
+          criado_por?: string | null
+          data_pagamento?: string | null
+          id?: string
+          mes_referencia?: string
+          observacao?: string | null
+          status?: string
+          valor_esperado?: number | null
+          valor_pago?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "escola_pagamentos_aluno_id_fkey"
+            columns: ["aluno_id"]
+            isOneToOne: false
+            referencedRelation: "escola_alunos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      escola_turmas: {
+        Row: {
+          ativo: boolean | null
+          created_at: string | null
+          data_fim: string
+          data_inicio: string
+          id: string
+          nome: string
+          vagas_total: number | null
+        }
+        Insert: {
+          ativo?: boolean | null
+          created_at?: string | null
+          data_fim: string
+          data_inicio: string
+          id?: string
+          nome: string
+          vagas_total?: number | null
+        }
+        Update: {
+          ativo?: boolean | null
+          created_at?: string | null
+          data_fim?: string
+          data_inicio?: string
+          id?: string
+          nome?: string
+          vagas_total?: number | null
+        }
+        Relationships: []
+      }
       feed_resultados: {
         Row: {
           created_at: string | null
