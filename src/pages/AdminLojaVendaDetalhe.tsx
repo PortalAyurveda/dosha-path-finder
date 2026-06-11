@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { Loader2, ExternalLink, Save, ArrowLeft, MapPin, Mail } from "lucide-react";
 import AdminNav from "@/components/admin/AdminNav";
 import { lojaSupabase } from "@/integrations/supabase/loja-client";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
