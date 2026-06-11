@@ -156,9 +156,8 @@ const FormacaoInscricao = () => {
         status: "pendente",
       };
 
-      const { error: insErr } = await (supabase as any)
-        .schema("escola")
-        .from("alunos")
+      const { error: insErr } = await supabase
+        .from("escola_alunos")
         .insert(payload);
       if (insErr) throw insErr;
 
