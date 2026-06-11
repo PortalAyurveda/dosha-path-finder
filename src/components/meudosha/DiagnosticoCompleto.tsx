@@ -7,6 +7,8 @@ import { premiumSupabase, type ObjetivoTratamento } from "@/integrations/supabas
 import { lojaSupabase } from "@/integrations/supabase/loja-client";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
+import { useCupomUsuario } from "@/hooks/useCupomUsuario";
+import { toast } from "sonner";
 
 // ============ Tokens ============
 const COLOR = {
@@ -378,6 +380,63 @@ const BADGE_TIPO: Record<string, { label: string; bg: string; cor: string }> = {
   suplementar: { label: "SUPORTE", bg: COLOR.accent, cor: COLOR.primary },
 };
 
+const CupomPessoalBadge = () => {
+  const { cupom } = useCupomUsuario();
+  if (!cupom) return null;
+  const isPerc = cupom.tipo_desconto === "percentual";
+  const valorLabel = isPerc
+    ? `${Number(cupom.valor_desconto).toFixed(0).replace(/\.0$/, "")}% OFF`
+    : cupom.tipo_desconto === "frete_gratis"
+      ? "FRETE GRÁTIS"
+      : `R$ ${Number(cupom.valor_desconto).toFixed(2).replace(".", ",")} OFF`;
+  const copiar = async () => {
+    try {
+      await navigator.clipboard.writeText(cupom.codigo);
+      toast.success("Cupom copiado!");
+    } catch {
+      toast.error("Não foi possível copiar");
+    }
+  };
+  return (
+    <button
+      type="button"
+      onClick={copiar}
+      className={cn(
+        "group flex items-center gap-2 px-3 py-2 transition-transform hover:scale-[1.02]",
+        LEAF,
+      )}
+      style={{
+        background: "linear-gradient(135deg, #FFF8EE 0%, #FFEFD0 100%)",
+        border: `1px solid ${COLOR.ouro}`,
+        boxShadow: "0 1px 8px rgba(200,146,42,0.18)",
+      }}
+      title="Clique para copiar"
+    >
+      <span
+        className="text-[10px] font-bold px-2 py-0.5 rounded-full"
+        style={{ background: COLOR.ouro, color: "#fff", fontFamily: "'DM Sans', sans-serif" }}
+      >
+        {valorLabel}
+      </span>
+      <div className="flex flex-col items-start leading-tight">
+        <span
+          className="text-[10px] uppercase tracking-wide"
+          style={{ color: COLOR.textoSec, fontFamily: "'DM Sans', sans-serif" }}
+        >
+          Seu cupom
+        </span>
+        <span
+          className="text-sm font-bold"
+          style={{ color: COLOR.primary, fontFamily: "'DM Sans', sans-serif", letterSpacing: 0.5 }}
+        >
+          {cupom.codigo}
+        </span>
+      </div>
+    </button>
+  );
+};
+
+
 const ProtocoloSamkhya = ({
   analise,
   produtos,
@@ -389,22 +448,26 @@ const ProtocoloSamkhya = ({
 
   return (
     <section className="space-y-4 pt-12">
-      <div className="space-y-1 text-left">
-        <h2
-          className="font-serif font-bold text-xl md:text-2xl"
-          style={{ color: COLOR.primary, fontFamily: "'Roboto Serif', serif" }}
-        >
-          Seu Protocolo Samkhya
-        </h2>
-        {analise.frase_clinica && (
-          <p
-            className="text-sm md:text-base font-medium"
-            style={{ color: COLOR.ouro, fontFamily: "'DM Sans', sans-serif" }}
+      <div className="flex items-start justify-between gap-3 flex-wrap">
+        <div className="space-y-1 text-left">
+          <h2
+            className="font-serif font-bold text-xl md:text-2xl"
+            style={{ color: COLOR.primary, fontFamily: "'Roboto Serif', serif" }}
           >
-            {analise.frase_clinica}
-          </p>
-        )}
+            Seu Protocolo Samkhya
+          </h2>
+          {analise.frase_clinica && (
+            <p
+              className="text-sm md:text-base font-medium"
+              style={{ color: COLOR.ouro, fontFamily: "'DM Sans', sans-serif" }}
+            >
+              {analise.frase_clinica}
+            </p>
+          )}
+        </div>
+        <CupomPessoalBadge />
       </div>
+
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {produtos.map((p) => {

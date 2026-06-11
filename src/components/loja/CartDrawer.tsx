@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Minus, Plus, Trash2, ShoppingBag, ChevronLeft } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
@@ -13,6 +13,7 @@ import { samkhyaTokens } from "@/components/samkhya/tokens";
 import { supabase } from "@/integrations/supabase/client";
 import { trackPixel } from "@/lib/metaPixel";
 import { useFreteGratisConfig } from "@/hooks/useFreteGratisConfig";
+import { useCupomUsuario } from "@/hooks/useCupomUsuario";
 
 type FreteOpcao = {
   id: string | number;
@@ -97,6 +98,8 @@ const CartDrawer = () => {
   const [cupomAplicado, setCupomAplicado] = useState<CupomAplicado | null>(null);
   const [cupomErro, setCupomErro] = useState<string | null>(null);
   const [validandoCupom, setValidandoCupom] = useState(false);
+  const { cupom: cupomDoUsuario } = useCupomUsuario();
+  const autoAplicadoRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (!isOpen) {
@@ -150,9 +153,9 @@ const CartDrawer = () => {
   })();
   const total = Math.max(0, subtotal - descontoCupom) + (freteSelecionado?.preco ?? 0);
 
-  const handleAplicarCupom = async () => {
-    const codigo = cupomCodigo.trim().toUpperCase();
-    if (!codigo) return;
+  const aplicarCupom = async (codigoBruto: string, opts?: { silent?: boolean }) => {
+    const codigo = codigoBruto.trim().toUpperCase();
+    if (!codigo) return false;
     setValidandoCupom(true);
     setCupomErro(null);
     try {
@@ -167,11 +170,10 @@ const CartDrawer = () => {
       });
       if (error) throw new Error(error.message || "Erro ao validar cupom");
       if (!data?.valido) {
-        setCupomErro(data?.erro || "Cupom inválido");
+        if (!opts?.silent) setCupomErro(data?.erro || "Cupom inválido");
         setCupomAplicado(null);
-        return;
+        return false;
       }
-      // Aceita ambos formatos: { valido, cupom: {...} } OU { valido, ...campos no topo }
       const src = (data.cupom && typeof data.cupom === "object") ? data.cupom : data;
       const normalizado: CupomAplicado = {
         cupom_id: String(src.cupom_id ?? src.id ?? ""),
@@ -182,21 +184,39 @@ const CartDrawer = () => {
       };
       setCupomAplicado(normalizado);
       setCupomErro(null);
+      return true;
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : "Erro ao validar cupom";
-      setCupomErro(msg);
+      if (!opts?.silent) setCupomErro(msg);
       setCupomAplicado(null);
+      return false;
     } finally {
       setValidandoCupom(false);
     }
   };
 
+  const handleAplicarCupom = () => aplicarCupom(cupomCodigo);
 
   const handleRemoverCupom = () => {
     setCupomAplicado(null);
     setCupomCodigo("");
     setCupomErro(null);
   };
+
+  // Auto-aplica o cupom pessoal do usuário (uso único) quando o carrinho abre
+  // e ainda não há cupom aplicado. Roda apenas uma vez por código de cupom.
+  useEffect(() => {
+    if (!isOpen) return;
+    if (!cupomDoUsuario?.codigo) return;
+    if (cupomAplicado) return;
+    if (itens.length === 0) return;
+    if (autoAplicadoRef.current === cupomDoUsuario.codigo) return;
+    autoAplicadoRef.current = cupomDoUsuario.codigo;
+    setCupomCodigo(cupomDoUsuario.codigo);
+    void aplicarCupom(cupomDoUsuario.codigo, { silent: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen, cupomDoUsuario?.codigo, itens.length]);
+
 
   const handleCalcularFrete = async () => {
     const cepLimpo = onlyDigits(cep);
