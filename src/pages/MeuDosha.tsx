@@ -809,7 +809,7 @@ const MeuDosha = () => {
                       onClick={handleRefazerTeste}
                       className="text-xs text-muted-foreground underline underline-offset-2 hover:text-foreground transition-colors"
                     >
-                      Refazer teste
+                      Recomeçar o teste
                     </button>
                     <button
                       type="button"
@@ -829,7 +829,7 @@ const MeuDosha = () => {
               </div>
             </div>
 
-            {/* ===== Diagnóstico clínico completo (substitui glossário + Refazer Teste) ===== */}
+            {/* ===== Diagnóstico clínico completo (substitui glossário + Recomeçar o Teste) ===== */}
             <DiagnosticoCompleto
               scores={{
                 vata: result.vatascore || 0,
