@@ -829,7 +829,7 @@ const MeuDosha = () => {
               </div>
             </div>
 
-            {/* ===== Diagnóstico clínico completo (substitui glossário + Refazer Teste) ===== */}
+            {/* ===== Diagnóstico clínico completo (substitui glossário + Recomeçar o Teste) ===== */}
             <DiagnosticoCompleto
               scores={{
                 vata: result.vatascore || 0,
