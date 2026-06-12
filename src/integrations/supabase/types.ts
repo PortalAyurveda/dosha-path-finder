@@ -2832,6 +2832,7 @@ export type Database = {
           pergunta_identificada: string | null
           pergunta_texto: string | null
           profundidade: string | null
+          qualidade_reteste: string | null
           tag: string | null
         }
         Insert: {
@@ -2844,6 +2845,7 @@ export type Database = {
           pergunta_identificada?: string | null
           pergunta_texto?: string | null
           profundidade?: string | null
+          qualidade_reteste?: string | null
           tag?: string | null
         }
         Update: {
@@ -2856,6 +2858,7 @@ export type Database = {
           pergunta_identificada?: string | null
           pergunta_texto?: string | null
           profundidade?: string | null
+          qualidade_reteste?: string | null
           tag?: string | null
         }
         Relationships: []
