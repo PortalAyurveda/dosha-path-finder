@@ -809,7 +809,7 @@ const MeuDosha = () => {
                       onClick={handleRefazerTeste}
                       className="text-xs text-muted-foreground underline underline-offset-2 hover:text-foreground transition-colors"
                     >
-                      Refazer teste
+                      Recomeçar o teste
                     </button>
                     <button
                       type="button"
