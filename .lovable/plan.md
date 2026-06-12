@@ -1,59 +1,48 @@
-# Confirmar Produção — foco em insumos + ciclo de vida do pedido
+## Objetivo
+Em `/meu-dosha`, quando o usuário não tem `narrativa_clinica` preenchida (ou nem tem registro em `premium.objetivos_tratamento`), reenviar automaticamente o mesmo webhook que o `/teste-de-dosha` dispara ao final do teste — para que o n8n gere a análise clínica.
 
-## 1. Topo da aba: mostrar INSUMOS (não produtos)
+## Onde
+`src/components/meudosha/DiagnosticoCompleto.tsx` — já é onde a página carrega `analise` (via `useAnalise(email)`) e onde sabemos se `narrativa_clinica` está vazia. O hook `useAnalise` já faz polling a cada 3s por até ~60s, então ao receber a narrativa o componente atualiza sozinho.
 
-Hoje a tabela de cima lista produtos com "qtd a produzir". Vou inverter o foco:
+## Comportamento
+1. Aguardar `analiseQ.isLoading === false`.
+2. Disparar UMA VEZ por email (guard com `useRef<Set<string>>`) quando:
+   - `analise === null` (sem registro em objetivos_tratamento), OU
+   - `analise.narrativa_clinica == null`.
+3. Buscar o registro mais recente do usuário:
+   ```ts
+   supabase.from("doshas_registros")
+     .select("*")
+     .eq("email", email)
+     .order("created_at", { ascending: false })
+     .limit(1)
+     .maybeSingle()
+   ```
+4. Montar o payload exatamente como em `TesteDeDosha.tsx` (linhas 382–415), mapeando colunas do registro para as chaves do webhook:
 
-- Mantenho um cálculo interno do que produzir (semeado com `meta_60_dias`), mas **escondido** num accordion "Ajustar produção planejada" recolhido por padrão.
-- A tabela principal passa a ser **"Insumos a comprar"**, derivada desse plano via `montarPedido()`:
+   | webhook key | origem (doshas_registros) |
+   |---|---|
+   | email | email (lowercase) |
+   | idPublico | idPublico |
+   | visitorIdBrowser | `localStorage.getItem("visitorId") ?? ""` |
+   | title / nome | nome |
+   | idade | idade |
+   | "conhecimento ayurveda" | conhecimentoAyurveda ?? "Iniciante" |
+   | altura, peso, imc | idem |
+   | datateste | `new Date().toISOString()` |
+   | vatascore, pittascore, kaphascore | idem |
+   | doshaprincipal | doshaprincipal |
+   | agniPrincipal | agniPrincipal |
+   | agniirregular, agniforte, agnifraco | idem |
+   | relato_aberto | relato_aberto ?? "" |
+   | agravVataTags / agravPittaTags / agravKaphaTags | idem (já são strings CSV no banco) |
+   | alimVata / alimPitta / alimKapha | idem |
+   | aliment, remedios, mentoria, diagn, espiritual, produtos | colunas equivalentes do registro |
 
-  | Ingrediente | Necessário (g) | Em estoque (g) | A comprar | Preço est. | 🗑 |
+5. POST `fetch("https://n8n.portalayurveda.com/webhook/teste-dosha-ayurveda", { method:"POST", headers:{ "Content-Type":"application/json" }, body: JSON.stringify(payload) }).catch(()=>{})` — fire-and-forget, sem toast.
+6. O polling existente em `useAnalise` continua e exibe a narrativa quando o n8n terminar.
 
-- Coluna 🗑 remove a linha do pedido antes de gerar (estado local `removidos: Set<ingrediente_id>`).
-- Rodapé: total recalculado + botão **Gerar Pedido de Compra**.
-
-## 2. Ciclo de vida do pedido
-
-Status novos: `aberto` → `confirmado` → (opcional) `cancelado` → deletado.
-Removo `enviado`/`recebido` (substituídos por `confirmado`).
-
-Regras de ação por status:
-
-| Status | Botões disponíveis | Efeito |
-|---|---|---|
-| aberto | **Confirmar**, **Deletar** | Confirmar = soma insumos ao estoque, vira `confirmado`. Deletar = remove a linha. |
-| confirmado | **Cancelar** | Subtrai do estoque o que tinha sido somado, vira `cancelado`. |
-| cancelado | **Deletar** | Remove a linha. |
-
-Cada card do histórico mostra **`#ID` + data + status (badge) + total**, com a lista de itens dentro.
-
-## 3. Banco
-
-Migration:
-
-- `ALTER TYPE` (ou check) do `pedidos_compra.status` para aceitar `aberto | confirmado | cancelado`.
-- Migrar registros existentes: `enviado`/`recebido` → `confirmado`.
-- Garantir que a tabela tenha `id serial` (já tem) — é o ID que aparece como `#42`.
-- Permissão de `DELETE` em `samkhya.pedidos_compra` para `authenticated` (revisar RLS — provavelmente já ok via `is_admin()`).
-
-## 4. Código
-
-**`src/hooks/useSamkhyaEstoque.ts`**
-- Substituir `useAtualizarStatusPedido` por:
-  - `useConfirmarPedido(pedido)` → status `confirmado` + soma `qtd_arredondada_g` em cada ingrediente.
-  - `useCancelarPedido(pedido)` → status `cancelado` + subtrai a mesma quantidade.
-  - `useDeletarPedido(id)` → `DELETE FROM pedidos_compra WHERE id=?`.
-
-**`src/integrations/supabase/samkhya-client.ts`**
-- Atualizar tipo `SkPedidoCompra.status` para `"aberto" | "confirmado" | "cancelado"`.
-
-**`src/components/admin/estoque-v2/tabs/TabConfirmarProducao.tsx`**
-- Reescrever:
-  1. Accordion "Plano de produção" (fechado) com a tabela atual de produtos + qtd.
-  2. Tabela "Insumos a comprar" (foco principal) com remoção por linha.
-  3. Histórico: cada item mostra `#ID`, status, ações conforme tabela acima, confirmações via `toast`/`window.confirm` para Deletar/Cancelar.
-
-## 5. Pontos a confirmar
-
-- OK marcar como **confirmado** já somar ao estoque (sem etapa separada de "recebido")? Pelo seu texto entendi que sim.
-- Ao **cancelar** um pedido confirmado, subtrair direto mesmo se o estoque já tiver sido usado em produção (pode ficar negativo) — é o comportamento desejado? Posso travar com erro se ficar negativo, se preferir.
+## Detalhes técnicos
+- Guard: `const firedRef = useRef<Set<string>>(new Set())`; só dispara se `!firedRef.current.has(email)`, e adiciona ao set antes do fetch.
+- Não tocar em nada do `/teste-de-dosha` nem na escrita no Supabase — apenas reenviar o webhook.
+- Se `doshas_registros` retornar vazio (usuário sem teste), não faz nada.

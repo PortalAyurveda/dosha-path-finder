@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { Loader2, Lock, Stethoscope, GitBranch, Compass, TrendingUp, type LucideIcon } from "lucide-react";
@@ -749,6 +749,70 @@ const DiagnosticoCompleto = ({
   const { analise, analiseLoading, analiseTimeout } = useAnalise(email);
   const { data: produtos } = useProdutosPrescritos(analise);
   const { data: glossario } = useGlossario(doshaPrincipalCompleto);
+
+  // Trigger n8n webhook se narrativa_clinica estiver faltando (1x por email).
+  const webhookFiredRef = useRef<Set<string>>(new Set());
+  useEffect(() => {
+    if (!email) return;
+    if (analiseLoading) return;
+    if (analise && analise.narrativa_clinica) return;
+    if (webhookFiredRef.current.has(email)) return;
+    webhookFiredRef.current.add(email);
+
+    (async () => {
+      const { data: reg } = await supabase
+        .from("doshas_registros")
+        .select("*")
+        .eq("email", email)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (!reg) return;
+
+      const r = reg as any;
+      const payload = {
+        email: (r.email || email).toLowerCase(),
+        idPublico: r.idPublico,
+        visitorIdBrowser: localStorage.getItem("visitorId") ?? "",
+        title: r.nome,
+        nome: r.nome,
+        idade: r.idade,
+        "conhecimento ayurveda": r.conhecimentoAyurveda || "Iniciante",
+        altura: r.altura,
+        peso: r.peso,
+        imc: r.imc,
+        datateste: new Date().toISOString(),
+        vatascore: r.vatascore,
+        pittascore: r.pittascore,
+        kaphascore: r.kaphascore,
+        doshaprincipal: r.doshaprincipal,
+        agniPrincipal: r.agniPrincipal,
+        agniirregular: r.agniirregular,
+        agniforte: r.agniforte,
+        agnifraco: r.agnifraco,
+        relato_aberto: r.relato_aberto || "",
+        agravVataTags: r.agravVataTags || "",
+        agravPittaTags: r.agravPittaTags || "",
+        agravKaphaTags: r.agravKaphaTags || "",
+        alimVata: r.alimVata || "",
+        alimPitta: r.alimPitta || "",
+        alimKapha: r.alimKapha || "",
+        aliment: r.aliment || "",
+        remedios: r.remedios || "",
+        mentoria: r.mentoria || "",
+        diagn: r.diagn || "",
+        espiritual: r.espiritual || "",
+        produtos: r.produtos || "",
+      };
+
+      fetch("https://n8n.portalayurveda.com/webhook/teste-dosha-ayurveda", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      }).catch(() => {});
+    })();
+  }, [email, analise, analiseLoading]);
+
 
   if (analiseLoading) {
     return (
