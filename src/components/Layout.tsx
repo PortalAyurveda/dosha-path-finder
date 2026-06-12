@@ -2,6 +2,7 @@ import { ReactNode } from "react";
 import Header from "./Header";
 import Footer from "./Footer";
 import ScrollToTop from "./ScrollToTop";
+import FloatingAkasha from "./akasha/FloatingAkasha";
 import { HeaderCtaProvider } from "@/contexts/HeaderCtaContext";
 import { ImmersiveProvider, useImmersive } from "@/contexts/ImmersiveContext";
 
@@ -13,6 +14,7 @@ const LayoutInner = ({ children }: { children: ReactNode }) => {
       <Header />
       <div className="flex-1 min-h-screen">{children}</div>
       {!immersive && <Footer />}
+      {!immersive && <FloatingAkasha />}
     </div>
   );
 };
