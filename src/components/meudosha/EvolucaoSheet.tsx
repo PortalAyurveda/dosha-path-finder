@@ -18,6 +18,7 @@ interface RegistroHist {
   agniPrincipal: string | null;
   created_at: string;
   email: string | null;
+  tipo: string | null;
 }
 
 const STALE = 30 * 60 * 1000;
