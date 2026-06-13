@@ -13,13 +13,13 @@ const OPEN_KEY = "akasha-floating-open";
 
 // Rotas onde o widget NÃO deve aparecer
 const HIDDEN_PREFIXES = [
-  "/meu-dosha",
   "/akasha",
   "/teste-de-dosha",
   "/assinar",
   "/auth",
 ];
 const HIDDEN_INCLUDES = ["/obrigado"];
+const AUTO_OPEN_DELAY_MS = 30_000;
 
 interface ChatMessage {
   role: "user" | "assistant";
