@@ -53,7 +53,7 @@ const EvolucaoSheet = ({ open, onOpenChange, registroUuid }: Props) => {
     queryFn: async () => {
       const { data } = await supabase
         .from("doshas_registros")
-        .select('vatascore, pittascore, kaphascore, "agniPrincipal", created_at, email')
+        .select('vatascore, pittascore, kaphascore, "agniPrincipal", created_at, email, tipo')
         .eq("email", email!)
         .order("created_at", { ascending: true });
       return (data || []) as RegistroHist[];
