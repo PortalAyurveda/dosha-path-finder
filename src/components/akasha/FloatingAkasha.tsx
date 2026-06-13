@@ -167,15 +167,12 @@ const FloatingAkasha = () => {
     }
   }, [cachedHistory]);
 
-  // Auto-abertura única em /meu-dosha, 30s após page load, se user tiver teste
+  // Auto-abertura única por navegador, 30s após page load, em qualquer rota visível
   useEffect(() => {
     if (shouldHide) return;
-    if (!location.pathname.startsWith("/meu-dosha")) return;
-    if (!user || !resolvedEmail || resolvedEmail === "visitante@portalayurveda.com") return;
-    if (!idPublico) return; // só com teste feito
     if (open) return;
 
-    const storageKey = `akasha_auto_opened_${resolvedEmail}`;
+    const storageKey = "akasha_auto_opened";
     try {
       if (localStorage.getItem(storageKey)) return;
     } catch {
@@ -203,7 +200,7 @@ const FloatingAkasha = () => {
     return () => {
       if (autoOpenTimerRef.current) clearTimeout(autoOpenTimerRef.current);
     };
-  }, [shouldHide, location.pathname, user, resolvedEmail, idPublico, open]);
+  }, [shouldHide, location.pathname, open]);
 
   // Say-hello na primeira abertura quando histórico está vazio
   const sendInitialMessage = useCallback(async () => {
