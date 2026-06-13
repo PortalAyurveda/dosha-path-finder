@@ -9,7 +9,6 @@ import { Link } from "react-router-dom";
 
 const AKASHA_LOGO = "https://static.wixstatic.com/media/b8f47f_105371e1ade24ccd9bd3406b83bd925e~mv2.png";
 const WEBHOOK_URL = "https://n8n.portalayurveda.com/webhook/chat-ayurveda";
-const OPEN_KEY = "akasha-floating-open";
 
 // Rotas onde o widget NÃO deve aparecer
 const HIDDEN_PREFIXES = [
@@ -69,10 +68,7 @@ const FloatingAkasha = () => {
   const { user, profile, doshaResult } = useUser();
   const queryClient = useQueryClient();
 
-  const [open, setOpen] = useState(() => {
-    if (typeof window === "undefined") return false;
-    return localStorage.getItem(OPEN_KEY) === "1";
-  });
+  const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
@@ -96,9 +92,6 @@ const FloatingAkasha = () => {
   const shouldHide = HIDDEN_PREFIXES.some((p) => location.pathname.startsWith(p))
     || HIDDEN_INCLUDES.some((p) => location.pathname.includes(p));
 
-  useEffect(() => {
-    try { localStorage.setItem(OPEN_KEY, open ? "1" : "0"); } catch {}
-  }, [open]);
 
   const scrollChatToBottom = useCallback(() => {
     const el = chatContainerRef.current;
