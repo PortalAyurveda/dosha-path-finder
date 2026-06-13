@@ -126,6 +126,7 @@ const EvolucaoSheet = ({ open, onOpenChange, registroUuid }: Props) => {
           pittaRaw: r.pittascore ?? undefined,
           kapha: r.kaphascore != null ? kaphaToLevel(r.kaphascore).level : undefined,
           kaphaRaw: r.kaphascore ?? undefined,
+          tipo: (r.tipo as "teste" | "reteste" | null) ?? "teste",
         });
       }
     }
