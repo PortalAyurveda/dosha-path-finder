@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Send, Loader2 } from "lucide-react";
-import { Send, Loader2 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 
 const AKASHA_LOGO = "https://static.wixstatic.com/media/b8f47f_105371e1ade24ccd9bd3406b83bd925e~mv2.png";
