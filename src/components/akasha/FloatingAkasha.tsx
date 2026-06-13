@@ -13,13 +13,13 @@ const OPEN_KEY = "akasha-floating-open";
 
 // Rotas onde o widget NÃO deve aparecer
 const HIDDEN_PREFIXES = [
-  "/meu-dosha",
   "/akasha",
   "/teste-de-dosha",
   "/assinar",
   "/auth",
 ];
 const HIDDEN_INCLUDES = ["/obrigado"];
+const AUTO_OPEN_DELAY_MS = 30_000;
 
 interface ChatMessage {
   role: "user" | "assistant";
@@ -77,6 +77,8 @@ const FloatingAkasha = () => {
   const [sending, setSending] = useState(false);
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const hasHydratedRef = useRef(false);
+  const initialSentRef = useRef(false);
+  const autoOpenTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const resolvedEmail = user?.email || "visitante@portalayurveda.com";
@@ -159,8 +161,110 @@ const FloatingAkasha = () => {
     if (cachedHistory === undefined) return;
     if (hasHydratedRef.current) return;
     hasHydratedRef.current = true;
-    if (cachedHistory.length > 0) setMessages(cachedHistory);
+    if (cachedHistory.length > 0) {
+      setMessages(cachedHistory);
+      initialSentRef.current = true; // já há histórico, não disparar say-hello
+    }
   }, [cachedHistory]);
+
+  // Auto-abertura única em /meu-dosha, 30s após page load, se user tiver teste
+  useEffect(() => {
+    if (shouldHide) return;
+    if (!location.pathname.startsWith("/meu-dosha")) return;
+    if (!user || !resolvedEmail || resolvedEmail === "visitante@portalayurveda.com") return;
+    if (!idPublico) return; // só com teste feito
+    if (open) return;
+
+    const storageKey = `akasha_auto_opened_${resolvedEmail}`;
+    try {
+      if (localStorage.getItem(storageKey)) return;
+    } catch {
+      return;
+    }
+
+    const schedule = () => {
+      autoOpenTimerRef.current = setTimeout(() => {
+        try { localStorage.setItem(storageKey, "1"); } catch {}
+        setOpen(true);
+      }, AUTO_OPEN_DELAY_MS);
+    };
+
+    if (document.readyState === "complete") {
+      schedule();
+    } else {
+      const onLoad = () => schedule();
+      window.addEventListener("load", onLoad, { once: true });
+      return () => {
+        window.removeEventListener("load", onLoad);
+        if (autoOpenTimerRef.current) clearTimeout(autoOpenTimerRef.current);
+      };
+    }
+
+    return () => {
+      if (autoOpenTimerRef.current) clearTimeout(autoOpenTimerRef.current);
+    };
+  }, [shouldHide, location.pathname, user, resolvedEmail, idPublico, open]);
+
+  // Say-hello na primeira abertura quando histórico está vazio
+  const sendInitialMessage = useCallback(async () => {
+    if (initialSentRef.current) return;
+    if (!user || !idPublico) return;
+    initialSentRef.current = true;
+
+    const doshaAgravado = doshaprincipal || "não identificado";
+    const nomeDisplay = resolvedNome || "Visitante";
+    const autoMessage = `Olá meu nome é ${nomeDisplay}. Acabei de chegar aqui e vim conhecer você. Meu dosha agravado é ${doshaAgravado}. Vamos conversar??`;
+
+    setSending(true);
+    const userMsg: ChatMessage = { role: "user", content: autoMessage, time: getNowBrazilTime() };
+    setMessages([userMsg]);
+    updateCache([userMsg]);
+
+    try {
+      const payload = {
+        message: autoMessage,
+        email: resolvedEmail,
+        contactId: idPublico,
+        nome: resolvedNome,
+        dosha: doshaprincipal,
+        scores: { vata: vatascore, pitta: pittascore, kapha: kaphascore },
+      };
+      const response = await fetch(WEBHOOK_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const data = await response.json();
+      const botReply = data?.resposta || data?.output || data?.text || "Olá! Bem-vindo(a). Como posso te ajudar?";
+      const botMsg: ChatMessage = { role: "assistant", content: botReply, time: getNowBrazilTime() };
+      setMessages(prev => {
+        const next = [...prev, botMsg];
+        updateCache(next);
+        return next;
+      });
+    } catch {
+      const errMsg: ChatMessage = { role: "assistant", content: "Erro ao conectar com a Akasha. Tente novamente.", time: getNowBrazilTime() };
+      setMessages(prev => {
+        const next = [...prev, errMsg];
+        updateCache(next);
+        return next;
+      });
+    } finally {
+      setSending(false);
+    }
+  }, [user, idPublico, doshaprincipal, resolvedNome, resolvedEmail, vatascore, pittascore, kaphascore, updateCache]);
+
+  // Dispara say-hello quando o chat abre pela 1ª vez com histórico vazio
+  useEffect(() => {
+    if (!open) return;
+    if (initialSentRef.current) return;
+    if (cachedHistory === undefined) return; // espera query terminar
+    if (cachedHistory.length > 0) return;
+    if (messages.length > 0) return;
+    if (!user || !idPublico) return;
+    sendInitialMessage();
+  }, [open, cachedHistory, messages.length, user, idPublico, sendInitialMessage]);
+
 
   const sendMessage = async () => {
     if (!input.trim() || sending) return;
