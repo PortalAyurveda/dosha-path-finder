@@ -2598,8 +2598,12 @@ export type Database = {
       reteste_sessao: {
         Row: {
           created_at: string | null
+          direcao_check_in: string | null
           dosha_registro_origem_id: string | null
           id: string
+          momento: number
+          pack_perguntas: Json | null
+          questao_atual: number
           relato_abertura: string | null
           resultado: Json | null
           sinais_agni: number
@@ -2613,8 +2617,12 @@ export type Database = {
         }
         Insert: {
           created_at?: string | null
+          direcao_check_in?: string | null
           dosha_registro_origem_id?: string | null
           id?: string
+          momento?: number
+          pack_perguntas?: Json | null
+          questao_atual?: number
           relato_abertura?: string | null
           resultado?: Json | null
           sinais_agni?: number
@@ -2628,8 +2636,12 @@ export type Database = {
         }
         Update: {
           created_at?: string | null
+          direcao_check_in?: string | null
           dosha_registro_origem_id?: string | null
           id?: string
+          momento?: number
+          pack_perguntas?: Json | null
+          questao_atual?: number
           relato_abertura?: string | null
           resultado?: Json | null
           sinais_agni?: number

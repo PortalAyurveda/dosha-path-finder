@@ -42,6 +42,8 @@ const RetesteChat = ({ email, nome, sessaoId, idPublico, initialMessages }: Rete
   const [concluding, setConcluding] = useState(false);
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const concluirTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const hasHydratedRef = useRef(false);
+  const initialSentRef = useRef(false);
 
   const scrollChatToBottom = useCallback(() => {
     const el = chatContainerRef.current;
@@ -57,6 +59,46 @@ const RetesteChat = ({ email, nome, sessaoId, idPublico, initialMessages }: Rete
       if (concluirTimerRef.current) clearTimeout(concluirTimerRef.current);
     };
   }, []);
+
+  const sendInitialMessage = useCallback(async () => {
+    if (initialSentRef.current) return;
+    initialSentRef.current = true;
+    setSending(true);
+
+    try {
+      const response = await fetch(WEBHOOK_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, nome, message: "__INICIO_RETESTE__" }),
+      });
+      const data = await response.json();
+      const botReply = data?.resposta || data?.output || data?.text || "Olá! Vamos revisar seu diagnóstico Ayurveda.";
+      const botMsg: ChatMessage = { role: "assistant", content: botReply, time: getNowBrazilTime() };
+      setMessages([botMsg]);
+
+      if (data?.reteste_concluido === true) {
+        concluirTimerRef.current = setTimeout(() => setShowConcluir(true), 2000);
+      }
+    } catch {
+      const errMsg: ChatMessage = { role: "assistant", content: "Erro ao conectar. Tente novamente.", time: getNowBrazilTime() };
+      setMessages([errMsg]);
+    } finally {
+      setSending(false);
+    }
+  }, [email, nome]);
+
+  // Hydration + say-hello: roda apenas uma vez na montagem
+  useEffect(() => {
+    if (hasHydratedRef.current) return;
+    hasHydratedRef.current = true;
+
+    if (initialMessages.length > 0) {
+      setMessages(initialMessages);
+      initialSentRef.current = true; // já tem histórico, não disparar say-hello
+    } else if (!initialSentRef.current) {
+      sendInitialMessage();
+    }
+  }, [initialMessages, sendInitialMessage]);
 
   const sendMessage = async () => {
     if (!input.trim() || sending || showConcluir) return;
