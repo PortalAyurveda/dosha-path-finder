@@ -21,6 +21,7 @@ export interface SeriesPoint {
   kapha?: number; kaphaRaw?: number;
   agni?: number; agniRaw?: number | null;
   isMeta?: boolean;
+  tipo?: "teste" | "reteste";
 }
 
 interface Props {
