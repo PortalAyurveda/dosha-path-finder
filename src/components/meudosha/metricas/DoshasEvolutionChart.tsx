@@ -21,6 +21,7 @@ export interface SeriesPoint {
   kapha?: number; kaphaRaw?: number;
   agni?: number; agniRaw?: number | null;
   isMeta?: boolean;
+  tipo?: "teste" | "reteste";
 }
 
 interface Props {
@@ -50,11 +51,17 @@ function ZoneTooltip({ active, payload }: { active?: boolean; payload?: any[] })
     return true;
   });
   if (!items.length) return null;
+  const isReteste = items[0]?.payload?.tipo === "reteste";
   return (
     <div
       className="rounded-lg border shadow-lg px-3 py-2 text-xs space-y-1"
       style={{ background: "hsl(var(--card))", borderColor: "hsl(var(--border))" }}
     >
+      {isReteste && (
+        <div className="text-[10px] uppercase tracking-wider font-bold" style={{ color: "hsl(var(--muted-foreground))" }}>
+          Revisão
+        </div>
+      )}
       {items.map((p) => {
         const key = p.dataKey as "vata" | "pitta" | "kapha";
         const raw = p.payload[`${key}Raw`];
@@ -71,6 +78,29 @@ function ZoneTooltip({ active, payload }: { active?: boolean; payload?: any[] })
       })}
     </div>
   );
+}
+
+// Custom dot: circle for "teste", dashed diamond for "reteste"
+function makeDot(color: string) {
+  return (props: any) => {
+    const { cx, cy, payload } = props;
+    if (cx == null || cy == null) return null;
+    const tipo = payload?.tipo;
+    if (tipo === "reteste") {
+      const s = 6;
+      const points = `${cx},${cy - s} ${cx + s},${cy} ${cx},${cy + s} ${cx - s},${cy}`;
+      return (
+        <polygon
+          points={points}
+          fill="hsl(var(--card))"
+          stroke={color}
+          strokeWidth={2}
+          strokeDasharray="2 2"
+        />
+      );
+    }
+    return <circle cx={cx} cy={cy} r={5} fill={color} stroke={color} />;
+  };
 }
 
 export default function DoshasEvolutionChart({
@@ -167,21 +197,21 @@ export default function DoshasEvolutionChart({
           <Line
             dataKey="vata" name="Vata"
             stroke={VATA} strokeWidth={3}
-            dot={{ r: 5, fill: VATA, stroke: VATA }}
+            dot={makeDot(VATA)}
             activeDot={{ r: 7, fill: VATA, stroke: "hsl(var(--card))", strokeWidth: 2 }}
             connectNulls isAnimationActive={false}
           />
           <Line
             dataKey="pitta" name="Pitta"
             stroke={PITTA} strokeWidth={3}
-            dot={{ r: 5, fill: PITTA, stroke: PITTA }}
+            dot={makeDot(PITTA)}
             activeDot={{ r: 7, fill: PITTA, stroke: "hsl(var(--card))", strokeWidth: 2 }}
             connectNulls isAnimationActive={false}
           />
           <Line
             dataKey="kapha" name="Kapha"
             stroke={KAPHA} strokeWidth={3}
-            dot={{ r: 5, fill: KAPHA, stroke: KAPHA }}
+            dot={makeDot(KAPHA)}
             activeDot={{ r: 7, fill: KAPHA, stroke: "hsl(var(--card))", strokeWidth: 2 }}
             connectNulls isAnimationActive={false}
           />
