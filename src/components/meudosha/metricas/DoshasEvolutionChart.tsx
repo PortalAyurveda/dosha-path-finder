@@ -197,21 +197,21 @@ export default function DoshasEvolutionChart({
           <Line
             dataKey="vata" name="Vata"
             stroke={VATA} strokeWidth={3}
-            dot={{ r: 5, fill: VATA, stroke: VATA }}
+            dot={makeDot(VATA)}
             activeDot={{ r: 7, fill: VATA, stroke: "hsl(var(--card))", strokeWidth: 2 }}
             connectNulls isAnimationActive={false}
           />
           <Line
             dataKey="pitta" name="Pitta"
             stroke={PITTA} strokeWidth={3}
-            dot={{ r: 5, fill: PITTA, stroke: PITTA }}
+            dot={makeDot(PITTA)}
             activeDot={{ r: 7, fill: PITTA, stroke: "hsl(var(--card))", strokeWidth: 2 }}
             connectNulls isAnimationActive={false}
           />
           <Line
             dataKey="kapha" name="Kapha"
             stroke={KAPHA} strokeWidth={3}
-            dot={{ r: 5, fill: KAPHA, stroke: KAPHA }}
+            dot={makeDot(KAPHA)}
             activeDot={{ r: 7, fill: KAPHA, stroke: "hsl(var(--card))", strokeWidth: 2 }}
             connectNulls isAnimationActive={false}
           />
