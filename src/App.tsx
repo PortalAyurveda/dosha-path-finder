@@ -77,6 +77,7 @@ const SamkhyaKits = lazy(() => import("./pages/SamkhyaKits"));
 const SamkhyaTodos = lazy(() => import("./pages/SamkhyaTodos"));
 const SamkhyaObrigado = lazy(() => import("./pages/SamkhyaObrigado"));
 const Pesquisa = lazy(() => import("./pages/Pesquisa"));
+const Revisao = lazy(() => import("./pages/Revisao"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -220,6 +221,7 @@ const RoutedApp = () => {
               <Route path="/samkhya/obrigado" element={<SamkhyaObrigado />} />
 
               <Route path="/pesquisa" element={<Pesquisa />} />
+              <Route path="/revisao" element={<Revisao />} />
 
               <Route path="*" element={<NotFound />} />
             </Routes>

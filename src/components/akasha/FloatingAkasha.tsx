@@ -17,6 +17,7 @@ const HIDDEN_PREFIXES = [
   "/teste-de-dosha",
   "/assinar",
   "/auth",
+  "/revisao",
 ];
 const HIDDEN_INCLUDES = ["/obrigado"];
 const AUTO_OPEN_DELAY_MS = 30_000;
