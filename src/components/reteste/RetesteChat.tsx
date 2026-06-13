@@ -91,17 +91,9 @@ const RetesteChat = ({ email, nome, sessaoId, idPublico, initialMessages }: Rete
 
 
 
-  const handleConcluir = async () => {
+  const handleConcluir = () => {
     if (concluding) return;
     setConcluding(true);
-    try {
-      await supabase
-        .from("reteste_sessao" as any)
-        .update({ status: "concluido", updated_at: new Date().toISOString() } as any)
-        .eq("id", sessaoId);
-    } catch (err) {
-      console.error("Failed to mark reteste concluido", err);
-    }
     navigate(`/meu-dosha${idPublico ? `?id=${idPublico}` : ""}`);
   };
 
