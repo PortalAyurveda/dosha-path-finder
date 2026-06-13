@@ -808,7 +808,9 @@ export type Database = {
           produtos: string | null
           relato_aberto: string | null
           remedios: string | null
+          reteste_sessao_id: string | null
           texto_ia: string | null
+          tipo: string
           vatascore: number | null
         }
         Insert: {
@@ -849,7 +851,9 @@ export type Database = {
           produtos?: string | null
           relato_aberto?: string | null
           remedios?: string | null
+          reteste_sessao_id?: string | null
           texto_ia?: string | null
+          tipo?: string
           vatascore?: number | null
         }
         Update: {
@@ -890,10 +894,20 @@ export type Database = {
           produtos?: string | null
           relato_aberto?: string | null
           remedios?: string | null
+          reteste_sessao_id?: string | null
           texto_ia?: string | null
+          tipo?: string
           vatascore?: number | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "doshas_registros_reteste_sessao_id_fkey"
+            columns: ["reteste_sessao_id"]
+            isOneToOne: false
+            referencedRelation: "reteste_sessao"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       doshas_registros2: {
         Row: {
@@ -2542,6 +2556,100 @@ export type Database = {
           video_id?: string
         }
         Relationships: []
+      }
+      reteste_chat_history: {
+        Row: {
+          content: string
+          created_at: string | null
+          id: string
+          role: string
+          sessao_id: string
+          sinal_emitido: Json | null
+          user_email: string
+        }
+        Insert: {
+          content: string
+          created_at?: string | null
+          id?: string
+          role: string
+          sessao_id: string
+          sinal_emitido?: Json | null
+          user_email: string
+        }
+        Update: {
+          content?: string
+          created_at?: string | null
+          id?: string
+          role?: string
+          sessao_id?: string
+          sinal_emitido?: Json | null
+          user_email?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reteste_chat_history_sessao_id_fkey"
+            columns: ["sessao_id"]
+            isOneToOne: false
+            referencedRelation: "reteste_sessao"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      reteste_sessao: {
+        Row: {
+          created_at: string | null
+          dosha_registro_origem_id: string | null
+          id: string
+          relato_abertura: string | null
+          resultado: Json | null
+          sinais_agni: number
+          sinais_kapha: number
+          sinais_pitta: number
+          sinais_vata: number
+          status: string
+          total_sinais: number
+          updated_at: string | null
+          user_email: string
+        }
+        Insert: {
+          created_at?: string | null
+          dosha_registro_origem_id?: string | null
+          id?: string
+          relato_abertura?: string | null
+          resultado?: Json | null
+          sinais_agni?: number
+          sinais_kapha?: number
+          sinais_pitta?: number
+          sinais_vata?: number
+          status?: string
+          total_sinais?: number
+          updated_at?: string | null
+          user_email: string
+        }
+        Update: {
+          created_at?: string | null
+          dosha_registro_origem_id?: string | null
+          id?: string
+          relato_abertura?: string | null
+          resultado?: Json | null
+          sinais_agni?: number
+          sinais_kapha?: number
+          sinais_pitta?: number
+          sinais_vata?: number
+          status?: string
+          total_sinais?: number
+          updated_at?: string | null
+          user_email?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reteste_sessao_dosha_registro_origem_id_fkey"
+            columns: ["dosha_registro_origem_id"]
+            isOneToOne: false
+            referencedRelation: "doshas_registros"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       rotina_acoes: {
         Row: {
