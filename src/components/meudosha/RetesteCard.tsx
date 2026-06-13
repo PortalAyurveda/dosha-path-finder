@@ -5,8 +5,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/contexts/UserContext";
 
 const RetesteCard = () => {
-  const { user } = useUser();
-  const email = user?.email || null;
+  const { user, role } = useUser();
+  const email = role === "admin" ? user?.email || null : null;
 
   const { data } = useQuery({
     queryKey: ["reteste-card", email],
