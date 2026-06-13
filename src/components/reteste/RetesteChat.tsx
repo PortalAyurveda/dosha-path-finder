@@ -146,8 +146,8 @@ const RetesteChat = ({ email, nome, sessaoId, idPublico, initialMessages }: Rete
   };
 
   return (
-    <div className="flex flex-col mt-2">
-      <div ref={chatContainerRef} className="flex-1 overflow-y-auto overscroll-contain space-y-3 pb-3 px-1 min-h-[50vh]">
+    <div className="flex flex-col mt-2 h-[calc(100dvh-260px)] min-h-[420px]">
+      <div ref={chatContainerRef} className="flex-1 min-h-0 overflow-y-auto overscroll-contain space-y-3 pb-3 px-1">
         <div className="flex items-center justify-center gap-2 pb-2 pt-1">
           <img src={AKASHA_LOGO} alt="Akasha IA" className="w-7 h-7 object-contain shrink-0" />
           <div className="flex flex-col leading-tight">
