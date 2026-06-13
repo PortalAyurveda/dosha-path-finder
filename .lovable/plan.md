@@ -1,44 +1,40 @@
-# Auto-abertura única do FloatingAkasha + say-hello
+# Auto-abertura universal do FloatingAkasha
 
 ## Objetivo
+O chat flutuante da Akasha abre sozinho **uma única vez por navegador**, 30 segundos depois que o visitante entrar em qualquer página do site — **logado ou não, com ou sem teste de dosha feito**. Se estiver na página `/teste-de-dosha`, nunca auto-abre (não atrapalhar quem está respondendo o teste). Se a pessoa concluir o teste e cair em `/meu-dosha`, o timer dessa página também conta normalmente.
 
-1. Em `/meu-dosha`, abrir o chat lateral automaticamente **uma única vez por usuário**, 30s após a página carregar — só se o usuário já tiver feito o teste de dosha.
-2. Na primeira abertura, se o histórico estiver vazio, disparar o mesmo "say hello" (webhook n8n) que o `AkashaTab` já faz hoje.
-3. Se o usuário fechar, nunca mais reabrir sozinho (persistência em localStorage).
+Se o usuário limpar cache/localStorage, pode abrir de novo numa próxima visita — tudo bem.
 
-## Mudanças
+## Mudanças em `src/components/akasha/FloatingAkasha.tsx`
 
-### `src/components/akasha/FloatingAkasha.tsx`
+### 1. Gating de rotas
+- Manter `HIDDEN_PREFIXES` atual (widget continua oculto em `/akasha`, `/teste-de-dosha`, `/assinar`, `/auth` e em qualquer rota com `/obrigado`). Ou seja, durante o teste de dosha o widget nem aparece — então não tem como auto-abrir lá.
+- Em todas as outras rotas o widget aparece e pode auto-abrir.
 
-**1. Permitir aparecer em `/meu-dosha`**
-- Remover `"/meu-dosha"` de `HIDDEN_PREFIXES`. Continua oculto em `/akasha`, `/teste-de-dosha`, `/assinar`, `/auth` e rotas com `/obrigado`.
-- Resultado: o widget passa a conviver com a aba Akasha existente em `/meu-dosha` (compartilham `cacheKey = ["akasha-history", email]`, então histórico fica sincronizado).
+### 2. Auto-abertura única (qualquer visitante)
+Substituir a lógica atual que exigia `user` logado + `idPublico`. Nova regra:
 
-**2. Auto-abertura única (apenas em `/meu-dosha`)**
-- Nova chave localStorage: `akasha_auto_opened_${resolvedEmail}` (escopo por usuário; visitante anônimo nunca dispara).
-- Condições para agendar o timer:
-  - `location.pathname.startsWith("/meu-dosha")`
-  - `user` logado **e** `doshaResult?.idPublico` presente (garante que o teste foi feito)
-  - `localStorage` da chave acima **não existe**
+- Chave única global no `localStorage`: **`akasha_auto_opened`** (sem sufixo de email — vale pro navegador inteiro, anônimo ou logado).
+- Condições para agendar o timer de 30s:
+  - `!shouldHide` (não está em rota oculta como `/teste-de-dosha`)
   - widget atualmente fechado
-- Esperar `document.readyState === "complete"` (ou usar `window.addEventListener("load")` quando ainda não estiver) antes de iniciar a contagem dos 30s — assim respeita o loading de imagens da página.
-- Após 30s: `setOpen(true)` e gravar `localStorage.setItem(key, "1")`. Guardar o timer em `useRef` e limpar no cleanup.
-- Não reagendar se o user fechar — a chave já foi gravada na abertura, então qualquer execução futura do effect cai no early-return.
+  - `localStorage.getItem("akasha_auto_opened")` é `null`
+- Esperar `document.readyState === "complete"` (ou `window.load`) e então iniciar o `setTimeout` de 30s.
+- Ao disparar: `localStorage.setItem("akasha_auto_opened", "1")` **antes** de `setOpen(true)`, garantindo que mesmo se o usuário navegar entre páginas durante os 30s, só abre uma vez.
+- Cleanup do timer no unmount / mudança de rota.
+- O timer **reinicia a contagem** se o usuário trocar de rota antes dos 30s — mas como a chave só é gravada na hora de abrir, qualquer rota válida que ele permaneça por 30s aciona a abertura única.
 
-**3. Say-hello na primeira abertura (replica AkashaTab)**
-- Adicionar `sendInitialMessage()` espelhando exatamente o que existe em `src/components/meudosha/AkashaTab.tsx` (mesma string, mesmo payload: `message`, `email`, `contactId=idPublico`, `nome`, `dosha`, `scores {vata,pitta,kapha}` + também `imc`, `agni`, `nivelDeConhecimento` quando disponíveis via `doshaResult`).
-- Gate em `useRef` `initialSentRef` para não duplicar.
-- Disparar quando: `open === true` **E** `cachedHistory !== undefined` (query terminou) **E** `cachedHistory.length === 0` **E** `messages.length === 0` **E** `user` + `doshaResult` presentes **E** `initialSentRef.current === false`.
-- Funciona tanto na auto-abertura quanto se o user abrir manualmente pela 1ª vez sem histórico.
-- Mantém o comportamento atual de **não** consumir token na intro (igual ao AkashaTab).
+### 3. Say-hello na primeira abertura
+- Mantém o comportamento atual: só dispara `sendInitialMessage` se houver `user` + `doshaResult.idPublico` + histórico vazio.
+- Para visitante anônimo (ou logado sem teste), o chat abre vazio com a tela de boas-vindas já existente (`"Olá! Sou a Akasha"` + placeholder do input). Não envia nada pro n8n até o usuário digitar.
 
 ## Fora de escopo
-- Nenhuma alteração no `AkashaTab` de `/meu-dosha` nem no fluxo n8n.
-- Nenhum reset/limpeza da chave de auto-abertura (é "uma vez para sempre" por email, como pedido).
-- Visitante anônimo continua sem auto-abertura e sem say-hello.
+- `AkashaTab` em `/meu-dosha` continua intacto.
+- Sem alteração no payload do webhook nem no fluxo n8n.
+- Sem mudança visual no widget ou no botão flutuante.
 
 ## Verificação manual
-1. User com teste pronto entra em `/meu-dosha?id=XXXX` → após 30s, chat abre sozinho; mensagem inicial é enviada se ainda não havia histórico.
-2. Fecha o chat → recarrega a página → chat **não** reabre.
-3. Em outras rotas (home, blog), o widget continua disponível pelo botão, sem auto-abrir.
-4. User sem teste em `/meu-dosha` → nada auto-abre.
+1. Visitante anônimo entra no `/` (home) → após 30s o chat abre sozinho, vazio, sem disparar webhook.
+2. Mesmo visitante navega para `/blog/algum-artigo` → não reabre (chave já existe).
+3. Visitante entra direto em `/teste-de-dosha` → widget nem aparece, nada auto-abre. Conclui o teste, é redirecionado para `/meu-dosha?id=XXX` → 30s depois, chat abre; se ele estiver logado e com teste, say-hello dispara.
+4. Usuário limpa localStorage → próxima visita auto-abre de novo (esperado).
