@@ -2562,27 +2562,33 @@ export type Database = {
           content: string
           created_at: string | null
           id: string
+          mapa_resposta: Json | null
           role: string
           sessao_id: string
           sinal_emitido: Json | null
+          subsecao: string | null
           user_email: string
         }
         Insert: {
           content: string
           created_at?: string | null
           id?: string
+          mapa_resposta?: Json | null
           role: string
           sessao_id: string
           sinal_emitido?: Json | null
+          subsecao?: string | null
           user_email: string
         }
         Update: {
           content?: string
           created_at?: string | null
           id?: string
+          mapa_resposta?: Json | null
           role?: string
           sessao_id?: string
           sinal_emitido?: Json | null
+          subsecao?: string | null
           user_email?: string
         }
         Relationships: [
@@ -2603,14 +2609,17 @@ export type Database = {
           id: string
           momento: number
           pack_perguntas: Json | null
+          perguntas_subsecao: number
           questao_atual: number
           relato_abertura: string | null
           resultado: Json | null
+          seed: Json
           sinais_agni: number
           sinais_kapha: number
           sinais_pitta: number
           sinais_vata: number
           status: string
+          subsecao: string | null
           total_sinais: number
           updated_at: string | null
           user_email: string
@@ -2622,14 +2631,17 @@ export type Database = {
           id?: string
           momento?: number
           pack_perguntas?: Json | null
+          perguntas_subsecao?: number
           questao_atual?: number
           relato_abertura?: string | null
           resultado?: Json | null
+          seed?: Json
           sinais_agni?: number
           sinais_kapha?: number
           sinais_pitta?: number
           sinais_vata?: number
           status?: string
+          subsecao?: string | null
           total_sinais?: number
           updated_at?: string | null
           user_email: string
@@ -2641,14 +2653,17 @@ export type Database = {
           id?: string
           momento?: number
           pack_perguntas?: Json | null
+          perguntas_subsecao?: number
           questao_atual?: number
           relato_abertura?: string | null
           resultado?: Json | null
+          seed?: Json
           sinais_agni?: number
           sinais_kapha?: number
           sinais_pitta?: number
           sinais_vata?: number
           status?: string
+          subsecao?: string | null
           total_sinais?: number
           updated_at?: string | null
           user_email?: string
