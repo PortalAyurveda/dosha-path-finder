@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
 import { Send, Loader2 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 
@@ -59,19 +58,6 @@ const RetesteChat = ({ email, nome, sessaoId, idPublico, initialMessages }: Rete
     };
   }, []);
 
-  const persistMessage = async (role: "user" | "assistant", content: string) => {
-    try {
-      await supabase.from("reteste_chat_history" as any).insert({
-        sessao_id: sessaoId,
-        user_email: email,
-        role,
-        content,
-      } as any);
-    } catch (err) {
-      console.error("Failed to persist reteste message", err);
-    }
-  };
-
   const sendMessage = async () => {
     if (!input.trim() || sending || showConcluir) return;
     const userMsg = input.trim();
@@ -79,8 +65,6 @@ const RetesteChat = ({ email, nome, sessaoId, idPublico, initialMessages }: Rete
     const userChatMsg: ChatMessage = { role: "user", content: userMsg, time: getNowBrazilTime() };
     setMessages(prev => [...prev, userChatMsg]);
     setSending(true);
-
-    await persistMessage("user", userMsg);
 
     try {
       const response = await fetch(WEBHOOK_URL, {
@@ -92,7 +76,6 @@ const RetesteChat = ({ email, nome, sessaoId, idPublico, initialMessages }: Rete
       const botReply = data?.resposta || data?.output || data?.text || "Desculpe, não consegui processar sua mensagem.";
       const botMsg: ChatMessage = { role: "assistant", content: botReply, time: getNowBrazilTime() };
       setMessages(prev => [...prev, botMsg]);
-      await persistMessage("assistant", botReply);
 
       if (data?.reteste_concluido === true) {
         concluirTimerRef.current = setTimeout(() => setShowConcluir(true), 2000);
@@ -105,17 +88,11 @@ const RetesteChat = ({ email, nome, sessaoId, idPublico, initialMessages }: Rete
     }
   };
 
-  const handleConcluir = async () => {
+
+
+  const handleConcluir = () => {
     if (concluding) return;
     setConcluding(true);
-    try {
-      await supabase
-        .from("reteste_sessao" as any)
-        .update({ status: "concluido", updated_at: new Date().toISOString() } as any)
-        .eq("id", sessaoId);
-    } catch (err) {
-      console.error("Failed to mark reteste concluido", err);
-    }
     navigate(`/meu-dosha${idPublico ? `?id=${idPublico}` : ""}`);
   };
 
