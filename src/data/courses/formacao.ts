@@ -577,9 +577,9 @@ export const formacaoData: FormacaoData = {
   },
   finalCta: {
     title: "Esta é a sua chance",
-    body: "Você já sabe que Ayurveda funciona. Você já experimentou na pele. Você já sentiu a diferença na saúde, na energia, na clareza.\n\nAgora é a hora de ir além. De sair de espectadora para protagonista. De deixar de ser paciente para se tornar terapeuta. De transformar sua própria vida — e a vida de outras pessoas.\n\nEsta é a primeira turma oficial de Terapeutas Ayurveda formada pelo Portal Ayurveda. São apenas 50 vagas. O desconto de 10% é válido até 12 de junho. A primeira aula começa em 11 de julho de 2026.",
+    body: "Você já sabe que Ayurveda funciona. Você já experimentou na pele. Você já sentiu a diferença na saúde, na energia, na clareza.\n\nAgora é a hora de ir além. De sair de espectadora para protagonista. De deixar de ser paciente para se tornar terapeuta. De transformar sua própria vida — e a vida de outras pessoas.\n\nEsta é a primeira turma oficial de Terapeutas Ayurveda formada pelo Portal Ayurveda. A primeira aula começa em 11 de julho de 2026.",
     primaryCta: "Inscreva-se com nossa equipe",
-    primarySub: "Apenas 50 vagas.",
+    primarySub: "Vagas abertas.",
     secondaryCta: "",
   },
 };
