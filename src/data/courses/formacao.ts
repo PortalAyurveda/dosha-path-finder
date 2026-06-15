@@ -129,7 +129,7 @@ export const formacaoData: FormacaoData = {
     startDate: "Início: 11 e 12 de Julho de 2026",
     endDate: "Término: 06 e 07 de Novembro de 2027",
     ctaText: "Inscreva-se com nossa equipe",
-    ctaSubtext: "Apenas 50 vagas.",
+    ctaSubtext: "Vagas abertas.",
   },
   paraQuem: {
     title: "Para quem é esta formação",
@@ -510,13 +510,12 @@ export const formacaoData: FormacaoData = {
       "💰 Módulos Presenciais (3 meses): R$ 630/mês",
     ],
     total: "Investimento total: R$ 8.370 ao longo de 1,5 ano",
-    condicoesTitle: "Condições especiais — 1º lote",
+    condicoesTitle: "Condições de pagamento",
     condicoes: [
-      "10% de desconto para pagamento à vista no PIX",
-      "Garantia de vaga com desconto válido até 12 de junho de 2026",
-      "Apenas 50 vagas disponíveis",
+      "Pagamento mês a mês conforme o módulo correspondente",
+      "Opção de pagamento à vista no PIX",
     ],
-    condicoesNote: "Após 12 de junho, o valor volta ao preço cheio.",
+    condicoesNote: "Entre em contato para mais detalhes sobre inscrição.",
     inclusoTitle: "O que está incluso",
     incluso: [
       "189 horas de aulas ao vivo (online + presencial)",
@@ -567,7 +566,7 @@ export const formacaoData: FormacaoData = {
       {
         question: "Posso parcelar o pagamento?",
         answer:
-          "Sim. As mensalidades são pagas mês a mês, conforme o módulo correspondente. Você também pode optar por pagamento à vista no PIX com 10% de desconto (válido até 12 de junho).",
+          "Sim. As mensalidades são pagas mês a mês, conforme o módulo correspondente. Você também pode optar por pagamento à vista no PIX.",
       },
       {
         question: "Como funciona a certificação?",
