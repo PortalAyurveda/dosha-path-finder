@@ -477,6 +477,9 @@ const Revisao = () => {
                   <Label className="text-sm font-medium">
                     Variação de peso nos últimos 30 dias (kg)
                   </Label>
+                  <p className="text-xs text-muted-foreground">
+                    Peso informado no diagnóstico: {pesoOriginal || "não informado"}
+                  </p>
                   <div className="flex items-center gap-3">
                     <Button
                       type="button"
