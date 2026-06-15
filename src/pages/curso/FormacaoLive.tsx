@@ -82,13 +82,6 @@ const FormacaoLive = () => {
                   <Calendar className="h-4 w-4" />
                   Início: 20 de Maio · 19h
                 </span>
-                <span
-                  className="inline-flex items-center gap-2 text-xs md:text-sm font-bold px-4 py-2 rounded-full"
-                  style={{ background: `${SALMON}40`, color: DARK }}
-                >
-                  <Users className="h-4 w-4" />
-                  Apenas 50 vagas
-                </span>
               </motion.div>
 
               <motion.p
@@ -130,7 +123,7 @@ const FormacaoLive = () => {
                 transition={{ duration: 0.5, delay: 0.6 }}
                 className="text-xs md:text-sm text-gray-600 italic mt-4"
               >
-                Vagas limitadas. Avisos enviados pelo grupo.
+                Avisos enviados pelo grupo.
               </motion.p>
             </div>
 
