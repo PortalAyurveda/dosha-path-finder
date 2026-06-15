@@ -1,18 +1,14 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-import { Loader2 } from "lucide-react";
+import { Loader2, Minus, Plus } from "lucide-react";
 import PageContainer from "@/components/PageContainer";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/contexts/UserContext";
-import RetesteChat from "@/components/reteste/RetesteChat";
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
-
-interface ChatMessage {
-  role: "user" | "assistant";
-  content: string;
-  time?: string;
-}
+import { Button } from "@/components/ui/button";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
 
 interface DoshaTeste {
   id: string;
@@ -24,6 +20,43 @@ interface DoshaTeste {
   agniPrincipal: string | null;
   doshaprincipal: string | null;
 }
+
+interface RevisaoResultado {
+  sintese?: string;
+  vatascore_antes?: number;
+  vatascore_depois?: number;
+  pittascore_antes?: number;
+  pittascore_depois?: number;
+  kaphascore_antes?: number;
+  kaphascore_depois?: number;
+  novoDosha?: string;
+  data_revisao?: string;
+}
+
+interface Pergunta {
+  id: number;
+  pergunta: string;
+}
+
+type Letra = "A" | "B" | "C" | "D" | "E";
+type FlowState =
+  | "idle"
+  | "hello_loading"
+  | "hello_done"
+  | "gerar_loading"
+  | "form"
+  | "calcular_loading"
+  | "concluido";
+
+const WEBHOOK = "https://n8n.portalayurveda.com/webhook/reteste-revisao";
+
+const OPCOES: { letra: Letra; texto: string }[] = [
+  { letra: "A", texto: "Melhorei muito" },
+  { letra: "B", texto: "Melhorei um pouco" },
+  { letra: "C", texto: "Igual" },
+  { letra: "D", texto: "Piorei um pouco" },
+  { letra: "E", texto: "Piorei muito" },
+];
 
 const PIE_COLORS: Record<string, string> = {
   Vata: "#4F75FF",
@@ -61,12 +94,47 @@ const NIVEL_BADGE: Record<string, string> = {
   Pouco: "bg-slate-100 text-slate-600 border-slate-300",
 };
 
+const formatPeso = (n: number) => {
+  if (n > 0) return `+${n} kg`;
+  if (n < 0) return `${n} kg`;
+  return `0 kg`;
+};
+
+const formatData = (s?: string) => {
+  if (!s) return "";
+  const d = new Date(s);
+  if (isNaN(d.getTime())) return s;
+  return d.toLocaleDateString("pt-BR");
+};
+
 const Revisao = () => {
   const { user, loading: authLoading } = useUser();
   const [loading, setLoading] = useState(true);
   const [teste, setTeste] = useState<DoshaTeste | null>(null);
+  const [ultimaRevisao, setUltimaRevisao] = useState<RevisaoResultado | null>(null);
+
+  // Máquina de estados do fluxo de nova revisão
+  const [flow, setFlow] = useState<FlowState>("idle");
   const [sessaoId, setSessaoId] = useState<string | null>(null);
-  const [initialMessages, setInitialMessages] = useState<ChatMessage[]>([]);
+  const [akashaHello, setAkashaHello] = useState<string>("");
+  const [perguntas, setPerguntas] = useState<Pergunta[]>([]);
+  const [respostas, setRespostas] = useState<Record<number, Letra>>({});
+  const [pesoDelta, setPesoDelta] = useState<number>(0);
+  const [, setSinteseNova] = useState<string>("");
+  const [erro, setErro] = useState<string | null>(null);
+
+  const fetchUltimaRevisao = useCallback(async (email: string) => {
+    const { data } = await supabase
+      .from("reteste_sessao" as any)
+      .select("resultado")
+      .eq("user_email", email)
+      .eq("status", "concluido")
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    const res = (data as any)?.resultado as RevisaoResultado | undefined;
+    setUltimaRevisao(res ?? null);
+  }, []);
 
   useEffect(() => {
     if (authLoading) return;
@@ -89,61 +157,107 @@ const Revisao = () => {
         .maybeSingle();
 
       if (cancelled) return;
-      if (!testeData) {
-        setLoading(false);
-        return;
-      }
-      setTeste(testeData as DoshaTeste);
+      if (testeData) setTeste(testeData as DoshaTeste);
 
-      const { data: existingSessao } = await supabase
-        .from("reteste_sessao" as any)
-        .select("id")
-        .eq("user_email", email)
-        .eq("status", "em_andamento")
-        .order("created_at", { ascending: false })
-        .limit(1)
-        .maybeSingle();
-
-      let activeSessaoId: string | null = (existingSessao as any)?.id ?? null;
-
-      if (!activeSessaoId) {
-        const { data: novaSessao, error: insertErr } = await supabase
-          .from("reteste_sessao" as any)
-          .insert({
-            user_email: email,
-            status: "em_andamento",
-            dosha_registro_origem_id: (testeData as any).id,
-          } as any)
-          .select("id")
-          .single();
-        if (insertErr) {
-          console.error("Erro criando reteste_sessao", insertErr);
-        }
-        activeSessaoId = (novaSessao as any)?.id ?? null;
-      } else {
-        const { data: history } = await supabase
-          .from("reteste_chat_history" as any)
-          .select("role, content, created_at")
-          .eq("sessao_id", activeSessaoId)
-          .order("created_at", { ascending: true });
-        if (history && Array.isArray(history)) {
-          setInitialMessages(
-            (history as any[])
-              .filter((r) => r.role === "user" || r.role === "assistant")
-              .map((r) => ({ role: r.role, content: r.content })),
-          );
-        }
-      }
-
+      await fetchUltimaRevisao(email);
       if (cancelled) return;
-      setSessaoId(activeSessaoId);
       setLoading(false);
     })();
 
     return () => {
       cancelled = true;
     };
-  }, [authLoading, user?.email]);
+  }, [authLoading, user?.email, fetchUltimaRevisao]);
+
+  const callWebhook = async (body: Record<string, unknown>) => {
+    const res = await fetch(WEBHOOK, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const json = await res.json();
+    // Webhooks do n8n às vezes vêm como array
+    return Array.isArray(json) ? json[0] : json;
+  };
+
+  const handleFazerRevisao = async () => {
+    if (!user?.email) return;
+    setErro(null);
+    const prev = flow;
+    setFlow("hello_loading");
+    try {
+      const r = await callWebhook({
+        action: "hello",
+        email: user.email,
+        nome: teste?.nome || "",
+      });
+      setSessaoId(r?.sessao_id ?? null);
+      setAkashaHello(r?.resposta ?? "");
+      setFlow("hello_done");
+    } catch (e) {
+      console.error(e);
+      setErro("Erro ao processar. Tente novamente.");
+      setFlow(prev);
+    }
+  };
+
+  const handleGerarRevisao = async () => {
+    if (!user?.email || !sessaoId) return;
+    setErro(null);
+    const prev = flow;
+    setFlow("gerar_loading");
+    try {
+      const r = await callWebhook({
+        action: "gerar",
+        email: user.email,
+        nome: teste?.nome || "",
+        sessao_id: sessaoId,
+      });
+      const ps: Pergunta[] = r?.perguntas ?? [];
+      setPerguntas(ps);
+      setRespostas({});
+      setFlow("form");
+    } catch (e) {
+      console.error(e);
+      setErro("Erro ao processar. Tente novamente.");
+      setFlow(prev);
+    }
+  };
+
+  const handleEnviarRevisao = async () => {
+    if (!user?.email || !sessaoId) return;
+    setErro(null);
+    const prev = flow;
+    setFlow("calcular_loading");
+    try {
+      const r = await callWebhook({
+        action: "calcular",
+        email: user.email,
+        nome: teste?.nome || "",
+        sessao_id: sessaoId,
+        respostas: Object.entries(respostas).map(([id, resposta]) => ({
+          id: Number(id),
+          resposta,
+        })),
+        peso_delta: pesoDelta,
+      });
+      setSinteseNova(r?.sintese ?? "");
+      setFlow("concluido");
+      await fetchUltimaRevisao(user.email);
+    } catch (e) {
+      console.error(e);
+      setErro("Erro ao processar. Tente novamente.");
+      setFlow(prev);
+    }
+  };
+
+  const adjustPeso = (delta: number) => {
+    setPesoDelta((v) => Math.max(-20, Math.min(20, v + delta)));
+  };
+
+  const todasRespondidas =
+    perguntas.length > 0 && Object.keys(respostas).length === perguntas.length;
 
   if (authLoading) {
     return (
@@ -153,9 +267,7 @@ const Revisao = () => {
     );
   }
 
-  if (!user) {
-    return <Navigate to="/entrar?redirect=/revisao" replace />;
-  }
+  if (!user) return <Navigate to="/entrar?redirect=/revisao" replace />;
 
   if (loading) {
     return (
@@ -165,19 +277,9 @@ const Revisao = () => {
     );
   }
 
-  if (!teste) {
-    return (
-      <PageContainer title="Revisão · Akasha" description="Revisão do seu diagnóstico Ayurveda">
-        <div className="max-w-2xl mx-auto py-10 text-center">
-          <p className="text-sm text-muted-foreground">Você ainda não tem um teste de dosha para revisar.</p>
-        </div>
-      </PageContainer>
-    );
-  }
-
-  const v = teste.vatascore ?? 0;
-  const p = teste.pittascore ?? 0;
-  const k = teste.kaphascore ?? 0;
+  const v = teste?.vatascore ?? 0;
+  const p = teste?.pittascore ?? 0;
+  const k = teste?.kaphascore ?? 0;
   const pieData = [
     { name: "Vata", value: v },
     { name: "Pitta", value: p },
@@ -192,64 +294,233 @@ const Revisao = () => {
       <PageContainer title="Revisão · Akasha" description="Revisão do seu diagnóstico Ayurveda">
         <div className="max-w-2xl mx-auto space-y-4">
           {/* Resumo compacto */}
-          <div className="rounded-xl border border-border bg-card p-3 flex items-center gap-3">
-            <div className="w-20 h-20 shrink-0">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={pieData}
-                    dataKey="value"
-                    nameKey="name"
-                    innerRadius={18}
-                    outerRadius={36}
-                    startAngle={90}
-                    endAngle={-270}
-                    stroke="none"
-                  >
-                    {pieData.map((d) => (
-                      <Cell key={d.name} fill={PIE_COLORS[d.name]} />
-                    ))}
-                  </Pie>
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-[11px] uppercase tracking-wide text-muted-foreground">Seu diagnóstico</p>
-              <div className="flex flex-wrap gap-1.5 mt-1">
-                {([
-                  ["Vata", v],
-                  ["Pitta", p],
-                  ["Kapha", k],
-                ] as [ "Vata" | "Pitta" | "Kapha", number ][]).map(([name, score]) => {
-                  const nivel = getNivel(score, name);
-                  return (
-                    <span
-                      key={name}
-                      className={`text-[10px] px-2 py-0.5 rounded-full border font-semibold ${NIVEL_BADGE[nivel]}`}
+          {teste && (
+            <div className="rounded-xl border border-border bg-card p-3 flex items-center gap-3">
+              <div className="w-20 h-20 shrink-0">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={pieData}
+                      dataKey="value"
+                      nameKey="name"
+                      innerRadius={18}
+                      outerRadius={36}
+                      startAngle={90}
+                      endAngle={-270}
+                      stroke="none"
                     >
-                      {name} {score} · {nivel}
-                    </span>
-                  );
-                })}
+                      {pieData.map((d) => (
+                        <Cell key={d.name} fill={PIE_COLORS[d.name]} />
+                      ))}
+                    </Pie>
+                  </PieChart>
+                </ResponsiveContainer>
               </div>
-              {teste.agniPrincipal && (
-                <p className="text-[11px] text-muted-foreground mt-1 truncate">
-                  Agni: <span className="text-foreground font-medium">{teste.agniPrincipal}</span>
-                </p>
-              )}
+              <div className="flex-1 min-w-0">
+                <p className="text-[11px] uppercase tracking-wide text-muted-foreground">Seu diagnóstico</p>
+                <div className="flex flex-wrap gap-1.5 mt-1">
+                  {(
+                    [
+                      ["Vata", v],
+                      ["Pitta", p],
+                      ["Kapha", k],
+                    ] as ["Vata" | "Pitta" | "Kapha", number][]
+                  ).map(([name, score]) => {
+                    const nivel = getNivel(score, name);
+                    return (
+                      <span
+                        key={name}
+                        className={`text-[10px] px-2 py-0.5 rounded-full border font-semibold ${NIVEL_BADGE[nivel]}`}
+                      >
+                        {name} {score} · {nivel}
+                      </span>
+                    );
+                  })}
+                </div>
+                {teste.agniPrincipal && (
+                  <p className="text-[11px] text-muted-foreground mt-1 truncate">
+                    Agni: <span className="text-foreground font-medium">{teste.agniPrincipal}</span>
+                  </p>
+                )}
+              </div>
             </div>
+          )}
+
+          {/* Última revisão concluída */}
+          <div className="rounded-xl border border-border bg-card p-4">
+            <h2 className="text-sm font-semibold mb-2">Sua última revisão</h2>
+            {ultimaRevisao ? (
+              <div className="space-y-3 text-sm">
+                {ultimaRevisao.sintese && (
+                  <p className="whitespace-pre-wrap leading-relaxed">{ultimaRevisao.sintese}</p>
+                )}
+                <div className="grid grid-cols-3 gap-2 text-xs">
+                  <div className="rounded-lg bg-muted/50 p-2 text-center">
+                    <div className="text-[10px] uppercase text-muted-foreground">Vata</div>
+                    <div className="font-semibold">
+                      {ultimaRevisao.vatascore_antes ?? "—"} → {ultimaRevisao.vatascore_depois ?? "—"}
+                    </div>
+                  </div>
+                  <div className="rounded-lg bg-muted/50 p-2 text-center">
+                    <div className="text-[10px] uppercase text-muted-foreground">Pitta</div>
+                    <div className="font-semibold">
+                      {ultimaRevisao.pittascore_antes ?? "—"} → {ultimaRevisao.pittascore_depois ?? "—"}
+                    </div>
+                  </div>
+                  <div className="rounded-lg bg-muted/50 p-2 text-center">
+                    <div className="text-[10px] uppercase text-muted-foreground">Kapha</div>
+                    <div className="font-semibold">
+                      {ultimaRevisao.kaphascore_antes ?? "—"} → {ultimaRevisao.kaphascore_depois ?? "—"}
+                    </div>
+                  </div>
+                </div>
+                <div className="flex justify-between text-xs text-muted-foreground">
+                  {ultimaRevisao.novoDosha && (
+                    <span>
+                      Novo dosha: <span className="text-foreground font-medium">{ultimaRevisao.novoDosha}</span>
+                    </span>
+                  )}
+                  {ultimaRevisao.data_revisao && <span>{formatData(ultimaRevisao.data_revisao)}</span>}
+                </div>
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground">Você ainda não tem uma revisão concluída.</p>
+            )}
           </div>
 
-          {/* Chat */}
-          {sessaoId && (
-            <RetesteChat
-              email={user.email!}
-              nome={teste.nome || "Visitante"}
-              sessaoId={sessaoId}
-              idPublico={teste.idPublico}
-              initialMessages={initialMessages}
-            />
-          )}
+          {/* Fluxo de nova revisão */}
+          <div className="rounded-xl border border-border bg-card p-4 space-y-4">
+            {erro && (
+              <div className="rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm p-2">
+                {erro}
+              </div>
+            )}
+
+            {flow === "idle" && (
+              <div className="flex flex-col items-start gap-2">
+                <p className="text-sm text-muted-foreground">
+                  Pronto para revisar como você está se sentindo nos últimos 30 dias?
+                </p>
+                <Button onClick={handleFazerRevisao}>Fazer revisão</Button>
+              </div>
+            )}
+
+            {flow === "hello_loading" && (
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Loader2 className="w-4 h-4 animate-spin" /> Akasha está preparando sua revisão...
+              </div>
+            )}
+
+            {flow === "hello_done" && (
+              <div className="space-y-3">
+                {akashaHello && (
+                  <div className="rounded-lg bg-muted/40 p-3 text-sm whitespace-pre-wrap leading-relaxed">
+                    {akashaHello}
+                  </div>
+                )}
+                <Button onClick={handleGerarRevisao}>Gerar revisão</Button>
+              </div>
+            )}
+
+            {flow === "gerar_loading" && (
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Loader2 className="w-4 h-4 animate-spin" /> Gerando perguntas...
+              </div>
+            )}
+
+            {flow === "form" && (
+              <div className="space-y-5">
+                {perguntas.map((pq, idx) => (
+                  <div key={pq.id} className="space-y-2">
+                    <p className="text-sm font-medium">
+                      {idx + 1}. {pq.pergunta}
+                    </p>
+                    <RadioGroup
+                      value={respostas[pq.id] ?? ""}
+                      onValueChange={(val) =>
+                        setRespostas((r) => ({ ...r, [pq.id]: val as Letra }))
+                      }
+                      className="space-y-1"
+                    >
+                      {OPCOES.map((o) => {
+                        const id = `q${pq.id}-${o.letra}`;
+                        return (
+                          <div key={o.letra} className="flex items-center gap-2">
+                            <RadioGroupItem id={id} value={o.letra} />
+                            <Label htmlFor={id} className="text-sm font-normal cursor-pointer">
+                              {o.letra}) {o.texto}
+                            </Label>
+                          </div>
+                        );
+                      })}
+                    </RadioGroup>
+                  </div>
+                ))}
+
+                <div className="space-y-2 pt-2 border-t border-border">
+                  <Label className="text-sm font-medium">
+                    Variação de peso nos últimos 30 dias (kg)
+                  </Label>
+                  <div className="flex items-center gap-3">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      onClick={() => adjustPeso(-1)}
+                      disabled={pesoDelta <= -20}
+                    >
+                      <Minus className="w-4 h-4" />
+                    </Button>
+                    <span className="min-w-[80px] text-center font-semibold">
+                      {formatPeso(pesoDelta)}
+                    </span>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      onClick={() => adjustPeso(1)}
+                      disabled={pesoDelta >= 20}
+                    >
+                      <Plus className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </div>
+
+                <Button onClick={handleEnviarRevisao} disabled={!todasRespondidas} className="w-full">
+                  Enviar revisão
+                </Button>
+              </div>
+            )}
+
+            {flow === "calcular_loading" && (
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Loader2 className="w-4 h-4 animate-spin" /> Calculando sua nova síntese...
+              </div>
+            )}
+
+            {flow === "concluido" && (
+              <div className="space-y-2">
+                <p className="text-sm font-medium text-green-700">Revisão concluída ✓</p>
+                <p className="text-xs text-muted-foreground">
+                  Sua nova síntese já está disponível acima.
+                </p>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setFlow("idle");
+                    setSessaoId(null);
+                    setAkashaHello("");
+                    setPerguntas([]);
+                    setRespostas({});
+                    setPesoDelta(0);
+                    setSinteseNova("");
+                  }}
+                >
+                  Voltar
+                </Button>
+              </div>
+            )}
+          </div>
         </div>
       </PageContainer>
     </>
