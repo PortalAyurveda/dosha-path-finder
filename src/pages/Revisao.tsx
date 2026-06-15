@@ -192,8 +192,8 @@ const Revisao = () => {
         email: user.email,
         nome: teste?.nome || "",
       });
-      setSessaoId(r?.sessao_id ?? null);
-      setAkashaHello(r?.resposta ?? "");
+      setSessaoId(r?.sessao_id ?? r?.sessaoId ?? r?.session_id ?? null);
+      setAkashaHello(r?.resposta ?? r?.mensagem ?? r?.message ?? "");
       setFlow("hello_done");
     } catch (e) {
       console.error(e);
@@ -203,7 +203,7 @@ const Revisao = () => {
   };
 
   const handleGerarRevisao = async () => {
-    if (!user?.email || !sessaoId) return;
+    if (!user?.email) return;
     setErro(null);
     const prev = flow;
     setFlow("gerar_loading");
@@ -214,7 +214,8 @@ const Revisao = () => {
         nome: teste?.nome || "",
         sessao_id: sessaoId,
       });
-      const ps: Pergunta[] = r?.perguntas ?? [];
+      const ps: Pergunta[] = r?.perguntas ?? r?.questions ?? [];
+
       setPerguntas(ps);
       setRespostas({});
       setFlow("form");
@@ -346,47 +347,17 @@ const Revisao = () => {
             </div>
           )}
 
-          {/* Última revisão concluída */}
-          <div className="rounded-xl border border-border bg-card p-4">
-            <h2 className="text-sm font-semibold mb-2">Sua última revisão</h2>
-            {ultimaRevisao ? (
-              <div className="space-y-3 text-sm">
-                {ultimaRevisao.sintese && (
-                  <p className="whitespace-pre-wrap leading-relaxed">{ultimaRevisao.sintese}</p>
-                )}
-                <div className="grid grid-cols-3 gap-2 text-xs">
-                  <div className="rounded-lg bg-muted/50 p-2 text-center">
-                    <div className="text-[10px] uppercase text-muted-foreground">Vata</div>
-                    <div className="font-semibold">
-                      {ultimaRevisao.vatascore_antes ?? "—"} → {ultimaRevisao.vatascore_depois ?? "—"}
-                    </div>
-                  </div>
-                  <div className="rounded-lg bg-muted/50 p-2 text-center">
-                    <div className="text-[10px] uppercase text-muted-foreground">Pitta</div>
-                    <div className="font-semibold">
-                      {ultimaRevisao.pittascore_antes ?? "—"} → {ultimaRevisao.pittascore_depois ?? "—"}
-                    </div>
-                  </div>
-                  <div className="rounded-lg bg-muted/50 p-2 text-center">
-                    <div className="text-[10px] uppercase text-muted-foreground">Kapha</div>
-                    <div className="font-semibold">
-                      {ultimaRevisao.kaphascore_antes ?? "—"} → {ultimaRevisao.kaphascore_depois ?? "—"}
-                    </div>
-                  </div>
-                </div>
-                <div className="flex justify-between text-xs text-muted-foreground">
-                  {ultimaRevisao.novoDosha && (
-                    <span>
-                      Novo dosha: <span className="text-foreground font-medium">{ultimaRevisao.novoDosha}</span>
-                    </span>
-                  )}
-                  {ultimaRevisao.data_revisao && <span>{formatData(ultimaRevisao.data_revisao)}</span>}
-                </div>
-              </div>
-            ) : (
-              <p className="text-sm text-muted-foreground">Você ainda não tem uma revisão concluída.</p>
-            )}
-          </div>
+          {/* Última revisão concluída (apenas síntese) */}
+          {ultimaRevisao?.sintese && (
+            <div className="rounded-xl border border-border bg-card p-4">
+              <h2 className="text-sm font-semibold mb-2">Sua última revisão</h2>
+              <p className="text-sm whitespace-pre-wrap leading-relaxed">{ultimaRevisao.sintese}</p>
+              {ultimaRevisao.data_revisao && (
+                <p className="text-xs text-muted-foreground mt-2">{formatData(ultimaRevisao.data_revisao)}</p>
+              )}
+            </div>
+          )}
+
 
           {/* Fluxo de nova revisão */}
           <div className="rounded-xl border border-border bg-card p-4 space-y-4">
