@@ -120,6 +120,7 @@ const Revisao = () => {
   const [perguntas, setPerguntas] = useState<Pergunta[]>([]);
   const [respostas, setRespostas] = useState<Record<number, Letra>>({});
   const [pesoDelta, setPesoDelta] = useState<number>(0);
+  const [pesoOriginal, setPesoOriginal] = useState<string | null>(null);
   const [, setSinteseNova] = useState<string>("");
   const [erro, setErro] = useState<string | null>(null);
 
@@ -147,20 +148,64 @@ const Revisao = () => {
     (async () => {
       const email = user.email!;
 
-      const { data: testeData } = await supabase
-        .from("doshas_registros")
-        .select('id, "idPublico", nome, vatascore, pittascore, kaphascore, "agniPrincipal", doshaprincipal')
-        .eq("email", email)
-        .eq("tipo", "teste")
-        .order("created_at", { ascending: false })
-        .limit(1)
-        .maybeSingle();
+      const [testeRes, ultimaRes, andamentoRes, pesoRes] = await Promise.all([
+        supabase
+          .from("doshas_registros")
+          .select('id, "idPublico", nome, vatascore, pittascore, kaphascore, "agniPrincipal", doshaprincipal')
+          .eq("email", email)
+          .eq("tipo", "teste")
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .maybeSingle(),
+        supabase
+          .from("reteste_sessao" as any)
+          .select("resultado")
+          .eq("user_email", email)
+          .eq("status", "concluido")
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .maybeSingle(),
+        supabase
+          .from("reteste_sessao" as any)
+          .select("id, momento, relato_abertura, pack_perguntas")
+          .eq("user_email", email)
+          .eq("status", "em_andamento")
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .maybeSingle(),
+        supabase
+          .from("doshas_registros")
+          .select("peso")
+          .eq("email", email)
+          .eq("tipo", "teste")
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .maybeSingle(),
+      ]);
 
       if (cancelled) return;
-      if (testeData) setTeste(testeData as DoshaTeste);
 
-      await fetchUltimaRevisao(email);
-      if (cancelled) return;
+      if (testeRes.data) setTeste(testeRes.data as DoshaTeste);
+
+      const ultRes = (ultimaRes.data as any)?.resultado as RevisaoResultado | undefined;
+      setUltimaRevisao(ultRes ?? null);
+
+      const pesoVal = (pesoRes.data as any)?.peso;
+      setPesoOriginal(pesoVal != null && String(pesoVal).trim() !== "" ? String(pesoVal) : null);
+
+      const sess = andamentoRes.data as any;
+      if (sess?.id) {
+        if (sess.momento === 1 && sess.relato_abertura) {
+          setSessaoId(sess.id);
+          setAkashaHello(String(sess.relato_abertura));
+          setFlow("hello_done");
+        } else if (sess.momento === 2 && Array.isArray(sess.pack_perguntas) && sess.pack_perguntas.length > 0) {
+          setSessaoId(sess.id);
+          setPerguntas(sess.pack_perguntas as Pergunta[]);
+          setFlow("form");
+        }
+      }
+
       setLoading(false);
     })();
 
@@ -432,6 +477,9 @@ const Revisao = () => {
                   <Label className="text-sm font-medium">
                     Variação de peso nos últimos 30 dias (kg)
                   </Label>
+                  <p className="text-xs text-muted-foreground">
+                    Peso informado no diagnóstico: {pesoOriginal || "não informado"}
+                  </p>
                   <div className="flex items-center gap-3">
                     <Button
                       type="button"
