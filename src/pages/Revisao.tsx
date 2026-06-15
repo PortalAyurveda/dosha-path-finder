@@ -192,8 +192,8 @@ const Revisao = () => {
         email: user.email,
         nome: teste?.nome || "",
       });
-      setSessaoId(r?.sessao_id ?? null);
-      setAkashaHello(r?.resposta ?? "");
+      setSessaoId(r?.sessao_id ?? r?.sessaoId ?? r?.session_id ?? null);
+      setAkashaHello(r?.resposta ?? r?.mensagem ?? r?.message ?? "");
       setFlow("hello_done");
     } catch (e) {
       console.error(e);
@@ -203,7 +203,7 @@ const Revisao = () => {
   };
 
   const handleGerarRevisao = async () => {
-    if (!user?.email || !sessaoId) return;
+    if (!user?.email) return;
     setErro(null);
     const prev = flow;
     setFlow("gerar_loading");
@@ -214,7 +214,8 @@ const Revisao = () => {
         nome: teste?.nome || "",
         sessao_id: sessaoId,
       });
-      const ps: Pergunta[] = r?.perguntas ?? [];
+      const ps: Pergunta[] = r?.perguntas ?? r?.questions ?? [];
+
       setPerguntas(ps);
       setRespostas({});
       setFlow("form");
