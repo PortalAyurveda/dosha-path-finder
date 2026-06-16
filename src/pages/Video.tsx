@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { Helmet } from "react-helmet-async";
@@ -110,17 +110,15 @@ const Video = () => {
     );
   }
 
+  // Soft 404: when slug doesn't resolve, redirect to /biblioteca (replace) instead of rendering a 200 error page
+  useEffect(() => {
+    if (!isLoading && !video) {
+      navigate("/biblioteca", { replace: true });
+    }
+  }, [isLoading, video, navigate]);
+
   if (!video) {
-    return (
-      <PageContainer title="Vídeo não encontrado" description="">
-        <div className="text-center py-20">
-          <p className="text-muted-foreground text-lg mb-4">Este vídeo não foi encontrado na biblioteca.</p>
-          <Button variant="outline" onClick={() => navigate("/biblioteca")}>
-            <ArrowLeft className="h-4 w-4 mr-2" /> Voltar à Biblioteca
-          </Button>
-        </div>
-      </PageContainer>
-    );
+    return null;
   }
 
   const title = video.novo_titulo || "Sem título";

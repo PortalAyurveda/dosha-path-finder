@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { trackPixel } from "@/lib/metaPixel";
 import PageContainer from "@/components/PageContainer";
@@ -466,10 +467,27 @@ const MeuDosha = () => {
     : 'perfil';
   const initialMode = modeParam === 'personalizado' ? 'personalizado' : 'gerais';
   const queryClient = useQueryClient();
-  const { profile, doshaResult } = useUser();
+  const { user, profile, doshaResult } = useUser();
   const isPremium = !!profile?.is_premium;
   const navigate = useNavigate();
   const [evolucaoOpen, setEvolucaoOpen] = useState(false);
+
+  // Já existe revisão concluída? -> botão vira "Ver revisão"
+  const { data: hasRevisaoConcluida } = useQuery({
+    queryKey: ["meudosha-revisao-concluida", user?.email],
+    enabled: !!user?.email,
+    staleTime: 60_000,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("reteste_sessao" as any)
+        .select("id")
+        .eq("user_email", user!.email!)
+        .eq("status", "concluido")
+        .limit(1)
+        .maybeSingle();
+      return !!data;
+    },
+  });
 
   // Se o usuário logado caiu em /meu-dosha sem ?id, redireciona para o id do
   // seu teste personalizado, preservando outros parâmetros (tab, mode).
@@ -688,9 +706,13 @@ const MeuDosha = () => {
 
   return (
     <PageContainer title={`Meu Dosha — ${formattedNome}`} description={`Resultado do teste de dosha de ${formattedNome}: ${result.doshaprincipal}`}>
+      <Helmet>
+        <meta name="robots" content="noindex, nofollow" />
+      </Helmet>
       <div className="max-w-3xl mx-auto space-y-6">
 
         <RetesteCard />
+
 
 
 
@@ -840,17 +862,20 @@ const MeuDosha = () => {
                           : '';
                         const baseClass = "inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full border transition-colors";
                         if (disponivel) {
+                          const jaConcluiu = !!hasRevisaoConcluida;
                           return (
                             <button
                               type="button"
-                              onClick={() => navigate("/revisao")}
-                              className={`${baseClass} border-akasha/60 bg-akasha/10 text-akasha hover:bg-akasha/20 animate-glow-pulse`}
-                              aria-label="Iniciar revisão — novidade"
-                              title="Sua revisão está disponível"
+                              onClick={() => navigate(jaConcluiu ? "/revisao?ver=ultima" : "/revisao")}
+                              className={`${baseClass} border-akasha/60 bg-akasha/10 text-akasha hover:bg-akasha/20 ${jaConcluiu ? '' : 'animate-glow-pulse'}`}
+                              aria-label={jaConcluiu ? "Ver sua última revisão" : "Iniciar revisão — novidade"}
+                              title={jaConcluiu ? "Ver sua última revisão" : "Sua revisão está disponível"}
                             >
                               <RefreshCw className="w-3.5 h-3.5" />
-                              Revisão
-                              <span className="ml-1 text-[9px] uppercase tracking-wider font-bold bg-akasha text-white px-1 py-0.5 rounded">novo</span>
+                              {jaConcluiu ? 'Ver revisão' : 'Revisão'}
+                              {!jaConcluiu && (
+                                <span className="ml-1 text-[9px] uppercase tracking-wider font-bold bg-akasha text-white px-1 py-0.5 rounded">novo</span>
+                              )}
                             </button>
                           );
                         }

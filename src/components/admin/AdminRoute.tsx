@@ -1,4 +1,5 @@
 import { Navigate, useLocation } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import { useUser } from "@/contexts/UserContext";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ShieldAlert } from "lucide-react";
@@ -52,7 +53,14 @@ const AdminRoute = ({ children }: AdminRouteProps) => {
     );
   }
 
-  return <>{children}</>;
+  return (
+    <>
+      <Helmet>
+        <meta name="robots" content="noindex, nofollow" />
+      </Helmet>
+      {children}
+    </>
+  );
 };
 
 export default AdminRoute;

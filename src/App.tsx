@@ -221,7 +221,7 @@ const RoutedApp = () => {
               <Route path="/samkhya/obrigado" element={<SamkhyaObrigado />} />
 
               <Route path="/pesquisa" element={<Pesquisa />} />
-              <Route path="/revisao" element={<AdminRoute><Revisao /></AdminRoute>} />
+              <Route path="/revisao" element={<Revisao />} />
 
               <Route path="*" element={<NotFound />} />
             </Routes>
