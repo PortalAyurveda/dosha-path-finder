@@ -40,6 +40,9 @@ interface RevisaoResultado {
   pesoStr?: string;
   data_revisao?: string;
   proxima_revisao?: string;
+  metaV?: number;
+  metaP?: number;
+  metaK?: number;
 }
 
 interface Pergunta {
