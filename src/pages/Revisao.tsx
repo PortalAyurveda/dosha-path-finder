@@ -87,12 +87,10 @@ const getNivel = (score: number, dosha: "Vata" | "Pitta" | "Kapha"): string => {
   return "Pouco";
 };
 
-const NIVEL_BADGE: Record<string, string> = {
-  Fixado: "bg-red-100 text-red-700 border-red-300",
-  Adoecido: "bg-orange-100 text-orange-700 border-orange-300",
-  Acúmulo: "bg-yellow-100 text-yellow-700 border-yellow-300",
-  Normal: "bg-green-100 text-green-700 border-green-300",
-  Pouco: "bg-slate-100 text-slate-600 border-slate-300",
+const DOSHA_BADGE: Record<"Vata" | "Pitta" | "Kapha", string> = {
+  Vata: "bg-blue-100 text-blue-700 border-blue-300",
+  Pitta: "bg-red-100 text-red-700 border-red-300",
+  Kapha: "bg-green-100 text-green-700 border-green-300",
 };
 
 const formatPeso = (n: number) => {
