@@ -381,7 +381,7 @@ const Revisao = () => {
                     return (
                       <span
                         key={name}
-                        className={`text-[10px] px-2 py-0.5 rounded-full border font-semibold ${NIVEL_BADGE[nivel]}`}
+                        className={`text-[10px] px-2 py-0.5 rounded-full border font-semibold ${DOSHA_BADGE[name]}`}
                       >
                         {name} {score} · {nivel}
                       </span>
