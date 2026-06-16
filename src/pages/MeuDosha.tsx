@@ -706,9 +706,13 @@ const MeuDosha = () => {
 
   return (
     <PageContainer title={`Meu Dosha — ${formattedNome}`} description={`Resultado do teste de dosha de ${formattedNome}: ${result.doshaprincipal}`}>
+      <Helmet>
+        <meta name="robots" content="noindex, nofollow" />
+      </Helmet>
       <div className="max-w-3xl mx-auto space-y-6">
 
         <RetesteCard />
+
 
 
 
@@ -858,17 +862,20 @@ const MeuDosha = () => {
                           : '';
                         const baseClass = "inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full border transition-colors";
                         if (disponivel) {
+                          const jaConcluiu = !!hasRevisaoConcluida;
                           return (
                             <button
                               type="button"
-                              onClick={() => navigate("/revisao")}
-                              className={`${baseClass} border-akasha/60 bg-akasha/10 text-akasha hover:bg-akasha/20 animate-glow-pulse`}
-                              aria-label="Iniciar revisão — novidade"
-                              title="Sua revisão está disponível"
+                              onClick={() => navigate(jaConcluiu ? "/revisao?ver=ultima" : "/revisao")}
+                              className={`${baseClass} border-akasha/60 bg-akasha/10 text-akasha hover:bg-akasha/20 ${jaConcluiu ? '' : 'animate-glow-pulse'}`}
+                              aria-label={jaConcluiu ? "Ver sua última revisão" : "Iniciar revisão — novidade"}
+                              title={jaConcluiu ? "Ver sua última revisão" : "Sua revisão está disponível"}
                             >
                               <RefreshCw className="w-3.5 h-3.5" />
-                              Revisão
-                              <span className="ml-1 text-[9px] uppercase tracking-wider font-bold bg-akasha text-white px-1 py-0.5 rounded">novo</span>
+                              {jaConcluiu ? 'Ver revisão' : 'Revisão'}
+                              {!jaConcluiu && (
+                                <span className="ml-1 text-[9px] uppercase tracking-wider font-bold bg-akasha text-white px-1 py-0.5 rounded">novo</span>
+                              )}
                             </button>
                           );
                         }
