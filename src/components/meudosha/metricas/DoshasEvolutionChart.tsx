@@ -228,7 +228,7 @@ export default function DoshasEvolutionChart({
             domain={[xMin, xMax]}
             scale="time"
             ticks={monthTicks}
-            tick={makeTick(labelsByTick)}
+            tick={makeTick(labelsByTick, anchorByTick, offsetByTick)}
             interval={0}
             stroke="hsl(var(--primary))"
             height={56}
