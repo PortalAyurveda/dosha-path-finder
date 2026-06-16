@@ -3,12 +3,11 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { premiumSupabase, type ObjetivoTratamento } from "@/integrations/supabase/premium-client";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Sparkles, TrendingUp } from "lucide-react";
+import { TrendingUp } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import DoshasEvolutionChart, { type SeriesPoint } from "./metricas/DoshasEvolutionChart";
 import AgniMiniChart, { type AgniPoint } from "./metricas/AgniMiniChart";
 import AgniIndicator from "./metricas/AgniIndicator";
-import ObjetivosPremiumBlock from "./metricas/ObjetivosPremiumBlock";
 import { vataToLevel, pittaToLevel, kaphaToLevel, agniToLevel } from "./metricas/doshaScale";
 
 function parseAgniNivel(s: string | null | undefined): number | null {
