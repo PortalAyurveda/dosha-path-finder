@@ -4,7 +4,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { trackPixel } from "@/lib/metaPixel";
 import PageContainer from "@/components/PageContainer";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, ChevronDown, ChevronUp, Calendar, Play, BookOpen, Brain, LineChart, Lock } from "lucide-react";
+import { Loader2, ChevronDown, ChevronUp, Calendar, Play, BookOpen, Brain, LineChart, Lock, RefreshCw } from "lucide-react";
 import EvolucaoSheet from "@/components/meudosha/EvolucaoSheet";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
