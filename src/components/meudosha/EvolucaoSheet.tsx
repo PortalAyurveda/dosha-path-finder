@@ -88,7 +88,16 @@ const EvolucaoSheet = ({ open, onOpenChange, registroUuid }: Props) => {
       return s.charAt(0).toUpperCase() + s.slice(1);
     };
 
-    for (const r of hist) {
+    // Mantém apenas o teste nativo mais recente + todas as revisões
+    const retestes = hist.filter((r) => r.tipo === "reteste");
+    const testes = hist.filter((r) => r.tipo !== "reteste");
+    const ultimoTeste = testes.length ? testes[testes.length - 1] : null;
+    const filtered: RegistroHist[] = [
+      ...(ultimoTeste ? [ultimoTeste] : []),
+      ...retestes,
+    ].sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+
+    for (const r of filtered) {
       const tipo = (r.tipo as "teste" | "reteste" | null) ?? "teste";
       points.push({
         t: new Date(r.created_at).getTime(),
@@ -102,6 +111,7 @@ const EvolucaoSheet = ({ open, onOpenChange, registroUuid }: Props) => {
         label: tipo === "reteste" ? `Revisão de ${monthName(r.created_at)}` : "Diagnóstico",
       });
     }
+
 
     let meta: SeriesPoint | null = null;
     const tFim = objetivo?.data_fim ? new Date(objetivo.data_fim).getTime() : null;
