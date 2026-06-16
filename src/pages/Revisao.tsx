@@ -25,11 +25,19 @@ interface RevisaoResultado {
   sintese?: string;
   vatascore_antes?: number;
   vatascore_depois?: number;
+  vst_antes?: string;
+  vst_depois?: string;
   pittascore_antes?: number;
   pittascore_depois?: number;
+  pst_antes?: string;
+  pst_depois?: string;
   kaphascore_antes?: number;
   kaphascore_depois?: number;
+  kst_antes?: string;
+  kst_depois?: string;
   novoDosha?: string;
+  agniNovo?: string;
+  pesoStr?: string;
   data_revisao?: string;
   proxima_revisao?: string;
 }
