@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { trackPixel } from "@/lib/metaPixel";
 import PageContainer from "@/components/PageContainer";
@@ -466,7 +467,7 @@ const MeuDosha = () => {
     : 'perfil';
   const initialMode = modeParam === 'personalizado' ? 'personalizado' : 'gerais';
   const queryClient = useQueryClient();
-  const { profile, doshaResult } = useUser();
+  const { user, profile, doshaResult } = useUser();
   const isPremium = !!profile?.is_premium;
   const navigate = useNavigate();
   const [evolucaoOpen, setEvolucaoOpen] = useState(false);
