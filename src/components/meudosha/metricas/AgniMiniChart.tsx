@@ -3,61 +3,114 @@ import {
 } from "recharts";
 import { agniStyle, AGNI_LABEL } from "./doshaScale";
 
-interface Props {
-  tStart: number;
-  tEnd: number;
-  agniTipo: string | null;
-  agniAtual: number | null;
-  agniMeta: number | null;
+export interface AgniPoint {
+  t: number;
+  nivel: number;
+  tipo: "teste" | "reteste" | "meta";
+  label: string;
 }
 
-const SIX_MONTHS_MS = 180 * 24 * 60 * 60 * 1000;
-const EDGE_PAD_MS   = 6 * 24 * 60 * 60 * 1000;
+interface Props {
+  points: AgniPoint[];
+  metaPoint: AgniPoint | null;
+  agniTipo: string | null;
+}
 
-export default function AgniMiniChart({ tStart, agniTipo, agniAtual, agniMeta }: Props) {
-  if (agniAtual == null || agniMeta == null) return null;
-  const style = agniStyle(agniTipo, agniAtual);
-  const tAtual = tStart;
-  const tObjetivo = tStart + 30 * 24 * 60 * 60 * 1000;
-  const xMin = tAtual - EDGE_PAD_MS;
-  const xMax = tAtual + SIX_MONTHS_MS;
+const EDGE_PAD_MS = 3 * 24 * 60 * 60 * 1000;
 
-  const data = [
-    { t: tAtual, agni: agniAtual },
-    { t: tObjetivo, agni: agniMeta },
-  ];
+function startOfMonth(ts: number): number {
+  const d = new Date(ts);
+  return new Date(d.getFullYear(), d.getMonth(), 1).getTime();
+}
+function addMonth(ts: number): number {
+  const d = new Date(ts);
+  return new Date(d.getFullYear(), d.getMonth() + 1, 1).getTime();
+}
+function monthLabel(ts: number): string {
+  const s = new Date(ts).toLocaleDateString("pt-BR", { month: "long" });
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}
 
+function TickWithLabel(labelsByTick: Record<number, string[]>) {
+  return (props: any) => {
+    const { x, y, payload } = props;
+    const t = payload.value as number;
+    const labels = labelsByTick[t] || [];
+    return (
+      <g transform={`translate(${x},${y})`}>
+        {labels.map((l, i) => (
+          <text
+            key={i}
+            x={0}
+            y={-6 - (labels.length - 1 - i) * 12}
+            textAnchor="middle"
+            fill="hsl(var(--primary))"
+            fontSize={10}
+            fontWeight={700}
+          >
+            {l}
+          </text>
+        ))}
+        <text x={0} y={14} textAnchor="middle" fill="hsl(var(--primary))" fontSize={11} fontWeight={600}>
+          {monthLabel(t)}
+        </text>
+      </g>
+    );
+  };
+}
+
+export default function AgniMiniChart({ points, metaPoint, agniTipo }: Props) {
+  const all = [...points, ...(metaPoint ? [metaPoint] : [])];
+  if (all.length === 0) return null;
+
+  const data = all.map((p) => ({ t: p.t, agni: p.nivel, label: p.label, tipo: p.tipo }));
+  const style = agniStyle(agniTipo, points[points.length - 1]?.nivel ?? metaPoint?.nivel ?? null);
+
+  const firstT = all[0].t;
+  const lastT = all[all.length - 1].t;
+  const firstMonth = startOfMonth(firstT);
+  const lastMonth = startOfMonth(lastT);
+  const monthTicks: number[] = [];
+  for (let m = firstMonth; m <= lastMonth; m = addMonth(m)) monthTicks.push(m);
+  if (monthTicks.length === 0) monthTicks.push(firstMonth);
+
+  // Mapeia rótulos por mês (rótulo do ponto fica acima do mês correspondente)
+  const labelsByTick: Record<number, string[]> = {};
+  for (const t of monthTicks) labelsByTick[t] = [];
+  for (const p of all) {
+    const mk = startOfMonth(p.t);
+    if (labelsByTick[mk]) labelsByTick[mk].push(p.label);
+  }
+
+  const xMin = firstMonth - EDGE_PAD_MS;
+  const xMax = (monthTicks[monthTicks.length - 1] ?? lastMonth) + EDGE_PAD_MS;
   const tipo = (agniTipo || "—").toLowerCase();
 
   return (
     <div
-      className="w-full h-[180px] rounded-xl"
+      className="w-full h-[200px] rounded-xl"
       style={{ background: "hsl(var(--surface-sun))" }}
     >
       <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={data} margin={{ top: 28, right: 24, left: 8, bottom: 8 }}>
-          <ReferenceLine
-            x={tAtual}
-            stroke="hsl(var(--muted-foreground) / 0.4)"
-            strokeDasharray="3 3"
-            label={{ value: "Atual", position: "top", fill: "hsl(var(--primary))", fontSize: 11, fontWeight: 700 }}
-          />
-          <ReferenceLine
-            x={tObjetivo}
-            stroke="hsl(var(--muted-foreground) / 0.4)"
-            strokeDasharray="3 3"
-            label={{ value: "Objetivo", position: "top", fill: "hsl(var(--primary))", fontSize: 11, fontWeight: 700 }}
-          />
+        <LineChart data={data} margin={{ top: 36, right: 24, left: 8, bottom: 8 }}>
+          {all.map((p) => (
+            <ReferenceLine
+              key={`ref-${p.t}`}
+              x={p.t}
+              stroke="hsl(var(--muted-foreground) / 0.25)"
+              strokeDasharray="3 3"
+            />
+          ))}
           <XAxis
             dataKey="t"
             type="number"
             domain={[xMin, xMax]}
             scale="time"
-            tickFormatter={(v) =>
-              new Date(v).toLocaleDateString("pt-BR", { day: "2-digit", month: "short" })
-            }
+            ticks={monthTicks}
+            tick={TickWithLabel(labelsByTick)}
+            interval={0}
             stroke="hsl(var(--primary))"
-            tick={{ fill: "hsl(var(--primary))", fontSize: 11, fontWeight: 600 }}
+            height={48}
           />
           <YAxis
             type="number"
@@ -74,13 +127,21 @@ export default function AgniMiniChart({ tStart, agniTipo, agniAtual, agniMeta }:
             content={({ active, payload }: any) => {
               if (!active || !payload?.length || payload[0].value == null) return null;
               const v = payload[0].value as number;
+              const lbl = payload[0].payload?.label as string | undefined;
               return (
                 <div
-                  className="rounded-lg border shadow-lg px-3 py-2 text-xs font-semibold"
-                  style={{ background: "hsl(var(--card))", borderColor: "hsl(var(--border))", color: style.color }}
+                  className="rounded-lg border shadow-lg px-3 py-2 text-xs space-y-1"
+                  style={{ background: "hsl(var(--card))", borderColor: "hsl(var(--border))" }}
                 >
-                  <span className="capitalize">Agni {tipo}</span>{" "}
-                  <span style={{ color: "hsl(var(--foreground))" }}>{AGNI_LABEL[v] ?? v}</span>
+                  {lbl && (
+                    <div className="text-[10px] uppercase tracking-wider font-bold" style={{ color: "hsl(var(--muted-foreground))" }}>
+                      {lbl}
+                    </div>
+                  )}
+                  <div className="font-semibold" style={{ color: style.color }}>
+                    <span className="capitalize">Agni {tipo}</span>{" "}
+                    <span style={{ color: "hsl(var(--foreground))" }}>{AGNI_LABEL[v] ?? v}</span>
+                  </div>
                 </div>
               );
             }}
