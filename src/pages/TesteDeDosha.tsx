@@ -793,6 +793,7 @@ const [step, setStep] = useState(0);
     );
   }
 
+  return (
     <>
       <Helmet>
         <title>Teste de Dosha | Descubra se você é Vata, Pitta ou Kapha</title>
