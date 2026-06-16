@@ -19,6 +19,7 @@ const SamkhyaObrigado = () => {
     <>
       <Helmet>
         <title>Obrigado pela sua compra — Loja Samkhya</title>
+        <meta name="robots" content="noindex, nofollow" />
       </Helmet>
       <SamkhyaLayout>
         <div className="max-w-xl mx-auto text-center py-16 md:py-24 flex flex-col items-center gap-6">
