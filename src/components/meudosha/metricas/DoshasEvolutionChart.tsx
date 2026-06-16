@@ -94,26 +94,45 @@ function ZoneTooltip({ active, payload }: { active?: boolean; payload?: any[] })
 }
 
 
-// Custom dot: circle for "teste", dashed diamond for "reteste"
+// Custom dot: filled circle for "teste", hollow circle for "reteste", larger for "meta"
 function makeDot(color: string) {
   return (props: any) => {
     const { cx, cy, payload } = props;
     if (cx == null || cy == null) return null;
     const tipo = payload?.tipo;
     if (tipo === "reteste") {
-      const s = 6;
-      const points = `${cx},${cy - s} ${cx + s},${cy} ${cx},${cy + s} ${cx - s},${cy}`;
-      return (
-        <polygon
-          points={points}
-          fill="hsl(var(--card))"
-          stroke={color}
-          strokeWidth={2}
-          strokeDasharray="2 2"
-        />
-      );
+      return <circle cx={cx} cy={cy} r={5} fill="hsl(var(--card))" stroke={color} strokeWidth={2.5} />;
     }
     return <circle cx={cx} cy={cy} r={5} fill={color} stroke={color} />;
+  };
+}
+
+// Custom XAxis tick: month name + ponto/label acima
+function makeTick(labelsByTick: Record<number, string[]>) {
+  return (props: any) => {
+    const { x, y, payload } = props;
+    const t = payload.value as number;
+    const labels = labelsByTick[t] || [];
+    return (
+      <g transform={`translate(${x},${y})`}>
+        {labels.map((l, i) => (
+          <text
+            key={i}
+            x={0}
+            y={-8 - (labels.length - 1 - i) * 13}
+            textAnchor="middle"
+            fill="hsl(var(--primary))"
+            fontSize={10}
+            fontWeight={700}
+          >
+            {l}
+          </text>
+        ))}
+        <text x={0} y={14} textAnchor="middle" fill="hsl(var(--primary))" fontSize={11} fontWeight={600}>
+          {monthLabel(t)}
+        </text>
+      </g>
+    );
   };
 }
 
@@ -137,15 +156,19 @@ export default function DoshasEvolutionChart({
   const xMin = firstMonth - EDGE_PAD_MS;
   const xMax = (monthTicks[monthTicks.length - 1] ?? lastMonth) + EDGE_PAD_MS;
 
-  // Combina real + meta numa série única por dosha (linha sólida contínua)
   const data: SeriesPoint[] = [...realPoints, ...(metaPoint ? [metaPoint] : [])];
 
-  const tAtual = firstReal;
-  const tObjetivo = metaPoint?.t ?? null;
+  // Rótulos do ponto agrupados pelo mês correspondente
+  const labelsByTick: Record<number, string[]> = {};
+  for (const t of monthTicks) labelsByTick[t] = [];
+  for (const p of data) {
+    const mk = startOfMonth(p.t);
+    if (labelsByTick[mk]) labelsByTick[mk].push(p.label || (p.isMeta ? "Meta" : ""));
+  }
 
   return (
     <div
-      className="w-full h-[420px] rounded-xl"
+      className="w-full h-[440px] rounded-xl"
       style={{ background: "hsl(var(--surface-sun))" }}
     >
       <ResponsiveContainer width="100%" height="100%">
@@ -153,7 +176,6 @@ export default function DoshasEvolutionChart({
           data={data}
           margin={{ top: 28, right: 24, left: 8, bottom: 8 }}
         >
-          {/* Linhas guia sutis nas fronteiras das 5 zonas */}
           {[3.5, 6.5, 9.5, 12.5].map((y) => (
             <ReferenceLine
               key={y}
@@ -164,33 +186,14 @@ export default function DoshasEvolutionChart({
             />
           ))}
 
-          {/* Marcações verticais "Atual" e "Objetivo" */}
-          <ReferenceLine
-            x={tAtual}
-            stroke="hsl(var(--muted-foreground) / 0.4)"
-            strokeDasharray="3 3"
-            label={{
-              value: "Atual",
-              position: "top",
-              fill: "hsl(var(--primary))",
-              fontSize: 11,
-              fontWeight: 700,
-            }}
-          />
-          {tObjetivo != null && (
+          {data.map((p) => (
             <ReferenceLine
-              x={tObjetivo}
-              stroke="hsl(var(--muted-foreground) / 0.4)"
+              key={`v-${p.t}`}
+              x={p.t}
+              stroke="hsl(var(--muted-foreground) / 0.25)"
               strokeDasharray="3 3"
-              label={{
-                value: "Objetivo",
-                position: "top",
-                fill: "hsl(var(--primary))",
-                fontSize: 11,
-                fontWeight: 700,
-              }}
             />
-          )}
+          ))}
 
           <XAxis
             dataKey="t"
@@ -198,9 +201,10 @@ export default function DoshasEvolutionChart({
             domain={[xMin, xMax]}
             scale="time"
             ticks={monthTicks}
-            tickFormatter={(v) => monthLabel(v as number)}
+            tick={makeTick(labelsByTick)}
+            interval={0}
             stroke="hsl(var(--primary))"
-            tick={{ fill: "hsl(var(--primary))", fontSize: 11, fontWeight: 600 }}
+            height={56}
           />
           <YAxis
             domain={[0.5, 15.5]}
@@ -208,7 +212,6 @@ export default function DoshasEvolutionChart({
             tickFormatter={(v) => ZONE_TICK_LABELS[v as number] || ""}
             stroke="hsl(var(--primary))"
             tick={{ fill: "hsl(var(--primary))", fontSize: 11, fontWeight: 600 }}
-
             width={78}
           />
           <Tooltip content={<ZoneTooltip />} cursor={{ stroke: "hsl(var(--muted-foreground) / 0.3)", strokeWidth: 1 }} />
