@@ -6,10 +6,19 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Sparkles, TrendingUp } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import DoshasEvolutionChart, { type SeriesPoint } from "./metricas/DoshasEvolutionChart";
-import AgniMiniChart from "./metricas/AgniMiniChart";
+import AgniMiniChart, { type AgniPoint } from "./metricas/AgniMiniChart";
 import AgniIndicator from "./metricas/AgniIndicator";
 import ObjetivosPremiumBlock from "./metricas/ObjetivosPremiumBlock";
 import { vataToLevel, pittaToLevel, kaphaToLevel, agniToLevel } from "./metricas/doshaScale";
+
+function parseAgniNivel(s: string | null | undefined): number | null {
+  if (!s) return null;
+  const m = s.match(/nivel\s*(\d)/i);
+  if (m) return Math.max(0, Math.min(3, parseInt(m[1], 10)));
+  const low = s.toLowerCase();
+  if (low.includes("constante") || low.includes("- boa") || low.includes("boa")) return 0;
+  return null;
+}
 
 interface RegistroHist {
   vatascore: number | null;
