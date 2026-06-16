@@ -88,27 +88,41 @@ const EvolucaoSheet = ({ open, onOpenChange, registroUuid }: Props) => {
 
   const isLoading = loadingBase || loadingHist || loadingObj;
 
-  const { realPoints, metaPoint, tStart, tEnd } = useMemo(() => {
+  const { realPoints, metaPoint, agniPoints, agniMetaPoint, tStart, tEnd } = useMemo(() => {
     const hist = historico || [];
-    const points: SeriesPoint[] = [];
 
     const monthName = (iso: string) => {
       const s = new Date(iso).toLocaleDateString("pt-BR", { month: "long" });
       return s.charAt(0).toUpperCase() + s.slice(1);
     };
+    const monthKey = (iso: string) => {
+      const d = new Date(iso);
+      return `${d.getFullYear()}-${d.getMonth()}`;
+    };
 
-    // Mantém apenas o teste nativo mais recente + todas as revisões
-    const retestes = hist.filter((r) => r.tipo === "reteste");
+    // Apenas o teste nativo mais recente + UMA revisão por mês (a mais recente)
     const testes = hist.filter((r) => r.tipo !== "reteste");
+    const retestesAll = hist.filter((r) => r.tipo === "reteste");
     const ultimoTeste = testes.length ? testes[testes.length - 1] : null;
+
+    const byMonth = new Map<string, RegistroHist>();
+    for (const r of retestesAll) {
+      byMonth.set(monthKey(r.created_at), r); // sorted ASC → último vence
+    }
+    // Não deixa a revisão cair no mesmo mês do teste inicial
+    if (ultimoTeste) byMonth.delete(monthKey(ultimoTeste.created_at));
+    const retestes = Array.from(byMonth.values()).sort(
+      (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime(),
+    );
+
     const filtered: RegistroHist[] = [
       ...(ultimoTeste ? [ultimoTeste] : []),
       ...retestes,
-    ].sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+    ];
 
-    for (const r of filtered) {
+    const points: SeriesPoint[] = filtered.map((r) => {
       const tipo = (r.tipo as "teste" | "reteste" | null) ?? "teste";
-      points.push({
+      return {
         t: new Date(r.created_at).getTime(),
         vata: r.vatascore != null ? vataToLevel(r.vatascore).level : undefined,
         vataRaw: r.vatascore ?? undefined,
@@ -118,9 +132,8 @@ const EvolucaoSheet = ({ open, onOpenChange, registroUuid }: Props) => {
         kaphaRaw: r.kaphascore ?? undefined,
         tipo,
         label: tipo === "reteste" ? `Revisão de ${monthName(r.created_at)}` : "Diagnóstico",
-      });
-    }
-
+      };
+    });
 
     let meta: SeriesPoint | null = null;
     const tFim = objetivo?.data_fim ? new Date(objetivo.data_fim).getTime() : null;
@@ -140,10 +153,35 @@ const EvolucaoSheet = ({ open, onOpenChange, registroUuid }: Props) => {
       };
     }
 
+    // Agni points: mesmo recorte (teste + revisões 1/mês). Usa nivel parseado de agniPrincipal,
+    // com fallback para objetivo.agni_nivel_atual no último ponto real.
+    const agniPts: AgniPoint[] = [];
+    for (let i = 0; i < filtered.length; i++) {
+      const r = filtered[i];
+      let nivel = parseAgniNivel(r.agniPrincipal);
+      if (nivel == null && i === filtered.length - 1 && objetivo?.agni_nivel_atual != null) {
+        nivel = objetivo.agni_nivel_atual;
+      }
+      if (nivel == null) continue;
+      const tipo = (r.tipo as "teste" | "reteste" | null) ?? "teste";
+      agniPts.push({
+        t: new Date(r.created_at).getTime(),
+        nivel,
+        tipo,
+        label: tipo === "reteste" ? `Revisão de ${monthName(r.created_at)}` : "Diagnóstico",
+      });
+    }
+    const agniMeta: AgniPoint | null =
+      objetivo && tFim != null && objetivo.agni_nivel_meta != null
+        ? { t: tFim, nivel: objetivo.agni_nivel_meta, tipo: "meta", label: "Meta" }
+        : null;
+
     const ts = [...points.map((p) => p.t), ...(meta ? [meta.t] : [])];
     return {
       realPoints: points,
       metaPoint: meta,
+      agniPoints: agniPts,
+      agniMetaPoint: agniMeta,
       tStart: ts.length ? Math.min(...ts) : Date.now(),
       tEnd: ts.length ? Math.max(...ts) : Date.now(),
     };
