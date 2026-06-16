@@ -31,6 +31,7 @@ interface RevisaoResultado {
   kaphascore_depois?: number;
   novoDosha?: string;
   data_revisao?: string;
+  proxima_revisao?: string;
 }
 
 interface Pergunta {
