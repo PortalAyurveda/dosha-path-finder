@@ -234,11 +234,9 @@ const EvolucaoSheet = ({ open, onOpenChange, registroUuid }: Props) => {
                   Agni — evolução
                 </h3>
                 <AgniMiniChart
-                  tStart={tStart}
-                  tEnd={tEnd}
+                  points={agniPoints}
+                  metaPoint={agniMetaPoint}
                   agniTipo={objetivo.agni_tipo}
-                  agniAtual={objetivo.agni_nivel_atual}
-                  agniMeta={objetivo.agni_nivel_meta}
                 />
               </div>
             )}
