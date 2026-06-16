@@ -81,57 +81,30 @@ const EvolucaoSheet = ({ open, onOpenChange, registroUuid }: Props) => {
 
   const { realPoints, metaPoint, tStart, tEnd } = useMemo(() => {
     const hist = historico || [];
-    const dataInicioISO = objetivo?.data_inicio || hist[hist.length - 1]?.created_at || null;
-    const dataFimISO = objetivo?.data_fim || null;
-    const tInicio = dataInicioISO ? new Date(dataInicioISO).getTime() : null;
-    const tFim = dataFimISO ? new Date(dataFimISO).getTime() : null;
     const points: SeriesPoint[] = [];
 
-    if (tInicio != null && objetivo) {
-      points.push({
-        t: tInicio,
-        vata: objetivo.vata_atual != null ? vataToLevel(objetivo.vata_atual).level : undefined,
-        vataRaw: objetivo.vata_atual ?? undefined,
-        pitta: objetivo.pitta_atual != null ? pittaToLevel(objetivo.pitta_atual).level : undefined,
-        pittaRaw: objetivo.pitta_atual ?? undefined,
-        kapha: objetivo.kapha_atual != null ? kaphaToLevel(objetivo.kapha_atual).level : undefined,
-        kaphaRaw: objetivo.kapha_atual ?? undefined,
-        agni: objetivo.agni_nivel_atual != null ? agniToLevel(objetivo.agni_nivel_atual).level : undefined,
-        agniRaw: objetivo.agni_nivel_atual,
-      });
-    }
+    const monthName = (iso: string) => {
+      const s = new Date(iso).toLocaleDateString("pt-BR", { month: "long" });
+      return s.charAt(0).toUpperCase() + s.slice(1);
+    };
 
     for (const r of hist) {
-      const t = new Date(r.created_at).getTime();
-      if (tInicio != null && t <= tInicio) continue;
+      const tipo = (r.tipo as "teste" | "reteste" | null) ?? "teste";
       points.push({
-        t,
+        t: new Date(r.created_at).getTime(),
         vata: r.vatascore != null ? vataToLevel(r.vatascore).level : undefined,
         vataRaw: r.vatascore ?? undefined,
         pitta: r.pittascore != null ? pittaToLevel(r.pittascore).level : undefined,
         pittaRaw: r.pittascore ?? undefined,
         kapha: r.kaphascore != null ? kaphaToLevel(r.kaphascore).level : undefined,
         kaphaRaw: r.kaphascore ?? undefined,
-        tipo: (r.tipo as "teste" | "reteste" | null) ?? "teste",
+        tipo,
+        label: tipo === "reteste" ? `Revisão de ${monthName(r.created_at)}` : "Diagnóstico",
       });
     }
 
-    if (points.length === 0 && hist.length > 0) {
-      for (const r of hist) {
-        points.push({
-          t: new Date(r.created_at).getTime(),
-          vata: r.vatascore != null ? vataToLevel(r.vatascore).level : undefined,
-          vataRaw: r.vatascore ?? undefined,
-          pitta: r.pittascore != null ? pittaToLevel(r.pittascore).level : undefined,
-          pittaRaw: r.pittascore ?? undefined,
-          kapha: r.kaphascore != null ? kaphaToLevel(r.kaphascore).level : undefined,
-          kaphaRaw: r.kaphascore ?? undefined,
-          tipo: (r.tipo as "teste" | "reteste" | null) ?? "teste",
-        });
-      }
-    }
-
     let meta: SeriesPoint | null = null;
+    const tFim = objetivo?.data_fim ? new Date(objetivo.data_fim).getTime() : null;
     if (objetivo && tFim != null) {
       meta = {
         t: tFim,
@@ -144,6 +117,7 @@ const EvolucaoSheet = ({ open, onOpenChange, registroUuid }: Props) => {
         agni: objetivo.agni_nivel_meta != null ? agniToLevel(objetivo.agni_nivel_meta).level : undefined,
         agniRaw: objetivo.agni_nivel_meta,
         isMeta: true,
+        label: "Meta",
       };
     }
 
@@ -155,6 +129,7 @@ const EvolucaoSheet = ({ open, onOpenChange, registroUuid }: Props) => {
       tEnd: ts.length ? Math.max(...ts) : Date.now(),
     };
   }, [historico, objetivo]);
+
 
   const hasData = realPoints.length > 0 || metaPoint;
 

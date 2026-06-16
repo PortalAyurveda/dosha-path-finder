@@ -22,7 +22,9 @@ export interface SeriesPoint {
   agni?: number; agniRaw?: number | null;
   isMeta?: boolean;
   tipo?: "teste" | "reteste";
+  label?: string;
 }
+
 
 interface Props {
   realPoints: SeriesPoint[];
@@ -37,12 +39,23 @@ const VATA  = "#4F75FF";
 const PITTA = "#FF5C5C";
 const KAPHA = "#22C55E";
 
-const SIX_MONTHS_MS = 180 * 24 * 60 * 60 * 1000;
-const EDGE_PAD_MS   = 6 * 24 * 60 * 60 * 1000; // pequeno respiro à esquerda
+const EDGE_PAD_MS   = 3 * 24 * 60 * 60 * 1000;
+
+function startOfMonth(ts: number): number {
+  const d = new Date(ts);
+  return new Date(d.getFullYear(), d.getMonth(), 1).getTime();
+}
+function addMonth(ts: number): number {
+  const d = new Date(ts);
+  return new Date(d.getFullYear(), d.getMonth() + 1, 1).getTime();
+}
+function monthLabel(ts: number): string {
+  const s = new Date(ts).toLocaleDateString("pt-BR", { month: "long" });
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}
 
 function ZoneTooltip({ active, payload }: { active?: boolean; payload?: any[] }) {
   if (!active || !payload?.length) return null;
-  // Dedupe por dataKey (real + projeção compartilham a mesma chave)
   const seen = new Set<string>();
   const items = payload.filter((p) => {
     if (p.value == null) return false;
@@ -51,15 +64,15 @@ function ZoneTooltip({ active, payload }: { active?: boolean; payload?: any[] })
     return true;
   });
   if (!items.length) return null;
-  const isReteste = items[0]?.payload?.tipo === "reteste";
+  const label = items[0]?.payload?.label as string | undefined;
   return (
     <div
       className="rounded-lg border shadow-lg px-3 py-2 text-xs space-y-1"
       style={{ background: "hsl(var(--card))", borderColor: "hsl(var(--border))" }}
     >
-      {isReteste && (
+      {label && (
         <div className="text-[10px] uppercase tracking-wider font-bold" style={{ color: "hsl(var(--muted-foreground))" }}>
-          Revisão
+          {label}
         </div>
       )}
       {items.map((p) => {
@@ -79,6 +92,7 @@ function ZoneTooltip({ active, payload }: { active?: boolean; payload?: any[] })
     </div>
   );
 }
+
 
 // Custom dot: circle for "teste", dashed diamond for "reteste"
 function makeDot(color: string) {
@@ -110,8 +124,18 @@ export default function DoshasEvolutionChart({
   if (realPoints.length === 0 && !metaPoint) return null;
 
   const firstReal = realPoints[0]?.t ?? metaPoint!.t;
-  const xMin = firstReal - EDGE_PAD_MS;
-  const xMax = firstReal + SIX_MONTHS_MS;
+  const lastT = metaPoint?.t ?? realPoints[realPoints.length - 1]?.t ?? firstReal;
+
+  const firstMonth = startOfMonth(firstReal);
+  const lastMonth = startOfMonth(lastT);
+  const monthTicks: number[] = [];
+  for (let m = firstMonth; m <= lastMonth; m = addMonth(m)) {
+    monthTicks.push(m);
+  }
+  if (monthTicks.length === 0) monthTicks.push(firstMonth);
+
+  const xMin = firstMonth - EDGE_PAD_MS;
+  const xMax = (monthTicks[monthTicks.length - 1] ?? lastMonth) + EDGE_PAD_MS;
 
   // Combina real + meta numa série única por dosha (linha sólida contínua)
   const data: SeriesPoint[] = [...realPoints, ...(metaPoint ? [metaPoint] : [])];
@@ -173,9 +197,8 @@ export default function DoshasEvolutionChart({
             type="number"
             domain={[xMin, xMax]}
             scale="time"
-            tickFormatter={(v) =>
-              new Date(v).toLocaleDateString("pt-BR", { day: "2-digit", month: "short" })
-            }
+            ticks={monthTicks}
+            tickFormatter={(v) => monthLabel(v as number)}
             stroke="hsl(var(--primary))"
             tick={{ fill: "hsl(var(--primary))", fontSize: 11, fontWeight: 600 }}
           />
@@ -185,6 +208,7 @@ export default function DoshasEvolutionChart({
             tickFormatter={(v) => ZONE_TICK_LABELS[v as number] || ""}
             stroke="hsl(var(--primary))"
             tick={{ fill: "hsl(var(--primary))", fontSize: 11, fontWeight: 600 }}
+
             width={78}
           />
           <Tooltip content={<ZoneTooltip />} cursor={{ stroke: "hsl(var(--muted-foreground) / 0.3)", strokeWidth: 1 }} />
