@@ -25,11 +25,19 @@ interface RevisaoResultado {
   sintese?: string;
   vatascore_antes?: number;
   vatascore_depois?: number;
+  vst_antes?: string;
+  vst_depois?: string;
   pittascore_antes?: number;
   pittascore_depois?: number;
+  pst_antes?: string;
+  pst_depois?: string;
   kaphascore_antes?: number;
   kaphascore_depois?: number;
+  kst_antes?: string;
+  kst_depois?: string;
   novoDosha?: string;
+  agniNovo?: string;
+  pesoStr?: string;
   data_revisao?: string;
   proxima_revisao?: string;
 }
@@ -485,6 +493,53 @@ const Revisao = () => {
             return (
               <div className="rounded-xl border border-border bg-card p-4">
                 <h2 className="font-serif text-base font-semibold mb-2">Sua última revisão</h2>
+                {/* Evolução dos doshas */}
+                <div className="grid grid-cols-3 gap-2 mb-3">
+                  {(
+                    [
+                      ["Vata", ultimaRevisao.vatascore_antes, ultimaRevisao.vatascore_depois, ultimaRevisao.vst_antes, ultimaRevisao.vst_depois],
+                      ["Pitta", ultimaRevisao.pittascore_antes, ultimaRevisao.pittascore_depois, ultimaRevisao.pst_antes, ultimaRevisao.pst_depois],
+                      ["Kapha", ultimaRevisao.kaphascore_antes, ultimaRevisao.kaphascore_depois, ultimaRevisao.kst_antes, ultimaRevisao.kst_depois],
+                    ] as ["Vata" | "Pitta" | "Kapha", number | undefined, number | undefined, string | undefined, string | undefined][]
+                  ).map(([name, antes, depois, stAntes, stDepois]) => {
+                    const a = antes ?? 0;
+                    const d = depois ?? a;
+                    const sa = stAntes ?? getNivel(a, name);
+                    const sd = stDepois ?? getNivel(d, name);
+                    return (
+                      <div
+                        key={name}
+                        className={cn(
+                          "rounded-lg border p-2 text-center",
+                          DOSHA_BADGE[name]
+                        )}
+                      >
+                        <p className="text-[10px] font-bold uppercase tracking-wide">{name}</p>
+                        <p className="text-sm font-semibold mt-0.5">
+                          {a} <span className="opacity-60">→</span> {d}
+                        </p>
+                        <p className="text-[10px] mt-0.5 opacity-80">
+                          {sa} <span className="opacity-60">→</span> {sd}
+                        </p>
+                      </div>
+                    );
+                  })}
+                </div>
+                {/* Agni + Peso */}
+                {(ultimaRevisao.agniNovo || ultimaRevisao.pesoStr) && (
+                  <div className="flex flex-wrap gap-3 mb-3 text-xs text-muted-foreground">
+                    {ultimaRevisao.agniNovo && (
+                      <span>
+                        Agni: <span className="text-foreground font-medium">{ultimaRevisao.agniNovo}</span>
+                      </span>
+                    )}
+                    {ultimaRevisao.pesoStr && (
+                      <span>
+                        Peso: <span className="text-foreground font-medium">{ultimaRevisao.pesoStr}</span>
+                      </span>
+                    )}
+                  </div>
+                )}
                 <div className="rounded-lg bg-muted/40 p-3 text-sm whitespace-pre-wrap leading-relaxed">
                   {ultimaRevisao.sintese}
                 </div>
