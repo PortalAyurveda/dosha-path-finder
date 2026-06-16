@@ -250,16 +250,6 @@ const EvolucaoSheet = ({ open, onOpenChange, registroUuid }: Props) => {
               />
             )}
 
-            {objetivo ? (
-              <ObjetivosPremiumBlock objetivo={objetivo} isPremium={true} />
-            ) : (
-              <div className="rounded-2xl border bg-card p-6 text-center space-y-2">
-                <Sparkles className="w-6 h-6 mx-auto text-muted-foreground/60" />
-                <p className="text-sm text-muted-foreground">
-                  Seu plano de acompanhamento ainda está sendo preparado.
-                </p>
-              </div>
-            )}
           </div>
         )}
       </DialogContent>
