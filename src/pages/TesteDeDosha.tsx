@@ -50,6 +50,16 @@ const TesteDeDosha = () => {
 const [step, setStep] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [interstitialTarget, setInterstitialTarget] = useState<string | null>(null);
+  const [needsHeroInfo, setNeedsHeroInfo] = useState<boolean>(() => {
+    try {
+      const stored = localStorage.getItem('dosha_test_info');
+      if (!stored) return true;
+      const parsed = JSON.parse(stored);
+      return !(parsed?.nome && parsed?.idade && parsed?.nivel);
+    } catch {
+      return true;
+    }
+  });
 
   // Info from Hero (localStorage)
   const [info, setInfo] = useState({ nome: '', idade: '', nivel: 'Iniciante', email: '', altura: '', peso: '', estado: '', cidade: '', paisCidade: '' });
