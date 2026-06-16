@@ -1,31 +1,45 @@
-## Atualizar gráfico de evolução dos doshas em /meu-dosha
 
-Incluir os pontos de revisão (retestes) entre o diagnóstico inicial e o objetivo final, e reformatar o eixo X para mostrar apenas meses por extenso.
+## 1. Corrigir sobreposição no gráfico Agni (EvolucaoSheet)
 
-### Arquivos a alterar
+Arquivo: `src/components/meudosha/metricas/AgniMiniChart.tsx`
 
-1. **`src/components/meudosha/EvolucaoSheet.tsx`** — montagem dos pontos:
-   - Remover a lógica que usa `objetivo.vata_atual` como ponto inicial.
-   - Construir `realPoints` percorrendo TODO o `historico` (já vem ordenado por `created_at` ASC) — cada registro vira um ponto, com `tipo` (`teste` ou `reteste`) preservado.
-   - Adicionar campo `label` em cada `SeriesPoint`:
-     - `tipo === "teste"` → `"Diagnóstico"`
-     - `tipo === "reteste"` → `"Revisão de {mês por extenso}"` (do `created_at`)
-     - meta → `"Meta"`
-   - `metaPoint` continua vindo de `objetivos_tratamento` (`vata_meta`, `pitta_meta`, `kapha_meta`, `data_fim`).
+Hoje os rótulos ("Diagnóstico", "Revisão de Junho", "Meta") são empilhados acima do tick do mês no eixo X, e o primeiro rótulo invade os labels do eixo Y ("Bom/Iniciando/Moderado/Agravado").
 
-2. **`src/components/meudosha/metricas/DoshasEvolutionChart.tsx`** — eixo X mensal:
-   - Adicionar `label?: string` em `SeriesPoint`.
-   - Substituir o domínio atual (`firstReal → firstReal+6meses`) por: do primeiro mês do `realPoints` até o mês do `metaPoint` (ou último ponto), em milissegundos do primeiro dia de cada mês.
-   - Gerar `ticks` explícitos: array com o timestamp do primeiro dia de cada mês no intervalo (inclusive meses sem ponto).
-   - `tickFormatter` retorna o nome do mês por extenso em pt-BR (`toLocaleDateString("pt-BR", { month: "long" })`, capitalizado).
-   - Tooltip: usar `payload.label` no topo (substitui o "Revisão" hardcoded) — exibir `Diagnóstico`, `Revisão de Junho` ou `Meta`.
-   - Manter ReferenceLines "Atual" (primeiro ponto) e "Objetivo" (meta) como já estão.
-   - Marcadores: continuam aparecendo apenas nos pontos reais (recharts não renderiza dot quando não há linha em meses vazios — comportamento já correto com `connectNulls`).
+Mudanças:
+- Remover os rótulos do `XAxis` tick (deixar só o nome do mês em baixo).
+- Renderizar os rótulos como `<Label>` em cima de cada `ReferenceLine` (já existente em cada `p.t`), com `position="top"`, fonte 10, peso 700, cor primária. Isso ancora o rótulo no instante do ponto e não no início do mês, eliminando colisão com o eixo Y.
+- Truncar rótulos longos para no máx ~14 chars (ex.: "Revisão de Junho" → "Rev. Junho") com helper local.
+- Aplicar o mesmo ajuste em `DoshasEvolutionChart.tsx` para manter consistência visual.
 
-### Detalhes técnicos
+## 2. Remover "Seu plano clínico" da aba de Gráficos
 
-- Helper `startOfMonth(ts)`: `new Date(y, m, 1).getTime()`.
-- Helper `monthsBetween(start, end)`: itera de `startOfMonth(start)` até `startOfMonth(end)` somando 1 mês para gerar os ticks.
-- Capitalizar nome do mês: `s[0].toUpperCase() + s.slice(1)`.
-- Não muda nada na query — ela já busca todos os registros do email ordenados por `created_at`.
-- Não toca em `AgniMiniChart` (escopo só do gráfico de doshas).
+Arquivo: `src/components/meudosha/EvolucaoSheet.tsx`
+- Remover render de `<ObjetivosPremiumBlock>` (e fallback "Seu plano de acompanhamento ainda está sendo preparado").
+- Remover import não utilizado.
+
+## 3. Mover o "Plano clínico" para a aba Perfil de /meu-dosha
+
+Arquivo: `src/components/meudosha/DiagnosticoCompleto.tsx`, componente `Diagnostico` (linhas ~316-374).
+
+- Renomear título de `Seu Diagnóstico: {dosha}` para `Seu plano clínico: {dosha}`.
+- Adicionar, ANTES dos três blocos (Situação Atual / O Que Te Trouxe / Caminhos), uma nova seção "Objetivos" com bullets vindos de `analise.objetivos` (já disponível em `ObjetivoTratamento` — é a mesma fonte usada em `ObjetivosPremiumBlock`).
+  - Estilo: card com mesmo `LEAF` e borda lateral cor do dosha, header "OBJETIVOS" no padrão das outras seções, lista `<ul>` com bullets coloridos.
+  - Se `analise.objetivos` vier vazio, omite a seção (não quebra layout).
+- Os 3 blocos narrativos atuais continuam abaixo, inalterados.
+
+Tipo `ObjetivoTratamento` já expõe `objetivos: string[]` (visto em `ObjetivosPremiumBlock`), então não precisa de mudança de API/tipos.
+
+## 4. Liberar o card de revisão para todos os usuários
+
+Arquivo: `src/components/meudosha/RetesteCard.tsx`
+
+Hoje só ativa para admin (`const email = role === "admin" ? user?.email : null`). Mudar para:
+- `const email = user?.email ?? null;`
+- Manter o gate dos 30 dias após `created_at` do último teste e a checagem de "concluido recente / em andamento" exatamente como já está.
+- Sem mudanças visuais.
+
+## Técnico
+
+- Não há mudanças de schema nem de RLS.
+- Não toca em `MetricasGraficos.tsx` (a página /metricas/graficos não exibe o plano clínico — o usuário se referiu ao modal "Gráficos" aberto via EvolucaoSheet).
+- Sem novas dependências.

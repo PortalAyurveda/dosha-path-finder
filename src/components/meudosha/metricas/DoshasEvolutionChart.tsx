@@ -39,7 +39,7 @@ const VATA  = "#4F75FF";
 const PITTA = "#FF5C5C";
 const KAPHA = "#22C55E";
 
-const EDGE_PAD_MS   = 3 * 24 * 60 * 60 * 1000;
+const EDGE_PAD_MS   = 14 * 24 * 60 * 60 * 1000;
 
 function startOfMonth(ts: number): number {
   const d = new Date(ts);
@@ -107,25 +107,37 @@ function makeDot(color: string) {
   };
 }
 
+function shortLabel(s: string): string {
+  return s
+    .replace(/Revisão de\s+/i, "Rev. ")
+    .replace(/Diagnóstico/i, "Diagn.");
+}
+
 // Custom XAxis tick: month name + ponto/label acima
-function makeTick(labelsByTick: Record<number, string[]>) {
+function makeTick(
+  labelsByTick: Record<number, string[]>,
+  anchorByTick: Record<number, "start" | "middle" | "end">,
+  offsetByTick: Record<number, number>,
+) {
   return (props: any) => {
     const { x, y, payload } = props;
     const t = payload.value as number;
     const labels = labelsByTick[t] || [];
+    const anchor = anchorByTick[t] || "middle";
+    const dx = offsetByTick[t] || 0;
     return (
       <g transform={`translate(${x},${y})`}>
         {labels.map((l, i) => (
           <text
             key={i}
-            x={0}
+            x={dx}
             y={-8 - (labels.length - 1 - i) * 13}
-            textAnchor="middle"
+            textAnchor={anchor}
             fill="hsl(var(--primary))"
             fontSize={10}
             fontWeight={700}
           >
-            {l}
+            {shortLabel(l)}
           </text>
         ))}
         <text x={0} y={14} textAnchor="middle" fill="hsl(var(--primary))" fontSize={11} fontWeight={600}>
@@ -160,7 +172,22 @@ export default function DoshasEvolutionChart({
 
   // Rótulos do ponto agrupados pelo mês correspondente
   const labelsByTick: Record<number, string[]> = {};
-  for (const t of monthTicks) labelsByTick[t] = [];
+  const anchorByTick: Record<number, "start" | "middle" | "end"> = {};
+  const offsetByTick: Record<number, number> = {};
+  for (let i = 0; i < monthTicks.length; i++) {
+    const t = monthTicks[i];
+    labelsByTick[t] = [];
+    if (i === 0 && monthTicks.length > 1) {
+      anchorByTick[t] = "start";
+      offsetByTick[t] = -4;
+    } else if (i === monthTicks.length - 1 && monthTicks.length > 1) {
+      anchorByTick[t] = "end";
+      offsetByTick[t] = 4;
+    } else {
+      anchorByTick[t] = "middle";
+      offsetByTick[t] = 0;
+    }
+  }
   for (const p of data) {
     const mk = startOfMonth(p.t);
     if (labelsByTick[mk]) labelsByTick[mk].push(p.label || (p.isMeta ? "Meta" : ""));
@@ -201,7 +228,7 @@ export default function DoshasEvolutionChart({
             domain={[xMin, xMax]}
             scale="time"
             ticks={monthTicks}
-            tick={makeTick(labelsByTick)}
+            tick={makeTick(labelsByTick, anchorByTick, offsetByTick)}
             interval={0}
             stroke="hsl(var(--primary))"
             height={56}
