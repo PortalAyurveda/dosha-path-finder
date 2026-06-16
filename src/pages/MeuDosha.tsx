@@ -39,6 +39,7 @@ interface DoshaResult {
   estado: string | null;
   cidade: string | null;
   pais: string | null;
+  created_at: string | null;
 }
 
 interface PortalGlossario {
