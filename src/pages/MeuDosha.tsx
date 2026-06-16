@@ -472,6 +472,23 @@ const MeuDosha = () => {
   const navigate = useNavigate();
   const [evolucaoOpen, setEvolucaoOpen] = useState(false);
 
+  // Já existe revisão concluída? -> botão vira "Ver revisão"
+  const { data: hasRevisaoConcluida } = useQuery({
+    queryKey: ["meudosha-revisao-concluida", user?.email],
+    enabled: !!user?.email,
+    staleTime: 60_000,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("reteste_sessao" as any)
+        .select("id")
+        .eq("user_email", user!.email!)
+        .eq("status", "concluido")
+        .limit(1)
+        .maybeSingle();
+      return !!data;
+    },
+  });
+
   // Se o usuário logado caiu em /meu-dosha sem ?id, redireciona para o id do
   // seu teste personalizado, preservando outros parâmetros (tab, mode).
   useEffect(() => {
