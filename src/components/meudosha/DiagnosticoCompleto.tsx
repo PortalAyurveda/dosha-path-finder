@@ -332,6 +332,7 @@ const Diagnostico = ({
   ];
 
   const deficits = (analise.deficit_doshas ?? []).filter(Boolean);
+  const objetivos = (analise.objetivos ?? []).filter(Boolean);
 
   return (
     <section className="space-y-6">
@@ -339,10 +340,27 @@ const Diagnostico = ({
         className="font-serif font-bold text-2xl md:text-3xl text-left"
         style={{ color: COLOR.primary, fontFamily: "'Roboto Serif', serif" }}
       >
-        Seu Diagnóstico: <span style={{ color: cor }}>{doshaPrincipalCompleto}</span>
+        Seu plano clínico: <span style={{ color: cor }}>{doshaPrincipalCompleto}</span>
       </h2>
 
       <div className="space-y-4">
+        {objetivos.length > 0 && (
+          <DiagnosticoCard Icon={TrendingUp} label="Objetivos" cor={cor}>
+            <ul className="space-y-2">
+              {objetivos.map((o, i) => (
+                <li
+                  key={i}
+                  className="text-[15px] leading-relaxed flex gap-2"
+                  style={{ color: COLOR.texto, fontFamily: "'DM Sans', sans-serif", lineHeight: 1.7 }}
+                >
+                  <span style={{ color: cor }}>•</span>
+                  <span>{o}</span>
+                </li>
+              ))}
+            </ul>
+          </DiagnosticoCard>
+        )}
+
         {blocos.map((b, idx) => (
           <DiagnosticoCard key={idx} Icon={b.Icon} label={b.label} cor={cor}>
             {b.texto ? (
