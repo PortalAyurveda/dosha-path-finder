@@ -31,6 +31,7 @@ interface RevisaoResultado {
   kaphascore_depois?: number;
   novoDosha?: string;
   data_revisao?: string;
+  proxima_revisao?: string;
 }
 
 interface Pergunta {
@@ -137,6 +138,64 @@ const Revisao = () => {
     setUltimaRevisao(res ?? null);
   }, []);
 
+  const loadAll = useCallback(async (email: string) => {
+    const [testeRes, ultimaRes, andamentoRes, pesoRes] = await Promise.all([
+      supabase
+        .from("doshas_registros")
+        .select('id, "idPublico", nome, vatascore, pittascore, kaphascore, "agniPrincipal", doshaprincipal')
+        .eq("email", email)
+        .eq("tipo", "teste")
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle(),
+      supabase
+        .from("reteste_sessao" as any)
+        .select("resultado")
+        .eq("user_email", email)
+        .eq("status", "concluido")
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle(),
+      supabase
+        .from("reteste_sessao" as any)
+        .select("id, momento, relato_abertura, pack_perguntas")
+        .eq("user_email", email)
+        .eq("status", "em_andamento")
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle(),
+      supabase
+        .from("doshas_registros")
+        .select("peso")
+        .eq("email", email)
+        .eq("tipo", "teste")
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle(),
+    ]);
+
+    if (testeRes.data) setTeste(testeRes.data as DoshaTeste);
+
+    const ultRes = (ultimaRes.data as any)?.resultado as RevisaoResultado | undefined;
+    setUltimaRevisao(ultRes ?? null);
+
+    const pesoVal = (pesoRes.data as any)?.peso;
+    setPesoOriginal(pesoVal != null && String(pesoVal).trim() !== "" ? String(pesoVal) : null);
+
+    const sess = andamentoRes.data as any;
+    if (sess?.id) {
+      if (sess.momento === 1 && sess.relato_abertura) {
+        setSessaoId(sess.id);
+        setAkashaHello(String(sess.relato_abertura));
+        setFlow("hello_done");
+      } else if (sess.momento === 2 && Array.isArray(sess.pack_perguntas) && sess.pack_perguntas.length > 0) {
+        setSessaoId(sess.id);
+        setPerguntas(sess.pack_perguntas as Pergunta[]);
+        setFlow("form");
+      }
+    }
+  }, []);
+
   useEffect(() => {
     if (authLoading) return;
     if (!user?.email) {
@@ -146,73 +205,15 @@ const Revisao = () => {
 
     let cancelled = false;
     (async () => {
-      const email = user.email!;
-
-      const [testeRes, ultimaRes, andamentoRes, pesoRes] = await Promise.all([
-        supabase
-          .from("doshas_registros")
-          .select('id, "idPublico", nome, vatascore, pittascore, kaphascore, "agniPrincipal", doshaprincipal')
-          .eq("email", email)
-          .eq("tipo", "teste")
-          .order("created_at", { ascending: false })
-          .limit(1)
-          .maybeSingle(),
-        supabase
-          .from("reteste_sessao" as any)
-          .select("resultado")
-          .eq("user_email", email)
-          .eq("status", "concluido")
-          .order("created_at", { ascending: false })
-          .limit(1)
-          .maybeSingle(),
-        supabase
-          .from("reteste_sessao" as any)
-          .select("id, momento, relato_abertura, pack_perguntas")
-          .eq("user_email", email)
-          .eq("status", "em_andamento")
-          .order("created_at", { ascending: false })
-          .limit(1)
-          .maybeSingle(),
-        supabase
-          .from("doshas_registros")
-          .select("peso")
-          .eq("email", email)
-          .eq("tipo", "teste")
-          .order("created_at", { ascending: false })
-          .limit(1)
-          .maybeSingle(),
-      ]);
-
+      await loadAll(user.email!);
       if (cancelled) return;
-
-      if (testeRes.data) setTeste(testeRes.data as DoshaTeste);
-
-      const ultRes = (ultimaRes.data as any)?.resultado as RevisaoResultado | undefined;
-      setUltimaRevisao(ultRes ?? null);
-
-      const pesoVal = (pesoRes.data as any)?.peso;
-      setPesoOriginal(pesoVal != null && String(pesoVal).trim() !== "" ? String(pesoVal) : null);
-
-      const sess = andamentoRes.data as any;
-      if (sess?.id) {
-        if (sess.momento === 1 && sess.relato_abertura) {
-          setSessaoId(sess.id);
-          setAkashaHello(String(sess.relato_abertura));
-          setFlow("hello_done");
-        } else if (sess.momento === 2 && Array.isArray(sess.pack_perguntas) && sess.pack_perguntas.length > 0) {
-          setSessaoId(sess.id);
-          setPerguntas(sess.pack_perguntas as Pergunta[]);
-          setFlow("form");
-        }
-      }
-
       setLoading(false);
     })();
 
     return () => {
       cancelled = true;
     };
-  }, [authLoading, user?.email, fetchUltimaRevisao]);
+  }, [authLoading, user?.email, loadAll]);
 
   const callWebhook = async (body: Record<string, unknown>) => {
     const res = await fetch(WEBHOOK, {
@@ -277,7 +278,7 @@ const Revisao = () => {
     const prev = flow;
     setFlow("calcular_loading");
     try {
-      const r = await callWebhook({
+      await callWebhook({
         action: "calcular",
         email: user.email,
         nome: teste?.nome || "",
@@ -288,9 +289,15 @@ const Revisao = () => {
         })),
         peso_delta: pesoDelta,
       });
-      setSinteseNova(r?.sintese ?? "");
-      setFlow("concluido");
-      await fetchUltimaRevisao(user.email);
+      // Reset all flow states to initial and re-fetch from DB
+      setFlow("idle");
+      setSessaoId(null);
+      setAkashaHello("");
+      setPerguntas([]);
+      setRespostas({});
+      setPesoDelta(0);
+      setSinteseNova("");
+      await loadAll(user.email);
     } catch (e) {
       console.error(e);
       setErro("Erro ao processar. Tente novamente.");
@@ -393,15 +400,30 @@ const Revisao = () => {
           )}
 
           {/* Última revisão concluída (apenas síntese) */}
-          {ultimaRevisao?.sintese && (
-            <div className="rounded-xl border border-border bg-card p-4">
-              <h2 className="text-sm font-semibold mb-2">Sua última revisão</h2>
-              <p className="text-sm whitespace-pre-wrap leading-relaxed">{ultimaRevisao.sintese}</p>
-              {ultimaRevisao.data_revisao && (
-                <p className="text-xs text-muted-foreground mt-2">{formatData(ultimaRevisao.data_revisao)}</p>
-              )}
-            </div>
-          )}
+          {ultimaRevisao?.sintese && (() => {
+            const proximaDate = ultimaRevisao.proxima_revisao
+              ? new Date(ultimaRevisao.proxima_revisao)
+              : ultimaRevisao.data_revisao
+                ? new Date(new Date(ultimaRevisao.data_revisao).getTime() + 30 * 24 * 60 * 60 * 1000)
+                : null;
+            const proximaStr = proximaDate && !isNaN(proximaDate.getTime())
+              ? proximaDate.toLocaleDateString("pt-BR")
+              : null;
+            return (
+              <div className="rounded-xl border border-border bg-card p-4">
+                <h2 className="text-sm font-semibold mb-2">Sua última revisão</h2>
+                <p className="text-sm whitespace-pre-wrap leading-relaxed">{ultimaRevisao.sintese}</p>
+                {ultimaRevisao.data_revisao && (
+                  <p className="text-xs text-muted-foreground mt-2">{formatData(ultimaRevisao.data_revisao)}</p>
+                )}
+                {proximaStr && (
+                  <p className="text-xs text-muted-foreground mt-2 pt-2 border-t border-border">
+                    Próxima revisão disponível a partir de: <span className="font-medium text-foreground">{proximaStr}</span>
+                  </p>
+                )}
+              </div>
+            );
+          })()}
 
 
           {/* Fluxo de nova revisão */}
