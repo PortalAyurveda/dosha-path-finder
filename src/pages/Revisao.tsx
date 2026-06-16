@@ -40,6 +40,9 @@ interface RevisaoResultado {
   pesoStr?: string;
   data_revisao?: string;
   proxima_revisao?: string;
+  metaV?: number;
+  metaP?: number;
+  metaK?: number;
 }
 
 interface Pergunta {
@@ -493,37 +496,59 @@ const Revisao = () => {
             return (
               <div className="rounded-xl border border-border bg-card p-4">
                 <h2 className="font-serif text-base font-semibold mb-2">Sua última revisão</h2>
-                {/* Evolução dos doshas */}
-                <div className="grid grid-cols-3 gap-2 mb-3">
+                {/* Evolução: Antes / Agora / Próximo objetivo */}
+                <div className="grid grid-cols-3 gap-2 mb-4">
                   {(
                     [
-                      ["Vata", ultimaRevisao.vatascore_antes, ultimaRevisao.vatascore_depois, ultimaRevisao.vst_antes, ultimaRevisao.vst_depois],
-                      ["Pitta", ultimaRevisao.pittascore_antes, ultimaRevisao.pittascore_depois, ultimaRevisao.pst_antes, ultimaRevisao.pst_depois],
-                      ["Kapha", ultimaRevisao.kaphascore_antes, ultimaRevisao.kaphascore_depois, ultimaRevisao.kst_antes, ultimaRevisao.kst_depois],
-                    ] as ["Vata" | "Pitta" | "Kapha", number | undefined, number | undefined, string | undefined, string | undefined][]
-                  ).map(([name, antes, depois, stAntes, stDepois]) => {
-                    const a = antes ?? 0;
-                    const d = depois ?? a;
-                    const sa = stAntes ?? getNivel(a, name);
-                    const sd = stDepois ?? getNivel(d, name);
-                    return (
-                      <div
-                        key={name}
-                        className={cn(
-                          "rounded-lg border p-2 text-center",
-                          DOSHA_BADGE[name]
-                        )}
-                      >
-                        <p className="text-[10px] font-bold uppercase tracking-wide">{name}</p>
-                        <p className="text-sm font-semibold mt-0.5">
-                          {a} <span className="opacity-60">→</span> {d}
-                        </p>
-                        <p className="text-[10px] mt-0.5 opacity-80">
-                          {sa} <span className="opacity-60">→</span> {sd}
-                        </p>
-                      </div>
-                    );
-                  })}
+                      {
+                        title: "Antes",
+                        scores: [
+                          ["Vata", ultimaRevisao.vatascore_antes ?? 0, ultimaRevisao.vst_antes],
+                          ["Pitta", ultimaRevisao.pittascore_antes ?? 0, ultimaRevisao.pst_antes],
+                          ["Kapha", ultimaRevisao.kaphascore_antes ?? 0, ultimaRevisao.kst_antes],
+                        ] as ["Vata" | "Pitta" | "Kapha", number, string | undefined][],
+                      },
+                      {
+                        title: "Agora",
+                        scores: [
+                          ["Vata", ultimaRevisao.vatascore_depois ?? 0, ultimaRevisao.vst_depois],
+                          ["Pitta", ultimaRevisao.pittascore_depois ?? 0, ultimaRevisao.pst_depois],
+                          ["Kapha", ultimaRevisao.kaphascore_depois ?? 0, ultimaRevisao.kst_depois],
+                        ] as ["Vata" | "Pitta" | "Kapha", number, string | undefined][],
+                      },
+                      {
+                        title: "Próximo objetivo",
+                        scores: [
+                          ["Vata", ultimaRevisao.metaV, "Meta"],
+                          ["Pitta", ultimaRevisao.metaP, "Meta"],
+                          ["Kapha", ultimaRevisao.metaK, "Meta"],
+                        ] as ["Vata" | "Pitta" | "Kapha", number | undefined, string][],
+                      },
+                    ] as const
+                  ).map((col) => (
+                    <div key={col.title} className="rounded-lg border border-border bg-muted/30 p-2 space-y-1.5">
+                      <p className="text-[10px] uppercase tracking-wide text-muted-foreground text-center font-semibold">
+                        {col.title}
+                      </p>
+                      {col.scores.map(([name, score, status]) => {
+                        const s = score ?? 0;
+                        const st = status ?? getNivel(s, name);
+                        return (
+                          <div
+                            key={name}
+                            className={cn(
+                              "rounded-md border px-2 py-1 text-center",
+                              DOSHA_BADGE[name]
+                            )}
+                          >
+                            <p className="text-[10px] font-bold uppercase tracking-wide leading-none">{name}</p>
+                            <p className="text-xs font-semibold leading-none mt-0.5">{s}</p>
+                            <p className="text-[10px] opacity-80 leading-none mt-0.5">{st}</p>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  ))}
                 </div>
                 {/* Agni + Peso */}
                 {(ultimaRevisao.agniNovo || ultimaRevisao.pesoStr) && (
