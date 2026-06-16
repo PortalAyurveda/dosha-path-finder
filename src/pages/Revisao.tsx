@@ -400,15 +400,30 @@ const Revisao = () => {
           )}
 
           {/* Última revisão concluída (apenas síntese) */}
-          {ultimaRevisao?.sintese && (
-            <div className="rounded-xl border border-border bg-card p-4">
-              <h2 className="text-sm font-semibold mb-2">Sua última revisão</h2>
-              <p className="text-sm whitespace-pre-wrap leading-relaxed">{ultimaRevisao.sintese}</p>
-              {ultimaRevisao.data_revisao && (
-                <p className="text-xs text-muted-foreground mt-2">{formatData(ultimaRevisao.data_revisao)}</p>
-              )}
-            </div>
-          )}
+          {ultimaRevisao?.sintese && (() => {
+            const proximaDate = ultimaRevisao.proxima_revisao
+              ? new Date(ultimaRevisao.proxima_revisao)
+              : ultimaRevisao.data_revisao
+                ? new Date(new Date(ultimaRevisao.data_revisao).getTime() + 30 * 24 * 60 * 60 * 1000)
+                : null;
+            const proximaStr = proximaDate && !isNaN(proximaDate.getTime())
+              ? proximaDate.toLocaleDateString("pt-BR")
+              : null;
+            return (
+              <div className="rounded-xl border border-border bg-card p-4">
+                <h2 className="text-sm font-semibold mb-2">Sua última revisão</h2>
+                <p className="text-sm whitespace-pre-wrap leading-relaxed">{ultimaRevisao.sintese}</p>
+                {ultimaRevisao.data_revisao && (
+                  <p className="text-xs text-muted-foreground mt-2">{formatData(ultimaRevisao.data_revisao)}</p>
+                )}
+                {proximaStr && (
+                  <p className="text-xs text-muted-foreground mt-2 pt-2 border-t border-border">
+                    Próxima revisão disponível a partir de: <span className="font-medium text-foreground">{proximaStr}</span>
+                  </p>
+                )}
+              </div>
+            );
+          })()}
 
 
           {/* Fluxo de nova revisão */}
