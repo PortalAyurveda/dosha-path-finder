@@ -680,7 +680,119 @@ const [step, setStep] = useState(0);
     );
   }
 
-  return (
+  // Mini-formulário inicial (mesmo do Hero do Index) — quando o usuário entra
+  // direto em /teste-de-dosha sem ter preenchido nome/idade/nivel no Index.
+  if (needsHeroInfo) {
+    const canStart = !!(info.nome.trim() && info.idade.trim() && info.nivel);
+    const handleStart = () => {
+      if (!canStart) return;
+      try {
+        const existing = JSON.parse(localStorage.getItem('dosha_test_info') || '{}');
+        localStorage.setItem(
+          'dosha_test_info',
+          JSON.stringify({ ...existing, nome: info.nome.trim(), idade: info.idade, nivel: info.nivel }),
+        );
+      } catch {
+        localStorage.setItem(
+          'dosha_test_info',
+          JSON.stringify({ nome: info.nome.trim(), idade: info.idade, nivel: info.nivel }),
+        );
+      }
+      setNeedsHeroInfo(false);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    return (
+      <>
+        <Helmet>
+          <title>Teste de Dosha | Descubra se você é Vata, Pitta ou Kapha</title>
+          <meta name="description" content="Descubra seu Dosha e cuide da sua saúde de forma individual. Crie sua dieta e rotina com o resultado imediato gerado para você." />
+          <link rel="canonical" href="https://portalayurveda.com/teste-de-dosha" />
+        </Helmet>
+        <section
+          className="relative overflow-hidden min-h-[80vh]"
+          style={{ background: "linear-gradient(100deg, hsl(228 70% 96%) 0%, hsl(0 70% 97%) 50%, hsl(48 80% 95%) 100%)" }}
+        >
+          <div className="absolute inset-0 opacity-25 pointer-events-none">
+            <div className="absolute -top-10 -left-20 w-[28rem] h-[28rem] rounded-full blur-3xl" style={{ background: "#6B7FF2" }} />
+            <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[26rem] h-[26rem] rounded-full blur-3xl" style={{ background: "#F28888" }} />
+            <div className="absolute -bottom-16 -right-20 w-[28rem] h-[28rem] rounded-full blur-3xl" style={{ background: "#F2CB05" }} />
+          </div>
+
+          <div className="relative max-w-md mx-auto px-4 sm:px-6 py-12 md:py-16">
+            <div className="bg-card/80 backdrop-blur-sm rounded-3xl p-6 xl:p-7 border border-border shadow-lg space-y-4">
+              <div className="text-center">
+                <h1 className="mb-2 text-2xl md:text-3xl font-semibold leading-snug">
+                  Seu guia completo para saúde e longevidade.
+                </h1>
+                <p className="text-sm md:text-base text-muted-foreground">
+                  Descubra e cuide dos seus Doshas por meio da medicina milenar.
+                </p>
+              </div>
+
+              <hr className="border-border" />
+
+              <p className="font-serif font-semibold text-foreground text-base text-center">
+                Comece seu Teste de Dosha Gratuito
+              </p>
+
+              <div className="text-left space-y-3">
+                <div>
+                  <Label htmlFor="td-nome" className="text-xs">Seu nome</Label>
+                  <Input
+                    id="td-nome"
+                    placeholder="Nome"
+                    value={info.nome}
+                    onChange={(e) => setInfo({ ...info, nome: e.target.value })}
+                    className="mt-1"
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <Label htmlFor="td-idade" className="text-xs">Idade</Label>
+                    <Input
+                      id="td-idade"
+                      type="number"
+                      placeholder="30"
+                      value={info.idade}
+                      onChange={(e) => setInfo({ ...info, idade: e.target.value })}
+                      className="mt-1"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-xs">Nível de Ayurveda</Label>
+                    <select
+                      value={info.nivel}
+                      onChange={(e) => setInfo({ ...info, nivel: e.target.value })}
+                      className={cn(
+                        "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm mt-1",
+                        "ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+                      )}
+                    >
+                      <option value="" disabled>Selecione</option>
+                      <option value="Iniciante">Iniciante</option>
+                      <option value="Intermediário">Intermediário</option>
+                      <option value="Avançado">Avançado</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <Button
+                onClick={handleStart}
+                disabled={!canStart}
+                className="w-full bg-primary text-primary-foreground hover:bg-primary/90 text-lg md:text-xl font-bold py-5 md:py-6 h-auto rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 hover:-translate-y-0.5 transition-all"
+                size="lg"
+              >
+                Começar <ChevronRight className="ml-2 h-6 w-6 md:h-7 md:w-7" />
+              </Button>
+            </div>
+          </div>
+        </section>
+      </>
+    );
+  }
+
     <>
       <Helmet>
         <title>Teste de Dosha | Descubra se você é Vata, Pitta ou Kapha</title>
