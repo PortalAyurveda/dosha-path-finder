@@ -372,57 +372,104 @@ const Revisao = () => {
       <PageContainer title="Revisão · Akasha" description="Revisão do seu diagnóstico Ayurveda">
         <div className="max-w-2xl mx-auto space-y-4">
           {/* Resumo compacto */}
-          {teste && (
-            <div className="rounded-xl border border-border bg-card p-3 flex items-center gap-3">
-              <div className="w-20 h-20 shrink-0">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={pieData}
-                      dataKey="value"
-                      nameKey="name"
-                      innerRadius={18}
-                      outerRadius={36}
-                      startAngle={90}
-                      endAngle={-270}
-                      stroke="none"
-                    >
-                      {pieData.map((d) => (
-                        <Cell key={d.name} fill={PIE_COLORS[d.name]} />
-                      ))}
-                    </Pie>
-                  </PieChart>
-                </ResponsiveContainer>
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-[11px] uppercase tracking-wide text-muted-foreground">Seu diagnóstico</p>
-                <div className="flex flex-wrap gap-1.5 mt-1">
-                  {(
-                    [
-                      ["Vata", v],
-                      ["Pitta", p],
-                      ["Kapha", k],
-                    ] as ["Vata" | "Pitta" | "Kapha", number][]
-                  ).map(([name, score]) => {
-                    const nivel = getNivel(score, name);
-                    return (
-                      <span
-                        key={name}
-                        className={`text-[10px] px-2 py-0.5 rounded-full border font-semibold ${DOSHA_BADGE[name]}`}
+          {teste && (() => {
+            const hasRev = !!ultimaRevisao && (
+              ultimaRevisao.vatascore_depois != null ||
+              ultimaRevisao.pittascore_depois != null ||
+              ultimaRevisao.kaphascore_depois != null
+            );
+            const vAntes = ultimaRevisao?.vatascore_antes ?? v;
+            const pAntes = ultimaRevisao?.pittascore_antes ?? p;
+            const kAntes = ultimaRevisao?.kaphascore_antes ?? k;
+            const vDepois = ultimaRevisao?.vatascore_depois ?? v;
+            const pDepois = ultimaRevisao?.pittascore_depois ?? p;
+            const kDepois = ultimaRevisao?.kaphascore_depois ?? k;
+            const showDepois = hasRev && revPhase === "depois";
+            const pieDataDyn = (showDepois
+              ? [
+                  { name: "Vata", value: vDepois },
+                  { name: "Pitta", value: pDepois },
+                  { name: "Kapha", value: kDepois },
+                ]
+              : [
+                  { name: "Vata", value: hasRev ? vAntes : v },
+                  { name: "Pitta", value: hasRev ? pAntes : p },
+                  { name: "Kapha", value: hasRev ? kAntes : k },
+                ]
+            ).filter((d) => d.value > 0);
+            const mes = ultimaRevisao?.data_revisao
+              ? new Date(ultimaRevisao.data_revisao).toLocaleDateString("pt-BR", { month: "long" })
+              : "";
+            const titulo = hasRev && mes
+              ? `Revisão de ${mes.charAt(0).toUpperCase() + mes.slice(1)}`
+              : "Seu diagnóstico";
+            return (
+              <div className="rounded-xl border border-border bg-card p-3 flex items-center gap-3">
+                <div className="w-20 h-20 shrink-0 transition-opacity duration-700">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={pieDataDyn}
+                        dataKey="value"
+                        nameKey="name"
+                        innerRadius={18}
+                        outerRadius={36}
+                        startAngle={90}
+                        endAngle={-270}
+                        stroke="none"
+                        isAnimationActive
+                        animationDuration={700}
                       >
-                        {name} {score} · {nivel}
-                      </span>
-                    );
-                  })}
+                        {pieDataDyn.map((d) => (
+                          <Cell
+                            key={d.name}
+                            fill={hasRev && !showDepois ? "#cbd5e1" : PIE_COLORS[d.name]}
+                          />
+                        ))}
+                      </Pie>
+                    </PieChart>
+                  </ResponsiveContainer>
                 </div>
-                {teste.agniPrincipal && (
-                  <p className="text-[11px] text-muted-foreground mt-1 truncate">
-                    Agni: <span className="text-foreground font-medium">{teste.agniPrincipal}</span>
-                  </p>
-                )}
+                <div className="flex-1 min-w-0">
+                  <p className="text-[11px] uppercase tracking-wide text-muted-foreground">{titulo}</p>
+                  <div className="flex flex-wrap gap-1.5 mt-1">
+                    {(
+                      [
+                        ["Vata", vAntes, vDepois],
+                        ["Pitta", pAntes, pDepois],
+                        ["Kapha", kAntes, kDepois],
+                      ] as ["Vata" | "Pitta" | "Kapha", number, number][]
+                    ).map(([name, antes, depois]) => {
+                      const score = showDepois ? depois : antes;
+                      const nivel = getNivel(score, name);
+                      const grey = hasRev && !showDepois;
+                      const label = hasRev && showDepois && antes !== depois
+                        ? `${name} ${antes}→${depois} · ${nivel}`
+                        : `${name} ${score} · ${nivel}`;
+                      return (
+                        <span
+                          key={name}
+                          className={cn(
+                            "text-[10px] px-2 py-0.5 rounded-full border font-semibold transition-all duration-700",
+                            grey
+                              ? "bg-muted text-muted-foreground border-border opacity-70"
+                              : DOSHA_BADGE[name]
+                          )}
+                        >
+                          {label}
+                        </span>
+                      );
+                    })}
+                  </div>
+                  {teste.agniPrincipal && (
+                    <p className="text-[11px] text-muted-foreground mt-1 truncate">
+                      Agni: <span className="text-foreground font-medium">{teste.agniPrincipal}</span>
+                    </p>
+                  )}
+                </div>
               </div>
-            </div>
-          )}
+            );
+          })()}
 
           {/* Última revisão concluída */}
           {ultimaRevisao?.sintese && (() => {
