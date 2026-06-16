@@ -214,15 +214,34 @@ const Revisao = () => {
   }, [authLoading, user?.email, loadAll]);
 
   const callWebhook = async (body: Record<string, unknown>) => {
-    const res = await fetch(WEBHOOK, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const json = await res.json();
-    // Webhooks do n8n às vezes vêm como array
-    return Array.isArray(json) ? json[0] : json;
+    const isCalcular = body?.action === "calcular";
+    const controller = isCalcular ? new AbortController() : null;
+    const timeout = controller
+      ? setTimeout(() => controller.abort(), 60000)
+      : null;
+    try {
+      const res = await fetch(WEBHOOK, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+        signal: controller?.signal,
+      });
+      if (timeout) clearTimeout(timeout);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const json = await res.json();
+      // Webhooks do n8n às vezes vêm como array
+      return Array.isArray(json) ? json[0] : json;
+    } catch (e: any) {
+      if (timeout) clearTimeout(timeout);
+      if (isCalcular && e?.name === "AbortError") {
+        // Timeout de 60s — n8n pode ter completado mesmo assim.
+        // Aguarda 2s e busca o resultado direto do banco.
+        await new Promise((r) => setTimeout(r, 2000));
+        if (user?.email) await loadAll(user.email);
+        return null;
+      }
+      throw e;
+    }
   };
 
   const handleFazerRevisao = async () => {
