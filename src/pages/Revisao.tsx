@@ -272,7 +272,7 @@ const Revisao = () => {
   };
 
   const handleEnviarRevisao = async () => {
-    if (!user?.email || !sessaoId) return;
+    if (!user?.email) return;
     setErro(null);
     const prev = flow;
     setFlow("calcular_loading");
