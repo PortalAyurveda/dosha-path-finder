@@ -1,45 +1,67 @@
+## 1. Mini-form de entrada em `/teste-de-dosha`
 
-## 1. Corrigir sobreposição no gráfico Agni (EvolucaoSheet)
+Quando o usuário acessa `/teste-de-dosha` direto (sem ter passado pelo `Hero` do Index), o `localStorage.dosha_test_info` está vazio e o usuário não está logado → faltam `nome`, `idade` e `nivel`.
 
-Arquivo: `src/components/meudosha/metricas/AgniMiniChart.tsx`
+Em `src/pages/TesteDeDosha.tsx`:
+- Adicionar um estado `needsHeroInfo` que começa `true` enquanto carrega e vira `false` se `localStorage.dosha_test_info` tem `nome` + `idade` válidos, OU se o `useEffect` que busca do usuário logado pré-preencher esses campos.
+- Antes de renderizar a árvore normal do teste (quando `step === 0` e `needsHeroInfo`), renderizar uma seção que reproduz o mesmo bloco do `Hero` (mesmo título, descrição, labels, select de nível e botão "Começar"). Ao clicar "Começar", grava no `localStorage.dosha_test_info` e segue para o teste (`setNeedsHeroInfo(false)`).
+- Reusar o mesmo visual / classes do `Hero.tsx` (card branco arredondado, gradiente sutil, botão `bg-primary`). Sem novo design — copiar a marcação.
+- Manter `Helmet` da página normal; nenhuma mudança de rotas.
 
-Hoje os rótulos ("Diagnóstico", "Revisão de Junho", "Meta") são empilhados acima do tick do mês no eixo X, e o primeiro rótulo invade os labels do eixo Y ("Bom/Iniciando/Moderado/Agravado").
+## 2. SEO
 
-Mudanças:
-- Remover os rótulos do `XAxis` tick (deixar só o nome do mês em baixo).
-- Renderizar os rótulos como `<Label>` em cima de cada `ReferenceLine` (já existente em cada `p.t`), com `position="top"`, fonte 10, peso 700, cor primária. Isso ancora o rótulo no instante do ponto e não no início do mês, eliminando colisão com o eixo Y.
-- Truncar rótulos longos para no máx ~14 chars (ex.: "Revisão de Junho" → "Rev. Junho") com helper local.
-- Aplicar o mesmo ajuste em `DoshasEvolutionChart.tsx` para manter consistência visual.
+### 2a. Title + description sitewide em `index.html`
+- `<title>`: `Portal Ayurveda | Seu caminho para saúde e longevidade`
+- `<meta name="description">`: `Faça nosso Teste de Dosha, personalize sua dieta e rotina, colha resultados certeiros. Aulas gratuitas, artigos e cursos. Conheça Akasha - Assistente Virtual`
+- Atualizar também `og:title`, `og:description`, `twitter:title`, `twitter:description` para combinar.
 
-## 2. Remover "Seu plano clínico" da aba de Gráficos
+### 2b. Noindex via `react-helmet-async`
+Adicionar `<Helmet><meta name="robots" content="noindex, nofollow" /></Helmet>` (e quando faltar `<Helmet>`, incluir o import) nas páginas:
+- `src/pages/Auth.tsx` (`/entrar`)
+- `src/pages/MeuDosha.tsx` (`/meu-dosha`)
+- `src/pages/SamkhyaObrigado.tsx` (`/samkhya/obrigado` — única rota `/obrigado` no app)
+- Não há rota `/perfil` no projeto (verificado em `App.tsx`). Se for criada futuramente, aplica-se a mesma regra; por ora, nenhuma ação.
+- Para `/admin` e `/admin/*`: adicionar uma única `<Helmet>` com `noindex,nofollow` dentro do wrapper `AdminRoute` em `src/components/admin/AdminRoute.tsx`. Cobre todas as sub-rotas sem editar cada página.
 
-Arquivo: `src/components/meudosha/EvolucaoSheet.tsx`
-- Remover render de `<ObjetivosPremiumBlock>` (e fallback "Seu plano de acompanhamento ainda está sendo preparado").
-- Remover import não utilizado.
+### 2c. Soft 404 em `/video/:slug`
+Em `src/pages/Video.tsx`, substituir o bloco `if (!video)` que renderiza a tela "Vídeo não encontrado". Em vez de renderizar, fazer:
+```ts
+useEffect(() => {
+  if (!isLoading && !video) navigate("/biblioteca", { replace: true });
+}, [isLoading, video, navigate]);
+```
+e retornar `null` enquanto redireciona.
 
-## 3. Mover o "Plano clínico" para a aba Perfil de /meu-dosha
+## 3. Liberar Revisão a todos os usuários
 
-Arquivo: `src/components/meudosha/DiagnosticoCompleto.tsx`, componente `Diagnostico` (linhas ~316-374).
+### 3a. Rota `/revisao`
+Em `src/App.tsx`, trocar `<Route path="/revisao" element={<AdminRoute><Revisao /></AdminRoute>} />` por `<Route path="/revisao" element={<Revisao />} />`. O próprio `Revisao.tsx` já trata `!user` redirecionando para `/entrar?redirect=/revisao`, e a regra dos 30 dias é validada implicitamente pelo `RetesteCard` + `loadAll` (sem teste, sem fluxo).
 
-- Renomear título de `Seu Diagnóstico: {dosha}` para `Seu plano clínico: {dosha}`.
-- Adicionar, ANTES dos três blocos (Situação Atual / O Que Te Trouxe / Caminhos), uma nova seção "Objetivos" com bullets vindos de `analise.objetivos` (já disponível em `ObjetivoTratamento` — é a mesma fonte usada em `ObjetivosPremiumBlock`).
-  - Estilo: card com mesmo `LEAF` e borda lateral cor do dosha, header "OBJETIVOS" no padrão das outras seções, lista `<ul>` com bullets coloridos.
-  - Se `analise.objetivos` vier vazio, omite a seção (não quebra layout).
-- Os 3 blocos narrativos atuais continuam abaixo, inalterados.
+### 3b. Botão "Revisão" em `/meu-dosha`
+Já está liberado para todos (lógica em `MeuDosha.tsx` linhas 834-870 só checa data, não papel). Confirmar — nenhuma mudança aqui exceto a próxima.
 
-Tipo `ObjetivoTratamento` já expõe `objetivos: string[]` (visto em `ObjetivosPremiumBlock`), então não precisa de mudança de API/tipos.
+### 3c. Reabrir output da última revisão
+Hoje o botão "Revisão" sempre navega para `/revisao` para iniciar nova. Quando o usuário já tem uma revisão concluída, queremos que esse mesmo botão mostre o output final.
 
-## 4. Liberar o card de revisão para todos os usuários
+- Em `MeuDosha.tsx`, dentro do bloco do botão Revisão, fazer um pequeno query para saber se existe uma `reteste_sessao` com `status='concluido'` para o `user.email`. (Reusar pattern do `RetesteCard` ou um `useQuery` simples.)
+- Se existe → o botão fica com label `Ver revisão` e navega para `/revisao?ver=ultima` (ou só `/revisao`, já que a página carrega `ultimaRevisao` no `loadAll`).
+- Se não existe + 30 dias passaram → fica `Revisão` (iniciar), como hoje.
+- Se < 30 dias → fica desabilitado como hoje.
 
-Arquivo: `src/components/meudosha/RetesteCard.tsx`
+Em `src/pages/Revisao.tsx`:
+- Quando `ultimaRevisao` existe e `flow === "idle"`, já hoje a página mostra os scores antes/depois no topo. Manter esse comportamento — funciona como "ver output". Já existe um botão para iniciar nova revisão; mantê-lo.
+- Adicionar um pequeno reaproveitamento: se a URL traz `?ver=ultima` e há `ultimaRevisao`, garantir scroll ao topo do bloco de resultado (cosmético, opcional).
 
-Hoje só ativa para admin (`const email = role === "admin" ? user?.email : null`). Mudar para:
-- `const email = user?.email ?? null;`
-- Manter o gate dos 30 dias após `created_at` do último teste e a checagem de "concluido recente / em andamento" exatamente como já está.
-- Sem mudanças visuais.
+## Arquivos que vão mudar
 
-## Técnico
+- `index.html` — title/description/og/twitter
+- `src/pages/TesteDeDosha.tsx` — gating com mini-form
+- `src/pages/Video.tsx` — soft 404 redirect
+- `src/pages/Auth.tsx` — Helmet noindex
+- `src/pages/MeuDosha.tsx` — Helmet noindex + botão Revisão (label "Ver revisão" se concluída)
+- `src/pages/SamkhyaObrigado.tsx` — Helmet noindex
+- `src/components/admin/AdminRoute.tsx` — Helmet noindex global de /admin/*
+- `src/App.tsx` — remover `AdminRoute` do `/revisao`
+- `src/pages/Revisao.tsx` — (mínimo) suporte a `?ver=ultima` se necessário
 
-- Não há mudanças de schema nem de RLS.
-- Não toca em `MetricasGraficos.tsx` (a página /metricas/graficos não exibe o plano clínico — o usuário se referiu ao modal "Gráficos" aberto via EvolucaoSheet).
-- Sem novas dependências.
+Sem mudanças em design, schema ou RLS.
