@@ -487,7 +487,7 @@ const MeuDosha = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('doshas_registros')
-        .select('id, nome, doshaprincipal, vatascore, pittascore, kaphascore, agniPrincipal, agravVataTags, agravPittaTags, agravKaphaTags, imc, idade, conhecimentoAyurveda, email, altura, peso, estado, cidade, pais')
+        .select('id, nome, doshaprincipal, vatascore, pittascore, kaphascore, agniPrincipal, agravVataTags, agravPittaTags, agravKaphaTags, imc, idade, conhecimentoAyurveda, email, altura, peso, estado, cidade, pais, created_at')
         .eq('idPublico', id!)
         .maybeSingle();
       if (error || !data) return null;
