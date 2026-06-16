@@ -518,6 +518,7 @@ const MeuDosha = () => {
     estado: registroRaw.estado,
     cidade: registroRaw.cidade,
     pais: registroRaw.pais,
+    created_at: (registroRaw as any).created_at ?? null,
   } : null;
   const registroUuid = registroRaw?.id || null;
 
