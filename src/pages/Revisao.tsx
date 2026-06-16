@@ -397,7 +397,7 @@ const Revisao = () => {
             </div>
           )}
 
-          {/* Última revisão concluída (apenas síntese) */}
+          {/* Última revisão concluída */}
           {ultimaRevisao?.sintese && (() => {
             const proximaDate = ultimaRevisao.proxima_revisao
               ? new Date(ultimaRevisao.proxima_revisao)
@@ -407,10 +407,13 @@ const Revisao = () => {
             const proximaStr = proximaDate && !isNaN(proximaDate.getTime())
               ? proximaDate.toLocaleDateString("pt-BR")
               : null;
+            const podeNovaRevisao = !!proximaDate && !isNaN(proximaDate.getTime()) && proximaDate.getTime() <= Date.now();
             return (
               <div className="rounded-xl border border-border bg-card p-4">
-                <h2 className="text-sm font-semibold mb-2">Sua última revisão</h2>
-                <p className="text-sm whitespace-pre-wrap leading-relaxed">{ultimaRevisao.sintese}</p>
+                <h2 className="font-serif text-base font-semibold mb-2">Sua última revisão</h2>
+                <div className="rounded-lg bg-muted/40 p-3 text-sm whitespace-pre-wrap leading-relaxed">
+                  {ultimaRevisao.sintese}
+                </div>
                 {ultimaRevisao.data_revisao && (
                   <p className="text-xs text-muted-foreground mt-2">{formatData(ultimaRevisao.data_revisao)}</p>
                 )}
@@ -419,147 +422,140 @@ const Revisao = () => {
                     Próxima revisão disponível a partir de: <span className="font-medium text-foreground">{proximaStr}</span>
                   </p>
                 )}
+                {podeNovaRevisao && (
+                  <div className="mt-3">
+                    <Button
+                      onClick={() => {
+                        window.scrollTo({ top: 0, behavior: "smooth" });
+                        handleFazerRevisao();
+                      }}
+                    >
+                      Fazer nova revisão
+                    </Button>
+                  </div>
+                )}
               </div>
             );
           })()}
 
-
-          {/* Fluxo de nova revisão */}
-          <div className="rounded-xl border border-border bg-card p-4 space-y-4">
-            {erro && (
-              <div className="rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm p-2">
-                {erro}
-              </div>
-            )}
-
-            {flow === "idle" && (
-              <div className="flex flex-col items-start gap-2">
-                <p className="text-sm text-muted-foreground">
-                  Pronto para revisar como você está se sentindo nos últimos 30 dias?
-                </p>
-                <Button onClick={handleFazerRevisao}>Fazer revisão</Button>
-              </div>
-            )}
-
-            {flow === "hello_loading" && (
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Loader2 className="w-4 h-4 animate-spin" /> Akasha está preparando sua revisão...
-              </div>
-            )}
-
-            {flow === "hello_done" && (
-              <div className="space-y-3">
-                {akashaHello && (
-                  <div className="rounded-lg bg-muted/40 p-3 text-sm whitespace-pre-wrap leading-relaxed">
-                    {akashaHello}
-                  </div>
-                )}
-                <Button onClick={handleGerarRevisao}>Gerar revisão</Button>
-              </div>
-            )}
-
-            {flow === "gerar_loading" && (
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Loader2 className="w-4 h-4 animate-spin" /> Gerando perguntas...
-              </div>
-            )}
-
-            {flow === "form" && (
-              <div className="space-y-5">
-                {perguntas.map((pq, idx) => (
-                  <div key={pq.id} className="space-y-2">
-                    <p className="text-sm font-medium">
-                      {idx + 1}. {pq.pergunta}
-                    </p>
-                    <RadioGroup
-                      value={respostas[pq.id] ?? ""}
-                      onValueChange={(val) =>
-                        setRespostas((r) => ({ ...r, [pq.id]: val as Letra }))
-                      }
-                      className="space-y-1"
-                    >
-                      {OPCOES.map((o) => {
-                        const id = `q${pq.id}-${o.letra}`;
-                        return (
-                          <div key={o.letra} className="flex items-center gap-2">
-                            <RadioGroupItem id={id} value={o.letra} />
-                            <Label htmlFor={id} className="text-sm font-normal cursor-pointer">
-                              {o.letra}) {o.texto}
-                            </Label>
-                          </div>
-                        );
-                      })}
-                    </RadioGroup>
-                  </div>
-                ))}
-
-                <div className="space-y-2 pt-2 border-t border-border">
-                  <Label className="text-sm font-medium">
-                    Variação de peso nos últimos 30 dias (kg)
-                  </Label>
-                  <p className="text-xs text-muted-foreground">
-                    Peso informado no diagnóstico: {pesoOriginal || "não informado"}
-                  </p>
-                  <div className="flex items-center gap-3">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="icon"
-                      onClick={() => adjustPeso(-1)}
-                      disabled={pesoDelta <= -20}
-                    >
-                      <Minus className="w-4 h-4" />
-                    </Button>
-                    <span className="min-w-[80px] text-center font-semibold">
-                      {formatPeso(pesoDelta)}
-                    </span>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="icon"
-                      onClick={() => adjustPeso(1)}
-                      disabled={pesoDelta >= 20}
-                    >
-                      <Plus className="w-4 h-4" />
-                    </Button>
-                  </div>
+          {/* Fluxo de nova revisão — apenas quando não há revisão concluída */}
+          {!ultimaRevisao?.sintese && (
+            <div className="rounded-xl border border-border bg-card p-4 space-y-4">
+              {erro && (
+                <div className="rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm p-2">
+                  {erro}
                 </div>
+              )}
 
-                <Button onClick={handleEnviarRevisao} disabled={!todasRespondidas} className="w-full">
-                  Enviar revisão
-                </Button>
-              </div>
-            )}
+              {flow === "idle" && (
+                <div className="flex flex-col items-start gap-2">
+                  <p className="text-sm text-muted-foreground">
+                    Pronto para revisar como você está se sentindo nos últimos 30 dias?
+                  </p>
+                  <Button onClick={handleFazerRevisao}>Fazer revisão</Button>
+                </div>
+              )}
 
-            {flow === "calcular_loading" && (
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Loader2 className="w-4 h-4 animate-spin" /> Calculando sua nova síntese...
-              </div>
-            )}
+              {flow === "hello_loading" && (
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Loader2 className="w-4 h-4 animate-spin" /> Akasha está preparando sua revisão...
+                </div>
+              )}
 
-            {flow === "concluido" && (
-              <div className="space-y-2">
-                <p className="text-sm font-medium text-green-700">Revisão concluída ✓</p>
-                <p className="text-xs text-muted-foreground">
-                  Sua nova síntese já está disponível acima.
-                </p>
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    setFlow("idle");
-                    setSessaoId(null);
-                    setAkashaHello("");
-                    setPerguntas([]);
-                    setRespostas({});
-                    setPesoDelta(0);
-                    setSinteseNova("");
-                  }}
-                >
-                  Voltar
-                </Button>
-              </div>
-            )}
-          </div>
+              {flow === "hello_done" && (
+                <div className="space-y-3">
+                  {akashaHello && (
+                    <div className="rounded-lg bg-muted/40 p-3 text-sm whitespace-pre-wrap leading-relaxed">
+                      {akashaHello}
+                    </div>
+                  )}
+                  <Button onClick={handleGerarRevisao}>Gerar revisão</Button>
+                </div>
+              )}
+
+              {flow === "gerar_loading" && (
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Loader2 className="w-4 h-4 animate-spin" /> Gerando perguntas...
+                </div>
+              )}
+
+              {flow === "form" && (
+                <div className="space-y-6">
+                  {perguntas.map((pq, idx) => (
+                    <div key={pq.id} className="space-y-3">
+                      <p className="font-serif font-semibold text-foreground text-base leading-snug">
+                        {idx + 1}. {pq.pergunta}
+                      </p>
+                      <div className="space-y-2">
+                        {OPCOES.map((o) => {
+                          const selected = respostas[pq.id] === o.letra;
+                          return (
+                            <button
+                              key={o.letra}
+                              type="button"
+                              onClick={() =>
+                                setRespostas((r) => ({ ...r, [pq.id]: o.letra }))
+                              }
+                              className={cn(
+                                "w-full text-left p-3.5 rounded-xl border-2 transition-all text-sm leading-snug",
+                                selected
+                                  ? "border-primary bg-primary/10 font-medium"
+                                  : "border-border bg-card hover:border-primary/40"
+                              )}
+                            >
+                              {o.letra}) {o.texto}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ))}
+
+                  <div className="space-y-2 pt-2 border-t border-border">
+                    <Label className="text-sm font-medium">
+                      Variação de peso nos últimos 30 dias (kg)
+                    </Label>
+                    <p className="text-xs text-muted-foreground">
+                      Peso informado no diagnóstico: {pesoOriginal || "não informado"}
+                    </p>
+                    <div className="flex items-center gap-3">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="icon"
+                        onClick={() => adjustPeso(-1)}
+                        disabled={pesoDelta <= -20}
+                      >
+                        <Minus className="w-4 h-4" />
+                      </Button>
+                      <span className="min-w-[80px] text-center font-semibold">
+                        {formatPeso(pesoDelta)}
+                      </span>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="icon"
+                        onClick={() => adjustPeso(1)}
+                        disabled={pesoDelta >= 20}
+                      >
+                        <Plus className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
+
+                  <Button onClick={handleEnviarRevisao} disabled={!todasRespondidas} className="w-full">
+                    Enviar revisão
+                  </Button>
+                </div>
+              )}
+
+              {flow === "calcular_loading" && (
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Loader2 className="w-4 h-4 animate-spin" /> Calculando sua nova síntese...
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </PageContainer>
     </>
