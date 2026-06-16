@@ -278,7 +278,7 @@ const Revisao = () => {
     const prev = flow;
     setFlow("calcular_loading");
     try {
-      const r = await callWebhook({
+      await callWebhook({
         action: "calcular",
         email: user.email,
         nome: teste?.nome || "",
@@ -289,9 +289,15 @@ const Revisao = () => {
         })),
         peso_delta: pesoDelta,
       });
-      setSinteseNova(r?.sintese ?? "");
-      setFlow("concluido");
-      await fetchUltimaRevisao(user.email);
+      // Reset all flow states to initial and re-fetch from DB
+      setFlow("idle");
+      setSessaoId(null);
+      setAkashaHello("");
+      setPerguntas([]);
+      setRespostas({});
+      setPesoDelta(0);
+      setSinteseNova("");
+      await loadAll(user.email);
     } catch (e) {
       console.error(e);
       setErro("Erro ao processar. Tente novamente.");
