@@ -124,8 +124,18 @@ export default function DoshasEvolutionChart({
   if (realPoints.length === 0 && !metaPoint) return null;
 
   const firstReal = realPoints[0]?.t ?? metaPoint!.t;
-  const xMin = firstReal - EDGE_PAD_MS;
-  const xMax = firstReal + SIX_MONTHS_MS;
+  const lastT = metaPoint?.t ?? realPoints[realPoints.length - 1]?.t ?? firstReal;
+
+  const firstMonth = startOfMonth(firstReal);
+  const lastMonth = startOfMonth(lastT);
+  const monthTicks: number[] = [];
+  for (let m = firstMonth; m <= lastMonth; m = addMonth(m)) {
+    monthTicks.push(m);
+  }
+  if (monthTicks.length === 0) monthTicks.push(firstMonth);
+
+  const xMin = firstMonth - EDGE_PAD_MS;
+  const xMax = (monthTicks[monthTicks.length - 1] ?? lastMonth) + EDGE_PAD_MS;
 
   // Combina real + meta numa série única por dosha (linha sólida contínua)
   const data: SeriesPoint[] = [...realPoints, ...(metaPoint ? [metaPoint] : [])];
@@ -187,9 +197,8 @@ export default function DoshasEvolutionChart({
             type="number"
             domain={[xMin, xMax]}
             scale="time"
-            tickFormatter={(v) =>
-              new Date(v).toLocaleDateString("pt-BR", { day: "2-digit", month: "short" })
-            }
+            ticks={monthTicks}
+            tickFormatter={(v) => monthLabel(v as number)}
             stroke="hsl(var(--primary))"
             tick={{ fill: "hsl(var(--primary))", fontSize: 11, fontWeight: 600 }}
           />
@@ -199,6 +208,7 @@ export default function DoshasEvolutionChart({
             tickFormatter={(v) => ZONE_TICK_LABELS[v as number] || ""}
             stroke="hsl(var(--primary))"
             tick={{ fill: "hsl(var(--primary))", fontSize: 11, fontWeight: 600 }}
+
             width={78}
           />
           <Tooltip content={<ZoneTooltip />} cursor={{ stroke: "hsl(var(--muted-foreground) / 0.3)", strokeWidth: 1 }} />
