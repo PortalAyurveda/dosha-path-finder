@@ -133,7 +133,7 @@ export default function AgniMiniChart({ points, metaPoint, agniTipo }: Props) {
             domain={[xMin, xMax]}
             scale="time"
             ticks={monthTicks}
-            tick={TickWithLabel(labelsByTick)}
+            tick={TickWithLabel(labelsByTick, anchorByTick, offsetByTick)}
             interval={0}
             stroke="hsl(var(--primary))"
             height={48}
