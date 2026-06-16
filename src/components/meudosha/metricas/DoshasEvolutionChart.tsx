@@ -22,7 +22,9 @@ export interface SeriesPoint {
   agni?: number; agniRaw?: number | null;
   isMeta?: boolean;
   tipo?: "teste" | "reteste";
+  label?: string;
 }
+
 
 interface Props {
   realPoints: SeriesPoint[];
