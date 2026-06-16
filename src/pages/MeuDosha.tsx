@@ -810,7 +810,7 @@ const MeuDosha = () => {
                       <p className="text-xs text-muted-foreground">{result.agniPrincipal}</p>
                     </div>
                   )}
-                  <div className="w-full mt-3 flex items-center justify-between gap-2">
+                  <div className="w-full mt-3 flex items-center justify-between gap-2 flex-wrap">
                     <button
                       type="button"
                       onClick={handleRefazerTeste}
@@ -818,18 +818,57 @@ const MeuDosha = () => {
                     >
                       Recomeçar o teste
                     </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        if (isPremium) setEvolucaoOpen(true);
-                        else navigate("/assinar");
-                      }}
-                      className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full border border-border bg-card hover:bg-muted transition-colors text-foreground"
-                      aria-label={isPremium ? "Ver gráficos de evolução" : "Recurso premium — gráficos de evolução"}
-                    >
-                      {isPremium ? <LineChart className="w-3.5 h-3.5" /> : <Lock className="w-3.5 h-3.5" />}
-                      Gráficos
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (isPremium) setEvolucaoOpen(true);
+                          else navigate("/assinar");
+                        }}
+                        className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full border border-border bg-card hover:bg-muted transition-colors text-foreground"
+                        aria-label={isPremium ? "Ver gráficos de evolução" : "Recurso premium — gráficos de evolução"}
+                      >
+                        {isPremium ? <LineChart className="w-3.5 h-3.5" /> : <Lock className="w-3.5 h-3.5" />}
+                        Gráficos
+                      </button>
+                      {(() => {
+                        const createdAt = result.created_at ? new Date(result.created_at) : null;
+                        const liberaEm = createdAt ? new Date(createdAt.getTime() + 30 * 24 * 3600 * 1000) : null;
+                        const disponivel = liberaEm ? Date.now() >= liberaEm.getTime() : false;
+                        const liberaStr = liberaEm
+                          ? `${String(liberaEm.getDate()).padStart(2, '0')}/${String(liberaEm.getMonth() + 1).padStart(2, '0')}`
+                          : '';
+                        const baseClass = "inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full border transition-colors";
+                        if (disponivel) {
+                          return (
+                            <button
+                              type="button"
+                              onClick={() => navigate("/revisao")}
+                              className={`${baseClass} border-akasha/60 bg-akasha/10 text-akasha hover:bg-akasha/20 animate-glow-pulse`}
+                              aria-label="Iniciar revisão — novidade"
+                              title="Sua revisão está disponível"
+                            >
+                              <RefreshCw className="w-3.5 h-3.5" />
+                              Revisão
+                              <span className="ml-1 text-[9px] uppercase tracking-wider font-bold bg-akasha text-white px-1 py-0.5 rounded">novo</span>
+                            </button>
+                          );
+                        }
+                        return (
+                          <button
+                            type="button"
+                            disabled
+                            className={`${baseClass} border-border bg-muted/40 text-muted-foreground cursor-not-allowed opacity-70`}
+                            title={liberaStr ? `Sua revisão libera dia ${liberaStr}` : 'Sua revisão ainda não está disponível'}
+                            aria-label={liberaStr ? `Revisão libera em ${liberaStr}` : 'Revisão indisponível'}
+                          >
+                            <RefreshCw className="w-3.5 h-3.5" />
+                            Revisão
+                            <Lock className="w-3 h-3" />
+                          </button>
+                        );
+                      })()}
+                    </div>
                   </div>
                 </div>
                 <ClinicalThermometer doshaScores={doshaScores} />
