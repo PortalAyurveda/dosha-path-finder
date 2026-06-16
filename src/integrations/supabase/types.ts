@@ -2612,6 +2612,7 @@ export type Database = {
           perguntas_subsecao: number
           questao_atual: number
           relato_abertura: string | null
+          respostas_raw: Json | null
           resultado: Json | null
           seed: Json
           sinais_agni: number
@@ -2634,6 +2635,7 @@ export type Database = {
           perguntas_subsecao?: number
           questao_atual?: number
           relato_abertura?: string | null
+          respostas_raw?: Json | null
           resultado?: Json | null
           seed?: Json
           sinais_agni?: number
@@ -2656,6 +2658,7 @@ export type Database = {
           perguntas_subsecao?: number
           questao_atual?: number
           relato_abertura?: string | null
+          respostas_raw?: Json | null
           resultado?: Json | null
           seed?: Json
           sinais_agni?: number
