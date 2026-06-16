@@ -172,7 +172,22 @@ export default function DoshasEvolutionChart({
 
   // Rótulos do ponto agrupados pelo mês correspondente
   const labelsByTick: Record<number, string[]> = {};
-  for (const t of monthTicks) labelsByTick[t] = [];
+  const anchorByTick: Record<number, "start" | "middle" | "end"> = {};
+  const offsetByTick: Record<number, number> = {};
+  for (let i = 0; i < monthTicks.length; i++) {
+    const t = monthTicks[i];
+    labelsByTick[t] = [];
+    if (i === 0 && monthTicks.length > 1) {
+      anchorByTick[t] = "start";
+      offsetByTick[t] = -4;
+    } else if (i === monthTicks.length - 1 && monthTicks.length > 1) {
+      anchorByTick[t] = "end";
+      offsetByTick[t] = 4;
+    } else {
+      anchorByTick[t] = "middle";
+      offsetByTick[t] = 0;
+    }
+  }
   for (const p of data) {
     const mk = startOfMonth(p.t);
     if (labelsByTick[mk]) labelsByTick[mk].push(p.label || (p.isMeta ? "Meta" : ""));
