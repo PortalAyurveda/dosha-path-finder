@@ -39,12 +39,23 @@ const VATA  = "#4F75FF";
 const PITTA = "#FF5C5C";
 const KAPHA = "#22C55E";
 
-const SIX_MONTHS_MS = 180 * 24 * 60 * 60 * 1000;
-const EDGE_PAD_MS   = 6 * 24 * 60 * 60 * 1000; // pequeno respiro à esquerda
+const EDGE_PAD_MS   = 3 * 24 * 60 * 60 * 1000;
+
+function startOfMonth(ts: number): number {
+  const d = new Date(ts);
+  return new Date(d.getFullYear(), d.getMonth(), 1).getTime();
+}
+function addMonth(ts: number): number {
+  const d = new Date(ts);
+  return new Date(d.getFullYear(), d.getMonth() + 1, 1).getTime();
+}
+function monthLabel(ts: number): string {
+  const s = new Date(ts).toLocaleDateString("pt-BR", { month: "long" });
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}
 
 function ZoneTooltip({ active, payload }: { active?: boolean; payload?: any[] }) {
   if (!active || !payload?.length) return null;
-  // Dedupe por dataKey (real + projeção compartilham a mesma chave)
   const seen = new Set<string>();
   const items = payload.filter((p) => {
     if (p.value == null) return false;
@@ -53,15 +64,15 @@ function ZoneTooltip({ active, payload }: { active?: boolean; payload?: any[] })
     return true;
   });
   if (!items.length) return null;
-  const isReteste = items[0]?.payload?.tipo === "reteste";
+  const label = items[0]?.payload?.label as string | undefined;
   return (
     <div
       className="rounded-lg border shadow-lg px-3 py-2 text-xs space-y-1"
       style={{ background: "hsl(var(--card))", borderColor: "hsl(var(--border))" }}
     >
-      {isReteste && (
+      {label && (
         <div className="text-[10px] uppercase tracking-wider font-bold" style={{ color: "hsl(var(--muted-foreground))" }}>
-          Revisão
+          {label}
         </div>
       )}
       {items.map((p) => {
@@ -81,6 +92,7 @@ function ZoneTooltip({ active, payload }: { active?: boolean; payload?: any[] })
     </div>
   );
 }
+
 
 // Custom dot: circle for "teste", dashed diamond for "reteste"
 function makeDot(color: string) {
