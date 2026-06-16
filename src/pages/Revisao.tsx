@@ -122,6 +122,14 @@ const Revisao = () => {
   const [pesoOriginal, setPesoOriginal] = useState<string | null>(null);
   const [, setSinteseNova] = useState<string>("");
   const [erro, setErro] = useState<string | null>(null);
+  const [revPhase, setRevPhase] = useState<"antes" | "depois">("antes");
+
+  useEffect(() => {
+    if (!ultimaRevisao) return;
+    setRevPhase("antes");
+    const t = setTimeout(() => setRevPhase("depois"), 800);
+    return () => clearTimeout(t);
+  }, [ultimaRevisao]);
 
   const fetchUltimaRevisao = useCallback(async (email: string) => {
     const { data } = await supabase
