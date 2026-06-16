@@ -39,7 +39,7 @@ const VATA  = "#4F75FF";
 const PITTA = "#FF5C5C";
 const KAPHA = "#22C55E";
 
-const EDGE_PAD_MS   = 3 * 24 * 60 * 60 * 1000;
+const EDGE_PAD_MS   = 14 * 24 * 60 * 60 * 1000;
 
 function startOfMonth(ts: number): number {
   const d = new Date(ts);
