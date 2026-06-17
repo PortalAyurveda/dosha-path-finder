@@ -97,6 +97,13 @@ const Video = () => {
       : `https://www.youtube.com/embed/${videoId}?autoplay=1`
     : "";
 
+  // Soft 404: when slug doesn't resolve, redirect to /biblioteca (replace) instead of rendering a 200 error page
+  useEffect(() => {
+    if (!isLoading && !video) {
+      navigate("/biblioteca", { replace: true });
+    }
+  }, [isLoading, video, navigate]);
+
   if (isLoading) {
     return (
       <PageContainer title="Carregando..." description="">
@@ -109,13 +116,6 @@ const Video = () => {
       </PageContainer>
     );
   }
-
-  // Soft 404: when slug doesn't resolve, redirect to /biblioteca (replace) instead of rendering a 200 error page
-  useEffect(() => {
-    if (!isLoading && !video) {
-      navigate("/biblioteca", { replace: true });
-    }
-  }, [isLoading, video, navigate]);
 
   if (!video) {
     return null;

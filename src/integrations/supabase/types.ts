@@ -1954,6 +1954,78 @@ export type Database = {
         }
         Relationships: []
       }
+      n8n_webhooks: {
+        Row: {
+          ativo: boolean
+          criado_em: string
+          descricao: string | null
+          execucoes_erro: number
+          execucoes_sucesso: number
+          funcao: string | null
+          id: string
+          notas: string | null
+          sincronizado_em: string
+          tags: string[] | null
+          taxa_sucesso: number | null
+          total_execucoes: number
+          ultima_atualizacao_n8n: string | null
+          ultima_execucao: string | null
+          webhook_method: string | null
+          webhook_path: string | null
+          webhook_tipo: string | null
+          webhook_url: string | null
+          workflow_ativo: boolean
+          workflow_id: string
+          workflow_name: string
+        }
+        Insert: {
+          ativo?: boolean
+          criado_em: string
+          descricao?: string | null
+          execucoes_erro?: number
+          execucoes_sucesso?: number
+          funcao?: string | null
+          id?: string
+          notas?: string | null
+          sincronizado_em?: string
+          tags?: string[] | null
+          taxa_sucesso?: number | null
+          total_execucoes?: number
+          ultima_atualizacao_n8n?: string | null
+          ultima_execucao?: string | null
+          webhook_method?: string | null
+          webhook_path?: string | null
+          webhook_tipo?: string | null
+          webhook_url?: string | null
+          workflow_ativo?: boolean
+          workflow_id: string
+          workflow_name: string
+        }
+        Update: {
+          ativo?: boolean
+          criado_em?: string
+          descricao?: string | null
+          execucoes_erro?: number
+          execucoes_sucesso?: number
+          funcao?: string | null
+          id?: string
+          notas?: string | null
+          sincronizado_em?: string
+          tags?: string[] | null
+          taxa_sucesso?: number | null
+          total_execucoes?: number
+          ultima_atualizacao_n8n?: string | null
+          ultima_execucao?: string | null
+          webhook_method?: string | null
+          webhook_path?: string | null
+          webhook_tipo?: string | null
+          webhook_url?: string | null
+          workflow_ativo?: boolean
+          workflow_id?: string
+          workflow_name?: string
+        }
+        Relationships: []
+      }
       perfis: {
         Row: {
           created_at: string | null

@@ -1,56 +1,29 @@
-# Admin · Revisões
+## Problema
 
-Nova área em `/admin/revisoes` listando todas as revisões já realizadas pelos usuários, com ação de excluir.
+A página `/video/:slug` fica travada em "Carregando..." (esqueleto + title) para qualquer vídeo acessado por URL direta (links do index, Google, compartilhamento).
 
-## O que será criado
+## Causa raiz
 
-### 1. Nova rota: `/admin/revisoes`
-- Protegida por `AdminRoute` (mesmo padrão dos outros admins).
-- Adicionada em `src/App.tsx`.
-- Link adicionado no `AdminNav.tsx` (ícone `RefreshCw` ou `History`).
+`src/pages/Video.tsx` viola as **Regras dos Hooks** do React:
 
-### 2. Página `src/pages/AdminRevisoes.tsx`
-Lista (tabela) ordenada por `updated_at` desc de `reteste_sessao` com `status = 'concluido'`.
-
-Para cada linha, exibir:
-- **Usuário** — `user_email` (e nome quando disponível via join com `doshas_registros.nome` do registro de origem)
-- **Data do teste** — `created_at` do `doshas_registros` referenciado por `dosha_registro_origem_id`
-- **Data da revisão** — `resultado->>'data_revisao'` (fallback `updated_at`)
-- **Vata** — `vatascore_antes → vatascore_depois`
-- **Pitta** — `pittascore_antes → pittascore_depois`
-- **Kapha** — `kaphascore_antes → kaphascore_depois`
-- **Agni** — `agniPrincipal` do teste → `resultado->>'agniNovo'`
-- **Ações** — botão "Excluir" (ícone lixeira) com `AlertDialog` de confirmação
-
-Como `resultado` é JSONB, os valores antes/depois vêm direto dele; o Agni anterior e a data do teste vêm de um `select` paralelo a `doshas_registros` por `dosha_registro_origem_id`. Busca feita com `useQuery`.
-
-Filtro simples no topo: input de busca por email.
-
-### 3. Exclusão
-Ao confirmar:
-- `DELETE FROM reteste_chat_history WHERE sessao_id = :id`
-- `DELETE FROM reteste_sessao WHERE id = :id`
-
-Feito via duas chamadas `supabase.from(...).delete()` em sequência (a mesma sessão pode ter mensagens em `reteste_chat_history` ligadas via `sessao_id`). Após sucesso, invalida o `useQuery` e mostra toast.
-
-### 4. RLS / permissões
-As tabelas `reteste_sessao` e `reteste_chat_history` já têm policies; será necessário garantir que admins possam ler/deletar todas as linhas (não só as próprias). Verifico as policies atuais antes de implementar e, se faltar, adiciono migration com policies extras usando `public.is_admin()`:
-
-```sql
-CREATE POLICY "Admins manage all reteste_sessao" ON public.reteste_sessao
-  FOR ALL TO authenticated USING (public.is_admin()) WITH CHECK (public.is_admin());
-
-CREATE POLICY "Admins manage all reteste_chat_history" ON public.reteste_chat_history
-  FOR ALL TO authenticated USING (public.is_admin()) WITH CHECK (public.is_admin());
+```text
+linha 100:  if (isLoading) return <Skeleton .../>;   ← early return
+linha 114:  useEffect(() => { ... navigate("/biblioteca") ... });  ← hook DEPOIS do return
 ```
 
-(Somente se as policies existentes não cobrirem admin.)
+Na primeira renderização `isLoading=true` → o componente retorna cedo e o `useEffect` nunca é registrado. Quando a query termina e `isLoading=false`, o React tenta executar o `useEffect` que não existia antes → erro "Rendered more hooks than during the previous render" → a árvore quebra e a UI fica congelada no esqueleto.
 
-## Arquivos
+Confirmei via `find_video_by_slug('leitura-de-lingua-no-ayurveda')` que o backend devolve os dados corretamente — o bug é 100% no client.
 
-- novo: `src/pages/AdminRevisoes.tsx`
-- editado: `src/App.tsx` (rota)
-- editado: `src/components/admin/AdminNav.tsx` (link)
-- migration condicional para policies de admin
+## Correção
 
-Sem mudanças em design tokens. UI segue o padrão de `AdminTesteRegistros`/`AdminMensagens` (Card + Table do shadcn).
+Em `src/pages/Video.tsx`:
+
+1. Mover o bloco `useEffect` (linhas 113–118) para **antes** de qualquer early return — logo após os outros hooks (`useMemo`, etc.) e antes do `if (isLoading) return ...`.
+2. Manter as duas guardas de render (`if (isLoading)` → skeleton; `if (!video) return null`) inalteradas.
+
+Nenhuma outra mudança de lógica, estilo ou backend. Sem mexer em ContentHub, RPC ou rotas.
+
+## Verificação
+
+Após o fix, abrir `/video/leitura-de-lingua-no-ayurveda` e `/video/como-fazer-grao-de-bico-com-leite-de-coco` direto na URL — devem carregar título, player do YouTube e índice de minutos normalmente.
