@@ -2026,6 +2026,54 @@ export type Database = {
         }
         Relationships: []
       }
+      n8n_webhooks_history: {
+        Row: {
+          funcao: string | null
+          id: string
+          node_types: string[] | null
+          nodes_count: number | null
+          snapshot_em: string
+          ultima_atualizacao_n8n: string | null
+          webhook_method: string | null
+          webhook_path: string | null
+          webhook_tipo: string | null
+          webhook_url: string | null
+          workflow_ativo: boolean
+          workflow_id: string
+          workflow_name: string
+        }
+        Insert: {
+          funcao?: string | null
+          id?: string
+          node_types?: string[] | null
+          nodes_count?: number | null
+          snapshot_em?: string
+          ultima_atualizacao_n8n?: string | null
+          webhook_method?: string | null
+          webhook_path?: string | null
+          webhook_tipo?: string | null
+          webhook_url?: string | null
+          workflow_ativo?: boolean
+          workflow_id: string
+          workflow_name: string
+        }
+        Update: {
+          funcao?: string | null
+          id?: string
+          node_types?: string[] | null
+          nodes_count?: number | null
+          snapshot_em?: string
+          ultima_atualizacao_n8n?: string | null
+          webhook_method?: string | null
+          webhook_path?: string | null
+          webhook_tipo?: string | null
+          webhook_url?: string | null
+          workflow_ativo?: boolean
+          workflow_id?: string
+          workflow_name?: string
+        }
+        Relationships: []
+      }
       perfis: {
         Row: {
           created_at: string | null
