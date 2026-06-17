@@ -8,6 +8,7 @@ import ReactMarkdown from "react-markdown";
 import { Link } from "react-router-dom";
 
 const AKASHA_LOGO = "https://static.wixstatic.com/media/b8f47f_105371e1ade24ccd9bd3406b83bd925e~mv2.png";
+const AKASHA_FLOATING_LOGO = "https://api.portalayurveda.com/storage/v1/object/public/portal_images/akasha-versao-2.webp";
 const WEBHOOK_URL = "https://n8n.portalayurveda.com/webhook/chat-ayurveda";
 
 // Rotas onde o widget NÃO deve aparecer
@@ -474,13 +475,13 @@ const FloatingAkasha = () => {
       {/* Botão flutuante */}
       <button
         onClick={() => setOpen((o) => !o)}
-        className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-[60] w-14 h-14 rounded-full bg-white border border-akasha/20 shadow-xl shadow-akasha/30 flex items-center justify-center text-akasha hover:scale-105 transition-transform"
+        className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-[60] w-14 h-14 rounded-full bg-white border border-akasha/20 shadow-xl shadow-akasha/30 flex items-center justify-center text-akasha hover:scale-105 transition-transform overflow-hidden"
         aria-label={open ? "Fechar Akasha" : "Abrir Akasha"}
       >
         {open ? (
           <X className="w-6 h-6" />
         ) : (
-          <img src={AKASHA_LOGO} alt="Akasha" className="w-8 h-8 object-contain" />
+          <img src={AKASHA_FLOATING_LOGO} alt="Akasha" className="w-full h-full object-cover rounded-full" />
         )}
       </button>
     </>
