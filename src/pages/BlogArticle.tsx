@@ -25,11 +25,15 @@ const BlogArticle = () => {
     enabled: !!slug,
   });
 
+  const formattedSlug = slug
+    ? slug.replace(/-/g, " ").replace(/^\w/, (c) => c.toUpperCase())
+    : "Carregando...";
+
   if (isLoading) {
     return (
       <>
         <Helmet>
-          <title>Carregando... | Portal Ayurveda</title>
+          <title>{formattedSlug} | Portal Ayurveda</title>
         </Helmet>
         <div className="max-w-3xl mx-auto px-4 py-12 animate-pulse space-y-6">
           <div className="h-8 bg-muted rounded w-3/4" />

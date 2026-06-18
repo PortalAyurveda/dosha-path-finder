@@ -586,6 +586,60 @@ export type Database = {
         }
         Relationships: []
       }
+      clarity_auditoria: {
+        Row: {
+          coletado_em: string
+          created_at: string | null
+          dead_clicks: number | null
+          erros_click: number | null
+          erros_script: number | null
+          id: string
+          paginas_por_sessao: number | null
+          quickback_clicks: number | null
+          rage_clicks: number | null
+          scroll_excessivo: number | null
+          scroll_profundidade: number | null
+          sessoes: number | null
+          tempo_engajamento_segundos: number | null
+          url: string
+          usuarios: number | null
+        }
+        Insert: {
+          coletado_em: string
+          created_at?: string | null
+          dead_clicks?: number | null
+          erros_click?: number | null
+          erros_script?: number | null
+          id?: string
+          paginas_por_sessao?: number | null
+          quickback_clicks?: number | null
+          rage_clicks?: number | null
+          scroll_excessivo?: number | null
+          scroll_profundidade?: number | null
+          sessoes?: number | null
+          tempo_engajamento_segundos?: number | null
+          url: string
+          usuarios?: number | null
+        }
+        Update: {
+          coletado_em?: string
+          created_at?: string | null
+          dead_clicks?: number | null
+          erros_click?: number | null
+          erros_script?: number | null
+          id?: string
+          paginas_por_sessao?: number | null
+          quickback_clicks?: number | null
+          rage_clicks?: number | null
+          scroll_excessivo?: number | null
+          scroll_profundidade?: number | null
+          sessoes?: number | null
+          tempo_engajamento_segundos?: number | null
+          url?: string
+          usuarios?: number | null
+        }
+        Relationships: []
+      }
       config_live: {
         Row: {
           ativo: boolean | null
