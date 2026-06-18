@@ -433,7 +433,12 @@ const TerapeutaCadastro = () => {
                     </span>
                   </Button>
                 </label>
-                <p className="text-xs text-muted-foreground mt-2">JPG ou PNG, até 5MB.</p>
+                <p className="text-xs text-muted-foreground mt-2">JPG, PNG ou WebP, até 10MB. (HEIC do iPhone não é suportado — troque para "Mais compatível" em Ajustes → Câmera → Formatos.)</p>
+                {uploadError && (
+                  <p className="text-xs text-destructive mt-2 font-medium">
+                    ⚠ {uploadError}
+                  </p>
+                )}
               </div>
             </div>
           </section>
