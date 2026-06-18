@@ -263,6 +263,10 @@ const TerapeutaCadastro = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (uploading) {
+      toast({ title: "Aguarde", description: "Sua foto ainda está sendo enviada.", variant: "destructive" });
+      return;
+    }
     if (!form.nome.trim()) {
       toast({ title: "Informe seu nome", variant: "destructive" });
       return;
