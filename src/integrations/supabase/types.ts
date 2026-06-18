@@ -1957,12 +1957,14 @@ export type Database = {
       n8n_webhooks: {
         Row: {
           ativo: boolean
+          connections_json: Json | null
           criado_em: string
           descricao: string | null
           execucoes_erro: number
           execucoes_sucesso: number
           funcao: string | null
           id: string
+          nodes_json: Json | null
           notas: string | null
           sincronizado_em: string
           tags: string[] | null
@@ -1980,12 +1982,14 @@ export type Database = {
         }
         Insert: {
           ativo?: boolean
+          connections_json?: Json | null
           criado_em: string
           descricao?: string | null
           execucoes_erro?: number
           execucoes_sucesso?: number
           funcao?: string | null
           id?: string
+          nodes_json?: Json | null
           notas?: string | null
           sincronizado_em?: string
           tags?: string[] | null
@@ -2003,12 +2007,14 @@ export type Database = {
         }
         Update: {
           ativo?: boolean
+          connections_json?: Json | null
           criado_em?: string
           descricao?: string | null
           execucoes_erro?: number
           execucoes_sucesso?: number
           funcao?: string | null
           id?: string
+          nodes_json?: Json | null
           notas?: string | null
           sincronizado_em?: string
           tags?: string[] | null
