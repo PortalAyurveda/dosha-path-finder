@@ -861,7 +861,7 @@ const MeuDosha = () => {
                           ? `${String(liberaEm.getDate()).padStart(2, '0')}/${String(liberaEm.getMonth() + 1).padStart(2, '0')}`
                           : '';
                         const baseClass = "inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full border transition-colors";
-                        if (disponivel) {
+                        if (disponivel || hasRevisaoConcluida) {
                           const jaConcluiu = !!hasRevisaoConcluida;
                           return (
                             <button
