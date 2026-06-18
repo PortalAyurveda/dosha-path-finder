@@ -19,6 +19,7 @@ interface DoshaTeste {
   kaphascore: number | null;
   agniPrincipal: string | null;
   doshaprincipal: string | null;
+  created_at: string | null;
 }
 
 interface RevisaoResultado {
@@ -159,7 +160,7 @@ const Revisao = () => {
     const [testeRes, ultimaRes, andamentoRes, pesoRes] = await Promise.all([
       supabase
         .from("doshas_registros")
-        .select('id, "idPublico", nome, vatascore, pittascore, kaphascore, "agniPrincipal", doshaprincipal')
+        .select('id, "idPublico", nome, vatascore, pittascore, kaphascore, "agniPrincipal", doshaprincipal, created_at')
         .eq("email", email)
         .eq("tipo", "teste")
         .order("created_at", { ascending: false })
@@ -606,7 +607,28 @@ const Revisao = () => {
                   <p className="text-sm text-muted-foreground">
                     Pronto para revisar como você está se sentindo nos últimos 30 dias?
                   </p>
-                  <Button onClick={handleFazerRevisao}>Fazer revisão</Button>
+                  {(() => {
+                    const testeDate = teste?.created_at ? new Date(teste.created_at) : null;
+                    const dias = testeDate
+                      ? Math.floor((Date.now() - testeDate.getTime()) / (1000 * 60 * 60 * 24))
+                      : null;
+                    const bloqueado = dias !== null && dias < 30;
+                    const dataLiberacao = testeDate
+                      ? new Date(testeDate.getTime() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString("pt-BR")
+                      : "";
+                    return (
+                      <>
+                        <Button onClick={handleFazerRevisao} disabled={bloqueado}>
+                          Fazer revisão
+                        </Button>
+                        {bloqueado && (
+                          <p className="text-xs text-muted-foreground">
+                            Sua revisão libera dia {dataLiberacao}
+                          </p>
+                        )}
+                      </>
+                    );
+                  })()}
                 </div>
               )}
 
