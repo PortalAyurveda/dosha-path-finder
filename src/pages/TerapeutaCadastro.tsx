@@ -64,6 +64,7 @@ const TerapeutaCadastro = () => {
   const [loadingMunicipios, setLoadingMunicipios] = useState(false);
 
   const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
 
