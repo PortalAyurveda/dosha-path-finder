@@ -98,8 +98,13 @@ const LiveChat = ({ slug }: Props) => {
       });
     };
 
+    const channelName = `chat_aula_${slug}`;
+    supabase.getChannels().forEach((ch) => {
+      if (ch.topic === `realtime:${channelName}`) supabase.removeChannel(ch);
+    });
+
     const channel = supabase
-      .channel(`chat_aula_${slug}`)
+      .channel(channelName)
       .on(
         "postgres_changes",
         {

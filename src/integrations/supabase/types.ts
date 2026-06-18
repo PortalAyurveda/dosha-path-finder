@@ -2992,6 +2992,138 @@ export type Database = {
           },
         ]
       }
+      rotina_nuggets_backup_20260617: {
+        Row: {
+          categoria: string | null
+          chunk_index: number | null
+          created_at: string | null
+          icone_lucide: string | null
+          id: string | null
+          kapha: number | null
+          nugget_json: Json | null
+          periodo: string | null
+          pitta: number | null
+          revisado: boolean | null
+          score: number | null
+          subcategoria: string | null
+          tags: string[] | null
+          tipo: string | null
+          titulo: string | null
+          uso_externo: boolean | null
+          vata: number | null
+          video_id: string | null
+          video_timestamp: string | null
+        }
+        Insert: {
+          categoria?: string | null
+          chunk_index?: number | null
+          created_at?: string | null
+          icone_lucide?: string | null
+          id?: string | null
+          kapha?: number | null
+          nugget_json?: Json | null
+          periodo?: string | null
+          pitta?: number | null
+          revisado?: boolean | null
+          score?: number | null
+          subcategoria?: string | null
+          tags?: string[] | null
+          tipo?: string | null
+          titulo?: string | null
+          uso_externo?: boolean | null
+          vata?: number | null
+          video_id?: string | null
+          video_timestamp?: string | null
+        }
+        Update: {
+          categoria?: string | null
+          chunk_index?: number | null
+          created_at?: string | null
+          icone_lucide?: string | null
+          id?: string | null
+          kapha?: number | null
+          nugget_json?: Json | null
+          periodo?: string | null
+          pitta?: number | null
+          revisado?: boolean | null
+          score?: number | null
+          subcategoria?: string | null
+          tags?: string[] | null
+          tipo?: string | null
+          titulo?: string | null
+          uso_externo?: boolean | null
+          vata?: number | null
+          video_id?: string | null
+          video_timestamp?: string | null
+        }
+        Relationships: []
+      }
+      rotina_nuggets_backup_jun17: {
+        Row: {
+          categoria: string | null
+          chunk_index: number | null
+          created_at: string | null
+          icone_lucide: string | null
+          id: string | null
+          kapha: number | null
+          nugget_json: Json | null
+          periodo: string | null
+          pitta: number | null
+          revisado: boolean | null
+          score: number | null
+          subcategoria: string | null
+          tags: string[] | null
+          tipo: string | null
+          titulo: string | null
+          uso_externo: boolean | null
+          vata: number | null
+          video_id: string | null
+          video_timestamp: string | null
+        }
+        Insert: {
+          categoria?: string | null
+          chunk_index?: number | null
+          created_at?: string | null
+          icone_lucide?: string | null
+          id?: string | null
+          kapha?: number | null
+          nugget_json?: Json | null
+          periodo?: string | null
+          pitta?: number | null
+          revisado?: boolean | null
+          score?: number | null
+          subcategoria?: string | null
+          tags?: string[] | null
+          tipo?: string | null
+          titulo?: string | null
+          uso_externo?: boolean | null
+          vata?: number | null
+          video_id?: string | null
+          video_timestamp?: string | null
+        }
+        Update: {
+          categoria?: string | null
+          chunk_index?: number | null
+          created_at?: string | null
+          icone_lucide?: string | null
+          id?: string | null
+          kapha?: number | null
+          nugget_json?: Json | null
+          periodo?: string | null
+          pitta?: number | null
+          revisado?: boolean | null
+          score?: number | null
+          subcategoria?: string | null
+          tags?: string[] | null
+          tipo?: string | null
+          titulo?: string | null
+          uso_externo?: boolean | null
+          vata?: number | null
+          video_id?: string | null
+          video_timestamp?: string | null
+        }
+        Relationships: []
+      }
       rotinas_usuario: {
         Row: {
           created_at: string | null
