@@ -64,6 +64,7 @@ const TerapeutaCadastro = () => {
   const [loadingMunicipios, setLoadingMunicipios] = useState(false);
 
   const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
 
@@ -199,13 +200,36 @@ const TerapeutaCadastro = () => {
 
   const handleFileUpload = async (file: File) => {
     if (!file) return;
+    setUploadError(null);
+
+    // Detecta HEIC/HEIF (iPhone com formato "Original") — navegadores não decodificam.
+    const lowerName = file.name.toLowerCase();
+    const isHeic =
+      file.type === "image/heic" ||
+      file.type === "image/heif" ||
+      lowerName.endsWith(".heic") ||
+      lowerName.endsWith(".heif");
+    if (isHeic) {
+      const msg =
+        "Formato HEIC do iPhone não é suportado pelo navegador. No iPhone: Ajustes → Câmera → Formatos → 'Mais compatível'. Ou envie a foto como JPG/PNG.";
+      setUploadError(msg);
+      toast({ title: "Formato não suportado", description: msg, variant: "destructive" });
+      return;
+    }
+
     if (file.size > 10 * 1024 * 1024) {
-      toast({ title: "Arquivo muito grande", description: "Máximo 10MB.", variant: "destructive" });
+      const msg = "Arquivo muito grande. Máximo 10MB.";
+      setUploadError(msg);
+      toast({ title: "Arquivo muito grande", description: msg, variant: "destructive" });
       return;
     }
     setUploading(true);
     try {
       const optimized = await optimizeImageToWebP(file, { maxWidth: 1600, quality: 0.85 });
+      // Se a otimização falhou (canvas/memória) e o original também não é uma imagem suportável, aborta
+      if (!optimized.optimized && !file.type.startsWith("image/")) {
+        throw new Error("Não foi possível processar o arquivo. Envie JPG, PNG ou WebP.");
+      }
       const uploadFile = optimized.file;
       const ext = uploadFile.type === "image/webp" ? "webp" : (file.name.split(".").pop() || "jpg");
       const path = `${slugify(user!.email!)}-${Date.now()}.${ext}`;
@@ -217,6 +241,7 @@ const TerapeutaCadastro = () => {
       if (error) throw error;
       const { data } = supabase.storage.from("terapeutas").getPublicUrl(path);
       setForm((f) => ({ ...f, imagem: data.publicUrl }));
+      setUploadError(null);
       const pct = optimized.optimized && optimized.originalSize > 0
         ? Math.round((1 - optimized.optimizedSize / optimized.originalSize) * 100)
         : 0;
@@ -227,14 +252,21 @@ const TerapeutaCadastro = () => {
           : "Imagem carregada com sucesso.",
       });
     } catch (err: any) {
-      toast({ title: "Erro no upload", description: err.message, variant: "destructive" });
+      const msg = err?.message || "Falha ao enviar a foto. Tente novamente.";
+      setUploadError(msg);
+      toast({ title: "Erro no upload", description: msg, variant: "destructive" });
     } finally {
       setUploading(false);
     }
   };
 
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (uploading) {
+      toast({ title: "Aguarde", description: "Sua foto ainda está sendo enviada.", variant: "destructive" });
+      return;
+    }
     if (!form.nome.trim()) {
       toast({ title: "Informe seu nome", variant: "destructive" });
       return;
@@ -401,7 +433,12 @@ const TerapeutaCadastro = () => {
                     </span>
                   </Button>
                 </label>
-                <p className="text-xs text-muted-foreground mt-2">JPG ou PNG, até 5MB.</p>
+                <p className="text-xs text-muted-foreground mt-2">JPG, PNG ou WebP, até 10MB. (HEIC do iPhone não é suportado — troque para "Mais compatível" em Ajustes → Câmera → Formatos.)</p>
+                {uploadError && (
+                  <p className="text-xs text-destructive mt-2 font-medium">
+                    ⚠ {uploadError}
+                  </p>
+                )}
               </div>
             </div>
           </section>
