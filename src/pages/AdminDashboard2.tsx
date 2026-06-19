@@ -990,6 +990,8 @@ export default function AdminDashboard2() {
             <RecepcionistaDev
               modulos={entries.map((e) => ({ id: e.id, titulo: e.titulo, modulo: e.modulo }))}
               onAttach={attachProposta}
+              notas={recepcionistaEntry?.notas || []}
+              onUpdateNotas={updateRecepcionistaNotas}
             />
             <div className="grid grid-cols-1 md:grid-cols-[260px_1fr] gap-4">
               <aside className="border rounded-lg bg-card overflow-hidden flex flex-col max-h-[calc(100vh-220px)]">
