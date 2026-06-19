@@ -892,13 +892,16 @@ export default function AdminDashboard2() {
     return Array.from(s);
   }, [entries]);
 
+  const PERFIS = ["Edson", "Marcos", "Marcelle", "Estoque"];
+
   const filtered = useMemo(() => {
     return entries.filter((e) => {
+      if (perfilFilter !== "all" && !(e.perfis || []).includes(perfilFilter)) return false;
       if (verticalFilter !== "all" && e.vertical !== verticalFilter) return false;
       if (acessoFilter !== "all" && !(e.acesso_permitido || []).includes(acessoFilter)) return false;
       return true;
     });
-  }, [entries, verticalFilter, acessoFilter]);
+  }, [entries, perfilFilter, verticalFilter, acessoFilter]);
 
   const grouped = useMemo(() => {
     const g: Record<string, DevlogEntry[]> = {};
