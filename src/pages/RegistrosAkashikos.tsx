@@ -286,7 +286,7 @@ const RegistrosAkashikos = () => {
                 data!.rows.map((r) => (
                   <li key={r.id}>
                     <Link
-                      to={`/registros/${r.id}`}
+                      to={`/registros-akashikos/${akashaSlug(r.titulo)}`}
                       className="px-5 py-2.5 flex items-center gap-4 transition-colors hover:bg-muted/40 group"
                     >
                       <span
