@@ -9,7 +9,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "@/components/ui/collapsible";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { ChevronDown, MessageSquare, Send, Pencil, Check, X, Star, Trash2, Sparkles } from "lucide-react";
+import { ChevronDown, MessageSquare, Send, Pencil, Check, X, Star, Trash2, Sparkles, RefreshCw, ListChecks } from "lucide-react";
+import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
+import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "@/hooks/use-toast";
 import ReactFlow, {
   Background,
@@ -215,13 +217,21 @@ function NotasSection({
 type RecepProposta = { modulo: string; campo: string; proposta: string; justificativa?: string };
 type RecepMsg = { role: "user" | "assistant"; content: string; propostas?: RecepProposta[] };
 
+const PERFIS_RECEP = ["Edson", "Marcos", "Marcelle", "Estoque"];
+const newSessionId = () =>
+  (typeof crypto !== "undefined" && "randomUUID" in crypto
+    ? crypto.randomUUID()
+    : `s_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`);
+
 function RecepcionistaDev({
   modulos,
+  verticais,
   onAttach,
   notas,
   onUpdateNotas,
 }: {
   modulos: { id: string; titulo: string; modulo: string | null }[];
+  verticais: string[];
   onAttach: (moduloId: string, p: RecepProposta) => Promise<void>;
   notas: Nota[];
   onUpdateNotas: (notas: Nota[]) => Promise<void>;
@@ -232,13 +242,54 @@ function RecepcionistaDev({
   const [loading, setLoading] = useState(false);
   const [picker, setPicker] = useState<{ p: RecepProposta; msgIdx: number; pIdx: number } | null>(null);
   const [pickerModuloId, setPickerModuloId] = useState<string>("");
+  const [sessionId, setSessionId] = useState<string>(() => newSessionId());
+
+  // Foco: modo rápido (uma chave) ou modo preciso (multi-módulos)
+  const [focusKind, setFocusKind] = useState<"quick" | "precise">("quick");
+  const [quickFocus, setQuickFocus] = useState<string>("tudo");
+  const [precisePickerOpen, setPrecisePickerOpen] = useState(false);
+  const [selectedModulos, setSelectedModulos] = useState<Set<string>>(new Set());
+
+  const moduloKey = (m: { titulo: string; modulo: string | null }) =>
+    (m.modulo && m.modulo.trim()) || m.titulo;
+
+  const modulosFoco: string[] = useMemo(() => {
+    if (focusKind === "precise") {
+      if (selectedModulos.size === 0) return ["tudo"];
+      return Array.from(selectedModulos);
+    }
+    return [quickFocus || "tudo"];
+  }, [focusKind, quickFocus, selectedModulos]);
+
+  const focusLabel =
+    focusKind === "precise"
+      ? selectedModulos.size === 0
+        ? "Tudo"
+        : `${selectedModulos.size} módulo${selectedModulos.size > 1 ? "s" : ""}`
+      : quickFocus === "tudo"
+        ? "Tudo"
+        : quickFocus.charAt(0).toUpperCase() + quickFocus.slice(1);
+
+  const toggleModulo = (key: string) => {
+    setSelectedModulos((s) => {
+      const next = new Set(s);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
+  };
+
+  const resetConversation = () => {
+    setHistory([]);
+    setInput("");
+    setSessionId(newSessionId());
+  };
 
   const send = async () => {
     const text = input.trim();
     if (!text) return;
     const userMsg: RecepMsg = { role: "user", content: text };
-    const nextHistory = [...history, userMsg];
-    setHistory(nextHistory);
+    setHistory((h) => [...h, userMsg]);
     setInput("");
     setLoading(true);
     try {
@@ -247,7 +298,8 @@ function RecepcionistaDev({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           mensagem: text,
-          historico: history.map((m) => ({ role: m.role, content: m.content })),
+          modulos_foco: modulosFoco,
+          session_id: sessionId,
         }),
       });
       const txt = await res.text();
@@ -280,14 +332,25 @@ function RecepcionistaDev({
 
   return (
     <div className="border rounded-lg bg-card mb-4">
-      <button
-        onClick={() => setOpen((o) => !o)}
-        className="w-full flex items-center gap-2 px-4 py-3 border-b text-sm font-semibold"
-      >
-        <Sparkles className="w-4 h-4 text-primary" />
-        Recepcionista Dev
-        <ChevronDown className={`w-4 h-4 ml-auto transition ${open ? "rotate-180" : ""}`} />
-      </button>
+      <div className="w-full flex items-center gap-2 px-4 py-3 border-b text-sm font-semibold">
+        <button onClick={() => setOpen((o) => !o)} className="flex items-center gap-2 flex-1 text-left">
+          <Sparkles className="w-4 h-4 text-primary" />
+          Recepcionista Dev
+        </button>
+        <span className="text-xs font-normal text-muted-foreground hidden sm:inline">
+          Foco: <span className="font-medium text-foreground">{focusLabel}</span>
+        </span>
+        <button
+          onClick={resetConversation}
+          className="text-xs font-normal text-muted-foreground hover:text-foreground flex items-center gap-1"
+          title="Nova conversa"
+        >
+          <RefreshCw className="w-3.5 h-3.5" /> Nova conversa
+        </button>
+        <button onClick={() => setOpen((o) => !o)} aria-label="toggle">
+          <ChevronDown className={`w-4 h-4 transition ${open ? "rotate-180" : ""}`} />
+        </button>
+      </div>
       {open && (
         <div className="p-4 space-y-3">
           {history.length === 0 && (
@@ -333,6 +396,88 @@ function RecepcionistaDev({
               </div>
             ))}
             {loading && <div className="text-xs text-muted-foreground">Pensando...</div>}
+          </div>
+          <div className="flex flex-wrap items-center gap-1.5 pb-1 border-b border-dashed">
+            <span className="text-[11px] uppercase tracking-wide text-muted-foreground mr-1">Foco:</span>
+            {[
+              { key: "tudo", label: "Tudo" },
+              ...PERFIS_RECEP.map((p) => ({ key: p.toLowerCase(), label: p })),
+              ...verticais.map((v) => ({ key: v.toLowerCase(), label: v })),
+            ].map((opt) => {
+              const active = focusKind === "quick" && quickFocus === opt.key;
+              return (
+                <button
+                  key={opt.key}
+                  onClick={() => {
+                    setFocusKind("quick");
+                    setQuickFocus(opt.key);
+                  }}
+                  className={`text-xs px-2 py-0.5 rounded-full border transition ${
+                    active
+                      ? "bg-primary text-primary-foreground border-primary"
+                      : "bg-background hover:bg-muted border-border text-muted-foreground"
+                  }`}
+                >
+                  {opt.label}
+                </button>
+              );
+            })}
+            <Popover open={precisePickerOpen} onOpenChange={setPrecisePickerOpen}>
+              <PopoverTrigger asChild>
+                <button
+                  className={`text-xs px-2 py-0.5 rounded-full border transition flex items-center gap-1 ${
+                    focusKind === "precise"
+                      ? "bg-primary text-primary-foreground border-primary"
+                      : "bg-background hover:bg-muted border-border text-muted-foreground"
+                  }`}
+                >
+                  <ListChecks className="w-3 h-3" />
+                  {focusKind === "precise" && selectedModulos.size > 0
+                    ? `${selectedModulos.size} selecionado${selectedModulos.size > 1 ? "s" : ""}`
+                    : "Escolher módulos específicos"}
+                </button>
+              </PopoverTrigger>
+              <PopoverContent className="w-80 p-0" align="start">
+                <div className="p-2 border-b flex items-center justify-between gap-2">
+                  <button
+                    className="text-xs text-primary hover:underline"
+                    onClick={() => {
+                      setFocusKind("precise");
+                      setSelectedModulos(new Set(modulos.map(moduloKey)));
+                    }}
+                  >
+                    Selecionar todos
+                  </button>
+                  <button
+                    className="text-xs text-muted-foreground hover:underline"
+                    onClick={() => setSelectedModulos(new Set())}
+                  >
+                    Limpar
+                  </button>
+                </div>
+                <div className="max-h-72 overflow-y-auto p-2 space-y-1">
+                  {modulos.map((m) => {
+                    const key = moduloKey(m);
+                    const checked = selectedModulos.has(key);
+                    return (
+                      <label
+                        key={m.id}
+                        className="flex items-center gap-2 text-sm px-2 py-1 rounded hover:bg-muted cursor-pointer"
+                      >
+                        <Checkbox
+                          checked={checked}
+                          onCheckedChange={() => {
+                            setFocusKind("precise");
+                            toggleModulo(key);
+                          }}
+                        />
+                        <span className="flex-1 truncate">{m.titulo}</span>
+                      </label>
+                    );
+                  })}
+                </div>
+              </PopoverContent>
+            </Popover>
           </div>
           <div className="flex gap-2">
             <Input
@@ -1011,6 +1156,7 @@ export default function AdminDashboard2() {
           <TabsContent value="ficha" className="mt-4">
             <RecepcionistaDev
               modulos={entries.map((e) => ({ id: e.id, titulo: e.titulo, modulo: e.modulo }))}
+              verticais={verticais}
               onAttach={attachProposta}
               notas={recepcionistaEntry?.notas || []}
               onUpdateNotas={updateRecepcionistaNotas}
