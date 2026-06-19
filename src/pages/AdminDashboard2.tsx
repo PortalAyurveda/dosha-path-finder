@@ -1187,6 +1187,11 @@ export default function AdminDashboard2() {
                 </div>
                 <div className="overflow-y-auto flex-1">
                   {loading && <p className="p-4 text-sm text-muted-foreground">Carregando...</p>}
+                  {!loading && entries.length > 0 && filtered.length === 0 && (
+                    <p className="p-4 text-xs text-muted-foreground italic">
+                      Nenhum módulo corresponde aos filtros selecionados.
+                    </p>
+                  )}
                   {TIPO_ORDER.map((tipo) => {
                     const items = grouped[tipo] || [];
                     if (items.length === 0) return null;
