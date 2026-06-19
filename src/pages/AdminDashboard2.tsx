@@ -984,7 +984,23 @@ export default function AdminDashboard2() {
     <div className="min-h-screen bg-background">
       <AdminNav />
       <div className="max-w-7xl mx-auto px-4 py-6">
-        <h1 className="text-3xl font-serif font-semibold mb-4">Dashboard 2.0</h1>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+          <h1 className="text-3xl font-serif font-semibold">Dashboard 2.0</h1>
+          <div className="flex items-center gap-2">
+            <label htmlFor="perfil-filter" className="text-sm text-muted-foreground">Trabalhando como:</label>
+            <Select value={perfilFilter} onValueChange={setPerfilFilter}>
+              <SelectTrigger id="perfil-filter" className="w-40 h-8 text-xs">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Ver tudo</SelectItem>
+                {PERFIS.map((p) => (
+                  <SelectItem key={p} value={p}>{p}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
 
         <Tabs value={tab} onValueChange={setTab}>
           <TabsList>
