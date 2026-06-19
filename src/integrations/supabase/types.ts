@@ -3726,6 +3726,16 @@ export type Database = {
         Args: { dosha: string; score: number }
         Returns: string
       }
+      find_akasha_by_slug: {
+        Args: { _slug: string }
+        Returns: {
+          data_postagem: string
+          id: number
+          tags: string
+          texto_inicio: string
+          titulo: string
+        }[]
+      }
       find_video_by_slug: {
         Args: { _slug: string }
         Returns: {

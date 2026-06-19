@@ -540,7 +540,7 @@ const RegistrosAkashikosInline = () => {
                   <p className="flex-1 min-w-0 font-serif font-bold text-[14px] leading-snug line-clamp-1 group-hover:underline">
                     {r.titulo}
                   </p>
-                  <span className="text-sm shrink-0" aria-hidden="true">
+                  <span className="text-xl md:text-2xl shrink-0 leading-none" aria-hidden="true">
                     {extractEmojis(r.tags)}
                   </span>
                 </Link>
