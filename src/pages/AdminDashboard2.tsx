@@ -909,23 +909,40 @@ export default function AdminDashboard2() {
 
   const selected = entries.find((e) => e.id === selectedId) || null;
 
-  const updateEntry = async (patch: Partial<DevlogEntry>, logAction: string) => {
-    if (!selected) return;
+  const RECEPCIONISTA_DEVLOG_ID = "6d731f09-882a-4cd2-a844-dc08a6f26cc9";
+  const recepcionistaEntry = entries.find((e) => e.id === RECEPCIONISTA_DEVLOG_ID) || null;
+
+  const updateEntryById = async (id: string, patch: Partial<DevlogEntry>, logAction: string) => {
+    const target = entries.find((e) => e.id === id);
+    if (!target) return;
     const newLog: LogEntry[] = [
-      ...(selected.log_atividade || []),
+      ...(target.log_atividade || []),
       { data: new Date().toISOString(), autor: "admin", acao: logAction },
     ];
     const fullPatch: any = { ...patch, log_atividade: newLog };
     const { error } = await supabase
       .from("portal_devlog" as any)
       .update(fullPatch)
-      .eq("id", selected.id);
+      .eq("id", id);
     if (error) {
       toast({ title: "Erro ao salvar", description: error.message, variant: "destructive" });
       return;
     }
-    setEntries((prev) => prev.map((e) => (e.id === selected.id ? { ...e, ...fullPatch } : e)));
+    setEntries((prev) => prev.map((e) => (e.id === id ? { ...e, ...fullPatch } : e)));
     toast({ title: "Salvo" });
+  };
+
+  const updateEntry = async (patch: Partial<DevlogEntry>, logAction: string) => {
+    if (!selected) return;
+    await updateEntryById(selected.id, patch, logAction);
+  };
+
+  const updateRecepcionistaNotas = async (notas: Nota[]) => {
+    if (!recepcionistaEntry) {
+      toast({ title: "Entrada do recepcionista não encontrada", variant: "destructive" });
+      return;
+    }
+    await updateEntryById(recepcionistaEntry.id, { notas } as any, notas.length > (recepcionistaEntry.notas?.length || 0) ? "Adicionou nota no recepcionista" : "Removeu nota do recepcionista");
   };
 
   const attachProposta = async (moduloId: string, p: RecepProposta) => {
