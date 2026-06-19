@@ -435,6 +435,19 @@ function DetailPanel({
         </Collapsible>
       )}
 
+      <NotasSection
+        notas={entry.notas || []}
+        onAdd={async (texto) => {
+          const nova: Nota = { data: new Date().toISOString().slice(0, 10), texto };
+          const list = [...(entry.notas || []), nova];
+          await onUpdate({ notas: list } as any, "Adicionou nota manual");
+        }}
+        onDelete={async (idx) => {
+          const list = (entry.notas || []).filter((_, i) => i !== idx);
+          await onUpdate({ notas: list } as any, "Removeu nota manual");
+        }}
+      />
+
       <div className="pt-4 border-t">
         {entry.agente_ativo && entry.agente_webhook ? (
           <Button onClick={() => setChatOpen(true)} className="gap-2">
