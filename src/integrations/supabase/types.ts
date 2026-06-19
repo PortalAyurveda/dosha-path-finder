@@ -2265,6 +2265,7 @@ export type Database = {
           agente_webhook: string | null
           arquivos_relevantes: string[] | null
           created_at: string | null
+          decisoes: Json | null
           depende_de: string[] | null
           descricao: string | null
           hipotese: string | null
@@ -2298,6 +2299,7 @@ export type Database = {
           agente_webhook?: string | null
           arquivos_relevantes?: string[] | null
           created_at?: string | null
+          decisoes?: Json | null
           depende_de?: string[] | null
           descricao?: string | null
           hipotese?: string | null
@@ -2331,6 +2333,7 @@ export type Database = {
           agente_webhook?: string | null
           arquivos_relevantes?: string[] | null
           created_at?: string | null
+          decisoes?: Json | null
           depende_de?: string[] | null
           descricao?: string | null
           hipotese?: string | null
@@ -2836,6 +2839,24 @@ export type Database = {
           titulo_original?: string | null
           url?: string | null
           video_id?: string
+        }
+        Relationships: []
+      }
+      recepcionista_memoria: {
+        Row: {
+          id: number
+          message: Json
+          session_id: string
+        }
+        Insert: {
+          id?: number
+          message: Json
+          session_id: string
+        }
+        Update: {
+          id?: number
+          message?: Json
+          session_id?: string
         }
         Relationships: []
       }
