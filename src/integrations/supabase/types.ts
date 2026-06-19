@@ -2273,9 +2273,11 @@ export type Database = {
           log_atividade: Json | null
           modo_acesso: string | null
           modulo: string
+          notas: Json | null
           notas_tecnicas: Json | null
           proposto_pelo_agente: Json | null
           proximos_passos: string | null
+          seguranca: Json | null
           stack: string[] | null
           status: Database["public"]["Enums"]["devlog_status"]
           submodulo: string | null
@@ -2303,9 +2305,11 @@ export type Database = {
           log_atividade?: Json | null
           modo_acesso?: string | null
           modulo: string
+          notas?: Json | null
           notas_tecnicas?: Json | null
           proposto_pelo_agente?: Json | null
           proximos_passos?: string | null
+          seguranca?: Json | null
           stack?: string[] | null
           status?: Database["public"]["Enums"]["devlog_status"]
           submodulo?: string | null
@@ -2333,9 +2337,11 @@ export type Database = {
           log_atividade?: Json | null
           modo_acesso?: string | null
           modulo?: string
+          notas?: Json | null
           notas_tecnicas?: Json | null
           proposto_pelo_agente?: Json | null
           proximos_passos?: string | null
+          seguranca?: Json | null
           stack?: string[] | null
           status?: Database["public"]["Enums"]["devlog_status"]
           submodulo?: string | null
