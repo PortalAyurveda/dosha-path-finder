@@ -2257,6 +2257,99 @@ export type Database = {
         }
         Relationships: []
       }
+      portal_devlog: {
+        Row: {
+          acesso_permitido: string[] | null
+          agente_ativo: boolean | null
+          agente_system_prompt: string | null
+          agente_webhook: string | null
+          arquivos_relevantes: string[] | null
+          created_at: string | null
+          depende_de: string[] | null
+          descricao: string | null
+          hipotese: string | null
+          id: string
+          impacta: string[] | null
+          log_atividade: Json | null
+          modo_acesso: string | null
+          modulo: string
+          notas_tecnicas: Json | null
+          proposto_pelo_agente: Json | null
+          proximos_passos: string | null
+          stack: string[] | null
+          status: Database["public"]["Enums"]["devlog_status"]
+          submodulo: string | null
+          tabelas_relacionadas: string[] | null
+          tags: string[] | null
+          tipo: Database["public"]["Enums"]["devlog_tipo"]
+          titulo: string
+          ultima_atualizacao: string | null
+          updated_at: string | null
+          versao: string | null
+          vertical: string | null
+        }
+        Insert: {
+          acesso_permitido?: string[] | null
+          agente_ativo?: boolean | null
+          agente_system_prompt?: string | null
+          agente_webhook?: string | null
+          arquivos_relevantes?: string[] | null
+          created_at?: string | null
+          depende_de?: string[] | null
+          descricao?: string | null
+          hipotese?: string | null
+          id?: string
+          impacta?: string[] | null
+          log_atividade?: Json | null
+          modo_acesso?: string | null
+          modulo: string
+          notas_tecnicas?: Json | null
+          proposto_pelo_agente?: Json | null
+          proximos_passos?: string | null
+          stack?: string[] | null
+          status?: Database["public"]["Enums"]["devlog_status"]
+          submodulo?: string | null
+          tabelas_relacionadas?: string[] | null
+          tags?: string[] | null
+          tipo?: Database["public"]["Enums"]["devlog_tipo"]
+          titulo: string
+          ultima_atualizacao?: string | null
+          updated_at?: string | null
+          versao?: string | null
+          vertical?: string | null
+        }
+        Update: {
+          acesso_permitido?: string[] | null
+          agente_ativo?: boolean | null
+          agente_system_prompt?: string | null
+          agente_webhook?: string | null
+          arquivos_relevantes?: string[] | null
+          created_at?: string | null
+          depende_de?: string[] | null
+          descricao?: string | null
+          hipotese?: string | null
+          id?: string
+          impacta?: string[] | null
+          log_atividade?: Json | null
+          modo_acesso?: string | null
+          modulo?: string
+          notas_tecnicas?: Json | null
+          proposto_pelo_agente?: Json | null
+          proximos_passos?: string | null
+          stack?: string[] | null
+          status?: Database["public"]["Enums"]["devlog_status"]
+          submodulo?: string | null
+          tabelas_relacionadas?: string[] | null
+          tags?: string[] | null
+          tipo?: Database["public"]["Enums"]["devlog_tipo"]
+          titulo?: string
+          ultima_atualizacao?: string | null
+          updated_at?: string | null
+          versao?: string | null
+          vertical?: string | null
+        }
+        Relationships: []
+      }
       portal_dicas: {
         Row: {
           Acao_Pratica: string
@@ -3036,15 +3129,7 @@ export type Database = {
           video_id?: string | null
           video_timestamp?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "rotina_nuggets_video_id_fkey"
-            columns: ["video_id"]
-            isOneToOne: false
-            referencedRelation: "rotina_acoes"
-            referencedColumns: ["video_id"]
-          },
-        ]
+        Relationships: []
       }
       rotina_nuggets_backup_20260617: {
         Row: {
@@ -3852,6 +3937,13 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
+      devlog_status:
+        | "planejado"
+        | "em_andamento"
+        | "concluido"
+        | "bloqueado"
+        | "em_revisao"
+      devlog_tipo: "vertical" | "modulo" | "submodulo" | "infra"
     }
     CompositeTypes: {
       http_header: {
@@ -3996,6 +4088,14 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "moderator", "user"],
+      devlog_status: [
+        "planejado",
+        "em_andamento",
+        "concluido",
+        "bloqueado",
+        "em_revisao",
+      ],
+      devlog_tipo: ["vertical", "modulo", "submodulo", "infra"],
     },
   },
 } as const
