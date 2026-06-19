@@ -120,6 +120,13 @@ function Chips({ items, color }: { items: string[] | null; color: string }) {
   );
 }
 
+function formatNotaDate(iso: string) {
+  if (!iso) return "—";
+  const d = new Date(iso + "T00:00:00");
+  if (isNaN(d.getTime())) return iso;
+  return d.toLocaleDateString("pt-BR", { day: "2-digit", month: "short" }).replace(".", "").toLowerCase();
+}
+
 function NotasSection({
   notas,
   onAdd,
@@ -131,42 +138,66 @@ function NotasSection({
 }) {
   const [texto, setTexto] = useState("");
   const [saving, setSaving] = useState(false);
-  const sorted = [...notas].sort((a, b) => (b.data || "").localeCompare(a.data || ""));
+  const sorted = useMemo(() => [...notas].sort((a, b) => (b.data || "").localeCompare(a.data || "")), [notas]);
+
+  const handleAdd = async () => {
+    const t = texto.trim();
+    if (!t || saving) return;
+    setSaving(true);
+    try {
+      await onAdd(t);
+      setTexto("");
+    } finally {
+      setSaving(false);
+    }
+  };
+
   return (
-    <div className="border rounded-lg p-4 bg-muted/30">
-      <h3 className="text-sm font-semibold mb-2 text-muted-foreground uppercase tracking-wide">Minhas notas</h3>
-      <div className="flex gap-2 mb-3">
+    <div className="border border-border/60 rounded-lg border-l-4 border-l-primary bg-primary/[0.03] p-4">
+      <h3 className="text-xs font-semibold mb-3 text-muted-foreground uppercase tracking-wide">Minhas notas</h3>
+      <div className="flex flex-col sm:flex-row gap-2 mb-4">
         <Textarea
           value={texto}
           onChange={(e) => setTexto(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && e.ctrlKey) {
+              e.preventDefault();
+              handleAdd();
+            }
+          }}
           rows={2}
-          placeholder="Anotação manual..."
+          placeholder="Escreva uma nota..."
+          className="min-h-[64px] resize-none"
         />
         <Button
           size="sm"
           disabled={saving || !texto.trim()}
-          onClick={async () => {
-            setSaving(true);
-            try { await onAdd(texto.trim()); setTexto(""); } finally { setSaving(false); }
-          }}
+          onClick={handleAdd}
+          className="sm:self-start shrink-0"
         >
-          Adicionar
+          Adicionar nota
         </Button>
       </div>
-      <div className="space-y-2">
-        {sorted.length === 0 && <p className="text-xs text-muted-foreground">Sem notas.</p>}
+      <div className="space-y-3">
+        {sorted.length === 0 && (
+          <p className="text-sm text-muted-foreground italic">Nenhuma nota ainda.</p>
+        )}
         {sorted.map((n, i) => {
           const originalIdx = notas.indexOf(n);
           return (
-            <div key={i} className="flex items-start gap-2 text-sm border-l-2 border-primary/40 pl-3 py-1">
-              <div className="flex-1">
-                <div className="text-[10px] text-muted-foreground">{n.data}</div>
-                <div className="whitespace-pre-wrap">{n.texto}</div>
+            <div
+              key={`${n.data}-${i}`}
+              className="group flex items-start gap-3 text-sm border rounded-md bg-background/60 p-3 transition hover:bg-background"
+            >
+              <div className="flex-1 min-w-0">
+                <div className="text-[11px] text-muted-foreground mb-1">{formatNotaDate(n.data)}</div>
+                <div className="whitespace-pre-wrap text-foreground/90">{n.texto}</div>
               </div>
               <button
                 onClick={() => onDelete(originalIdx)}
-                className="text-muted-foreground hover:text-destructive transition"
+                className="text-muted-foreground/60 hover:text-destructive transition opacity-60 group-hover:opacity-100"
                 aria-label="Excluir nota"
+                title="Excluir nota"
               >
                 <Trash2 className="w-3.5 h-3.5" />
               </button>
@@ -177,6 +208,7 @@ function NotasSection({
     </div>
   );
 }
+
 
 type RecepProposta = { modulo: string; campo: string; proposta: string; justificativa?: string };
 type RecepMsg = { role: "user" | "assistant"; content: string; propostas?: RecepProposta[] };
