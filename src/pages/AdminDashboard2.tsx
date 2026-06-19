@@ -138,7 +138,11 @@ function NotasSection({
 }) {
   const [texto, setTexto] = useState("");
   const [saving, setSaving] = useState(false);
-  const sorted = useMemo(() => [...notas].sort((a, b) => (b.data || "").localeCompare(a.data || "")), [notas]);
+  const sorted = useMemo(() => {
+    return [...notas]
+      .map((n, idx) => ({ ...n, _idx: idx }))
+      .sort((a, b) => (b.data || "").localeCompare(a.data || ""));
+  }, [notas]);
 
   const handleAdd = async () => {
     const t = texto.trim();
@@ -182,28 +186,25 @@ function NotasSection({
         {sorted.length === 0 && (
           <p className="text-sm text-muted-foreground italic">Nenhuma nota ainda.</p>
         )}
-        {sorted.map((n, i) => {
-          const originalIdx = notas.indexOf(n);
-          return (
-            <div
-              key={`${n.data}-${i}`}
-              className="group flex items-start gap-3 text-sm border rounded-md bg-background/60 p-3 transition hover:bg-background"
-            >
-              <div className="flex-1 min-w-0">
-                <div className="text-[11px] text-muted-foreground mb-1">{formatNotaDate(n.data)}</div>
-                <div className="whitespace-pre-wrap text-foreground/90">{n.texto}</div>
-              </div>
-              <button
-                onClick={() => onDelete(originalIdx)}
-                className="text-muted-foreground/60 hover:text-destructive transition opacity-60 group-hover:opacity-100"
-                aria-label="Excluir nota"
-                title="Excluir nota"
-              >
-                <Trash2 className="w-3.5 h-3.5" />
-              </button>
+        {sorted.map((n) => (
+          <div
+            key={`${n.data}-${n._idx}`}
+            className="group flex items-start gap-3 text-sm border rounded-md bg-background/60 p-3 transition hover:bg-background"
+          >
+            <div className="flex-1 min-w-0">
+              <div className="text-[11px] text-muted-foreground mb-1">{formatNotaDate(n.data)}</div>
+              <div className="whitespace-pre-wrap text-foreground/90">{n.texto}</div>
             </div>
-          );
-        })}
+            <button
+              onClick={() => onDelete(n._idx)}
+              className="text-muted-foreground/60 hover:text-destructive transition opacity-60 group-hover:opacity-100"
+              aria-label="Excluir nota"
+              title="Excluir nota"
+            >
+              <Trash2 className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        ))}
       </div>
     </div>
   );
