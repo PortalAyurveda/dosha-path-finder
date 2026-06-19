@@ -1047,7 +1047,7 @@ export default function AdminDashboard2() {
 
   const filtered = useMemo(() => {
     return entries.filter((e) => {
-      if (perfilFilter !== "all" && !(e.perfis || []).includes(perfilFilter)) return false;
+      if (perfilFilter !== "all" && !(e.perfis || []).map((p) => p.toLowerCase()).includes(perfilFilter.toLowerCase())) return false;
       if (verticalFilter !== "all" && e.vertical !== verticalFilter) return false;
       if (acessoFilter !== "all" && !(e.acesso_permitido || []).includes(acessoFilter)) return false;
       return true;
