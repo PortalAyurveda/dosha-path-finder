@@ -362,6 +362,17 @@ function RecepcionistaDev({
               </div>
             </div>
           )}
+          <NotasSection
+            notas={notas || []}
+            onAdd={async (texto) => {
+              const nova: Nota = { data: new Date().toISOString().slice(0, 10), texto };
+              await onUpdateNotas([...(notas || []), nova]);
+            }}
+            onDelete={async (idx) => {
+              const list = (notas || []).filter((_, i) => i !== idx);
+              await onUpdateNotas(list);
+            }}
+          />
         </div>
       )}
     </div>
