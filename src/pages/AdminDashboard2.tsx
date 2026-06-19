@@ -22,7 +22,8 @@ import ReactFlow, {
 import "reactflow/dist/style.css";
 
 type LogEntry = { data: string; autor: string; acao: string };
-type Sugestao = { data: string; campo: string; sugestao: string; status: string };
+type Sugestao = { data: string; campo: string; sugestao: string; justificativa?: string; status: string; origem?: string };
+type Nota = { data: string; texto: string };
 
 type DevlogEntry = {
   id: string;
@@ -47,6 +48,7 @@ type DevlogEntry = {
   agente_ativo: boolean | null;
   log_atividade: LogEntry[] | null;
   proposto_pelo_agente: Sugestao[] | null;
+  notas: Nota[] | null;
 };
 
 const STATUS_COLOR: Record<string, string> = {
