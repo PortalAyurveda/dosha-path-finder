@@ -62,11 +62,23 @@ const RegistroAkashico = () => {
         if (error) throw error;
         return data as Registro | null;
       }
-      // Lookup by slug — fetch all titulos and match
-      const { data, error } = await supabase
+      // Lookup by slug — narrow with ilike on longest tokens, then exact-match client-side
+      const tokens = (slug ?? "")
+        .split("-")
+        .filter((t) => t.length >= 4)
+        .sort((a, b) => b.length - a.length)
+        .slice(0, 2);
+
+      let q = supabase
         .from("akasha_memory")
         .select("id, titulo, texto_inicio, tags, data_postagem")
         .not("titulo", "is", null);
+
+      for (const t of tokens) {
+        q = q.ilike("titulo", `%${t}%`);
+      }
+
+      const { data, error } = await q.limit(200);
       if (error) throw error;
       const match = (data ?? []).find((r) => akashaSlug(r.titulo) === slug);
       return (match ?? null) as Registro | null;
