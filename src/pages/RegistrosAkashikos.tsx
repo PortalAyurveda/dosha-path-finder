@@ -305,7 +305,7 @@ const RegistrosAkashikos = () => {
                       >
                         {r.titulo}
                       </p>
-                      <span className="text-base shrink-0" aria-hidden="true">
+                      <span className="text-2xl md:text-3xl shrink-0 leading-none" aria-hidden="true">
                         {extractEmojis(r.tags)}
                       </span>
                     </Link>
