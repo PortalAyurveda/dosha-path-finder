@@ -41,6 +41,7 @@ type DevlogEntry = {
   impacta: string[] | null;
   stack: string[] | null;
   acesso_permitido: string[] | null;
+  perfis: string[] | null;
   modo_acesso: string | null;
   tabelas_relacionadas: string[] | null;
   agente_webhook: string | null;
@@ -853,6 +854,7 @@ export default function AdminDashboard2() {
   const [entries, setEntries] = useState<DevlogEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [perfilFilter, setPerfilFilter] = useState<string>("Edson");
   const [verticalFilter, setVerticalFilter] = useState<string>("all");
   const [acessoFilter, setAcessoFilter] = useState<string>("all");
   const [tab, setTab] = useState("ficha");
@@ -890,13 +892,16 @@ export default function AdminDashboard2() {
     return Array.from(s);
   }, [entries]);
 
+  const PERFIS = ["Edson", "Marcos", "Marcelle", "Estoque"];
+
   const filtered = useMemo(() => {
     return entries.filter((e) => {
+      if (perfilFilter !== "all" && !(e.perfis || []).includes(perfilFilter)) return false;
       if (verticalFilter !== "all" && e.vertical !== verticalFilter) return false;
       if (acessoFilter !== "all" && !(e.acesso_permitido || []).includes(acessoFilter)) return false;
       return true;
     });
-  }, [entries, verticalFilter, acessoFilter]);
+  }, [entries, perfilFilter, verticalFilter, acessoFilter]);
 
   const grouped = useMemo(() => {
     const g: Record<string, DevlogEntry[]> = {};
@@ -979,7 +984,23 @@ export default function AdminDashboard2() {
     <div className="min-h-screen bg-background">
       <AdminNav />
       <div className="max-w-7xl mx-auto px-4 py-6">
-        <h1 className="text-3xl font-serif font-semibold mb-4">Dashboard 2.0</h1>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+          <h1 className="text-3xl font-serif font-semibold">Dashboard 2.0</h1>
+          <div className="flex items-center gap-2">
+            <label htmlFor="perfil-filter" className="text-sm text-muted-foreground">Trabalhando como:</label>
+            <Select value={perfilFilter} onValueChange={setPerfilFilter}>
+              <SelectTrigger id="perfil-filter" className="w-40 h-8 text-xs">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Ver tudo</SelectItem>
+                {PERFIS.map((p) => (
+                  <SelectItem key={p} value={p}>{p}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
 
         <Tabs value={tab} onValueChange={setTab}>
           <TabsList>
