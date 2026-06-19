@@ -28,7 +28,7 @@ interface ArtigosTabProps {
   initialMode?: "geral" | "personalizado" | "pesquisa";
 }
 
-type SubTab = "geral" | "personalizado" | "pesquisa";
+type SubTab = "geral" | "personalizado" | "pesquisa" | "registros";
 
 interface MatchedArticle {
   id: string;
