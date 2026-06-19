@@ -332,14 +332,25 @@ function RecepcionistaDev({
 
   return (
     <div className="border rounded-lg bg-card mb-4">
-      <button
-        onClick={() => setOpen((o) => !o)}
-        className="w-full flex items-center gap-2 px-4 py-3 border-b text-sm font-semibold"
-      >
-        <Sparkles className="w-4 h-4 text-primary" />
-        Recepcionista Dev
-        <ChevronDown className={`w-4 h-4 ml-auto transition ${open ? "rotate-180" : ""}`} />
-      </button>
+      <div className="w-full flex items-center gap-2 px-4 py-3 border-b text-sm font-semibold">
+        <button onClick={() => setOpen((o) => !o)} className="flex items-center gap-2 flex-1 text-left">
+          <Sparkles className="w-4 h-4 text-primary" />
+          Recepcionista Dev
+        </button>
+        <span className="text-xs font-normal text-muted-foreground hidden sm:inline">
+          Foco: <span className="font-medium text-foreground">{focusLabel}</span>
+        </span>
+        <button
+          onClick={resetConversation}
+          className="text-xs font-normal text-muted-foreground hover:text-foreground flex items-center gap-1"
+          title="Nova conversa"
+        >
+          <RefreshCw className="w-3.5 h-3.5" /> Nova conversa
+        </button>
+        <button onClick={() => setOpen((o) => !o)} aria-label="toggle">
+          <ChevronDown className={`w-4 h-4 transition ${open ? "rotate-180" : ""}`} />
+        </button>
+      </div>
       {open && (
         <div className="p-4 space-y-3">
           {history.length === 0 && (
