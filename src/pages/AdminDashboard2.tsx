@@ -1156,6 +1156,7 @@ export default function AdminDashboard2() {
           <TabsContent value="ficha" className="mt-4">
             <RecepcionistaDev
               modulos={entries.map((e) => ({ id: e.id, titulo: e.titulo, modulo: e.modulo }))}
+              verticais={verticais}
               onAttach={attachProposta}
               notas={recepcionistaEntry?.notas || []}
               onUpdateNotas={updateRecepcionistaNotas}
