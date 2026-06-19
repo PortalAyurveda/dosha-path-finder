@@ -117,13 +117,38 @@ const AdminLojaVendaDetalhe = () => {
     const patch: Record<string, unknown> = { status: novo };
     if (novo === "enviado" && !pedido.shipped_at) patch.shipped_at = new Date().toISOString();
     if (novo === "entregue" && !pedido.delivered_at) patch.delivered_at = new Date().toISOString();
-    if (novo === "pago" && !pedido.paid_at) patch.paid_at = new Date().toISOString();
+    if (novo === "pago") {
+      if (!pedido.paid_at) patch.paid_at = new Date().toISOString();
+      patch.status_pagamento = "paid";
+    }
     const { error } = await lojaSupabase.from("pedidos").update(patch).eq("id", pedido.id);
     if (error) {
       toast.error("Erro ao atualizar status");
     } else {
       setPedido({ ...pedido, ...(patch as Partial<Pedido>) });
       toast.success("Status atualizado");
+    }
+    setSavingStatus(false);
+  };
+
+  const handleMarcarBrinde = async () => {
+    if (!pedido) return;
+    if (!confirm("Marcar este pedido como brinde? Subtotal e total serão zerados.")) return;
+    setSavingStatus(true);
+    const patch = {
+      status: "pago" as PedidoStatus,
+      status_pagamento: "paid",
+      metodo_pagamento: "brinde",
+      subtotal: 0,
+      total: 0,
+      paid_at: new Date().toISOString(),
+    };
+    const { error } = await lojaSupabase.from("pedidos").update(patch).eq("id", pedido.id);
+    if (error) {
+      toast.error("Erro ao marcar como brinde");
+    } else {
+      setPedido({ ...pedido, ...(patch as unknown as Partial<Pedido>) });
+      toast.success("Pedido marcado como brinde ✓");
     }
     setSavingStatus(false);
   };
