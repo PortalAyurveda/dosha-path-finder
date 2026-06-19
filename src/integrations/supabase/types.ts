@@ -2275,6 +2275,7 @@ export type Database = {
           modulo: string
           notas: Json | null
           notas_tecnicas: Json | null
+          perfis: string[] | null
           proposto_pelo_agente: Json | null
           proximos_passos: string | null
           seguranca: Json | null
@@ -2307,6 +2308,7 @@ export type Database = {
           modulo: string
           notas?: Json | null
           notas_tecnicas?: Json | null
+          perfis?: string[] | null
           proposto_pelo_agente?: Json | null
           proximos_passos?: string | null
           seguranca?: Json | null
@@ -2339,6 +2341,7 @@ export type Database = {
           modulo?: string
           notas?: Json | null
           notas_tecnicas?: Json | null
+          perfis?: string[] | null
           proposto_pelo_agente?: Json | null
           proximos_passos?: string | null
           seguranca?: Json | null
