@@ -4,6 +4,7 @@ import { Helmet } from "react-helmet-async";
 import { useQuery } from "@tanstack/react-query";
 import { Search, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { akashaSlug } from "@/lib/akashaSlug";
 import { Input } from "@/components/ui/input";
 import PaginationControls from "@/components/PaginationControls";
 
@@ -286,7 +287,7 @@ const RegistrosAkashikos = () => {
                 data!.rows.map((r) => (
                   <li key={r.id}>
                     <Link
-                      to={`/registros/${r.id}`}
+                      to={`/registros-akashikos/${akashaSlug(r.titulo)}`}
                       className="px-5 py-2.5 flex items-center gap-4 transition-colors hover:bg-muted/40 group"
                     >
                       <span

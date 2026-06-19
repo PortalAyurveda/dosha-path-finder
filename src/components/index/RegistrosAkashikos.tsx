@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowRight } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { akashaSlug } from "@/lib/akashaSlug";
 
 const PRIMARY = "#352F54";
 const AKASHA = "#9b73ad";
@@ -70,7 +71,7 @@ const RegistrosAkashikos = () => {
               className="w-12 h-12 md:w-14 md:h-14 object-contain shrink-0 mt-1"
               loading="lazy"
             />
-            <Link to="/registros" className="hover:opacity-80 transition-opacity">
+            <Link to="/registros-akashikos" className="hover:opacity-80 transition-opacity">
               <span>
                 Registros de Akasha,
                 <br />
@@ -101,7 +102,7 @@ const RegistrosAkashikos = () => {
               style={{ background: `${AKASHA}08` }}
             >
               <Link
-                to="/registros"
+                to="/registros-akashikos"
                 className="font-sans text-xs font-bold uppercase tracking-wider hover:underline"
                 style={{ color: AKASHA }}
               >
@@ -124,7 +125,7 @@ const RegistrosAkashikos = () => {
               : (data ?? []).map((r) => (
                     <li key={r.id}>
                       <Link
-                        to={`/registros/${r.id}`}
+                        to={`/registros-akashikos/${akashaSlug(r.titulo)}`}
                         className="px-5 py-2.5 flex items-center gap-4 transition-colors hover:bg-muted/40 group"
                       >
                         <span
@@ -149,7 +150,7 @@ const RegistrosAkashikos = () => {
 
             <div className="px-5 py-3 border-t border-border text-right">
               <Link
-                to="/registros"
+                to="/registros-akashikos"
                 className="inline-flex items-center gap-1 text-xs font-semibold transition-colors hover:opacity-80"
                 style={{ color: AKASHA }}
               >

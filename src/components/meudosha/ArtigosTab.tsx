@@ -2,8 +2,9 @@ import { getTransformedImageUrl } from "@/lib/imageTransform";
 import { useState, useMemo, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
-import { Search, Sparkles, X } from "lucide-react";
+import { ArrowRight, BookOpen, Search, Sparkles, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { akashaSlug } from "@/lib/akashaSlug";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
@@ -27,7 +28,7 @@ interface ArtigosTabProps {
   initialMode?: "geral" | "personalizado" | "pesquisa";
 }
 
-type SubTab = "geral" | "personalizado" | "pesquisa";
+type SubTab = "geral" | "personalizado" | "pesquisa" | "registros";
 
 interface MatchedArticle {
   id: string;
@@ -201,7 +202,17 @@ const ArtigosTab = ({ agravVataTags, agravPittaTags, agravKaphaTags, doshaprinci
         >
           <Search className="h-3.5 w-3.5" /> Pesquisa
         </button>
+        <button
+          onClick={() => setSubTab("registros")}
+          className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all flex items-center gap-1 ${
+            subTab === "registros" ? "bg-akasha text-white shadow-sm" : "text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          <BookOpen className="h-3.5 w-3.5" /> Registros Akashikos
+        </button>
       </div>
+
+      {subTab === "registros" && <RegistrosAkashikosInline />}
 
       {/* Search (only for pesquisa subtab) */}
       {subTab === "pesquisa" && isPremium && (
@@ -258,7 +269,7 @@ const ArtigosTab = ({ agravVataTags, agravPittaTags, agravKaphaTags, doshaprinci
       )}
 
       {/* Premium lock for personalizado / pesquisa */}
-      {(subTab === "personalizado" || subTab === "pesquisa") && !isPremium ? (
+      {subTab !== "registros" && ((subTab === "personalizado" || subTab === "pesquisa") && !isPremium ? (
         <PremiumLock>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 min-h-[300px]">
             {[1, 2, 3].map((i) => (
@@ -438,9 +449,107 @@ const ArtigosTab = ({ agravVataTags, agravPittaTags, agravKaphaTags, doshaprinci
         })()
       )}
         </>
-      )}
+      ))}
+    </div>
+  );
+};
+
+type AkashaRow = {
+  id: number;
+  titulo: string | null;
+  tags: string | null;
+  data_postagem: string | null;
+};
+
+const AKASHA_COLOR = "#9b73ad";
+
+const extractEmojis = (tags: string | null) => {
+  if (!tags) return "";
+  const emojis = tags.match(/\p{Extended_Pictographic}/gu);
+  return emojis ? emojis.slice(0, 3).join("") : "";
+};
+
+const formatDate = (iso: string | null) => {
+  if (!iso) return "";
+  try {
+    const normalized =
+      iso.includes("T") && !iso.endsWith("Z") && !/[+-]\d{2}:?\d{2}$/.test(iso) ? iso + "Z" : iso;
+    return new Date(normalized).toLocaleDateString("pt-BR", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "2-digit",
+      timeZone: "America/Sao_Paulo",
+    });
+  } catch {
+    return "";
+  }
+};
+
+const RegistrosAkashikosInline = () => {
+  const { data, isLoading } = useQuery({
+    queryKey: ["artigos_tab_registros_akashikos"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("akasha_memory")
+        .select("id, titulo, tags, data_postagem")
+        .not("titulo", "is", null)
+        .order("data_postagem", { ascending: false })
+        .limit(12);
+      if (error) throw error;
+      return (data ?? []) as AkashaRow[];
+    },
+    staleTime: 5 * 60 * 1000,
+  });
+
+  return (
+    <div className="space-y-3">
+      <div className="flex items-center justify-between gap-2 flex-wrap">
+        <p className="text-sm text-muted-foreground">
+          Memória viva da Akasha — perguntas anônimas guardadas em forma de reflexão.
+        </p>
+        <Link
+          to="/registros-akashikos"
+          className="inline-flex items-center gap-1 text-xs font-semibold hover:opacity-80"
+          style={{ color: AKASHA_COLOR }}
+        >
+          Abrir o diário completo <ArrowRight className="h-3.5 w-3.5" />
+        </Link>
+      </div>
+
+      <ul className="border border-border rounded-2xl overflow-hidden divide-y divide-border bg-card">
+        {isLoading
+          ? Array.from({ length: 6 }).map((_, i) => (
+              <li key={i} className="px-4 py-3 flex items-center gap-3 animate-pulse">
+                <div className="w-14 h-3 bg-muted rounded" />
+                <div className="flex-1 h-4 bg-muted rounded" />
+                <div className="w-8 h-4 bg-muted rounded" />
+              </li>
+            ))
+          : (data ?? []).map((r) => (
+              <li key={r.id}>
+                <Link
+                  to={`/registros-akashikos/${akashaSlug(r.titulo)}`}
+                  className="px-4 py-2.5 flex items-center gap-3 hover:bg-muted/40 transition-colors group"
+                >
+                  <span
+                    className="font-mono text-[11px] font-bold tabular-nums shrink-0 w-14"
+                    style={{ color: AKASHA_COLOR }}
+                  >
+                    {formatDate(r.data_postagem)}
+                  </span>
+                  <p className="flex-1 min-w-0 font-serif font-bold text-[14px] leading-snug line-clamp-1 group-hover:underline">
+                    {r.titulo}
+                  </p>
+                  <span className="text-sm shrink-0" aria-hidden="true">
+                    {extractEmojis(r.tags)}
+                  </span>
+                </Link>
+              </li>
+            ))}
+      </ul>
     </div>
   );
 };
 
 export default ArtigosTab;
+

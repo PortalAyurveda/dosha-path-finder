@@ -1,8 +1,9 @@
 import { Link, useParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft, Sparkles } from "lucide-react";
+import { ArrowLeft, List, Sparkles } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { akashaSlug } from "@/lib/akashaSlug";
 
 const PRIMARY = "#352F54";
 const AKASHA = "#9b73ad";
@@ -46,20 +47,31 @@ const splitTags = (tags: string | null) => {
 };
 
 const RegistroAkashico = () => {
-  const { id } = useParams<{ id: string }>();
+  const { id, slug } = useParams<{ id?: string; slug?: string }>();
 
   const { data, isLoading, error } = useQuery({
-    queryKey: ["registro_akashico", id],
+    queryKey: ["registro_akashico", id ?? slug],
     queryFn: async () => {
+      // Lookup by numeric id (legacy /registros/:id)
+      if (id && !slug) {
+        const { data, error } = await supabase
+          .from("akasha_memory")
+          .select("id, titulo, texto_inicio, tags, data_postagem")
+          .eq("id", Number(id))
+          .maybeSingle();
+        if (error) throw error;
+        return data as Registro | null;
+      }
+      // Lookup by slug — fetch all titulos and match
       const { data, error } = await supabase
         .from("akasha_memory")
         .select("id, titulo, texto_inicio, tags, data_postagem")
-        .eq("id", Number(id))
-        .maybeSingle();
+        .not("titulo", "is", null);
       if (error) throw error;
-      return data as Registro | null;
+      const match = (data ?? []).find((r) => akashaSlug(r.titulo) === slug);
+      return (match ?? null) as Registro | null;
     },
-    enabled: !!id,
+    enabled: !!(id || slug),
   });
 
   return (
@@ -71,12 +83,21 @@ const RegistroAkashico = () => {
 
       <main className="bg-background min-h-screen">
         <article className="max-w-3xl mx-auto px-4 sm:px-6 py-10 md:py-14">
-          <Link
-            to="/registros"
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground mb-6"
-          >
-            <ArrowLeft className="h-3.5 w-3.5" /> Voltar aos registros
-          </Link>
+          <div className="flex items-center justify-between gap-3 mb-6 flex-wrap">
+            <Link
+              to="/registros-akashikos"
+              className="inline-flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground"
+            >
+              <ArrowLeft className="h-3.5 w-3.5" /> Voltar
+            </Link>
+            <Link
+              to="/registros-akashikos"
+              className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full border transition-colors hover:bg-muted/40"
+              style={{ color: AKASHA, borderColor: `${AKASHA}40` }}
+            >
+              <List className="h-3.5 w-3.5" /> Ler o diário da Akasha — ver lista completa
+            </Link>
+          </div>
 
           {isLoading ? (
             <div className="space-y-4">
@@ -92,7 +113,7 @@ const RegistroAkashico = () => {
             <div className="text-center py-16">
               <p className="text-muted-foreground">Registro não encontrado.</p>
               <Link
-                to="/registros"
+                to="/registros-akashikos"
                 className="inline-flex items-center gap-1 text-sm font-semibold mt-4"
                 style={{ color: AKASHA }}
               >
