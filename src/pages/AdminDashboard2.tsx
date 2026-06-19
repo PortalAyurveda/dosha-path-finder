@@ -397,6 +397,88 @@ function RecepcionistaDev({
             ))}
             {loading && <div className="text-xs text-muted-foreground">Pensando...</div>}
           </div>
+          <div className="flex flex-wrap items-center gap-1.5 pb-1 border-b border-dashed">
+            <span className="text-[11px] uppercase tracking-wide text-muted-foreground mr-1">Foco:</span>
+            {[
+              { key: "tudo", label: "Tudo" },
+              ...PERFIS_RECEP.map((p) => ({ key: p.toLowerCase(), label: p })),
+              ...verticais.map((v) => ({ key: v.toLowerCase(), label: v })),
+            ].map((opt) => {
+              const active = focusKind === "quick" && quickFocus === opt.key;
+              return (
+                <button
+                  key={opt.key}
+                  onClick={() => {
+                    setFocusKind("quick");
+                    setQuickFocus(opt.key);
+                  }}
+                  className={`text-xs px-2 py-0.5 rounded-full border transition ${
+                    active
+                      ? "bg-primary text-primary-foreground border-primary"
+                      : "bg-background hover:bg-muted border-border text-muted-foreground"
+                  }`}
+                >
+                  {opt.label}
+                </button>
+              );
+            })}
+            <Popover open={precisePickerOpen} onOpenChange={setPrecisePickerOpen}>
+              <PopoverTrigger asChild>
+                <button
+                  className={`text-xs px-2 py-0.5 rounded-full border transition flex items-center gap-1 ${
+                    focusKind === "precise"
+                      ? "bg-primary text-primary-foreground border-primary"
+                      : "bg-background hover:bg-muted border-border text-muted-foreground"
+                  }`}
+                >
+                  <ListChecks className="w-3 h-3" />
+                  {focusKind === "precise" && selectedModulos.size > 0
+                    ? `${selectedModulos.size} selecionado${selectedModulos.size > 1 ? "s" : ""}`
+                    : "Escolher módulos específicos"}
+                </button>
+              </PopoverTrigger>
+              <PopoverContent className="w-80 p-0" align="start">
+                <div className="p-2 border-b flex items-center justify-between gap-2">
+                  <button
+                    className="text-xs text-primary hover:underline"
+                    onClick={() => {
+                      setFocusKind("precise");
+                      setSelectedModulos(new Set(modulos.map(moduloKey)));
+                    }}
+                  >
+                    Selecionar todos
+                  </button>
+                  <button
+                    className="text-xs text-muted-foreground hover:underline"
+                    onClick={() => setSelectedModulos(new Set())}
+                  >
+                    Limpar
+                  </button>
+                </div>
+                <div className="max-h-72 overflow-y-auto p-2 space-y-1">
+                  {modulos.map((m) => {
+                    const key = moduloKey(m);
+                    const checked = selectedModulos.has(key);
+                    return (
+                      <label
+                        key={m.id}
+                        className="flex items-center gap-2 text-sm px-2 py-1 rounded hover:bg-muted cursor-pointer"
+                      >
+                        <Checkbox
+                          checked={checked}
+                          onCheckedChange={() => {
+                            setFocusKind("precise");
+                            toggleModulo(key);
+                          }}
+                        />
+                        <span className="flex-1 truncate">{m.titulo}</span>
+                      </label>
+                    );
+                  })}
+                </div>
+              </PopoverContent>
+            </Popover>
+          </div>
           <div className="flex gap-2">
             <Input
               value={input}
