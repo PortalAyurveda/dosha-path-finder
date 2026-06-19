@@ -119,7 +119,7 @@ const RegistroAkashico = () => {
             </div>
           ) : (
             <>
-              <header className="mb-8">
+              <header className="mb-6">
                 <div className="flex items-center gap-2 mb-4">
                   <img src={AKASHA_LOGO} alt="" className="w-10 h-10 object-contain" />
                   <span
@@ -130,11 +130,26 @@ const RegistroAkashico = () => {
                   </span>
                 </div>
                 <h1
-                  className="font-serif italic font-bold text-3xl md:text-[40px] leading-tight mb-3"
+                  className="font-serif italic font-bold text-2xl md:text-3xl leading-tight mb-3"
                   style={{ color: PRIMARY }}
                 >
                   {data.titulo}
                 </h1>
+
+                {splitTags(data.tags).length > 0 && (
+                  <div className="flex flex-wrap gap-2 mb-3">
+                    {splitTags(data.tags).map((t, i) => (
+                      <span
+                        key={i}
+                        className="text-base md:text-lg font-medium px-3 py-1 rounded-full border border-border bg-card inline-flex items-center gap-1.5"
+                        style={{ color: AKASHA }}
+                      >
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+                )}
+
                 <p className="text-sm text-muted-foreground">{formatFull(data.data_postagem)}</p>
               </header>
 
@@ -149,20 +164,6 @@ const RegistroAkashico = () => {
                   >
                     {data.texto_inicio}
                   </p>
-                </div>
-              )}
-
-              {splitTags(data.tags).length > 0 && (
-                <div className="flex flex-wrap gap-2">
-                  {splitTags(data.tags).map((t, i) => (
-                    <span
-                      key={i}
-                      className="text-xs font-medium px-3 py-1.5 rounded-full border border-border bg-card"
-                      style={{ color: AKASHA }}
-                    >
-                      {t}
-                    </span>
-                  ))}
                 </div>
               )}
 
