@@ -3973,7 +3973,7 @@ export type Database = {
         | "concluido"
         | "bloqueado"
         | "em_revisao"
-      devlog_tipo: "vertical" | "modulo" | "submodulo" | "infra"
+      devlog_tipo: "vertical" | "modulo" | "submodulo" | "infra" | "manifesto"
     }
     CompositeTypes: {
       http_header: {
@@ -4125,7 +4125,7 @@ export const Constants = {
         "bloqueado",
         "em_revisao",
       ],
-      devlog_tipo: ["vertical", "modulo", "submodulo", "infra"],
+      devlog_tipo: ["vertical", "modulo", "submodulo", "infra", "manifesto"],
     },
   },
 } as const
