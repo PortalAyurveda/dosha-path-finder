@@ -1,8 +1,9 @@
 import { Link, useParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft, Sparkles } from "lucide-react";
+import { ArrowLeft, List, Sparkles } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { akashaSlug } from "@/lib/akashaSlug";
 
 const PRIMARY = "#352F54";
 const AKASHA = "#9b73ad";
