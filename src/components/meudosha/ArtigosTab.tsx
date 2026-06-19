@@ -269,7 +269,7 @@ const ArtigosTab = ({ agravVataTags, agravPittaTags, agravKaphaTags, doshaprinci
       )}
 
       {/* Premium lock for personalizado / pesquisa */}
-      {(subTab === "personalizado" || subTab === "pesquisa") && !isPremium ? (
+      {subTab !== "registros" && ((subTab === "personalizado" || subTab === "pesquisa") && !isPremium ? (
         <PremiumLock>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 min-h-[300px]">
             {[1, 2, 3].map((i) => (
