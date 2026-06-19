@@ -943,7 +943,7 @@ export default function AdminDashboard2() {
       toast({ title: "Entrada do recepcionista não encontrada", variant: "destructive" });
       return;
     }
-    await updateEntryById(recepcionistaEntry.id, { notas } as any, notas.length > (recepcionistaEntry.notas?.length || 0) ? "Adicionou nota no recepcionista" : "Removeu nota do recepcionista");
+    await updateEntryById(recepcionistaEntry.id, { notas }, notas.length > (recepcionistaEntry.notas?.length || 0) ? "Adicionou nota no recepcionista" : "Removeu nota do recepcionista");
   };
 
   const attachProposta = async (moduloId: string, p: RecepProposta) => {
