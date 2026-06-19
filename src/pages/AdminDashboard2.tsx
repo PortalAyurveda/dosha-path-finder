@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "@/components/ui/collapsible";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { ChevronDown, MessageSquare, Send, Pencil, Check, X } from "lucide-react";
+import { ChevronDown, MessageSquare, Send, Pencil, Check, X, Star, Trash2, Sparkles } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import ReactFlow, {
   Background,
