@@ -999,7 +999,7 @@ export default function AdminDashboard2() {
   const [entries, setEntries] = useState<DevlogEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [perfilFilter, setPerfilFilter] = useState<string>("Edson");
+  const [perfilFilter, setPerfilFilter] = useState<string>("all");
   const [verticalFilter, setVerticalFilter] = useState<string>("all");
   const [acessoFilter, setAcessoFilter] = useState<string>("all");
   const [tab, setTab] = useState("ficha");
@@ -1011,6 +1011,11 @@ export default function AdminDashboard2() {
       .select("*")
       .order("tipo", { ascending: true })
       .order("titulo", { ascending: true });
+    console.log("[AdminDashboard2] portal_devlog:", {
+      count: data?.length ?? 0,
+      error,
+      perfisAmostra: (data || []).slice(0, 3).map((r: any) => ({ titulo: r.titulo, perfis: r.perfis })),
+    });
     if (error) {
       toast({ title: "Erro ao carregar", description: error.message, variant: "destructive" });
     } else {
@@ -1019,6 +1024,7 @@ export default function AdminDashboard2() {
     }
     setLoading(false);
   }, [selectedId]);
+
 
   useEffect(() => {
     load();
