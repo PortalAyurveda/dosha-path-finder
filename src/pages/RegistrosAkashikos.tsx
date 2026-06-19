@@ -4,6 +4,7 @@ import { Helmet } from "react-helmet-async";
 import { useQuery } from "@tanstack/react-query";
 import { Search, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { akashaSlug } from "@/lib/akashaSlug";
 import { Input } from "@/components/ui/input";
 import PaginationControls from "@/components/PaginationControls";
 
