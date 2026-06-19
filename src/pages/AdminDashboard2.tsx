@@ -41,6 +41,7 @@ type DevlogEntry = {
   impacta: string[] | null;
   stack: string[] | null;
   acesso_permitido: string[] | null;
+  perfis: string[] | null;
   modo_acesso: string | null;
   tabelas_relacionadas: string[] | null;
   agente_webhook: string | null;
