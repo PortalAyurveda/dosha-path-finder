@@ -854,6 +854,7 @@ export default function AdminDashboard2() {
   const [entries, setEntries] = useState<DevlogEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [perfilFilter, setPerfilFilter] = useState<string>("Edson");
   const [verticalFilter, setVerticalFilter] = useState<string>("all");
   const [acessoFilter, setAcessoFilter] = useState<string>("all");
   const [tab, setTab] = useState("ficha");
