@@ -269,28 +269,6 @@ const AdminLojaVendaDetalhe = () => {
                     </SelectContent>
                   </Select>
                 </div>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs text-muted-foreground">
-            <div>
-              <span className="block">Pago em</span>
-              <span className="text-foreground">
-                {pedido.paid_at ? formatDateTime(pedido.paid_at) : "—"}
-              </span>
-            </div>
-            <div>
-              <span className="block">Enviado em</span>
-              <span className="text-foreground">
-                {pedido.shipped_at ? formatDateTime(pedido.shipped_at) : "—"}
-              </span>
-            </div>
-            <div>
-              <span className="block">Entregue em</span>
-              <span className="text-foreground">
-                {pedido.delivered_at ? formatDateTime(pedido.delivered_at) : "—"}
-              </span>
-            </div>
                 {pedido.status !== "pago" && (
                   <Button
                     type="button"
