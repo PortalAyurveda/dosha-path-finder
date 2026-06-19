@@ -8,7 +8,7 @@ import ReactMarkdown from "react-markdown";
 import { Link } from "react-router-dom";
 
 const AKASHA_LOGO = "https://static.wixstatic.com/media/b8f47f_105371e1ade24ccd9bd3406b83bd925e~mv2.png";
-const AKASHA_FLOATING_LOGO = "https://api.portalayurveda.com/storage/v1/object/public/portal_images/akasha-versao-2.webp";
+const AKASHA_FLOATING_LOGO = "https://fwezkasjfguarjmjxifh.supabase.co/storage/v1/object/public/portal_images/akasha-versao-3.webp";
 const WEBHOOK_URL = "https://n8n.portalayurveda.com/webhook/chat-ayurveda";
 
 // Rotas onde o widget NÃO deve aparecer
