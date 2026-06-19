@@ -216,9 +216,13 @@ type RecepMsg = { role: "user" | "assistant"; content: string; propostas?: Recep
 function RecepcionistaDev({
   modulos,
   onAttach,
+  notas,
+  onUpdateNotas,
 }: {
   modulos: { id: string; titulo: string; modulo: string | null }[];
   onAttach: (moduloId: string, p: RecepProposta) => Promise<void>;
+  notas: Nota[];
+  onUpdateNotas: (notas: Nota[]) => Promise<void>;
 }) {
   const [open, setOpen] = useState(true);
   const [input, setInput] = useState("");
