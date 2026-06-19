@@ -202,7 +202,17 @@ const ArtigosTab = ({ agravVataTags, agravPittaTags, agravKaphaTags, doshaprinci
         >
           <Search className="h-3.5 w-3.5" /> Pesquisa
         </button>
+        <button
+          onClick={() => setSubTab("registros")}
+          className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all flex items-center gap-1 ${
+            subTab === "registros" ? "bg-akasha text-white shadow-sm" : "text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          <BookOpen className="h-3.5 w-3.5" /> Registros Akashikos
+        </button>
       </div>
+
+      {subTab === "registros" && <RegistrosAkashikosInline />}
 
       {/* Search (only for pesquisa subtab) */}
       {subTab === "pesquisa" && isPremium && (
