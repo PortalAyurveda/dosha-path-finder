@@ -881,6 +881,35 @@ export default function AdminDashboard2() {
     toast({ title: "Salvo" });
   };
 
+  const attachProposta = async (moduloId: string, p: RecepProposta) => {
+    const target = entries.find((e) => e.id === moduloId);
+    if (!target) return;
+    const nova: Sugestao = {
+      data: new Date().toISOString().slice(0, 10),
+      campo: p.campo,
+      sugestao: p.proposta,
+      justificativa: p.justificativa,
+      status: "pendente",
+      origem: "recepcionista",
+    };
+    const list = [...(target.proposto_pelo_agente || []), nova];
+    const newLog: LogEntry[] = [
+      ...(target.log_atividade || []),
+      { data: new Date().toISOString(), autor: "recepcionista", acao: `Sugestão recebida para ${p.campo}` },
+    ];
+    const fullPatch: any = { proposto_pelo_agente: list, log_atividade: newLog };
+    const { error } = await supabase
+      .from("portal_devlog" as any)
+      .update(fullPatch)
+      .eq("id", moduloId);
+    if (error) {
+      toast({ title: "Erro ao anexar", description: error.message, variant: "destructive" });
+      return;
+    }
+    setEntries((prev) => prev.map((e) => (e.id === moduloId ? { ...e, ...fullPatch } : e)));
+    toast({ title: "Sugestão anexada" });
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <AdminNav />
@@ -894,6 +923,10 @@ export default function AdminDashboard2() {
           </TabsList>
 
           <TabsContent value="ficha" className="mt-4">
+            <RecepcionistaDev
+              modulos={entries.map((e) => ({ id: e.id, titulo: e.titulo, modulo: e.modulo }))}
+              onAttach={attachProposta}
+            />
             <div className="grid grid-cols-1 md:grid-cols-[260px_1fr] gap-4">
               <aside className="border rounded-lg bg-card overflow-hidden flex flex-col max-h-[calc(100vh-220px)]">
                 <div className="p-3 border-b space-y-2">
