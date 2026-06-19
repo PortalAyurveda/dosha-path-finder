@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "@/components/ui/collapsible";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { ChevronDown, MessageSquare, Send, Pencil, Check, X } from "lucide-react";
+import { ChevronDown, MessageSquare, Send, Pencil, Check, X, Star, Trash2, Sparkles } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import ReactFlow, {
   Background,
@@ -22,7 +22,8 @@ import ReactFlow, {
 import "reactflow/dist/style.css";
 
 type LogEntry = { data: string; autor: string; acao: string };
-type Sugestao = { data: string; campo: string; sugestao: string; status: string };
+type Sugestao = { data: string; campo: string; sugestao: string; justificativa?: string; status: string; origem?: string };
+type Nota = { data: string; texto: string };
 
 type DevlogEntry = {
   id: string;
@@ -47,6 +48,7 @@ type DevlogEntry = {
   agente_ativo: boolean | null;
   log_atividade: LogEntry[] | null;
   proposto_pelo_agente: Sugestao[] | null;
+  notas: Nota[] | null;
 };
 
 const STATUS_COLOR: Record<string, string> = {
@@ -114,6 +116,218 @@ function Chips({ items, color }: { items: string[] | null; color: string }) {
           {it}
         </span>
       ))}
+    </div>
+  );
+}
+
+function NotasSection({
+  notas,
+  onAdd,
+  onDelete,
+}: {
+  notas: Nota[];
+  onAdd: (texto: string) => Promise<void>;
+  onDelete: (idx: number) => Promise<void>;
+}) {
+  const [texto, setTexto] = useState("");
+  const [saving, setSaving] = useState(false);
+  const sorted = [...notas].sort((a, b) => (b.data || "").localeCompare(a.data || ""));
+  return (
+    <div className="border rounded-lg p-4 bg-muted/30">
+      <h3 className="text-sm font-semibold mb-2 text-muted-foreground uppercase tracking-wide">Minhas notas</h3>
+      <div className="flex gap-2 mb-3">
+        <Textarea
+          value={texto}
+          onChange={(e) => setTexto(e.target.value)}
+          rows={2}
+          placeholder="Anotação manual..."
+        />
+        <Button
+          size="sm"
+          disabled={saving || !texto.trim()}
+          onClick={async () => {
+            setSaving(true);
+            try { await onAdd(texto.trim()); setTexto(""); } finally { setSaving(false); }
+          }}
+        >
+          Adicionar
+        </Button>
+      </div>
+      <div className="space-y-2">
+        {sorted.length === 0 && <p className="text-xs text-muted-foreground">Sem notas.</p>}
+        {sorted.map((n, i) => {
+          const originalIdx = notas.indexOf(n);
+          return (
+            <div key={i} className="flex items-start gap-2 text-sm border-l-2 border-primary/40 pl-3 py-1">
+              <div className="flex-1">
+                <div className="text-[10px] text-muted-foreground">{n.data}</div>
+                <div className="whitespace-pre-wrap">{n.texto}</div>
+              </div>
+              <button
+                onClick={() => onDelete(originalIdx)}
+                className="text-muted-foreground hover:text-destructive transition"
+                aria-label="Excluir nota"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+type RecepProposta = { modulo: string; campo: string; proposta: string; justificativa?: string };
+type RecepMsg = { role: "user" | "assistant"; content: string; propostas?: RecepProposta[] };
+
+function RecepcionistaDev({
+  modulos,
+  onAttach,
+}: {
+  modulos: { id: string; titulo: string; modulo: string | null }[];
+  onAttach: (moduloId: string, p: RecepProposta) => Promise<void>;
+}) {
+  const [open, setOpen] = useState(true);
+  const [input, setInput] = useState("");
+  const [history, setHistory] = useState<RecepMsg[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [picker, setPicker] = useState<{ p: RecepProposta; msgIdx: number; pIdx: number } | null>(null);
+  const [pickerModuloId, setPickerModuloId] = useState<string>("");
+
+  const send = async () => {
+    const text = input.trim();
+    if (!text) return;
+    const userMsg: RecepMsg = { role: "user", content: text };
+    const nextHistory = [...history, userMsg];
+    setHistory(nextHistory);
+    setInput("");
+    setLoading(true);
+    try {
+      const res = await fetch("https://n8n.portalayurveda.com/webhook/recepcionista-dev", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          mensagem: text,
+          historico: history.map((m) => ({ role: m.role, content: m.content })),
+        }),
+      });
+      const txt = await res.text();
+      let resposta = txt;
+      let propostas: RecepProposta[] = [];
+      try {
+        const j = JSON.parse(txt);
+        resposta = j.resposta || j.message || txt;
+        if (Array.isArray(j.propostas)) propostas = j.propostas;
+      } catch {}
+      setHistory((h) => [...h, { role: "assistant", content: resposta, propostas }]);
+    } catch (e: any) {
+      setHistory((h) => [...h, { role: "assistant", content: `Erro: ${e.message}` }]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const openPicker = (p: RecepProposta, msgIdx: number, pIdx: number) => {
+    const found = modulos.find((m) => m.modulo === p.modulo || m.titulo === p.modulo);
+    setPickerModuloId(found?.id || modulos[0]?.id || "");
+    setPicker({ p, msgIdx, pIdx });
+  };
+
+  const confirmAttach = async () => {
+    if (!picker || !pickerModuloId) return;
+    await onAttach(pickerModuloId, picker.p);
+    setPicker(null);
+  };
+
+  return (
+    <div className="border rounded-lg bg-card mb-4">
+      <button
+        onClick={() => setOpen((o) => !o)}
+        className="w-full flex items-center gap-2 px-4 py-3 border-b text-sm font-semibold"
+      >
+        <Sparkles className="w-4 h-4 text-primary" />
+        Recepcionista Dev
+        <ChevronDown className={`w-4 h-4 ml-auto transition ${open ? "rotate-180" : ""}`} />
+      </button>
+      {open && (
+        <div className="p-4 space-y-3">
+          {history.length === 0 && (
+            <p className="text-sm text-muted-foreground">
+              Conte uma ideia ou observação. Eu posso sugerir mudanças e você decide a qual módulo anexar.
+            </p>
+          )}
+          <div className="space-y-3 max-h-80 overflow-y-auto">
+            {history.map((m, i) => (
+              <div key={i} className={`text-sm ${m.role === "user" ? "ml-8" : "mr-8"}`}>
+                <div
+                  className={`p-3 rounded-lg whitespace-pre-wrap ${
+                    m.role === "user" ? "bg-primary/10" : "bg-muted"
+                  }`}
+                >
+                  {m.content}
+                </div>
+                {m.propostas && m.propostas.length > 0 && (
+                  <div className="mt-2 space-y-2">
+                    {m.propostas.map((p, pi) => (
+                      <div key={pi} className="border rounded-lg p-3 bg-background flex items-start gap-2">
+                        <div className="flex-1 text-xs space-y-1">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <Badge variant="outline">{p.modulo}</Badge>
+                            <Badge variant="secondary">{p.campo}</Badge>
+                          </div>
+                          <div className="whitespace-pre-wrap text-sm">{p.proposta}</div>
+                          {p.justificativa && (
+                            <div className="text-muted-foreground italic">{p.justificativa}</div>
+                          )}
+                        </div>
+                        <button
+                          onClick={() => openPicker(p, i, pi)}
+                          className="text-muted-foreground hover:text-yellow-500 transition shrink-0"
+                          title="Anexar a um módulo"
+                        >
+                          <Star className="w-5 h-5" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
+            {loading && <div className="text-xs text-muted-foreground">Pensando...</div>}
+          </div>
+          <div className="flex gap-2">
+            <Input
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="Sua ideia..."
+              onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && (e.preventDefault(), send())}
+            />
+            <Button onClick={send} disabled={loading || !input.trim()}>
+              <Send className="w-4 h-4" />
+            </Button>
+          </div>
+
+          {picker && (
+            <div className="border rounded-lg p-3 bg-muted/50 space-y-2">
+              <div className="text-xs font-semibold">Anexar sugestão a qual módulo?</div>
+              <Select value={pickerModuloId} onValueChange={setPickerModuloId}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {modulos.map((m) => (
+                    <SelectItem key={m.id} value={m.id}>{m.titulo}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <div className="text-xs text-muted-foreground">Campo: <span className="font-mono">{picker.p.campo}</span></div>
+              <div className="flex gap-2">
+                <Button size="sm" onClick={confirmAttach}>Confirmar</Button>
+                <Button size="sm" variant="ghost" onClick={() => setPicker(null)}>Cancelar</Button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
@@ -433,6 +647,19 @@ function DetailPanel({
         </Collapsible>
       )}
 
+      <NotasSection
+        notas={entry.notas || []}
+        onAdd={async (texto) => {
+          const nova: Nota = { data: new Date().toISOString().slice(0, 10), texto };
+          const list = [...(entry.notas || []), nova];
+          await onUpdate({ notas: list } as any, "Adicionou nota manual");
+        }}
+        onDelete={async (idx) => {
+          const list = (entry.notas || []).filter((_, i) => i !== idx);
+          await onUpdate({ notas: list } as any, "Removeu nota manual");
+        }}
+      />
+
       <div className="pt-4 border-t">
         {entry.agente_ativo && entry.agente_webhook ? (
           <Button onClick={() => setChatOpen(true)} className="gap-2">
@@ -654,6 +881,35 @@ export default function AdminDashboard2() {
     toast({ title: "Salvo" });
   };
 
+  const attachProposta = async (moduloId: string, p: RecepProposta) => {
+    const target = entries.find((e) => e.id === moduloId);
+    if (!target) return;
+    const nova: Sugestao = {
+      data: new Date().toISOString().slice(0, 10),
+      campo: p.campo,
+      sugestao: p.proposta,
+      justificativa: p.justificativa,
+      status: "pendente",
+      origem: "recepcionista",
+    };
+    const list = [...(target.proposto_pelo_agente || []), nova];
+    const newLog: LogEntry[] = [
+      ...(target.log_atividade || []),
+      { data: new Date().toISOString(), autor: "recepcionista", acao: `Sugestão recebida para ${p.campo}` },
+    ];
+    const fullPatch: any = { proposto_pelo_agente: list, log_atividade: newLog };
+    const { error } = await supabase
+      .from("portal_devlog" as any)
+      .update(fullPatch)
+      .eq("id", moduloId);
+    if (error) {
+      toast({ title: "Erro ao anexar", description: error.message, variant: "destructive" });
+      return;
+    }
+    setEntries((prev) => prev.map((e) => (e.id === moduloId ? { ...e, ...fullPatch } : e)));
+    toast({ title: "Sugestão anexada" });
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <AdminNav />
@@ -667,6 +923,10 @@ export default function AdminDashboard2() {
           </TabsList>
 
           <TabsContent value="ficha" className="mt-4">
+            <RecepcionistaDev
+              modulos={entries.map((e) => ({ id: e.id, titulo: e.titulo, modulo: e.modulo }))}
+              onAttach={attachProposta}
+            />
             <div className="grid grid-cols-1 md:grid-cols-[260px_1fr] gap-4">
               <aside className="border rounded-lg bg-card overflow-hidden flex flex-col max-h-[calc(100vh-220px)]">
                 <div className="p-3 border-b space-y-2">
