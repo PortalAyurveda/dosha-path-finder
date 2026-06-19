@@ -291,6 +291,41 @@ const AdminLojaVendaDetalhe = () => {
                 {pedido.delivered_at ? formatDateTime(pedido.delivered_at) : "—"}
               </span>
             </div>
+                {pedido.status !== "pago" && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={handleMarcarBrinde}
+                    disabled={savingStatus}
+                    title="Marcar como brinde (zera total)"
+                  >
+                    <Gift className="h-4 w-4 mr-1" />
+                    Brinde
+                  </Button>
+                )}
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs text-muted-foreground">
+            <div>
+              <span className="block">Pago em</span>
+              <span className="text-foreground">
+                {pedido.paid_at ? formatDateTime(pedido.paid_at) : "—"}
+              </span>
+            </div>
+            <div>
+              <span className="block">Enviado em</span>
+              <span className="text-foreground">
+                {pedido.shipped_at ? formatDateTime(pedido.shipped_at) : "—"}
+              </span>
+            </div>
+            <div>
+              <span className="block">Entregue em</span>
+              <span className="text-foreground">
+                {pedido.delivered_at ? formatDateTime(pedido.delivered_at) : "—"}
+              </span>
+            </div>
             <div>
               <span className="block">Pagamento</span>
               <span className="text-foreground">{pedido.status_pagamento}</span>
