@@ -215,13 +215,21 @@ function NotasSection({
 type RecepProposta = { modulo: string; campo: string; proposta: string; justificativa?: string };
 type RecepMsg = { role: "user" | "assistant"; content: string; propostas?: RecepProposta[] };
 
+const PERFIS_RECEP = ["Edson", "Marcos", "Marcelle", "Estoque"];
+const newSessionId = () =>
+  (typeof crypto !== "undefined" && "randomUUID" in crypto
+    ? crypto.randomUUID()
+    : `s_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`);
+
 function RecepcionistaDev({
   modulos,
+  verticais,
   onAttach,
   notas,
   onUpdateNotas,
 }: {
   modulos: { id: string; titulo: string; modulo: string | null }[];
+  verticais: string[];
   onAttach: (moduloId: string, p: RecepProposta) => Promise<void>;
   notas: Nota[];
   onUpdateNotas: (notas: Nota[]) => Promise<void>;
@@ -232,13 +240,54 @@ function RecepcionistaDev({
   const [loading, setLoading] = useState(false);
   const [picker, setPicker] = useState<{ p: RecepProposta; msgIdx: number; pIdx: number } | null>(null);
   const [pickerModuloId, setPickerModuloId] = useState<string>("");
+  const [sessionId, setSessionId] = useState<string>(() => newSessionId());
+
+  // Foco: modo rápido (uma chave) ou modo preciso (multi-módulos)
+  const [focusKind, setFocusKind] = useState<"quick" | "precise">("quick");
+  const [quickFocus, setQuickFocus] = useState<string>("tudo");
+  const [precisePickerOpen, setPrecisePickerOpen] = useState(false);
+  const [selectedModulos, setSelectedModulos] = useState<Set<string>>(new Set());
+
+  const moduloKey = (m: { titulo: string; modulo: string | null }) =>
+    (m.modulo && m.modulo.trim()) || m.titulo;
+
+  const modulosFoco: string[] = useMemo(() => {
+    if (focusKind === "precise") {
+      if (selectedModulos.size === 0) return ["tudo"];
+      return Array.from(selectedModulos);
+    }
+    return [quickFocus || "tudo"];
+  }, [focusKind, quickFocus, selectedModulos]);
+
+  const focusLabel =
+    focusKind === "precise"
+      ? selectedModulos.size === 0
+        ? "Tudo"
+        : `${selectedModulos.size} módulo${selectedModulos.size > 1 ? "s" : ""}`
+      : quickFocus === "tudo"
+        ? "Tudo"
+        : quickFocus.charAt(0).toUpperCase() + quickFocus.slice(1);
+
+  const toggleModulo = (key: string) => {
+    setSelectedModulos((s) => {
+      const next = new Set(s);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
+  };
+
+  const resetConversation = () => {
+    setHistory([]);
+    setInput("");
+    setSessionId(newSessionId());
+  };
 
   const send = async () => {
     const text = input.trim();
     if (!text) return;
     const userMsg: RecepMsg = { role: "user", content: text };
-    const nextHistory = [...history, userMsg];
-    setHistory(nextHistory);
+    setHistory((h) => [...h, userMsg]);
     setInput("");
     setLoading(true);
     try {
@@ -247,7 +296,8 @@ function RecepcionistaDev({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           mensagem: text,
-          historico: history.map((m) => ({ role: m.role, content: m.content })),
+          modulos_foco: modulosFoco,
+          session_id: sessionId,
         }),
       });
       const txt = await res.text();
