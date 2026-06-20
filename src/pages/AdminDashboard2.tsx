@@ -1248,6 +1248,10 @@ export default function AdminDashboard2() {
               }}
             />
           </TabsContent>
+
+          <TabsContent value="doc" className="mt-4">
+            <DocumentacaoTab entries={entries as unknown as import("@/components/admin/dashboard2/DocumentacaoTab").DocEntry[]} />
+          </TabsContent>
         </Tabs>
       </div>
     </div>
