@@ -1157,6 +1157,7 @@ export default function AdminDashboard2() {
           <TabsList>
             <TabsTrigger value="ficha">Ficha</TabsTrigger>
             <TabsTrigger value="mapa">Mapa</TabsTrigger>
+            <TabsTrigger value="doc">Documentação</TabsTrigger>
           </TabsList>
 
           <TabsContent value="ficha" className="mt-4">
