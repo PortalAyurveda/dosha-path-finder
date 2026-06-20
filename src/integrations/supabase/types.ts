@@ -17,23 +17,29 @@ export type Database = {
       akasha_memory: {
         Row: {
           data_postagem: string | null
+          email: string | null
           id: number
           tags: string | null
           texto_inicio: string | null
+          texto_resumo: string | null
           titulo: string | null
         }
         Insert: {
           data_postagem?: string | null
+          email?: string | null
           id?: number
           tags?: string | null
           texto_inicio?: string | null
+          texto_resumo?: string | null
           titulo?: string | null
         }
         Update: {
           data_postagem?: string | null
+          email?: string | null
           id?: number
           tags?: string | null
           texto_inicio?: string | null
+          texto_resumo?: string | null
           titulo?: string | null
         }
         Relationships: []
@@ -2857,6 +2863,51 @@ export type Database = {
           id?: number
           message?: Json
           session_id?: string
+        }
+        Relationships: []
+      }
+      registroakashikobkp: {
+        Row: {
+          "Created Date": string | null
+          data: string | null
+          emailFonte: string | null
+          ID: string | null
+          Owner: string | null
+          "Registro de Akasha": string | null
+          "Registros Akashikos": string | null
+          resumo: string | null
+          tags: string | null
+          tags_registro: string | null
+          titulo: string | null
+          "Updated Date": string | null
+        }
+        Insert: {
+          "Created Date"?: string | null
+          data?: string | null
+          emailFonte?: string | null
+          ID?: string | null
+          Owner?: string | null
+          "Registro de Akasha"?: string | null
+          "Registros Akashikos"?: string | null
+          resumo?: string | null
+          tags?: string | null
+          tags_registro?: string | null
+          titulo?: string | null
+          "Updated Date"?: string | null
+        }
+        Update: {
+          "Created Date"?: string | null
+          data?: string | null
+          emailFonte?: string | null
+          ID?: string | null
+          Owner?: string | null
+          "Registro de Akasha"?: string | null
+          "Registros Akashikos"?: string | null
+          resumo?: string | null
+          tags?: string | null
+          tags_registro?: string | null
+          titulo?: string | null
+          "Updated Date"?: string | null
         }
         Relationships: []
       }

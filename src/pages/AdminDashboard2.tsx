@@ -22,6 +22,7 @@ import ReactFlow, {
   MarkerType,
 } from "reactflow";
 import "reactflow/dist/style.css";
+import DocumentacaoTab from "@/components/admin/dashboard2/DocumentacaoTab";
 
 type LogEntry = { data: string; autor: string; acao: string };
 type Sugestao = { data: string; campo: string; sugestao: string; justificativa?: string; status: string; origem?: string };
@@ -1157,6 +1158,7 @@ export default function AdminDashboard2() {
           <TabsList>
             <TabsTrigger value="ficha">Ficha</TabsTrigger>
             <TabsTrigger value="mapa">Mapa</TabsTrigger>
+            <TabsTrigger value="doc">Documentação</TabsTrigger>
           </TabsList>
 
           <TabsContent value="ficha" className="mt-4">
@@ -1246,6 +1248,10 @@ export default function AdminDashboard2() {
                 setTab("ficha");
               }}
             />
+          </TabsContent>
+
+          <TabsContent value="doc" className="mt-4">
+            <DocumentacaoTab entries={entries as unknown as import("@/components/admin/dashboard2/DocumentacaoTab").DocEntry[]} />
           </TabsContent>
         </Tabs>
       </div>
