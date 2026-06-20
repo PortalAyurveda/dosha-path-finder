@@ -22,6 +22,7 @@ import ReactFlow, {
   MarkerType,
 } from "reactflow";
 import "reactflow/dist/style.css";
+import DocumentacaoTab from "@/components/admin/dashboard2/DocumentacaoTab";
 
 type LogEntry = { data: string; autor: string; acao: string };
 type Sugestao = { data: string; campo: string; sugestao: string; justificativa?: string; status: string; origem?: string };
