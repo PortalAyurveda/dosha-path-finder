@@ -350,8 +350,6 @@ const CartDrawer = () => {
                 preco: freteSelecionado.preco,
                 prazo_dias: freteSelecionado.prazo_dias,
               },
-          _frete_extra: {
-          },
           comprador: {
             nome: form.nome.trim() || "Cliente",
             email: form.email.trim(),
