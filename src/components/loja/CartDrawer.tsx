@@ -342,12 +342,14 @@ const CartDrawer = () => {
             stripe_price_id: it.stripe_price_id,
             peso_gramas: it.peso_gramas,
           })),
-          frete: {
-            id: freteSelecionado.id,
-            nome: freteSelecionado.nome,
-            preco: freteSelecionado.preco,
-            prazo_dias: freteSelecionado.prazo_dias,
-          },
+          frete: freteSelecionado.preco === 0
+            ? { id: null, prazo_dias: null, preco: 0, nome: "Frete Grátis" }
+            : {
+                id: freteSelecionado.id,
+                nome: freteSelecionado.nome,
+                preco: freteSelecionado.preco,
+                prazo_dias: freteSelecionado.prazo_dias,
+              },
           comprador: {
             nome: form.nome.trim() || "Cliente",
             email: form.email.trim(),
