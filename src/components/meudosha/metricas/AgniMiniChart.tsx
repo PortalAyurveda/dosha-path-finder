@@ -19,11 +19,11 @@ function makeTick(rows: Array<Record<string, any>>) {
     return (
       <g transform={`translate(${x},${y})`}>
         {row.topLabel && (
-          <text x={0} y={-10} textAnchor="middle" fill="hsl(var(--primary))" fontSize={10} fontWeight={700}>
+          <text x={0} y={-22} textAnchor="middle" fill="hsl(var(--primary))" fontSize={10} fontWeight={700}>
             {row.topLabel}
           </text>
         )}
-        <text x={0} y={16} textAnchor="middle" fill="hsl(var(--primary))" fontSize={11} fontWeight={600}>
+        <text x={0} y={18} textAnchor="middle" fill="hsl(var(--muted-foreground))" fontSize={10} fontWeight={500}>
           {row.isOverflowAnchor ? "‹ " : ""}{row.monthLabel}
         </text>
       </g>
