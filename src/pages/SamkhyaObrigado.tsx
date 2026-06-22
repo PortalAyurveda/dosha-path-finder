@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { CheckCircle2 } from "lucide-react";
 import SamkhyaLayout from "@/components/samkhya/SamkhyaLayout";
@@ -9,6 +9,8 @@ import { trackPixel } from "@/lib/metaPixel";
 
 const SamkhyaObrigado = () => {
   const { limparCarrinho } = useCart();
+  const [params] = useSearchParams();
+  const sessionId = params.get("session_id");
 
   useEffect(() => {
     limparCarrinho();
@@ -33,13 +35,24 @@ const SamkhyaObrigado = () => {
           <p style={{ color: samkhyaTokens.textoSec }} className="text-base leading-relaxed">
             Seu pedido foi recebido com sucesso. Você receberá em breve um email com os detalhes da compra e o código de rastreio assim que despachado.
           </p>
-          <Link
-            to="/samkhya"
-            className="inline-flex items-center justify-center px-6 py-3 rounded-md text-white text-sm font-medium transition-opacity hover:opacity-90"
-            style={{ background: samkhyaTokens.roxo }}
-          >
-            Voltar à loja
-          </Link>
+          <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+            {sessionId && (
+              <Link
+                to={`/samkhya/pedido/${sessionId}`}
+                className="inline-flex items-center justify-center px-6 py-3 rounded-md text-white text-sm font-medium transition-opacity hover:opacity-90"
+                style={{ background: samkhyaTokens.roxo }}
+              >
+                Acompanhar meu pedido
+              </Link>
+            )}
+            <Link
+              to="/samkhya"
+              className="inline-flex items-center justify-center px-6 py-3 rounded-md text-sm font-medium border transition hover:bg-white"
+              style={{ borderColor: samkhyaTokens.roxo, color: samkhyaTokens.roxo }}
+            >
+              Voltar à loja
+            </Link>
+          </div>
         </div>
       </SamkhyaLayout>
     </>
