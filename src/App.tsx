@@ -78,6 +78,8 @@ const SamkhyaCategoria = lazy(() => import("./pages/SamkhyaCategoria"));
 const SamkhyaKits = lazy(() => import("./pages/SamkhyaKits"));
 const SamkhyaTodos = lazy(() => import("./pages/SamkhyaTodos"));
 const SamkhyaObrigado = lazy(() => import("./pages/SamkhyaObrigado"));
+const SamkhyaPedido = lazy(() => import("./pages/SamkhyaPedido"));
+const SamkhyaCompras = lazy(() => import("./pages/SamkhyaCompras"));
 const Pesquisa = lazy(() => import("./pages/Pesquisa"));
 const Revisao = lazy(() => import("./pages/Revisao"));
 
