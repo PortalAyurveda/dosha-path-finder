@@ -33,8 +33,9 @@ const Auth = () => {
 
   useEffect(() => {
     if (!waitingForDosha) return;
-    if (doshaResult?.idPublico) {
-      navigate(`/meu-dosha?id=${doshaResult.idPublico}`, { replace: true });
+    const fallbackId = doshaResult?.idPublico || localStorage.getItem("activeDoshaId");
+    if (fallbackId) {
+      navigate(`/meu-dosha?id=${fallbackId}`, { replace: true });
       return;
     }
     const timer = setTimeout(() => {
