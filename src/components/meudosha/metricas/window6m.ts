@@ -208,7 +208,7 @@ export function buildSixMonthWindow(
     points.push({
       slot: metaSlot,
       ts: months[metaSlot].ts,
-      topLabel: "Objetivo",
+      topLabel: "Próximo objetivo",
       tipo: "meta",
       vata: meta.vata_meta != null ? vataToLevel(meta.vata_meta).level : undefined,
       vataRaw: meta.vata_meta ?? undefined,
