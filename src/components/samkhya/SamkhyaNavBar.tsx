@@ -1,7 +1,8 @@
 import { NavLink, useLocation } from "react-router-dom";
-import { ShoppingBag } from "lucide-react";
+import { Package, ShoppingBag } from "lucide-react";
 import { samkhyaTokens } from "./tokens";
 import { useCart } from "@/contexts/CartContext";
+import { useUser } from "@/contexts/UserContext";
 
 const ITEMS = [
   { slug: "vata", label: "Vata" },
@@ -16,6 +17,7 @@ const ITEMS = [
 
 const SamkhyaNavBar = () => {
   const { totalItens, abrirCarrinho } = useCart();
+  const { user } = useUser();
   const location = useLocation();
   // Active state derived from URL: /samkhya/categoria/:slug or /samkhya/kits
   const match = location.pathname.match(/^\/samkhya\/categoria\/([^/]+)/);
@@ -62,6 +64,16 @@ const SamkhyaNavBar = () => {
             );
           })}
         </ul>
+        {user && (
+          <NavLink
+            to="/samkhya/compras"
+            aria-label="Minhas compras"
+            title="Minhas compras"
+            className="shrink-0 p-2 text-white hover:opacity-80 transition-opacity"
+          >
+            <Package className="h-5 w-5" />
+          </NavLink>
+        )}
         <button
           type="button"
           onClick={abrirCarrinho}

@@ -78,6 +78,8 @@ const SamkhyaCategoria = lazy(() => import("./pages/SamkhyaCategoria"));
 const SamkhyaKits = lazy(() => import("./pages/SamkhyaKits"));
 const SamkhyaTodos = lazy(() => import("./pages/SamkhyaTodos"));
 const SamkhyaObrigado = lazy(() => import("./pages/SamkhyaObrigado"));
+const SamkhyaPedido = lazy(() => import("./pages/SamkhyaPedido"));
+const SamkhyaCompras = lazy(() => import("./pages/SamkhyaCompras"));
 const Pesquisa = lazy(() => import("./pages/Pesquisa"));
 const Revisao = lazy(() => import("./pages/Revisao"));
 
@@ -225,6 +227,8 @@ const RoutedApp = () => {
               <Route path="/samkhya/todos" element={<SamkhyaTodos />} />
               <Route path="/samkhya/categoria/:slug" element={<SamkhyaCategoria />} />
               <Route path="/samkhya/obrigado" element={<SamkhyaObrigado />} />
+              <Route path="/samkhya/pedido/:session_id" element={<SamkhyaPedido />} />
+              <Route path="/samkhya/compras" element={<SamkhyaCompras />} />
 
               <Route path="/pesquisa" element={<Pesquisa />} />
               <Route path="/revisao" element={<Revisao />} />
