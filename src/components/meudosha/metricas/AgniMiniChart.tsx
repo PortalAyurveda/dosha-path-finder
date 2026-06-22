@@ -2,141 +2,76 @@ import {
   LineChart, Line, XAxis, YAxis, ResponsiveContainer, ReferenceLine, Tooltip,
 } from "recharts";
 import { agniStyle, AGNI_LABEL } from "./doshaScale";
-
-export interface AgniPoint {
-  t: number;
-  nivel: number;
-  tipo: "teste" | "reteste" | "meta";
-  label: string;
-}
+import type { SixMonthWindow } from "./window6m";
+import { rowsFromWindow } from "./window6m";
 
 interface Props {
-  points: AgniPoint[];
-  metaPoint: AgniPoint | null;
+  window: SixMonthWindow;
   agniTipo: string | null;
 }
 
-const EDGE_PAD_MS = 14 * 24 * 60 * 60 * 1000;
-
-function startOfMonth(ts: number): number {
-  const d = new Date(ts);
-  return new Date(d.getFullYear(), d.getMonth(), 1).getTime();
-}
-function addMonth(ts: number): number {
-  const d = new Date(ts);
-  return new Date(d.getFullYear(), d.getMonth() + 1, 1).getTime();
-}
-function monthLabel(ts: number): string {
-  const s = new Date(ts).toLocaleDateString("pt-BR", { month: "long" });
-  return s.charAt(0).toUpperCase() + s.slice(1);
-}
-function shortLabel(s: string): string {
-  return s
-    .replace(/Revisão de\s+/i, "Rev. ")
-    .replace(/Diagnóstico/i, "Diagn.");
-}
-
-function TickWithLabel(
-  labelsByTick: Record<number, string[]>,
-  anchorByTick: Record<number, "start" | "middle" | "end">,
-  offsetByTick: Record<number, number>,
-) {
+function makeTick(rows: Array<Record<string, any>>) {
   return (props: any) => {
     const { x, y, payload } = props;
-    const t = payload.value as number;
-    const labels = labelsByTick[t] || [];
-    const anchor = anchorByTick[t] || "middle";
-    const dx = offsetByTick[t] || 0;
+    const slot = payload.value as number;
+    const row = rows.find((r) => r.slot === slot);
+    if (!row) return <g />;
     return (
       <g transform={`translate(${x},${y})`}>
-        {labels.map((l, i) => (
-          <text
-            key={i}
-            x={dx}
-            y={-6 - (labels.length - 1 - i) * 12}
-            textAnchor={anchor}
-            fill="hsl(var(--primary))"
-            fontSize={10}
-            fontWeight={700}
-          >
-            {shortLabel(l)}
+        {row.topLabel && (
+          <text x={0} y={-10} textAnchor="middle" fill="hsl(var(--primary))" fontSize={10} fontWeight={700}>
+            {row.topLabel}
           </text>
-        ))}
-        <text x={0} y={14} textAnchor="middle" fill="hsl(var(--primary))" fontSize={11} fontWeight={600}>
-          {monthLabel(t)}
+        )}
+        <text x={0} y={16} textAnchor="middle" fill="hsl(var(--primary))" fontSize={11} fontWeight={600}>
+          {row.isOverflowAnchor ? "‹ " : ""}{row.monthLabel}
         </text>
       </g>
     );
   };
 }
 
-export default function AgniMiniChart({ points, metaPoint, agniTipo }: Props) {
-  const all = [...points, ...(metaPoint ? [metaPoint] : [])];
-  if (all.length === 0) return null;
+export default function AgniMiniChart({ window: win, agniTipo }: Props) {
+  if (win.months.length === 0) return null;
+  const rows = rowsFromWindow(win);
+  const lastVal = [...rows].reverse().find((r) => r.agni != null)?.agni ?? null;
+  const style = agniStyle(agniTipo, lastVal);
+  const tipoLabel = (agniTipo || "—").toLowerCase();
 
-  const data = all.map((p) => ({ t: p.t, agni: p.nivel, label: p.label, tipo: p.tipo }));
-  const style = agniStyle(agniTipo, points[points.length - 1]?.nivel ?? metaPoint?.nivel ?? null);
-
-  const firstT = all[0].t;
-  const lastT = all[all.length - 1].t;
-  const firstMonth = startOfMonth(firstT);
-  const lastMonth = startOfMonth(lastT);
-  const monthTicks: number[] = [];
-  for (let m = firstMonth; m <= lastMonth; m = addMonth(m)) monthTicks.push(m);
-  if (monthTicks.length === 0) monthTicks.push(firstMonth);
-
-  // Mapeia rótulos por mês (rótulo do ponto fica acima do mês correspondente)
-  const labelsByTick: Record<number, string[]> = {};
-  const anchorByTick: Record<number, "start" | "middle" | "end"> = {};
-  const offsetByTick: Record<number, number> = {};
-  for (let i = 0; i < monthTicks.length; i++) {
-    const t = monthTicks[i];
-    labelsByTick[t] = [];
-    if (i === 0 && monthTicks.length > 1) {
-      anchorByTick[t] = "start";
-      offsetByTick[t] = -4;
-    } else if (i === monthTicks.length - 1 && monthTicks.length > 1) {
-      anchorByTick[t] = "end";
-      offsetByTick[t] = 4;
-    } else {
-      anchorByTick[t] = "middle";
-      offsetByTick[t] = 0;
+  const makeDot = (props: any) => {
+    const { cx, cy, payload } = props;
+    if (cx == null || cy == null || payload?.agni == null) return null;
+    if (payload.tipo === "reteste") {
+      return <circle cx={cx} cy={cy} r={5} fill="hsl(var(--card))" stroke={style.color} strokeWidth={2.5} />;
     }
-  }
-  for (const p of all) {
-    const mk = startOfMonth(p.t);
-    if (labelsByTick[mk]) labelsByTick[mk].push(p.label);
-  }
-
-  const xMin = firstMonth - EDGE_PAD_MS;
-  const xMax = (monthTicks[monthTicks.length - 1] ?? lastMonth) + EDGE_PAD_MS;
-  const tipo = (agniTipo || "—").toLowerCase();
+    if (payload.tipo === "meta") {
+      return <circle cx={cx} cy={cy} r={6} fill={style.color} stroke="hsl(var(--card))" strokeWidth={2} />;
+    }
+    return <circle cx={cx} cy={cy} r={5} fill={style.color} stroke={style.color} />;
+  };
 
   return (
-    <div
-      className="w-full h-[200px] rounded-xl"
-      style={{ background: "hsl(var(--surface-sun))" }}
-    >
+    <div className="w-full h-[200px] rounded-xl" style={{ background: "hsl(var(--surface-sun))" }}>
       <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={data} margin={{ top: 36, right: 24, left: 8, bottom: 8 }}>
-          {all.map((p) => (
-            <ReferenceLine
-              key={`ref-${p.t}`}
-              x={p.t}
-              stroke="hsl(var(--muted-foreground) / 0.25)"
-              strokeDasharray="3 3"
-            />
-          ))}
+        <LineChart data={rows} margin={{ top: 36, right: 24, left: 8, bottom: 8 }}>
+          {rows.map((r) =>
+            r.topLabel ? (
+              <ReferenceLine
+                key={`ref-${r.slot}`}
+                x={r.slot}
+                stroke="hsl(var(--muted-foreground) / 0.25)"
+                strokeDasharray="3 3"
+              />
+            ) : null,
+          )}
           <XAxis
-            dataKey="t"
-            type="number"
-            domain={[xMin, xMax]}
-            scale="time"
-            ticks={monthTicks}
-            tick={TickWithLabel(labelsByTick, anchorByTick, offsetByTick)}
+            dataKey="slot"
+            type="category"
+            tick={makeTick(rows)}
             interval={0}
             stroke="hsl(var(--primary))"
             height={48}
+            padding={{ left: 0, right: 0 }}
           />
           <YAxis
             type="number"
@@ -153,7 +88,8 @@ export default function AgniMiniChart({ points, metaPoint, agniTipo }: Props) {
             content={({ active, payload }: any) => {
               if (!active || !payload?.length || payload[0].value == null) return null;
               const v = payload[0].value as number;
-              const lbl = payload[0].payload?.label as string | undefined;
+              const row = payload[0].payload;
+              const lbl = [row?.topLabel, row?.monthLabel].filter(Boolean).join(" · ");
               return (
                 <div
                   className="rounded-lg border shadow-lg px-3 py-2 text-xs space-y-1"
@@ -165,7 +101,7 @@ export default function AgniMiniChart({ points, metaPoint, agniTipo }: Props) {
                     </div>
                   )}
                   <div className="font-semibold" style={{ color: style.color }}>
-                    <span className="capitalize">Agni {tipo}</span>{" "}
+                    <span className="capitalize">Agni {tipoLabel}</span>{" "}
                     <span style={{ color: "hsl(var(--foreground))" }}>{AGNI_LABEL[v] ?? v}</span>
                   </div>
                 </div>
@@ -177,8 +113,9 @@ export default function AgniMiniChart({ points, metaPoint, agniTipo }: Props) {
             dataKey="agni"
             stroke={style.color}
             strokeWidth={3}
-            dot={{ r: 5, fill: style.color, stroke: style.color }}
+            dot={makeDot}
             activeDot={{ r: 7, fill: style.color, stroke: "hsl(var(--card))", strokeWidth: 2 }}
+            connectNulls
             isAnimationActive={false}
           />
         </LineChart>
