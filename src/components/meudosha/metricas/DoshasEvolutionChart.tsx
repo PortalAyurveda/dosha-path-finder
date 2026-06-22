@@ -8,51 +8,17 @@ import {
   ResponsiveContainer,
   Legend,
 } from "recharts";
-import {
-  ZONE_TICKS,
-  ZONE_TICK_LABELS,
-  scoreToLevel,
-} from "./doshaScale";
-
-export interface SeriesPoint {
-  t: number;
-  vata?: number; vataRaw?: number;
-  pitta?: number; pittaRaw?: number;
-  kapha?: number; kaphaRaw?: number;
-  agni?: number; agniRaw?: number | null;
-  isMeta?: boolean;
-  tipo?: "teste" | "reteste";
-  label?: string;
-}
-
+import { ZONE_TICKS, ZONE_TICK_LABELS, scoreToLevel } from "./doshaScale";
+import type { SixMonthWindow } from "./window6m";
+import { rowsFromWindow } from "./window6m";
 
 interface Props {
-  realPoints: SeriesPoint[];
-  metaPoint: SeriesPoint | null;
-  agniTipo: string | null;
-  agniNivelAtual: number | null;
-  agniNivelMeta: number | null;
+  window: SixMonthWindow;
 }
 
-// Cores densas alinhadas com o gráfico em pizza de /meu-dosha
-const VATA  = "#4F75FF";
+const VATA = "#4F75FF";
 const PITTA = "#FF5C5C";
 const KAPHA = "#22C55E";
-
-const EDGE_PAD_MS   = 14 * 24 * 60 * 60 * 1000;
-
-function startOfMonth(ts: number): number {
-  const d = new Date(ts);
-  return new Date(d.getFullYear(), d.getMonth(), 1).getTime();
-}
-function addMonth(ts: number): number {
-  const d = new Date(ts);
-  return new Date(d.getFullYear(), d.getMonth() + 1, 1).getTime();
-}
-function monthLabel(ts: number): string {
-  const s = new Date(ts).toLocaleDateString("pt-BR", { month: "long" });
-  return s.charAt(0).toUpperCase() + s.slice(1);
-}
 
 function ZoneTooltip({ active, payload }: { active?: boolean; payload?: any[] }) {
   if (!active || !payload?.length) return null;
@@ -64,15 +30,20 @@ function ZoneTooltip({ active, payload }: { active?: boolean; payload?: any[] })
     return true;
   });
   if (!items.length) return null;
-  const label = items[0]?.payload?.label as string | undefined;
+  const row = items[0]?.payload;
+  const top = row?.topLabel as string | undefined;
+  const month = row?.monthLabel as string | undefined;
   return (
     <div
       className="rounded-lg border shadow-lg px-3 py-2 text-xs space-y-1"
       style={{ background: "hsl(var(--card))", borderColor: "hsl(var(--border))" }}
     >
-      {label && (
-        <div className="text-[10px] uppercase tracking-wider font-bold" style={{ color: "hsl(var(--muted-foreground))" }}>
-          {label}
+      {(top || month) && (
+        <div
+          className="text-[10px] uppercase tracking-wider font-bold"
+          style={{ color: "hsl(var(--muted-foreground))" }}
+        >
+          {[top, month].filter(Boolean).join(" · ")}
         </div>
       )}
       {items.map((p) => {
@@ -93,116 +64,65 @@ function ZoneTooltip({ active, payload }: { active?: boolean; payload?: any[] })
   );
 }
 
-
-// Custom dot: filled circle for "teste", hollow circle for "reteste", larger for "meta"
 function makeDot(color: string) {
   return (props: any) => {
     const { cx, cy, payload } = props;
-    if (cx == null || cy == null) return null;
+    if (cx == null || cy == null || payload?.[props.dataKey] == null) return null;
     const tipo = payload?.tipo;
     if (tipo === "reteste") {
       return <circle cx={cx} cy={cy} r={5} fill="hsl(var(--card))" stroke={color} strokeWidth={2.5} />;
+    }
+    if (tipo === "meta") {
+      return <circle cx={cx} cy={cy} r={6} fill={color} stroke="hsl(var(--card))" strokeWidth={2} />;
     }
     return <circle cx={cx} cy={cy} r={5} fill={color} stroke={color} />;
   };
 }
 
-function shortLabel(s: string): string {
-  return s
-    .replace(/Revisão de\s+/i, "Rev. ")
-    .replace(/Diagnóstico/i, "Diagn.");
-}
-
-// Custom XAxis tick: month name + ponto/label acima
-function makeTick(
-  labelsByTick: Record<number, string[]>,
-  anchorByTick: Record<number, "start" | "middle" | "end">,
-  offsetByTick: Record<number, number>,
-) {
+/** Tick custom: rótulo do ponto (topo, alinhado) + nome do mês (rodapé). */
+function makeTick(rows: Array<Record<string, any>>) {
   return (props: any) => {
     const { x, y, payload } = props;
-    const t = payload.value as number;
-    const labels = labelsByTick[t] || [];
-    const anchor = anchorByTick[t] || "middle";
-    const dx = offsetByTick[t] || 0;
+    const slot = payload.value as number;
+    const row = rows.find((r) => r.slot === slot);
+    if (!row) return <g />;
     return (
       <g transform={`translate(${x},${y})`}>
-        {labels.map((l, i) => (
+        {row.topLabel && (
           <text
-            key={i}
-            x={dx}
-            y={-8 - (labels.length - 1 - i) * 13}
-            textAnchor={anchor}
+            x={0}
+            y={-10}
+            textAnchor="middle"
             fill="hsl(var(--primary))"
-            fontSize={10}
+            fontSize={11}
             fontWeight={700}
           >
-            {shortLabel(l)}
+            {row.topLabel}
           </text>
-        ))}
-        <text x={0} y={14} textAnchor="middle" fill="hsl(var(--primary))" fontSize={11} fontWeight={600}>
-          {monthLabel(t)}
+        )}
+        <text
+          x={0}
+          y={16}
+          textAnchor="middle"
+          fill="hsl(var(--primary))"
+          fontSize={11}
+          fontWeight={600}
+        >
+          {row.isOverflowAnchor ? "‹ " : ""}{row.monthLabel}
         </text>
       </g>
     );
   };
 }
 
-export default function DoshasEvolutionChart({
-  realPoints,
-  metaPoint,
-}: Props) {
-  if (realPoints.length === 0 && !metaPoint) return null;
-
-  const firstReal = realPoints[0]?.t ?? metaPoint!.t;
-  const lastT = metaPoint?.t ?? realPoints[realPoints.length - 1]?.t ?? firstReal;
-
-  const firstMonth = startOfMonth(firstReal);
-  const lastMonth = startOfMonth(lastT);
-  const monthTicks: number[] = [];
-  for (let m = firstMonth; m <= lastMonth; m = addMonth(m)) {
-    monthTicks.push(m);
-  }
-  if (monthTicks.length === 0) monthTicks.push(firstMonth);
-
-  const xMin = firstMonth - EDGE_PAD_MS;
-  const xMax = (monthTicks[monthTicks.length - 1] ?? lastMonth) + EDGE_PAD_MS;
-
-  const data: SeriesPoint[] = [...realPoints, ...(metaPoint ? [metaPoint] : [])];
-
-  // Rótulos do ponto agrupados pelo mês correspondente
-  const labelsByTick: Record<number, string[]> = {};
-  const anchorByTick: Record<number, "start" | "middle" | "end"> = {};
-  const offsetByTick: Record<number, number> = {};
-  for (let i = 0; i < monthTicks.length; i++) {
-    const t = monthTicks[i];
-    labelsByTick[t] = [];
-    if (i === 0 && monthTicks.length > 1) {
-      anchorByTick[t] = "start";
-      offsetByTick[t] = -4;
-    } else if (i === monthTicks.length - 1 && monthTicks.length > 1) {
-      anchorByTick[t] = "end";
-      offsetByTick[t] = 4;
-    } else {
-      anchorByTick[t] = "middle";
-      offsetByTick[t] = 0;
-    }
-  }
-  for (const p of data) {
-    const mk = startOfMonth(p.t);
-    if (labelsByTick[mk]) labelsByTick[mk].push(p.label || (p.isMeta ? "Meta" : ""));
-  }
+export default function DoshasEvolutionChart({ window: win }: Props) {
+  if (win.months.length === 0) return null;
+  const rows = rowsFromWindow(win);
 
   return (
-    <div
-      className="w-full h-[440px] rounded-xl"
-      style={{ background: "hsl(var(--surface-sun))" }}
-    >
+    <div className="w-full h-[440px] rounded-xl" style={{ background: "hsl(var(--surface-sun))" }}>
       <ResponsiveContainer width="100%" height="100%">
-        <ComposedChart
-          data={data}
-          margin={{ top: 28, right: 24, left: 8, bottom: 8 }}
-        >
+        <ComposedChart data={rows} margin={{ top: 28, right: 24, left: 8, bottom: 8 }}>
           {[3.5, 6.5, 9.5, 12.5].map((y) => (
             <ReferenceLine
               key={y}
@@ -213,25 +133,25 @@ export default function DoshasEvolutionChart({
             />
           ))}
 
-          {data.map((p) => (
-            <ReferenceLine
-              key={`v-${p.t}`}
-              x={p.t}
-              stroke="hsl(var(--muted-foreground) / 0.25)"
-              strokeDasharray="3 3"
-            />
-          ))}
+          {rows.map((r) =>
+            r.topLabel ? (
+              <ReferenceLine
+                key={`v-${r.slot}`}
+                x={r.slot}
+                stroke="hsl(var(--muted-foreground) / 0.25)"
+                strokeDasharray="3 3"
+              />
+            ) : null,
+          )}
 
           <XAxis
-            dataKey="t"
-            type="number"
-            domain={[xMin, xMax]}
-            scale="time"
-            ticks={monthTicks}
-            tick={makeTick(labelsByTick, anchorByTick, offsetByTick)}
+            dataKey="slot"
+            type="category"
+            tick={makeTick(rows)}
             interval={0}
             stroke="hsl(var(--primary))"
             height={56}
+            padding={{ left: 0, right: 0 }}
           />
           <YAxis
             domain={[0.5, 15.5]}
@@ -241,11 +161,19 @@ export default function DoshasEvolutionChart({
             tick={{ fill: "hsl(var(--primary))", fontSize: 11, fontWeight: 600 }}
             width={78}
           />
-          <Tooltip content={<ZoneTooltip />} cursor={{ stroke: "hsl(var(--muted-foreground) / 0.3)", strokeWidth: 1 }} />
+          <Tooltip
+            content={<ZoneTooltip />}
+            cursor={{ stroke: "hsl(var(--muted-foreground) / 0.3)", strokeWidth: 1 }}
+          />
           <Legend
             verticalAlign="bottom"
             iconType="circle"
-            wrapperStyle={{ fontSize: 12, paddingTop: 8, color: "hsl(var(--primary))", fontWeight: 600 }}
+            wrapperStyle={{
+              fontSize: 12,
+              paddingTop: 8,
+              color: "hsl(var(--primary))",
+              fontWeight: 600,
+            }}
           />
 
           <Line
