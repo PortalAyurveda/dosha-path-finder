@@ -35,7 +35,7 @@ interface UserContextType {
   roleLoading: boolean;
   signOut: () => Promise<void>;
   refreshProfile: () => Promise<void>;
-  claimTest: (idPublico: string) => Promise<boolean>;
+  claimTest: (idPublico?: string | null) => Promise<boolean>;
   setDoshaResultFromId: (idPublico: string) => Promise<void>;
 }
 
@@ -140,9 +140,21 @@ export function UserProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const claimTest = async (_idPublico: string): Promise<boolean> => {
-    // doshas_registros doesn't have user_id column; claim is a no-op
-    return true;
+  const claimTest = async (idPublico?: string | null): Promise<boolean> => {
+    try {
+      const { data, error } = await supabase.rpc(
+        "claim_dosha_test",
+        idPublico ? { p_id_publico: idPublico } : {}
+      );
+      if (error) {
+        console.error("[UserContext] claim_dosha_test erro:", error);
+        return false;
+      }
+      return (data as any)?.ok === true;
+    } catch (e) {
+      console.error("[UserContext] claim_dosha_test exceção:", e);
+      return false;
+    }
   };
 
   const signOut = async () => {
@@ -190,14 +202,15 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
         if (event === "SIGNED_IN") {
           const pendingId = localStorage.getItem("pendingClaimIdPublico");
+          const urlId = new URLSearchParams(window.location.search).get("id");
+          const activeId = localStorage.getItem("activeDoshaId");
+          const idToClaim = pendingId || urlId || activeId || null;
           const visitorId = localStorage.getItem("visitorId");
 
-          if (pendingId) {
-            setTimeout(async () => {
-              await claimTest(pendingId);
-              localStorage.removeItem("pendingClaimIdPublico");
-            }, 500);
-          }
+          setTimeout(async () => {
+            await claimTest(idToClaim);
+            if (pendingId) localStorage.removeItem("pendingClaimIdPublico");
+          }, 500);
 
           if (visitorId) {
             setTimeout(async () => {
