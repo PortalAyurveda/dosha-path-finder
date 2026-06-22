@@ -139,14 +139,22 @@ export function buildSixMonthWindow(
   if (hasPastOverflow) months[0].isOverflowAnchor = true;
 
   // 4. Constrói WindowPoints com rótulos.
-  // Regra: tipo='teste' → "Teste inicial" (sem número). tipo='reteste' → "Rev. N",
-  // numerado por ordem global de created_at apenas entre os retestes (inclui os fora da janela).
+  // Regras de rotulagem (globais, por ordem de created_at em todo histórico):
+  //   - 1º registro tipo='teste' → "Teste inicial"
+  //   - 2º, 3º... tipo='teste' → "Teste 2", "Teste 3", ...
+  //   - tipo='reteste' numerado independentemente → "Revisão 1", "Revisão 2", ...
+  const testeRankByTs = new Map<number, number>();
   const retesteRankByTs = new Map<number, number>();
+  let tk = 0;
   let rk = 0;
   for (const r of sortedHist) {
+    const ts = new Date(r.created_at).getTime();
     if (r.tipo === "reteste") {
       rk++;
-      retesteRankByTs.set(new Date(r.created_at).getTime(), rk);
+      retesteRankByTs.set(ts, rk);
+    } else {
+      tk++;
+      testeRankByTs.set(ts, tk);
     }
   }
 
@@ -157,13 +165,15 @@ export function buildSixMonthWindow(
     const slot = monthsBetween(m0, mDate);
     if (slot < 0 || slot > 5) continue;
 
+    const recTs = new Date(r.created_at).getTime();
     const tipo: "teste" | "reteste" = r.tipo === "reteste" ? "reteste" : "teste";
     let topLabel: string;
     if (tipo === "reteste") {
-      const rank = retesteRankByTs.get(new Date(r.created_at).getTime());
-      topLabel = rank ? `Rev. ${rank}` : "Rev.";
+      const rank = retesteRankByTs.get(recTs);
+      topLabel = rank ? `Revisão ${rank}` : "Revisão";
     } else {
-      topLabel = "Teste inicial";
+      const rank = testeRankByTs.get(recTs) ?? 1;
+      topLabel = rank === 1 ? "Teste inicial" : `Teste ${rank}`;
     }
     const agni = parseAgniNivelStr(r.agniPrincipal);
 
@@ -198,7 +208,7 @@ export function buildSixMonthWindow(
     points.push({
       slot: metaSlot,
       ts: months[metaSlot].ts,
-      topLabel: "Objetivo",
+      topLabel: "Próximo objetivo",
       tipo: "meta",
       vata: meta.vata_meta != null ? vataToLevel(meta.vata_meta).level : undefined,
       vataRaw: meta.vata_meta ?? undefined,
