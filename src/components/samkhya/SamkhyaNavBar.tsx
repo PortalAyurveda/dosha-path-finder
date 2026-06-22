@@ -1,7 +1,8 @@
 import { NavLink, useLocation } from "react-router-dom";
-import { ShoppingBag } from "lucide-react";
+import { Package, ShoppingBag } from "lucide-react";
 import { samkhyaTokens } from "./tokens";
 import { useCart } from "@/contexts/CartContext";
+import { useUser } from "@/contexts/UserContext";
 
 const ITEMS = [
   { slug: "vata", label: "Vata" },
