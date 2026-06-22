@@ -212,21 +212,21 @@ export default function DoshasEvolutionChart({ window: win }: Props) {
           <Line
             dataKey="vata" name="Vata"
             stroke={VATA} strokeWidth={3}
-            dot={makeDot(VATA)}
+            dot={makeDot(VATA, "vata")}
             activeDot={{ r: 7, fill: VATA, stroke: "hsl(var(--card))", strokeWidth: 2 }}
             connectNulls isAnimationActive={false}
           />
           <Line
             dataKey="pitta" name="Pitta"
             stroke={PITTA} strokeWidth={3}
-            dot={makeDot(PITTA)}
+            dot={makeDot(PITTA, "pitta")}
             activeDot={{ r: 7, fill: PITTA, stroke: "hsl(var(--card))", strokeWidth: 2 }}
             connectNulls isAnimationActive={false}
           />
           <Line
             dataKey="kapha" name="Kapha"
             stroke={KAPHA} strokeWidth={3}
-            dot={makeDot(KAPHA)}
+            dot={makeDot(KAPHA, "kapha")}
             activeDot={{ r: 7, fill: KAPHA, stroke: "hsl(var(--card))", strokeWidth: 2 }}
             connectNulls isAnimationActive={false}
           />
