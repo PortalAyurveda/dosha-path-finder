@@ -1,25 +1,33 @@
-## Diagnóstico
+## Problema
 
-O `perfilFilter` padrão é `"Edson"` (capitalizado), mas a coluna `perfis` (text[]) do `portal_devlog` armazena os valores em minúsculas: `"edson"`, `"marcos"`, `"marcelle"`, `"estoque"`. O filtro usa `.includes(perfilFilter)`, que é case-sensitive, então a comparação sempre falha e a lista fica vazia.
+O bucket `terapeutas` tem política de INSERT restrita ao role `authenticated`:
 
-## Correções
+```
+INSERT  roles={authenticated}  with_check: bucket_id = 'terapeutas'
+```
 
-1. **Case-insensitive no filtro** — transformar tanto o valor selecionado quanto os itens do array para minúsculo antes de comparar:
-   ```ts
-   (e.perfis || []).map(p => p.toLowerCase()).includes(perfilFilter.toLowerCase())
-   ```
-2. **Padrão "all"** — iniciar `perfilFilter` como `"all"` (Ver tudo), para a página abrir mostrando todos os módulos independentemente de caixa alta/baixa.
-3. **Log da query** — adicionar `console.log` no fetch de `portal_devlog` exibindo `data.length`, `error` e, se útil, uma amostra dos valores de `perfis`, confirmando que os dados chegam.
-4. **Indicador de lista vazia por filtro** — quando `filtered.length === 0` mas `entries.length > 0`, mostrar abaixo dos seletores uma linha discreta: "Nenhum módulo corresponde aos filtros selecionados."
+Mas a página `/terapeutas-do-brasil/cadastro` é pública — o terapeuta envia a foto antes/sem estar logado. Resultado: o upload retorna `new row violates row-level security policy` e o cadastro quebra.
 
-## Validação esperada
+Auditei também:
+- SELECT público já existe (foto aparece depois)
+- UPDATE/DELETE seguem restritos (correto)
+- Bucket existe e está acessível
+- O código em `TerapeutaCadastro.tsx` (linha 236) usa `supabase.storage.from("terapeutas").upload(...)` — está correto, o problema é só RLS
 
-- "Ver tudo" → 25 módulos.
-- "Edson" → 25 módulos.
-- "Marcelle" → 17 módulos.
-- "Marcos" → 8 módulos.
-- "Estoque" → 2 módulos.
+## Correção
 
-Sem mudanças no banco, schema ou no tipo `DevlogEntry`.
+Migração que adiciona política de INSERT para `anon` (e mantém a de `authenticated`):
 
-**Arquivo:** `src/pages/AdminDashboard2.tsx`
+```sql
+CREATE POLICY "Anyone can upload therapist photos"
+ON storage.objects
+FOR INSERT
+TO anon, authenticated
+WITH CHECK (bucket_id = 'terapeutas');
+
+DROP POLICY "Authenticated can upload therapist photos" ON storage.objects;
+```
+
+Mantenho UPDATE/DELETE restritos a `authenticated`/`admin` para que ninguém anônimo sobrescreva foto alheia. Como o nome do arquivo já é gerado com slug + timestamp no código, não há risco prático de colisão/sobrescrita por anônimos.
+
+Nada mais muda — só a política de storage.
