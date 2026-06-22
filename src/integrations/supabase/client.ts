@@ -30,6 +30,29 @@ export const supabase: SupabaseClient<Database> =
     },
   });
 
+// Reescreve URLs públicas de Storage para o domínio público de imagens
+// (api.portalayurveda.com), mantendo o endpoint original do Supabase para
+// auth, DB e chamadas autenticadas de Storage.
+const LEGACY_STORAGE_HOST = SUPABASE_URL?.replace(/\/$/, '') ?? '';
+const PUBLIC_IMAGE_HOST = 'https://api.portalayurveda.com';
+
+if (!globalRef[GLOBAL_KEY] && LEGACY_STORAGE_HOST) {
+  const originalFrom = supabase.storage.from.bind(supabase.storage);
+  supabase.storage.from = ((bucketId: string) => {
+    const bucket = originalFrom(bucketId);
+    const originalGetPublicUrl = bucket.getPublicUrl.bind(bucket);
+    bucket.getPublicUrl = ((path: string, options?: Parameters<typeof originalGetPublicUrl>[1]) => {
+      const result = originalGetPublicUrl(path, options);
+      if (result?.data?.publicUrl?.startsWith(LEGACY_STORAGE_HOST)) {
+        result.data.publicUrl =
+          PUBLIC_IMAGE_HOST + result.data.publicUrl.slice(LEGACY_STORAGE_HOST.length);
+      }
+      return result;
+    }) as typeof bucket.getPublicUrl;
+    return bucket;
+  }) as typeof supabase.storage.from;
+}
+
 if (typeof window !== 'undefined') {
   globalRef[GLOBAL_KEY] = supabase;
 }
