@@ -329,8 +329,11 @@ const CartDrawer = () => {
           .eq("id", user.id);
       }
 
+      const origin = window.location.origin;
       const { data, error } = await supabase.functions.invoke("create-checkout", {
         body: {
+          success_url: `${origin}/samkhya/obrigado?session_id={CHECKOUT_SESSION_ID}`,
+          cancel_url: `${origin}/samkhya?checkout=cancelado`,
           user_id: user?.id ?? null,
           itens: itens.map((it) => ({
             slug: it.slug,
