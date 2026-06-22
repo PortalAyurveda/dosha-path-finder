@@ -467,7 +467,7 @@ const MeuDosha = () => {
     : 'perfil';
   const initialMode = modeParam === 'personalizado' ? 'personalizado' : 'gerais';
   const queryClient = useQueryClient();
-  const { user, profile, doshaResult } = useUser();
+  const { user, profile, doshaResult, loading: authLoading } = useUser();
   const isPremium = !!profile?.is_premium;
   const navigate = useNavigate();
   const [evolucaoOpen, setEvolucaoOpen] = useState(false);
