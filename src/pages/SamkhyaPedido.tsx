@@ -30,7 +30,7 @@ interface PedidoDetalhe {
   frete_servico?: string | null;
   endereco_entrega: {
     cep?: string;
-    rua?: string;
+    logradouro?: string;
     numero?: string;
     complemento?: string;
     bairro?: string;
@@ -375,7 +375,7 @@ const SamkhyaPedido = () => {
                   >
                     <div>{pedido.comprador_nome}</div>
                     <div>
-                      {pedido.endereco_entrega?.rua}
+                      {pedido.endereco_entrega?.logradouro}
                       {pedido.endereco_entrega?.numero
                         ? `, ${pedido.endereco_entrega.numero}`
                         : ""}
