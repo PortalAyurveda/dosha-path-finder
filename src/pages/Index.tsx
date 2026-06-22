@@ -228,7 +228,7 @@ const ColumnCard = ({
         {image ? (
           <img
             src={image}
-            alt={title}
+            alt={`Capa do conteúdo: ${title}`}
             width={400}
             height={225}
             loading="lazy"

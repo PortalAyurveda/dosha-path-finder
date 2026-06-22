@@ -710,6 +710,10 @@ const MeuDosha = () => {
         <meta name="robots" content="noindex, nofollow" />
       </Helmet>
       <div className="max-w-3xl mx-auto space-y-6">
+        <h1 className="sr-only">
+          {formattedNome ? `Resultado do teste de dosha de ${formattedNome}` : "Resultado do teste de dosha"}
+          {result.doshaprincipal ? ` — Dosha ${result.doshaprincipal}` : ""}
+        </h1>
 
         <RetesteCard />
 
