@@ -64,6 +64,16 @@ const SamkhyaNavBar = () => {
             );
           })}
         </ul>
+        {user && (
+          <NavLink
+            to="/samkhya/compras"
+            aria-label="Minhas compras"
+            title="Minhas compras"
+            className="shrink-0 p-2 text-white hover:opacity-80 transition-opacity"
+          >
+            <Package className="h-5 w-5" />
+          </NavLink>
+        )}
         <button
           type="button"
           onClick={abrirCarrinho}
