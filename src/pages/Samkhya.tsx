@@ -36,6 +36,29 @@ const Samkhya = () => {
   const [kits, setKits] = useState<LojaKit[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const { itens, abrirCarrinho } = useCart();
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  // Reabre o carrinho se o cliente voltou de um checkout cancelado no Stripe.
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const cancelado = params.get("checkout") === "cancelado";
+    const veioDoStripe = typeof document !== "undefined" &&
+      /(^|\.)stripe\.com$/.test(new URL(document.referrer || "https://x", "https://x").hostname);
+
+    if ((cancelado || veioDoStripe) && itens.length > 0) {
+      abrirCarrinho();
+      toast.info("Seus itens continuam aqui. É só finalizar quando quiser.");
+    }
+    if (cancelado) {
+      params.delete("checkout");
+      const qs = params.toString();
+      navigate({ pathname: location.pathname, search: qs ? `?${qs}` : "" }, { replace: true });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   useEffect(() => {
     let cancelled = false;
     (async () => {
