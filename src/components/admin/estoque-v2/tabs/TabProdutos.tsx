@@ -1,7 +1,6 @@
 import { useMemo, useState } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
-import { ArrowRight, Save } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -24,11 +23,10 @@ import {
   SEMAFORO_ORDEM,
 } from "../semaforo";
 import { useEstoqueCtx } from "../EstoqueContext";
-import { necessidadePorProduto } from "../calc";
+import { necessidadePorProduto, agregarNecessidade } from "../calc";
 import ResultadoProducaoModal from "../ResultadoProducaoModal";
 
 export default function TabProdutos() {
-  const qc = useQueryClient();
   const { qtdProduzir, setQtd } = useEstoqueCtx();
   const [resultadoOpen, setResultadoOpen] = useState(false);
 
@@ -55,25 +53,21 @@ export default function TabProdutos() {
   });
 
   const { data: ingredientes = [] } = useQuery({
-    queryKey: ["sk-v2", "ingredientes-min"],
+    queryKey: ["sk-v2", "ingredientes-min-estoque"],
     queryFn: async () => {
       const { data, error } = await samkhyaSupabase
         .from("ingredientes")
-        .select("id,nome");
+        .select("id,nome,qnt_estoque_g");
       if (error) throw error;
-      return (data ?? []) as Pick<SkIngrediente, "id" | "nome">[];
+      return (data ?? []) as Pick<SkIngrediente, "id" | "nome" | "qnt_estoque_g">[];
     },
   });
 
-  const ingNome = useMemo(() => {
-    const m = new Map<number, string>();
-    for (const i of ingredientes) m.set(i.id, i.nome);
+  const ingMap = useMemo(() => {
+    const m = new Map<number, Pick<SkIngrediente, "id" | "nome" | "qnt_estoque_g">>();
+    for (const i of ingredientes) m.set(i.id, i);
     return m;
   }, [ingredientes]);
-
-  const [edit, setEdit] = useState<
-    Record<number, { estoque_atual?: string; estimativa_mensal?: string }>
-  >({});
 
   const rows = useMemo(() => {
     return [...produtos].sort((a, b) => {
@@ -85,37 +79,6 @@ export default function TabProdutos() {
     });
   }, [produtos]);
 
-  const salvarLinha = async (p: SkProduto) => {
-    const patch = edit[p.id];
-    if (!patch) return;
-    const payload: any = {};
-    if (patch.estoque_atual !== undefined) {
-      payload.estoque_atual = Number(patch.estoque_atual) || 0;
-    }
-    if (patch.estimativa_mensal !== undefined) {
-      const em = Number(patch.estimativa_mensal) || 0;
-      payload.estimativa_mensal = em;
-      payload.estimativa_3_meses = Math.round(em * 3);
-    }
-    if (Object.keys(payload).length === 0) return;
-    try {
-      const { error } = await samkhyaSupabase
-        .from("produtos")
-        .update(payload)
-        .eq("id", p.id);
-      if (error) throw error;
-      toast.success("Salvo");
-      setEdit((s) => {
-        const n = { ...s };
-        delete n[p.id];
-        return n;
-      });
-      qc.invalidateQueries({ queryKey: ["sk-v2"] });
-    } catch (e: any) {
-      toast.error(e?.message ?? "Erro");
-    }
-  };
-
   const preview = (p: SkProduto, unid: number): string => {
     if (!unid) return "";
     const itens = necessidadePorProduto(p, unid, receitas);
@@ -123,124 +86,159 @@ export default function TabProdutos() {
     return itens
       .slice(0, 6)
       .map((i) => {
-        const nome = ingNome.get(i.ingrediente_id) ?? `#${i.ingrediente_id}`;
-        return `${nome} +${Math.round(i.quantidade_g).toLocaleString("pt-BR")}g`;
+        const nome = ingMap.get(i.ingrediente_id)?.nome ?? `#${i.ingrediente_id}`;
+        return `${nome}: ${Math.round(i.quantidade_g).toLocaleString("pt-BR")}g`;
       })
       .join(" · ");
   };
 
   const totalUnidades = Object.values(qtdProduzir).reduce((s, n) => s + (n || 0), 0);
 
+  const necessidade = useMemo(
+    () => agregarNecessidade(produtos, qtdProduzir, receitas),
+    [produtos, qtdProduzir, receitas],
+  );
+
+  const insumosRows = useMemo(() => {
+    const out: {
+      id: number;
+      nome: string;
+      necessario: number;
+      estoque: number;
+      saldo: number;
+    }[] = [];
+    for (const [id, nec] of necessidade) {
+      if (!nec || nec <= 0) continue;
+      const ing = ingMap.get(id);
+      const estoque = Number(ing?.qnt_estoque_g ?? 0);
+      out.push({
+        id,
+        nome: ing?.nome ?? `#${id}`,
+        necessario: nec,
+        estoque,
+        saldo: estoque - nec,
+      });
+    }
+    out.sort((a, b) => {
+      const an = a.saldo < 0 ? 0 : 1;
+      const bn = b.saldo < 0 ? 0 : 1;
+      if (an !== bn) return an - bn;
+      return a.nome.localeCompare(b.nome, "pt-BR");
+    });
+    return out;
+  }, [necessidade, ingMap]);
+
+  const fmt = (n: number) =>
+    Math.round(n).toLocaleString("pt-BR");
+
   return (
-    <div className="space-y-3">
-      <div className="rounded border bg-card overflow-x-auto">
-        <Table className="min-w-[1100px]">
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-10"></TableHead>
-              <TableHead>Produto</TableHead>
-              <TableHead className="text-right">Estoque atual</TableHead>
-              <TableHead className="text-right border-r">Venda /mês</TableHead>
-              <TableHead className="text-right pl-4">A produzir</TableHead>
-              <TableHead className="text-xs text-muted-foreground">Consumo previsto</TableHead>
-              <TableHead className="w-20"></TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {rows.map((p) => {
-              const s = mesesEstoqueSemaforo(p.estoque_atual ?? 0, p.estimativa_mensal);
-              const e = edit[p.id] ?? {};
-              const dirty =
-                e.estoque_atual !== undefined || e.estimativa_mensal !== undefined;
-              const unid = qtdProduzir[p.id] ?? 0;
-              return (
-                <TableRow key={p.id}>
-                  <TableCell>
-                    <SemaforoDot s={s} />
-                  </TableCell>
-                  <TableCell>
-                    <div className="font-medium">{p.nome}</div>
+    <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 min-h-[calc(100vh-220px)]">
+      {/* COLUNA ESQUERDA */}
+      <div className="lg:col-span-2 flex flex-col rounded border bg-card">
+        <div className="px-4 py-3 border-b">
+          <h2 className="font-semibold">O que produzir</h2>
+        </div>
+        <div className="flex-1 overflow-y-auto p-3 space-y-2">
+          {rows.map((p) => {
+            const s = mesesEstoqueSemaforo(p.estoque_atual ?? 0, p.estimativa_mensal);
+            const unid = qtdProduzir[p.id] ?? 0;
+            return (
+              <div
+                key={p.id}
+                className="rounded border bg-background p-3 space-y-2"
+              >
+                <div className="flex items-start gap-2">
+                  <SemaforoDot s={s} />
+                  <div className="flex-1 min-w-0">
+                    <div className="font-medium truncate">{p.nome}</div>
                     <div className="text-xs text-muted-foreground">
-                      {Number(p.peso_unidade_g ?? 0)}g/unid.
+                      Estoque atual: {p.estoque_atual ?? 0} un.
                     </div>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <Input
-                      type="number"
-                      className="h-8 w-24 text-right ml-auto"
-                      value={
-                        e.estoque_atual !== undefined
-                          ? e.estoque_atual
-                          : String(p.estoque_atual ?? 0)
-                      }
-                      onChange={(ev) =>
-                        setEdit((s) => ({
-                          ...s,
-                          [p.id]: { ...s[p.id], estoque_atual: ev.target.value },
-                        }))
-                      }
-                    />
-                  </TableCell>
-                  <TableCell className="text-right border-r">
-                    <Input
-                      type="number"
-                      className="h-8 w-24 text-right ml-auto"
-                      value={
-                        e.estimativa_mensal !== undefined
-                          ? e.estimativa_mensal
-                          : String(p.estimativa_mensal ?? 0)
-                      }
-                      onChange={(ev) =>
-                        setEdit((s) => ({
-                          ...s,
-                          [p.id]: { ...s[p.id], estimativa_mensal: ev.target.value },
-                        }))
-                      }
-                    />
-                  </TableCell>
-                  <TableCell className="text-right pl-4">
-                    <Input
-                      type="number"
-                      min={0}
-                      className="h-8 w-24 text-right ml-auto"
-                      value={String(unid)}
-                      onChange={(ev) => setQtd(p.id, Math.max(0, Number(ev.target.value) || 0))}
-                    />
-                  </TableCell>
-                  <TableCell className="text-xs text-muted-foreground max-w-[320px] truncate">
+                  </div>
+                </div>
+                <div>
+                  <label className="text-xs text-muted-foreground block mb-1">
+                    Unidades a produzir
+                  </label>
+                  <Input
+                    type="number"
+                    min={0}
+                    className="h-10 text-base"
+                    value={String(unid)}
+                    onChange={(ev) =>
+                      setQtd(p.id, Math.max(0, Number(ev.target.value) || 0))
+                    }
+                  />
+                </div>
+                {unid > 0 && (
+                  <div className="text-xs text-muted-foreground leading-relaxed">
                     {preview(p, unid)}
-                  </TableCell>
-                  <TableCell>
-                    {dirty && (
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        className="h-7 w-7"
-                        onClick={() => salvarLinha(p)}
-                      >
-                        <Save className="size-3.5" />
-                      </Button>
-                    )}
-                  </TableCell>
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+        <div className="border-t p-3 flex items-center justify-between gap-2 bg-card">
+          <div className="text-sm text-muted-foreground">
+            {totalUnidades > 0
+              ? `${totalUnidades} un. planejada(s)`
+              : "Nenhuma produção"}
+          </div>
+          <Button
+            disabled={totalUnidades === 0}
+            onClick={() => setResultadoOpen(true)}
+          >
+            Confirmar Produção <ArrowRight className="size-4 ml-1" />
+          </Button>
+        </div>
       </div>
 
-      <div className="flex items-center justify-between border-t pt-3">
-        <div className="text-sm text-muted-foreground">
-          {totalUnidades > 0
-            ? `${totalUnidades} unidade(s) planejada(s)`
-            : "Nenhuma produção planejada"}
+      {/* COLUNA DIREITA */}
+      <div className="lg:col-span-3 flex flex-col rounded border bg-card">
+        <div className="px-4 py-3 border-b">
+          <h2 className="font-semibold">Insumos necessários</h2>
         </div>
-        <Button
-          disabled={totalUnidades === 0}
-          onClick={() => setResultadoOpen(true)}
-        >
-          Ver resultado completo <ArrowRight className="size-4 ml-1" />
-        </Button>
+        <div className="flex-1 overflow-y-auto">
+          {insumosRows.length === 0 ? (
+            <div className="p-8 text-center text-sm text-muted-foreground">
+              Digite quantas unidades quer produzir na coluna ao lado.
+            </div>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Ingrediente</TableHead>
+                  <TableHead className="text-right">Necessário (g)</TableHead>
+                  <TableHead className="text-right">Em estoque (g)</TableHead>
+                  <TableHead className="text-right">Saldo (g)</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {insumosRows.map((r) => {
+                  const neg = r.saldo < 0;
+                  return (
+                    <TableRow key={r.id}>
+                      <TableCell className="font-medium">{r.nome}</TableCell>
+                      <TableCell className="text-right">{fmt(r.necessario)}</TableCell>
+                      <TableCell className="text-right">{fmt(r.estoque)}</TableCell>
+                      <TableCell
+                        className={`text-right ${
+                          neg
+                            ? "text-red-600 font-bold"
+                            : "text-emerald-600"
+                        }`}
+                      >
+                        {r.saldo >= 0 ? "+" : ""}
+                        {fmt(r.saldo)}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          )}
+        </div>
       </div>
 
       <ResultadoProducaoModal
