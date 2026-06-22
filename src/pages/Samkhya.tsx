@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
+import { toast } from "sonner";
 import {
   lojaSupabase,
   type LojaProdutoComCategorias,
   type LojaKit,
 } from "@/integrations/supabase/loja-client";
+import { useCart } from "@/contexts/CartContext";
 import SamkhyaLayout from "@/components/samkhya/SamkhyaLayout";
 import CarouselSection from "@/components/samkhya/CarouselSection";
 import MinimalProductCard from "@/components/samkhya/MinimalProductCard";
@@ -33,6 +35,29 @@ const Samkhya = () => {
   const [gold, setGold] = useState<LojaProdutoComCategorias[]>([]);
   const [kits, setKits] = useState<LojaKit[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const { itens, abrirCarrinho } = useCart();
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  // Reabre o carrinho se o cliente voltou de um checkout cancelado no Stripe.
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const cancelado = params.get("checkout") === "cancelado";
+    const veioDoStripe = typeof document !== "undefined" &&
+      /(^|\.)stripe\.com$/.test(new URL(document.referrer || "https://x", "https://x").hostname);
+
+    if ((cancelado || veioDoStripe) && itens.length > 0) {
+      abrirCarrinho();
+      toast.info("Seus itens continuam aqui. É só finalizar quando quiser.");
+    }
+    if (cancelado) {
+      params.delete("checkout");
+      const qs = params.toString();
+      navigate({ pathname: location.pathname, search: qs ? `?${qs}` : "" }, { replace: true });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
