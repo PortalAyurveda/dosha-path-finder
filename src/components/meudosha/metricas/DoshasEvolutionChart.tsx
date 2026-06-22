@@ -64,18 +64,51 @@ function ZoneTooltip({ active, payload }: { active?: boolean; payload?: any[] })
   );
 }
 
-function makeDot(color: string) {
+type DoshaKey = "vata" | "pitta" | "kapha";
+
+function makeDot(color: string, dataKey: DoshaKey) {
   return (props: any) => {
     const { cx, cy, payload } = props;
-    if (cx == null || cy == null || payload?.[props.dataKey] == null) return null;
+    const v = payload?.[dataKey];
+    if (cx == null || cy == null || v == null) return null;
     const tipo = payload?.tipo;
+
+    // Detectar sobreposição com outras doshas no mesmo nível (mesmo y)
+    const order: DoshaKey[] = ["vata", "pitta", "kapha"];
+    const sameLevel = order.filter((k) => payload?.[k] === v);
+    const idx = sameLevel.indexOf(dataKey);
+    const overlap = sameLevel.length > 1;
+    // Espalha horizontalmente os rótulos sobrepostos (centro em torno do bullet)
+    const labelDx = overlap ? (idx - (sameLevel.length - 1) / 2) * 16 : 0;
+    const labelDy = overlap ? -12 : -10;
+
+    let dot;
     if (tipo === "reteste") {
-      return <circle cx={cx} cy={cy} r={5} fill="hsl(var(--card))" stroke={color} strokeWidth={2.5} />;
+      dot = <circle cx={cx} cy={cy} r={5} fill="hsl(var(--card))" stroke={color} strokeWidth={2.5} />;
+    } else if (tipo === "meta") {
+      dot = <circle cx={cx} cy={cy} r={6} fill={color} stroke="hsl(var(--card))" strokeWidth={2} />;
+    } else {
+      dot = <circle cx={cx} cy={cy} r={5} fill={color} stroke={color} />;
     }
-    if (tipo === "meta") {
-      return <circle cx={cx} cy={cy} r={6} fill={color} stroke="hsl(var(--card))" strokeWidth={2} />;
-    }
-    return <circle cx={cx} cy={cy} r={5} fill={color} stroke={color} />;
+
+    const raw = payload?.[`${dataKey}Raw`];
+    const num = raw != null ? raw : v;
+    return (
+      <g>
+        {dot}
+        <text
+          x={cx + labelDx}
+          y={cy + labelDy}
+          textAnchor="middle"
+          fontSize={9}
+          fontWeight={700}
+          fill={color}
+          opacity={0.9}
+        >
+          {num}
+        </text>
+      </g>
+    );
   };
 }
 
