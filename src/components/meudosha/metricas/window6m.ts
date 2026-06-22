@@ -138,21 +138,33 @@ export function buildSixMonthWindow(
   const hasPastOverflow = overflowOrigin != null;
   if (hasPastOverflow) months[0].isOverflowAnchor = true;
 
-  // 4. Constrói WindowPoints com rótulos (Diagn./Rev. N/Objetivo).
-  // Numeração: primeiro registro do histórico geral = Diagn. (mesmo se overflow). Demais = Rev. 1, 2...
-  // Se Diagn. estiver fora da janela, ele não aparece, mas a contagem continua a partir dos visíveis.
+  // 4. Constrói WindowPoints com rótulos.
+  // Regra: tipo='teste' → "Teste inicial" (sem número). tipo='reteste' → "Rev. N",
+  // numerado por ordem global de created_at apenas entre os retestes (inclui os fora da janela).
+  const retesteRankByTs = new Map<number, number>();
+  let rk = 0;
+  for (const r of sortedHist) {
+    if (r.tipo === "reteste") {
+      rk++;
+      retesteRankByTs.set(new Date(r.created_at).getTime(), rk);
+    }
+  }
+
   const points: WindowPoint[] = [];
-  let reviewCount = 0;
   for (let i = 0; i < monthlyAll.length; i++) {
     const r = monthlyAll[i];
     const mDate = startOfMonth(new Date(r.created_at));
     const slot = monthsBetween(m0, mDate);
-    const isDiagn = i === 0;
-    if (!isDiagn) reviewCount++;
     if (slot < 0 || slot > 5) continue;
 
-    const tipo: "teste" | "reteste" = isDiagn ? "teste" : "reteste";
-    const topLabel = isDiagn ? "Diagn." : `Rev. ${reviewCount}`;
+    const tipo: "teste" | "reteste" = r.tipo === "reteste" ? "reteste" : "teste";
+    let topLabel: string;
+    if (tipo === "reteste") {
+      const rank = retesteRankByTs.get(new Date(r.created_at).getTime());
+      topLabel = rank ? `Rev. ${rank}` : "Rev.";
+    } else {
+      topLabel = "Teste inicial";
+    }
     const agni = parseAgniNivelStr(r.agniPrincipal);
 
     points.push({
@@ -169,6 +181,7 @@ export function buildSixMonthWindow(
       agniNivel: agni ?? undefined,
     });
   }
+
 
   // 5. Objetivo: slot = (último real visível + 1), clamp em 5. Se não há real visível, slot 1.
   let metaSlot: number | null = null;
