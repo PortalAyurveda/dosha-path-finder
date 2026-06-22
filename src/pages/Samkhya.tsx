@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
+import { toast } from "sonner";
 import {
   lojaSupabase,
   type LojaProdutoComCategorias,
   type LojaKit,
 } from "@/integrations/supabase/loja-client";
+import { useCart } from "@/contexts/CartContext";
 import SamkhyaLayout from "@/components/samkhya/SamkhyaLayout";
 import CarouselSection from "@/components/samkhya/CarouselSection";
 import MinimalProductCard from "@/components/samkhya/MinimalProductCard";
