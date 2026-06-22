@@ -79,7 +79,7 @@ function makeDot(color: string) {
   };
 }
 
-/** Tick custom: rótulo do ponto (topo, alinhado) + nome do mês (rodapé). */
+/** Tick custom: rótulo do ponto (topo, separado) + nome do mês (rodapé, atenuado). */
 function makeTick(rows: Array<Record<string, any>>) {
   return (props: any) => {
     const { x, y, payload } = props;
@@ -91,7 +91,7 @@ function makeTick(rows: Array<Record<string, any>>) {
         {row.topLabel && (
           <text
             x={0}
-            y={-10}
+            y={-22}
             textAnchor="middle"
             fill="hsl(var(--primary))"
             fontSize={11}
@@ -102,11 +102,11 @@ function makeTick(rows: Array<Record<string, any>>) {
         )}
         <text
           x={0}
-          y={16}
+          y={18}
           textAnchor="middle"
-          fill="hsl(var(--primary))"
-          fontSize={11}
-          fontWeight={600}
+          fill="hsl(var(--muted-foreground))"
+          fontSize={10}
+          fontWeight={500}
         >
           {row.isOverflowAnchor ? "‹ " : ""}{row.monthLabel}
         </text>
