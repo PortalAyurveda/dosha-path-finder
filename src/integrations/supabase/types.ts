@@ -871,6 +871,7 @@ export type Database = {
           reteste_sessao_id: string | null
           texto_ia: string | null
           tipo: string
+          user_id: string | null
           vatascore: number | null
         }
         Insert: {
@@ -914,6 +915,7 @@ export type Database = {
           reteste_sessao_id?: string | null
           texto_ia?: string | null
           tipo?: string
+          user_id?: string | null
           vatascore?: number | null
         }
         Update: {
@@ -957,6 +959,7 @@ export type Database = {
           reteste_sessao_id?: string | null
           texto_ia?: string | null
           tipo?: string
+          user_id?: string | null
           vatascore?: number | null
         }
         Relationships: [
@@ -3777,6 +3780,7 @@ export type Database = {
         Args: { dosha: string; score: number }
         Returns: string
       }
+      claim_dosha_test: { Args: { p_id_publico?: string }; Returns: Json }
       find_akasha_by_slug: {
         Args: { _slug: string }
         Returns: {
