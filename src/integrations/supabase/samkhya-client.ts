@@ -48,6 +48,8 @@ export interface SkProduto {
   criado_em: string | null;
   estimativa_3_meses: number | null;
   estimativa_mensal: number | null;
+  estoque_atual: number | null;
+  pote_tipo_id: number | null;
 }
 
 export type SkSemaforo = "verde" | "amarelo" | "vermelho";
