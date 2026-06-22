@@ -17,6 +17,7 @@ const ITEMS = [
 
 const SamkhyaNavBar = () => {
   const { totalItens, abrirCarrinho } = useCart();
+  const { user } = useUser();
   const location = useLocation();
   // Active state derived from URL: /samkhya/categoria/:slug or /samkhya/kits
   const match = location.pathname.match(/^\/samkhya\/categoria\/([^/]+)/);
