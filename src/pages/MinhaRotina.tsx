@@ -118,19 +118,21 @@ const MinhaRotina = () => {
   const queryClient = useQueryClient();
   const [diaSelecionado, setDiaSelecionado] = useState<number>(1);
 
-  // Agni do usuário (fraco/irregular?) — busca a partir do idPublico ativo
-  const { data: agniInfo } = useQuery({
-    queryKey: ["minha-rotina-agni", doshaResult?.idPublico],
+  // Scores + agni do usuário — busca a partir do idPublico ativo
+  const { data: doshaInfo } = useQuery({
+    queryKey: ["minha-rotina-dosha-info", doshaResult?.idPublico],
     enabled: !!doshaResult?.idPublico,
     queryFn: async () => {
       const { data } = await supabase
         .from("doshas_registros")
-        .select("agniPrincipal")
+        .select("agniPrincipal, vatascore, pittascore, kaphascore")
         .eq("idPublico", doshaResult!.idPublico)
         .maybeSingle();
-      return (data?.agniPrincipal as string | null) ?? null;
+      return data ?? null;
     },
   });
+
+  const agniInfo = (doshaInfo?.agniPrincipal as string | null) ?? null;
 
   const agniFracoOuIrregular = useMemo(() => {
     if (!agniInfo) return false;
