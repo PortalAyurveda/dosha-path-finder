@@ -11,6 +11,9 @@ interface UserProfile {
   nivel_evolucao: string;
   pontos_ojas: number;
   is_premium: boolean | null;
+  plano: string | null;
+  subscription_status: string | null;
+  premium_until: string | null;
   created_at: string;
 }
 

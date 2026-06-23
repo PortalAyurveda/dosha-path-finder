@@ -11,6 +11,8 @@ import {
   ArrowRight,
   AlertTriangle,
   Leaf,
+  Lock,
+  Check,
 } from "lucide-react";
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 
@@ -123,9 +125,21 @@ const parseTimestamp = (ts: string | null): number | undefined => {
 
 // ===== Page =====
 const MinhaRotina = () => {
-  const { user, loading, doshaResult } = useUser();
+  const { user, loading, doshaResult, profile, refreshProfile } = useUser();
   const queryClient = useQueryClient();
   const [diaSelecionado, setDiaSelecionado] = useState<number>(1);
+
+  // Retorno do Stripe: /minha-rotina?assinatura=ok
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("assinatura") === "ok") {
+      toast({ title: "Bem-vindo à sua rotina! ✨", description: "Sua assinatura está ativa." });
+      const t = setTimeout(() => { refreshProfile(); }, 2000);
+      window.history.replaceState({}, "", "/minha-rotina");
+      return () => clearTimeout(t);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Scores + agni do usuário — busca a partir do idPublico ativo
   const { data: doshaInfo } = useQuery({
@@ -288,6 +302,30 @@ const MinhaRotina = () => {
   if (!user) {
     return <Navigate to="/entrar" replace />;
   }
+
+  // Gate de assinatura
+  const temAcessoRotina = (() => {
+    if (!profile) return false;
+    if (profile.is_premium === true) return true;
+    const planosValidos = ["rotina", "mensal", "anual"];
+    const ativo = profile.subscription_status === "active";
+    const planoOk = !!profile.plano && planosValidos.includes(profile.plano);
+    const dataOk = !profile.premium_until || new Date(profile.premium_until) > new Date();
+    return ativo && planoOk && dataOk;
+  })();
+
+  if (!temAcessoRotina) {
+    return (
+      <PageContainer title="Minha rotina" description="Sua rotina ayurvédica personalizada.">
+        <PaywallRotina
+          email={user.email ?? ""}
+          userId={user.id}
+          doshaPrincipal={doshaResult?.doshaprincipal ?? null}
+        />
+      </PageContainer>
+    );
+  }
+
 
   // Rotina filtrada do dia
   const rowsDoDia = (rotinaRows ?? []).filter((r) => r.dia === diaSelecionado);
@@ -1294,3 +1332,119 @@ const SuplementosSection = ({ vata, pitta, kapha }: SuplementosSectionProps) => 
 };
 
 export default MinhaRotina;
+
+// ===== Paywall (gate de assinatura) =====
+interface PaywallRotinaProps {
+  email: string;
+  userId: string;
+  doshaPrincipal: string | null;
+}
+
+const PaywallRotina = ({ email, userId, doshaPrincipal }: PaywallRotinaProps) => {
+  const [carregando, setCarregando] = useState(false);
+
+  const desbloquear = async () => {
+    setCarregando(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("create-subscription-checkout", {
+        body: { plano: "rotina", email, user_id: userId },
+      });
+      if (error) throw error;
+      const url = (data as { url?: string })?.url;
+      if (!url) throw new Error("sem url");
+      window.location.href = url;
+    } catch (e) {
+      setCarregando(false);
+      toast({
+        title: "Não consegui abrir o checkout",
+        description: "Tente de novo em instantes.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const subtitulo = doshaPrincipal
+    ? `${doshaPrincipal} · foco da semana: aquecer, untar e estabilizar`
+    : "sua constituição · foco da semana: equilíbrio diário";
+
+  const beneficios = [
+    "Sua rotina dos 7 dias, refeita a cada mês",
+    "Os cuidados e os suplementos certos pro seu dosha",
+    "Sua revisão mensal de evolução",
+    "Seu progresso e seus pontos, dia após dia",
+  ];
+
+  return (
+    <div className="max-w-2xl mx-auto px-4 py-6">
+      <Card className="relative overflow-hidden rounded-2xl">
+        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-secondary to-primary" />
+        <div className="p-6 md:p-8 space-y-6">
+          <div className="space-y-2">
+            <p className="text-xs uppercase tracking-widest text-muted-foreground font-medium">
+              Portal Ayurveda · Seu plano
+            </p>
+            <h2 className="font-serif text-2xl md:text-3xl text-foreground leading-tight">
+              Sua rotina personalizada está pronta
+            </h2>
+            <p className="text-sm text-muted-foreground">{subtitulo}</p>
+          </div>
+
+          {/* Preview borrado */}
+          <div className="relative rounded-xl border border-border bg-muted/30 p-4 overflow-hidden">
+            <div className="space-y-3 blur-sm select-none pointer-events-none" aria-hidden="true">
+              {[0, 1, 2, 3].map((i) => (
+                <div key={i} className="flex items-center gap-3">
+                  <div className="h-8 w-8 rounded-full bg-muted-foreground/20" />
+                  <div className="flex-1 space-y-1.5">
+                    <div className="h-2.5 w-1/3 rounded bg-muted-foreground/20" />
+                    <div className="h-2 w-3/4 rounded bg-muted-foreground/15" />
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
+              <div className="h-12 w-12 rounded-full bg-primary flex items-center justify-center shadow-md">
+                <Lock className="h-5 w-5 text-primary-foreground" />
+              </div>
+              <p className="text-sm text-foreground font-medium text-center px-4">
+                7 dias · 8 momentos do dia · personalizada pra você
+              </p>
+            </div>
+          </div>
+
+          {/* Benefícios */}
+          <ul className="space-y-2.5">
+            {beneficios.map((b) => (
+              <li key={b} className="flex items-start gap-2.5 text-sm text-foreground">
+                <Check className="h-4 w-4 text-secondary mt-0.5 shrink-0" />
+                <span>{b}</span>
+              </li>
+            ))}
+          </ul>
+
+          <div className="border-t border-border pt-5 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+            <div>
+              <div className="flex items-baseline gap-1">
+                <span className="text-3xl font-semibold text-foreground">R$ 30</span>
+                <span className="text-sm text-muted-foreground">/mês</span>
+              </div>
+              <p className="text-xs text-muted-foreground mt-1">
+                1 revisão inclusa · cancele quando quiser
+              </p>
+            </div>
+            <Button
+              onClick={desbloquear}
+              disabled={carregando}
+              size="lg"
+              className="bg-secondary text-secondary-foreground hover:bg-secondary/90 rounded-full px-6"
+            >
+              {carregando ? "Abrindo checkout…" : (
+                <>Desbloquear minha rotina <ArrowRight className="h-4 w-4" /></>
+              )}
+            </Button>
+          </div>
+        </div>
+      </Card>
+    </div>
+  );
+};
