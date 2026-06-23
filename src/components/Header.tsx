@@ -267,6 +267,15 @@ const Header = () => {
               </span>
             )}
           </button>
+          {temAcessoRotina && (
+            <Link
+              to="/minha-rotina"
+              aria-label="Minha rotina"
+              className="flex items-center justify-center w-9 h-9 rounded-full bg-white hover:bg-white/90 transition-colors shadow-sm"
+            >
+              <CalendarHeart className="h-[18px] w-[18px] text-secondary" strokeWidth={2.2} />
+            </Link>
+          )}
           {doshaResult ? (
             <Link
               to={profileLink}
