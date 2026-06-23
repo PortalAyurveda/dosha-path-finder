@@ -33,7 +33,7 @@ const Auth = () => {
 
   useEffect(() => {
     if (!waitingForDosha) return;
-    const fallbackId = doshaResult?.idPublico || localStorage.getItem("activeDoshaId");
+    const fallbackId = searchParams.get("claim") || doshaResult?.idPublico || localStorage.getItem("activeDoshaId");
     if (fallbackId) {
       navigate(`/meu-dosha?id=${fallbackId}`, { replace: true });
       return;
