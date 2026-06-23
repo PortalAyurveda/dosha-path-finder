@@ -10,6 +10,7 @@ import {
   ChevronDown,
   ArrowRight,
 } from "lucide-react";
+import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 
 import PageContainer from "@/components/PageContainer";
 import { Card } from "@/components/ui/card";
