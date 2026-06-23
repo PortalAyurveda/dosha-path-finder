@@ -709,93 +709,100 @@ const SemanaHeader = ({ agniPrincipal, analise, vata, pitta, kapha }: SemanaHead
 
   return (
     <Card className="mb-5 p-5 bg-primary/5 border-primary/20 space-y-4">
-      {/* Bloco 1 — situação atual */}
-      <div className="rounded-xl border border-border bg-card p-3 flex items-center gap-3">
-        <div className="w-20 h-20 shrink-0">
-          <ResponsiveContainer width="100%" height="100%">
-            <PieChart>
-              <Pie
-                data={pieData}
-                dataKey="value"
-                nameKey="name"
-                innerRadius={18}
-                outerRadius={36}
-                startAngle={90}
-                endAngle={-270}
-                stroke="none"
-                isAnimationActive
-                animationDuration={700}
-              >
-                {pieData.map((d) => (
-                  <Cell key={d.name} fill={PIE_COLORS[d.name]} />
-                ))}
-              </Pie>
-            </PieChart>
-          </ResponsiveContainer>
-        </div>
-        <div className="flex-1 min-w-0">
-          <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold mb-1.5">
-            sua situação agora
-          </div>
-          <div className="flex flex-wrap gap-1.5">
-            {(["Vata", "Pitta", "Kapha"] as const).map((name) => {
-              const score = scores[name];
-              const nivel = getNivel(score, name);
-              return (
-                <span
-                  key={name}
-                  className={cn(
-                    "text-[10px] px-2 py-0.5 rounded-full border font-semibold",
-                    DOSHA_BADGE[name]
-                  )}
+      <div className="flex flex-col md:flex-row gap-4">
+        {/* Bloco 1 — situação atual */}
+        <div
+          className={cn(
+            "rounded-xl border border-border bg-card p-3 flex items-center gap-3",
+            hasPlano ? "md:w-2/5" : "md:w-full"
+          )}
+        >
+          <div className="w-20 h-20 shrink-0">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={pieData}
+                  dataKey="value"
+                  nameKey="name"
+                  innerRadius={18}
+                  outerRadius={36}
+                  startAngle={90}
+                  endAngle={-270}
+                  stroke="none"
+                  isAnimationActive
+                  animationDuration={700}
                 >
-                  {name} {score} · {nivel}
-                </span>
-              );
-            })}
+                  {pieData.map((d) => (
+                    <Cell key={d.name} fill={PIE_COLORS[d.name]} />
+                  ))}
+                </Pie>
+              </PieChart>
+            </ResponsiveContainer>
           </div>
-          {agniPrincipal && (
-            <p className="text-[11px] text-muted-foreground mt-1.5 truncate">
-              Agni: <span className="text-foreground font-medium">{agniPrincipal}</span>
-            </p>
-          )}
-        </div>
-      </div>
-
-      {/* Bloco 2 — plano da semana */}
-      {hasPlano && (
-        <div className="rounded-xl border border-secondary/30 bg-secondary/5 p-4 space-y-3">
-          <div className="text-[11px] uppercase tracking-wider text-secondary font-semibold">
-            seu plano desta semana
-          </div>
-
-          {focoTexto && (
-            <p className="text-sm text-foreground leading-relaxed">
-              <span className="font-semibold">Seu foco:</span>{" "}
-              {focoTexto}{" "}
-              <span className="text-muted-foreground">— é o que a rotina abaixo faz por você.</span>
-            </p>
-          )}
-
-          {metaRows.length > 0 && (
-            <div className="space-y-1.5">
-              {metaRows.map((row) => (
-                <div key={row.name} className="flex flex-wrap items-center gap-1.5 text-sm">
-                  <span
-                    className="font-bold"
-                    style={{ color: "#2E8B57" }}
-                  >
-                    {row.arrow} {row.direction} {row.name}
-                  </span>
-                  <span className="text-xs text-muted-foreground">{row.atual}</span>
-                  <span className="text-xs text-muted-foreground/60">→</span>
-                  <span className="text-xs font-semibold text-foreground">{row.meta}</span>
-                </div>
-              ))}
+          <div className="flex-1 min-w-0">
+            <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold mb-1.5">
+              sua situação agora
             </div>
-          )}
+            <div className="flex flex-wrap gap-1.5">
+              {(["Vata", "Pitta", "Kapha"] as const).map((name) => {
+                const score = scores[name];
+                const nivel = getNivel(score, name);
+                return (
+                  <span
+                    key={name}
+                    className={cn(
+                      "text-[10px] px-2 py-0.5 rounded-full border font-semibold",
+                      DOSHA_BADGE[name]
+                    )}
+                  >
+                    {name} {score} · {nivel}
+                  </span>
+                );
+              })}
+            </div>
+            {agniPrincipal && (
+              <p className="text-[11px] text-muted-foreground mt-1.5 truncate">
+                Agni: <span className="text-foreground font-medium">{agniPrincipal}</span>
+              </p>
+            )}
+          </div>
         </div>
-      )}
+
+        {/* Bloco 2 — plano da semana */}
+        {hasPlano && (
+          <div className="rounded-xl border border-secondary/30 bg-secondary/5 p-4 space-y-3 md:flex-1">
+            <div className="text-[11px] uppercase tracking-wider text-secondary font-semibold">
+              seu plano desta semana
+            </div>
+
+            {focoTexto && (
+              <p className="text-sm text-foreground leading-relaxed">
+                <span className="font-semibold">Seu foco:</span>{" "}
+                {focoTexto}{" "}
+                <span className="text-muted-foreground">— é o que a rotina abaixo faz por você.</span>
+              </p>
+            )}
+
+            {metaRows.length > 0 && (
+              <div className="space-y-1.5">
+                {metaRows.map((row) => (
+                  <div key={row.name} className="flex flex-wrap items-center gap-1.5 text-sm">
+                    <span
+                      className="font-bold"
+                      style={{ color: "#2E8B57" }}
+                    >
+                      {row.arrow} {row.direction} {row.name}
+                    </span>
+                    <span className="text-xs text-muted-foreground">{row.atual}</span>
+                    <span className="text-xs text-muted-foreground/60">→</span>
+                    <span className="text-xs font-semibold text-foreground">{row.meta}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
 
       <Link
         to="/meu-dosha"
