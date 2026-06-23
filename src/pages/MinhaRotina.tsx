@@ -719,7 +719,7 @@ const getNivel = (score: number, dosha: "Vata" | "Pitta" | "Kapha"): string => {
   return "Pouco";
 };
 
-const SemanaHeader = ({ agniPrincipal, analise, vata, pitta, kapha }: SemanaHeaderProps) => {
+const SemanaHeader = ({ agniPrincipal, analise, vata, pitta, kapha, ultimaRevisao }: SemanaHeaderProps) => {
   const v = vata ?? 0;
   const p = pitta ?? 0;
   const k = kapha ?? 0;
