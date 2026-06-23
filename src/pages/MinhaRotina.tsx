@@ -148,7 +148,7 @@ const MinhaRotina = () => {
     queryFn: async () => {
       const { data } = await supabase
         .from("doshas_registros")
-        .select("agniPrincipal, vatascore, pittascore, kaphascore")
+        .select("agniPrincipal, vatascore, pittascore, kaphascore, created_at")
         .eq("idPublico", doshaResult!.idPublico)
         .maybeSingle();
       return data ?? null;
