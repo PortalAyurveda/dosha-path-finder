@@ -345,17 +345,52 @@ const MinhaRotina = () => {
 
 // ===== Moldura da semana =====
 interface SemanaHeaderProps {
-  doshaPrincipal: string | null;
   agniPrincipal: string | null;
   analise: ObjetivoTratamento | null;
+  vata: number | null;
+  pitta: number | null;
+  kapha: number | null;
 }
 
-const SemanaHeader = ({ doshaPrincipal, agniPrincipal, analise }: SemanaHeaderProps) => {
+const PIE_COLORS: Record<string, string> = {
+  Vata: "#4F75FF",
+  Pitta: "#FF5C5C",
+  Kapha: "#22C55E",
+};
+
+const DOSHA_BADGE: Record<"Vata" | "Pitta" | "Kapha", string> = {
+  Vata: "bg-blue-100 text-blue-700 border-blue-300",
+  Pitta: "bg-red-100 text-red-700 border-red-300",
+  Kapha: "bg-green-100 text-green-700 border-green-300",
+};
+
+const getNivel = (score: number, dosha: "Vata" | "Pitta" | "Kapha"): string => {
+  if (dosha === "Vata") {
+    if (score >= 50) return "Fixado";
+    if (score >= 36) return "Adoecido";
+    if (score >= 25) return "Acúmulo";
+    if (score >= 15) return "Normal";
+    return "Pouco";
+  }
+  if (dosha === "Pitta") {
+    if (score >= 50) return "Fixado";
+    if (score >= 41) return "Adoecido";
+    if (score >= 31) return "Acúmulo";
+    if (score >= 15) return "Normal";
+    return "Pouco";
+  }
+  if (score >= 60) return "Fixado";
+  if (score >= 51) return "Adoecido";
+  if (score >= 36) return "Acúmulo";
+  if (score >= 15) return "Normal";
+  return "Pouco";
+};
+
+const SemanaHeader = ({ agniPrincipal, analise, vata, pitta, kapha }: SemanaHeaderProps) => {
   // Foco: tenta usar o bloco 3 da narrativa (caminhos); fallback para objetivos[0]
   const focoTexto = (() => {
     const cam = analise?.narrativa_clinica?.bloco_3_caminhos;
     if (cam) {
-      // pega a primeira frase
       const primeira = cam.split(/(?<=[.!?])\s+/)[0];
       return primeira?.trim() || null;
     }
@@ -365,46 +400,85 @@ const SemanaHeader = ({ doshaPrincipal, agniPrincipal, analise }: SemanaHeaderPr
     return null;
   })();
 
-  // Meta: encontra o dosha com maior diferença atual → meta
-  const metaTexto = (() => {
-    if (!analise) return null;
-    const partes: string[] = [];
-    const doshas = [
-      { nome: "Vata", atual: analise.vata_atual, meta: analise.vata_meta },
-      { nome: "Pitta", atual: analise.pitta_atual, meta: analise.pitta_meta },
-      { nome: "Kapha", atual: analise.kapha_atual, meta: analise.kapha_meta },
-    ].filter((d) => d.atual != null && d.meta != null && d.atual !== d.meta);
+  const v = vata ?? 0;
+  const p = pitta ?? 0;
+  const k = kapha ?? 0;
+  const pieData = [
+    { name: "Vata", value: v },
+    { name: "Pitta", value: p },
+    { name: "Kapha", value: k },
+  ].filter((d) => d.value > 0);
 
-    doshas.sort((a, b) => Math.abs((b.atual! - b.meta!)) - Math.abs((a.atual! - a.meta!)));
-    const top = doshas[0];
-    if (top) {
-      const verbo = top.atual! > top.meta! ? "reduzir" : "elevar";
-      partes.push(`${verbo} ${top.nome} ${top.atual} → ${top.meta}`);
-    }
-    if (analise.agni_nivel_atual != null && analise.agni_nivel_meta != null && analise.agni_nivel_atual !== analise.agni_nivel_meta) {
-      partes.push("regularizar o agni");
-    }
-    if (partes.length === 0) return null;
-    return `Meta: ${partes.join(" · ")}`;
-  })();
-
-  const temAnalise = !!analise && (focoTexto || metaTexto);
+  const metas: Record<"Vata" | "Pitta" | "Kapha", number | null> = {
+    Vata: analise?.vata_meta ?? null,
+    Pitta: analise?.pitta_meta ?? null,
+    Kapha: analise?.kapha_meta ?? null,
+  };
+  const scores: Record<"Vata" | "Pitta" | "Kapha", number> = { Vata: v, Pitta: p, Kapha: k };
 
   return (
     <Card className="mb-5 p-5 bg-primary/5 border-primary/20">
-      <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold mb-2">
+      <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold mb-3">
         sua semana
       </div>
-      {doshaPrincipal && (
-        <p className="font-serif text-xl text-foreground leading-tight">
-          {doshaPrincipal} em desequilíbrio
-        </p>
-      )}
-      {agniPrincipal && (
-        <p className="text-sm text-muted-foreground mt-0.5">
-          Agni {agniPrincipal.toLowerCase()}
-        </p>
-      )}
+
+      <div className="rounded-xl border border-border bg-card p-3 flex items-center gap-3">
+        <div className="w-20 h-20 shrink-0">
+          <ResponsiveContainer width="100%" height="100%">
+            <PieChart>
+              <Pie
+                data={pieData}
+                dataKey="value"
+                nameKey="name"
+                innerRadius={18}
+                outerRadius={36}
+                startAngle={90}
+                endAngle={-270}
+                stroke="none"
+                isAnimationActive
+                animationDuration={700}
+              >
+                {pieData.map((d) => (
+                  <Cell key={d.name} fill={PIE_COLORS[d.name]} />
+                ))}
+              </Pie>
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
+            Seu diagnóstico
+          </p>
+          <div className="flex flex-wrap gap-1.5 mt-1">
+            {(["Vata", "Pitta", "Kapha"] as const).map((name) => {
+              const score = scores[name];
+              const meta = metas[name];
+              const nivel = getNivel(score, name);
+              const label =
+                meta != null && meta !== score
+                  ? `${name} ${score} → ${meta} · ${nivel}`
+                  : `${name} ${score} · ${nivel}`;
+              return (
+                <span
+                  key={name}
+                  className={cn(
+                    "text-[10px] px-2 py-0.5 rounded-full border font-semibold",
+                    DOSHA_BADGE[name]
+                  )}
+                >
+                  {label}
+                </span>
+              );
+            })}
+          </div>
+          {agniPrincipal && (
+            <p className="text-[11px] text-muted-foreground mt-1 truncate">
+              Agni: <span className="text-foreground font-medium">{agniPrincipal}</span>
+            </p>
+          )}
+        </div>
+      </div>
+
 
       {temAnalise && (
         <div className="mt-4 pt-4 border-t border-primary/15 space-y-1.5">
