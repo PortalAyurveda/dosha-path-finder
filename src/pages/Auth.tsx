@@ -33,7 +33,7 @@ const Auth = () => {
 
   useEffect(() => {
     if (!waitingForDosha) return;
-    const fallbackId = doshaResult?.idPublico || localStorage.getItem("activeDoshaId");
+    const fallbackId = searchParams.get("claim") || doshaResult?.idPublico || localStorage.getItem("activeDoshaId");
     if (fallbackId) {
       navigate(`/meu-dosha?id=${fallbackId}`, { replace: true });
       return;
@@ -49,6 +49,21 @@ const Auth = () => {
     if (idPublico) {
       localStorage.setItem("pendingClaimIdPublico", idPublico);
     }
+  }, [searchParams]);
+
+  useEffect(() => {
+    const claimId = searchParams.get("claim");
+    if (!claimId) return;
+    let cancelled = false;
+    (async () => {
+      const { data } = await supabase
+        .from("doshas_registros")
+        .select("email")
+        .eq("idPublico", claimId)
+        .maybeSingle();
+      if (!cancelled && data?.email) setEmail(data.email);
+    })();
+    return () => { cancelled = true; };
   }, [searchParams]);
 
   const handleGoogleLogin = async () => {
