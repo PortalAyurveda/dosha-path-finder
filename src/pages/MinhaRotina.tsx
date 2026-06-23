@@ -59,7 +59,7 @@ interface RotinaRow {
   dia: number;
   slot: string;
   nugget_id: string | null;
-  status: string | null;
+  praticado: boolean | null;
 }
 
 interface NuggetJson {
