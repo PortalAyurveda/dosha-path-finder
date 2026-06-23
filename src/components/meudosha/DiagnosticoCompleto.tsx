@@ -8,6 +8,7 @@ import { premiumSupabase, type ObjetivoTratamento } from "@/integrations/supabas
 import { lojaSupabase } from "@/integrations/supabase/loja-client";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
+import { normalizarDosha } from "@/lib/dosha";
 import { useCupomUsuario } from "@/hooks/useCupomUsuario";
 import { toast } from "sonner";
 
@@ -153,7 +154,7 @@ function useGlossario(doshaCompleto: string | null) {
           "rotinasEquilibrar",
           "dicasGeraisFazer"
         `)
-        .eq("doshanome", doshaCompleto)
+        .eq("doshanome", normalizarDosha(doshaCompleto) ?? "")
         .maybeSingle();
       if (error || !data) return null;
       return data as PortalGlossario;
@@ -845,144 +846,12 @@ const Plano30Dias = ({ isPremium }: { isPremium: boolean }) => (
 );
 
 
-// ============ SEÇÃO 4 — Próximos Passos ============
-const ProximoPassoCard = ({
-  iconSrc,
-  titulo,
-  descricao,
-  href,
-  iconScale = 1,
-  iconOffsetY = 0,
-}: {
-  iconSrc: string;
-  titulo: string;
-  descricao: string;
-  href: string;
-  iconScale?: number;
-  iconOffsetY?: number;
-}) => (
-  <Link
-    to={href}
-    className={cn(
-      "group block bg-white p-4 aspect-square flex flex-col items-center justify-center text-center gap-2 transition-all hover:-translate-y-0.5",
-      LEAF,
-    )}
-    style={{
-      border: `1px solid ${COLOR.cardBorder}`,
-      boxShadow: "0 1px 8px rgba(53,47,84,0.08)",
-    }}
-  >
-    <div className="w-16 h-16 flex items-center justify-center shrink-0">
-      <img
-        src={iconSrc}
-        alt=""
-        className="w-full h-full object-contain"
-        style={{ transform: `translateY(${iconOffsetY}px) scale(${iconScale})` }}
-      />
-    </div>
-    <h3
-      className="font-serif font-bold text-sm leading-tight"
-      style={{ color: COLOR.primary, fontFamily: "'Roboto Serif', serif" }}
-    >
-      {titulo}
-    </h3>
-    <p
-      className="text-[12px] leading-snug"
-      style={{ color: COLOR.textoSec, fontFamily: "'DM Sans', sans-serif" }}
-    >
-      {descricao}
-    </p>
-  </Link>
-);
-
-interface DoshaScores {
-  vata: number;
-  pitta: number;
-  kapha: number;
-}
-
-const topDoshaSlug = (scores: DoshaScores): "vata" | "pitta" | "kapha" => {
-  const arr: { k: "vata" | "pitta" | "kapha"; v: number }[] = [
-    { k: "vata", v: scores.vata },
-    { k: "pitta", v: scores.pitta },
-    { k: "kapha", v: scores.kapha },
-  ];
-  arr.sort((a, b) => b.v - a.v);
-  return arr[0].k;
-};
-
-const DOSHA_LABEL: Record<"vata" | "pitta" | "kapha", string> = {
-  vata: "Vata",
-  pitta: "Pitta",
-  kapha: "Kapha",
-};
-
-const ICON_ALIMENTACAO = "https://api.portalayurveda.com/storage/v1/object/public/portal_images/logo-alimentacao2.svg";
-const ICON_ROTINAS = "https://api.portalayurveda.com/storage/v1/object/public/portal_images/logo-rotinas.svg";
-const ICON_ALQUIMIA = "https://api.portalayurveda.com/storage/v1/object/public/portal_images/logo-remedios-2.png";
-const ICON_AKASHA = "https://api.portalayurveda.com/storage/v1/object/public/portal_images/logo-akasha.svg";
-
-const ProximosPassos = ({
-  refazerTeste,
-  scores,
-}: {
-  refazerTeste: () => void;
-  scores: DoshaScores;
-}) => {
-  const top = topDoshaSlug(scores);
-  const label = DOSHA_LABEL[top];
-  const cor = corDosha(label);
-
-  return (
-    <section className="space-y-4 pt-12">
-      <h2
-        className="font-serif font-bold text-xl md:text-2xl text-left"
-        style={{ color: COLOR.primary, fontFamily: "'Roboto Serif', serif" }}
-      >
-        Próximos Passos
-      </h2>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 max-w-3xl">
-        <ProximoPassoCard
-          iconSrc={ICON_ALIMENTACAO}
-          titulo="Alimentação"
-          descricao="Aprenda a comer de acordo com seus Doshas"
-          href={`/biblioteca/${top}/alimentacao`}
-          iconScale={1.55}
-          iconOffsetY={4}
-        />
-        <ProximoPassoCard
-          iconSrc={ICON_ROTINAS}
-          titulo="Horários"
-          descricao="A rotina ideal começa em pequenas mudanças"
-          href={`/biblioteca/${top}/horarios`}
-          iconScale={0.95}
-        />
-        <ProximoPassoCard
-          iconSrc={ICON_ALQUIMIA}
-          titulo="Alquimia"
-          descricao="Aprenda a tratar a raiz, não o sintoma"
-          href={`/biblioteca/${top}/alquimia`}
-          iconScale={1.15}
-        />
-        <ProximoPassoCard
-          iconSrc={ICON_AKASHA}
-          titulo="Akasha"
-          descricao="Sua consultora de Ayurveda 24h"
-          href="/meu-dosha?tab=akasha"
-          iconScale={0.95}
-        />
-      </div>
-    </section>
-  );
-};
-
 // ============ Componente principal ============
 interface DiagnosticoCompletoProps {
   email: string | null;
   doshaPrincipal: string;
   doshaPrincipalCompleto: string;
   refazerTeste: () => void;
-  scores: DoshaScores;
   isPremium?: boolean;
 }
 
@@ -991,7 +860,6 @@ const DiagnosticoCompleto = ({
   doshaPrincipal,
   doshaPrincipalCompleto,
   refazerTeste,
-  scores,
   isPremium = false,
 }: DiagnosticoCompletoProps) => {
   const { analise, analiseLoading, analiseTimeout } = useAnalise(email);
@@ -1087,7 +955,6 @@ const DiagnosticoCompleto = ({
               : "Akasha está preparando sua análise..."}
           </p>
         </div>
-        <ProximosPassos refazerTeste={refazerTeste} scores={scores} />
       </div>
     );
   }
@@ -1104,7 +971,6 @@ const DiagnosticoCompleto = ({
         doshaPrincipalCompleto={doshaPrincipalCompleto}
         cor={corDosha(doshaPrincipal)}
       />
-      <ProximosPassos refazerTeste={refazerTeste} scores={scores} />
       <Plano30Dias isPremium={isPremium} />
       {!!produtos?.length && <ProtocoloSamkhya analise={analise} produtos={produtos} />}
     </div>
