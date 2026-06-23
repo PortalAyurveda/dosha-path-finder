@@ -154,9 +154,9 @@ const MinhaRotina = () => {
     queryKey: ["rotina-user", testeId],
     enabled: !!testeId,
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("rotinas_usuario")
-        .select("id, dia, slot, nugget_id, status")
+      const { data, error } = await (supabase
+        .from("rotinas_usuario") as any)
+        .select("id, dia, slot, nugget_id, praticado")
         .eq("user_id", testeId!);
       if (error) throw error;
       return (data ?? []) as RotinaRow[];
