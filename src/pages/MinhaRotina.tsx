@@ -316,9 +316,7 @@ interface SlotCardProps {
   slotLabel: string;
   row: RotinaRow | undefined;
   nugget: Nugget | undefined;
-  isFav: boolean;
   agniFracoOuIrregular: boolean;
-  onToggleFav: () => void;
   onToggleFeito: () => void;
 }
 
@@ -326,9 +324,7 @@ const RotinaSlotCard = ({
   slotLabel,
   row,
   nugget,
-  isFav,
   agniFracoOuIrregular,
-  onToggleFav,
   onToggleFeito,
 }: SlotCardProps) => {
   const [open, setOpen] = useState(false);
