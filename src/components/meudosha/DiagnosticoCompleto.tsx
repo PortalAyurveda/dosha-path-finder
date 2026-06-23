@@ -139,7 +139,19 @@ function useGlossario(doshaCompleto: string | null) {
       if (!doshaCompleto) return null;
       const { data, error } = await supabase
         .from("portal_glossario")
-        .select(`resumo_curto, oque, "alimentosEvitar", "alimentosPriorizar", "rotinasEquilibrar", "dicasGeraisFazer"`)
+        .select(`
+          resumo_curto,
+          frase_clinica,
+          oque,
+          atributos,
+          equilibrio,
+          desequilibrio,
+          "principaisDoencas",
+          "alimentosEvitar",
+          "alimentosPriorizar",
+          "rotinasEquilibrar",
+          "dicasGeraisFazer"
+        `)
         .eq("doshanome", doshaCompleto)
         .maybeSingle();
       if (error || !data) return null;
