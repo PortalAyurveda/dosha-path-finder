@@ -212,6 +212,33 @@ const MinhaRotina = () => {
     return m;
   }, [nuggets]);
 
+  // Glossário do dosha do usuário (habitos_diarios + alertas_cotidianos)
+  const doshaNome = doshaResult?.doshaprincipal ?? null;
+  const { data: glossario } = useQuery<GlossarioRotina | null>({
+    queryKey: ["rotina-glossario", doshaNome],
+    enabled: !!doshaNome,
+    staleTime: 30 * 60 * 1000,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("portal_glossario")
+        .select("habitos_diarios, alertas_cotidianos")
+        .eq("doshanome", doshaNome!)
+        .maybeSingle();
+      if (error) return null;
+      return (data as unknown as GlossarioRotina) ?? null;
+    },
+  });
+
+  // Estado local do dia: hábitos do glossário marcados, e alertas "escorreguei"
+  const [habitosFeitos, setHabitosFeitos] = useState<Set<string>>(new Set());
+  const [alertasEscorregados, setAlertasEscorregados] = useState<Set<string>>(new Set());
+
+  // Reseta o estado local ao trocar de dia
+  useEffect(() => {
+    setHabitosFeitos(new Set());
+    setAlertasEscorregados(new Set());
+  }, [diaSelecionado]);
+
   // Gate de login
   if (loading) {
     return (
@@ -229,13 +256,20 @@ const MinhaRotina = () => {
   const rowBySlot = new Map<string, RotinaRow>();
   rowsDoDia.forEach((r) => rowBySlot.set(r.slot, r));
 
-  const feitosCount = rowsDoDia.filter((r) => r.praticado === true).length;
-  const totalSlots = SLOT_DEFS.length;
-  const progressoPct = (feitosCount / totalSlots) * 100;
+  // Cuidados do glossário em destaque (2-3)
+  const habitosGloss = (glossario?.habitos_diarios ?? []).slice(0, 3);
+  const alertasGloss = (glossario?.alertas_cotidianos ?? []).slice(0, 3);
 
-  // Mutations otimistas
+  // Contagens
+  const praticadosRotina = rowsDoDia.filter((r) => r.praticado === true).length;
+  const habitosCount = habitosFeitos.size;
+  const totalPossivel =
+    MEAL_SLOTS.length + PRACTICE_SLOTS.length + habitosGloss.length;
+  const feitosCount = praticadosRotina + habitosCount;
+  const progressoPct = totalPossivel > 0 ? (feitosCount / totalPossivel) * 100 : 0;
+  const equilibrioDia = feitosCount - alertasEscorregados.size;
 
-
+  // Toggle de praticado: grava em rotinas_usuario + grava preferência em rotina_favoritos
   const toggleFeito = async (row: RotinaRow) => {
     if (!user) return;
     const key = ["rotina-user", testeId];
@@ -250,10 +284,44 @@ const MinhaRotina = () => {
         .update({ praticado: novoValor })
         .eq("id", row.id);
       if (error) throw error;
+
+      // Preferência (estrela-fixa): só grava, não lê.
+      if (row.nugget_id) {
+        if (novoValor) {
+          await (supabase.from("rotina_favoritos") as any)
+            .upsert(
+              { user_id: user.id, nugget_id: row.nugget_id },
+              { onConflict: "user_id,nugget_id", ignoreDuplicates: true }
+            );
+        } else {
+          await (supabase.from("rotina_favoritos") as any)
+            .delete()
+            .eq("user_id", user.id)
+            .eq("nugget_id", row.nugget_id);
+        }
+      }
     } catch (e) {
       queryClient.setQueryData(key, prev);
       toast({ title: "Não consegui salvar", variant: "destructive" });
     }
+  };
+
+  const toggleHabito = (habito: string) => {
+    setHabitosFeitos((prev) => {
+      const next = new Set(prev);
+      if (next.has(habito)) next.delete(habito);
+      else next.add(habito);
+      return next;
+    });
+  };
+
+  const toggleAlerta = (alerta: string) => {
+    setAlertasEscorregados((prev) => {
+      const next = new Set(prev);
+      if (next.has(alerta)) next.delete(alerta);
+      else next.add(alerta);
+      return next;
+    });
   };
 
   return (
@@ -272,7 +340,6 @@ const MinhaRotina = () => {
 
       {/* Topo */}
       <header className="mb-6">
-
         <h1 className="font-serif text-3xl md:text-4xl text-foreground">
           Sua rotina
         </h1>
@@ -305,47 +372,104 @@ const MinhaRotina = () => {
         })}
       </div>
 
-      {/* Progresso */}
+      {/* Indicadores do dia */}
       <div className="mb-6">
         <div className="flex items-baseline justify-between mb-1.5">
           <span className="text-sm text-foreground font-medium">
-            {feitosCount} de {totalSlots} feitos
+            Progresso do dia · {feitosCount} de {totalPossivel}
           </span>
-          <span className="text-xs text-muted-foreground">hoje</span>
+          <span className="text-xs text-muted-foreground">
+            Equilíbrio:{" "}
+            <span
+              className={cn(
+                "font-medium",
+                equilibrioDia < 0 ? "text-muted-foreground" : "text-foreground"
+              )}
+            >
+              {equilibrioDia > 0 ? `+${equilibrioDia}` : equilibrioDia}
+            </span>
+          </span>
         </div>
         <Progress value={progressoPct} className="h-2" />
       </div>
 
-      {/* Slots agrupados */}
-      <div className="space-y-7">
-        {PERIODOS.map((periodo) => {
-          const slotsDoPeriodo = SLOT_DEFS.filter((s) => s.periodo === periodo);
-          return (
-            <section key={periodo}>
-              <h2 className="text-xs uppercase tracking-wider text-muted-foreground font-semibold mb-2">
-                {periodo}
-              </h2>
-              <div className="space-y-3">
-                {slotsDoPeriodo.map((s) => {
-                  const row = rowBySlot.get(s.slot);
-                  const nugget = row?.nugget_id
-                    ? nuggetsById.get(row.nugget_id)
-                    : undefined;
-                  return (
-                    <RotinaSlotCard
-                      key={s.slot}
-                      slotLabel={s.label}
-                      row={row}
-                      nugget={nugget}
-                      agniFracoOuIrregular={agniFracoOuIrregular}
-                      onToggleFeito={() => row && toggleFeito(row)}
-                    />
-                  );
-                })}
-              </div>
-            </section>
-          );
-        })}
+      <div className="space-y-8">
+        {/* ===== Sua rotina (refeições) ===== */}
+        <section>
+          <h2 className="text-xs uppercase tracking-wider text-muted-foreground font-semibold mb-2">
+            Sua rotina
+          </h2>
+          <div className="space-y-3">
+            {MEAL_SLOTS.map((s) => {
+              const row = rowBySlot.get(s.slot);
+              const nugget = row?.nugget_id ? nuggetsById.get(row.nugget_id) : undefined;
+              return (
+                <RotinaSlotCard
+                  key={s.slot}
+                  slotLabel={s.label}
+                  row={row}
+                  nugget={nugget}
+                  agniFracoOuIrregular={agniFracoOuIrregular}
+                  onToggleFeito={() => row && toggleFeito(row)}
+                />
+              );
+            })}
+          </div>
+        </section>
+
+        {/* ===== Seus cuidados de hoje (práticas + hábitos do glossário) ===== */}
+        <section>
+          <h2 className="text-xs uppercase tracking-wider text-muted-foreground font-semibold mb-2">
+            Seus cuidados de hoje
+          </h2>
+          <div className="space-y-3">
+            {PRACTICE_SLOTS.map((s) => {
+              const row = rowBySlot.get(s.slot);
+              const nugget = row?.nugget_id ? nuggetsById.get(row.nugget_id) : undefined;
+              return (
+                <RotinaSlotCard
+                  key={s.slot}
+                  slotLabel={s.label}
+                  row={row}
+                  nugget={nugget}
+                  agniFracoOuIrregular={agniFracoOuIrregular}
+                  onToggleFeito={() => row && toggleFeito(row)}
+                />
+              );
+            })}
+            {habitosGloss.map((h, idx) => (
+              <HabitoCard
+                key={`hab-${idx}`}
+                habito={h.habito}
+                periodo={h.periodo}
+                feito={habitosFeitos.has(h.habito)}
+                onToggle={() => toggleHabito(h.habito)}
+              />
+            ))}
+          </div>
+        </section>
+
+        {/* ===== Evitar hoje ===== */}
+        {alertasGloss.length > 0 && (
+          <section>
+            <h2 className="text-xs uppercase tracking-wider text-muted-foreground font-semibold mb-2">
+              Evitar hoje
+            </h2>
+            <p className="text-xs text-muted-foreground mb-3">
+              espelho do dia — sem culpa, só consciência.
+            </p>
+            <div className="space-y-3">
+              {alertasGloss.map((a, idx) => (
+                <AlertaCard
+                  key={`al-${idx}`}
+                  alerta={a}
+                  escorregou={alertasEscorregados.has(a)}
+                  onToggle={() => toggleAlerta(a)}
+                />
+              ))}
+            </div>
+          </section>
+        )}
       </div>
     </PageContainer>
   );
