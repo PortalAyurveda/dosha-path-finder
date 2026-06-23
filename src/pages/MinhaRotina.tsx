@@ -250,8 +250,16 @@ const MinhaRotina = () => {
       title="Minha rotina"
       description="Seu planner ayurvédico diário, slot a slot."
     >
+      {/* Moldura: cabeçalho de contexto da semana */}
+      <SemanaHeader
+        doshaPrincipal={doshaResult?.doshaprincipal ?? null}
+        agniPrincipal={agniInfo ?? null}
+        analise={analise ?? null}
+      />
+
       {/* Topo */}
       <header className="mb-6">
+
         <h1 className="font-serif text-3xl md:text-4xl text-foreground">
           Sua rotina
         </h1>
