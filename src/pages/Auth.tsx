@@ -51,6 +51,21 @@ const Auth = () => {
     }
   }, [searchParams]);
 
+  useEffect(() => {
+    const claimId = searchParams.get("claim");
+    if (!claimId) return;
+    let cancelled = false;
+    (async () => {
+      const { data } = await supabase
+        .from("doshas_registros")
+        .select("email")
+        .eq("idPublico", claimId)
+        .maybeSingle();
+      if (!cancelled && data?.email) setEmail(data.email);
+    })();
+    return () => { cancelled = true; };
+  }, [searchParams]);
+
   const handleGoogleLogin = async () => {
     setGoogleLoading(true);
     const storedDoshaId = localStorage.getItem("activeDoshaId");
