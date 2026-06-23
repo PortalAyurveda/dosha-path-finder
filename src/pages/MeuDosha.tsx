@@ -818,25 +818,28 @@ const MeuDosha = () => {
 
           if (temAcessoRotina) {
             return (
-              <Link
-                to="/minha-rotina"
-                className="block text-sm font-medium text-primary hover:underline"
-              >
-                Ver minha rotina de hoje →
-              </Link>
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 rounded-2xl border border-secondary/30 bg-secondary/10 px-5 py-4">
+                <span className="text-sm font-medium text-foreground">
+                  Sua rotina de hoje está pronta
+                </span>
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => navigate("/minha-rotina")}
+                  className="self-start sm:self-auto"
+                >
+                  Ver minha rotina →
+                </Button>
+              </div>
             );
           }
 
-          const doshaNome = doshaResult?.doshaprincipal ?? "seu dosha";
+          const doshaNome = result?.doshaprincipal || "seu dosha";
           return (
-            <Link
-              to="/minha-rotina"
-              aria-label="Conhecer minha rotina ayurvédica"
-              className="group relative block overflow-hidden rounded-2xl border border-border bg-secondary/10 hover:bg-secondary/15 transition-colors p-5 md:p-6"
-            >
+            <div className="relative overflow-hidden rounded-2xl border border-border bg-secondary/10 p-5 md:p-6">
               <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-secondary to-primary" />
               <p className="text-xs uppercase tracking-widest text-muted-foreground font-medium mb-2">
-                Sua rotina Ayurveda
+                SUA ROTINA AYURVEDA
               </p>
               <h2 className="font-serif text-xl md:text-2xl text-primary leading-tight mb-2">
                 Você descobriu seu dosha. E agora?
@@ -848,13 +851,18 @@ const MeuDosha = () => {
                 <p className="text-sm text-muted-foreground">
                   <span className="text-foreground font-semibold">R$30</span> · sua rotina mensal
                 </p>
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-secondary text-secondary-foreground px-5 py-2.5 text-sm font-medium group-hover:bg-secondary/90 transition-colors self-start sm:self-auto">
+                <Button
+                  variant="secondary"
+                  onClick={() => navigate("/minha-rotina")}
+                  className="self-start sm:self-auto"
+                >
                   Conhecer minha rotina →
-                </span>
+                </Button>
               </div>
-            </Link>
+            </div>
           );
         })()}
+
 
 
         {/* ===== TABS ===== */}
