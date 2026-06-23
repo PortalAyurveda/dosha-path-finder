@@ -4,7 +4,6 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import * as LucideIcons from "lucide-react";
 import {
   Star,
-  CheckCircle2,
   Circle,
   Flame,
   Play,
@@ -176,18 +175,6 @@ const MinhaRotina = () => {
     },
   });
 
-  const { data: favoritos } = useQuery({
-    queryKey: ["rotina-favoritos", user?.id],
-    enabled: !!user?.id,
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("rotina_favoritos")
-        .select("nugget_id")
-        .eq("user_id", user!.id);
-      if (error) throw error;
-      return new Set<string>((data ?? []).map((r) => r.nugget_id));
-    },
-  });
 
   const nuggetsById = useMemo(() => {
     const m = new Map<string, Nugget>();
@@ -217,35 +204,7 @@ const MinhaRotina = () => {
   const progressoPct = (feitosCount / totalSlots) * 100;
 
   // Mutations otimistas
-  const toggleFavorito = async (nuggetId: string) => {
-    if (!user) return;
-    const key = ["rotina-favoritos", user.id];
-    const prev = queryClient.getQueryData<Set<string>>(key) ?? new Set<string>();
-    const next = new Set(prev);
-    const wasFav = next.has(nuggetId);
-    if (wasFav) next.delete(nuggetId);
-    else next.add(nuggetId);
-    queryClient.setQueryData(key, next);
 
-    try {
-      if (wasFav) {
-        const { error } = await supabase
-          .from("rotina_favoritos")
-          .delete()
-          .eq("user_id", user.id)
-          .eq("nugget_id", nuggetId);
-        if (error) throw error;
-      } else {
-        const { error } = await supabase
-          .from("rotina_favoritos")
-          .insert({ user_id: user.id, nugget_id: nuggetId });
-        if (error) throw error;
-      }
-    } catch (e) {
-      queryClient.setQueryData(key, prev);
-      toast({ title: "Não consegui salvar o favorito", variant: "destructive" });
-    }
-  };
 
   const toggleFeito = async (row: RotinaRow) => {
     if (!user) return;
@@ -338,13 +297,7 @@ const MinhaRotina = () => {
                       slotLabel={s.label}
                       row={row}
                       nugget={nugget}
-                      isFav={
-                        nugget ? favoritos?.has(nugget.id) ?? false : false
-                      }
                       agniFracoOuIrregular={agniFracoOuIrregular}
-                      onToggleFav={() =>
-                        nugget && toggleFavorito(nugget.id)
-                      }
                       onToggleFeito={() => row && toggleFeito(row)}
                     />
                   );
@@ -363,9 +316,7 @@ interface SlotCardProps {
   slotLabel: string;
   row: RotinaRow | undefined;
   nugget: Nugget | undefined;
-  isFav: boolean;
   agniFracoOuIrregular: boolean;
-  onToggleFav: () => void;
   onToggleFeito: () => void;
 }
 
@@ -373,9 +324,7 @@ const RotinaSlotCard = ({
   slotLabel,
   row,
   nugget,
-  isFav,
   agniFracoOuIrregular,
-  onToggleFav,
   onToggleFeito,
 }: SlotCardProps) => {
   const [open, setOpen] = useState(false);
@@ -424,32 +373,19 @@ const RotinaSlotCard = ({
           </CollapsibleTrigger>
 
           <button
-            onClick={onToggleFav}
-            disabled={!nugget}
+            onClick={onToggleFeito}
+            disabled={!row}
             className="p-2 rounded-full hover:bg-muted disabled:opacity-40"
-            aria-label="favoritar"
+            aria-label="marcar como praticado"
           >
             <Star
               className={cn(
-                "h-5 w-5",
-                isFav
+                "h-7 w-7",
+                feito
                   ? "fill-secondary text-secondary"
                   : "text-muted-foreground"
               )}
             />
-          </button>
-
-          <button
-            onClick={onToggleFeito}
-            disabled={!row}
-            className="p-1 rounded-full disabled:opacity-40"
-            aria-label="marcar como feito"
-          >
-            {feito ? (
-              <CheckCircle2 className="h-7 w-7 text-green-600 fill-green-100" />
-            ) : (
-              <Circle className="h-7 w-7 text-muted-foreground" />
-            )}
           </button>
         </div>
 
