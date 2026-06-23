@@ -125,7 +125,7 @@ const parseTimestamp = (ts: string | null): number | undefined => {
 
 // ===== Page =====
 const MinhaRotina = () => {
-  const { user, loading, doshaResult } = useUser();
+  const { user, loading, doshaResult, profile, refreshProfile } = useUser();
   const queryClient = useQueryClient();
   const [diaSelecionado, setDiaSelecionado] = useState<number>(1);
 
