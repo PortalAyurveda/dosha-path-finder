@@ -336,23 +336,34 @@ const MinhaRotina = () => {
   const habitosGloss = (glossario?.habitos_diarios ?? []).slice(0, 3);
   const alertasGloss = (glossario?.alertas_cotidianos ?? []).slice(0, 3);
 
-  // Sets derivados de rotina_pontos de hoje
+  // Sets derivados de rotina_pontos de hoje — filtrados pelo dia do planner
+  // referencia agora vem como "diaN:resto" (ex.: "dia1:cafe_manha").
+  // Marcações antigas sem prefixo são ignoradas (não casam com nenhum dia).
   const acertoRotinaSlots = new Set<string>();
   const acertoHabitos = new Set<string>();
   const deslizes = new Set<string>();
   (pontosHoje ?? []).forEach((p) => {
     if (!p.referencia) return;
-    if (p.tipo === "acerto_rotina") acertoRotinaSlots.add(p.referencia);
-    else if (p.tipo === "acerto_habito") acertoHabitos.add(p.referencia);
-    else if (p.tipo === "deslize") deslizes.add(p.referencia);
+    const m = p.referencia.match(/^dia(\d+):(.*)$/s);
+    if (!m) return;
+    const diaRef = Number(m[1]);
+    const resto = m[2];
+    if (diaRef !== diaSelecionado) return;
+    if (p.tipo === "acerto_rotina") acertoRotinaSlots.add(resto);
+    else if (p.tipo === "acerto_habito") acertoHabitos.add(resto);
+    else if (p.tipo === "deslize") deslizes.add(resto);
   });
 
-  // Contagens do dia
+  // Contagens do dia (apenas marcações do dia selecionado)
   const totalPossivel =
     MEAL_SLOTS.length + PRACTICE_SLOTS.length + habitosGloss.length;
   const feitosCount = acertoRotinaSlots.size + acertoHabitos.size;
   const progressoPct = totalPossivel > 0 ? (feitosCount / totalPossivel) * 100 : 0;
-  const equilibrioDia = (pontosHoje ?? []).reduce((acc, r) => acc + (r.pontos ?? 0), 0);
+  const equilibrioDia = (pontosHoje ?? []).reduce((acc, r) => {
+    const m = r.referencia?.match(/^dia(\d+):/);
+    if (!m || Number(m[1]) !== diaSelecionado) return acc;
+    return acc + (r.pontos ?? 0);
+  }, 0);
 
   // Nível do DIA (reseta a cada dia)
   const nivelDia = (() => {
