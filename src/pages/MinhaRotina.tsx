@@ -136,6 +136,23 @@ const MinhaRotina = () => {
     return /fraca|irregular/i.test(agniInfo);
   }, [agniInfo]);
 
+  // Análise clínica (objetivos_tratamento) — mesma query usada por DiagnosticoCompleto
+  const { data: analise } = useQuery({
+    queryKey: ["minha-rotina-analise", user?.email],
+    enabled: !!user?.email,
+    queryFn: async () => {
+      const { data, error } = await premiumSupabase
+        .from("objetivos_tratamento")
+        .select("*")
+        .eq("user_email", user!.email!)
+        .eq("status", "ativo")
+        .maybeSingle();
+      if (error) return null;
+      return (data as unknown as ObjetivoTratamento) || null;
+    },
+    staleTime: 30_000,
+  });
+
   const { data: testeId } = useQuery({
     queryKey: ["rotina-teste-id", doshaResult?.idPublico],
     enabled: !!doshaResult?.idPublico,
