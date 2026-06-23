@@ -54,7 +54,12 @@ interface ProdutoExibicao {
 
 interface PortalGlossario {
   resumo_curto: string | null;
+  frase_clinica: string | null;
   oque: string | null;
+  atributos: string | null;
+  equilibrio: string | null;
+  desequilibrio: string | null;
+  principaisDoencas: string | null;
   alimentosEvitar: string | null;
   alimentosPriorizar: string | null;
   rotinasEquilibrar: string | null;
