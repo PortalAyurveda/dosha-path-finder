@@ -135,14 +135,28 @@ const MinhaRotina = () => {
     return /fraca|irregular/i.test(agniInfo);
   }, [agniInfo]);
 
+  const { data: testeId } = useQuery({
+    queryKey: ["rotina-teste-id", doshaResult?.idPublico],
+    enabled: !!doshaResult?.idPublico,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("doshas_registros")
+        .select("id")
+        .eq("idPublico", doshaResult!.idPublico)
+        .maybeSingle();
+      if (error) throw error;
+      return (data?.id as string | undefined) ?? null;
+    },
+  });
+
   const { data: rotinaRows } = useQuery({
-    queryKey: ["rotina-user", user?.id],
-    enabled: !!user?.id,
+    queryKey: ["rotina-user", testeId],
+    enabled: !!testeId,
     queryFn: async () => {
       const { data, error } = await supabase
         .from("rotinas_usuario")
         .select("id, dia, slot, nugget_id, status")
-        .eq("user_id", user!.id);
+        .eq("user_id", testeId!);
       if (error) throw error;
       return (data ?? []) as RotinaRow[];
     },
@@ -235,7 +249,7 @@ const MinhaRotina = () => {
 
   const toggleFeito = async (row: RotinaRow) => {
     if (!user) return;
-    const key = ["rotina-user", user.id];
+    const key = ["rotina-user", testeId];
     const prev = queryClient.getQueryData<RotinaRow[]>(key) ?? [];
     const novoStatus = row.status === "feito" ? null : "feito";
     const next = prev.map((r) => (r.id === row.id ? { ...r, status: novoStatus } : r));

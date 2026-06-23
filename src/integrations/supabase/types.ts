@@ -4012,6 +4012,7 @@ export type Database = {
           tag: string
         }[]
       }
+      owns_rotina: { Args: { p_test_id: string }; Returns: boolean }
       receita_do_dia: {
         Args: never
         Returns: {
