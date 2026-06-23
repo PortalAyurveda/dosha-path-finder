@@ -1099,6 +1099,11 @@ const DiagnosticoCompleto = ({
         doshaPrincipal={doshaPrincipal}
         doshaPrincipalCompleto={doshaPrincipalCompleto}
       />
+      <EntendaSeuDosha
+        glossario={glossario || null}
+        doshaPrincipalCompleto={doshaPrincipalCompleto}
+        cor={corDosha(doshaPrincipal)}
+      />
       <ProximosPassos refazerTeste={refazerTeste} scores={scores} />
       <Plano30Dias isPremium={isPremium} />
       {!!produtos?.length && <ProtocoloSamkhya analise={analise} produtos={produtos} />}
