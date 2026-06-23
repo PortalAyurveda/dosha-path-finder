@@ -129,6 +129,18 @@ const MinhaRotina = () => {
   const queryClient = useQueryClient();
   const [diaSelecionado, setDiaSelecionado] = useState<number>(1);
 
+  // Retorno do Stripe: /minha-rotina?assinatura=ok
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("assinatura") === "ok") {
+      toast({ title: "Bem-vindo à sua rotina! ✨", description: "Sua assinatura está ativa." });
+      const t = setTimeout(() => { refreshProfile(); }, 2000);
+      window.history.replaceState({}, "", "/minha-rotina");
+      return () => clearTimeout(t);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // Scores + agni do usuário — busca a partir do idPublico ativo
   const { data: doshaInfo } = useQuery({
     queryKey: ["minha-rotina-dosha-info", doshaResult?.idPublico],
