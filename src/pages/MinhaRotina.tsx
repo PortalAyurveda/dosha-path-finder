@@ -201,7 +201,7 @@ const MinhaRotina = () => {
   const rowBySlot = new Map<string, RotinaRow>();
   rowsDoDia.forEach((r) => rowBySlot.set(r.slot, r));
 
-  const feitosCount = rowsDoDia.filter((r) => r.status === "feito").length;
+  const feitosCount = rowsDoDia.filter((r) => r.praticado === true).length;
   const totalSlots = SLOT_DEFS.length;
   const progressoPct = (feitosCount / totalSlots) * 100;
 
@@ -212,19 +212,19 @@ const MinhaRotina = () => {
     if (!user) return;
     const key = ["rotina-user", testeId];
     const prev = queryClient.getQueryData<RotinaRow[]>(key) ?? [];
-    const novoStatus = row.status === "feito" ? null : "feito";
-    const next = prev.map((r) => (r.id === row.id ? { ...r, status: novoStatus } : r));
+    const novoValor = !row.praticado;
+    const next = prev.map((r) => (r.id === row.id ? { ...r, praticado: novoValor } : r));
     queryClient.setQueryData(key, next);
 
     try {
-      const { error } = await supabase
-        .from("rotinas_usuario")
-        .update({ status: novoStatus })
+      const { error } = await (supabase
+        .from("rotinas_usuario") as any)
+        .update({ praticado: novoValor })
         .eq("id", row.id);
       if (error) throw error;
     } catch (e) {
       queryClient.setQueryData(key, prev);
-      toast({ title: "Não consegui salvar o check", variant: "destructive" });
+      toast({ title: "Não consegui salvar", variant: "destructive" });
     }
   };
 
