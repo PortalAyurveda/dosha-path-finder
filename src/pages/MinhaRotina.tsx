@@ -4,7 +4,6 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import * as LucideIcons from "lucide-react";
 import {
   Star,
-  CheckCircle2,
   Circle,
   Flame,
   Play,
