@@ -338,7 +338,96 @@ const MinhaRotina = () => {
   );
 };
 
+// ===== Moldura da semana =====
+interface SemanaHeaderProps {
+  doshaPrincipal: string | null;
+  agniPrincipal: string | null;
+  analise: ObjetivoTratamento | null;
+}
+
+const SemanaHeader = ({ doshaPrincipal, agniPrincipal, analise }: SemanaHeaderProps) => {
+  // Foco: tenta usar o bloco 3 da narrativa (caminhos); fallback para objetivos[0]
+  const focoTexto = (() => {
+    const cam = analise?.narrativa_clinica?.bloco_3_caminhos;
+    if (cam) {
+      // pega a primeira frase
+      const primeira = cam.split(/(?<=[.!?])\s+/)[0];
+      return primeira?.trim() || null;
+    }
+    if (analise?.objetivos && analise.objetivos.length > 0) {
+      return `Esta semana sua rotina foca em ${analise.objetivos.slice(0, 2).join(" e ")}.`;
+    }
+    return null;
+  })();
+
+  // Meta: encontra o dosha com maior diferença atual → meta
+  const metaTexto = (() => {
+    if (!analise) return null;
+    const partes: string[] = [];
+    const doshas = [
+      { nome: "Vata", atual: analise.vata_atual, meta: analise.vata_meta },
+      { nome: "Pitta", atual: analise.pitta_atual, meta: analise.pitta_meta },
+      { nome: "Kapha", atual: analise.kapha_atual, meta: analise.kapha_meta },
+    ].filter((d) => d.atual != null && d.meta != null && d.atual !== d.meta);
+
+    doshas.sort((a, b) => Math.abs((b.atual! - b.meta!)) - Math.abs((a.atual! - a.meta!)));
+    const top = doshas[0];
+    if (top) {
+      const verbo = top.atual! > top.meta! ? "reduzir" : "elevar";
+      partes.push(`${verbo} ${top.nome} ${top.atual} → ${top.meta}`);
+    }
+    if (analise.agni_nivel_atual != null && analise.agni_nivel_meta != null && analise.agni_nivel_atual !== analise.agni_nivel_meta) {
+      partes.push("regularizar o agni");
+    }
+    if (partes.length === 0) return null;
+    return `Meta: ${partes.join(" · ")}`;
+  })();
+
+  const temAnalise = !!analise && (focoTexto || metaTexto);
+
+  return (
+    <Card className="mb-5 p-5 bg-primary/5 border-primary/20">
+      <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold mb-2">
+        sua semana
+      </div>
+      {doshaPrincipal && (
+        <p className="font-serif text-xl text-foreground leading-tight">
+          {doshaPrincipal} em desequilíbrio
+        </p>
+      )}
+      {agniPrincipal && (
+        <p className="text-sm text-muted-foreground mt-0.5">
+          Agni {agniPrincipal.toLowerCase()}
+        </p>
+      )}
+
+      {temAnalise && (
+        <div className="mt-4 pt-4 border-t border-primary/15 space-y-1.5">
+          <div className="text-[11px] uppercase tracking-wider text-secondary font-semibold">
+            foco da semana
+          </div>
+          {focoTexto && (
+            <p className="text-sm text-foreground leading-relaxed">{focoTexto}</p>
+          )}
+          {metaTexto && (
+            <p className="text-xs text-muted-foreground">{metaTexto}</p>
+          )}
+        </div>
+      )}
+
+      <Link
+        to="/meu-dosha"
+        className="inline-flex items-center gap-1 mt-4 text-sm font-medium text-primary hover:underline"
+      >
+        ver meu diagnóstico completo
+        <ArrowRight className="h-3.5 w-3.5" />
+      </Link>
+    </Card>
+  );
+};
+
 // ===== Card =====
+
 interface SlotCardProps {
   slotLabel: string;
   row: RotinaRow | undefined;
