@@ -401,13 +401,6 @@ const MinhaRotina = () => {
     queryClient.invalidateQueries({ queryKey: pontosTotalKey as any });
   };
 
-  // Toggle de praticado (refeição/prática): grava em rotina_pontos + preferência em rotina_favoritos
-  const toggleFeito = async (row: RotinaRow) => {
-    if (!user) return;
-    const slot = row.slot;
-    const jaFeito = acertoRotinaSlots.has(slot);
-
-    if (!jaFeito) {
   // Toggle de praticado (refeição/prática): grava em rotina_pontos com prefixo do dia
   const toggleFeito = async (row: RotinaRow) => {
     if (!user) return;
