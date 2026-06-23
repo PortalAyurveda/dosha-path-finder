@@ -469,6 +469,13 @@ const MinhaRotina = () => {
             </div>
           </section>
         )}
+
+        {/* ===== Sempre Faz Bem (suplementos personalizados) ===== */}
+        <SuplementosSection
+          vata={(doshaInfo?.vatascore as number | null) ?? null}
+          pitta={(doshaInfo?.pittascore as number | null) ?? null}
+          kapha={(doshaInfo?.kaphascore as number | null) ?? null}
+        />
       </div>
     </PageContainer>
   );
