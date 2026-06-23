@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, Link } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import * as LucideIcons from "lucide-react";
 import {
@@ -8,6 +8,7 @@ import {
   Flame,
   Play,
   ChevronDown,
+  ArrowRight,
 } from "lucide-react";
 
 import PageContainer from "@/components/PageContainer";
@@ -21,6 +22,7 @@ import {
 } from "@/components/ui/collapsible";
 import { useUser } from "@/contexts/UserContext";
 import { supabase } from "@/integrations/supabase/client";
+import { premiumSupabase, type ObjetivoTratamento } from "@/integrations/supabase/premium-client";
 import { cn } from "@/lib/utils";
 import { toast } from "@/hooks/use-toast";
 import VideoPlayerDialog from "@/components/biblioteca/VideoPlayerDialog";
@@ -57,7 +59,7 @@ interface RotinaRow {
   dia: number;
   slot: string;
   nugget_id: string | null;
-  status: string | null;
+  praticado: boolean | null;
 }
 
 interface NuggetJson {
@@ -134,6 +136,23 @@ const MinhaRotina = () => {
     return /fraca|irregular/i.test(agniInfo);
   }, [agniInfo]);
 
+  // Análise clínica (objetivos_tratamento) — mesma query usada por DiagnosticoCompleto
+  const { data: analise } = useQuery({
+    queryKey: ["minha-rotina-analise", user?.email],
+    enabled: !!user?.email,
+    queryFn: async () => {
+      const { data, error } = await premiumSupabase
+        .from("objetivos_tratamento")
+        .select("*")
+        .eq("user_email", user!.email!)
+        .eq("status", "ativo")
+        .maybeSingle();
+      if (error) return null;
+      return (data as unknown as ObjetivoTratamento) || null;
+    },
+    staleTime: 30_000,
+  });
+
   const { data: testeId } = useQuery({
     queryKey: ["rotina-teste-id", doshaResult?.idPublico],
     enabled: !!doshaResult?.idPublico,
@@ -152,9 +171,9 @@ const MinhaRotina = () => {
     queryKey: ["rotina-user", testeId],
     enabled: !!testeId,
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("rotinas_usuario")
-        .select("id, dia, slot, nugget_id, status")
+      const { data, error } = await (supabase
+        .from("rotinas_usuario") as any)
+        .select("id, dia, slot, nugget_id, praticado")
         .eq("user_id", testeId!);
       if (error) throw error;
       return (data ?? []) as RotinaRow[];
@@ -199,7 +218,7 @@ const MinhaRotina = () => {
   const rowBySlot = new Map<string, RotinaRow>();
   rowsDoDia.forEach((r) => rowBySlot.set(r.slot, r));
 
-  const feitosCount = rowsDoDia.filter((r) => r.status === "feito").length;
+  const feitosCount = rowsDoDia.filter((r) => r.praticado === true).length;
   const totalSlots = SLOT_DEFS.length;
   const progressoPct = (feitosCount / totalSlots) * 100;
 
@@ -210,19 +229,19 @@ const MinhaRotina = () => {
     if (!user) return;
     const key = ["rotina-user", testeId];
     const prev = queryClient.getQueryData<RotinaRow[]>(key) ?? [];
-    const novoStatus = row.status === "feito" ? null : "feito";
-    const next = prev.map((r) => (r.id === row.id ? { ...r, status: novoStatus } : r));
+    const novoValor = !row.praticado;
+    const next = prev.map((r) => (r.id === row.id ? { ...r, praticado: novoValor } : r));
     queryClient.setQueryData(key, next);
 
     try {
-      const { error } = await supabase
-        .from("rotinas_usuario")
-        .update({ status: novoStatus })
+      const { error } = await (supabase
+        .from("rotinas_usuario") as any)
+        .update({ praticado: novoValor })
         .eq("id", row.id);
       if (error) throw error;
     } catch (e) {
       queryClient.setQueryData(key, prev);
-      toast({ title: "Não consegui salvar o check", variant: "destructive" });
+      toast({ title: "Não consegui salvar", variant: "destructive" });
     }
   };
 
@@ -231,8 +250,16 @@ const MinhaRotina = () => {
       title="Minha rotina"
       description="Seu planner ayurvédico diário, slot a slot."
     >
+      {/* Moldura: cabeçalho de contexto da semana */}
+      <SemanaHeader
+        doshaPrincipal={doshaResult?.doshaprincipal ?? null}
+        agniPrincipal={agniInfo ?? null}
+        analise={analise ?? null}
+      />
+
       {/* Topo */}
       <header className="mb-6">
+
         <h1 className="font-serif text-3xl md:text-4xl text-foreground">
           Sua rotina
         </h1>
@@ -311,7 +338,96 @@ const MinhaRotina = () => {
   );
 };
 
+// ===== Moldura da semana =====
+interface SemanaHeaderProps {
+  doshaPrincipal: string | null;
+  agniPrincipal: string | null;
+  analise: ObjetivoTratamento | null;
+}
+
+const SemanaHeader = ({ doshaPrincipal, agniPrincipal, analise }: SemanaHeaderProps) => {
+  // Foco: tenta usar o bloco 3 da narrativa (caminhos); fallback para objetivos[0]
+  const focoTexto = (() => {
+    const cam = analise?.narrativa_clinica?.bloco_3_caminhos;
+    if (cam) {
+      // pega a primeira frase
+      const primeira = cam.split(/(?<=[.!?])\s+/)[0];
+      return primeira?.trim() || null;
+    }
+    if (analise?.objetivos && analise.objetivos.length > 0) {
+      return `Esta semana sua rotina foca em ${analise.objetivos.slice(0, 2).join(" e ")}.`;
+    }
+    return null;
+  })();
+
+  // Meta: encontra o dosha com maior diferença atual → meta
+  const metaTexto = (() => {
+    if (!analise) return null;
+    const partes: string[] = [];
+    const doshas = [
+      { nome: "Vata", atual: analise.vata_atual, meta: analise.vata_meta },
+      { nome: "Pitta", atual: analise.pitta_atual, meta: analise.pitta_meta },
+      { nome: "Kapha", atual: analise.kapha_atual, meta: analise.kapha_meta },
+    ].filter((d) => d.atual != null && d.meta != null && d.atual !== d.meta);
+
+    doshas.sort((a, b) => Math.abs((b.atual! - b.meta!)) - Math.abs((a.atual! - a.meta!)));
+    const top = doshas[0];
+    if (top) {
+      const verbo = top.atual! > top.meta! ? "reduzir" : "elevar";
+      partes.push(`${verbo} ${top.nome} ${top.atual} → ${top.meta}`);
+    }
+    if (analise.agni_nivel_atual != null && analise.agni_nivel_meta != null && analise.agni_nivel_atual !== analise.agni_nivel_meta) {
+      partes.push("regularizar o agni");
+    }
+    if (partes.length === 0) return null;
+    return `Meta: ${partes.join(" · ")}`;
+  })();
+
+  const temAnalise = !!analise && (focoTexto || metaTexto);
+
+  return (
+    <Card className="mb-5 p-5 bg-primary/5 border-primary/20">
+      <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold mb-2">
+        sua semana
+      </div>
+      {doshaPrincipal && (
+        <p className="font-serif text-xl text-foreground leading-tight">
+          {doshaPrincipal} em desequilíbrio
+        </p>
+      )}
+      {agniPrincipal && (
+        <p className="text-sm text-muted-foreground mt-0.5">
+          Agni {agniPrincipal.toLowerCase()}
+        </p>
+      )}
+
+      {temAnalise && (
+        <div className="mt-4 pt-4 border-t border-primary/15 space-y-1.5">
+          <div className="text-[11px] uppercase tracking-wider text-secondary font-semibold">
+            foco da semana
+          </div>
+          {focoTexto && (
+            <p className="text-sm text-foreground leading-relaxed">{focoTexto}</p>
+          )}
+          {metaTexto && (
+            <p className="text-xs text-muted-foreground">{metaTexto}</p>
+          )}
+        </div>
+      )}
+
+      <Link
+        to="/meu-dosha"
+        className="inline-flex items-center gap-1 mt-4 text-sm font-medium text-primary hover:underline"
+      >
+        ver meu diagnóstico completo
+        <ArrowRight className="h-3.5 w-3.5" />
+      </Link>
+    </Card>
+  );
+};
+
 // ===== Card =====
+
 interface SlotCardProps {
   slotLabel: string;
   row: RotinaRow | undefined;
@@ -337,7 +453,7 @@ const RotinaSlotCard = ({
       iconName
     ] ?? Circle;
 
-  const feito = row?.status === "feito";
+  const feito = row?.praticado === true;
   const mostrarChama =
     !!nugget?.nugget_json?.bom_para_agni && agniFracoOuIrregular;
 

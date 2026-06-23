@@ -3379,6 +3379,7 @@ export type Database = {
           dia: number
           id: string
           nugget_id: string | null
+          praticado: boolean
           slot: string
           status: string | null
           user_id: string | null
@@ -3388,6 +3389,7 @@ export type Database = {
           dia: number
           id?: string
           nugget_id?: string | null
+          praticado?: boolean
           slot: string
           status?: string | null
           user_id?: string | null
@@ -3397,6 +3399,7 @@ export type Database = {
           dia?: number
           id?: string
           nugget_id?: string | null
+          praticado?: boolean
           slot?: string
           status?: string | null
           user_id?: string | null
