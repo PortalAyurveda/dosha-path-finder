@@ -859,4 +859,73 @@ const RotinaSlotCard = ({
   );
 };
 
+// ===== Hábito do glossário (estado local) =====
+interface HabitoCardProps {
+  habito: string;
+  periodo?: string;
+  feito: boolean;
+  onToggle: () => void;
+}
+const HabitoCard = ({ habito, periodo, feito, onToggle }: HabitoCardProps) => (
+  <Card className="p-4 flex items-center gap-3">
+    <div className="h-10 w-10 rounded-full bg-secondary/10 text-secondary flex items-center justify-center shrink-0">
+      <Leaf className="h-5 w-5" />
+    </div>
+    <div className="flex-1 min-w-0">
+      <div className="text-[11px] uppercase tracking-wider text-muted-foreground">
+        {periodo ? `cuidado · ${periodo}` : "cuidado do dia"}
+      </div>
+      <p className="text-sm text-foreground leading-snug">{habito}</p>
+    </div>
+    <button
+      onClick={onToggle}
+      className="p-2 rounded-full hover:bg-muted"
+      aria-label="marcar como praticado"
+    >
+      <Star
+        className={cn(
+          "h-7 w-7",
+          feito ? "fill-secondary text-secondary" : "text-muted-foreground"
+        )}
+      />
+    </button>
+  </Card>
+);
+
+// ===== Alerta do glossário (escorregão) =====
+interface AlertaCardProps {
+  alerta: string;
+  escorregou: boolean;
+  onToggle: () => void;
+}
+const AlertaCard = ({ alerta, escorregou, onToggle }: AlertaCardProps) => (
+  <Card
+    className={cn(
+      "p-4 flex items-center gap-3 border-dashed transition-colors",
+      escorregou ? "bg-muted/60 border-muted-foreground/30" : "bg-card"
+    )}
+  >
+    <div className="h-9 w-9 rounded-full bg-muted text-muted-foreground flex items-center justify-center shrink-0">
+      <AlertTriangle className="h-4 w-4" />
+    </div>
+    <p
+      className={cn(
+        "flex-1 text-sm leading-snug",
+        escorregou ? "text-foreground font-medium" : "text-muted-foreground"
+      )}
+    >
+      {alerta}
+    </p>
+    <Button
+      type="button"
+      size="sm"
+      variant={escorregou ? "secondary" : "outline"}
+      onClick={onToggle}
+      className="shrink-0 text-xs h-8"
+    >
+      {escorregou ? "anotado" : "registrar"}
+    </Button>
+  </Card>
+);
+
 export default MinhaRotina;
