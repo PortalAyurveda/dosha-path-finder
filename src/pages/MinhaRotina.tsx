@@ -204,35 +204,7 @@ const MinhaRotina = () => {
   const progressoPct = (feitosCount / totalSlots) * 100;
 
   // Mutations otimistas
-  const toggleFavorito = async (nuggetId: string) => {
-    if (!user) return;
-    const key = ["rotina-favoritos", user.id];
-    const prev = queryClient.getQueryData<Set<string>>(key) ?? new Set<string>();
-    const next = new Set(prev);
-    const wasFav = next.has(nuggetId);
-    if (wasFav) next.delete(nuggetId);
-    else next.add(nuggetId);
-    queryClient.setQueryData(key, next);
 
-    try {
-      if (wasFav) {
-        const { error } = await supabase
-          .from("rotina_favoritos")
-          .delete()
-          .eq("user_id", user.id)
-          .eq("nugget_id", nuggetId);
-        if (error) throw error;
-      } else {
-        const { error } = await supabase
-          .from("rotina_favoritos")
-          .insert({ user_id: user.id, nugget_id: nuggetId });
-        if (error) throw error;
-      }
-    } catch (e) {
-      queryClient.setQueryData(key, prev);
-      toast({ title: "Não consegui salvar o favorito", variant: "destructive" });
-    }
-  };
 
   const toggleFeito = async (row: RotinaRow) => {
     if (!user) return;
