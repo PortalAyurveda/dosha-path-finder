@@ -527,7 +527,22 @@ const getNivel = (score: number, dosha: "Vata" | "Pitta" | "Kapha"): string => {
 };
 
 const SemanaHeader = ({ agniPrincipal, analise, vata, pitta, kapha }: SemanaHeaderProps) => {
-  // Foco: tenta usar o bloco 3 da narrativa (caminhos); fallback para objetivos[0]
+  const v = vata ?? 0;
+  const p = pitta ?? 0;
+  const k = kapha ?? 0;
+  const pieData = [
+    { name: "Vata", value: v },
+    { name: "Pitta", value: p },
+    { name: "Kapha", value: k },
+  ].filter((d) => d.value > 0);
+
+  const scores: Record<"Vata" | "Pitta" | "Kapha", number> = { Vata: v, Pitta: p, Kapha: k };
+  const metas: Record<"Vata" | "Pitta" | "Kapha", number | null> = {
+    Vata: analise?.vata_meta ?? null,
+    Pitta: analise?.pitta_meta ?? null,
+    Kapha: analise?.kapha_meta ?? null,
+  };
+
   const focoTexto = (() => {
     const cam = analise?.narrativa_clinica?.bloco_3_caminhos;
     if (cam) {
@@ -540,28 +555,22 @@ const SemanaHeader = ({ agniPrincipal, analise, vata, pitta, kapha }: SemanaHead
     return null;
   })();
 
-  const v = vata ?? 0;
-  const p = pitta ?? 0;
-  const k = kapha ?? 0;
-  const pieData = [
-    { name: "Vata", value: v },
-    { name: "Pitta", value: p },
-    { name: "Kapha", value: k },
-  ].filter((d) => d.value > 0);
+  const metaRows = (["Vata", "Pitta", "Kapha"] as const)
+    .map((name) => {
+      const atual = scores[name];
+      const meta = metas[name];
+      if (meta == null || meta === atual) return null;
+      const direction = meta < atual ? "reduzir" : "fortalecer";
+      const arrow = meta < atual ? "↓" : "↑";
+      return { name, atual, meta, direction, arrow };
+    })
+    .filter((r): r is NonNullable<typeof r> => r != null);
 
-  const metas: Record<"Vata" | "Pitta" | "Kapha", number | null> = {
-    Vata: analise?.vata_meta ?? null,
-    Pitta: analise?.pitta_meta ?? null,
-    Kapha: analise?.kapha_meta ?? null,
-  };
-  const scores: Record<"Vata" | "Pitta" | "Kapha", number> = { Vata: v, Pitta: p, Kapha: k };
+  const hasPlano = !!analise && (metaRows.length > 0 || !!focoTexto);
 
   return (
-    <Card className="mb-5 p-5 bg-primary/5 border-primary/20">
-      <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold mb-3">
-        sua semana
-      </div>
-
+    <Card className="mb-5 p-5 bg-primary/5 border-primary/20 space-y-4">
+      {/* Bloco 1 — situação atual */}
       <div className="rounded-xl border border-border bg-card p-3 flex items-center gap-3">
         <div className="w-20 h-20 shrink-0">
           <ResponsiveContainer width="100%" height="100%">
@@ -586,18 +595,13 @@ const SemanaHeader = ({ agniPrincipal, analise, vata, pitta, kapha }: SemanaHead
           </ResponsiveContainer>
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
-            Seu diagnóstico
-          </p>
-          <div className="flex flex-wrap gap-1.5 mt-1">
+          <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold mb-1.5">
+            sua situação agora
+          </div>
+          <div className="flex flex-wrap gap-1.5">
             {(["Vata", "Pitta", "Kapha"] as const).map((name) => {
               const score = scores[name];
-              const meta = metas[name];
               const nivel = getNivel(score, name);
-              const label =
-                meta != null && meta !== score
-                  ? `${name} ${score} → ${meta} · ${nivel}`
-                  : `${name} ${score} · ${nivel}`;
               return (
                 <span
                   key={name}
@@ -606,32 +610,57 @@ const SemanaHeader = ({ agniPrincipal, analise, vata, pitta, kapha }: SemanaHead
                     DOSHA_BADGE[name]
                   )}
                 >
-                  {label}
+                  {name} {score} · {nivel}
                 </span>
               );
             })}
           </div>
           {agniPrincipal && (
-            <p className="text-[11px] text-muted-foreground mt-1 truncate">
+            <p className="text-[11px] text-muted-foreground mt-1.5 truncate">
               Agni: <span className="text-foreground font-medium">{agniPrincipal}</span>
             </p>
           )}
         </div>
       </div>
 
-
-      {focoTexto && (
-        <div className="mt-4 pt-4 border-t border-primary/15 space-y-1.5">
+      {/* Bloco 2 — plano da semana */}
+      {hasPlano && (
+        <div className="rounded-xl border border-secondary/30 bg-secondary/5 p-4 space-y-3">
           <div className="text-[11px] uppercase tracking-wider text-secondary font-semibold">
-            foco da semana
+            seu plano desta semana
           </div>
-          <p className="text-sm text-foreground leading-relaxed">{focoTexto}</p>
+
+          {focoTexto && (
+            <p className="text-sm text-foreground leading-relaxed">
+              <span className="font-semibold">Seu foco:</span>{" "}
+              {focoTexto}{" "}
+              <span className="text-muted-foreground">— é o que a rotina abaixo faz por você.</span>
+            </p>
+          )}
+
+          {metaRows.length > 0 && (
+            <div className="space-y-1.5">
+              {metaRows.map((row) => (
+                <div key={row.name} className="flex flex-wrap items-center gap-1.5 text-sm">
+                  <span
+                    className="font-bold"
+                    style={{ color: "#2E8B57" }}
+                  >
+                    {row.arrow} {row.direction} {row.name}
+                  </span>
+                  <span className="text-xs text-muted-foreground">{row.atual}</span>
+                  <span className="text-xs text-muted-foreground/60">→</span>
+                  <span className="text-xs font-semibold text-foreground">{row.meta}</span>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
 
       <Link
         to="/meu-dosha"
-        className="inline-flex items-center gap-1 mt-4 text-sm font-medium text-primary hover:underline"
+        className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
       >
         ver meu diagnóstico completo
         <ArrowRight className="h-3.5 w-3.5" />
