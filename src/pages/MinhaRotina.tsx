@@ -297,13 +297,7 @@ const MinhaRotina = () => {
                       slotLabel={s.label}
                       row={row}
                       nugget={nugget}
-                      isFav={
-                        nugget ? favoritos?.has(nugget.id) ?? false : false
-                      }
                       agniFracoOuIrregular={agniFracoOuIrregular}
-                      onToggleFav={() =>
-                        nugget && toggleFavorito(nugget.id)
-                      }
                       onToggleFeito={() => row && toggleFeito(row)}
                     />
                   );
