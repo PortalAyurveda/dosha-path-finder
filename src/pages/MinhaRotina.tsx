@@ -303,6 +303,30 @@ const MinhaRotina = () => {
     return <Navigate to="/entrar" replace />;
   }
 
+  // Gate de assinatura
+  const temAcessoRotina = (() => {
+    if (!profile) return false;
+    if (profile.is_premium === true) return true;
+    const planosValidos = ["rotina", "mensal", "anual"];
+    const ativo = profile.subscription_status === "active";
+    const planoOk = !!profile.plano && planosValidos.includes(profile.plano);
+    const dataOk = !profile.premium_until || new Date(profile.premium_until) > new Date();
+    return ativo && planoOk && dataOk;
+  })();
+
+  if (!temAcessoRotina) {
+    return (
+      <PageContainer title="Minha rotina" description="Sua rotina ayurvédica personalizada.">
+        <PaywallRotina
+          email={user.email ?? ""}
+          userId={user.id}
+          doshaPrincipal={doshaResult?.doshaprincipal ?? null}
+        />
+      </PageContainer>
+    );
+  }
+
+
   // Rotina filtrada do dia
   const rowsDoDia = (rotinaRows ?? []).filter((r) => r.dia === diaSelecionado);
   const rowBySlot = new Map<string, RotinaRow>();
