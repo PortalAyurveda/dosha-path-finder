@@ -13,6 +13,7 @@ import { CartProvider } from "./contexts/CartContext";
 import CartDrawer from "./components/loja/CartDrawer";
 
 const Index = lazy(() => import("./pages/Index"));
+const MinhaRotina = lazy(() => import("./pages/MinhaRotina"));
 const LaunchPage = lazy(() => import("./pages/LaunchPage"));
 const PreviewLoading = lazy(() => import("./pages/PreviewLoading"));
 const TesteDeDosha = lazy(() => import("./pages/TesteDeDosha"));
