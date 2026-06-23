@@ -128,6 +128,7 @@ const RoutedApp = () => {
               <Route path="/preview-loading" element={<PreviewLoading />} />
               <Route path="/teste-de-dosha" element={<TesteDeDosha />} />
               <Route path="/meu-dosha" element={<MeuDosha />} />
+              <Route path="/minha-rotina" element={<MinhaRotina />} />
               <Route path="/biblioteca" element={<Biblioteca />} />
               <Route path="/cursos" element={<Navigate to="/curso/alimentacao" replace />} />
               <Route path="/curso/alimentacao" element={<CursoAlimentacao />} />
