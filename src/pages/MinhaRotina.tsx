@@ -761,14 +761,28 @@ const SemanaHeader = ({ agniPrincipal, analise, vata, pitta, kapha, ultimaRevisa
 
   const hasPlano = !!analise && (metaRows.length > 0 || !!focoTexto);
 
+  const dateFmt = (iso: string | null) => {
+    if (!iso) return null;
+    const d = new Date(iso);
+    if (isNaN(d.getTime())) return null;
+    return d.toLocaleDateString("pt-BR", { day: "2-digit", month: "short" }).replace(".", "");
+  };
+  const ultimaTxt = dateFmt(ultimaRevisao);
+  const proximaDate = ultimaRevisao ? new Date(new Date(ultimaRevisao).getTime() + 30 * 86400000) : null;
+  const proximaTxt = proximaDate ? dateFmt(proximaDate.toISOString()) : null;
+  const diasParaProxima = proximaDate
+    ? Math.max(0, Math.ceil((proximaDate.getTime() - Date.now()) / 86400000))
+    : null;
+  const revisaoVencida = proximaDate ? proximaDate.getTime() < Date.now() : false;
+
   return (
-    <Card className="mb-5 p-5 bg-primary/5 border-primary/20 space-y-4">
+    <Card className="mb-5 p-5 bg-muted/30 border-border/60 space-y-4">
       <div className="flex flex-col md:flex-row gap-4">
         {/* Bloco 1 — situação atual */}
         <div
           className={cn(
-            "rounded-xl border border-border bg-card p-3 flex items-center gap-3",
-            hasPlano ? "md:w-2/5" : "md:w-full"
+            "rounded-xl border border-border/60 bg-card/80 p-3 flex items-center gap-3",
+            hasPlano ? "md:w-[36%]" : "md:flex-1"
           )}
         >
           <div className="w-20 h-20 shrink-0">
@@ -824,7 +838,7 @@ const SemanaHeader = ({ agniPrincipal, analise, vata, pitta, kapha, ultimaRevisa
 
         {/* Bloco 2 — plano da semana */}
         {hasPlano && (
-          <div className="rounded-xl border border-secondary/30 bg-secondary/5 p-4 space-y-3 md:flex-1">
+          <div className="rounded-xl border border-secondary/20 bg-secondary/10 p-4 space-y-3 md:flex-1">
             <div className="text-[11px] uppercase tracking-wider text-secondary font-semibold">
               seu plano desta semana
             </div>
@@ -856,6 +870,47 @@ const SemanaHeader = ({ agniPrincipal, analise, vata, pitta, kapha, ultimaRevisa
             )}
           </div>
         )}
+
+        {/* Bloco 3 — Revisão */}
+        <Link
+          to="/revisao"
+          className={cn(
+            "group rounded-xl border border-primary/20 bg-primary/5 hover:bg-primary/10 transition-colors p-4 flex flex-col justify-between",
+            hasPlano ? "md:w-[22%]" : "md:w-[28%]"
+          )}
+        >
+          <div>
+            <div className="text-[11px] uppercase tracking-wider text-primary font-semibold mb-2">
+              revisão
+            </div>
+            {ultimaTxt && (
+              <p className="text-[11px] text-muted-foreground leading-tight">
+                última: <span className="text-foreground font-medium">{ultimaTxt}</span>
+              </p>
+            )}
+            {proximaTxt && (
+              <p className="text-[11px] text-muted-foreground leading-tight mt-1">
+                próxima: <span className="text-foreground font-medium">{proximaTxt}</span>
+              </p>
+            )}
+            {diasParaProxima != null && (
+              <p className={cn(
+                "text-xs mt-2 font-semibold",
+                revisaoVencida ? "text-secondary" : "text-primary/80"
+              )}>
+                {revisaoVencida
+                  ? "está na hora"
+                  : diasParaProxima === 0
+                    ? "é hoje"
+                    : `em ${diasParaProxima} ${diasParaProxima === 1 ? "dia" : "dias"}`}
+              </p>
+            )}
+          </div>
+          <span className="inline-flex items-center gap-1 text-xs font-medium text-primary mt-3 group-hover:underline">
+            revisar agora
+            <ArrowRight className="h-3 w-3" />
+          </span>
+        </Link>
       </div>
 
       <Link
