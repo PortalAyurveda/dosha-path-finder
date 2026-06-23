@@ -9,7 +9,6 @@ import {
   Play,
   ChevronDown,
   ArrowRight,
-  Sparkles,
   AlertTriangle,
   Leaf,
 } from "lucide-react";
