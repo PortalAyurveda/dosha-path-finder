@@ -255,9 +255,11 @@ const MinhaRotina = () => {
     >
       {/* Moldura: cabeçalho de contexto da semana */}
       <SemanaHeader
-        doshaPrincipal={doshaResult?.doshaprincipal ?? null}
         agniPrincipal={agniInfo ?? null}
         analise={analise ?? null}
+        vata={(doshaInfo?.vatascore as number | null) ?? null}
+        pitta={(doshaInfo?.pittascore as number | null) ?? null}
+        kapha={(doshaInfo?.kaphascore as number | null) ?? null}
       />
 
       {/* Topo */}
