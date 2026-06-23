@@ -682,6 +682,7 @@ interface SemanaHeaderProps {
   vata: number | null;
   pitta: number | null;
   kapha: number | null;
+  ultimaRevisao: string | null;
 }
 
 const PIE_COLORS: Record<string, string> = {
