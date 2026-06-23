@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/collapsible";
 import { useUser } from "@/contexts/UserContext";
 import { supabase } from "@/integrations/supabase/client";
+import { lojaSupabase } from "@/integrations/supabase/loja-client";
 import { premiumSupabase, type ObjetivoTratamento } from "@/integrations/supabase/premium-client";
 import { cn } from "@/lib/utils";
 import { toast } from "@/hooks/use-toast";
@@ -958,6 +959,18 @@ interface SuplementosSectionProps {
   kapha: number | null;
 }
 
+const extractSlug = (link?: string): string | null => {
+  if (!link) return null;
+  try {
+    const url = new URL(link);
+    const segs = url.pathname.split("/").filter(Boolean);
+    return segs[segs.length - 1] ?? null;
+  } catch {
+    const segs = link.split("/").filter(Boolean);
+    return segs[segs.length - 1] ?? null;
+  }
+};
+
 const SuplementosSection = ({ vata, pitta, kapha }: SuplementosSectionProps) => {
   const { data: produtos } = useQuery({
     queryKey: ["rotina-produtos"],
@@ -1007,13 +1020,43 @@ const SuplementosSection = ({ vata, pitta, kapha }: SuplementosSectionProps) => 
     return out;
   }, [produtos, doshasAgravadosOrdenados]);
 
+  const slugs = useMemo(
+    () =>
+      Array.from(
+        new Set(
+          recomendados
+            .map((pr) => extractSlug(pr.nugget_json?.produto?.link))
+            .filter((s): s is string => !!s)
+        )
+      ),
+    [recomendados]
+  );
+
+  const { data: lojaMap } = useQuery({
+    queryKey: ["rotina-suplementos-loja", slugs],
+    enabled: slugs.length > 0,
+    staleTime: 30 * 60 * 1000,
+    queryFn: async () => {
+      const { data, error } = await lojaSupabase
+        .from("produtos")
+        .select("slug, nome_display, imagem_url")
+        .in("slug", slugs);
+      if (error) throw error;
+      const map: Record<string, { nome_display: string; imagem_url: string | null }> = {};
+      for (const row of (data ?? []) as Array<{ slug: string; nome_display: string; imagem_url: string | null }>) {
+        map[row.slug] = { nome_display: row.nome_display, imagem_url: row.imagem_url };
+      }
+      return map;
+    },
+  });
+
   if (recomendados.length === 0) return null;
 
   return (
     <section className="mt-10 pt-8 border-t border-border">
       <div className="mb-3">
         <h2 className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">
-          Sempre Faz Bem
+          Suplementos ayurvédicos
         </h2>
         <p className="text-xs text-muted-foreground mt-1">
           suplementos que pacificam o que está mais agravado em você.
@@ -1021,19 +1064,29 @@ const SuplementosSection = ({ vata, pitta, kapha }: SuplementosSectionProps) => 
       </div>
       <div className="grid gap-3 sm:grid-cols-2">
         {recomendados.map((pr) => {
-          const nome = pr.nugget_json?.produto?.nome ?? pr.titulo;
           const link = pr.nugget_json?.produto?.link;
+          const slug = extractSlug(link);
+          const lojaInfo = slug ? lojaMap?.[slug] : undefined;
+          const nomeFallback = (pr.nugget_json?.produto?.nome ?? pr.titulo).replace(/\s*[—-]\s*Samkhya\s*$/i, "").trim();
+          const nome = lojaInfo?.nome_display ?? nomeFallback;
+          const imagem = lojaInfo?.imagem_url;
           const resumo = pr.nugget_json?.resumo;
           return (
             <Card key={pr.id} className="p-4 flex flex-col gap-3 bg-muted/30">
               <div className="flex items-start gap-3">
-                <div className="h-10 w-10 rounded-full bg-secondary/10 text-secondary flex items-center justify-center shrink-0">
-                  <LucideIcons.Package className="h-5 w-5" />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="text-[11px] uppercase tracking-wider text-muted-foreground">
-                    suplemento
+                {imagem ? (
+                  <img
+                    src={imagem}
+                    alt={nome}
+                    className="h-16 w-16 rounded-lg object-cover shrink-0 bg-muted"
+                    loading="lazy"
+                  />
+                ) : (
+                  <div className="h-16 w-16 rounded-lg bg-secondary/10 text-secondary flex items-center justify-center shrink-0">
+                    <LucideIcons.Package className="h-6 w-6" />
                   </div>
+                )}
+                <div className="min-w-0 flex-1">
                   <p className="font-medium text-foreground leading-snug">
                     {nome}
                   </p>
