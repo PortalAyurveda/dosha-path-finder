@@ -28,6 +28,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { lojaSupabase } from "@/integrations/supabase/loja-client";
 import { premiumSupabase, type ObjetivoTratamento } from "@/integrations/supabase/premium-client";
 import { cn } from "@/lib/utils";
+import { normalizarDosha } from "@/lib/dosha";
 import { toast } from "@/hooks/use-toast";
 import VideoPlayerDialog from "@/components/biblioteca/VideoPlayerDialog";
 
