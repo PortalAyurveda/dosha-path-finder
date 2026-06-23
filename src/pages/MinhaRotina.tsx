@@ -547,6 +547,7 @@ const MinhaRotina = () => {
                   slotLabel={s.label}
                   row={row}
                   nugget={nugget}
+                  feito={acertoRotinaSlots.has(s.slot)}
                   agniFracoOuIrregular={agniFracoOuIrregular}
                   onToggleFeito={() => row && toggleFeito(row)}
                 />
@@ -570,6 +571,7 @@ const MinhaRotina = () => {
                   slotLabel={s.label}
                   row={row}
                   nugget={nugget}
+                  feito={acertoRotinaSlots.has(s.slot)}
                   agniFracoOuIrregular={agniFracoOuIrregular}
                   onToggleFeito={() => row && toggleFeito(row)}
                 />
@@ -580,7 +582,7 @@ const MinhaRotina = () => {
                 key={`hab-${idx}`}
                 habito={h.habito}
                 periodo={h.periodo}
-                feito={habitosFeitos.has(h.habito)}
+                feito={acertoHabitos.has(h.habito)}
                 onToggle={() => toggleHabito(h.habito)}
               />
             ))}
