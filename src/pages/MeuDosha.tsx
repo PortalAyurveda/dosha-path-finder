@@ -808,53 +808,53 @@ const MeuDosha = () => {
 
 
 
-        {/* ===== HEADER: Premium banner (compact) — só para não-premium ===== */}
-        {!isPremium && (
-        <Link
-          to="/assinar"
-          aria-label="Conheça o Portal Premium"
-          className="group relative block overflow-hidden rounded-2xl border border-border shadow-sm hover:shadow-md transition-all p-3 md:p-4"
-          style={{
-            background:
-              "linear-gradient(110deg, hsl(228 70% 96%) 0%, hsl(0 70% 97%) 55%, hsl(48 80% 95%) 100%)",
-          }}
-        >
-          {/* Soft decorative blobs */}
-          <div className="pointer-events-none absolute inset-0 opacity-40">
-            <div className="absolute -top-10 -left-10 h-32 w-32 rounded-full blur-3xl" style={{ background: "#6B7FF2" }} />
-            <div className="absolute -bottom-12 -right-8 h-32 w-32 rounded-full blur-3xl" style={{ background: "#F28888" }} />
-          </div>
+        {/* ===== Vitrine da Rotina ===== */}
+        {(() => {
+          const temAcessoRotina =
+            profile?.is_premium === true ||
+            (profile?.subscription_status === "active" &&
+              ["rotina", "mensal", "anual"].includes(profile?.plano ?? "") &&
+              (!profile?.premium_until || new Date(profile.premium_until) > new Date()));
 
-          <div className="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 mb-2">
-            <h2 className="font-serif text-base md:text-lg font-bold text-primary leading-tight">
-              Desbloqueie todo Portal Ayurveda
-            </h2>
-            <p className="text-xs font-semibold text-muted-foreground whitespace-nowrap">
-              A partir de <span className="text-foreground">R$ 49,75/mês</span>
-              <span className="hidden sm:inline ml-2 text-primary group-hover:translate-x-0.5 transition-transform">→</span>
-            </p>
-          </div>
+          if (temAcessoRotina) {
+            return (
+              <Link
+                to="/minha-rotina"
+                className="block text-sm font-medium text-primary hover:underline"
+              >
+                Ver minha rotina de hoje →
+              </Link>
+            );
+          }
 
-          <div className="relative grid grid-cols-4 gap-1">
-            {[
-              { Icon: Calendar, title: "Rotinas Diárias", color: "#6B7FF2" },
-              { Icon: Play, title: "Artigos e Vídeos", color: "#6B7FF2" },
-              { Icon: BookOpen, title: "Aulas Exclusivas", color: "#6B7FF2" },
-              { Icon: Brain, title: "Akasha consultora", color: "#F28888" },
-            ].map(({ Icon, title, color }) => (
-              <div key={title} className="flex flex-col items-center text-center gap-1 px-1 py-1.5">
-                <div
-                  className="flex h-8 w-8 items-center justify-center rounded-full border bg-card/70 backdrop-blur-sm"
-                  style={{ borderColor: color }}
-                >
-                  <Icon className="h-4 w-4" style={{ color }} aria-hidden />
-                </div>
-                <p className="text-[11px] font-semibold text-foreground leading-tight">{title}</p>
+          const doshaNome = doshaResult?.doshaprincipal ?? "seu dosha";
+          return (
+            <Link
+              to="/minha-rotina"
+              aria-label="Conhecer minha rotina ayurvédica"
+              className="group relative block overflow-hidden rounded-2xl border border-border bg-secondary/10 hover:bg-secondary/15 transition-colors p-5 md:p-6"
+            >
+              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-secondary to-primary" />
+              <p className="text-xs uppercase tracking-widest text-muted-foreground font-medium mb-2">
+                Sua rotina Ayurveda
+              </p>
+              <h2 className="font-serif text-xl md:text-2xl text-primary leading-tight mb-2">
+                Você descobriu seu dosha. E agora?
+              </h2>
+              <p className="text-sm text-foreground/80 leading-relaxed mb-4">
+                Ayurveda sem rotina é teoria. Receba um plano diário pro seu {doshaNome} — café, almoço, chás, prática e tônico da noite, revisado todo mês.
+              </p>
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <p className="text-sm text-muted-foreground">
+                  <span className="text-foreground font-semibold">R$30</span> · sua rotina mensal
+                </p>
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-secondary text-secondary-foreground px-5 py-2.5 text-sm font-medium group-hover:bg-secondary/90 transition-colors self-start sm:self-auto">
+                  Conhecer minha rotina →
+                </span>
               </div>
-            ))}
-          </div>
-        </Link>
-        )}
+            </Link>
+          );
+        })()}
 
 
         {/* ===== TABS ===== */}

@@ -1424,27 +1424,187 @@ const PaywallRotina = ({ email, userId, doshaPrincipal }: PaywallRotinaProps) =>
 
           <div className="border-t border-border pt-5 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
             <div>
-              <div className="flex items-baseline gap-1">
-                <span className="text-3xl font-semibold text-foreground">R$ 30</span>
-                <span className="text-sm text-muted-foreground">/mês</span>
+              <div className="flex items-baseline gap-2">
+                <span className="text-3xl font-semibold text-foreground">R$30</span>
+                <span className="text-sm text-muted-foreground">· sua rotina mensal</span>
               </div>
               <p className="text-xs text-muted-foreground mt-1">
-                1 revisão inclusa · cancele quando quiser
+                1 revisão inclusa
               </p>
             </div>
-            <Button
-              onClick={desbloquear}
-              disabled={carregando}
-              size="lg"
-              className="bg-secondary text-secondary-foreground hover:bg-secondary/90 rounded-full px-6"
-            >
-              {carregando ? "Abrindo checkout…" : (
-                <>Desbloquear minha rotina <ArrowRight className="h-4 w-4" /></>
-              )}
-            </Button>
+            <div className="flex flex-col items-start sm:items-end gap-1.5">
+              <Button
+                onClick={desbloquear}
+                disabled={carregando}
+                size="lg"
+                className="bg-secondary text-secondary-foreground hover:bg-secondary/90 rounded-full px-6"
+              >
+                {carregando ? "Abrindo checkout…" : (
+                  <>Desbloquear minha rotina <ArrowRight className="h-4 w-4" /></>
+                )}
+              </Button>
+              <p className="text-[11px] text-muted-foreground">cancele quando quiser · sem burocracia</p>
+            </div>
           </div>
         </div>
       </Card>
+
+      {/* ===== Landing — conteúdo de apoio ===== */}
+      <PaywallLanding doshaPrincipal={doshaPrincipal} onDesbloquear={desbloquear} carregando={carregando} />
+    </div>
+  );
+};
+
+// ===== Landing de apoio (abaixo do card-resumo) =====
+interface PaywallLandingProps {
+  doshaPrincipal: string | null;
+  onDesbloquear: () => void;
+  carregando: boolean;
+}
+
+const PaywallLanding = ({ doshaPrincipal, onDesbloquear, carregando }: PaywallLandingProps) => {
+  const dosha = doshaPrincipal ?? "seu dosha";
+
+  const recebe = [
+    { Icon: LucideIcons.Sunrise, titulo: "Café da manhã", desc: "Receita completa: ingredientes, modo de preparo, vídeo do professor e por que funciona pro seu dosha." },
+    { Icon: LucideIcons.Coffee, titulo: "Lanche da manhã", desc: "Um lanche leve, certo pro seu agni nesse momento do dia." },
+    { Icon: LucideIcons.Soup, titulo: "Almoço", desc: `Prato completo (cereal, proteína, legume, acompanhamento) pra equilibrar seu ${dosha}.` },
+    { Icon: LucideIcons.Leaf, titulo: "Lanche da tarde", desc: "Um chá funcional pro seu estado atual." },
+    { Icon: LucideIcons.Soup, titulo: "Jantar", desc: "Sopa ou caldo, sempre quente, no horário certo." },
+    { Icon: LucideIcons.Moon, titulo: "Tônico da noite", desc: "30 min antes de dormir: o elixir certo pro seu dosha. Mingau, leite vegetal ou chá calmante, varia a cada dia." },
+    { Icon: LucideIcons.Sun, titulo: "Rotina da manhã", desc: "A prática do dia (abhyanga, pranayama, meditação) com instrução completa." },
+    { Icon: LucideIcons.Sparkles, titulo: "Prática do dia", desc: "Yoga, meditação ou respiração. Diferente a cada dia." },
+  ];
+
+  const paraQuemE = [
+    "Cansado de conviver com intestino preso, inflamação, pele irritada e cansaço sem motivo — e suspeita que a causa está na rotina, não em mais um remédio.",
+    "Já tentou dietas e suplementos que funcionam na teoria mas não no seu corpo — feitos pra uma média, não pra você.",
+    "Quer parar de apagar incêndio e cuidar da causa.",
+    "Entende que saúde se constrói no dia a dia e quer saber exatamente o que fazer, sem adivinhar.",
+  ];
+
+  const paraQuemNao = [
+    "Prefere tomar um remédio pro sintoma e seguir em frente.",
+    "Acredita que adoecer é inevitável.",
+    "Não está disposto a mudar nada da rotina.",
+  ];
+
+  return (
+    <div className="mt-12 space-y-14">
+      {/* E agora? */}
+      <section className="space-y-3">
+        <h3 className="font-serif text-2xl text-primary">E agora?</h3>
+        <p className="text-foreground/85 leading-relaxed">
+          Você fez o teste. Descobriu seu dosha. E agora? A maioria das pessoas para aqui.
+          Sabe que é {dosha}. Sabe que deveria comer mais quente, dormir cedo, evitar o frio.
+          Mas na hora de montar o dia, trava. O que como no café? Qual chá tomo à tarde?
+          O que faço antes de dormir? Ayurveda sem rotina é teoria. E teoria não muda nada.
+        </p>
+      </section>
+
+      {/* O que você recebe */}
+      <section className="space-y-5">
+        <h3 className="font-serif text-2xl text-primary">O que você recebe</h3>
+        <p className="text-foreground/85 leading-relaxed">
+          Baseado no seu dosha — e só no seu — um plano completo pros próximos 7 dias.
+          Não é genérico, não é "dicas pra {dosha}". É o seu plano, calculado com seus scores reais.
+        </p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {recebe.map((r) => (
+            <div key={r.titulo} className="rounded-xl border border-border bg-card p-4 flex gap-3">
+              <div className="h-10 w-10 rounded-full bg-secondary/15 text-secondary flex items-center justify-center shrink-0">
+                <r.Icon className="h-5 w-5" />
+              </div>
+              <div className="min-w-0">
+                <p className="font-medium text-foreground leading-tight">{r.titulo}</p>
+                <p className="text-sm text-muted-foreground mt-1 leading-relaxed">{r.desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="rounded-xl bg-secondary/10 border border-secondary/20 p-4">
+          <p className="text-foreground font-medium leading-relaxed">
+            56 itens personalizados por semana. Cada um com receita, ingredientes, vídeo e a explicação de por que funciona pra você.
+          </p>
+        </div>
+      </section>
+
+      {/* Revisão mensal */}
+      <section className="space-y-3">
+        <h3 className="font-serif text-2xl text-primary">Uma revisão por mês — inclusa</h3>
+        <p className="text-foreground/85 leading-relaxed">
+          Todo mês, seu plano é revisado. Seu dosha muda com as estações, o estresse, a fase da vida.
+          A revisão ajusta o plano pra onde você está agora — não pra onde estava há três meses.
+          É um acompanhamento mensal do seu equilíbrio. Por R$30.
+        </p>
+      </section>
+
+      {/* Para quem é / não é */}
+      <section className="space-y-4">
+        <h3 className="font-serif text-2xl text-primary">Para quem é. Para quem não é.</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="rounded-xl border border-border bg-secondary/5 p-5">
+            <p className="font-medium text-foreground mb-3">Para quem é</p>
+            <ul className="space-y-2.5">
+              {paraQuemE.map((t) => (
+                <li key={t} className="flex items-start gap-2.5 text-sm text-foreground/85">
+                  <Check className="h-4 w-4 text-secondary mt-0.5 shrink-0" />
+                  <span className="leading-relaxed">{t}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className="rounded-xl border border-border bg-muted/40 p-5">
+            <p className="font-medium text-muted-foreground mb-3">Para quem não é</p>
+            <ul className="space-y-2.5">
+              {paraQuemNao.map((t) => (
+                <li key={t} className="flex items-start gap-2.5 text-sm text-muted-foreground">
+                  <LucideIcons.X className="h-4 w-4 mt-0.5 shrink-0" />
+                  <span className="leading-relaxed">{t}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      {/* Como funciona */}
+      <section className="space-y-4">
+        <h3 className="font-serif text-2xl text-primary">Como funciona</h3>
+        <ol className="space-y-3">
+          {[
+            "Você assina por R$30.",
+            "Acessa sua rotina personalizada na hora — 7 dias completos, 8 momentos do dia.",
+            "Todo mês, seu plano é revisado pra onde você está agora.",
+          ].map((t, i) => (
+            <li key={t} className="flex items-start gap-3">
+              <span className="h-7 w-7 rounded-full bg-secondary text-secondary-foreground text-sm font-semibold flex items-center justify-center shrink-0">{i + 1}</span>
+              <span className="text-foreground/85 leading-relaxed pt-0.5">{t}</span>
+            </li>
+          ))}
+        </ol>
+      </section>
+
+      {/* Fechamento */}
+      <section className="space-y-4 border-t border-border pt-10">
+        <p className="text-foreground/85 leading-relaxed">
+          R$30, sua rotina mensal. Menos que um jantar fora. Menos que um suplemento que você não sabe se funciona pra você.
+          E você tem um plano completo, todo mês, feito pro seu corpo.
+        </p>
+        <div className="flex flex-col items-center gap-2 pt-2">
+          <Button
+            onClick={onDesbloquear}
+            disabled={carregando}
+            size="lg"
+            className="bg-secondary text-secondary-foreground hover:bg-secondary/90 rounded-full px-8 h-12 text-base"
+          >
+            {carregando ? "Abrindo checkout…" : (
+              <>Quero minha rotina agora <ArrowRight className="h-4 w-4" /></>
+            )}
+          </Button>
+          <p className="text-[11px] text-muted-foreground">cancele quando quiser · sem burocracia</p>
+        </div>
+      </section>
     </div>
   );
 };
