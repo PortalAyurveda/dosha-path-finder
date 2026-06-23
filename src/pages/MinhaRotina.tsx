@@ -603,7 +603,7 @@ const MinhaRotina = () => {
                 <AlertaCard
                   key={`al-${idx}`}
                   alerta={a}
-                  escorregou={alertasEscorregados.has(a)}
+                  escorregou={deslizes.has(a)}
                   onToggle={() => toggleAlerta(a)}
                 />
               ))}
