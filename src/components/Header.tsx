@@ -88,6 +88,14 @@ const Header = () => {
 
   const isPremium = profile?.is_premium === true;
 
+  const temAcessoRotina =
+    profile?.is_premium === true ||
+    (profile?.subscription_status === "active" &&
+     ["rotina","mensal","anual"].includes(profile?.plano ?? "") &&
+     (!profile?.premium_until || new Date(profile.premium_until) > new Date()));
+
+  const fezTeste = !!doshaResult?.idPublico;
+
   const navLinks = [
     { label: "Portal", to: "/" },
     { label: "Loja Samkhya", to: "/samkhya" },
@@ -96,7 +104,11 @@ const Header = () => {
     { label: "Cursos", to: "/cursos" },
     { label: "Terapeutas", to: "/terapeutas-do-brasil" },
     { label: "Métricas", to: "/metricas" },
-    ...(!isPremium ? [{ label: "Assinar", to: "/assinar" }] : []),
+    ...(temAcessoRotina
+       ? [{ label: "Minha rotina", to: "/minha-rotina" }]
+       : fezTeste
+         ? [{ label: "Minha rotina", to: "/minha-rotina" }]
+         : []),
   ];
 
   const firstName = doshaResult?.nome?.split(" ")[0] 
@@ -182,9 +194,13 @@ const Header = () => {
                     to={link.to}
                     onClick={() => setOpen(false)}
                     className={`px-4 py-3 rounded-xl text-base font-medium transition-colors ${
-                      isActive(link.to)
-                        ? "bg-white/20 text-white font-bold"
-                        : "text-white/70 hover:text-white hover:bg-white/10"
+                      link.label === "Minha rotina"
+                        ? isActive(link.to)
+                          ? "bg-secondary/30 text-white font-bold"
+                          : "bg-secondary/20 text-white font-semibold hover:bg-secondary/30"
+                        : isActive(link.to)
+                          ? "bg-white/20 text-white font-bold"
+                          : "text-white/70 hover:text-white hover:bg-white/10"
                     }`}
                   >
                     {link.label}
