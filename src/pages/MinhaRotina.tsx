@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, Link } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import * as LucideIcons from "lucide-react";
 import {
@@ -8,6 +8,7 @@ import {
   Flame,
   Play,
   ChevronDown,
+  ArrowRight,
 } from "lucide-react";
 
 import PageContainer from "@/components/PageContainer";
@@ -21,6 +22,7 @@ import {
 } from "@/components/ui/collapsible";
 import { useUser } from "@/contexts/UserContext";
 import { supabase } from "@/integrations/supabase/client";
+import { premiumSupabase, type ObjetivoTratamento } from "@/integrations/supabase/premium-client";
 import { cn } from "@/lib/utils";
 import { toast } from "@/hooks/use-toast";
 import VideoPlayerDialog from "@/components/biblioteca/VideoPlayerDialog";
