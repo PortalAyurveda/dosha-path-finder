@@ -154,7 +154,7 @@ function useGlossario(doshaCompleto: string | null) {
           "rotinasEquilibrar",
           "dicasGeraisFazer"
         `)
-        .eq("doshanome", doshaCompleto)
+        .eq("doshanome", normalizarDosha(doshaCompleto) ?? "")
         .maybeSingle();
       if (error || !data) return null;
       return data as PortalGlossario;
