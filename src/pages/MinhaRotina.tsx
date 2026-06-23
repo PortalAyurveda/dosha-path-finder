@@ -135,14 +135,28 @@ const MinhaRotina = () => {
     return /fraca|irregular/i.test(agniInfo);
   }, [agniInfo]);
 
+  const { data: testeId } = useQuery({
+    queryKey: ["rotina-teste-id", doshaResult?.idPublico],
+    enabled: !!doshaResult?.idPublico,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("doshas_registros")
+        .select("id")
+        .eq("idPublico", doshaResult!.idPublico)
+        .maybeSingle();
+      if (error) throw error;
+      return (data?.id as string | undefined) ?? null;
+    },
+  });
+
   const { data: rotinaRows } = useQuery({
-    queryKey: ["rotina-user", user?.id],
-    enabled: !!user?.id,
+    queryKey: ["rotina-user", testeId],
+    enabled: !!testeId,
     queryFn: async () => {
       const { data, error } = await supabase
         .from("rotinas_usuario")
         .select("id, dia, slot, nugget_id, status")
-        .eq("user_id", user!.id);
+        .eq("user_id", testeId!);
       if (error) throw error;
       return (data ?? []) as RotinaRow[];
     },
