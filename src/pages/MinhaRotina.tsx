@@ -339,7 +339,7 @@ const RotinaSlotCard = ({
       iconName
     ] ?? Circle;
 
-  const feito = row?.status === "feito";
+  const feito = row?.praticado === true;
   const mostrarChama =
     !!nugget?.nugget_json?.bom_para_agni && agniFracoOuIrregular;
 
