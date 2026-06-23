@@ -934,4 +934,133 @@ const AlertaCard = ({ alerta, escorregou, onToggle }: AlertaCardProps) => (
   </Card>
 );
 
+// ===== Sempre Faz Bem (suplementos) =====
+interface ProdutoNugget {
+  id: string;
+  titulo: string;
+  vata: number | null;
+  pitta: number | null;
+  kapha: number | null;
+  nugget_json: {
+    resumo?: string;
+    produto?: { nome?: string; link?: string };
+  } | null;
+}
+
+const isAgravado = (score: number, dosha: "Vata" | "Pitta" | "Kapha") => {
+  const nivel = getNivel(score, dosha);
+  return nivel === "Acúmulo" || nivel === "Adoecido" || nivel === "Fixado";
+};
+
+interface SuplementosSectionProps {
+  vata: number | null;
+  pitta: number | null;
+  kapha: number | null;
+}
+
+const SuplementosSection = ({ vata, pitta, kapha }: SuplementosSectionProps) => {
+  const { data: produtos } = useQuery({
+    queryKey: ["rotina-produtos"],
+    staleTime: 30 * 60 * 1000,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("rotina_nuggets")
+        .select("id, titulo, vata, pitta, kapha, nugget_json")
+        .eq("subcategoria", "produto");
+      if (error) throw error;
+      return (data ?? []) as unknown as ProdutoNugget[];
+    },
+  });
+
+  const v = vata ?? 0;
+  const p = pitta ?? 0;
+  const k = kapha ?? 0;
+
+  // Doshas agravados, ordenados do mais alto para o mais baixo
+  const doshasAgravadosOrdenados = (
+    [
+      ["Vata", v] as const,
+      ["Pitta", p] as const,
+      ["Kapha", k] as const,
+    ]
+      .filter(([d, s]) => isAgravado(s, d))
+      .sort((a, b) => b[1] - a[1])
+      .map(([d]) => d as "Vata" | "Pitta" | "Kapha")
+  );
+
+  const recomendados = useMemo(() => {
+    if (!produtos || doshasAgravadosOrdenados.length === 0) return [];
+    const seen = new Set<string>();
+    const out: ProdutoNugget[] = [];
+    for (const d of doshasAgravadosOrdenados) {
+      const key = d.toLowerCase() as "vata" | "pitta" | "kapha";
+      const matches = produtos
+        .filter((pr) => (pr[key] ?? 0) < 0)
+        .sort((a, b) => (a[key] ?? 0) - (b[key] ?? 0));
+      for (const m of matches) {
+        if (!seen.has(m.id)) {
+          seen.add(m.id);
+          out.push(m);
+        }
+      }
+    }
+    return out;
+  }, [produtos, doshasAgravadosOrdenados]);
+
+  if (recomendados.length === 0) return null;
+
+  return (
+    <section className="mt-10 pt-8 border-t border-border">
+      <div className="mb-3">
+        <h2 className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">
+          Sempre Faz Bem
+        </h2>
+        <p className="text-xs text-muted-foreground mt-1">
+          suplementos que pacificam o que está mais agravado em você.
+        </p>
+      </div>
+      <div className="grid gap-3 sm:grid-cols-2">
+        {recomendados.map((pr) => {
+          const nome = pr.nugget_json?.produto?.nome ?? pr.titulo;
+          const link = pr.nugget_json?.produto?.link;
+          const resumo = pr.nugget_json?.resumo;
+          return (
+            <Card key={pr.id} className="p-4 flex flex-col gap-3 bg-muted/30">
+              <div className="flex items-start gap-3">
+                <div className="h-10 w-10 rounded-full bg-secondary/10 text-secondary flex items-center justify-center shrink-0">
+                  <LucideIcons.Package className="h-5 w-5" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="text-[11px] uppercase tracking-wider text-muted-foreground">
+                    suplemento
+                  </div>
+                  <p className="font-medium text-foreground leading-snug">
+                    {nome}
+                  </p>
+                </div>
+              </div>
+              {resumo && (
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  {resumo}
+                </p>
+              )}
+              {link && (
+                <a
+                  href={link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 self-start text-sm font-medium text-primary hover:underline"
+                >
+                  ver na loja
+                  <LucideIcons.ExternalLink className="h-3.5 w-3.5" />
+                </a>
+              )}
+            </Card>
+          );
+        })}
+      </div>
+    </section>
+  );
+};
+
 export default MinhaRotina;
