@@ -423,32 +423,19 @@ const RotinaSlotCard = ({
           </CollapsibleTrigger>
 
           <button
-            onClick={onToggleFav}
-            disabled={!nugget}
+            onClick={onToggleFeito}
+            disabled={!row}
             className="p-2 rounded-full hover:bg-muted disabled:opacity-40"
-            aria-label="favoritar"
+            aria-label="marcar como praticado"
           >
             <Star
               className={cn(
-                "h-5 w-5",
-                isFav
+                "h-7 w-7",
+                feito
                   ? "fill-secondary text-secondary"
                   : "text-muted-foreground"
               )}
             />
-          </button>
-
-          <button
-            onClick={onToggleFeito}
-            disabled={!row}
-            className="p-1 rounded-full disabled:opacity-40"
-            aria-label="marcar como feito"
-          >
-            {feito ? (
-              <CheckCircle2 className="h-7 w-7 text-green-600 fill-green-100" />
-            ) : (
-              <Circle className="h-7 w-7 text-muted-foreground" />
-            )}
           </button>
         </div>
 
