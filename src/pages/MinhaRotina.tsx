@@ -814,6 +814,7 @@ interface SlotCardProps {
   slotLabel: string;
   row: RotinaRow | undefined;
   nugget: Nugget | undefined;
+  feito: boolean;
   agniFracoOuIrregular: boolean;
   onToggleFeito: () => void;
 }
@@ -822,6 +823,7 @@ const RotinaSlotCard = ({
   slotLabel,
   row,
   nugget,
+  feito,
   agniFracoOuIrregular,
   onToggleFeito,
 }: SlotCardProps) => {
@@ -835,7 +837,6 @@ const RotinaSlotCard = ({
       iconName
     ] ?? Circle;
 
-  const feito = row?.praticado === true;
   const mostrarChama =
     !!nugget?.nugget_json?.bom_para_agni && agniFracoOuIrregular;
 
