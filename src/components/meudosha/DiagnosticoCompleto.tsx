@@ -409,6 +409,218 @@ const Diagnostico = ({
   );
 };
 
+// ============ SEÇÃO 1.5 — Entenda seu dosha (glossário) ============
+function parseLista(texto: string | null): string[] {
+  if (!texto) return [];
+  const limpo = stripHtml(texto)
+    .split(/\r?\n/)
+    .map((s) => s.trim())
+    .filter((s) => s.length > 0);
+  return limpo;
+}
+
+const EntendaSeuDosha = ({
+  glossario,
+  doshaPrincipalCompleto,
+  cor,
+}: {
+  glossario: PortalGlossario | null;
+  doshaPrincipalCompleto: string;
+  cor: string;
+}) => {
+  const [aberto, setAberto] = useState(false);
+  if (!glossario) return null;
+
+  const atributos = parseLista(glossario.atributos);
+  const equilibrio = parseLista(glossario.equilibrio);
+  const desequilibrio = parseLista(glossario.desequilibrio);
+  const temConteudo =
+    glossario.frase_clinica ||
+    glossario.oque ||
+    atributos.length ||
+    equilibrio.length ||
+    desequilibrio.length ||
+    glossario.principaisDoencas;
+
+  if (!temConteudo) return null;
+
+  return (
+    <section className="pt-10">
+      <Collapsible open={aberto} onOpenChange={setAberto}>
+        <div
+          className={cn("overflow-hidden", LEAF)}
+          style={{
+            backgroundColor: "#FFFFFF",
+            border: `1px solid ${COLOR.cardBorder}`,
+          }}
+        >
+          <CollapsibleTrigger asChild>
+            <button
+              type="button"
+              className="w-full flex items-center justify-between gap-3 p-5 text-left transition-colors hover:bg-black/5"
+            >
+              <div className="flex items-center gap-3">
+                <BookOpen className="w-5 h-5 shrink-0" style={{ color: cor }} />
+                <h2
+                  className="font-serif font-bold text-xl md:text-2xl"
+                  style={{ color: COLOR.primary, fontFamily: "'Roboto Serif', serif" }}
+                >
+                  Entenda seu dosha
+                </h2>
+              </div>
+              <div
+                className="w-8 h-8 rounded-full flex items-center justify-center shrink-0"
+                style={{ backgroundColor: `${cor}15` }}
+              >
+                {aberto ? (
+                  <ChevronUp className="w-5 h-5" style={{ color: cor }} />
+                ) : (
+                  <ChevronDown className="w-5 h-5" style={{ color: cor }} />
+                )}
+              </div>
+            </button>
+          </CollapsibleTrigger>
+
+          <CollapsibleContent>
+            <div className="px-5 pb-6 pt-1 space-y-6">
+              {glossario.frase_clinica && (
+                <p
+                  className="text-base md:text-lg font-medium leading-snug"
+                  style={{ color: cor, fontFamily: "'DM Sans', sans-serif" }}
+                >
+                  {stripHtml(glossario.frase_clinica)}
+                </p>
+              )}
+
+              {glossario.oque && (
+                <div className="space-y-2">
+                  <h3
+                    className="text-[12px] font-semibold uppercase tracking-wider"
+                    style={{ color: COLOR.ouro, fontFamily: "'DM Sans', sans-serif" }}
+                  >
+                    O que é {doshaPrincipalCompleto}
+                  </h3>
+                  <p
+                    className="text-[15px] leading-relaxed"
+                    style={{ color: COLOR.texto, fontFamily: "'DM Sans', sans-serif", lineHeight: 1.7 }}
+                  >
+                    {stripHtml(glossario.oque)}
+                  </p>
+                </div>
+              )}
+
+              {atributos.length > 0 && (
+                <div className="space-y-2">
+                  <h3
+                    className="text-[12px] font-semibold uppercase tracking-wider"
+                    style={{ color: COLOR.ouro, fontFamily: "'DM Sans', sans-serif" }}
+                  >
+                    Atributos
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {atributos.map((item, i) => (
+                      <span
+                        key={i}
+                        className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium"
+                        style={{
+                          backgroundColor: `${cor}15`,
+                          color: cor,
+                          border: `1px solid ${cor}30`,
+                          fontFamily: "'DM Sans', sans-serif",
+                        }}
+                      >
+                        {item}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {(equilibrio.length > 0 || desequilibrio.length > 0) && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {equilibrio.length > 0 && (
+                    <div
+                      className={cn("p-4 space-y-2", LEAF)}
+                      style={{ backgroundColor: COLOR.surfaceSun }}
+                    >
+                      <h3
+                        className="text-[12px] font-semibold uppercase tracking-wider"
+                        style={{ color: COLOR.ouro, fontFamily: "'DM Sans', sans-serif" }}
+                      >
+                        Em equilíbrio
+                      </h3>
+                      <ul className="space-y-1.5">
+                        {equilibrio.map((item, i) => (
+                          <li
+                            key={i}
+                            className="text-sm flex items-start gap-2"
+                            style={{ color: COLOR.texto, fontFamily: "'DM Sans', sans-serif", lineHeight: 1.6 }}
+                          >
+                            <span style={{ color: COLOR.kapha }}>•</span>
+                            <span>{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {desequilibrio.length > 0 && (
+                    <div
+                      className={cn("p-4 space-y-2", LEAF)}
+                      style={{ backgroundColor: "#FFFFFF", border: `1px solid ${COLOR.cardBorder}` }}
+                    >
+                      <h3
+                        className="text-[12px] font-semibold uppercase tracking-wider"
+                        style={{ color: COLOR.secondary, fontFamily: "'DM Sans', sans-serif" }}
+                      >
+                        Em desequilíbrio
+                      </h3>
+                      <ul className="space-y-1.5">
+                        {desequilibrio.map((item, i) => (
+                          <li
+                            key={i}
+                            className="text-sm flex items-start gap-2"
+                            style={{ color: COLOR.texto, fontFamily: "'DM Sans', sans-serif", lineHeight: 1.6 }}
+                          >
+                            <span style={{ color: COLOR.secondary }}>•</span>
+                            <span>{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {glossario.principaisDoencas && (
+                <div className="space-y-2">
+                  <h3
+                    className="text-[12px] font-semibold uppercase tracking-wider"
+                    style={{ color: COLOR.ouro, fontFamily: "'DM Sans', sans-serif" }}
+                  >
+                    Para onde tende a desandar
+                  </h3>
+                  <div
+                    className="p-4 rounded-lg"
+                    style={{ backgroundColor: `${COLOR.secondary}10`, border: `1px solid ${COLOR.secondary}25` }}
+                  >
+                    <p
+                      className="text-sm leading-relaxed"
+                      style={{ color: COLOR.textoSec, fontFamily: "'DM Sans', sans-serif", lineHeight: 1.7 }}
+                    >
+                      {stripHtml(glossario.principaisDoencas)}
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
+          </CollapsibleContent>
+        </div>
+      </Collapsible>
+    </section>
+  );
+};
+
 // ============ SEÇÃO 2 — Protocolo Samkhya ============
 const BADGE_TIPO: Record<string, { label: string; bg: string; cor: string }> = {
   primario: { label: "PRINCIPAL", bg: COLOR.roxoSamkhya, cor: "#fff" },
