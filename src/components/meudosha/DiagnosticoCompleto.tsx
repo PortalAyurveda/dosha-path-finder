@@ -8,6 +8,7 @@ import { premiumSupabase, type ObjetivoTratamento } from "@/integrations/supabas
 import { lojaSupabase } from "@/integrations/supabase/loja-client";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
+import { normalizarDosha } from "@/lib/dosha";
 import { useCupomUsuario } from "@/hooks/useCupomUsuario";
 import { toast } from "sonner";
 
