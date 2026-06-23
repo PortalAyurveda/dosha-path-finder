@@ -480,17 +480,12 @@ const SemanaHeader = ({ agniPrincipal, analise, vata, pitta, kapha }: SemanaHead
       </div>
 
 
-      {temAnalise && (
+      {focoTexto && (
         <div className="mt-4 pt-4 border-t border-primary/15 space-y-1.5">
           <div className="text-[11px] uppercase tracking-wider text-secondary font-semibold">
             foco da semana
           </div>
-          {focoTexto && (
-            <p className="text-sm text-foreground leading-relaxed">{focoTexto}</p>
-          )}
-          {metaTexto && (
-            <p className="text-xs text-muted-foreground">{metaTexto}</p>
-          )}
+          <p className="text-sm text-foreground leading-relaxed">{focoTexto}</p>
         </div>
       )}
 
