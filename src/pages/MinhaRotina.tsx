@@ -249,7 +249,7 @@ const MinhaRotina = () => {
 
   const toggleFeito = async (row: RotinaRow) => {
     if (!user) return;
-    const key = ["rotina-user", user.id];
+    const key = ["rotina-user", testeId];
     const prev = queryClient.getQueryData<RotinaRow[]>(key) ?? [];
     const novoStatus = row.status === "feito" ? null : "feito";
     const next = prev.map((r) => (r.id === row.id ? { ...r, status: novoStatus } : r));
