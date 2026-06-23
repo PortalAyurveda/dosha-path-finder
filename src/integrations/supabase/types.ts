@@ -3149,6 +3149,32 @@ export type Database = {
         }
         Relationships: []
       }
+      rotina_favoritos: {
+        Row: {
+          created_at: string
+          nugget_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          nugget_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          nugget_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rotina_favoritos_nugget_id_fkey"
+            columns: ["nugget_id"]
+            isOneToOne: false
+            referencedRelation: "rotina_nuggets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       rotina_nuggets: {
         Row: {
           categoria: string | null
