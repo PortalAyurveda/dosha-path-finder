@@ -3373,6 +3373,47 @@ export type Database = {
         }
         Relationships: []
       }
+      rotina_pontos: {
+        Row: {
+          created_at: string
+          data: string
+          id: string
+          nugget_id: string | null
+          pontos: number
+          referencia: string | null
+          tipo: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          data?: string
+          id?: string
+          nugget_id?: string | null
+          pontos: number
+          referencia?: string | null
+          tipo: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          data?: string
+          id?: string
+          nugget_id?: string | null
+          pontos?: number
+          referencia?: string | null
+          tipo?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rotina_pontos_nugget_id_fkey"
+            columns: ["nugget_id"]
+            isOneToOne: false
+            referencedRelation: "rotina_nuggets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       rotinas_usuario: {
         Row: {
           created_at: string | null
