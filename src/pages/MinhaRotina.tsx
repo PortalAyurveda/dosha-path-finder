@@ -11,6 +11,8 @@ import {
   ArrowRight,
   AlertTriangle,
   Leaf,
+  Lock,
+  Check,
 } from "lucide-react";
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 
