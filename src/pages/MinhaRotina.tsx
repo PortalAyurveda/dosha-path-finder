@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/collapsible";
 import { useUser } from "@/contexts/UserContext";
 import { supabase } from "@/integrations/supabase/client";
+import { lojaSupabase } from "@/integrations/supabase/loja-client";
 import { premiumSupabase, type ObjetivoTratamento } from "@/integrations/supabase/premium-client";
 import { cn } from "@/lib/utils";
 import { toast } from "@/hooks/use-toast";
