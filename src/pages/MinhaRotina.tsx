@@ -175,18 +175,6 @@ const MinhaRotina = () => {
     },
   });
 
-  const { data: favoritos } = useQuery({
-    queryKey: ["rotina-favoritos", user?.id],
-    enabled: !!user?.id,
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("rotina_favoritos")
-        .select("nugget_id")
-        .eq("user_id", user!.id);
-      if (error) throw error;
-      return new Set<string>((data ?? []).map((r) => r.nugget_id));
-    },
-  });
 
   const nuggetsById = useMemo(() => {
     const m = new Map<string, Nugget>();
