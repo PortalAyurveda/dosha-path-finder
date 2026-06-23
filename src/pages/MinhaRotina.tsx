@@ -521,6 +521,7 @@ const MinhaRotina = () => {
         vata={(doshaInfo?.vatascore as number | null) ?? null}
         pitta={(doshaInfo?.pittascore as number | null) ?? null}
         kapha={(doshaInfo?.kaphascore as number | null) ?? null}
+        ultimaRevisao={(doshaInfo?.created_at as string | null) ?? null}
       />
 
       {/* Topo */}
