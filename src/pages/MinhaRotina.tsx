@@ -336,23 +336,34 @@ const MinhaRotina = () => {
   const habitosGloss = (glossario?.habitos_diarios ?? []).slice(0, 3);
   const alertasGloss = (glossario?.alertas_cotidianos ?? []).slice(0, 3);
 
-  // Sets derivados de rotina_pontos de hoje
+  // Sets derivados de rotina_pontos de hoje — filtrados pelo dia do planner
+  // referencia agora vem como "diaN:resto" (ex.: "dia1:cafe_manha").
+  // Marcações antigas sem prefixo são ignoradas (não casam com nenhum dia).
   const acertoRotinaSlots = new Set<string>();
   const acertoHabitos = new Set<string>();
   const deslizes = new Set<string>();
   (pontosHoje ?? []).forEach((p) => {
     if (!p.referencia) return;
-    if (p.tipo === "acerto_rotina") acertoRotinaSlots.add(p.referencia);
-    else if (p.tipo === "acerto_habito") acertoHabitos.add(p.referencia);
-    else if (p.tipo === "deslize") deslizes.add(p.referencia);
+    const m = p.referencia.match(/^dia(\d+):(.*)$/s);
+    if (!m) return;
+    const diaRef = Number(m[1]);
+    const resto = m[2];
+    if (diaRef !== diaSelecionado) return;
+    if (p.tipo === "acerto_rotina") acertoRotinaSlots.add(resto);
+    else if (p.tipo === "acerto_habito") acertoHabitos.add(resto);
+    else if (p.tipo === "deslize") deslizes.add(resto);
   });
 
-  // Contagens do dia
+  // Contagens do dia (apenas marcações do dia selecionado)
   const totalPossivel =
     MEAL_SLOTS.length + PRACTICE_SLOTS.length + habitosGloss.length;
   const feitosCount = acertoRotinaSlots.size + acertoHabitos.size;
   const progressoPct = totalPossivel > 0 ? (feitosCount / totalPossivel) * 100 : 0;
-  const equilibrioDia = (pontosHoje ?? []).reduce((acc, r) => acc + (r.pontos ?? 0), 0);
+  const equilibrioDia = (pontosHoje ?? []).reduce((acc, r) => {
+    const m = r.referencia?.match(/^dia(\d+):/);
+    if (!m || Number(m[1]) !== diaSelecionado) return acc;
+    return acc + (r.pontos ?? 0);
+  }, 0);
 
   // Nível do DIA (reseta a cada dia)
   const nivelDia = (() => {
@@ -390,10 +401,11 @@ const MinhaRotina = () => {
     queryClient.invalidateQueries({ queryKey: pontosTotalKey as any });
   };
 
-  // Toggle de praticado (refeição/prática): grava em rotina_pontos + preferência em rotina_favoritos
+  // Toggle de praticado (refeição/prática): grava em rotina_pontos com prefixo do dia
   const toggleFeito = async (row: RotinaRow) => {
     if (!user) return;
     const slot = row.slot;
+    const ref = `dia${diaSelecionado}:${slot}`;
     const jaFeito = acertoRotinaSlots.has(slot);
 
     if (!jaFeito) {
@@ -401,7 +413,7 @@ const MinhaRotina = () => {
         data: todayISO,
         tipo: "acerto_rotina",
         pontos: 1,
-        referencia: slot,
+        referencia: ref,
         nugget_id: row.nugget_id,
       });
       try {
@@ -410,7 +422,7 @@ const MinhaRotina = () => {
           data: todayISO,
           tipo: "acerto_rotina",
           pontos: 1,
-          referencia: slot,
+          referencia: ref,
           nugget_id: row.nugget_id,
         });
         if (error && (error as any).code !== "23505") throw error;
@@ -425,14 +437,14 @@ const MinhaRotina = () => {
         toast({ title: "Não consegui salvar", variant: "destructive" });
       }
     } else {
-      optimisticRemove({ tipo: "acerto_rotina", referencia: slot });
+      optimisticRemove({ tipo: "acerto_rotina", referencia: ref });
       try {
         const { error } = await (supabase.from("rotina_pontos") as any)
           .delete()
           .eq("user_id", user.id)
           .eq("data", todayISO)
           .eq("tipo", "acerto_rotina")
-          .eq("referencia", slot);
+          .eq("referencia", ref);
         if (error) throw error;
         if (row.nugget_id) {
           await (supabase.from("rotina_favoritos") as any)
@@ -449,48 +461,50 @@ const MinhaRotina = () => {
 
   const toggleHabito = async (habito: string) => {
     if (!user) return;
+    const ref = `dia${diaSelecionado}:${habito}`;
     const jaFeito = acertoHabitos.has(habito);
     if (!jaFeito) {
-      optimisticAdd({ data: todayISO, tipo: "acerto_habito", pontos: 1, referencia: habito, nugget_id: null });
+      optimisticAdd({ data: todayISO, tipo: "acerto_habito", pontos: 1, referencia: ref, nugget_id: null });
       const { error } = await (supabase.from("rotina_pontos") as any).insert({
-        user_id: user.id, data: todayISO, tipo: "acerto_habito", pontos: 1, referencia: habito,
+        user_id: user.id, data: todayISO, tipo: "acerto_habito", pontos: 1, referencia: ref,
       });
       if (error && (error as any).code !== "23505") {
         revertPontos();
         toast({ title: "Não consegui salvar", variant: "destructive" });
       }
     } else {
-      optimisticRemove({ tipo: "acerto_habito", referencia: habito });
+      optimisticRemove({ tipo: "acerto_habito", referencia: ref });
       const { error } = await (supabase.from("rotina_pontos") as any)
         .delete()
         .eq("user_id", user.id)
         .eq("data", todayISO)
         .eq("tipo", "acerto_habito")
-        .eq("referencia", habito);
+        .eq("referencia", ref);
       if (error) { revertPontos(); toast({ title: "Não consegui salvar", variant: "destructive" }); }
     }
   };
 
   const toggleAlerta = async (alerta: string) => {
     if (!user) return;
+    const ref = `dia${diaSelecionado}:${alerta}`;
     const jaEscorregou = deslizes.has(alerta);
     if (!jaEscorregou) {
-      optimisticAdd({ data: todayISO, tipo: "deslize", pontos: -1, referencia: alerta, nugget_id: null });
+      optimisticAdd({ data: todayISO, tipo: "deslize", pontos: -1, referencia: ref, nugget_id: null });
       const { error } = await (supabase.from("rotina_pontos") as any).insert({
-        user_id: user.id, data: todayISO, tipo: "deslize", pontos: -1, referencia: alerta,
+        user_id: user.id, data: todayISO, tipo: "deslize", pontos: -1, referencia: ref,
       });
       if (error && (error as any).code !== "23505") {
         revertPontos();
         toast({ title: "Não consegui salvar", variant: "destructive" });
       }
     } else {
-      optimisticRemove({ tipo: "deslize", referencia: alerta });
+      optimisticRemove({ tipo: "deslize", referencia: ref });
       const { error } = await (supabase.from("rotina_pontos") as any)
         .delete()
         .eq("user_id", user.id)
         .eq("data", todayISO)
         .eq("tipo", "deslize")
-        .eq("referencia", alerta);
+        .eq("referencia", ref);
       if (error) { revertPontos(); toast({ title: "Não consegui salvar", variant: "destructive" }); }
     }
   };
