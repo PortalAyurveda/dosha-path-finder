@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Navigate, Link } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import * as LucideIcons from "lucide-react";
@@ -9,6 +9,8 @@ import {
   Play,
   ChevronDown,
   ArrowRight,
+  AlertTriangle,
+  Leaf,
 } from "lucide-react";
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 
@@ -39,20 +41,25 @@ type SlotKey =
   | "jantar"
   | "tonico_noite";
 
-type Periodo = "Manhã" | "Tarde" | "Noite";
-
-const SLOT_DEFS: { slot: SlotKey; label: string; periodo: Periodo }[] = [
-  { slot: "rotina_manha", label: "ritual da manhã", periodo: "Manhã" },
-  { slot: "cafe_manha", label: "café da manhã", periodo: "Manhã" },
-  { slot: "lanche_manha", label: "lanche da manhã", periodo: "Manhã" },
-  { slot: "almoco", label: "almoço", periodo: "Tarde" },
-  { slot: "lanche_tarde", label: "lanche da tarde", periodo: "Tarde" },
-  { slot: "bonus_diario", label: "bônus do dia", periodo: "Tarde" },
-  { slot: "jantar", label: "jantar", periodo: "Noite" },
-  { slot: "tonico_noite", label: "tônico da noite", periodo: "Noite" },
+const MEAL_SLOTS: { slot: SlotKey; label: string }[] = [
+  { slot: "cafe_manha", label: "café da manhã" },
+  { slot: "lanche_manha", label: "lanche da manhã" },
+  { slot: "almoco", label: "almoço" },
+  { slot: "lanche_tarde", label: "lanche da tarde" },
+  { slot: "jantar", label: "jantar" },
+  { slot: "tonico_noite", label: "tônico da noite" },
 ];
 
-const PERIODOS: Periodo[] = ["Manhã", "Tarde", "Noite"];
+const PRACTICE_SLOTS: { slot: SlotKey; label: string }[] = [
+  { slot: "rotina_manha", label: "ritual da manhã" },
+  { slot: "bonus_diario", label: "bônus do dia" },
+];
+
+interface HabitoGloss { habito: string; periodo?: string }
+interface GlossarioRotina {
+  habitos_diarios: HabitoGloss[] | null;
+  alertas_cotidianos: string[] | null;
+}
 
 // ===== Types =====
 interface RotinaRow {
@@ -204,6 +211,33 @@ const MinhaRotina = () => {
     return m;
   }, [nuggets]);
 
+  // Glossário do dosha do usuário (habitos_diarios + alertas_cotidianos)
+  const doshaNome = doshaResult?.doshaprincipal ?? null;
+  const { data: glossario } = useQuery<GlossarioRotina | null>({
+    queryKey: ["rotina-glossario", doshaNome],
+    enabled: !!doshaNome,
+    staleTime: 30 * 60 * 1000,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("portal_glossario")
+        .select("habitos_diarios, alertas_cotidianos")
+        .eq("doshanome", doshaNome!)
+        .maybeSingle();
+      if (error) return null;
+      return (data as unknown as GlossarioRotina) ?? null;
+    },
+  });
+
+  // Estado local do dia: hábitos do glossário marcados, e alertas "escorreguei"
+  const [habitosFeitos, setHabitosFeitos] = useState<Set<string>>(new Set());
+  const [alertasEscorregados, setAlertasEscorregados] = useState<Set<string>>(new Set());
+
+  // Reseta o estado local ao trocar de dia
+  useEffect(() => {
+    setHabitosFeitos(new Set());
+    setAlertasEscorregados(new Set());
+  }, [diaSelecionado]);
+
   // Gate de login
   if (loading) {
     return (
@@ -221,13 +255,20 @@ const MinhaRotina = () => {
   const rowBySlot = new Map<string, RotinaRow>();
   rowsDoDia.forEach((r) => rowBySlot.set(r.slot, r));
 
-  const feitosCount = rowsDoDia.filter((r) => r.praticado === true).length;
-  const totalSlots = SLOT_DEFS.length;
-  const progressoPct = (feitosCount / totalSlots) * 100;
+  // Cuidados do glossário em destaque (2-3)
+  const habitosGloss = (glossario?.habitos_diarios ?? []).slice(0, 3);
+  const alertasGloss = (glossario?.alertas_cotidianos ?? []).slice(0, 3);
 
-  // Mutations otimistas
+  // Contagens
+  const praticadosRotina = rowsDoDia.filter((r) => r.praticado === true).length;
+  const habitosCount = habitosFeitos.size;
+  const totalPossivel =
+    MEAL_SLOTS.length + PRACTICE_SLOTS.length + habitosGloss.length;
+  const feitosCount = praticadosRotina + habitosCount;
+  const progressoPct = totalPossivel > 0 ? (feitosCount / totalPossivel) * 100 : 0;
+  const equilibrioDia = feitosCount - alertasEscorregados.size;
 
-
+  // Toggle de praticado: grava em rotinas_usuario + grava preferência em rotina_favoritos
   const toggleFeito = async (row: RotinaRow) => {
     if (!user) return;
     const key = ["rotina-user", testeId];
@@ -242,10 +283,44 @@ const MinhaRotina = () => {
         .update({ praticado: novoValor })
         .eq("id", row.id);
       if (error) throw error;
+
+      // Preferência (estrela-fixa): só grava, não lê.
+      if (row.nugget_id) {
+        if (novoValor) {
+          await (supabase.from("rotina_favoritos") as any)
+            .upsert(
+              { user_id: user.id, nugget_id: row.nugget_id },
+              { onConflict: "user_id,nugget_id", ignoreDuplicates: true }
+            );
+        } else {
+          await (supabase.from("rotina_favoritos") as any)
+            .delete()
+            .eq("user_id", user.id)
+            .eq("nugget_id", row.nugget_id);
+        }
+      }
     } catch (e) {
       queryClient.setQueryData(key, prev);
       toast({ title: "Não consegui salvar", variant: "destructive" });
     }
+  };
+
+  const toggleHabito = (habito: string) => {
+    setHabitosFeitos((prev) => {
+      const next = new Set(prev);
+      if (next.has(habito)) next.delete(habito);
+      else next.add(habito);
+      return next;
+    });
+  };
+
+  const toggleAlerta = (alerta: string) => {
+    setAlertasEscorregados((prev) => {
+      const next = new Set(prev);
+      if (next.has(alerta)) next.delete(alerta);
+      else next.add(alerta);
+      return next;
+    });
   };
 
   return (
@@ -264,7 +339,6 @@ const MinhaRotina = () => {
 
       {/* Topo */}
       <header className="mb-6">
-
         <h1 className="font-serif text-3xl md:text-4xl text-foreground">
           Sua rotina
         </h1>
@@ -297,47 +371,104 @@ const MinhaRotina = () => {
         })}
       </div>
 
-      {/* Progresso */}
+      {/* Indicadores do dia */}
       <div className="mb-6">
         <div className="flex items-baseline justify-between mb-1.5">
           <span className="text-sm text-foreground font-medium">
-            {feitosCount} de {totalSlots} feitos
+            Progresso do dia · {feitosCount} de {totalPossivel}
           </span>
-          <span className="text-xs text-muted-foreground">hoje</span>
+          <span className="text-xs text-muted-foreground">
+            Equilíbrio:{" "}
+            <span
+              className={cn(
+                "font-medium",
+                equilibrioDia < 0 ? "text-muted-foreground" : "text-foreground"
+              )}
+            >
+              {equilibrioDia > 0 ? `+${equilibrioDia}` : equilibrioDia}
+            </span>
+          </span>
         </div>
         <Progress value={progressoPct} className="h-2" />
       </div>
 
-      {/* Slots agrupados */}
-      <div className="space-y-7">
-        {PERIODOS.map((periodo) => {
-          const slotsDoPeriodo = SLOT_DEFS.filter((s) => s.periodo === periodo);
-          return (
-            <section key={periodo}>
-              <h2 className="text-xs uppercase tracking-wider text-muted-foreground font-semibold mb-2">
-                {periodo}
-              </h2>
-              <div className="space-y-3">
-                {slotsDoPeriodo.map((s) => {
-                  const row = rowBySlot.get(s.slot);
-                  const nugget = row?.nugget_id
-                    ? nuggetsById.get(row.nugget_id)
-                    : undefined;
-                  return (
-                    <RotinaSlotCard
-                      key={s.slot}
-                      slotLabel={s.label}
-                      row={row}
-                      nugget={nugget}
-                      agniFracoOuIrregular={agniFracoOuIrregular}
-                      onToggleFeito={() => row && toggleFeito(row)}
-                    />
-                  );
-                })}
-              </div>
-            </section>
-          );
-        })}
+      <div className="space-y-8">
+        {/* ===== Sua rotina (refeições) ===== */}
+        <section>
+          <h2 className="text-xs uppercase tracking-wider text-muted-foreground font-semibold mb-2">
+            Sua rotina
+          </h2>
+          <div className="space-y-3">
+            {MEAL_SLOTS.map((s) => {
+              const row = rowBySlot.get(s.slot);
+              const nugget = row?.nugget_id ? nuggetsById.get(row.nugget_id) : undefined;
+              return (
+                <RotinaSlotCard
+                  key={s.slot}
+                  slotLabel={s.label}
+                  row={row}
+                  nugget={nugget}
+                  agniFracoOuIrregular={agniFracoOuIrregular}
+                  onToggleFeito={() => row && toggleFeito(row)}
+                />
+              );
+            })}
+          </div>
+        </section>
+
+        {/* ===== Seus cuidados de hoje (práticas + hábitos do glossário) ===== */}
+        <section>
+          <h2 className="text-xs uppercase tracking-wider text-muted-foreground font-semibold mb-2">
+            Seus cuidados de hoje
+          </h2>
+          <div className="space-y-3">
+            {PRACTICE_SLOTS.map((s) => {
+              const row = rowBySlot.get(s.slot);
+              const nugget = row?.nugget_id ? nuggetsById.get(row.nugget_id) : undefined;
+              return (
+                <RotinaSlotCard
+                  key={s.slot}
+                  slotLabel={s.label}
+                  row={row}
+                  nugget={nugget}
+                  agniFracoOuIrregular={agniFracoOuIrregular}
+                  onToggleFeito={() => row && toggleFeito(row)}
+                />
+              );
+            })}
+            {habitosGloss.map((h, idx) => (
+              <HabitoCard
+                key={`hab-${idx}`}
+                habito={h.habito}
+                periodo={h.periodo}
+                feito={habitosFeitos.has(h.habito)}
+                onToggle={() => toggleHabito(h.habito)}
+              />
+            ))}
+          </div>
+        </section>
+
+        {/* ===== Evitar hoje ===== */}
+        {alertasGloss.length > 0 && (
+          <section>
+            <h2 className="text-xs uppercase tracking-wider text-muted-foreground font-semibold mb-2">
+              Evitar hoje
+            </h2>
+            <p className="text-xs text-muted-foreground mb-3">
+              espelho do dia — sem culpa, só consciência.
+            </p>
+            <div className="space-y-3">
+              {alertasGloss.map((a, idx) => (
+                <AlertaCard
+                  key={`al-${idx}`}
+                  alerta={a}
+                  escorregou={alertasEscorregados.has(a)}
+                  onToggle={() => toggleAlerta(a)}
+                />
+              ))}
+            </div>
+          </section>
+        )}
       </div>
     </PageContainer>
   );
@@ -726,5 +857,74 @@ const RotinaSlotCard = ({
     </Card>
   );
 };
+
+// ===== Hábito do glossário (estado local) =====
+interface HabitoCardProps {
+  habito: string;
+  periodo?: string;
+  feito: boolean;
+  onToggle: () => void;
+}
+const HabitoCard = ({ habito, periodo, feito, onToggle }: HabitoCardProps) => (
+  <Card className="p-4 flex items-center gap-3">
+    <div className="h-10 w-10 rounded-full bg-secondary/10 text-secondary flex items-center justify-center shrink-0">
+      <Leaf className="h-5 w-5" />
+    </div>
+    <div className="flex-1 min-w-0">
+      <div className="text-[11px] uppercase tracking-wider text-muted-foreground">
+        {periodo ? `cuidado · ${periodo}` : "cuidado do dia"}
+      </div>
+      <p className="text-sm text-foreground leading-snug">{habito}</p>
+    </div>
+    <button
+      onClick={onToggle}
+      className="p-2 rounded-full hover:bg-muted"
+      aria-label="marcar como praticado"
+    >
+      <Star
+        className={cn(
+          "h-7 w-7",
+          feito ? "fill-secondary text-secondary" : "text-muted-foreground"
+        )}
+      />
+    </button>
+  </Card>
+);
+
+// ===== Alerta do glossário (escorregão) =====
+interface AlertaCardProps {
+  alerta: string;
+  escorregou: boolean;
+  onToggle: () => void;
+}
+const AlertaCard = ({ alerta, escorregou, onToggle }: AlertaCardProps) => (
+  <Card
+    className={cn(
+      "p-4 flex items-center gap-3 border-dashed transition-colors",
+      escorregou ? "bg-muted/60 border-muted-foreground/30" : "bg-card"
+    )}
+  >
+    <div className="h-9 w-9 rounded-full bg-muted text-muted-foreground flex items-center justify-center shrink-0">
+      <AlertTriangle className="h-4 w-4" />
+    </div>
+    <p
+      className={cn(
+        "flex-1 text-sm leading-snug",
+        escorregou ? "text-foreground font-medium" : "text-muted-foreground"
+      )}
+    >
+      {alerta}
+    </p>
+    <Button
+      type="button"
+      size="sm"
+      variant={escorregou ? "secondary" : "outline"}
+      onClick={onToggle}
+      className="shrink-0 text-xs h-8"
+    >
+      {escorregou ? "anotado" : "registrar"}
+    </Button>
+  </Card>
+);
 
 export default MinhaRotina;
