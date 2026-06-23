@@ -230,15 +230,52 @@ const MinhaRotina = () => {
     },
   });
 
-  // Estado local do dia: hábitos do glossário marcados, e alertas "escorreguei"
-  const [habitosFeitos, setHabitosFeitos] = useState<Set<string>>(new Set());
-  const [alertasEscorregados, setAlertasEscorregados] = useState<Set<string>>(new Set());
+  // Data de hoje (YYYY-MM-DD, fuso local) — referência única para gravação/leitura
+  const todayISO = (() => {
+    const d = new Date();
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${y}-${m}-${day}`;
+  })();
 
-  // Reseta o estado local ao trocar de dia
-  useEffect(() => {
-    setHabitosFeitos(new Set());
-    setAlertasEscorregados(new Set());
-  }, [diaSelecionado]);
+  interface PontoRow {
+    id?: string;
+    data: string;
+    tipo: string;
+    pontos: number;
+    referencia: string | null;
+    nugget_id: string | null;
+  }
+
+  // Pontos de HOJE — fonte da verdade das marcações (estrelas e deslizes)
+  const pontosHojeKey = ["rotina-pontos-hoje", user?.id, todayISO] as const;
+  const { data: pontosHoje } = useQuery({
+    queryKey: pontosHojeKey,
+    enabled: !!user?.id,
+    queryFn: async () => {
+      const { data, error } = await (supabase.from("rotina_pontos") as any)
+        .select("id, data, tipo, pontos, referencia, nugget_id")
+        .eq("user_id", user!.id)
+        .eq("data", todayISO);
+      if (error) throw error;
+      return (data ?? []) as PontoRow[];
+    },
+  });
+
+  // Placar total da conta — soma de todas as datas
+  const pontosTotalKey = ["rotina-pontos-total", user?.id] as const;
+  const { data: pontosTotal } = useQuery({
+    queryKey: pontosTotalKey,
+    enabled: !!user?.id,
+    queryFn: async () => {
+      const { data, error } = await (supabase.from("rotina_pontos") as any)
+        .select("pontos")
+        .eq("user_id", user!.id);
+      if (error) throw error;
+      return ((data ?? []) as { pontos: number }[]).reduce((acc, r) => acc + (r.pontos ?? 0), 0);
+    },
+  });
 
   // Gate de login
   if (loading) {
@@ -261,68 +298,163 @@ const MinhaRotina = () => {
   const habitosGloss = (glossario?.habitos_diarios ?? []).slice(0, 3);
   const alertasGloss = (glossario?.alertas_cotidianos ?? []).slice(0, 3);
 
-  // Contagens
-  const praticadosRotina = rowsDoDia.filter((r) => r.praticado === true).length;
-  const habitosCount = habitosFeitos.size;
+  // Sets derivados de rotina_pontos de hoje
+  const acertoRotinaSlots = new Set<string>();
+  const acertoHabitos = new Set<string>();
+  const deslizes = new Set<string>();
+  (pontosHoje ?? []).forEach((p) => {
+    if (!p.referencia) return;
+    if (p.tipo === "acerto_rotina") acertoRotinaSlots.add(p.referencia);
+    else if (p.tipo === "acerto_habito") acertoHabitos.add(p.referencia);
+    else if (p.tipo === "deslize") deslizes.add(p.referencia);
+  });
+
+  // Contagens do dia
   const totalPossivel =
     MEAL_SLOTS.length + PRACTICE_SLOTS.length + habitosGloss.length;
-  const feitosCount = praticadosRotina + habitosCount;
+  const feitosCount = acertoRotinaSlots.size + acertoHabitos.size;
   const progressoPct = totalPossivel > 0 ? (feitosCount / totalPossivel) * 100 : 0;
-  const equilibrioDia = feitosCount - alertasEscorregados.size;
+  const equilibrioDia = (pontosHoje ?? []).reduce((acc, r) => acc + (r.pontos ?? 0), 0);
 
-  // Toggle de praticado: grava em rotinas_usuario + grava preferência em rotina_favoritos
+  // Nível do DIA (reseta a cada dia)
+  const nivelDia = (() => {
+    if (progressoPct < 33) return "Iniciante";
+    if (progressoPct < 66) return "Praticante";
+    return "Avançado";
+  })();
+
+  // Helpers de mutação otimista em rotina_pontos
+  const optimisticAdd = (linha: PontoRow) => {
+    queryClient.setQueryData<PontoRow[]>(pontosHojeKey as any, (prev) => [
+      ...(prev ?? []),
+      linha,
+    ]);
+    queryClient.setQueryData<number>(pontosTotalKey as any, (prev) => (prev ?? 0) + linha.pontos);
+  };
+  const optimisticRemove = (match: { tipo: string; referencia: string }) => {
+    let removidoPontos = 0;
+    queryClient.setQueryData<PontoRow[]>(pontosHojeKey as any, (prev) => {
+      const arr = prev ?? [];
+      const out: PontoRow[] = [];
+      for (const r of arr) {
+        if (r.tipo === match.tipo && r.referencia === match.referencia) {
+          removidoPontos += r.pontos ?? 0;
+        } else {
+          out.push(r);
+        }
+      }
+      return out;
+    });
+    queryClient.setQueryData<number>(pontosTotalKey as any, (prev) => (prev ?? 0) - removidoPontos);
+  };
+  const revertPontos = () => {
+    queryClient.invalidateQueries({ queryKey: pontosHojeKey as any });
+    queryClient.invalidateQueries({ queryKey: pontosTotalKey as any });
+  };
+
+  // Toggle de praticado (refeição/prática): grava em rotina_pontos + preferência em rotina_favoritos
   const toggleFeito = async (row: RotinaRow) => {
     if (!user) return;
-    const key = ["rotina-user", testeId];
-    const prev = queryClient.getQueryData<RotinaRow[]>(key) ?? [];
-    const novoValor = !row.praticado;
-    const next = prev.map((r) => (r.id === row.id ? { ...r, praticado: novoValor } : r));
-    queryClient.setQueryData(key, next);
+    const slot = row.slot;
+    const jaFeito = acertoRotinaSlots.has(slot);
 
-    try {
-      const { error } = await (supabase
-        .from("rotinas_usuario") as any)
-        .update({ praticado: novoValor })
-        .eq("id", row.id);
-      if (error) throw error;
-
-      // Preferência (estrela-fixa): só grava, não lê.
-      if (row.nugget_id) {
-        if (novoValor) {
-          await (supabase.from("rotina_favoritos") as any)
-            .upsert(
-              { user_id: user.id, nugget_id: row.nugget_id },
-              { onConflict: "user_id,nugget_id", ignoreDuplicates: true }
-            );
-        } else {
+    if (!jaFeito) {
+      optimisticAdd({
+        data: todayISO,
+        tipo: "acerto_rotina",
+        pontos: 1,
+        referencia: slot,
+        nugget_id: row.nugget_id,
+      });
+      try {
+        const { error } = await (supabase.from("rotina_pontos") as any).insert({
+          user_id: user.id,
+          data: todayISO,
+          tipo: "acerto_rotina",
+          pontos: 1,
+          referencia: slot,
+          nugget_id: row.nugget_id,
+        });
+        if (error && (error as any).code !== "23505") throw error;
+        if (row.nugget_id) {
+          await (supabase.from("rotina_favoritos") as any).upsert(
+            { user_id: user.id, nugget_id: row.nugget_id },
+            { onConflict: "user_id,nugget_id", ignoreDuplicates: true }
+          );
+        }
+      } catch {
+        revertPontos();
+        toast({ title: "Não consegui salvar", variant: "destructive" });
+      }
+    } else {
+      optimisticRemove({ tipo: "acerto_rotina", referencia: slot });
+      try {
+        const { error } = await (supabase.from("rotina_pontos") as any)
+          .delete()
+          .eq("user_id", user.id)
+          .eq("data", todayISO)
+          .eq("tipo", "acerto_rotina")
+          .eq("referencia", slot);
+        if (error) throw error;
+        if (row.nugget_id) {
           await (supabase.from("rotina_favoritos") as any)
             .delete()
             .eq("user_id", user.id)
             .eq("nugget_id", row.nugget_id);
         }
+      } catch {
+        revertPontos();
+        toast({ title: "Não consegui salvar", variant: "destructive" });
       }
-    } catch (e) {
-      queryClient.setQueryData(key, prev);
-      toast({ title: "Não consegui salvar", variant: "destructive" });
     }
   };
 
-  const toggleHabito = (habito: string) => {
-    setHabitosFeitos((prev) => {
-      const next = new Set(prev);
-      if (next.has(habito)) next.delete(habito);
-      else next.add(habito);
-      return next;
-    });
+  const toggleHabito = async (habito: string) => {
+    if (!user) return;
+    const jaFeito = acertoHabitos.has(habito);
+    if (!jaFeito) {
+      optimisticAdd({ data: todayISO, tipo: "acerto_habito", pontos: 1, referencia: habito, nugget_id: null });
+      const { error } = await (supabase.from("rotina_pontos") as any).insert({
+        user_id: user.id, data: todayISO, tipo: "acerto_habito", pontos: 1, referencia: habito,
+      });
+      if (error && (error as any).code !== "23505") {
+        revertPontos();
+        toast({ title: "Não consegui salvar", variant: "destructive" });
+      }
+    } else {
+      optimisticRemove({ tipo: "acerto_habito", referencia: habito });
+      const { error } = await (supabase.from("rotina_pontos") as any)
+        .delete()
+        .eq("user_id", user.id)
+        .eq("data", todayISO)
+        .eq("tipo", "acerto_habito")
+        .eq("referencia", habito);
+      if (error) { revertPontos(); toast({ title: "Não consegui salvar", variant: "destructive" }); }
+    }
   };
 
-  const toggleAlerta = (alerta: string) => {
-    setAlertasEscorregados((prev) => {
-      const next = new Set(prev);
-      if (next.has(alerta)) next.delete(alerta);
-      else next.add(alerta);
-      return next;
-    });
+  const toggleAlerta = async (alerta: string) => {
+    if (!user) return;
+    const jaEscorregou = deslizes.has(alerta);
+    if (!jaEscorregou) {
+      optimisticAdd({ data: todayISO, tipo: "deslize", pontos: -1, referencia: alerta, nugget_id: null });
+      const { error } = await (supabase.from("rotina_pontos") as any).insert({
+        user_id: user.id, data: todayISO, tipo: "deslize", pontos: -1, referencia: alerta,
+      });
+      if (error && (error as any).code !== "23505") {
+        revertPontos();
+        toast({ title: "Não consegui salvar", variant: "destructive" });
+      }
+    } else {
+      optimisticRemove({ tipo: "deslize", referencia: alerta });
+      const { error } = await (supabase.from("rotina_pontos") as any)
+        .delete()
+        .eq("user_id", user.id)
+        .eq("data", todayISO)
+        .eq("tipo", "deslize")
+        .eq("referencia", alerta);
+      if (error) { revertPontos(); toast({ title: "Não consegui salvar", variant: "destructive" }); }
+    }
   };
 
   return (
@@ -347,9 +479,14 @@ const MinhaRotina = () => {
         <p className="text-muted-foreground mt-1">
           Dia {diaSelecionado} da sua semana
         </p>
-        <span className="inline-flex items-center gap-1 mt-3 px-3 py-1 rounded-full bg-secondary/15 text-secondary text-xs font-medium border border-secondary/30">
-          Praticante
-        </span>
+        <div className="flex items-center gap-2 mt-3 flex-wrap">
+          <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-secondary/15 text-secondary text-xs font-medium border border-secondary/30">
+            {nivelDia}
+          </span>
+          <span className="text-xs text-muted-foreground">
+            Seus pontos: <span className="font-semibold text-foreground">{pontosTotal ?? 0}</span>
+          </span>
+        </div>
       </header>
 
       {/* Pílulas de dias */}
@@ -410,6 +547,7 @@ const MinhaRotina = () => {
                   slotLabel={s.label}
                   row={row}
                   nugget={nugget}
+                  feito={acertoRotinaSlots.has(s.slot)}
                   agniFracoOuIrregular={agniFracoOuIrregular}
                   onToggleFeito={() => row && toggleFeito(row)}
                 />
@@ -433,6 +571,7 @@ const MinhaRotina = () => {
                   slotLabel={s.label}
                   row={row}
                   nugget={nugget}
+                  feito={acertoRotinaSlots.has(s.slot)}
                   agniFracoOuIrregular={agniFracoOuIrregular}
                   onToggleFeito={() => row && toggleFeito(row)}
                 />
@@ -443,7 +582,7 @@ const MinhaRotina = () => {
                 key={`hab-${idx}`}
                 habito={h.habito}
                 periodo={h.periodo}
-                feito={habitosFeitos.has(h.habito)}
+                feito={acertoHabitos.has(h.habito)}
                 onToggle={() => toggleHabito(h.habito)}
               />
             ))}
@@ -464,7 +603,7 @@ const MinhaRotina = () => {
                 <AlertaCard
                   key={`al-${idx}`}
                   alerta={a}
-                  escorregou={alertasEscorregados.has(a)}
+                  escorregou={deslizes.has(a)}
                   onToggle={() => toggleAlerta(a)}
                 />
               ))}
@@ -675,6 +814,7 @@ interface SlotCardProps {
   slotLabel: string;
   row: RotinaRow | undefined;
   nugget: Nugget | undefined;
+  feito: boolean;
   agniFracoOuIrregular: boolean;
   onToggleFeito: () => void;
 }
@@ -683,6 +823,7 @@ const RotinaSlotCard = ({
   slotLabel,
   row,
   nugget,
+  feito,
   agniFracoOuIrregular,
   onToggleFeito,
 }: SlotCardProps) => {
@@ -696,7 +837,6 @@ const RotinaSlotCard = ({
       iconName
     ] ?? Circle;
 
-  const feito = row?.praticado === true;
   const mostrarChama =
     !!nugget?.nugget_json?.bom_para_agni && agniFracoOuIrregular;
 
