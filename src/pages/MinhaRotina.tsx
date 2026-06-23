@@ -39,20 +39,25 @@ type SlotKey =
   | "jantar"
   | "tonico_noite";
 
-type Periodo = "Manhã" | "Tarde" | "Noite";
-
-const SLOT_DEFS: { slot: SlotKey; label: string; periodo: Periodo }[] = [
-  { slot: "rotina_manha", label: "ritual da manhã", periodo: "Manhã" },
-  { slot: "cafe_manha", label: "café da manhã", periodo: "Manhã" },
-  { slot: "lanche_manha", label: "lanche da manhã", periodo: "Manhã" },
-  { slot: "almoco", label: "almoço", periodo: "Tarde" },
-  { slot: "lanche_tarde", label: "lanche da tarde", periodo: "Tarde" },
-  { slot: "bonus_diario", label: "bônus do dia", periodo: "Tarde" },
-  { slot: "jantar", label: "jantar", periodo: "Noite" },
-  { slot: "tonico_noite", label: "tônico da noite", periodo: "Noite" },
+const MEAL_SLOTS: { slot: SlotKey; label: string }[] = [
+  { slot: "cafe_manha", label: "café da manhã" },
+  { slot: "lanche_manha", label: "lanche da manhã" },
+  { slot: "almoco", label: "almoço" },
+  { slot: "lanche_tarde", label: "lanche da tarde" },
+  { slot: "jantar", label: "jantar" },
+  { slot: "tonico_noite", label: "tônico da noite" },
 ];
 
-const PERIODOS: Periodo[] = ["Manhã", "Tarde", "Noite"];
+const PRACTICE_SLOTS: { slot: SlotKey; label: string }[] = [
+  { slot: "rotina_manha", label: "ritual da manhã" },
+  { slot: "bonus_diario", label: "bônus do dia" },
+];
+
+interface HabitoGloss { habito: string; periodo?: string }
+interface GlossarioRotina {
+  habitos_diarios: HabitoGloss[] | null;
+  alertas_cotidianos: string[] | null;
+}
 
 // ===== Types =====
 interface RotinaRow {
