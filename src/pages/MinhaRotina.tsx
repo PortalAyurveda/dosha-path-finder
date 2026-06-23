@@ -223,7 +223,7 @@ const MinhaRotina = () => {
       const { data, error } = await supabase
         .from("portal_glossario")
         .select("habitos_diarios, alertas_cotidianos")
-        .eq("doshanome", doshaNome!)
+        .eq("doshanome", normalizarDosha(doshaNome) ?? "")
         .maybeSingle();
       if (error) return null;
       return (data as unknown as GlossarioRotina) ?? null;
