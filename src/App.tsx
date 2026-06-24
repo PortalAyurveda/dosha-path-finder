@@ -50,6 +50,7 @@ const AdminRevisoes = lazy(() => import("./pages/AdminRevisoes"));
 const AdminLoja = lazy(() => import("./pages/AdminLoja"));
 const AdminLojaVendas = lazy(() => import("./pages/AdminLojaVendas"));
 const AdminVendasAkasha = lazy(() => import("./pages/AdminVendasAkasha"));
+const AdminFinanceiro = lazy(() => import("./pages/AdminFinanceiro"));
 const AdminLojaVendaDetalhe = lazy(() => import("./pages/AdminLojaVendaDetalhe"));
 const AdminBiblioteca = lazy(() => import("./pages/AdminBiblioteca"));
 const AdminTerapeutas = lazy(() => import("./pages/AdminTerapeutas"));
