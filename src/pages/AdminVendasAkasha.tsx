@@ -476,7 +476,7 @@ const AdminVendasAkasha = () => {
           </TabsContent>
 
           <TabsContent value="rotinas" className="space-y-6">
-            <ResumoCards data={rotinasData} />
+            <ResumoCardsRotinas data={rotinasData} />
 
             <Card>
               <CardContent className="p-0">
