@@ -5,6 +5,7 @@ import ScrollToTop from "./ScrollToTop";
 import FloatingAkasha from "./akasha/FloatingAkasha";
 import { HeaderCtaProvider } from "@/contexts/HeaderCtaContext";
 import { ImmersiveProvider, useImmersive } from "@/contexts/ImmersiveContext";
+import { useUser } from "@/contexts/UserContext";
 
 const LayoutInner = ({ children }: { children: ReactNode }) => {
   const { immersive } = useImmersive();
