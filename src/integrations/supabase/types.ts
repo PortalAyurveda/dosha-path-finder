@@ -3786,6 +3786,7 @@ export type Database = {
           cupom_id: string | null
           email: string
           id: string
+          is_cortesia: boolean | null
           is_premium: boolean | null
           nivel_evolucao: string
           nome: string | null
@@ -3807,6 +3808,7 @@ export type Database = {
           cupom_id?: string | null
           email: string
           id: string
+          is_cortesia?: boolean | null
           is_premium?: boolean | null
           nivel_evolucao?: string
           nome?: string | null
@@ -3828,6 +3830,7 @@ export type Database = {
           cupom_id?: string | null
           email?: string
           id?: string
+          is_cortesia?: boolean | null
           is_premium?: boolean | null
           nivel_evolucao?: string
           nome?: string | null

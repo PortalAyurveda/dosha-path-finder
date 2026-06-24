@@ -11,6 +11,18 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import Seo from "@/components/Seo";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSub,
+  DropdownMenuSubTrigger,
+  DropdownMenuSubContent,
+  DropdownMenuPortal,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
+import { MoreHorizontal } from "lucide-react";
 
 interface Assinante {
   nome: string | null;
@@ -75,10 +87,39 @@ const statusBadge = (status: string | null) => {
 const AssinaturasTable = ({
   data,
   loading,
+  onChanged,
 }: {
   data: Assinante[];
   loading: boolean;
+  onChanged: () => void;
 }) => {
+  const toggleCortesia = async (a: Assinante) => {
+    const novo = !a.isCortesia;
+    const { error } = await supabase
+      .from("user_profiles")
+      .update({ is_cortesia: novo } as any)
+      .ilike("email", a.email);
+    if (error) {
+      toast.error(`Erro ao atualizar: ${error.message}`);
+      return;
+    }
+    toast.success(novo ? "Marcado como cortesia" : "Cortesia removida");
+    onChanged();
+  };
+
+  const trocarPlano = async (a: Assinante, plano: "mensal" | "anual" | "rotina") => {
+    const { error } = await supabase
+      .from("user_profiles")
+      .update({ plano } as any)
+      .ilike("email", a.email);
+    if (error) {
+      toast.error(`Erro ao trocar plano: ${error.message}`);
+      return;
+    }
+    toast.success(`Plano alterado para ${plano}`);
+    onChanged();
+  };
+
   if (loading) {
     return (
       <div className="p-6 space-y-3">
@@ -103,6 +144,7 @@ const AssinaturasTable = ({
           <TableHead>Plano</TableHead>
           <TableHead>Valor</TableHead>
           <TableHead>Status</TableHead>
+          <TableHead className="w-[60px]">Ações</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -123,6 +165,31 @@ const AssinaturasTable = ({
             </TableCell>
             <TableCell>{formatBRL(Number(a.valor))}</TableCell>
             <TableCell>{statusBadge(a.subscription_status)}</TableCell>
+            <TableCell>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="h-8 w-8">
+                    <MoreHorizontal className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={() => toggleCortesia(a)}>
+                    {a.isCortesia ? "Remover cortesia" : "Marcar como cortesia"}
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuSub>
+                    <DropdownMenuSubTrigger>Trocar plano</DropdownMenuSubTrigger>
+                    <DropdownMenuPortal>
+                      <DropdownMenuSubContent>
+                        <DropdownMenuItem onClick={() => trocarPlano(a, "mensal")}>Mensal</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => trocarPlano(a, "anual")}>Anual</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => trocarPlano(a, "rotina")}>Rotina</DropdownMenuItem>
+                      </DropdownMenuSubContent>
+                    </DropdownMenuPortal>
+                  </DropdownMenuSub>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </TableCell>
           </TableRow>
         ))}
       </TableBody>
@@ -226,7 +293,7 @@ const AdminVendasAkasha = () => {
     setLoading(true);
       const { data, error } = await supabase
         .from("user_profiles")
-        .select("nome, nome_completo, email, subscription_status, premium_since, premium_until, is_premium, stripe_subscription_id")
+        .select("nome, nome_completo, email, subscription_status, premium_since, premium_until, is_premium, stripe_subscription_id, is_cortesia")
         .eq("is_premium", true)
         .order("premium_since", { ascending: false, nullsFirst: false });
       if (!error && data) {
@@ -242,7 +309,7 @@ const AdminVendasAkasha = () => {
             plano,
             valor,
             stripe_subscription_id: stripeId ?? null,
-            isCortesia: stripeId === "manual" || stripeId == null,
+            isCortesia: !!r.is_cortesia,
           };
         });
         setData(rows);
@@ -258,7 +325,7 @@ const AdminVendasAkasha = () => {
     setRotinasLoading(true);
       const { data, error } = await supabase
         .from("user_profiles")
-        .select("nome, nome_completo, email, subscription_status, premium_since, premium_until, plano, stripe_subscription_id")
+        .select("nome, nome_completo, email, subscription_status, premium_since, premium_until, plano, stripe_subscription_id, is_cortesia")
         .eq("plano", "rotina")
         .order("premium_since", { ascending: false, nullsFirst: false });
       if (!error && data) {
@@ -273,7 +340,7 @@ const AdminVendasAkasha = () => {
             plano: "rotina" as const,
             valor: 30.0,
             stripe_subscription_id: stripeId ?? null,
-            isCortesia: stripeId === "manual" || stripeId == null,
+            isCortesia: !!r.is_cortesia,
           };
         });
         setRotinasData(rows);
@@ -500,7 +567,7 @@ const AdminVendasAkasha = () => {
 
             <Card>
               <CardContent className="p-0">
-                <AssinaturasTable data={data} loading={loading} />
+                <AssinaturasTable data={data} loading={loading} onChanged={() => { loadAssinaturas(); loadRotinas(); }} />
               </CardContent>
             </Card>
           </TabsContent>
@@ -510,7 +577,7 @@ const AdminVendasAkasha = () => {
 
             <Card>
               <CardContent className="p-0">
-                <AssinaturasTable data={rotinasData} loading={rotinasLoading} />
+                <AssinaturasTable data={rotinasData} loading={rotinasLoading} onChanged={() => { loadAssinaturas(); loadRotinas(); }} />
               </CardContent>
             </Card>
           </TabsContent>
