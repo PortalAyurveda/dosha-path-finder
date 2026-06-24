@@ -11,6 +11,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { ArrowLeft, Clock, Play } from "lucide-react";
 import HeartButton from "@/components/HeartButton";
 import Comments from "@/components/Comments";
+import BannerSlot from "@/components/banners/BannerSlot";
 
 const ALL_TABLES = ["portal_oficial", "portal_receitas", "portal_lives", "portal_vata", "portal_pitta", "portal_kapha"] as const;
 
