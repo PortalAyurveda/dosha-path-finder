@@ -215,6 +215,9 @@ const Auth = () => {
                     {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
                     Enviar código
                   </Button>
+                  <p className="text-center text-xs text-muted-foreground">
+                    Já tem conta? É só usar o mesmo e-mail para entrar.
+                  </p>
                 </form>
 
                 {!isInstagram && (
