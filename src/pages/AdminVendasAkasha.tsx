@@ -87,10 +87,39 @@ const statusBadge = (status: string | null) => {
 const AssinaturasTable = ({
   data,
   loading,
+  onChanged,
 }: {
   data: Assinante[];
   loading: boolean;
+  onChanged: () => void;
 }) => {
+  const toggleCortesia = async (a: Assinante) => {
+    const novo = !a.isCortesia;
+    const { error } = await supabase
+      .from("user_profiles")
+      .update({ is_cortesia: novo } as any)
+      .ilike("email", a.email);
+    if (error) {
+      toast.error(`Erro ao atualizar: ${error.message}`);
+      return;
+    }
+    toast.success(novo ? "Marcado como cortesia" : "Cortesia removida");
+    onChanged();
+  };
+
+  const trocarPlano = async (a: Assinante, plano: "mensal" | "anual" | "rotina") => {
+    const { error } = await supabase
+      .from("user_profiles")
+      .update({ plano } as any)
+      .ilike("email", a.email);
+    if (error) {
+      toast.error(`Erro ao trocar plano: ${error.message}`);
+      return;
+    }
+    toast.success(`Plano alterado para ${plano}`);
+    onChanged();
+  };
+
   if (loading) {
     return (
       <div className="p-6 space-y-3">
