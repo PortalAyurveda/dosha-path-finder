@@ -20,6 +20,8 @@ interface Assinante {
   premium_until: string | null;
   plano: "mensal" | "anual" | "rotina";
   valor: number;
+  stripe_subscription_id: string | null;
+  isCortesia: boolean;
 }
 
 const formatBRL = (v: number) =>
