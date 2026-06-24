@@ -12,6 +12,7 @@ import AdvancedVideoResult from "@/components/biblioteca/AdvancedVideoResult";
 import { Skeleton } from "@/components/ui/skeleton";
 import PaginationControls from "@/components/PaginationControls";
 import Seo from "@/components/Seo";
+import BannerSlot from "@/components/banners/BannerSlot";
 
 const PAGE_SIZE = 12;
 
