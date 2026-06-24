@@ -11,6 +11,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { ArrowLeft, Clock, Play } from "lucide-react";
 import HeartButton from "@/components/HeartButton";
 import Comments from "@/components/Comments";
+import BannerSlot from "@/components/banners/BannerSlot";
 
 const ALL_TABLES = ["portal_oficial", "portal_receitas", "portal_lives", "portal_vata", "portal_pitta", "portal_kapha"] as const;
 
@@ -154,6 +155,8 @@ const Video = () => {
           <Button variant="ghost" size="sm" onClick={() => navigate(-1)} className="text-muted-foreground hover:text-foreground">
             <ArrowLeft className="h-4 w-4 mr-2" /> Voltar
           </Button>
+
+          <BannerSlot slot="video" className="[&:empty]:hidden" />
 
           <div className="grid lg:grid-cols-3 gap-6 items-start">
             <div className="space-y-6 lg:col-span-2">

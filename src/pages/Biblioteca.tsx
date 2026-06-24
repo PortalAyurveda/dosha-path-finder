@@ -12,6 +12,7 @@ import AdvancedVideoResult from "@/components/biblioteca/AdvancedVideoResult";
 import { Skeleton } from "@/components/ui/skeleton";
 import PaginationControls from "@/components/PaginationControls";
 import Seo from "@/components/Seo";
+import BannerSlot from "@/components/banners/BannerSlot";
 
 const PAGE_SIZE = 12;
 
@@ -142,6 +143,8 @@ const Biblioteca = () => {
         category={category}
         onCategoryChange={setCategory}
       />
+
+      <BannerSlot slot="biblioteca" className="my-4 [&:empty]:hidden" />
 
       {loading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">

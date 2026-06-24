@@ -4,6 +4,7 @@ import { TrendingUp, FileText, Play, AlertTriangle, ChevronRight } from "lucide-
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/contexts/UserContext";
+import BannerSlot from "@/components/banners/BannerSlot";
 
 const C = {
   primary: "#352F54",
@@ -245,6 +246,9 @@ const LoggedHero = () => {
           </div>
           <span className="sr-only">Continue para seu perfil</span>
         </Link>
+
+        {/* Banner personalizado (slot loggedhero) */}
+        <BannerSlot slot="loggedhero" className="mt-4 [&:empty]:hidden" />
 
         {/* Bottom: 3 dados personalizados — métrica, artigo, vídeo */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-4">
