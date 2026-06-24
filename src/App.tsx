@@ -205,6 +205,7 @@ const RoutedApp = () => {
               <Route path="/admin/loja" element={<AdminRoute><AdminLoja /></AdminRoute>} />
               <Route path="/admin/loja/vendas" element={<AdminRoute><AdminLojaVendas /></AdminRoute>} />
               <Route path="/admin/vendas/akasha" element={<AdminRoute><AdminVendasAkasha /></AdminRoute>} />
+              <Route path="/admin/financeiro" element={<AdminRoute><AdminFinanceiro /></AdminRoute>} />
               <Route path="/admin/loja/vendas/:id" element={<AdminRoute><AdminLojaVendaDetalhe /></AdminRoute>} />
               <Route path="/admin/biblioteca" element={<AdminRoute><AdminBiblioteca /></AdminRoute>} />
               <Route path="/admin/terapeutas" element={<AdminRoute><AdminTerapeutas /></AdminRoute>} />
