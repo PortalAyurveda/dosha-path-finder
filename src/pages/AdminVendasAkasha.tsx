@@ -132,8 +132,9 @@ const AssinaturasTable = ({
 
 const ResumoCards = ({ data }: { data: Assinante[] }) => {
   const ativos = data.filter((a) => a.subscription_status === "active");
-  const mensaisAtivos = ativos.filter((a) => a.plano?.toLowerCase() === "mensal").length;
-  const anuaisAtivos = ativos.filter((a) => a.plano?.toLowerCase() === "anual").length;
+  const mensaisAtivos = ativos.filter((a) => a.plano?.toLowerCase() === "mensal" && !a.isCortesia).length;
+  const anuaisAtivos = ativos.filter((a) => a.plano?.toLowerCase() === "anual" && !a.isCortesia).length;
+  const cortesiasAtivas = ativos.filter((a) => a.isCortesia).length;
   const mrr = mensaisAtivos * 79.9 + anuaisAtivos * 49.75;
 
   return (
@@ -154,6 +155,9 @@ const ResumoCards = ({ data }: { data: Assinante[] }) => {
           <p className="text-3xl font-bold text-foreground">{formatBRL(mrr)}</p>
           <p className="text-xs text-muted-foreground mt-1">
             {mensaisAtivos} mensal × R$ 79,90 + {anuaisAtivos} anual × R$ 49,75
+            {cortesiasAtivas > 0 && (
+              <span className="block text-amber-600">({cortesiasAtivas} cortesia{cortesiasAtivas > 1 ? "s" : ""} não contabilizada{cortesiasAtivas > 1 ? "s" : ""})</span>
+            )}
           </p>
         </CardContent>
       </Card>
