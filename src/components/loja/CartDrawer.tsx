@@ -139,16 +139,14 @@ const CartDrawer = () => {
   }, [itens]);
 
   const freteSelecionado = opcoesFrete.find((f) => String(f.id) === freteId) || null;
-  // Recalcula o desconto se o subtotal mudar (itens alterados)
+  // Recalcula o desconto SEMPRE sobre o subtotal atual (não usa valor congelado)
   const descontoCupom = (() => {
     if (!cupomAplicado) return 0;
-    // Prioriza valor calculado pela edge function
-    if (Number(cupomAplicado.desconto_calculado) > 0) {
-      return Math.min(subtotal, Number(cupomAplicado.desconto_calculado));
-    }
+    if (cupomAplicado.tipo_desconto === "frete_gratis") return 0;
     if (cupomAplicado.tipo_desconto === "percentual") {
       return Math.min(subtotal, (subtotal * Number(cupomAplicado.valor_desconto)) / 100);
     }
+    // valor_fixo
     return Math.min(subtotal, Number(cupomAplicado.valor_desconto));
   })();
   const total = Math.max(0, subtotal - descontoCupom) + (freteSelecionado?.preco ?? 0);

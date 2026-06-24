@@ -59,6 +59,114 @@ export type Database = {
         }
         Relationships: []
       }
+      arquitetura_fluxos: {
+        Row: {
+          ativo: boolean | null
+          created_at: string | null
+          edge_functions: string[] | null
+          fluxo_nome: string
+          gatilho: string | null
+          id: string
+          observacoes: string | null
+          passos: Json | null
+          resumo: string | null
+          status_saude: string | null
+          tabelas_tocadas: string[] | null
+          telas: string[] | null
+          updated_at: string | null
+          verificado_em: string | null
+          webhooks: string[] | null
+        }
+        Insert: {
+          ativo?: boolean | null
+          created_at?: string | null
+          edge_functions?: string[] | null
+          fluxo_nome: string
+          gatilho?: string | null
+          id?: string
+          observacoes?: string | null
+          passos?: Json | null
+          resumo?: string | null
+          status_saude?: string | null
+          tabelas_tocadas?: string[] | null
+          telas?: string[] | null
+          updated_at?: string | null
+          verificado_em?: string | null
+          webhooks?: string[] | null
+        }
+        Update: {
+          ativo?: boolean | null
+          created_at?: string | null
+          edge_functions?: string[] | null
+          fluxo_nome?: string
+          gatilho?: string | null
+          id?: string
+          observacoes?: string | null
+          passos?: Json | null
+          resumo?: string | null
+          status_saude?: string | null
+          tabelas_tocadas?: string[] | null
+          telas?: string[] | null
+          updated_at?: string | null
+          verificado_em?: string | null
+          webhooks?: string[] | null
+        }
+        Relationships: []
+      }
+      arquitetura_tabelas: {
+        Row: {
+          categoria: string | null
+          conversa_com: string[] | null
+          created_at: string | null
+          escrito_por: Json | null
+          id: string
+          lido_por: Json | null
+          linhas: number | null
+          modulos_devlog: string[] | null
+          observacoes: string | null
+          papel: string | null
+          schema_nome: string
+          status_saude: string | null
+          tabela: string
+          updated_at: string | null
+          verificado_em: string | null
+        }
+        Insert: {
+          categoria?: string | null
+          conversa_com?: string[] | null
+          created_at?: string | null
+          escrito_por?: Json | null
+          id?: string
+          lido_por?: Json | null
+          linhas?: number | null
+          modulos_devlog?: string[] | null
+          observacoes?: string | null
+          papel?: string | null
+          schema_nome: string
+          status_saude?: string | null
+          tabela: string
+          updated_at?: string | null
+          verificado_em?: string | null
+        }
+        Update: {
+          categoria?: string | null
+          conversa_com?: string[] | null
+          created_at?: string | null
+          escrito_por?: Json | null
+          id?: string
+          lido_por?: Json | null
+          linhas?: number | null
+          modulos_devlog?: string[] | null
+          observacoes?: string | null
+          papel?: string | null
+          schema_nome?: string
+          status_saude?: string | null
+          tabela?: string
+          updated_at?: string | null
+          verificado_em?: string | null
+        }
+        Relationships: []
+      }
       assinaturas: {
         Row: {
           canceled_at: string | null
@@ -3889,7 +3997,26 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      arquitetura_saude: {
+        Row: {
+          categoria: string | null
+          n_tabelas: number | null
+          status_saude: string | null
+        }
+        Relationships: []
+      }
+      arquitetura_tabela_fluxos: {
+        Row: {
+          categoria: string | null
+          fluxos_que_passam: string[] | null
+          linhas: number | null
+          n_fluxos: number | null
+          schema_nome: string | null
+          status_saude: string | null
+          tabela: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       admin_set_portal_conteudo_destaques: {
