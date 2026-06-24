@@ -111,7 +111,16 @@ const AssinaturasTable = ({
             <TableCell className="whitespace-nowrap">{formatDate(a.premium_since)}</TableCell>
             <TableCell>{a.nome || "—"}</TableCell>
             <TableCell className="text-muted-foreground">{a.email}</TableCell>
-            <TableCell>{planoBadge(a.plano)}</TableCell>
+            <TableCell>
+              <div className="flex items-center gap-1.5 flex-wrap">
+                {planoBadge(a.plano)}
+                {a.isCortesia && (
+                  <Badge variant="outline" className="border-amber-400 text-amber-600 text-[10px] px-1.5 py-0">
+                    cortesia
+                  </Badge>
+                )}
+              </div>
+            </TableCell>
             <TableCell>{formatBRL(Number(a.valor))}</TableCell>
             <TableCell>{statusBadge(a.subscription_status)}</TableCell>
           </TableRow>
@@ -161,8 +170,10 @@ const ResumoCards = ({ data }: { data: Assinante[] }) => {
 };
 
 const ResumoCardsRotinas = ({ data }: { data: Assinante[] }) => {
-  const ativos = data.filter((a) => a.subscription_status === "active").length;
-  const mrr = ativos * 30.0;
+  const ativos = data.filter((a) => a.subscription_status === "active");
+  const ativosPagantes = ativos.filter((a) => !a.isCortesia).length;
+  const cortesiasAtivas = ativos.filter((a) => a.isCortesia).length;
+  const mrr = ativosPagantes * 30.0;
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -171,7 +182,7 @@ const ResumoCardsRotinas = ({ data }: { data: Assinante[] }) => {
           <CardTitle className="text-sm text-muted-foreground font-normal">Assinantes ativos</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-3xl font-bold text-foreground">{ativos}</p>
+          <p className="text-3xl font-bold text-foreground">{ativos.length}</p>
         </CardContent>
       </Card>
       <Card>
@@ -180,7 +191,12 @@ const ResumoCardsRotinas = ({ data }: { data: Assinante[] }) => {
         </CardHeader>
         <CardContent>
           <p className="text-3xl font-bold text-foreground">{formatBRL(mrr)}</p>
-          <p className="text-xs text-muted-foreground mt-1">{ativos} rotina × R$ 30,00</p>
+          <p className="text-xs text-muted-foreground mt-1">
+            {ativosPagantes} rotina × R$ 30,00
+            {cortesiasAtivas > 0 && (
+              <span className="block text-amber-600">({cortesiasAtivas} cortesia{cortesiasAtivas > 1 ? "s" : ""} não contabilizada{cortesiasAtivas > 1 ? "s" : ""})</span>
+            )}
+          </p>
         </CardContent>
       </Card>
       <Card>
@@ -204,26 +220,29 @@ const AdminVendasAkasha = () => {
 
   const loadAssinaturas = useCallback(async () => {
     setLoading(true);
-    const { data, error } = await supabase
-      .from("user_profiles")
-      .select("nome, nome_completo, email, subscription_status, premium_since, premium_until, is_premium")
-      .eq("is_premium", true)
-      .order("premium_since", { ascending: false, nullsFirst: false });
-    if (!error && data) {
-      const rows: Assinante[] = (data as any[]).map((r) => {
-        const { plano, valor } = derivarPlano(r.premium_since, r.premium_until);
-        return {
-          nome: r.nome_completo || r.nome || null,
-          email: r.email,
-          subscription_status: r.subscription_status ?? null,
-          premium_since: r.premium_since ?? null,
-          premium_until: r.premium_until ?? null,
-          plano,
-          valor,
-        };
-      });
-      setData(rows);
-    }
+      const { data, error } = await supabase
+        .from("user_profiles")
+        .select("nome, nome_completo, email, subscription_status, premium_since, premium_until, is_premium, stripe_subscription_id")
+        .eq("is_premium", true)
+        .order("premium_since", { ascending: false, nullsFirst: false });
+      if (!error && data) {
+        const rows: Assinante[] = (data as any[]).map((r) => {
+          const { plano, valor } = derivarPlano(r.premium_since, r.premium_until);
+          const stripeId = r.stripe_subscription_id;
+          return {
+            nome: r.nome_completo || r.nome || null,
+            email: r.email,
+            subscription_status: r.subscription_status ?? null,
+            premium_since: r.premium_since ?? null,
+            premium_until: r.premium_until ?? null,
+            plano,
+            valor,
+            stripe_subscription_id: stripeId ?? null,
+            isCortesia: stripeId === "manual" || stripeId == null,
+          };
+        });
+        setData(rows);
+      }
     setLoading(false);
   }, []);
 
@@ -233,23 +252,28 @@ const AdminVendasAkasha = () => {
 
   const loadRotinas = useCallback(async () => {
     setRotinasLoading(true);
-    const { data, error } = await supabase
-      .from("user_profiles")
-      .select("nome, nome_completo, email, subscription_status, premium_since, premium_until, plano")
-      .eq("plano", "rotina")
-      .order("premium_since", { ascending: false, nullsFirst: false });
-    if (!error && data) {
-      const rows: Assinante[] = (data as any[]).map((r) => ({
-        nome: r.nome_completo || r.nome || null,
-        email: r.email,
-        subscription_status: r.subscription_status ?? null,
-        premium_since: r.premium_since ?? null,
-        premium_until: r.premium_until ?? null,
-        plano: "rotina" as const,
-        valor: 30.0,
-      }));
-      setRotinasData(rows);
-    }
+      const { data, error } = await supabase
+        .from("user_profiles")
+        .select("nome, nome_completo, email, subscription_status, premium_since, premium_until, plano, stripe_subscription_id")
+        .eq("plano", "rotina")
+        .order("premium_since", { ascending: false, nullsFirst: false });
+      if (!error && data) {
+        const rows: Assinante[] = (data as any[]).map((r) => {
+          const stripeId = r.stripe_subscription_id;
+          return {
+            nome: r.nome_completo || r.nome || null,
+            email: r.email,
+            subscription_status: r.subscription_status ?? null,
+            premium_since: r.premium_since ?? null,
+            premium_until: r.premium_until ?? null,
+            plano: "rotina" as const,
+            valor: 30.0,
+            stripe_subscription_id: stripeId ?? null,
+            isCortesia: stripeId === "manual" || stripeId == null,
+          };
+        });
+        setRotinasData(rows);
+      }
     setRotinasLoading(false);
   }, []);
 
