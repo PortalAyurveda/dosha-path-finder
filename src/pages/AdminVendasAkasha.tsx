@@ -325,7 +325,7 @@ const AdminVendasAkasha = () => {
     setRotinasLoading(true);
       const { data, error } = await supabase
         .from("user_profiles")
-        .select("nome, nome_completo, email, subscription_status, premium_since, premium_until, plano, stripe_subscription_id")
+        .select("nome, nome_completo, email, subscription_status, premium_since, premium_until, plano, stripe_subscription_id, is_cortesia")
         .eq("plano", "rotina")
         .order("premium_since", { ascending: false, nullsFirst: false });
       if (!error && data) {
@@ -340,7 +340,7 @@ const AdminVendasAkasha = () => {
             plano: "rotina" as const,
             valor: 30.0,
             stripe_subscription_id: stripeId ?? null,
-            isCortesia: stripeId === "manual" || stripeId == null,
+            isCortesia: !!r.is_cortesia,
           };
         });
         setRotinasData(rows);
