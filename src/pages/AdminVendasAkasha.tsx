@@ -18,7 +18,7 @@ interface Assinante {
   subscription_status: string | null;
   premium_since: string | null;
   premium_until: string | null;
-  plano: "mensal" | "anual";
+  plano: "mensal" | "anual" | "rotina";
   valor: number;
 }
 
@@ -54,6 +54,8 @@ const planoBadge = (plano: string) => {
   const p = plano?.toLowerCase();
   if (p === "anual")
     return <Badge className="bg-purple-500 hover:bg-purple-600 text-white border-transparent">anual</Badge>;
+  if (p === "rotina")
+    return <Badge className="bg-amber-500 hover:bg-amber-600 text-white border-transparent">rotina</Badge>;
   return <Badge className="bg-blue-500 hover:bg-blue-600 text-white border-transparent">mensal</Badge>;
 };
 
@@ -156,6 +158,41 @@ const ResumoCards = ({ data }: { data: Assinante[] }) => {
   );
 };
 
+const ResumoCardsRotinas = ({ data }: { data: Assinante[] }) => {
+  const ativos = data.filter((a) => a.subscription_status === "active").length;
+  const mrr = ativos * 30.0;
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <Card>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-sm text-muted-foreground font-normal">Assinantes ativos</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-3xl font-bold text-foreground">{ativos}</p>
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-sm text-muted-foreground font-normal">MRR</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-3xl font-bold text-foreground">{formatBRL(mrr)}</p>
+          <p className="text-xs text-muted-foreground mt-1">{ativos} rotina × R$ 30,00</p>
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-sm text-muted-foreground font-normal">Total de assinaturas</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-3xl font-bold text-foreground">{data.length}</p>
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
+
 const AdminVendasAkasha = () => {
   const [tab, setTab] = useState("premium");
 
@@ -197,21 +234,18 @@ const AdminVendasAkasha = () => {
     const { data, error } = await supabase
       .from("user_profiles")
       .select("nome, nome_completo, email, subscription_status, premium_since, premium_until, plano")
-      .eq("plano", "rotinas")
+      .eq("plano", "rotina")
       .order("premium_since", { ascending: false, nullsFirst: false });
     if (!error && data) {
-      const rows: Assinante[] = (data as any[]).map((r) => {
-        const { plano, valor } = derivarPlano(r.premium_since, r.premium_until);
-        return {
-          nome: r.nome_completo || r.nome || null,
-          email: r.email,
-          subscription_status: r.subscription_status ?? null,
-          premium_since: r.premium_since ?? null,
-          premium_until: r.premium_until ?? null,
-          plano,
-          valor,
-        };
-      });
+      const rows: Assinante[] = (data as any[]).map((r) => ({
+        nome: r.nome_completo || r.nome || null,
+        email: r.email,
+        subscription_status: r.subscription_status ?? null,
+        premium_since: r.premium_since ?? null,
+        premium_until: r.premium_until ?? null,
+        plano: "rotina" as const,
+        valor: 30.0,
+      }));
       setRotinasData(rows);
     }
     setRotinasLoading(false);
@@ -442,7 +476,7 @@ const AdminVendasAkasha = () => {
           </TabsContent>
 
           <TabsContent value="rotinas" className="space-y-6">
-            <ResumoCards data={rotinasData} />
+            <ResumoCardsRotinas data={rotinasData} />
 
             <Card>
               <CardContent className="p-0">
