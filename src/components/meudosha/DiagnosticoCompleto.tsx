@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { Loader2, Lock, Stethoscope, GitBranch, Compass, TrendingUp, ChevronDown, ChevronUp, BookOpen, type LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -803,47 +803,46 @@ const ProtocoloSamkhya = ({
 };
 
 // ============ SEÇÃO 3 — Plano 30 Dias ============
-const Plano30Dias = ({ isPremium }: { isPremium: boolean }) => (
-  <section className="space-y-4 pt-12">
-    <h2
-      className="font-serif font-bold text-xl md:text-2xl"
-      style={{ color: COLOR.primary, fontFamily: "'Roboto Serif', serif" }}
-    >
-      Seu Plano de 30 Dias
-    </h2>
+const Plano30Dias = ({ isPremium }: { isPremium: boolean }) => {
+  const navigate = useNavigate();
+  return (
+    <section className="space-y-4 pt-12">
+      <h2 className="font-serif font-bold text-xl md:text-2xl text-primary">
+        Seu Plano de 30 Dias
+      </h2>
 
-    {isPremium ? (
       <div
-        className={cn("p-6 md:p-8 text-center", LEAF)}
-        style={{
-          background: `linear-gradient(135deg, ${COLOR.surfaceSun} 0%, #FFFFFF 100%)`,
-          border: `1px solid ${COLOR.cardBorder}`,
-        }}
+        className={cn(
+          "rounded-2xl border p-5 md:p-6 transition-colors",
+          isPremium
+            ? "bg-secondary/10 border-secondary/20 hover:bg-secondary/[0.13]"
+            : "bg-primary/5 border-primary/20 hover:bg-primary/[0.08]"
+        )}
       >
-        <p
-          className="text-base md:text-lg font-medium"
-          style={{ color: COLOR.primary, fontFamily: "'Roboto Serif', serif" }}
-        >
-          Em breve liberado para você,
-          <br />
-          <span style={{ color: COLOR.ouro }}>assinante Premium do Portal Ayurveda</span>.
-        </p>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="space-y-1">
+            <p className="text-xs uppercase tracking-widest text-muted-foreground font-medium">
+              {isPremium ? "Sua rotina está liberada" : "Rotina personalizada"}
+            </p>
+            <p className="text-base text-foreground font-medium leading-relaxed">
+              {isPremium
+                ? "Seu plano diário de Ayurveda está pronto: café da manhã, almoço, chás, prática e tônico da noite."
+                : "Receba um plano diário para o seu dosha — café, almoço, chás, prática e tônico da noite, revisado todo mês."}
+            </p>
+          </div>
+          <Button
+            variant={isPremium ? "secondary" : "default"}
+            size="sm"
+            onClick={() => navigate("/minha-rotina")}
+            className="self-start sm:self-auto shrink-0"
+          >
+            {isPremium ? "Ver minha rotina →" : "Conhecer minha rotina →"}
+          </Button>
+        </div>
       </div>
-    ) : (
-      <Link
-        to="/assinar"
-        aria-label="Conheça o Portal Premium"
-        className={cn("block overflow-hidden hover:opacity-95 transition-opacity", LEAF)}
-      >
-        <img
-          src="https://api.portalayurveda.com/storage/v1/object/public/portal_images/banner-premium-sf300x.webp"
-          alt="Desbloqueie seu plano personalizado de 30 dias no Portal Premium"
-          className="block w-full h-auto"
-        />
-      </Link>
-    )}
-  </section>
-);
+    </section>
+  );
+};
 
 
 // ============ Componente principal ============
