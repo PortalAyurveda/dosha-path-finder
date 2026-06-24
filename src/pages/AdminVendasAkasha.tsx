@@ -144,6 +144,7 @@ const AssinaturasTable = ({
           <TableHead>Plano</TableHead>
           <TableHead>Valor</TableHead>
           <TableHead>Status</TableHead>
+          <TableHead className="w-[60px]">Ações</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -164,6 +165,31 @@ const AssinaturasTable = ({
             </TableCell>
             <TableCell>{formatBRL(Number(a.valor))}</TableCell>
             <TableCell>{statusBadge(a.subscription_status)}</TableCell>
+            <TableCell>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="h-8 w-8">
+                    <MoreHorizontal className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={() => toggleCortesia(a)}>
+                    {a.isCortesia ? "Remover cortesia" : "Marcar como cortesia"}
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuSub>
+                    <DropdownMenuSubTrigger>Trocar plano</DropdownMenuSubTrigger>
+                    <DropdownMenuPortal>
+                      <DropdownMenuSubContent>
+                        <DropdownMenuItem onClick={() => trocarPlano(a, "mensal")}>Mensal</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => trocarPlano(a, "anual")}>Anual</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => trocarPlano(a, "rotina")}>Rotina</DropdownMenuItem>
+                      </DropdownMenuSubContent>
+                    </DropdownMenuPortal>
+                  </DropdownMenuSub>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </TableCell>
           </TableRow>
         ))}
       </TableBody>
