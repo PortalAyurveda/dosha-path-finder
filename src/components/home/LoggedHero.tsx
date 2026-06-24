@@ -247,6 +247,9 @@ const LoggedHero = () => {
           <span className="sr-only">Continue para seu perfil</span>
         </Link>
 
+        {/* Banner personalizado (slot loggedhero) */}
+        <BannerSlot slot="loggedhero" className="mt-4 [&:empty]:hidden" />
+
         {/* Bottom: 3 dados personalizados — métrica, artigo, vídeo */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-4">
           {/* Métrica destaque — mini barras */}
