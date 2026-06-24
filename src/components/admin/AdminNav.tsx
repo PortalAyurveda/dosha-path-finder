@@ -14,6 +14,7 @@ const links = [
   { to: "/admin/banners", label: "Banners", icon: LayoutTemplate },
   { to: "/admin/cupons", label: "Cupons", icon: Ticket },
   { to: "/admin/devlog", label: "Devlog", icon: History },
+  { to: "/admin/financeiro", label: "Financeiro", icon: DollarSign },
   { to: "/admin/estoque", label: "Estoque & Produção", icon: Package },
   { to: "/admin/imagens", label: "Imagens", icon: ImageIcon },
   { to: "/admin/loja", label: "Loja Samkhya", icon: Store },
