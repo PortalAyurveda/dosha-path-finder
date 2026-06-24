@@ -214,6 +214,7 @@ const RoutedApp = () => {
               <Route path="/admin/tags" element={<AdminRoute><AdminTags /></AdminRoute>} />
               <Route path="/admin/cupons" element={<AdminRoute><AdminCupons /></AdminRoute>} />
               <Route path="/admin/alunos" element={<AdminRoute><AdminAlunos /></AdminRoute>} />
+              <Route path="/admin/banners" element={<AdminRoute><AdminBanners /></AdminRoute>} />
 
               {/* Aulas ao vivo + webinars (CMS) */}
               <Route path="/aula/:slug/confirmado" element={<WebinarConfirmado />} />
