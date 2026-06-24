@@ -199,21 +199,18 @@ const AdminVendasAkasha = () => {
     const { data, error } = await supabase
       .from("user_profiles")
       .select("nome, nome_completo, email, subscription_status, premium_since, premium_until, plano")
-      .eq("plano", "rotinas")
+      .eq("plano", "rotina")
       .order("premium_since", { ascending: false, nullsFirst: false });
     if (!error && data) {
-      const rows: Assinante[] = (data as any[]).map((r) => {
-        const { plano, valor } = derivarPlano(r.premium_since, r.premium_until);
-        return {
-          nome: r.nome_completo || r.nome || null,
-          email: r.email,
-          subscription_status: r.subscription_status ?? null,
-          premium_since: r.premium_since ?? null,
-          premium_until: r.premium_until ?? null,
-          plano,
-          valor,
-        };
-      });
+      const rows: Assinante[] = (data as any[]).map((r) => ({
+        nome: r.nome_completo || r.nome || null,
+        email: r.email,
+        subscription_status: r.subscription_status ?? null,
+        premium_since: r.premium_since ?? null,
+        premium_until: r.premium_until ?? null,
+        plano: "rotina" as const,
+        valor: 30.0,
+      }));
       setRotinasData(rows);
     }
     setRotinasLoading(false);
