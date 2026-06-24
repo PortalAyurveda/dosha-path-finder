@@ -18,7 +18,7 @@ interface Assinante {
   subscription_status: string | null;
   premium_since: string | null;
   premium_until: string | null;
-  plano: "mensal" | "anual";
+  plano: "mensal" | "anual" | "rotina";
   valor: number;
 }
 
