@@ -83,6 +83,7 @@ const SamkhyaPedido = lazy(() => import("./pages/SamkhyaPedido"));
 const SamkhyaCompras = lazy(() => import("./pages/SamkhyaCompras"));
 const Pesquisa = lazy(() => import("./pages/Pesquisa"));
 const Revisao = lazy(() => import("./pages/Revisao"));
+const AdminBanners = lazy(() => import("./pages/AdminBanners"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
