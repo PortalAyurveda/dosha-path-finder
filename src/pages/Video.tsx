@@ -156,6 +156,8 @@ const Video = () => {
             <ArrowLeft className="h-4 w-4 mr-2" /> Voltar
           </Button>
 
+          <BannerSlot slot="video" className="[&:empty]:hidden" />
+
           <div className="grid lg:grid-cols-3 gap-6 items-start">
             <div className="space-y-6 lg:col-span-2">
               {/* Player */}
