@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import Seo from "@/components/Seo";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface Assinante {
   nome: string | null;
@@ -67,7 +68,98 @@ const statusBadge = (status: string | null) => {
   return <Badge variant="outline">{status ?? "—"}</Badge>;
 };
 
+const AssinaturasTable = ({
+  data,
+  loading,
+}: {
+  data: Assinante[];
+  loading: boolean;
+}) => {
+  if (loading) {
+    return (
+      <div className="p-6 space-y-3">
+        <Skeleton className="h-8 w-full" />
+        <Skeleton className="h-8 w-full" />
+        <Skeleton className="h-8 w-full" />
+      </div>
+    );
+  }
+
+  if (data.length === 0) {
+    return <p className="p-6 text-sm text-muted-foreground">Nenhuma assinatura encontrada.</p>;
+  }
+
+  return (
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>Data</TableHead>
+          <TableHead>Nome</TableHead>
+          <TableHead>Email</TableHead>
+          <TableHead>Plano</TableHead>
+          <TableHead>Valor</TableHead>
+          <TableHead>Status</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {data.map((a) => (
+          <TableRow key={a.email}>
+            <TableCell className="whitespace-nowrap">{formatDate(a.premium_since)}</TableCell>
+            <TableCell>{a.nome || "—"}</TableCell>
+            <TableCell className="text-muted-foreground">{a.email}</TableCell>
+            <TableCell>{planoBadge(a.plano)}</TableCell>
+            <TableCell>{formatBRL(Number(a.valor))}</TableCell>
+            <TableCell>{statusBadge(a.subscription_status)}</TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  );
+};
+
+const ResumoCards = ({ data }: { data: Assinante[] }) => {
+  const ativos = data.filter((a) => a.subscription_status === "active");
+  const mensaisAtivos = ativos.filter((a) => a.plano?.toLowerCase() === "mensal").length;
+  const anuaisAtivos = ativos.filter((a) => a.plano?.toLowerCase() === "anual").length;
+  const mrr = mensaisAtivos * 79.9 + anuaisAtivos * 49.75;
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <Card>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-sm text-muted-foreground font-normal">Assinantes ativos</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-3xl font-bold text-foreground">{ativos.length}</p>
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-sm text-muted-foreground font-normal">MRR</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-3xl font-bold text-foreground">{formatBRL(mrr)}</p>
+          <p className="text-xs text-muted-foreground mt-1">
+            {mensaisAtivos} mensal × R$ 79,90 + {anuaisAtivos} anual × R$ 49,75
+          </p>
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-sm text-muted-foreground font-normal">Total de assinaturas</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-3xl font-bold text-foreground">{data.length}</p>
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
+
 const AdminVendasAkasha = () => {
+  const [tab, setTab] = useState("premium");
+
+  // ----- Premium tab state -----
   const [data, setData] = useState<Assinante[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -96,9 +188,39 @@ const AdminVendasAkasha = () => {
     setLoading(false);
   }, []);
 
+  // ----- Rotinas tab state -----
+  const [rotinasData, setRotinasData] = useState<Assinante[]>([]);
+  const [rotinasLoading, setRotinasLoading] = useState(true);
+
+  const loadRotinas = useCallback(async () => {
+    setRotinasLoading(true);
+    const { data, error } = await supabase
+      .from("user_profiles")
+      .select("nome, nome_completo, email, subscription_status, premium_since, premium_until, plano")
+      .eq("plano", "rotinas")
+      .order("premium_since", { ascending: false, nullsFirst: false });
+    if (!error && data) {
+      const rows: Assinante[] = (data as any[]).map((r) => {
+        const { plano, valor } = derivarPlano(r.premium_since, r.premium_until);
+        return {
+          nome: r.nome_completo || r.nome || null,
+          email: r.email,
+          subscription_status: r.subscription_status ?? null,
+          premium_since: r.premium_since ?? null,
+          premium_until: r.premium_until ?? null,
+          plano,
+          valor,
+        };
+      });
+      setRotinasData(rows);
+    }
+    setRotinasLoading(false);
+  }, []);
+
   useEffect(() => {
     loadAssinaturas();
-  }, [loadAssinaturas]);
+    loadRotinas();
+  }, [loadAssinaturas, loadRotinas]);
 
   // ----- Manual premium activation panel -----
   const [searchEmail, setSearchEmail] = useState("");
@@ -223,11 +345,6 @@ const AdminVendasAkasha = () => {
     loadAssinaturas();
   };
 
-  const ativos = data.filter((a) => a.subscription_status === "active");
-  const mensaisAtivos = ativos.filter((a) => a.plano?.toLowerCase() === "mensal").length;
-  const anuaisAtivos = ativos.filter((a) => a.plano?.toLowerCase() === "anual").length;
-  const mrr = mensaisAtivos * 79.9 + anuaisAtivos * 49.75;
-
   return (
     <div className="min-h-screen bg-background">
       <Seo title="Assinaturas Premium — Admin" description="Painel de assinaturas Akasha" />
@@ -235,150 +352,109 @@ const AdminVendasAkasha = () => {
       <div className="max-w-6xl mx-auto px-4 py-8 space-y-6">
         <h1 className="text-2xl font-heading font-bold text-foreground">Assinaturas Premium</h1>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm text-muted-foreground font-normal">Assinantes ativos</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-3xl font-bold text-foreground">{ativos.length}</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm text-muted-foreground font-normal">MRR</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-3xl font-bold text-foreground">{formatBRL(mrr)}</p>
-              <p className="text-xs text-muted-foreground mt-1">
-                {mensaisAtivos} mensal × R$ 79,90 + {anuaisAtivos} anual × R$ 49,75
-              </p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm text-muted-foreground font-normal">Total de assinaturas</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-3xl font-bold text-foreground">{data.length}</p>
-            </CardContent>
-          </Card>
-        </div>
+        <Tabs value={tab} onValueChange={setTab} className="w-full">
+          <TabsList className="mb-4">
+            <TabsTrigger value="premium">Premium</TabsTrigger>
+            <TabsTrigger value="rotinas">Rotinas</TabsTrigger>
+          </TabsList>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Ativar Premium Manualmente</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex flex-col sm:flex-row gap-2 sm:items-end">
-              <div className="flex-1 space-y-1.5">
-                <Label htmlFor="manual-premium-email">Email do usuário</Label>
-                <Input
-                  id="manual-premium-email"
-                  type="email"
-                  placeholder="usuario@exemplo.com"
-                  value={searchEmail}
-                  onChange={(e) => {
-                    setSearchEmail(e.target.value);
-                    setFoundUser(null);
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") handleBuscar();
-                  }}
-                />
-              </div>
-              <Button onClick={handleBuscar} disabled={searching}>
-                {searching ? "Buscando..." : "Buscar"}
-              </Button>
-            </div>
+          <TabsContent value="premium" className="space-y-6">
+            <ResumoCards data={data} />
 
-            {foundUser && (
-              <div className="rounded-md border bg-muted/30 p-4 space-y-3">
-                <div className="text-sm">
-                  <p className="font-medium text-foreground">{foundUser.nome}</p>
-                  <p className="text-muted-foreground">{foundUser.email}</p>
-                  {foundUser.is_premium ? (
-                    <p className="mt-1 text-yellow-600 font-medium">
-                      ⚠ Já é premium (status: {foundUser.subscription_status ?? "active"})
-                    </p>
-                  ) : (
-                    <p className="mt-1 text-muted-foreground">Status: não premium</p>
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Plano</Label>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                    {([
-                      { v: "mensal", label: "Mensal — R$ 79,90/mês", sub: "+ 1 mês" },
-                      { v: "anual", label: "Anual — R$ 597,00/ano", sub: "+ 12 meses" },
-                    ] as const).map((opt) => (
-                      <button
-                        key={opt.v}
-                        type="button"
-                        onClick={() => setPlanoSel(opt.v)}
-                        className={`text-left rounded-md border p-3 transition-colors ${
-                          planoSel === opt.v
-                            ? "border-primary bg-primary/5"
-                            : "border-input hover:bg-accent"
-                        }`}
-                      >
-                        <p className="text-sm font-medium text-foreground">{opt.label}</p>
-                        <p className="text-xs text-muted-foreground">premium_until = now() {opt.sub}</p>
-                      </button>
-                    ))}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Ativar Premium Manualmente</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex flex-col sm:flex-row gap-2 sm:items-end">
+                  <div className="flex-1 space-y-1.5">
+                    <Label htmlFor="manual-premium-email">Email do usuário</Label>
+                    <Input
+                      id="manual-premium-email"
+                      type="email"
+                      placeholder="usuario@exemplo.com"
+                      value={searchEmail}
+                      onChange={(e) => {
+                        setSearchEmail(e.target.value);
+                        setFoundUser(null);
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") handleBuscar();
+                      }}
+                    />
                   </div>
+                  <Button onClick={handleBuscar} disabled={searching}>
+                    {searching ? "Buscando..." : "Buscar"}
+                  </Button>
                 </div>
 
-                <Button onClick={handleAtivar} disabled={activating} className="w-full sm:w-auto">
-                  {activating ? "Ativando..." : "Ativar Premium"}
-                </Button>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+                {foundUser && (
+                  <div className="rounded-md border bg-muted/30 p-4 space-y-3">
+                    <div className="text-sm">
+                      <p className="font-medium text-foreground">{foundUser.nome}</p>
+                      <p className="text-muted-foreground">{foundUser.email}</p>
+                      {foundUser.is_premium ? (
+                        <p className="mt-1 text-yellow-600 font-medium">
+                          ⚠ Já é premium (status: {foundUser.subscription_status ?? "active"})
+                        </p>
+                      ) : (
+                        <p className="mt-1 text-muted-foreground">Status: não premium</p>
+                      )}
+                    </div>
 
-        <Card>
-          <CardContent className="p-0">
-            {loading ? (
-              <div className="p-6 space-y-3">
-                <Skeleton className="h-8 w-full" />
-                <Skeleton className="h-8 w-full" />
-                <Skeleton className="h-8 w-full" />
-              </div>
-            ) : data.length === 0 ? (
-              <p className="p-6 text-sm text-muted-foreground">Nenhuma assinatura encontrada.</p>
-            ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Data</TableHead>
-                    <TableHead>Nome</TableHead>
-                    <TableHead>Email</TableHead>
-                    <TableHead>Plano</TableHead>
-                    <TableHead>Valor</TableHead>
-                    <TableHead>Status</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {data.map((a) => (
-                    <TableRow key={a.email}>
-                      <TableCell className="whitespace-nowrap">{formatDate(a.premium_since)}</TableCell>
-                      <TableCell>{a.nome || "—"}</TableCell>
-                      <TableCell className="text-muted-foreground">{a.email}</TableCell>
-                      <TableCell>{planoBadge(a.plano)}</TableCell>
-                      <TableCell>{formatBRL(Number(a.valor))}</TableCell>
-                      <TableCell>{statusBadge(a.subscription_status)}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            )}
-          </CardContent>
-        </Card>
+                    <div className="space-y-2">
+                      <Label>Plano</Label>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        {([
+                          { v: "mensal", label: "Mensal — R$ 79,90/mês", sub: "+ 1 mês" },
+                          { v: "anual", label: "Anual — R$ 597,00/ano", sub: "+ 12 meses" },
+                        ] as const).map((opt) => (
+                          <button
+                            key={opt.v}
+                            type="button"
+                            onClick={() => setPlanoSel(opt.v)}
+                            className={`text-left rounded-md border p-3 transition-colors ${
+                              planoSel === opt.v
+                                ? "border-primary bg-primary/5"
+                                : "border-input hover:bg-accent"
+                            }`}
+                          >
+                            <p className="text-sm font-medium text-foreground">{opt.label}</p>
+                            <p className="text-xs text-muted-foreground">premium_until = now() {opt.sub}</p>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <Button onClick={handleAtivar} disabled={activating} className="w-full sm:w-auto">
+                      {activating ? "Ativando..." : "Ativar Premium"}
+                    </Button>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardContent className="p-0">
+                <AssinaturasTable data={data} loading={loading} />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="rotinas" className="space-y-6">
+            <ResumoCards data={rotinasData} />
+
+            <Card>
+              <CardContent className="p-0">
+                <AssinaturasTable data={rotinasData} loading={rotinasLoading} />
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
 };
 
 export default AdminVendasAkasha;
+
