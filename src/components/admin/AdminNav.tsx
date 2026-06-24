@@ -11,6 +11,7 @@ const links = [
   { to: "/admin/vendas/akasha", label: "Assinaturas Premium", icon: Crown },
   { to: "/admin/aula", label: "Aulas", icon: Video },
   { to: "/admin/biblioteca", label: "Biblioteca", icon: Library },
+  { to: "/admin/banners", label: "Banners", icon: LayoutTemplate },
   { to: "/admin/cupons", label: "Cupons", icon: Ticket },
   { to: "/admin/devlog", label: "Devlog", icon: History },
   { to: "/admin/estoque", label: "Estoque & Produção", icon: Package },
