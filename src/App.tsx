@@ -50,6 +50,7 @@ const AdminRevisoes = lazy(() => import("./pages/AdminRevisoes"));
 const AdminLoja = lazy(() => import("./pages/AdminLoja"));
 const AdminLojaVendas = lazy(() => import("./pages/AdminLojaVendas"));
 const AdminVendasAkasha = lazy(() => import("./pages/AdminVendasAkasha"));
+const AdminFinanceiro = lazy(() => import("./pages/AdminFinanceiro"));
 const AdminLojaVendaDetalhe = lazy(() => import("./pages/AdminLojaVendaDetalhe"));
 const AdminBiblioteca = lazy(() => import("./pages/AdminBiblioteca"));
 const AdminTerapeutas = lazy(() => import("./pages/AdminTerapeutas"));
@@ -204,6 +205,7 @@ const RoutedApp = () => {
               <Route path="/admin/loja" element={<AdminRoute><AdminLoja /></AdminRoute>} />
               <Route path="/admin/loja/vendas" element={<AdminRoute><AdminLojaVendas /></AdminRoute>} />
               <Route path="/admin/vendas/akasha" element={<AdminRoute><AdminVendasAkasha /></AdminRoute>} />
+              <Route path="/admin/financeiro" element={<AdminRoute><AdminFinanceiro /></AdminRoute>} />
               <Route path="/admin/loja/vendas/:id" element={<AdminRoute><AdminLojaVendaDetalhe /></AdminRoute>} />
               <Route path="/admin/biblioteca" element={<AdminRoute><AdminBiblioteca /></AdminRoute>} />
               <Route path="/admin/terapeutas" element={<AdminRoute><AdminTerapeutas /></AdminRoute>} />
