@@ -158,6 +158,41 @@ const ResumoCards = ({ data }: { data: Assinante[] }) => {
   );
 };
 
+const ResumoCardsRotinas = ({ data }: { data: Assinante[] }) => {
+  const ativos = data.filter((a) => a.subscription_status === "active").length;
+  const mrr = ativos * 30.0;
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <Card>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-sm text-muted-foreground font-normal">Assinantes ativos</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-3xl font-bold text-foreground">{ativos}</p>
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-sm text-muted-foreground font-normal">MRR</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-3xl font-bold text-foreground">{formatBRL(mrr)}</p>
+          <p className="text-xs text-muted-foreground mt-1">{ativos} rotina × R$ 30,00</p>
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-sm text-muted-foreground font-normal">Total de assinaturas</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-3xl font-bold text-foreground">{data.length}</p>
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
+
 const AdminVendasAkasha = () => {
   const [tab, setTab] = useState("premium");
 
