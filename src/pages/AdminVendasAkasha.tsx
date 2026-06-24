@@ -54,6 +54,8 @@ const planoBadge = (plano: string) => {
   const p = plano?.toLowerCase();
   if (p === "anual")
     return <Badge className="bg-purple-500 hover:bg-purple-600 text-white border-transparent">anual</Badge>;
+  if (p === "rotina")
+    return <Badge className="bg-amber-500 hover:bg-amber-600 text-white border-transparent">rotina</Badge>;
   return <Badge className="bg-blue-500 hover:bg-blue-600 text-white border-transparent">mensal</Badge>;
 };
 
