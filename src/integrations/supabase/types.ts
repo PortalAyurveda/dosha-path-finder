@@ -263,6 +263,101 @@ export type Database = {
         }
         Relationships: []
       }
+      banners: {
+        Row: {
+          ativo: boolean
+          atualizado_em: string
+          campanha: string
+          criado_em: string
+          html: string
+          id: string
+          ordem: number
+          slot: string
+          tags: string[]
+          titulo_admin: string
+        }
+        Insert: {
+          ativo?: boolean
+          atualizado_em?: string
+          campanha?: string
+          criado_em?: string
+          html: string
+          id?: string
+          ordem?: number
+          slot: string
+          tags?: string[]
+          titulo_admin: string
+        }
+        Update: {
+          ativo?: boolean
+          atualizado_em?: string
+          campanha?: string
+          criado_em?: string
+          html?: string
+          id?: string
+          ordem?: number
+          slot?: string
+          tags?: string[]
+          titulo_admin?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "banners_slot_fkey"
+            columns: ["slot"]
+            isOneToOne: false
+            referencedRelation: "banners_molde"
+            referencedColumns: ["slot"]
+          },
+        ]
+      }
+      banners_molde: {
+        Row: {
+          atualizado_em: string
+          contrato: string
+          criado_em: string
+          descricao: string
+          exemplo_html: string | null
+          slot: string
+        }
+        Insert: {
+          atualizado_em?: string
+          contrato: string
+          criado_em?: string
+          descricao: string
+          exemplo_html?: string | null
+          slot: string
+        }
+        Update: {
+          atualizado_em?: string
+          contrato?: string
+          criado_em?: string
+          descricao?: string
+          exemplo_html?: string | null
+          slot?: string
+        }
+        Relationships: []
+      }
+      banners_tags: {
+        Row: {
+          categoria: string
+          descricao: string
+          ordem: number
+          tag: string
+        }
+        Insert: {
+          categoria: string
+          descricao: string
+          ordem?: number
+          tag: string
+        }
+        Update: {
+          categoria?: string
+          descricao?: string
+          ordem?: number
+          tag?: string
+        }
+        Relationships: []
+      }
       bkp: {
         Row: {
           agniforte: number | null
