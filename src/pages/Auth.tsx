@@ -185,10 +185,10 @@ const Auth = () => {
               Portal Ayurveda
             </div>
             <h1 className="text-2xl font-heading font-bold text-foreground">
-              Acesse sua conta
+              Entre ou crie sua conta
             </h1>
             <p className="text-muted-foreground text-sm">
-              Entre para acessar seus resultados e evolução
+              Use seu e-mail abaixo. Se ainda não tiver conta, criamos uma na hora — sem senha.
             </p>
           </div>
 
@@ -215,6 +215,9 @@ const Auth = () => {
                     {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
                     Enviar código
                   </Button>
+                  <p className="text-center text-xs text-muted-foreground">
+                    Já tem conta? É só usar o mesmo e-mail para entrar.
+                  </p>
                 </form>
 
                 {!isInstagram && (
