@@ -577,7 +577,7 @@ const AdminVendasAkasha = () => {
 
             <Card>
               <CardContent className="p-0">
-                <AssinaturasTable data={rotinasData} loading={rotinasLoading} />
+                <AssinaturasTable data={rotinasData} loading={rotinasLoading} onChanged={() => { loadAssinaturas(); loadRotinas(); }} />
               </CardContent>
             </Card>
           </TabsContent>
