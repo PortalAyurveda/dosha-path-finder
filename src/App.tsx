@@ -83,6 +83,7 @@ const SamkhyaPedido = lazy(() => import("./pages/SamkhyaPedido"));
 const SamkhyaCompras = lazy(() => import("./pages/SamkhyaCompras"));
 const Pesquisa = lazy(() => import("./pages/Pesquisa"));
 const Revisao = lazy(() => import("./pages/Revisao"));
+const AdminBanners = lazy(() => import("./pages/AdminBanners"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -213,6 +214,7 @@ const RoutedApp = () => {
               <Route path="/admin/tags" element={<AdminRoute><AdminTags /></AdminRoute>} />
               <Route path="/admin/cupons" element={<AdminRoute><AdminCupons /></AdminRoute>} />
               <Route path="/admin/alunos" element={<AdminRoute><AdminAlunos /></AdminRoute>} />
+              <Route path="/admin/banners" element={<AdminRoute><AdminBanners /></AdminRoute>} />
 
               {/* Aulas ao vivo + webinars (CMS) */}
               <Route path="/aula/:slug/confirmado" element={<WebinarConfirmado />} />

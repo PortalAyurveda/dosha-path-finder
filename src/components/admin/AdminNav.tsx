@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ImageIcon, FileText, Store, Library, MessageCircle, Users, ClipboardList, Video, ListChecks, ShoppingCart, Inbox, Crown, History, Soup, LayoutDashboard, Package, Tag, Megaphone, Ticket, GraduationCap, RefreshCw, Network } from "lucide-react";
+import { ImageIcon, FileText, Store, Library, MessageCircle, Users, ClipboardList, Video, ListChecks, ShoppingCart, Inbox, Crown, History, Soup, LayoutDashboard, Package, Tag, Megaphone, Ticket, GraduationCap, RefreshCw, Network, LayoutTemplate } from "lucide-react";
 
 const links = [
   { to: "/admin", label: "Dashboard", icon: LayoutDashboard },
@@ -11,6 +11,7 @@ const links = [
   { to: "/admin/vendas/akasha", label: "Assinaturas Premium", icon: Crown },
   { to: "/admin/aula", label: "Aulas", icon: Video },
   { to: "/admin/biblioteca", label: "Biblioteca", icon: Library },
+  { to: "/admin/banners", label: "Banners", icon: LayoutTemplate },
   { to: "/admin/cupons", label: "Cupons", icon: Ticket },
   { to: "/admin/devlog", label: "Devlog", icon: History },
   { to: "/admin/estoque", label: "Estoque & Produção", icon: Package },
