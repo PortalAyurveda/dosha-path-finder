@@ -11,6 +11,10 @@ const formatBRL = (n: number) =>
   n.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
 const PrecoDisplay = ({ precoNormal, precoPix, showParcelas = false, size = "md" }: PrecoDisplayProps) => {
+  // Há desconto Pix real só quando o preço Pix é MENOR que o normal
+  const temDescontoPix = precoPix < precoNormal;
+  // Preço a destacar: o Pix se houver desconto, senão o normal
+  const precoPrincipal = temDescontoPix ? precoPix : precoNormal;
   const parcela = precoNormal / 3;
 
   const pixSizeClass = size === "lg" ? "text-3xl md:text-4xl" : size === "sm" ? "text-lg" : "text-2xl";
@@ -19,23 +23,32 @@ const PrecoDisplay = ({ precoNormal, precoPix, showParcelas = false, size = "md"
 
   return (
     <div className="flex flex-col gap-1" style={{ fontFamily: helvetica }}>
-      <span
-        className={`${normalSizeClass} line-through`}
-        style={{ color: samkhyaTokens.textoSec, fontFamily: helvetica }}
-      >
-        {formatBRL(precoNormal)}
-      </span>
+      {/* Preço riscado: só quando há desconto Pix real */}
+      {temDescontoPix && (
+        <span
+          className={`${normalSizeClass} line-through`}
+          style={{ color: samkhyaTokens.textoSec, fontFamily: helvetica }}
+        >
+          {formatBRL(precoNormal)}
+        </span>
+      )}
       <span
         className={`${pixSizeClass} leading-none`}
         style={{ color: samkhyaTokens.roxo, fontFamily: helvetica, fontWeight: 600 }}
       >
-        {formatBRL(precoPix)}{" "}
-        <span
-          className={`${normalSizeClass}`}
-          style={{ color: samkhyaTokens.roxoDark, fontFamily: helvetica, fontWeight: 500 }}
-        >
-          no Pix
-        </span>
+        {formatBRL(precoPrincipal)}
+        {/* "no Pix" só quando há desconto Pix real */}
+        {temDescontoPix && (
+          <>
+            {" "}
+            <span
+              className={`${normalSizeClass}`}
+              style={{ color: samkhyaTokens.roxoDark, fontFamily: helvetica, fontWeight: 500 }}
+            >
+              no Pix
+            </span>
+          </>
+        )}
       </span>
       {showParcelas && (
         <span className="text-xs" style={{ color: samkhyaTokens.textoSec, fontFamily: helvetica }}>
