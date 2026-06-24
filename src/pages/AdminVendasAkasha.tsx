@@ -445,19 +445,6 @@ const AdminVendasAkasha = () => {
             <ResumoCards data={rotinasData} />
 
             <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Ativar Rotina Manualmente</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="rounded-md border bg-muted/30 p-4">
-                  <p className="text-sm text-muted-foreground">
-                    Painel de ativação manual de rotinas em construção. Use a aba Premium para gerenciar assinaturas premium.
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
               <CardContent className="p-0">
                 <AssinaturasTable data={rotinasData} loading={rotinasLoading} />
               </CardContent>
