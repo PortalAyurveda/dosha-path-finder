@@ -62,6 +62,9 @@ const AdminTags = lazy(() => import("./pages/AdminTags"));
 const AdminCupons = lazy(() => import("./pages/AdminCupons"));
 const AdminAlunos = lazy(() => import("./pages/AdminAlunos"));
 const AdminEscola = lazy(() => import("./pages/AdminEscola"));
+const EscolaAluno = lazy(() => import("./pages/escola/EscolaAluno"));
+const EscolaAlunoModulos = lazy(() => import("./pages/escola/EscolaAlunoModulos"));
+const EscolaAlunoModulo = lazy(() => import("./pages/escola/EscolaAlunoModulo"));
 
 const AulaDispatcher = lazy(() => import("./pages/AulaDispatcher"));
 const WebinarConfirmado = lazy(() => import("./pages/WebinarConfirmado"));
@@ -218,6 +221,11 @@ const RoutedApp = () => {
               <Route path="/admin/cupons" element={<AdminRoute><AdminCupons /></AdminRoute>} />
               <Route path="/admin/alunos" element={<AdminRoute><AdminAlunos /></AdminRoute>} />
               <Route path="/admin/escola" element={<AdminRoute><AdminEscola /></AdminRoute>} />
+
+              {/* Área do Aluno da Formação (rota escondida) */}
+              <Route path="/escola/aluno" element={<EscolaAluno />} />
+              <Route path="/escola/aluno/modulos" element={<EscolaAlunoModulos />} />
+              <Route path="/escola/aluno/modulo/:id" element={<EscolaAlunoModulo />} />
               <Route path="/admin/banners" element={<AdminRoute><AdminBanners /></AdminRoute>} />
 
               {/* Aulas ao vivo + webinars (CMS) */}
