@@ -1487,6 +1487,7 @@ export type Database = {
           status: string
           turma_id: string | null
           updated_at: string | null
+          user_id: string | null
           valor_mensalidade: number | null
           whatsapp: string
         }
@@ -1517,6 +1518,7 @@ export type Database = {
           status?: string
           turma_id?: string | null
           updated_at?: string | null
+          user_id?: string | null
           valor_mensalidade?: number | null
           whatsapp: string
         }
@@ -1547,6 +1549,7 @@ export type Database = {
           status?: string
           turma_id?: string | null
           updated_at?: string | null
+          user_id?: string | null
           valor_mensalidade?: number | null
           whatsapp?: string
         }
@@ -4330,6 +4333,7 @@ export type Database = {
       }
       claim_dosha_test: { Args: { p_id_publico?: string }; Returns: Json }
       escola_aluno_atual: { Args: never; Returns: string }
+      escola_vincular_minha_conta: { Args: never; Returns: undefined }
       find_akasha_by_slug: {
         Args: { _slug: string }
         Returns: {
