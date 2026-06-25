@@ -1592,6 +1592,163 @@ export type Database = {
           },
         ]
       }
+      escola_avaliacao_perguntas: {
+        Row: {
+          created_at: string | null
+          id: string
+          modulo_id: string
+          ordem: number | null
+          pergunta: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          modulo_id: string
+          ordem?: number | null
+          pergunta: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          modulo_id?: string
+          ordem?: number | null
+          pergunta?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "escola_avaliacao_perguntas_modulo_id_fkey"
+            columns: ["modulo_id"]
+            isOneToOne: false
+            referencedRelation: "escola_modulos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      escola_avaliacao_respostas: {
+        Row: {
+          aluno_id: string
+          created_at: string | null
+          id: string
+          pergunta_id: string
+          resposta: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          aluno_id: string
+          created_at?: string | null
+          id?: string
+          pergunta_id: string
+          resposta?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          aluno_id?: string
+          created_at?: string | null
+          id?: string
+          pergunta_id?: string
+          resposta?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "escola_avaliacao_respostas_aluno_id_fkey"
+            columns: ["aluno_id"]
+            isOneToOne: false
+            referencedRelation: "escola_alunos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "escola_avaliacao_respostas_pergunta_id_fkey"
+            columns: ["pergunta_id"]
+            isOneToOne: false
+            referencedRelation: "escola_avaliacao_perguntas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      escola_diario: {
+        Row: {
+          aluno_id: string
+          conteudo: string | null
+          created_at: string | null
+          id: string
+          modulo_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          aluno_id: string
+          conteudo?: string | null
+          created_at?: string | null
+          id?: string
+          modulo_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          aluno_id?: string
+          conteudo?: string | null
+          created_at?: string | null
+          id?: string
+          modulo_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "escola_diario_aluno_id_fkey"
+            columns: ["aluno_id"]
+            isOneToOne: false
+            referencedRelation: "escola_alunos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "escola_diario_modulo_id_fkey"
+            columns: ["modulo_id"]
+            isOneToOne: false
+            referencedRelation: "escola_modulos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      escola_modulo_recursos: {
+        Row: {
+          created_at: string | null
+          descricao: string | null
+          id: string
+          modulo_id: string
+          ordem: number | null
+          tipo: string
+          titulo: string
+          url: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          descricao?: string | null
+          id?: string
+          modulo_id: string
+          ordem?: number | null
+          tipo: string
+          titulo: string
+          url?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          descricao?: string | null
+          id?: string
+          modulo_id?: string
+          ordem?: number | null
+          tipo?: string
+          titulo?: string
+          url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "escola_modulo_recursos_modulo_id_fkey"
+            columns: ["modulo_id"]
+            isOneToOne: false
+            referencedRelation: "escola_modulos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       escola_modulos: {
         Row: {
           apostila_url: string | null
@@ -1602,9 +1759,13 @@ export type Database = {
           descricao: string | null
           id: string
           numero: number
+          semestre: number | null
+          slides_url: string | null
           tipo: string
           titulo: string
           turma_id: string | null
+          video_url: string | null
+          zoom_url: string | null
         }
         Insert: {
           apostila_url?: string | null
@@ -1615,9 +1776,13 @@ export type Database = {
           descricao?: string | null
           id?: string
           numero: number
+          semestre?: number | null
+          slides_url?: string | null
           tipo: string
           titulo: string
           turma_id?: string | null
+          video_url?: string | null
+          zoom_url?: string | null
         }
         Update: {
           apostila_url?: string | null
@@ -1628,9 +1793,13 @@ export type Database = {
           descricao?: string | null
           id?: string
           numero?: number
+          semestre?: number | null
+          slides_url?: string | null
           tipo?: string
           titulo?: string
           turma_id?: string | null
+          video_url?: string | null
+          zoom_url?: string | null
         }
         Relationships: [
           {
@@ -1685,6 +1854,90 @@ export type Database = {
             columns: ["aluno_id"]
             isOneToOne: false
             referencedRelation: "escola_alunos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      escola_postits: {
+        Row: {
+          aluno_id: string | null
+          conteudo: string
+          created_at: string | null
+          id: string
+          modulo_id: string
+          parent_id: string | null
+        }
+        Insert: {
+          aluno_id?: string | null
+          conteudo: string
+          created_at?: string | null
+          id?: string
+          modulo_id: string
+          parent_id?: string | null
+        }
+        Update: {
+          aluno_id?: string | null
+          conteudo?: string
+          created_at?: string | null
+          id?: string
+          modulo_id?: string
+          parent_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "escola_postits_aluno_id_fkey"
+            columns: ["aluno_id"]
+            isOneToOne: false
+            referencedRelation: "escola_alunos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "escola_postits_modulo_id_fkey"
+            columns: ["modulo_id"]
+            isOneToOne: false
+            referencedRelation: "escola_modulos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "escola_postits_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "escola_postits"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      escola_recados: {
+        Row: {
+          conteudo: string
+          created_at: string | null
+          fixado: boolean | null
+          id: string
+          titulo: string | null
+          turma_id: string
+        }
+        Insert: {
+          conteudo: string
+          created_at?: string | null
+          fixado?: boolean | null
+          id?: string
+          titulo?: string | null
+          turma_id: string
+        }
+        Update: {
+          conteudo?: string
+          created_at?: string | null
+          fixado?: boolean | null
+          id?: string
+          titulo?: string | null
+          turma_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "escola_recados_turma_id_fkey"
+            columns: ["turma_id"]
+            isOneToOne: false
+            referencedRelation: "escola_turmas"
             referencedColumns: ["id"]
           },
         ]
@@ -4076,6 +4329,7 @@ export type Database = {
         Returns: string
       }
       claim_dosha_test: { Args: { p_id_publico?: string }; Returns: Json }
+      escola_aluno_atual: { Args: never; Returns: string }
       find_akasha_by_slug: {
         Args: { _slug: string }
         Returns: {
