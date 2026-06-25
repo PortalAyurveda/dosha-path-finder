@@ -6,6 +6,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { Pin, Video as VideoIcon, ChevronRight, CalendarDays } from "lucide-react";
 import EscolaAlunoShell, { escolaBranding as branding } from "./EscolaAlunoShell";
+import { formatModuloFimDeSemana, formatModuloHorarios } from "@/lib/escolaModuloDatas";
 import type { AlunoRow } from "@/hooks/useEscolaAluno";
 
 type Modulo = {
@@ -165,8 +166,11 @@ const Conteudo = ({ aluno }: { aluno: AlunoRow }) => {
                 >
                   {atual.titulo}
                 </h2>
-                <p className="text-sm text-muted-foreground capitalize mt-1">
-                  {formatDateLong(atual.data_inicio)}
+                <p className="text-sm text-foreground/80 mt-1">
+                  {formatModuloFimDeSemana(atual.data_inicio)}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {formatModuloHorarios(atual.tipo)}
                 </p>
                 <p className="text-xs mt-2" style={{ color: branding.primaryColor }}>
                   Semestre {atual.semestre} · Módulo {atual.numero} de 15

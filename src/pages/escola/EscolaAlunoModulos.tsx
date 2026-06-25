@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ArrowLeft, ChevronRight } from "lucide-react";
 import EscolaAlunoShell, { escolaBranding as branding } from "./EscolaAlunoShell";
+import { formatModuloFimDeSemana, formatModuloHorarios } from "@/lib/escolaModuloDatas";
 
 type Modulo = {
   id: string;
@@ -191,8 +192,11 @@ const Conteudo = () => {
                               </Badge>
                             )}
                           </div>
-                          <p className="text-xs text-muted-foreground mt-1">
-                            {formatDate(m.data_inicio)}
+                          <p className="text-sm text-foreground/80 mt-1">
+                            {formatModuloFimDeSemana(m.data_inicio)}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {formatModuloHorarios(m.tipo)}
                           </p>
                         </div>
                         <ChevronRight
