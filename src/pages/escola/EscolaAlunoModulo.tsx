@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import EscolaAlunoShell, { escolaBranding as branding } from "./EscolaAlunoShell";
+import { formatModuloFimDeSemana, formatModuloHorarios } from "@/lib/escolaModuloDatas";
 import type { AlunoRow } from "@/hooks/useEscolaAluno";
 
 const BUCKET = "escola";
@@ -783,7 +784,8 @@ const Conteudo = ({ aluno }: { aluno: AlunoRow }) => {
               >
                 {modulo.titulo}
               </h1>
-              <p className="text-sm text-muted-foreground mt-1">{formatDateLong(modulo.data_inicio)}</p>
+              <p className="text-sm text-foreground/80 mt-1">{formatModuloFimDeSemana(modulo.data_inicio)}</p>
+              <p className="text-xs text-muted-foreground">{formatModuloHorarios(modulo.tipo)}</p>
               {modulo.tipo === "presencial" && (
                 <Badge
                   className="text-[10px] mt-2"

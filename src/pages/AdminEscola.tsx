@@ -28,6 +28,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { formatModuloFimDeSemana, formatModuloHorarios } from "@/lib/escolaModuloDatas";
 
 const BUCKET = "escola";
 
@@ -139,11 +140,14 @@ const ListaModulos = ({
                       </div>
                     </CardHeader>
                     <CardContent className="space-y-2">
-                      <div className="flex items-center gap-2 flex-wrap text-xs text-muted-foreground">
-                        <span>{formatDate(m.data_inicio)}</span>
-                        {m.tipo === "presencial" && (
-                          <Badge variant="secondary" className="text-[10px]">Presencial</Badge>
-                        )}
+                      <div className="space-y-0.5">
+                        <p className="text-xs text-foreground/80">{formatModuloFimDeSemana(m.data_inicio)}</p>
+                        <div className="flex items-center gap-2 flex-wrap text-[11px] text-muted-foreground">
+                          <span>{formatModuloHorarios(m.tipo)}</span>
+                          {m.tipo === "presencial" && (
+                            <Badge variant="secondary" className="text-[10px]">Presencial</Badge>
+                          )}
+                        </div>
                       </div>
                       <p className="text-xs text-muted-foreground">
                         vídeo {check(!!m.video_url)} · apostila {check(!!m.apostila_url)} · zoom {check(!!m.zoom_url)} · {nRec} recursos · {nPerg} perguntas
@@ -517,8 +521,11 @@ const EditarModulo = ({
             <h1 className="text-xl font-heading font-bold italic text-foreground flex items-center gap-2">
               <GraduationCap className="w-5 h-5" /> Módulo {modulo.numero}: {modulo.titulo}
             </h1>
-            <p className="text-xs text-muted-foreground">
-              {formatDate(modulo.data_inicio)} · {modulo.tipo === "presencial" ? "Presencial" : "Online"}
+            <p className="text-xs text-foreground/80">
+              {formatModuloFimDeSemana(modulo.data_inicio)} · {modulo.tipo === "presencial" ? "Presencial" : "Online"}
+            </p>
+            <p className="text-[11px] text-muted-foreground">
+              {formatModuloHorarios(modulo.tipo)}
             </p>
           </div>
         </div>
