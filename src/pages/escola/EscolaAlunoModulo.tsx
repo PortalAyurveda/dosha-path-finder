@@ -11,11 +11,9 @@ import {
   Download,
   FileText,
   Loader2,
-  MessageCircle,
+  Lock,
   Save,
-  Send,
   Sparkles,
-  Trash2,
   Utensils,
   Video as VideoIcon,
   Link2,
@@ -35,10 +33,20 @@ type Modulo = {
   tipo: string;
   data_inicio: string;
   data_fim: string;
+  slug: string | null;
+  liberado: boolean;
   video_url: string | null;
   zoom_url: string | null;
   slides_url: string | null;
   apostila_url: string | null;
+};
+
+type CardapioRow = {
+  id: string;
+  dia: string;
+  refeicao: string;
+  conteudo: string | null;
+  ordem: number | null;
 };
 
 type Recurso = {
@@ -53,14 +61,6 @@ type Recurso = {
 type Pergunta = { id: string; pergunta: string; ordem: number | null };
 type Resposta = { id: string; pergunta_id: string; resposta: string | null };
 
-type Postit = {
-  id: string;
-  aluno_id: string | null;
-  conteudo: string;
-  created_at: string | null;
-  parent_id: string | null;
-  aluno?: { nome_completo: string } | null;
-};
 
 const RECURSO_GROUPS: { tipo: string; label: string; icon: typeof VideoIcon }[] = [
   { tipo: "video_recomendado", label: "Vídeos recomendados", icon: VideoIcon },
@@ -465,233 +465,87 @@ const DiarioBlock = ({ moduloId, alunoId }: { moduloId: string; alunoId: string 
   );
 };
 
-const PostitsBlock = ({ moduloId, alunoId }: { moduloId: string; alunoId: string }) => {
-  const [postits, setPostits] = useState<Postit[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [novo, setNovo] = useState("");
-  const [respostaPara, setRespostaPara] = useState<string | null>(null);
-  const [respostaTexto, setRespostaTexto] = useState("");
-  const [posting, setPosting] = useState(false);
+const DIAS: { key: "sexta" | "sabado" | "domingo"; label: string }[] = [
+  { key: "sexta", label: "Sexta" },
+  { key: "sabado", label: "Sábado" },
+  { key: "domingo", label: "Domingo" },
+];
+const REFEICAO_LABEL: Record<string, string> = {
+  cafe: "Café da manhã",
+  almoco: "Almoço",
+  jantar: "Jantar",
+};
 
-  const load = useCallback(async () => {
-    setLoading(true);
-    const { data } = await supabase
-      .from("escola_postits")
-      .select("id,aluno_id,conteudo,created_at,parent_id, aluno:escola_alunos(nome_completo)")
-      .eq("modulo_id", moduloId)
-      .order("created_at", { ascending: true });
-    setPostits((data ?? []) as any as Postit[]);
-    setLoading(false);
-  }, [moduloId]);
+const CardapioBlock = ({ moduloId }: { moduloId: string }) => {
+  const [linhas, setLinhas] = useState<CardapioRow[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    load();
-  }, [load]);
+    (async () => {
+      setLoading(true);
+      const { data } = await supabase
+        .from("escola_cardapio")
+        .select("id,dia,refeicao,conteudo,ordem")
+        .eq("modulo_id", moduloId)
+        .order("ordem", { ascending: true });
+      setLinhas((data ?? []) as CardapioRow[]);
+      setLoading(false);
+    })();
+  }, [moduloId]);
 
-  const colar = async () => {
-    if (!novo.trim()) return;
-    setPosting(true);
-    const { error } = await supabase
-      .from("escola_postits")
-      .insert({ modulo_id: moduloId, aluno_id: alunoId, conteudo: novo.trim() });
-    setPosting(false);
-    if (error) toast({ title: "Erro", description: error.message });
-    else {
-      setNovo("");
-      load();
-    }
-  };
+  if (loading) return <Skeleton className="h-32 w-full" />;
+  if (linhas.length === 0) {
+    return <p className="text-sm text-muted-foreground italic">Cardápio ainda não publicado.</p>;
+  }
 
-  const responder = async (parentId: string) => {
-    if (!respostaTexto.trim()) return;
-    setPosting(true);
-    const { error } = await supabase
-      .from("escola_postits")
-      .insert({
-        modulo_id: moduloId,
-        aluno_id: alunoId,
-        conteudo: respostaTexto.trim(),
-        parent_id: parentId,
-      });
-    setPosting(false);
-    if (error) toast({ title: "Erro", description: error.message });
-    else {
-      setRespostaTexto("");
-      setRespostaPara(null);
-      load();
-    }
-  };
-
-  const remover = async (id: string) => {
-    if (!confirm("Apagar este post-it?")) return;
-    const { error } = await supabase.from("escola_postits").delete().eq("id", id);
-    if (error) toast({ title: "Erro", description: error.message });
-    else load();
-  };
-
-  const principais = postits.filter((p) => !p.parent_id);
-  const respostasDe = (parentId: string) => postits.filter((p) => p.parent_id === parentId);
-
-  const authorName = (p: Postit) => p.aluno?.nome_completo?.split(" ")[0] ?? "Aluno";
+  const algumComConteudo = linhas.some((l) => (l.conteudo ?? "").trim().length > 0);
+  if (!algumComConteudo) {
+    return <p className="text-sm text-muted-foreground italic">Cardápio ainda não publicado.</p>;
+  }
 
   return (
-    <div className="space-y-4">
-      {/* Novo post-it */}
-      <div
-        className="bg-white rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm border p-4 space-y-2"
-        style={{ borderColor: `${branding.primaryColor}33` }}
-      >
-        <Textarea
-          value={novo}
-          onChange={(e) => setNovo(e.target.value)}
-          rows={2}
-          placeholder="Cole um post-it para a turma…"
-        />
-        <div className="flex justify-end">
-          <Button
-            size="sm"
-            onClick={colar}
-            disabled={posting || !novo.trim()}
-            className="rounded-tl-xl rounded-br-xl rounded-tr-sm rounded-bl-sm"
-            style={{ background: branding.primaryColor, color: "#fff" }}
-          >
-            <Send className="w-4 h-4" /> Colar
-          </Button>
-        </div>
-      </div>
-
-      {loading ? (
-        <Skeleton className="h-24 w-full" />
-      ) : principais.length === 0 ? (
-        <p className="text-sm text-muted-foreground italic">
-          Seja o primeiro a colar um post-it neste módulo.
-        </p>
-      ) : (
-        <div className="grid gap-4 md:grid-cols-2">
-          {principais.map((p) => {
-            const respostas = respostasDe(p.id);
-            const own = p.aluno_id === alunoId;
-            return (
-              <div key={p.id} className="space-y-2">
-                <div
-                  className="rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm p-4 shadow-sm"
-                  style={{ background: `${branding.primaryColor}10` }}
-                >
-                  <div className="flex items-center justify-between gap-2 mb-2 text-[11px] text-muted-foreground">
-                    <span className="font-medium" style={{ color: branding.darkColor }}>
-                      {authorName(p)}
-                    </span>
-                    <span>{formatRelative(p.created_at)}</span>
-                  </div>
-                  <p
-                    className="text-sm whitespace-pre-wrap font-serif italic"
-                    style={{ color: branding.darkColor }}
+    <div className="space-y-5">
+      {DIAS.map((d) => {
+        const itens = linhas.filter((l) => l.dia === d.key);
+        if (itens.length === 0) return null;
+        return (
+          <div key={d.key} className="space-y-2">
+            <h3 className="font-serif font-bold italic text-base" style={{ color: branding.darkColor }}>
+              {d.label}
+            </h3>
+            <div className="grid gap-2 md:grid-cols-3">
+              {itens.map((r) => {
+                const vazio = !(r.conteudo ?? "").trim();
+                return (
+                  <div
+                    key={r.id}
+                    className="bg-white rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm border p-3"
+                    style={{ borderColor: `${branding.primaryColor}22` }}
                   >
-                    {p.conteudo}
-                  </p>
-                  <div className="flex gap-2 mt-3">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setRespostaPara(respostaPara === p.id ? null : p.id);
-                        setRespostaTexto("");
-                      }}
-                      className="text-[11px] inline-flex items-center gap-1"
-                      style={{ color: branding.primaryColor }}
-                    >
-                      <MessageCircle className="w-3 h-3" /> responder
-                    </button>
-                    {own && (
-                      <button
-                        type="button"
-                        onClick={() => remover(p.id)}
-                        className="text-[11px] inline-flex items-center gap-1 text-muted-foreground hover:text-destructive"
-                      >
-                        <Trash2 className="w-3 h-3" /> apagar
-                      </button>
+                    <p className="text-[11px] uppercase tracking-wide" style={{ color: branding.primaryColor }}>
+                      {REFEICAO_LABEL[r.refeicao] ?? r.refeicao}
+                    </p>
+                    {vazio ? (
+                      <p className="text-xs italic text-muted-foreground mt-1">a definir</p>
+                    ) : (
+                      <p className="text-sm whitespace-pre-wrap text-foreground/85 mt-1">{r.conteudo}</p>
                     )}
                   </div>
-                </div>
-
-                {respostas.length > 0 && (
-                  <div className="pl-6 space-y-2">
-                    {respostas.map((r) => {
-                      const ownR = r.aluno_id === alunoId;
-                      return (
-                        <div
-                          key={r.id}
-                          className="rounded-tl-xl rounded-br-xl rounded-tr-sm rounded-bl-sm border bg-white p-3"
-                          style={{ borderColor: `${branding.primaryColor}22` }}
-                        >
-                          <div className="flex items-center justify-between gap-2 text-[11px] text-muted-foreground mb-1">
-                            <span className="font-medium" style={{ color: branding.darkColor }}>
-                              {authorName(r)}
-                            </span>
-                            <span>{formatRelative(r.created_at)}</span>
-                          </div>
-                          <p className="text-sm whitespace-pre-wrap text-foreground/85">{r.conteudo}</p>
-                          {ownR && (
-                            <button
-                              type="button"
-                              onClick={() => remover(r.id)}
-                              className="text-[11px] inline-flex items-center gap-1 text-muted-foreground hover:text-destructive mt-1"
-                            >
-                              <Trash2 className="w-3 h-3" /> apagar
-                            </button>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-
-                {respostaPara === p.id && (
-                  <div className="pl-6">
-                    <div
-                      className="rounded-tl-xl rounded-br-xl rounded-tr-sm rounded-bl-sm border bg-white p-3 space-y-2"
-                      style={{ borderColor: `${branding.primaryColor}33` }}
-                    >
-                      <Input
-                        value={respostaTexto}
-                        onChange={(e) => setRespostaTexto(e.target.value)}
-                        placeholder="Sua resposta…"
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter") responder(p.id);
-                        }}
-                      />
-                      <div className="flex justify-end gap-2">
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => setRespostaPara(null)}
-                        >
-                          cancelar
-                        </Button>
-                        <Button
-                          size="sm"
-                          onClick={() => responder(p.id)}
-                          disabled={posting || !respostaTexto.trim()}
-                          style={{ background: branding.primaryColor, color: "#fff" }}
-                        >
-                          enviar
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
-      )}
+                );
+              })}
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 };
 
+
 // ============= PÁGINA =============
 
 const Conteudo = ({ aluno }: { aluno: AlunoRow }) => {
-  const { id } = useParams();
+  const { slug } = useParams();
   const [modulo, setModulo] = useState<Modulo | null>(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
@@ -699,13 +553,22 @@ const Conteudo = ({ aluno }: { aluno: AlunoRow }) => {
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      if (!id) return;
+      if (!slug) return;
       setLoading(true);
-      const { data } = await supabase
+      // tenta por slug; se não achar e parecer UUID, fallback por id
+      let { data } = await supabase
         .from("escola_modulos")
-        .select("id,numero,semestre,titulo,tipo,data_inicio,data_fim,video_url,zoom_url,slides_url,apostila_url")
-        .eq("id", id)
+        .select("id,numero,semestre,titulo,tipo,data_inicio,data_fim,slug,liberado,video_url,zoom_url,slides_url,apostila_url")
+        .eq("slug", slug)
         .maybeSingle();
+      if (!data && /^[0-9a-f-]{36}$/i.test(slug)) {
+        const r = await supabase
+          .from("escola_modulos")
+          .select("id,numero,semestre,titulo,tipo,data_inicio,data_fim,slug,liberado,video_url,zoom_url,slides_url,apostila_url")
+          .eq("id", slug)
+          .maybeSingle();
+        data = r.data;
+      }
       if (cancelled) return;
       if (!data) setNotFound(true);
       else setModulo(data as Modulo);
@@ -714,7 +577,7 @@ const Conteudo = ({ aluno }: { aluno: AlunoRow }) => {
     return () => {
       cancelled = true;
     };
-  }, [id]);
+  }, [slug]);
 
   const arc = useMemo(
     () => (
@@ -746,6 +609,8 @@ const Conteudo = ({ aluno }: { aluno: AlunoRow }) => {
       </div>
     );
   }
+
+  const locked = !modulo.liberado;
 
   return (
     <div className="space-y-10">
@@ -786,45 +651,73 @@ const Conteudo = ({ aluno }: { aluno: AlunoRow }) => {
               </h1>
               <p className="text-sm text-foreground/80 mt-1">{formatModuloFimDeSemana(modulo.data_inicio)}</p>
               <p className="text-xs text-muted-foreground">{formatModuloHorarios(modulo.tipo)}</p>
-              {modulo.tipo === "presencial" && (
-                <Badge
-                  className="text-[10px] mt-2"
-                  style={{ background: `${branding.primaryColor}1A`, color: branding.primaryColor }}
-                >
-                  Presencial em SP
-                </Badge>
-              )}
+              <div className="flex items-center gap-2 flex-wrap mt-2">
+                {locked && (
+                  <Badge
+                    variant="secondary"
+                    className="text-[10px] inline-flex items-center gap-1"
+                    style={{ background: `${branding.primaryColor}1A`, color: branding.primaryColor }}
+                  >
+                    <Lock className="w-3 h-3" /> cadeado
+                  </Badge>
+                )}
+                {modulo.tipo === "presencial" && (
+                  <Badge
+                    className="text-[10px]"
+                    style={{ background: `${branding.primaryColor}1A`, color: branding.primaryColor }}
+                  >
+                    Presencial em SP
+                  </Badge>
+                )}
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Material */}
-      <section className="space-y-4">
-        <SectionTitle icon={VideoIcon}>Material</SectionTitle>
-        <MaterialBlock modulo={modulo} />
-      </section>
+      {locked ? (
+        <div
+          className="rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm border bg-white p-8 text-center space-y-3"
+          style={{ borderColor: `${branding.primaryColor}33` }}
+        >
+          <Lock className="w-8 h-8 mx-auto" style={{ color: branding.primaryColor }} />
+          <h2 className="font-serif text-xl italic font-bold" style={{ color: branding.darkColor }}>
+            Este módulo ainda será liberado.
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            O conteúdo será disponibilizado pelo professor conforme o curso avança.
+          </p>
+        </div>
+      ) : (
+        <>
+          {/* Material */}
+          <section className="space-y-4">
+            <SectionTitle icon={VideoIcon}>Material</SectionTitle>
+            <MaterialBlock modulo={modulo} />
+          </section>
 
-      {/* Recursos */}
-      <RecursosBlock moduloId={modulo.id} />
+          {/* Recursos */}
+          <RecursosBlock moduloId={modulo.id} />
 
-      {/* Autoavaliação */}
-      <section className="space-y-4">
-        <SectionTitle icon={FileText}>Autoavaliação</SectionTitle>
-        <AutoavaliacaoBlock moduloId={modulo.id} alunoId={aluno.id} />
-      </section>
+          {/* Cardápio */}
+          <section className="space-y-4">
+            <SectionTitle icon={Utensils}>Cardápio do fim de semana</SectionTitle>
+            <CardapioBlock moduloId={modulo.id} />
+          </section>
 
-      {/* Diário */}
-      <section className="space-y-4">
-        <SectionTitle icon={Sparkles}>Diário de evolução clínica</SectionTitle>
-        <DiarioBlock moduloId={modulo.id} alunoId={aluno.id} />
-      </section>
+          {/* Autoavaliação */}
+          <section className="space-y-4">
+            <SectionTitle icon={FileText}>Autoavaliação</SectionTitle>
+            <AutoavaliacaoBlock moduloId={modulo.id} alunoId={aluno.id} />
+          </section>
 
-      {/* Mural de post-its */}
-      <section className="space-y-4">
-        <SectionTitle icon={MessageCircle}>Mural de post-its</SectionTitle>
-        <PostitsBlock moduloId={modulo.id} alunoId={aluno.id} />
-      </section>
+          {/* Diário */}
+          <section className="space-y-4">
+            <SectionTitle icon={Sparkles}>Diário de evolução clínica</SectionTitle>
+            <DiarioBlock moduloId={modulo.id} alunoId={aluno.id} />
+          </section>
+        </>
+      )}
     </div>
   );
 };

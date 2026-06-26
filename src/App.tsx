@@ -225,7 +225,7 @@ const RoutedApp = () => {
               {/* Área do Aluno da Formação (rota escondida) */}
               <Route path="/escola/aluno" element={<EscolaAluno />} />
               <Route path="/escola/aluno/modulos" element={<EscolaAlunoModulos />} />
-              <Route path="/escola/aluno/modulo/:id" element={<EscolaAlunoModulo />} />
+              <Route path="/escola/aluno/modulo/:slug" element={<EscolaAlunoModulo />} />
               <Route path="/admin/banners" element={<AdminRoute><AdminBanners /></AdminRoute>} />
 
               {/* Aulas ao vivo + webinars (CMS) */}

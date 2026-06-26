@@ -18,6 +18,8 @@ type Modulo = {
   data_inicio: string;
   data_fim: string;
   zoom_url: string | null;
+  slug: string | null;
+  liberado: boolean;
 };
 
 type Recado = {
@@ -85,7 +87,7 @@ const Conteudo = ({ aluno }: { aluno: AlunoRow }) => {
     setLoading(true);
     const modsP = supabase
       .from("escola_modulos")
-      .select("id,numero,semestre,titulo,tipo,data_inicio,data_fim,zoom_url")
+      .select("id,numero,semestre,titulo,tipo,data_inicio,data_fim,zoom_url,slug,liberado")
       .order("numero", { ascending: true });
 
     const recadosP = aluno.turma_id
@@ -214,7 +216,7 @@ const Conteudo = ({ aluno }: { aluno: AlunoRow }) => {
                 className="rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm h-11 px-5"
                 style={{ borderColor: branding.primaryColor, color: branding.primaryColor }}
               >
-                <Link to={`/escola/aluno/modulo/${atual.id}`}>
+                <Link to={`/escola/aluno/modulo/${atual.slug ?? atual.id}`}>
                   Abrir sala do módulo <ChevronRight className="w-4 h-4" />
                 </Link>
               </Button>

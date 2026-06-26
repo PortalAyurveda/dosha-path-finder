@@ -26,6 +26,9 @@ import {
   Upload,
   Download,
   Loader2,
+  Lock,
+  Unlock,
+  Utensils,
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { formatModuloFimDeSemana, formatModuloHorarios } from "@/lib/escolaModuloDatas";
@@ -45,6 +48,17 @@ type Modulo = {
   slides_url: string | null;
   apostila_url: string | null;
   turma_id: string | null;
+  slug: string | null;
+  liberado: boolean;
+};
+
+type CardapioRow = {
+  id: string;
+  modulo_id: string;
+  dia: string;
+  refeicao: string;
+  conteudo: string | null;
+  ordem: number | null;
 };
 
 type Recurso = {
@@ -101,11 +115,13 @@ const ListaModulos = ({
   recursosCount,
   perguntasCount,
   onSelect,
+  onToggleLiberado,
 }: {
   modulos: Modulo[];
   recursosCount: Record<string, number>;
   perguntasCount: Record<string, number>;
   onSelect: (m: Modulo) => void;
+  onToggleLiberado: (m: Modulo, value: boolean) => void;
 }) => {
   return (
     <div className="space-y-10">
@@ -125,10 +141,9 @@ const ListaModulos = ({
                 return (
                   <Card
                     key={m.id}
-                    onClick={() => onSelect(m)}
-                    className="cursor-pointer hover:border-primary transition-colors"
+                    className={`hover:border-primary transition-colors ${m.liberado ? "" : "bg-muted/30"}`}
                   >
-                    <CardHeader className="pb-2">
+                    <CardHeader className="pb-2 cursor-pointer" onClick={() => onSelect(m)}>
                       <div className="flex items-start justify-between gap-2">
                         <div className="flex items-center gap-2">
                           <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary text-sm font-bold">
@@ -152,6 +167,23 @@ const ListaModulos = ({
                       <p className="text-xs text-muted-foreground">
                         vídeo {check(!!m.video_url)} · apostila {check(!!m.apostila_url)} · zoom {check(!!m.zoom_url)} · {nRec} recursos · {nPerg} perguntas
                       </p>
+                      <div className="flex items-center justify-between gap-2 pt-2 border-t border-border">
+                        <div className="flex items-center gap-2">
+                          {m.liberado ? (
+                            <Unlock className="w-3.5 h-3.5 text-primary" />
+                          ) : (
+                            <Lock className="w-3.5 h-3.5 text-muted-foreground" />
+                          )}
+                          <Label className="text-[11px] cursor-pointer" htmlFor={`lib-${m.id}`}>
+                            {m.liberado ? "Liberado" : "Cadeado"}
+                          </Label>
+                        </div>
+                        <Switch
+                          id={`lib-${m.id}`}
+                          checked={m.liberado}
+                          onCheckedChange={(v) => onToggleLiberado(m, v)}
+                        />
+                      </div>
                     </CardContent>
                   </Card>
                 );
@@ -163,6 +195,7 @@ const ListaModulos = ({
     </div>
   );
 };
+
 
 const RecadosBlock = ({ turmaId }: { turmaId: string | null }) => {
   const [recados, setRecados] = useState<Recado[]>([]);
@@ -330,6 +363,105 @@ const RecadosBlock = ({ turmaId }: { turmaId: string | null }) => {
               </div>
             )}
           </>
+        )}
+      </CardContent>
+    </Card>
+  );
+};
+
+// ============ TELA 2: Editar módulo ============
+// ============ Cardápio editor (admin) ============
+const DIAS_CARDAPIO: { key: "sexta" | "sabado" | "domingo"; label: string }[] = [
+  { key: "sexta", label: "Sexta" },
+  { key: "sabado", label: "Sábado" },
+  { key: "domingo", label: "Domingo" },
+];
+const REFEICAO_LABEL_ADMIN: Record<string, string> = {
+  cafe: "Café da manhã",
+  almoco: "Almoço",
+  jantar: "Jantar",
+};
+
+const CardapioEditor = ({ moduloId }: { moduloId: string }) => {
+  const [linhas, setLinhas] = useState<CardapioRow[]>([]);
+  const [drafts, setDrafts] = useState<Record<string, string>>({});
+  const [loading, setLoading] = useState(true);
+  const [savingId, setSavingId] = useState<string | null>(null);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    const { data } = await supabase
+      .from("escola_cardapio")
+      .select("id,modulo_id,dia,refeicao,conteudo,ordem")
+      .eq("modulo_id", moduloId)
+      .order("ordem", { ascending: true });
+    const rows = (data ?? []) as CardapioRow[];
+    setLinhas(rows);
+    const d: Record<string, string> = {};
+    rows.forEach((r) => (d[r.id] = r.conteudo ?? ""));
+    setDrafts(d);
+    setLoading(false);
+  }, [moduloId]);
+
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  const salvar = async (row: CardapioRow) => {
+    setSavingId(row.id);
+    const conteudo = (drafts[row.id] ?? "").trim();
+    const { error } = await supabase
+      .from("escola_cardapio")
+      .update({ conteudo: conteudo || null })
+      .eq("id", row.id);
+    setSavingId(null);
+    if (error) toast({ title: "Erro ao salvar", description: error.message });
+    else toast({ title: "Refeição salva" });
+  };
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-lg font-heading italic flex items-center gap-2">
+          <Utensils className="w-4 h-4" /> Cardápio do fim de semana
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-5">
+        {loading ? (
+          <Skeleton className="h-32 w-full" />
+        ) : linhas.length === 0 ? (
+          <p className="text-sm text-muted-foreground">Slots do cardápio não encontrados.</p>
+        ) : (
+          DIAS_CARDAPIO.map((d) => {
+            const itens = linhas.filter((l) => l.dia === d.key);
+            if (itens.length === 0) return null;
+            return (
+              <div key={d.key} className="space-y-2">
+                <h3 className="font-medium text-sm text-foreground">{d.label}</h3>
+                <div className="space-y-2">
+                  {itens.map((r) => (
+                    <div key={r.id} className="rounded-lg border border-border p-3 bg-card space-y-2">
+                      <Label className="text-xs uppercase tracking-wide text-primary">
+                        {REFEICAO_LABEL_ADMIN[r.refeicao] ?? r.refeicao}
+                      </Label>
+                      <Textarea
+                        rows={2}
+                        value={drafts[r.id] ?? ""}
+                        onChange={(e) => setDrafts((p) => ({ ...p, [r.id]: e.target.value }))}
+                        placeholder="Descreva a refeição…"
+                      />
+                      <div className="flex justify-end">
+                        <Button size="sm" variant="outline" onClick={() => salvar(r)} disabled={savingId === r.id}>
+                          {savingId === r.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                          Salvar
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })
         )}
       </CardContent>
     </Card>
@@ -529,7 +661,31 @@ const EditarModulo = ({
             </p>
           </div>
         </div>
+        <div className="flex items-center gap-2 rounded-lg border border-border px-3 py-2 bg-muted/30">
+          {modulo.liberado ? (
+            <Unlock className="w-4 h-4 text-primary" />
+          ) : (
+            <Lock className="w-4 h-4 text-muted-foreground" />
+          )}
+          <Label htmlFor="lib-edit" className="cursor-pointer text-sm">
+            {modulo.liberado ? "Liberado para os alunos" : "Cadeado — não visível para os alunos"}
+          </Label>
+          <Switch
+            id="lib-edit"
+            checked={modulo.liberado}
+            onCheckedChange={async (v) => {
+              const { error } = await supabase.from("escola_modulos").update({ liberado: v }).eq("id", modulo.id);
+              if (error) toast({ title: "Erro", description: error.message });
+              else {
+                toast({ title: v ? "Módulo liberado" : "Módulo cadeado" });
+                onChange();
+              }
+            }}
+          />
+        </div>
       </div>
+
+
 
       {/* 1. Material */}
       <Card>
@@ -593,6 +749,11 @@ const EditarModulo = ({
           </div>
         </CardContent>
       </Card>
+
+      {/* Cardápio */}
+      <CardapioEditor moduloId={modulo.id} />
+
+
 
       {/* 2. Recursos do módulo */}
       <Card>
@@ -717,7 +878,7 @@ const AdminEscola = () => {
       supabase.from("escola_turmas").select("id").eq("ativo", true).limit(1).maybeSingle(),
       supabase
         .from("escola_modulos")
-        .select("id,numero,semestre,titulo,tipo,data_inicio,data_fim,video_url,zoom_url,slides_url,apostila_url,turma_id")
+        .select("id,numero,semestre,titulo,tipo,data_inicio,data_fim,video_url,zoom_url,slides_url,apostila_url,turma_id,slug,liberado")
         .order("numero", { ascending: true }),
       supabase.from("escola_modulo_recursos").select("modulo_id"),
       supabase.from("escola_avaliacao_perguntas").select("modulo_id"),
@@ -757,12 +918,23 @@ const AdminEscola = () => {
     if (!selected) return;
     const { data } = await supabase
       .from("escola_modulos")
-      .select("id,numero,semestre,titulo,tipo,data_inicio,data_fim,video_url,zoom_url,slides_url,apostila_url,turma_id")
+      .select("id,numero,semestre,titulo,tipo,data_inicio,data_fim,video_url,zoom_url,slides_url,apostila_url,turma_id,slug,liberado")
       .eq("id", selected.id)
       .maybeSingle();
     if (data) setSelected(data as Modulo);
     loadAll();
   }, [selected, loadAll]);
+
+  const toggleLiberado = async (m: Modulo, value: boolean) => {
+    setModulos((prev) => prev.map((x) => (x.id === m.id ? { ...x, liberado: value } : x)));
+    const { error } = await supabase.from("escola_modulos").update({ liberado: value }).eq("id", m.id);
+    if (error) {
+      toast({ title: "Erro ao atualizar", description: error.message });
+      setModulos((prev) => prev.map((x) => (x.id === m.id ? { ...x, liberado: !value } : x)));
+    } else {
+      toast({ title: value ? "Módulo liberado" : "Módulo cadeado" });
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -792,6 +964,7 @@ const AdminEscola = () => {
                 recursosCount={recursosCount}
                 perguntasCount={perguntasCount}
                 onSelect={setSelected}
+                onToggleLiberado={toggleLiberado}
               />
             )}
           </>
