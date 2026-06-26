@@ -651,6 +651,11 @@ const EditarModulo = ({
         </CardContent>
       </Card>
 
+      {/* Cardápio */}
+      <CardapioEditor moduloId={modulo.id} />
+
+
+
       {/* 2. Recursos do módulo */}
       <Card>
         <CardHeader>
