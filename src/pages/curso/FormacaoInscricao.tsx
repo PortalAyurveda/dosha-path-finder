@@ -225,7 +225,6 @@ const FormacaoInscricao = () => {
               <Input
                 id="email"
                 type="email"
-                required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 onBlur={onBlurEmail}
