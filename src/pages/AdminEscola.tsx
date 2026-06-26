@@ -26,6 +26,9 @@ import {
   Upload,
   Download,
   Loader2,
+  Lock,
+  Unlock,
+  Utensils,
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { formatModuloFimDeSemana, formatModuloHorarios } from "@/lib/escolaModuloDatas";
@@ -45,6 +48,17 @@ type Modulo = {
   slides_url: string | null;
   apostila_url: string | null;
   turma_id: string | null;
+  slug: string | null;
+  liberado: boolean;
+};
+
+type CardapioRow = {
+  id: string;
+  modulo_id: string;
+  dia: string;
+  refeicao: string;
+  conteudo: string | null;
+  ordem: number | null;
 };
 
 type Recurso = {
