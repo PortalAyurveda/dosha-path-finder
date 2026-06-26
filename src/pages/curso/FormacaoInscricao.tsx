@@ -120,12 +120,6 @@ const FormacaoInscricao = () => {
   };
 
   const objetivoCount = objetivo.trim().length;
-  const podeEnviar = useMemo(() => {
-    if (!email || !nome.trim() || !whatsapp || !estado || !cidade) return false;
-    if (objetivoCount < 100) return false;
-    if (plano === "outro" && planoDescricao.trim().length < 3) return false;
-    return true;
-  }, [email, nome, whatsapp, estado, cidade, objetivoCount, plano, planoDescricao]);
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
