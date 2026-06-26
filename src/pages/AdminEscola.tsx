@@ -731,7 +731,7 @@ const AdminEscola = () => {
       supabase.from("escola_turmas").select("id").eq("ativo", true).limit(1).maybeSingle(),
       supabase
         .from("escola_modulos")
-        .select("id,numero,semestre,titulo,tipo,data_inicio,data_fim,video_url,zoom_url,slides_url,apostila_url,turma_id")
+        .select("id,numero,semestre,titulo,tipo,data_inicio,data_fim,video_url,zoom_url,slides_url,apostila_url,turma_id,slug,liberado")
         .order("numero", { ascending: true }),
       supabase.from("escola_modulo_recursos").select("modulo_id"),
       supabase.from("escola_avaliacao_perguntas").select("modulo_id"),
@@ -771,7 +771,7 @@ const AdminEscola = () => {
     if (!selected) return;
     const { data } = await supabase
       .from("escola_modulos")
-      .select("id,numero,semestre,titulo,tipo,data_inicio,data_fim,video_url,zoom_url,slides_url,apostila_url,turma_id")
+      .select("id,numero,semestre,titulo,tipo,data_inicio,data_fim,video_url,zoom_url,slides_url,apostila_url,turma_id,slug,liberado")
       .eq("id", selected.id)
       .maybeSingle();
     if (data) setSelected(data as Modulo);
