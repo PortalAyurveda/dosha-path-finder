@@ -255,7 +255,6 @@ const FormacaoInscricao = () => {
               <Label htmlFor="nome">Nome completo *</Label>
               <Input
                 id="nome"
-                required
                 value={nome}
                 onChange={(e) => setNome(e.target.value)}
               />
@@ -263,7 +262,7 @@ const FormacaoInscricao = () => {
 
             {/* CPF */}
             <div className="space-y-2">
-              <Label htmlFor="cpf">CPF</Label>
+              <Label htmlFor="cpf">CPF <span className="text-stone-400 font-normal">(opcional)</span></Label>
               <Input
                 id="cpf"
                 value={cpf}
@@ -277,52 +276,44 @@ const FormacaoInscricao = () => {
               <Label htmlFor="whats">WhatsApp *</Label>
               <Input
                 id="whats"
-                required
                 value={whatsapp}
-                onChange={(e) => setWhatsapp(formatWhats(e.target.value))}
-                placeholder="(11) 99999-9999"
+                onChange={(e) => setWhatsapp(e.target.value)}
+                placeholder="(11) 99999-9999 ou +351 ..."
               />
+              <p className="text-xs text-stone-500">Pode incluir DDI se for de fora do Brasil (ex.: +351 para Portugal).</p>
             </div>
 
-            {/* Estado / Cidade */}
+            {/* Estado / Cidade — texto livre, aceita qualquer país */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="estado">Estado *</Label>
-                <select
+                <Label htmlFor="estado">Estado / Região</Label>
+                <Input
                   id="estado"
-                  required
+                  list="estados-br"
                   value={estado}
-                  onChange={(e) => {
-                    setEstado(e.target.value);
-                    setCidade("");
-                  }}
-                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                >
-                  <option value="">Selecione</option>
+                  onChange={(e) => setEstado(e.target.value)}
+                  placeholder="Ex.: SP, Lisboa, Porto…"
+                />
+                <datalist id="estados-br">
                   {estados.map((e) => (
-                    <option key={e.sigla} value={e.sigla}>
-                      {e.nome}
-                    </option>
+                    <option key={e.sigla} value={e.sigla}>{e.nome}</option>
                   ))}
-                </select>
+                </datalist>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="cidade">Cidade *</Label>
-                <select
+                <Label htmlFor="cidade">Cidade / País</Label>
+                <Input
                   id="cidade"
-                  required
+                  list="cidades-br"
                   value={cidade}
-                  disabled={!estado || municipios.length === 0}
                   onChange={(e) => setCidade(e.target.value)}
-                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm disabled:opacity-50"
-                >
-                  <option value="">{estado ? "Selecione" : "Selecione o estado"}</option>
+                  placeholder="Ex.: São Paulo, Lisboa / Portugal…"
+                />
+                <datalist id="cidades-br">
                   {municipios.map((m) => (
-                    <option key={m.id} value={m.nome}>
-                      {m.nome}
-                    </option>
+                    <option key={m.id} value={m.nome} />
                   ))}
-                </select>
+                </datalist>
               </div>
             </div>
 
