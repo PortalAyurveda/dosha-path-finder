@@ -28,12 +28,14 @@ import {
 } from "@/components/ui/table";
 import {
   STATUS_META,
+  MetodoPagamentoBadge,
   formatBRL,
   formatDateTime,
   whatsappLink,
   type Pedido,
   type PedidoStatus,
 } from "./AdminLojaVendas";
+
 
 const enderecoCompleto = (e: Record<string, string>) =>
   [
@@ -305,9 +307,12 @@ const AdminLojaVendaDetalhe = () => {
               </span>
             </div>
             <div>
-              <span className="block">Pagamento</span>
-              <span className="text-foreground">{pedido.status_pagamento}</span>
+              <span className="block">Forma de pagamento</span>
+              <span className="text-foreground">
+                <MetodoPagamentoBadge metodo={pedido.metodo_pagamento} />
+              </span>
             </div>
+
           </CardContent>
         </Card>
 

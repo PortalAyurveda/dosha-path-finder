@@ -49,6 +49,7 @@ export interface Pedido {
   frete_codigo_rastreio: string | null;
   status: PedidoStatus;
   status_pagamento: string;
+  metodo_pagamento: string | null;
   endereco_entrega: Record<string, string>;
   itens: Array<{
     slug: string;
@@ -70,6 +71,7 @@ export interface Pedido {
   delivered_at: string | null;
 }
 
+
 export const STATUS_META: Record<PedidoStatus, { label: string; cls: string }> = {
   aguardando_pagamento: { label: "Aguardando pagamento", cls: "bg-yellow-100 text-yellow-800 border-yellow-300" },
   pago: { label: "Pago", cls: "bg-blue-100 text-blue-800 border-blue-300" },
@@ -79,8 +81,26 @@ export const STATUS_META: Record<PedidoStatus, { label: string; cls: string }> =
   cancelado: { label: "Cancelado", cls: "bg-red-100 text-red-800 border-red-300" },
 };
 
+export const METODO_PAGAMENTO_META: Record<string, { label: string; cls: string }> = {
+  card: { label: "Cartão", cls: "bg-indigo-100 text-indigo-800 border-indigo-300" },
+  boleto: { label: "Boleto", cls: "bg-amber-100 text-amber-800 border-amber-300" },
+  pix: { label: "Pix", cls: "bg-teal-100 text-teal-800 border-teal-300" },
+  brinde: { label: "Brinde", cls: "bg-pink-100 text-pink-800 border-pink-300" },
+};
+
+export const MetodoPagamentoBadge = ({ metodo }: { metodo: string | null }) => {
+  if (!metodo) return <span className="text-xs text-muted-foreground">—</span>;
+  const meta = METODO_PAGAMENTO_META[metodo] ?? { label: metodo, cls: "bg-gray-100 text-gray-700 border-gray-300" };
+  return (
+    <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium border ${meta.cls}`}>
+      {meta.label}
+    </span>
+  );
+};
+
 export const formatBRL = (v: number) =>
   Number(v || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+
 
 export const formatDateTime = (iso: string) => {
   const d = new Date(iso);
@@ -302,10 +322,12 @@ const AdminLojaVendas = () => {
                   <TableHead>Comprador</TableHead>
                   <TableHead>WhatsApp</TableHead>
                   <TableHead className="text-right">Total</TableHead>
+                  <TableHead>Pagamento</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead></TableHead>
                 </TableRow>
               </TableHeader>
+
               <TableBody>
                 {filtrados.map((p) => (
                   <TableRow key={p.id} data-state={selecionados.has(p.id) ? "selected" : undefined}>
@@ -341,6 +363,7 @@ const AdminLojaVendas = () => {
                       )}
                     </TableCell>
                     <TableCell className="text-right font-medium">{formatBRL(p.total)}</TableCell>
+                    <TableCell><MetodoPagamentoBadge metodo={p.metodo_pagamento} /></TableCell>
                     <TableCell>
                       <StatusBadge status={p.status} />
                     </TableCell>
@@ -349,6 +372,7 @@ const AdminLojaVendas = () => {
                         <Link to={`/admin/loja/vendas/${p.id}`}>Ver detalhes</Link>
                       </Button>
                     </TableCell>
+
                   </TableRow>
                 ))}
               </TableBody>
