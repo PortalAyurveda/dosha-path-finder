@@ -330,7 +330,7 @@ const FormacaoInscricao = () => {
 
             {/* Objetivo */}
             <div className="space-y-2">
-              <Label htmlFor="obj">Seu objetivo e expectativa com a formação *</Label>
+              <Label htmlFor="obj">Seu objetivo e expectativa com a formação</Label>
               <Textarea
                 id="obj"
                 rows={5}
@@ -338,9 +338,6 @@ const FormacaoInscricao = () => {
                 onChange={(e) => setObjetivo(e.target.value)}
                 placeholder="Conte-nos um pouco sobre sua trajetória e o que espera construir com esta formação..."
               />
-              <div className={`text-xs ${objetivoCount < 100 ? "text-stone-500" : "text-emerald-700"}`}>
-                {objetivoCount}/100 caracteres mínimos
-              </div>
             </div>
 
             {/* Plano */}
