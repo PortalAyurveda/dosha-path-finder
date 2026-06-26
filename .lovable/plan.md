@@ -1,42 +1,39 @@
-## Objetivo
-Padronizar a exibição de datas e horários dos módulos da Formação em toda parte que mostra um módulo, corrigindo também o off-by-one (mostra "10 de jul" quando o salvo é 2026-07-11).
+## Diagnóstico
 
-## Helpers compartilhados (novo arquivo)
-Criar `src/lib/escolaModuloDatas.ts` exportando:
+Dois bloqueios independentes estão impedindo o envio:
 
-- `parseLocalDate(iso: string): Date` — separa `YYYY-MM-DD` (ou prefixo da string) em ano/mês/dia e monta `new Date(y, m-1, d)` para evitar o desvio de timezone que está causando "10 de jul" em vez de "11 de jul".
-- `formatModuloFimDeSemana(dataInicio: string): string` — retorna a Linha 1, ex.: `"11 e 12 de Julho de 2026"` e, quando vira o mês, `"31 de Janeiro e 01 de Fevereiro de 2027"`. Sempre dois dígitos no dia, mês com inicial maiúscula em português, ano sempre presente.
-- `formatModuloHorarios(tipo: string): string` — retorna a Linha 2:
-  - `online` → `"Sábado 9h–17h · Domingo 9h–13h"`
-  - `presencial` → `"Sábado 9h–17h · Domingo 9h–16h"`
-- (Opcional) `<ModuloDataHorario />` componente leve que renderiza as duas linhas com `text-sm` em cima e `text-xs text-muted-foreground` embaixo, para uso consistente.
+### 1. Backend — falta GRANT (bloqueia TODO mundo, inclusive Brasil)
+A tabela `public.escola_alunos` tem RLS aberta para insert (`with check = true`), mas **nenhum GRANT INSERT** foi concedido a `anon` ou `authenticated`. Resultado: o PostgREST rejeita com *permission denied for table escola_alunos* e o `try/catch` no formulário mostra "não foi possível enviar". É a causa principal de quem "preenche e nada acontece".
 
-A ordenação/seleção de "módulo atual" continua usando `new Date(data_inicio)` como hoje — não é exibição.
+### 2. Frontend — campos travam estrangeiros e usuários com algum campo vazio
+- `estado` e `cidade` são `<select>` populados pelo IBGE (só UFs brasileiras). Usuário em Portugal não consegue selecionar nada.
+- Vários inputs têm `required` do HTML5 → se faltar um, o browser bloqueia o submit sem mensagem visível clara.
 
-## Pontos de troca (só apresentação)
+## Mudanças
 
-1. **`src/pages/escola/EscolaAlunoModulos.tsx`** (cards dos 15 módulos)
-   - Substituir o `formatDate(m.data_inicio)` local pelas duas linhas novas (fim de semana + horários por tipo). Manter o selo "Presencial em SP".
+### A. Migration (Supabase) — destravar inserts
+```sql
+GRANT INSERT ON public.escola_alunos TO anon, authenticated;
+GRANT SELECT, UPDATE ON public.escola_alunos TO authenticated;
+GRANT ALL ON public.escola_alunos TO service_role;
+```
+(o GRANT já refletido em todas as sessões; nada de republish para isso.)
 
-2. **`src/pages/escola/EscolaAluno.tsx`** (tarja "Próxima aula ao vivo")
-   - Trocar `formatDateLong(atual.data_inicio)` pela Linha 1 (fim de semana) + Linha 2 (horários por tipo). Manter o badge "Presencial em SP".
+### B. `src/pages/curso/FormacaoInscricao.tsx` — liberar geral
+- Remover `required` de **todos** os campos.
+- Trocar `<select>` de **estado** e **cidade** por `<Input>` de texto livre. Mantemos o autocomplete IBGE como *sugestão opcional* via `<datalist>` (Brasil), mas qualquer texto vale — inclusive "Lisboa / Portugal".
+- Manter o mínimo que o banco exige (`NOT NULL`): se `email`, `nome` ou `whatsapp` vierem em branco, exibir aviso amigável **acima do botão** em vez de travar; só não envia se esses três estiverem vazios — qualquer outra combinação envia.
+- Botão `<button type="submit">` continua sempre clicável, sem `disabled`, sem `opacity`.
+- Tratamento de erro: se o insert falhar, mostrar a mensagem real do Supabase para a gente conseguir diagnosticar caso ainda haja algo.
 
-3. **`src/pages/escola/EscolaAlunoModulo.tsx`** (cabeçalho da sala do módulo)
-   - Trocar `formatDateLong(modulo.data_inicio)` pelas duas linhas novas.
+### C. Publish
+Depois das mudanças no frontend, o usuário precisa clicar **Publish → Update** para que `portalayurveda.com` receba a nova versão. O GRANT já vale para a versão atual no ar também.
 
-4. **`src/pages/AdminEscola.tsx`** (admin Escola)
-   - Linha do card de módulo (≈L143): `{formatDate(m.data_inicio)}` → as duas linhas novas.
-   - Cabeçalho do editor de módulo (≈L521): `{formatDate(modulo.data_inicio)} · {tipo}` → as duas linhas novas (o tipo já fica implícito nos horários; manter um chip pequeno "Presencial"/"Online" se quiser preservar a sinalização).
-   - Não tocar nas datas de `recados` (`created_at`).
+## O que NÃO muda
+- Sem alteração em outras telas, módulos, escola, admin.
+- Sem alteração no design system (paleta `formacao-azul`, tipografia).
+- Sem mexer em policies RLS além do GRANT.
 
-5. **Landing `/curso/formacao`** — verificação feita: não existe listagem de módulos com data por módulo na landing atual. `ProgramaSection.tsx` mostra apenas "Módulos 1–5" sem datas, e a única data textual ("11 de julho de 2026") está hardcoded em `src/data/courses/formacao.ts`. Nada a fazer aqui; se você quiser que a landing também passe a listar módulo a módulo com as datas do banco, me avise que é outro escopo.
-
-## Fora do escopo
-- Nenhuma mudança em lógica de seleção de módulo atual, queries, rotas, RLS, ou banco.
-- Datas de recados, posts, diário continuam como estão.
-- Sem mudanças em `data_fim` (continuamos derivando o domingo como `data_inicio + 1 dia` conforme pedido).
-
-## Validação
-- Conferir no `/escola/aluno/modulos` que o módulo com `data_inicio = 2026-07-11` aparece como `"11 e 12 de Julho de 2026"` e não mais `"10 de jul"`.
-- Conferir um caso de virada de mês (ex.: `2027-01-31` → `"31 de Janeiro e 01 de Fevereiro de 2027"`).
-- Conferir horários: online vs presencial trocando o `tipo` no admin.
+## Resumo dos arquivos
+- **migration nova** — GRANTs em `escola_alunos`.
+- **`src/pages/curso/FormacaoInscricao.tsx`** — remover `required`, trocar selects de estado/cidade por inputs livres, exibir erro real do Supabase, manter botão sempre clicável.
