@@ -115,11 +115,13 @@ const ListaModulos = ({
   recursosCount,
   perguntasCount,
   onSelect,
+  onToggleLiberado,
 }: {
   modulos: Modulo[];
   recursosCount: Record<string, number>;
   perguntasCount: Record<string, number>;
   onSelect: (m: Modulo) => void;
+  onToggleLiberado: (m: Modulo, value: boolean) => void;
 }) => {
   return (
     <div className="space-y-10">
@@ -139,10 +141,9 @@ const ListaModulos = ({
                 return (
                   <Card
                     key={m.id}
-                    onClick={() => onSelect(m)}
-                    className="cursor-pointer hover:border-primary transition-colors"
+                    className={`hover:border-primary transition-colors ${m.liberado ? "" : "bg-muted/30"}`}
                   >
-                    <CardHeader className="pb-2">
+                    <CardHeader className="pb-2 cursor-pointer" onClick={() => onSelect(m)}>
                       <div className="flex items-start justify-between gap-2">
                         <div className="flex items-center gap-2">
                           <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary text-sm font-bold">
@@ -166,6 +167,23 @@ const ListaModulos = ({
                       <p className="text-xs text-muted-foreground">
                         vídeo {check(!!m.video_url)} · apostila {check(!!m.apostila_url)} · zoom {check(!!m.zoom_url)} · {nRec} recursos · {nPerg} perguntas
                       </p>
+                      <div className="flex items-center justify-between gap-2 pt-2 border-t border-border">
+                        <div className="flex items-center gap-2">
+                          {m.liberado ? (
+                            <Unlock className="w-3.5 h-3.5 text-primary" />
+                          ) : (
+                            <Lock className="w-3.5 h-3.5 text-muted-foreground" />
+                          )}
+                          <Label className="text-[11px] cursor-pointer" htmlFor={`lib-${m.id}`}>
+                            {m.liberado ? "Liberado" : "Cadeado"}
+                          </Label>
+                        </div>
+                        <Switch
+                          id={`lib-${m.id}`}
+                          checked={m.liberado}
+                          onCheckedChange={(v) => onToggleLiberado(m, v)}
+                        />
+                      </div>
                     </CardContent>
                   </Card>
                 );
@@ -177,6 +195,7 @@ const ListaModulos = ({
     </div>
   );
 };
+
 
 const RecadosBlock = ({ turmaId }: { turmaId: string | null }) => {
   const [recados, setRecados] = useState<Recado[]>([]);
