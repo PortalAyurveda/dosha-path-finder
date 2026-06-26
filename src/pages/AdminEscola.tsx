@@ -797,6 +797,17 @@ const AdminEscola = () => {
     loadAll();
   }, [selected, loadAll]);
 
+  const toggleLiberado = async (m: Modulo, value: boolean) => {
+    setModulos((prev) => prev.map((x) => (x.id === m.id ? { ...x, liberado: value } : x)));
+    const { error } = await supabase.from("escola_modulos").update({ liberado: value }).eq("id", m.id);
+    if (error) {
+      toast({ title: "Erro ao atualizar", description: error.message });
+      setModulos((prev) => prev.map((x) => (x.id === m.id ? { ...x, liberado: !value } : x)));
+    } else {
+      toast({ title: value ? "Módulo liberado" : "Módulo cadeado" });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Seo title="Escola — Admin" description="Administração da Formação em Ayurveda" />
@@ -825,6 +836,7 @@ const AdminEscola = () => {
                 recursosCount={recursosCount}
                 perguntasCount={perguntasCount}
                 onSelect={setSelected}
+                onToggleLiberado={toggleLiberado}
               />
             )}
           </>
