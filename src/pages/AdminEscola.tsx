@@ -562,7 +562,31 @@ const EditarModulo = ({
             </p>
           </div>
         </div>
+        <div className="flex items-center gap-2 rounded-lg border border-border px-3 py-2 bg-muted/30">
+          {modulo.liberado ? (
+            <Unlock className="w-4 h-4 text-primary" />
+          ) : (
+            <Lock className="w-4 h-4 text-muted-foreground" />
+          )}
+          <Label htmlFor="lib-edit" className="cursor-pointer text-sm">
+            {modulo.liberado ? "Liberado para os alunos" : "Cadeado — não visível para os alunos"}
+          </Label>
+          <Switch
+            id="lib-edit"
+            checked={modulo.liberado}
+            onCheckedChange={async (v) => {
+              const { error } = await supabase.from("escola_modulos").update({ liberado: v }).eq("id", modulo.id);
+              if (error) toast({ title: "Erro", description: error.message });
+              else {
+                toast({ title: v ? "Módulo liberado" : "Módulo cadeado" });
+                onChange();
+              }
+            }}
+          />
+        </div>
       </div>
+
+
 
       {/* 1. Material */}
       <Card>
