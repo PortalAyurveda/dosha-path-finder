@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
 import { Loader2, CheckCircle2 } from "lucide-react";
@@ -120,12 +120,6 @@ const FormacaoInscricao = () => {
   };
 
   const objetivoCount = objetivo.trim().length;
-  const podeEnviar = useMemo(() => {
-    if (!email || !nome.trim() || !whatsapp || !estado || !cidade) return false;
-    if (objetivoCount < 100) return false;
-    if (plano === "outro" && planoDescricao.trim().length < 3) return false;
-    return true;
-  }, [email, nome, whatsapp, estado, cidade, objetivoCount, plano, planoDescricao]);
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -134,16 +128,16 @@ const FormacaoInscricao = () => {
     try {
       const payload = {
         turma_id: TURMA_ID,
-        email: email.trim().toLowerCase(),
-        nome_completo: nome.trim(),
+        email: email.trim().toLowerCase() || "—",
+        nome_completo: nome.trim() || "—",
         cpf: cpf.trim() || null,
-        whatsapp: whatsapp.trim(),
-        cidade,
-        estado,
-        objetivo: objetivo.trim(),
+        whatsapp: whatsapp.trim() || "—",
+        cidade: cidade.trim() || null,
+        estado: estado.trim() || null,
+        objetivo: objetivo.trim() || null,
         como_conheceu: comoConheceu.trim() || null,
         plano_pagamento: plano,
-        plano_descricao: plano === "outro" ? planoDescricao.trim() : null,
+        plano_descricao: plano === "outro" ? (planoDescricao.trim() || null) : null,
         dosha_registro_id: dosha?.registro_id ?? null,
         dosha_v: dosha?.v ?? null,
         dosha_p: dosha?.p ?? null,
@@ -231,7 +225,6 @@ const FormacaoInscricao = () => {
               <Input
                 id="email"
                 type="email"
-                required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 onBlur={onBlurEmail}
@@ -262,7 +255,6 @@ const FormacaoInscricao = () => {
               <Label htmlFor="nome">Nome completo *</Label>
               <Input
                 id="nome"
-                required
                 value={nome}
                 onChange={(e) => setNome(e.target.value)}
               />
@@ -270,7 +262,7 @@ const FormacaoInscricao = () => {
 
             {/* CPF */}
             <div className="space-y-2">
-              <Label htmlFor="cpf">CPF</Label>
+              <Label htmlFor="cpf">CPF <span className="text-stone-400 font-normal">(opcional)</span></Label>
               <Input
                 id="cpf"
                 value={cpf}
@@ -284,52 +276,44 @@ const FormacaoInscricao = () => {
               <Label htmlFor="whats">WhatsApp *</Label>
               <Input
                 id="whats"
-                required
                 value={whatsapp}
-                onChange={(e) => setWhatsapp(formatWhats(e.target.value))}
-                placeholder="(11) 99999-9999"
+                onChange={(e) => setWhatsapp(e.target.value)}
+                placeholder="(11) 99999-9999 ou +351 ..."
               />
+              <p className="text-xs text-stone-500">Pode incluir DDI se for de fora do Brasil (ex.: +351 para Portugal).</p>
             </div>
 
-            {/* Estado / Cidade */}
+            {/* Estado / Cidade — texto livre, aceita qualquer país */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="estado">Estado *</Label>
-                <select
+                <Label htmlFor="estado">Estado / Região</Label>
+                <Input
                   id="estado"
-                  required
+                  list="estados-br"
                   value={estado}
-                  onChange={(e) => {
-                    setEstado(e.target.value);
-                    setCidade("");
-                  }}
-                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                >
-                  <option value="">Selecione</option>
+                  onChange={(e) => setEstado(e.target.value)}
+                  placeholder="Ex.: SP, Lisboa, Porto…"
+                />
+                <datalist id="estados-br">
                   {estados.map((e) => (
-                    <option key={e.sigla} value={e.sigla}>
-                      {e.nome}
-                    </option>
+                    <option key={e.sigla} value={e.sigla}>{e.nome}</option>
                   ))}
-                </select>
+                </datalist>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="cidade">Cidade *</Label>
-                <select
+                <Label htmlFor="cidade">Cidade / País</Label>
+                <Input
                   id="cidade"
-                  required
+                  list="cidades-br"
                   value={cidade}
-                  disabled={!estado || municipios.length === 0}
                   onChange={(e) => setCidade(e.target.value)}
-                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm disabled:opacity-50"
-                >
-                  <option value="">{estado ? "Selecione" : "Selecione o estado"}</option>
+                  placeholder="Ex.: São Paulo, Lisboa / Portugal…"
+                />
+                <datalist id="cidades-br">
                   {municipios.map((m) => (
-                    <option key={m.id} value={m.nome}>
-                      {m.nome}
-                    </option>
+                    <option key={m.id} value={m.nome} />
                   ))}
-                </select>
+                </datalist>
               </div>
             </div>
 
@@ -349,7 +333,6 @@ const FormacaoInscricao = () => {
               <Label htmlFor="obj">Seu objetivo e expectativa com a formação *</Label>
               <Textarea
                 id="obj"
-                required
                 rows={5}
                 value={objetivo}
                 onChange={(e) => setObjetivo(e.target.value)}
