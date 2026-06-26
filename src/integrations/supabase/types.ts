@@ -1669,6 +1669,47 @@ export type Database = {
           },
         ]
       }
+      escola_cardapio: {
+        Row: {
+          conteudo: string | null
+          created_at: string | null
+          dia: string
+          id: string
+          modulo_id: string
+          ordem: number | null
+          refeicao: string
+          updated_at: string | null
+        }
+        Insert: {
+          conteudo?: string | null
+          created_at?: string | null
+          dia: string
+          id?: string
+          modulo_id: string
+          ordem?: number | null
+          refeicao: string
+          updated_at?: string | null
+        }
+        Update: {
+          conteudo?: string | null
+          created_at?: string | null
+          dia?: string
+          id?: string
+          modulo_id?: string
+          ordem?: number | null
+          refeicao?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "escola_cardapio_modulo_id_fkey"
+            columns: ["modulo_id"]
+            isOneToOne: false
+            referencedRelation: "escola_modulos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       escola_diario: {
         Row: {
           aluno_id: string
@@ -1761,9 +1802,11 @@ export type Database = {
           data_inicio: string
           descricao: string | null
           id: string
+          liberado: boolean
           numero: number
           semestre: number | null
           slides_url: string | null
+          slug: string | null
           tipo: string
           titulo: string
           turma_id: string | null
@@ -1778,9 +1821,11 @@ export type Database = {
           data_inicio: string
           descricao?: string | null
           id?: string
+          liberado?: boolean
           numero: number
           semestre?: number | null
           slides_url?: string | null
+          slug?: string | null
           tipo: string
           titulo: string
           turma_id?: string | null
@@ -1795,9 +1840,11 @@ export type Database = {
           data_inicio?: string
           descricao?: string | null
           id?: string
+          liberado?: boolean
           numero?: number
           semestre?: number | null
           slides_url?: string | null
+          slug?: string | null
           tipo?: string
           titulo?: string
           turma_id?: string | null
@@ -1867,24 +1914,27 @@ export type Database = {
           conteudo: string
           created_at: string | null
           id: string
-          modulo_id: string
+          modulo_id: string | null
           parent_id: string | null
+          turma_id: string | null
         }
         Insert: {
           aluno_id?: string | null
           conteudo: string
           created_at?: string | null
           id?: string
-          modulo_id: string
+          modulo_id?: string | null
           parent_id?: string | null
+          turma_id?: string | null
         }
         Update: {
           aluno_id?: string | null
           conteudo?: string
           created_at?: string | null
           id?: string
-          modulo_id?: string
+          modulo_id?: string | null
           parent_id?: string | null
+          turma_id?: string | null
         }
         Relationships: [
           {
@@ -1906,6 +1956,13 @@ export type Database = {
             columns: ["parent_id"]
             isOneToOne: false
             referencedRelation: "escola_postits"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "escola_postits_turma_id_fkey"
+            columns: ["turma_id"]
+            isOneToOne: false
+            referencedRelation: "escola_turmas"
             referencedColumns: ["id"]
           },
         ]
