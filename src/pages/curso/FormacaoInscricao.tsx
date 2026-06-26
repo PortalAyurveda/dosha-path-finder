@@ -333,7 +333,6 @@ const FormacaoInscricao = () => {
               <Label htmlFor="obj">Seu objetivo e expectativa com a formação *</Label>
               <Textarea
                 id="obj"
-                required
                 rows={5}
                 value={objetivo}
                 onChange={(e) => setObjetivo(e.target.value)}
