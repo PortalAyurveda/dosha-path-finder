@@ -61,14 +61,6 @@ type Recurso = {
 type Pergunta = { id: string; pergunta: string; ordem: number | null };
 type Resposta = { id: string; pergunta_id: string; resposta: string | null };
 
-type Postit = {
-  id: string;
-  aluno_id: string | null;
-  conteudo: string;
-  created_at: string | null;
-  parent_id: string | null;
-  aluno?: { nome_completo: string } | null;
-};
 
 const RECURSO_GROUPS: { tipo: string; label: string; icon: typeof VideoIcon }[] = [
   { tipo: "video_recomendado", label: "Vídeos recomendados", icon: VideoIcon },
