@@ -545,7 +545,7 @@ const CardapioBlock = ({ moduloId }: { moduloId: string }) => {
 // ============= PÁGINA =============
 
 const Conteudo = ({ aluno }: { aluno: AlunoRow }) => {
-  const { id } = useParams();
+  const { slug } = useParams();
   const [modulo, setModulo] = useState<Modulo | null>(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
@@ -553,13 +553,22 @@ const Conteudo = ({ aluno }: { aluno: AlunoRow }) => {
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      if (!id) return;
+      if (!slug) return;
       setLoading(true);
-      const { data } = await supabase
+      // tenta por slug; se não achar e parecer UUID, fallback por id
+      let { data } = await supabase
         .from("escola_modulos")
-        .select("id,numero,semestre,titulo,tipo,data_inicio,data_fim,video_url,zoom_url,slides_url,apostila_url")
-        .eq("id", id)
+        .select("id,numero,semestre,titulo,tipo,data_inicio,data_fim,slug,liberado,video_url,zoom_url,slides_url,apostila_url")
+        .eq("slug", slug)
         .maybeSingle();
+      if (!data && /^[0-9a-f-]{36}$/i.test(slug)) {
+        const r = await supabase
+          .from("escola_modulos")
+          .select("id,numero,semestre,titulo,tipo,data_inicio,data_fim,slug,liberado,video_url,zoom_url,slides_url,apostila_url")
+          .eq("id", slug)
+          .maybeSingle();
+        data = r.data;
+      }
       if (cancelled) return;
       if (!data) setNotFound(true);
       else setModulo(data as Modulo);
@@ -568,7 +577,7 @@ const Conteudo = ({ aluno }: { aluno: AlunoRow }) => {
     return () => {
       cancelled = true;
     };
-  }, [id]);
+  }, [slug]);
 
   const arc = useMemo(
     () => (
@@ -600,6 +609,8 @@ const Conteudo = ({ aluno }: { aluno: AlunoRow }) => {
       </div>
     );
   }
+
+  const locked = !modulo.liberado;
 
   return (
     <div className="space-y-10">
@@ -640,45 +651,73 @@ const Conteudo = ({ aluno }: { aluno: AlunoRow }) => {
               </h1>
               <p className="text-sm text-foreground/80 mt-1">{formatModuloFimDeSemana(modulo.data_inicio)}</p>
               <p className="text-xs text-muted-foreground">{formatModuloHorarios(modulo.tipo)}</p>
-              {modulo.tipo === "presencial" && (
-                <Badge
-                  className="text-[10px] mt-2"
-                  style={{ background: `${branding.primaryColor}1A`, color: branding.primaryColor }}
-                >
-                  Presencial em SP
-                </Badge>
-              )}
+              <div className="flex items-center gap-2 flex-wrap mt-2">
+                {locked && (
+                  <Badge
+                    variant="secondary"
+                    className="text-[10px] inline-flex items-center gap-1"
+                    style={{ background: `${branding.primaryColor}1A`, color: branding.primaryColor }}
+                  >
+                    <Lock className="w-3 h-3" /> cadeado
+                  </Badge>
+                )}
+                {modulo.tipo === "presencial" && (
+                  <Badge
+                    className="text-[10px]"
+                    style={{ background: `${branding.primaryColor}1A`, color: branding.primaryColor }}
+                  >
+                    Presencial em SP
+                  </Badge>
+                )}
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Material */}
-      <section className="space-y-4">
-        <SectionTitle icon={VideoIcon}>Material</SectionTitle>
-        <MaterialBlock modulo={modulo} />
-      </section>
+      {locked ? (
+        <div
+          className="rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm border bg-white p-8 text-center space-y-3"
+          style={{ borderColor: `${branding.primaryColor}33` }}
+        >
+          <Lock className="w-8 h-8 mx-auto" style={{ color: branding.primaryColor }} />
+          <h2 className="font-serif text-xl italic font-bold" style={{ color: branding.darkColor }}>
+            Este módulo ainda será liberado.
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            O conteúdo será disponibilizado pelo professor conforme o curso avança.
+          </p>
+        </div>
+      ) : (
+        <>
+          {/* Material */}
+          <section className="space-y-4">
+            <SectionTitle icon={VideoIcon}>Material</SectionTitle>
+            <MaterialBlock modulo={modulo} />
+          </section>
 
-      {/* Recursos */}
-      <RecursosBlock moduloId={modulo.id} />
+          {/* Recursos */}
+          <RecursosBlock moduloId={modulo.id} />
 
-      {/* Autoavaliação */}
-      <section className="space-y-4">
-        <SectionTitle icon={FileText}>Autoavaliação</SectionTitle>
-        <AutoavaliacaoBlock moduloId={modulo.id} alunoId={aluno.id} />
-      </section>
+          {/* Cardápio */}
+          <section className="space-y-4">
+            <SectionTitle icon={Utensils}>Cardápio do fim de semana</SectionTitle>
+            <CardapioBlock moduloId={modulo.id} />
+          </section>
 
-      {/* Diário */}
-      <section className="space-y-4">
-        <SectionTitle icon={Sparkles}>Diário de evolução clínica</SectionTitle>
-        <DiarioBlock moduloId={modulo.id} alunoId={aluno.id} />
-      </section>
+          {/* Autoavaliação */}
+          <section className="space-y-4">
+            <SectionTitle icon={FileText}>Autoavaliação</SectionTitle>
+            <AutoavaliacaoBlock moduloId={modulo.id} alunoId={aluno.id} />
+          </section>
 
-      {/* Mural de post-its */}
-      <section className="space-y-4">
-        <SectionTitle icon={MessageCircle}>Mural de post-its</SectionTitle>
-        <PostitsBlock moduloId={modulo.id} alunoId={aluno.id} />
-      </section>
+          {/* Diário */}
+          <section className="space-y-4">
+            <SectionTitle icon={Sparkles}>Diário de evolução clínica</SectionTitle>
+            <DiarioBlock moduloId={modulo.id} alunoId={aluno.id} />
+          </section>
+        </>
+      )}
     </div>
   );
 };
