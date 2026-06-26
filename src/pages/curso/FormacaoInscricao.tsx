@@ -130,10 +130,6 @@ const FormacaoInscricao = () => {
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    if (!podeEnviar) {
-      setError("Preencha todos os campos obrigatórios.");
-      return;
-    }
     setSubmitting(true);
     try {
       const payload = {
@@ -403,8 +399,7 @@ const FormacaoInscricao = () => {
 
             <button
               type="submit"
-              disabled={submitting}
-              className="w-full h-12 rounded-md font-semibold text-white transition-opacity disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full h-12 rounded-md font-semibold text-white transition-opacity flex items-center justify-center gap-2"
               style={{ background: ROXO }}
             >
               {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
