@@ -119,7 +119,7 @@ const FormacaoInscricao = () => {
     }
   };
 
-  const objetivoCount = objetivo.trim().length;
+  
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
