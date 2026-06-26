@@ -130,10 +130,6 @@ const FormacaoInscricao = () => {
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    if (!podeEnviar) {
-      setError("Preencha todos os campos obrigatórios.");
-      return;
-    }
     setSubmitting(true);
     try {
       const payload = {
