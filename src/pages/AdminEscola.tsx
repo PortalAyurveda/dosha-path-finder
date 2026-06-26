@@ -370,6 +370,105 @@ const RecadosBlock = ({ turmaId }: { turmaId: string | null }) => {
 };
 
 // ============ TELA 2: Editar módulo ============
+// ============ Cardápio editor (admin) ============
+const DIAS_CARDAPIO: { key: "sexta" | "sabado" | "domingo"; label: string }[] = [
+  { key: "sexta", label: "Sexta" },
+  { key: "sabado", label: "Sábado" },
+  { key: "domingo", label: "Domingo" },
+];
+const REFEICAO_LABEL_ADMIN: Record<string, string> = {
+  cafe: "Café da manhã",
+  almoco: "Almoço",
+  jantar: "Jantar",
+};
+
+const CardapioEditor = ({ moduloId }: { moduloId: string }) => {
+  const [linhas, setLinhas] = useState<CardapioRow[]>([]);
+  const [drafts, setDrafts] = useState<Record<string, string>>({});
+  const [loading, setLoading] = useState(true);
+  const [savingId, setSavingId] = useState<string | null>(null);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    const { data } = await supabase
+      .from("escola_cardapio")
+      .select("id,modulo_id,dia,refeicao,conteudo,ordem")
+      .eq("modulo_id", moduloId)
+      .order("ordem", { ascending: true });
+    const rows = (data ?? []) as CardapioRow[];
+    setLinhas(rows);
+    const d: Record<string, string> = {};
+    rows.forEach((r) => (d[r.id] = r.conteudo ?? ""));
+    setDrafts(d);
+    setLoading(false);
+  }, [moduloId]);
+
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  const salvar = async (row: CardapioRow) => {
+    setSavingId(row.id);
+    const conteudo = (drafts[row.id] ?? "").trim();
+    const { error } = await supabase
+      .from("escola_cardapio")
+      .update({ conteudo: conteudo || null })
+      .eq("id", row.id);
+    setSavingId(null);
+    if (error) toast({ title: "Erro ao salvar", description: error.message });
+    else toast({ title: "Refeição salva" });
+  };
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-lg font-heading italic flex items-center gap-2">
+          <Utensils className="w-4 h-4" /> Cardápio do fim de semana
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-5">
+        {loading ? (
+          <Skeleton className="h-32 w-full" />
+        ) : linhas.length === 0 ? (
+          <p className="text-sm text-muted-foreground">Slots do cardápio não encontrados.</p>
+        ) : (
+          DIAS_CARDAPIO.map((d) => {
+            const itens = linhas.filter((l) => l.dia === d.key);
+            if (itens.length === 0) return null;
+            return (
+              <div key={d.key} className="space-y-2">
+                <h3 className="font-medium text-sm text-foreground">{d.label}</h3>
+                <div className="space-y-2">
+                  {itens.map((r) => (
+                    <div key={r.id} className="rounded-lg border border-border p-3 bg-card space-y-2">
+                      <Label className="text-xs uppercase tracking-wide text-primary">
+                        {REFEICAO_LABEL_ADMIN[r.refeicao] ?? r.refeicao}
+                      </Label>
+                      <Textarea
+                        rows={2}
+                        value={drafts[r.id] ?? ""}
+                        onChange={(e) => setDrafts((p) => ({ ...p, [r.id]: e.target.value }))}
+                        placeholder="Descreva a refeição…"
+                      />
+                      <div className="flex justify-end">
+                        <Button size="sm" variant="outline" onClick={() => salvar(r)} disabled={savingId === r.id}>
+                          {savingId === r.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                          Salvar
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })
+        )}
+      </CardContent>
+    </Card>
+  );
+};
+
+// ============ TELA 2: Editar módulo ============
 const EditarModulo = ({
   modulo,
   onBack,
