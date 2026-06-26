@@ -403,7 +403,7 @@ const FormacaoInscricao = () => {
 
             <button
               type="submit"
-              disabled={!podeEnviar || submitting}
+              disabled={submitting}
               className="w-full h-12 rounded-md font-semibold text-white transition-opacity disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               style={{ background: ROXO }}
             >
