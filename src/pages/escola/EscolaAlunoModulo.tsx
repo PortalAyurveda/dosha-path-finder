@@ -11,11 +11,9 @@ import {
   Download,
   FileText,
   Loader2,
-  MessageCircle,
+  Lock,
   Save,
-  Send,
   Sparkles,
-  Trash2,
   Utensils,
   Video as VideoIcon,
   Link2,
@@ -35,10 +33,20 @@ type Modulo = {
   tipo: string;
   data_inicio: string;
   data_fim: string;
+  slug: string | null;
+  liberado: boolean;
   video_url: string | null;
   zoom_url: string | null;
   slides_url: string | null;
   apostila_url: string | null;
+};
+
+type CardapioRow = {
+  id: string;
+  dia: string;
+  refeicao: string;
+  conteudo: string | null;
+  ordem: number | null;
 };
 
 type Recurso = {
