@@ -243,6 +243,24 @@ function CharCreateScreen({ user, party_id, onCreated }: { user: any; party_id: 
   const [nome, setNome] = useState("");
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+  const [classesEmUso, setClassesEmUso] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (!party_id) return;
+    let alive = true;
+    const tick = async () => {
+      const r = await rpcEstadoParty(party_id);
+      if (!alive || !r.ok) return;
+      const usadas = (((r.data as any)?.jogadores ?? []) as any[])
+        .filter((j) => j.user_id !== user?.id && !!j.classe)
+        .map((j) => String(j.classe).toLowerCase());
+      setClassesEmUso(usadas);
+      if (classe && usadas.includes(classe)) setClasse(null);
+    };
+    tick();
+    const id = window.setInterval(tick, 3000);
+    return () => { alive = false; window.clearInterval(id); };
+  }, [party_id, user?.id, classe]);
 
   useEffect(() => {
     if (!classe) return;
