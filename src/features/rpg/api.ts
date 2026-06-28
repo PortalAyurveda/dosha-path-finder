@@ -103,7 +103,7 @@ export const rpcEventoPendente = (player_id: string) => rpgRpc("evento_pendente"
 
 // Admin (leitura de tabelas rpg.* via funcao publica criada anteriormente).
 export const adminSelect = async <T = any>(table: string): Promise<RpcResult<T[]>> => {
-  const { data, error } = await (supabase as any).rpc("rpg_admin_select", { _table: `rpg.${table}` });
+  const { data, error } = await (supabase as any).rpc("rpg_admin_select", { _table: table });
   if (error) return { ok: false, error: error.message };
   return { ok: true, data: (Array.isArray(data) ? data : []) as T[] };
 };
