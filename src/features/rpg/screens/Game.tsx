@@ -48,8 +48,9 @@ function DiscursivaInput() {
   );
 }
 
-export function GameShell({ children }: { children: React.ReactNode }) {
+export function GameShell({ children, showCardapio = true }: { children: React.ReactNode; showCardapio?: boolean }) {
   const { estado, loading } = useGame();
+  useSayHello();
   if (!estado) {
     return (
       <div className="rpg-ink-soft flex items-center gap-2">
@@ -70,8 +71,10 @@ export function GameShell({ children }: { children: React.ReactNode }) {
         ) : null}
         {loading ? <span className="inline-flex items-center gap-1 text-xs rpg-ink-soft"><Loader2 size={12} className="animate-spin"/> resolvendo...</span> : null}
       </div>
+      {showCardapio ? <ChoiceMenu /> : null}
       {children}
       <DiscursivaInput />
+      <Cronica />
     </div>
   );
 }
