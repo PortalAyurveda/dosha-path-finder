@@ -53,7 +53,7 @@ export function LobbyFlow() {
       // se veio via /rpg/lobby/:code, tenta entrar direto
       const code = (params as any).code as string | undefined;
       if (code && !player) {
-        const r = await rpcEntrarParty(code);
+        const r: any = await rpcEntrarParty(code);
         if (r.ok && (r.data as any).ok && (r.data as any).party_id) {
           setPartyOnly((r.data as any).party_id);
           setStep({ name: "char" });
@@ -178,7 +178,7 @@ function EntryScreen({ user, onCreated }: { user: any; onCreated: (party_id: str
 
   const criar = async () => {
     setBusy(true); setErr(null);
-    const r = await rpcCriarParty(user.id);
+    const r: any = await rpcCriarParty(user.id);
     if (!r.ok) { setErr(r.error); setBusy(false); return; }
     const d = r.data as any;
     setJoinCode(d.join_code);
@@ -188,7 +188,7 @@ function EntryScreen({ user, onCreated }: { user: any; onCreated: (party_id: str
 
   const entrar = async () => {
     setBusy(true); setErr(null);
-    const r = await rpcEntrarParty(code);
+    const r: any = await rpcEntrarParty(code);
     setBusy(false);
     if (!r.ok) return setErr(r.error);
     const d = r.data as any;
@@ -279,7 +279,7 @@ function CharCreateScreen({ user, party_id, onCreated }: { user: any; party_id: 
     if (restantes !== 0) return setErr(`Distribua todos os pontos (${restantes} restantes)`);
     if (!nome.trim()) return setErr("Escolha um nome");
     setBusy(true); setErr(null);
-    const r = await rpcCriarPersonagem(party_id, user.id, nome.trim(), classe, pontos);
+    const r: any = await rpcCriarPersonagem(party_id, user.id, nome.trim(), classe, pontos);
     setBusy(false);
     if (!r.ok) return setErr(r.error);
     const d = r.data as any;
