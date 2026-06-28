@@ -131,7 +131,7 @@ function useRpgTable<T = any>(table: string, transform?: (rows: T[]) => T[]) {
     setError(null);
     rpgAdminSelect<T>(table).then(({ data, error }) => {
       if (cancelled) return;
-      if (error) setError(error.message);
+      if (error) setError(error);
       else setData(transform ? transform(data) : data);
       setLoading(false);
     });
