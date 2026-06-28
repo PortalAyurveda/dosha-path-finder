@@ -121,7 +121,7 @@ function Table({ table, columns, order }: { table: string; columns: string[]; or
   const [err, setErr] = useState<string | null>(null);
   useEffect(() => {
     setRows(null); setErr(null);
-    adminSelect(table).then((r) => {
+    adminSelect(table).then((r: any) => {
       if (!r.ok) { setErr(r.error); return; }
       let data = [...r.data];
       if (order) {
@@ -180,7 +180,7 @@ function CidadesTab() {
   const [err, setErr] = useState<string | null>(null);
 
   useEffect(() => {
-    Promise.all([adminSelect("cities"), adminSelect("npcs")]).then(([a, b]) => {
+    Promise.all([adminSelect("cities"), adminSelect("npcs")]).then(([a, b]: [any, any]) => {
       if (!a.ok) return setErr(a.error);
       if (!b.ok) return setErr(b.error);
       setCidades(a.data); setNpcs(b.data);
