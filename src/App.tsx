@@ -90,6 +90,7 @@ const Pesquisa = lazy(() => import("./pages/Pesquisa"));
 const Revisao = lazy(() => import("./pages/Revisao"));
 const AdminBanners = lazy(() => import("./pages/AdminBanners"));
 const RpgAdmin = lazy(() => import("./pages/RpgAdmin"));
+const AdminRpg = lazy(() => import("./pages/AdminRpg"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
