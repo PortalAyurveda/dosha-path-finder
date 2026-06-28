@@ -89,6 +89,7 @@ const SamkhyaCompras = lazy(() => import("./pages/SamkhyaCompras"));
 const Pesquisa = lazy(() => import("./pages/Pesquisa"));
 const Revisao = lazy(() => import("./pages/Revisao"));
 const AdminBanners = lazy(() => import("./pages/AdminBanners"));
+const RpgAdmin = lazy(() => import("./pages/RpgAdmin"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -248,6 +249,10 @@ const RoutedApp = () => {
 
               <Route path="/pesquisa" element={<Pesquisa />} />
               <Route path="/revisao" element={<Revisao />} />
+
+              {/* RPG admin (somente leitura) */}
+              <Route path="/rpg" element={<Navigate to="/rpg/admin" replace />} />
+              <Route path="/rpg/admin" element={<AdminRoute><RpgAdmin /></AdminRoute>} />
 
               <Route path="*" element={<NotFound />} />
             </Routes>
