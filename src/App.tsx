@@ -91,6 +91,7 @@ const Revisao = lazy(() => import("./pages/Revisao"));
 const AdminBanners = lazy(() => import("./pages/AdminBanners"));
 const RpgAdmin = lazy(() => import("./pages/RpgAdmin"));
 const AdminRpg = lazy(() => import("./pages/AdminRpg"));
+const Rpg = lazy(() => import("./pages/Rpg"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -253,7 +254,8 @@ const RoutedApp = () => {
               <Route path="/revisao" element={<Revisao />} />
 
               {/* RPG admin (somente leitura) */}
-              <Route path="/rpg" element={<Navigate to="/rpg/admin" replace />} />
+              <Route path="/rpg" element={<Rpg />} />
+              <Route path="/rpg/lobby/:code" element={<Rpg />} />
               <Route path="/rpg/admin" element={<AdminRoute><RpgAdmin /></AdminRoute>} />
 
               <Route path="*" element={<NotFound />} />
