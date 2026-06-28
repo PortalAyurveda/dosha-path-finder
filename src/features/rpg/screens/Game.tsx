@@ -6,6 +6,7 @@ import { ArrowLeft, ArrowRight, BedDouble, Loader2, MessageSquare, Shield, Sword
 import { useGame } from "../GameContext";
 import { rpcEventoPendente, rpcMapa } from "../api";
 import { EntityIcon, FichaButton, Hud, NarrativaPainel, NodeIcon, PartyBar } from "../ui";
+import { ChoiceMenu, Cronica, useSayHello } from "../scene";
 
 function meuTurno(estado: any) {
   return !!estado?.party?.meu_turno || estado?.party == null;
@@ -47,8 +48,9 @@ function DiscursivaInput() {
   );
 }
 
-export function GameShell({ children }: { children: React.ReactNode }) {
+export function GameShell({ children, showCardapio = true }: { children: React.ReactNode; showCardapio?: boolean }) {
   const { estado, loading } = useGame();
+  useSayHello();
   if (!estado) {
     return (
       <div className="rpg-ink-soft flex items-center gap-2">
@@ -69,8 +71,10 @@ export function GameShell({ children }: { children: React.ReactNode }) {
         ) : null}
         {loading ? <span className="inline-flex items-center gap-1 text-xs rpg-ink-soft"><Loader2 size={12} className="animate-spin"/> resolvendo...</span> : null}
       </div>
+      {showCardapio ? <ChoiceMenu /> : null}
       {children}
       <DiscursivaInput />
+      <Cronica />
     </div>
   );
 }
@@ -312,7 +316,7 @@ export function Combat() {
   };
 
   return (
-    <GameShell>
+    <GameShell showCardapio={false}>
       <div className="rpg-card-scroll p-3">
         <h3 className="rpg-title text-base mb-2">Round {combate.round ?? "?"}</h3>
         {[0, 1, 2].map((tile) => (
@@ -392,7 +396,7 @@ export function Combat() {
 export function Defeat() {
   const { lastNarrativa, refresh } = useGame();
   return (
-    <GameShell>
+    <GameShell showCardapio={false}>
       <div className="rpg-card-scroll p-6 text-center">
         <h2 className="rpg-title text-2xl mb-2">Voces despertam feridos mas vivos</h2>
         <p>{lastNarrativa ?? "A taverna esta quieta. Alguem cuidou de voces na ultima cidade."}</p>
