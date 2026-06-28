@@ -1,5 +1,5 @@
 // Dashboard admin do modulo RPG (so leitura) + 1 acao de escrita: Forjar Mundo.
-// Leitura via rpc('rpg_admin_select', { _table: 'rpg.<table>' }).
+// Leitura via rpc('rpg_admin_select', { _table: '<table>' }).
 // Gerar via webhook /rpg-gerar-tudo (pipeline completo, ~5-8 min).
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Helmet } from "react-helmet-async";
