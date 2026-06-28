@@ -141,7 +141,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
       if (!state.player?.player_id) return;
       dispatch({ type: "set_loading", loading: true });
       dispatch({ type: "set_error", error: null });
-      const r = await postAcao(state.player.player_id, acao);
+      const r: any = await postAcao(state.player.player_id, acao);
       if (r.ok) {
         dispatch({
           type: "set_response",
