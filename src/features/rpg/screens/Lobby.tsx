@@ -49,6 +49,7 @@ export function LobbyFlow() {
   // 2. com user: se ja temos player no save e party iniciada → jogo; senao tela inicial.
   useEffect(() => {
     if (!user) return;
+    if (step.name !== "loading") return;
     (async () => {
       // se veio via /rpg/lobby/:code, tenta entrar direto
       const code = (params as any).code as string | undefined;
@@ -69,7 +70,7 @@ export function LobbyFlow() {
       const saves = r.ok && Array.isArray(r.data) ? (r.data as any[]) : [];
       setStep(saves.length ? { name: "saves", saves } : { name: "entry" });
     })();
-  }, [user, params, player, setPartyOnly]);
+  }, [user, params, player]);
 
   // 3. quando estado vira jogo (modo != lobby), navega pra "modo de jogo"
   useEffect(() => {
