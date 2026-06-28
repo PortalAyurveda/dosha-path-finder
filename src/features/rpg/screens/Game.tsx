@@ -316,7 +316,7 @@ export function Combat() {
   };
 
   return (
-    <GameShell>
+    <GameShell showCardapio={false}>
       <div className="rpg-card-scroll p-3">
         <h3 className="rpg-title text-base mb-2">Round {combate.round ?? "?"}</h3>
         {[0, 1, 2].map((tile) => (
@@ -396,7 +396,7 @@ export function Combat() {
 export function Defeat() {
   const { lastNarrativa, refresh } = useGame();
   return (
-    <GameShell>
+    <GameShell showCardapio={false}>
       <div className="rpg-card-scroll p-6 text-center">
         <h2 className="rpg-title text-2xl mb-2">Voces despertam feridos mas vivos</h2>
         <p>{lastNarrativa ?? "A taverna esta quieta. Alguem cuidou de voces na ultima cidade."}</p>
