@@ -4624,6 +4624,7 @@ export type Database = {
         Args: { _version_number: number }
         Returns: undefined
       }
+      rpg_admin_select: { Args: { _table: string }; Returns: Json }
       text_to_bytea: { Args: { data: string }; Returns: string }
       unaccent: { Args: { "": string }; Returns: string }
       urlencode:
