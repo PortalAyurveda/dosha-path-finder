@@ -1,16 +1,14 @@
-// Client somente leitura para o schema `rpg`. Compartilha a sessão admin.
-import { createClient } from "@supabase/supabase-js";
+// Leitura administrativa do conteúdo RPG.
+// Usa o client principal para reaproveitar exatamente a mesma sessão admin.
+import { supabase } from "@/integrations/supabase/client";
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
-const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string;
+export async function rpgAdminSelect<T = Record<string, unknown>>(table: string) {
+  const { data, error } = await (supabase as any).rpc("rpg_admin_select", {
+    _table: table,
+  });
 
-export const rpgSupabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
-  db: { schema: "rpg" as never },
-  auth: {
-    storage: typeof window !== "undefined" ? localStorage : undefined,
-    persistSession: true,
-    autoRefreshToken: false,
-    detectSessionInUrl: false,
-    storageKey: "sb-portalayurveda-auth",
-  },
-});
+  return {
+    data: (Array.isArray(data) ? data : []) as T[],
+    error: error?.message ? String(error.message) : null,
+  };
+}

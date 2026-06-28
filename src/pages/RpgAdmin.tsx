@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet-async";
-import { rpgSupabase } from "@/integrations/supabase/rpg-client";
+import { rpgAdminSelect } from "@/integrations/supabase/rpg-client";
 import {
   Globe2, Skull, Crown, Sword, Users, ScrollText, LayoutDashboard,
   ChevronRight, ChevronDown, X, Loader2,
@@ -65,6 +65,24 @@ const TierBadge = ({ tier }: { tier: number | null | undefined }) => (
   </span>
 );
 
+const RpgError = ({ table, message }: { table?: string; message: string }) => (
+  <div className="rounded border border-red-900/60 bg-red-950/30 p-3 text-sm text-red-200">
+    <div className="font-mono text-xs uppercase tracking-wider text-red-300/80">Falha ao carregar {table ? `rpg.${table}` : "conteúdo RPG"}</div>
+    <div className="mt-1 text-red-100/90">{message}</div>
+  </div>
+);
+
+const compareValues = (a: unknown, b: unknown) => {
+  if (a == null && b == null) return 0;
+  if (a == null) return 1;
+  if (b == null) return -1;
+  if (typeof a === "number" && typeof b === "number") return a - b;
+  return String(a).localeCompare(String(b), "pt-BR", { numeric: true, sensitivity: "base" });
+};
+
+const byField = <T extends Record<string, any>>(field: keyof T & string, ascending = true) => (rows: T[]) =>
+  [...rows].sort((a, b) => ascending ? compareValues(a[field], b[field]) : compareValues(b[field], a[field]));
+
 // ============================================================
 // Detail drawer
 // ============================================================
@@ -102,7 +120,7 @@ const DetailDrawer = ({ open, onClose, title, record }: { open: boolean; onClose
 // ============================================================
 // Hooks de dados
 // ============================================================
-function useRpgTable<T = any>(table: string, filters?: (q: any) => any) {
+function useRpgTable<T = any>(table: string, transform?: (rows: T[]) => T[]) {
   const [data, setData] = useState<T[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -110,12 +128,11 @@ function useRpgTable<T = any>(table: string, filters?: (q: any) => any) {
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
-    let q: any = (rpgSupabase as any).from(table).select("*");
-    if (filters) q = filters(q);
-    q.then(({ data, error }: any) => {
+    setError(null);
+    rpgAdminSelect<T>(table).then(({ data, error }) => {
       if (cancelled) return;
-      if (error) setError(error.message);
-      else setData((data ?? []) as T[]);
+      if (error) setError(error);
+      else setData(transform ? transform(data) : data);
       setLoading(false);
     });
     return () => { cancelled = true; };
@@ -136,20 +153,21 @@ const TABLES_FOR_COUNT = [
 const OverviewSection = () => {
   const [counts, setCounts] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     (async () => {
       const out: Record<string, number> = {};
+      setError(null);
       await Promise.all(TABLES_FOR_COUNT.map(async (t) => {
-        const { count } = await (rpgSupabase as any).from(t).select("*", { count: "exact", head: true });
-        out[t] = count ?? 0;
+        const { data, error } = await rpgAdminSelect(t);
+        if (error) setError(`rpg.${t}: ${error}`);
+        out[t] = data.length;
       }));
-      const { count: monstersCount } = await (rpgSupabase as any)
-        .from("monster_templates").select("*", { count: "exact", head: true }).neq("type", "boss");
-      const { count: bossesCount } = await (rpgSupabase as any)
-        .from("monster_templates").select("*", { count: "exact", head: true }).eq("type", "boss");
-      out.monstros = monstersCount ?? 0;
-      out.bosses = bossesCount ?? 0;
+      const { data: monsters, error: monstersError } = await rpgAdminSelect<any>("monster_templates");
+      if (monstersError) setError(`rpg.monster_templates: ${monstersError}`);
+      out.monstros = monsters.filter((m) => m.type !== "boss").length;
+      out.bosses = monsters.filter((m) => m.type === "boss").length;
       setCounts(out);
       setLoading(false);
     })();
@@ -167,7 +185,7 @@ const OverviewSection = () => {
       <div className="mb-6 p-3 rounded border border-amber-900/40 bg-amber-950/20 text-sm text-amber-200/90">
         O banco contém duas gerações empilhadas; os números podem aparecer duplicados (ex.: 2 biomas). Mostrado como está, sem deduplicar.
       </div>
-      {loading ? <Loader2 className="w-5 h-5 animate-spin text-zinc-500" /> : (
+      {error ? <RpgError message={error} /> : loading ? <Loader2 className="w-5 h-5 animate-spin text-zinc-500" /> : (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
           {cards.map(([key, label]) => (
             <div key={key} className="rounded-lg border border-zinc-800 bg-zinc-900/60 p-4">
@@ -214,27 +232,41 @@ const WorldSection = ({ openDetail }: { openDetail: (title: string, rec: any) =>
   const [quests, setQuests] = useState<any[]>([]);
   const [rooms, setRooms] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     (async () => {
-      const { data: camps } = await (rpgSupabase as any).from("campaigns").select("*").eq("status", "active").limit(1);
-      const c = camps?.[0] ?? null;
+      setError(null);
+      const { data: camps, error: campsError } = await rpgAdminSelect<any>("campaigns");
+      if (campsError) {
+        setError(campsError);
+        setLoading(false);
+        return;
+      }
+      const c = camps.find((item) => item.status === "active") ?? camps[0] ?? null;
       setCampaign(c);
       if (c) {
-        const [{ data: b }, { data: ci }, { data: n }, { data: q }, { data: r }] = await Promise.all([
-          (rpgSupabase as any).from("biomes").select("*").eq("campaign_id", c.id),
-          (rpgSupabase as any).from("cities").select("*").order("ordem", { ascending: true }),
-          (rpgSupabase as any).from("npcs").select("*"),
-          (rpgSupabase as any).from("quests").select("*").eq("campaign_id", c.id).order("sequence_order", { ascending: true }),
-          (rpgSupabase as any).from("rooms").select("*").order("ordem", { ascending: true }),
+        const [{ data: b, error: bErr }, { data: ci, error: ciErr }, { data: n, error: nErr }, { data: q, error: qErr }, { data: r, error: rErr }] = await Promise.all([
+          rpgAdminSelect<any>("biomes"),
+          rpgAdminSelect<any>("cities"),
+          rpgAdminSelect<any>("npcs"),
+          rpgAdminSelect<any>("quests"),
+          rpgAdminSelect<any>("rooms"),
         ]);
-        setBiomes(b ?? []); setCities(ci ?? []); setNpcs(n ?? []); setQuests(q ?? []); setRooms(r ?? []);
+        const firstError = bErr || ciErr || nErr || qErr || rErr;
+        if (firstError) setError(firstError);
+        setBiomes((b ?? []).filter((item) => item.campaign_id === c.id));
+        setCities(byField<any>("ordem")(ci ?? []));
+        setNpcs(n ?? []);
+        setQuests(byField<any>("sequence_order")((q ?? []).filter((item) => item.campaign_id === c.id)));
+        setRooms(byField<any>("ordem")(r ?? []));
       }
       setLoading(false);
     })();
   }, []);
 
   if (loading) return <Loader2 className="w-5 h-5 animate-spin text-zinc-500" />;
+  if (error) return <RpgError table="world" message={error} />;
   if (!campaign) return <p className="text-zinc-500">Nenhuma campanha ativa.</p>;
 
   return (
@@ -318,7 +350,7 @@ const WorldSection = ({ openDetail }: { openDetail: (title: string, rec: any) =>
 // SECTION: Monsters
 // ============================================================
 const MonstersSection = ({ openDetail }: { openDetail: (title: string, rec: any) => void }) => {
-  const { data, loading } = useRpgTable<any>("monster_templates", (q) => q.neq("type", "boss").order("difficulty_tier", { ascending: true }));
+  const { data, loading, error } = useRpgTable<any>("monster_templates", (rows) => byField<any>("difficulty_tier")(rows.filter((m) => m.type !== "boss")));
   const [tier, setTier] = useState<number | "all">("all");
   const [search, setSearch] = useState("");
   const filtered = useMemo(() => data.filter((m) =>
@@ -340,7 +372,7 @@ const MonstersSection = ({ openDetail }: { openDetail: (title: string, rec: any)
           <button key={t} onClick={() => setTier(t)} className={`text-xs px-2 py-1 rounded border ${TIER_COLORS[t]} ${tier === t ? "ring-1 ring-offset-1 ring-offset-zinc-950 ring-amber-500" : "opacity-70"}`}>T{t}</button>
         ))}
       </div>
-      {loading ? <Loader2 className="w-5 h-5 animate-spin text-zinc-500" /> : (
+      {error ? <RpgError table="monster_templates" message={error} /> : loading ? <Loader2 className="w-5 h-5 animate-spin text-zinc-500" /> : (
         <div className="rounded border border-zinc-800 overflow-hidden">
           <table className="w-full text-sm">
             <thead className="bg-zinc-900 text-zinc-400 text-xs uppercase">
@@ -369,7 +401,7 @@ const MonstersSection = ({ openDetail }: { openDetail: (title: string, rec: any)
 // SECTION: Bosses
 // ============================================================
 const BossesSection = ({ openDetail }: { openDetail: (title: string, rec: any) => void }) => {
-  const { data, loading } = useRpgTable<any>("monster_templates", (q) => q.eq("type", "boss"));
+  const { data, loading, error } = useRpgTable<any>("monster_templates", (rows) => rows.filter((m) => m.type === "boss"));
   const parsed = useMemo(() => {
     return data.map((b) => {
       const m = (b.clue ?? "").match(/\[(.*?)\]\s*ato\s*(\d+)/i);
@@ -378,6 +410,7 @@ const BossesSection = ({ openDetail }: { openDetail: (title: string, rec: any) =
   }, [data]);
 
   if (loading) return <Loader2 className="w-5 h-5 animate-spin text-zinc-500" />;
+  if (error) return <RpgError table="monster_templates" message={error} />;
   return (
     <div className="grid gap-3 sm:grid-cols-2">
       {parsed.map((b) => (
@@ -404,7 +437,7 @@ const BossesSection = ({ openDetail }: { openDetail: (title: string, rec: any) =
 // SECTION: Items
 // ============================================================
 const ItemsSection = ({ openDetail }: { openDetail: (title: string, rec: any) => void }) => {
-  const { data, loading } = useRpgTable<any>("item_templates");
+  const { data, loading, error } = useRpgTable<any>("item_templates");
   const [mode, setMode] = useState<"matrix" | "table">("matrix");
   const [fClass, setFClass] = useState<string>("all");
   const [fSlot, setFSlot] = useState<string>("all");
@@ -421,6 +454,7 @@ const ItemsSection = ({ openDetail }: { openDetail: (title: string, rec: any) =>
   ), [data, fClass, fSlot, fTier]);
 
   if (loading) return <Loader2 className="w-5 h-5 animate-spin text-zinc-500" />;
+  if (error) return <RpgError table="item_templates" message={error} />;
 
   return (
     <div>
@@ -513,9 +547,10 @@ const ItemsSection = ({ openDetail }: { openDetail: (title: string, rec: any) =>
 // SECTION: NPCs
 // ============================================================
 const NpcsSection = ({ openDetail }: { openDetail: (title: string, rec: any) => void }) => {
-  const { data: npcs, loading: l1 } = useRpgTable<any>("npcs");
-  const { data: cities, loading: l2 } = useRpgTable<any>("cities");
+  const { data: npcs, loading: l1, error: e1 } = useRpgTable<any>("npcs");
+  const { data: cities, loading: l2, error: e2 } = useRpgTable<any>("cities", byField<any>("ordem"));
   if (l1 || l2) return <Loader2 className="w-5 h-5 animate-spin text-zinc-500" />;
+  if (e1 || e2) return <RpgError table={e1 ? "npcs" : "cities"} message={(e1 || e2) as string} />;
   const grouped = cities.map((c) => ({ city: c, items: npcs.filter((n) => n.city_id === c.id) })).filter((g) => g.items.length > 0);
   return (
     <div className="space-y-6">
@@ -565,8 +600,9 @@ const STATUS_COLOR: Record<string, string> = {
 };
 
 const DevlogSection = () => {
-  const { data, loading } = useRpgTable<any>("devlog", (q) => q.order("ordem", { ascending: true }));
+  const { data, loading, error } = useRpgTable<any>("devlog", byField<any>("ordem"));
   if (loading) return <Loader2 className="w-5 h-5 animate-spin text-zinc-500" />;
+  if (error) return <RpgError table="devlog" message={error} />;
   return (
     <div className="space-y-4 max-w-4xl">
       {data.map((d) => (
