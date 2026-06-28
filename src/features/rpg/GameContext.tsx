@@ -1,7 +1,6 @@
 // Store central do jogo. Context + useReducer + polling de cena_atual.
 import { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useRef } from "react";
 import { rpcCenaAtual, rpcEstadoParty, postAcao, postDiscursiva } from "./api";
-import { supabase } from "@/integrations/supabase/client";
 
 type Estado = any | null;
 type Mode = "lobby" | "exploracao" | "cidade" | "quest" | "combate" | "derrota" | string;
@@ -122,19 +121,6 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
     const id = window.setInterval(tick, 2500);
     return () => window.clearInterval(id);
   }, [state.player?.player_id, state.party_id]);
-
-  // Realtime: escuta mudancas nas tabelas-chave da party (best-effort).
-  useEffect(() => {
-    if (!state.party_id) return;
-    const ch = supabase
-      .channel(`rpg-party-${state.party_id}`)
-      .on("postgres_changes", { event: "*", schema: "rpg", table: "parties", filter: `id=eq.${state.party_id}` }, () => refreshRef.current())
-      .on("postgres_changes", { event: "*", schema: "rpg", table: "player_state", filter: `party_id=eq.${state.party_id}` }, () => refreshRef.current())
-      .subscribe();
-    return () => {
-      supabase.removeChannel(ch);
-    };
-  }, [state.party_id]);
 
   const acao = useCallback(
     async (acao: any) => {
