@@ -243,6 +243,24 @@ function CharCreateScreen({ user, party_id, onCreated }: { user: any; party_id: 
   const [nome, setNome] = useState("");
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+  const [classesEmUso, setClassesEmUso] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (!party_id) return;
+    let alive = true;
+    const tick = async () => {
+      const r = await rpcEstadoParty(party_id);
+      if (!alive || !r.ok) return;
+      const usadas = (((r.data as any)?.jogadores ?? []) as any[])
+        .filter((j) => j.user_id !== user?.id && !!j.classe)
+        .map((j) => String(j.classe).toLowerCase());
+      setClassesEmUso(usadas);
+      if (classe && usadas.includes(classe)) setClasse(null);
+    };
+    tick();
+    const id = window.setInterval(tick, 3000);
+    return () => { alive = false; window.clearInterval(id); };
+  }, [party_id, user?.id, classe]);
 
   useEffect(() => {
     if (!classe) return;
@@ -294,19 +312,30 @@ function CharCreateScreen({ user, party_id, onCreated }: { user: any; party_id: 
       <div>
         <h3 className="rpg-title text-base mb-2">1. Classe</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-          {CLASSES.map((c) => (
-            <button
-              key={c.id}
-              className={`rpg-card p-3 text-left ${classe === c.id ? "rpg-pulse" : ""}`}
-              onClick={() => setClasse(c.id)}
-              style={classe === c.id ? { borderColor: "hsl(41 70% 50%)" } : undefined}
-            >
-              <div className="rpg-title text-lg">{c.nome}</div>
-              <div className="text-sm rpg-ink-soft">{c.desc}</div>
-            </button>
-          ))}
+          {CLASSES.map((c) => {
+            const emUso = classesEmUso.includes(c.id);
+            return (
+              <button
+                key={c.id}
+                className={`rpg-card p-3 text-left ${classe === c.id ? "rpg-pulse" : ""}`}
+                onClick={() => !emUso && setClasse(c.id)}
+                disabled={emUso}
+                style={{
+                  ...(classe === c.id ? { borderColor: "hsl(41 70% 50%)" } : {}),
+                  ...(emUso ? { opacity: 0.45, cursor: "not-allowed" } : {}),
+                }}
+              >
+                <div className="rpg-title text-lg">{c.nome}</div>
+                <div className="text-sm rpg-ink-soft">{emUso ? "ja escolhida por outro jogador" : c.desc}</div>
+              </button>
+            );
+          })}
         </div>
+        {classesEmUso.length ? (
+          <div className="rpg-ink-soft text-xs mt-2">Cada classe so pode aparecer uma vez na mesa.</div>
+        ) : null}
       </div>
+
 
       {classe && config ? (
         <>
