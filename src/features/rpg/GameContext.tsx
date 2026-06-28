@@ -166,18 +166,22 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
     [state.player?.player_id],
   );
 
+  const setPlayer = useCallback((p: PlayerSave) => dispatch({ type: "set_player", player: p }), []);
+  const setPartyOnly = useCallback((party_id: string) => dispatch({ type: "set_party", party_id }), []);
+  const clearSession = useCallback(() => dispatch({ type: "clear_session" }), []);
+
   const api = useMemo<GameApi>(
     () => ({
       ...state,
       mode: (state.estado?.modo as Mode) ?? null,
-      setPlayer: (p) => dispatch({ type: "set_player", player: p }),
-      setPartyOnly: (party_id) => dispatch({ type: "set_party", party_id }),
-      clearSession: () => dispatch({ type: "clear_session" }),
+      setPlayer,
+      setPartyOnly,
+      clearSession,
       refresh,
       acao,
       discursiva,
     }),
-    [state, refresh, acao, discursiva],
+    [state, refresh, acao, discursiva, setPlayer, setPartyOnly, clearSession],
   );
 
   return <GameCtx.Provider value={api}>{children}</GameCtx.Provider>;

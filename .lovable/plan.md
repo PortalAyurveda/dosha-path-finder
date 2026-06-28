@@ -1,37 +1,24 @@
-## Bug: "Invalid schema: rpg" no /rpg
+## Bug: "Criar mesa" volta sozinha pra tela de entrada (+ salas duplicadas)
 
-### Causa
-`src/features/rpg/api.ts` chama `(supabase as any).schema("rpg").rpc(...)`. O client supabase-js valida o nome do schema contra a lista declarada nos `Database` types (apenas `public`). Como `rpg` não está lá, o próprio client-side dispara `Invalid schema: rpg` antes mesmo de bater na rede. Por isso o "Entrar" e "Criar mesa" quebram imediatamente.
+Aplicar exatamente as duas correções identificadas. Sem mexer em mais nada do fluxo.
 
-Além disso, mesmo bypassando a validação do client, o PostgREST do Supabase só responde em schemas declarados em **API → Exposed schemas** no dashboard. Por padrão são `public, graphql_public, storage`.
+### 1. `src/features/rpg/GameContext.tsx` — estabilizar handlers
 
-### Correção (frontend)
-Substituir o uso de `.schema("rpg").rpc(...)` por uma chamada `fetch` direta ao endpoint REST do PostgREST, mandando os headers `Content-Profile: rpg` e `Accept-Profile: rpg`. Isso evita a validação client-side e diz ao PostgREST para resolver a função no schema `rpg`.
+- Extrair `setPlayer`, `setPartyOnly` e `clearSession` do objeto `api` para `useCallback` com **deps vazias** (`[]`), declarados antes do `useMemo`. O `dispatch` do `useReducer` é estável e não precisa ser listado.
+- No `useMemo` que monta `api`, apenas referenciar essas funções já estáveis (mantém o resto: `refresh`, `acao`, `discursiva`, `mode`, spread do `state`).
+- Resultado: a referência de `setPartyOnly` deixa de mudar a cada tick do polling / mudança de estado.
 
-Arquivos:
+### 2. `src/features/rpg/screens/Lobby.tsx` — não re-decidir a tela inicial
 
-1. **`src/integrations/supabase/rpg-client.ts`** — adicionar `rpgRpc(fn, args)`:
-   - lê `VITE_SUPABASE_URL` e `VITE_SUPABASE_PUBLISHABLE_KEY`
-   - pega `access_token` atual via `supabase.auth.getSession()` (fallback para anon)
-   - `POST ${URL}/rest/v1/rpc/${fn}` com headers:
-     - `apikey: <publishable>`
-     - `Authorization: Bearer <access_token || publishable>`
-     - `Content-Type: application/json`
-     - `Content-Profile: rpg`
-     - `Accept-Profile: rpg` (só por segurança no retorno)
-   - retorna `{ ok:true, data } | { ok:false, error }`
+No segundo `useEffect` (o que chama `rpcEntrarParty` via `params.code` e/ou `rpcMeusPersonagens` e faz `setStep('entry' | 'saves')`):
 
-2. **`src/features/rpg/api.ts`** — trocar a implementação interna de `rpgRpc` para delegar ao helper acima. Assinatura e nomes de funções RPC (`criar_party`, `entrar_party`, `meus_personagens`, etc.) ficam iguais — nenhum dos consumidores muda.
+- **Guarda de entrada** logo no topo: `if (step.name !== 'loading') return;` — assim, depois que já avançamos para `char`/`wait`/`entry`/`saves`, qualquer re-disparo é ignorado.
+- **Remover `setPartyOnly`** da lista de dependências (manter `user`, `params`, `player`).
 
-3. Manter `rpg_admin_select` (público) como está; o painel admin continua funcionando.
+### Fora de escopo
 
-### Pré-requisito do lado Supabase (precisa de você)
-No painel do Supabase: **Project Settings → API → Exposed schemas**, adicionar `rpg` à lista (`public, graphql_public, storage, rpg`) e clicar Save. Sem isso o PostgREST devolve `404 Not Found` para qualquer RPC do schema `rpg` — independente do front. Posso confirmar via `supabase--read_query` se as funções existem, mas não consigo alterar essa configuração por migration.
+Sala de espera, criação de personagem, tela de jogo, polling, RPCs e qualquer outro arquivo permanecem inalterados.
 
-### Verificação
-Após a mudança e a exposição do schema:
-- `/rpg` → "Criar mesa" deve retornar `{ ok:true, party_id, join_code }` e seguir para criação de personagem.
-- "Entrar com código" deve aceitar um code válido.
-- Sem regressão no `/admin/rpg` (continua usando RPC `public.rpg_admin_select`).
+### Resultado esperado
 
-Se mesmo após expor o schema o RPC voltar 404/permission, criamos wrappers SECURITY DEFINER em `public` para cada função (`public.rpg_criar_party`, etc.) — caminho B, mais verboso, mas 100% sob nosso controle via migration.
+Clicar "Criar mesa" navega para a etapa de classe e **permanece** lá; o polling não reverte mais o `step`; nenhuma party duplicada é criada por re-disparo do efeito.
