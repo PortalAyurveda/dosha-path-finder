@@ -1,39 +1,35 @@
 ## Diagnóstico
 
-Dois bloqueios independentes estão impedindo o envio:
+A causa raiz é simples: o schema `rpg` **não está exposto na API REST do Supabase em produção**.
 
-### 1. Backend — falta GRANT (bloqueia TODO mundo, inclusive Brasil)
-A tabela `public.escola_alunos` tem RLS aberta para insert (`with check = true`), mas **nenhum GRANT INSERT** foi concedido a `anon` ou `authenticated`. Resultado: o PostgREST rejeita com *permission denied for table escola_alunos* e o `try/catch` no formulário mostra "não foi possível enviar". É a causa principal de quem "preenche e nada acontece".
+O que já está correto no banco:
+- `GRANT USAGE` no schema `rpg` para `authenticated` / `service_role` — ok
+- RLS habilitado em todas as 20 tabelas do schema `rpg` — ok
+- Policy "Admins can read" usando `public.has_role(auth.uid(), 'admin')` em cada tabela — ok
+- `supabase/config.toml` com `schemas = ["public", "rpg"]` — ok
 
-### 2. Frontend — campos travam estrangeiros e usuários com algum campo vazio
-- `estado` e `cidade` são `<select>` populados pelo IBGE (só UFs brasileiras). Usuário em Portugal não consegue selecionar nada.
-- Vários inputs têm `required` do HTML5 → se faltar um, o browser bloqueia o submit sem mensagem visível clara.
+**O detalhe que falta:** o `config.toml` só vale para o ambiente **local** do Supabase CLI. No projeto **hospedado** (que é o que serve `portalayurveda.com`), a lista de schemas expostos pelo PostgREST é controlada pelo **Dashboard do Supabase**, não pelo arquivo. Por isso o cliente em `rpg-client.ts` (que faz `db: { schema: "rpg" }`) recebe erro / vazio: o PostgREST simplesmente não conhece o schema `rpg` na API hospedada.
 
-## Mudanças
+## O que precisa ser feito (ação manual no Dashboard, 30 segundos)
 
-### A. Migration (Supabase) — destravar inserts
-```sql
-GRANT INSERT ON public.escola_alunos TO anon, authenticated;
-GRANT SELECT, UPDATE ON public.escola_alunos TO authenticated;
-GRANT ALL ON public.escola_alunos TO service_role;
-```
-(o GRANT já refletido em todas as sessões; nada de republish para isso.)
+Você precisa abrir as configurações da API do Supabase e adicionar `rpg` à lista de schemas expostos:
 
-### B. `src/pages/curso/FormacaoInscricao.tsx` — liberar geral
-- Remover `required` de **todos** os campos.
-- Trocar `<select>` de **estado** e **cidade** por `<Input>` de texto livre. Mantemos o autocomplete IBGE como *sugestão opcional* via `<datalist>` (Brasil), mas qualquer texto vale — inclusive "Lisboa / Portugal".
-- Manter o mínimo que o banco exige (`NOT NULL`): se `email`, `nome` ou `whatsapp` vierem em branco, exibir aviso amigável **acima do botão** em vez de travar; só não envia se esses três estiverem vazios — qualquer outra combinação envia.
-- Botão `<button type="submit">` continua sempre clicável, sem `disabled`, sem `opacity`.
-- Tratamento de erro: se o insert falhar, mostrar a mensagem real do Supabase para a gente conseguir diagnosticar caso ainda haja algo.
+1. Abrir **Project Settings → API**
+2. Localizar o campo **"Exposed schemas"** (hoje provavelmente está `public, graphql_public`)
+3. Adicionar `rpg`, ficando: `public, graphql_public, rpg`
+4. Salvar — o PostgREST recarrega sozinho em poucos segundos
 
-### C. Publish
-Depois das mudanças no frontend, o usuário precisa clicar **Publish → Update** para que `portalayurveda.com` receba a nova versão. O GRANT já vale para a versão atual no ar também.
+Depois disso, recarregar `/rpg/admin` já logado como admin deve listar todo o conteúdo.
 
-## O que NÃO muda
-- Sem alteração em outras telas, módulos, escola, admin.
-- Sem alteração no design system (paleta `formacao-azul`, tipografia).
-- Sem mexer em policies RLS além do GRANT.
+Não é algo que eu consiga fazer por migration nem por código — é uma configuração de projeto exclusiva do Dashboard.
 
-## Resumo dos arquivos
-- **migration nova** — GRANTs em `escola_alunos`.
-- **`src/pages/curso/FormacaoInscricao.tsx`** — remover `required`, trocar selects de estado/cidade por inputs livres, exibir erro real do Supabase, manter botão sempre clicável.
+## Por que não fazer nada no código
+
+Tudo do lado de aplicação e RLS já está correto. Mexer no client, nas policies ou criar views só vai mascarar o problema real. Assim que `rpg` entrar na lista de exposed schemas, a tela passa a funcionar sem nenhuma alteração de código.
+
+## Plano após você confirmar que adicionou no Dashboard
+
+1. Você abre `/rpg/admin` logado como admin e me confirma se carregou.
+2. Se ainda der erro, eu investigo: leio a resposta exata do PostgREST no Network tab, checo se a sessão admin está chegando com o JWT correto e ajusto o que for preciso (provavelmente nada, mas fico de olho).
+
+Quer que eu já deixe pronta uma mensagem de erro mais clara na tela `/rpg/admin` (algo como "Schema rpg não exposto — configure em Project Settings → API") para casos futuros, ou prefere deixar como está?
