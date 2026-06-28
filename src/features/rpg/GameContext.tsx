@@ -163,7 +163,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
     async (texto: string) => {
       if (!state.player?.player_id) return;
       dispatch({ type: "set_loading", loading: true });
-      const r = await postDiscursiva(state.player.player_id, texto);
+      const r: any = await postDiscursiva(state.player.player_id, texto);
       if (r.ok) {
         dispatch({
           type: "set_response",
