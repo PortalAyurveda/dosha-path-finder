@@ -6,6 +6,7 @@ import { ArrowLeft, ArrowRight, BedDouble, Loader2, MessageSquare, Shield, Sword
 import { useGame } from "../GameContext";
 import { rpcEventoPendente, rpcMapa } from "../api";
 import { EntityIcon, FichaButton, Hud, NarrativaPainel, NodeIcon, PartyBar } from "../ui";
+import { ChoiceMenu, Cronica, useSayHello } from "../scene";
 
 function meuTurno(estado: any) {
   return !!estado?.party?.meu_turno || estado?.party == null;
