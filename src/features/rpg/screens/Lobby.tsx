@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Copy, Crown, Loader2, Plus, Sparkles, Users } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useGame } from "./GameContext";
+import { useGame } from "../GameContext";
 import {
   rpcClasseConfig,
   rpcCriarParty,
@@ -13,7 +13,7 @@ import {
   rpcIniciarJogo,
   rpcMarcarPronto,
   rpcMeusPersonagens,
-} from "./api";
+} from "../api";
 
 type Step =
   | { name: "loading" }
