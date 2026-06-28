@@ -153,15 +153,19 @@ const TABLES_FOR_COUNT = [
 const OverviewSection = () => {
   const [counts, setCounts] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     (async () => {
       const out: Record<string, number> = {};
+      setError(null);
       await Promise.all(TABLES_FOR_COUNT.map(async (t) => {
-        const { data } = await rpgAdminSelect(t);
+        const { data, error } = await rpgAdminSelect(t);
+        if (error) setError(`rpg.${t}: ${error}`);
         out[t] = data.length;
       }));
-      const { data: monsters } = await rpgAdminSelect<any>("monster_templates");
+      const { data: monsters, error: monstersError } = await rpgAdminSelect<any>("monster_templates");
+      if (monstersError) setError(`rpg.monster_templates: ${monstersError}`);
       out.monstros = monsters.filter((m) => m.type !== "boss").length;
       out.bosses = monsters.filter((m) => m.type === "boss").length;
       setCounts(out);
@@ -181,7 +185,7 @@ const OverviewSection = () => {
       <div className="mb-6 p-3 rounded border border-amber-900/40 bg-amber-950/20 text-sm text-amber-200/90">
         O banco contém duas gerações empilhadas; os números podem aparecer duplicados (ex.: 2 biomas). Mostrado como está, sem deduplicar.
       </div>
-      {loading ? <Loader2 className="w-5 h-5 animate-spin text-zinc-500" /> : (
+      {error ? <RpgError message={error} /> : loading ? <Loader2 className="w-5 h-5 animate-spin text-zinc-500" /> : (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
           {cards.map(([key, label]) => (
             <div key={key} className="rounded-lg border border-zinc-800 bg-zinc-900/60 p-4">
