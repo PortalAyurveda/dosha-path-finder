@@ -1,4 +1,7 @@
 project_id = "fwezkasjfguarjmjxifh"
 
+[api]
+schemas = ["public", "rpg"]
+
 [functions.sitemap]
 verify_jwt = false
