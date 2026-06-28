@@ -2,6 +2,7 @@
 // - rpgRpc: chama funcoes Postgres do schema `rpg` (PostgREST).
 // - webhooks: chama n8n; SEMPRE com fallback para RPC quando o webhook cair.
 import { supabase } from "@/integrations/supabase/client";
+import { rpgRpc as rpgRpcRaw } from "@/integrations/supabase/rpg-client";
 
 const WEBHOOK_BASE = "https://n8n.portalayurveda.com/webhook";
 
@@ -9,12 +10,7 @@ export const CAMPANHA_MOLDE_ID = "aaaaaaaa-0000-0000-0000-000000000002";
 
 type RpcResult<T> = { ok: true; data: T } | { ok: false; error: string };
 
-export async function rpgRpc<T = any>(fn: string, args: Record<string, unknown> = {}): Promise<RpcResult<T>> {
-  const client = (supabase as any).schema("rpg");
-  const { data, error } = await client.rpc(fn, args);
-  if (error) return { ok: false, error: error.message || String(error) };
-  return { ok: true, data: data as T };
-}
+export const rpgRpc = rpgRpcRaw;
 
 async function postJson<T>(path: string, body: unknown, timeoutMs = 60_000): Promise<RpcResult<T>> {
   const ctrl = new AbortController();
