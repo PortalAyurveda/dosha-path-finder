@@ -254,7 +254,8 @@ const RoutedApp = () => {
               <Route path="/revisao" element={<Revisao />} />
 
               {/* RPG admin (somente leitura) */}
-              <Route path="/rpg" element={<Navigate to="/rpg/admin" replace />} />
+              <Route path="/rpg" element={<Rpg />} />
+              <Route path="/rpg/lobby/:code" element={<Rpg />} />
               <Route path="/rpg/admin" element={<AdminRoute><RpgAdmin /></AdminRoute>} />
 
               <Route path="*" element={<NotFound />} />
