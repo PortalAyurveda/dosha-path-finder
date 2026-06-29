@@ -1,11 +1,13 @@
 // Componentes compartilhados do loop de jogo:
-// - useSayHello: dispara postCena 1x por cena (abre a narracao da cena nova).
-// - ChoiceMenu: renderiza as "esperadas" da cena (cardapio_discursiva) como botoes.
-// - Cronica: painel recolhivel com chatlog da mesa.
+// - useSayHello: dispara postCena 1x por cena e captura a narrativa de abertura.
+// - ChoiceMenu: renderiza as "esperadas" da cena (cardapio_discursiva) com
+//   chance/atributo/rotulo para testes e tag "sem risco" para acoes livres.
+// - Cronica: painel recolhivel com chatlog da mesa (dado + banda + acao livre).
 import { useEffect, useRef, useState } from "react";
 import { ChevronDown, ChevronUp, Loader2, ScrollText } from "lucide-react";
 import { postCena, rpgRpc } from "./api";
 import { useGame } from "./GameContext";
+import { BandBadge, Dice } from "./ui";
 
 function sceneKey(estado: any, mode: string | null) {
   if (!estado) return "";
@@ -17,9 +19,9 @@ function sceneKey(estado: any, mode: string | null) {
   ].join("|");
 }
 
-// 1x por cena, dispara o narrador para abrir a cena.
+// 1x por cena, dispara o narrador para abrir a cena e captura a narrativa.
 export function useSayHello() {
-  const { player, estado, mode } = useGame();
+  const { player, estado, mode, setSceneNarrativa } = useGame();
   const sentRef = useRef<string | null>(null);
   useEffect(() => {
     if (!player?.player_id) return;
@@ -29,31 +31,47 @@ export function useSayHello() {
     if (!key) return;
     if (sentRef.current === key) return;
     sentRef.current = key;
-    postCena(player.player_id).catch(() => {
-      // se falhar, libera para nova tentativa na proxima troca
-      sentRef.current = null;
-    });
+    postCena(player.player_id)
+      .then((r: any) => {
+        if (r?.ok && r.data?.narrativa) setSceneNarrativa(r.data.narrativa);
+      })
+      .catch(() => {
+        // libera para nova tentativa
+        sentRef.current = null;
+      });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [player?.player_id, mode, estado?.local?.id, estado?.local?.nome, estado?.sala_atual?.id, estado?.sala_atual?.ordem]);
 }
 
-type Esperada = { id: string; intencao: string; dimensao?: string };
+type Esperada = {
+  id: string;
+  intencao: string;
+  dimensao?: string;
+  rola?: boolean;
+  chance?: number | null;
+  rotulo?: string;
+  atributo?: string;
+  dificuldade?: number;
+};
 
-function meuTurno(estado: any) {
-  return !!estado?.party?.meu_turno || estado?.party == null;
-}
-
-const DIM_LABEL: Record<string, string> = {
+const DIM_FALLBACK: Record<string, string> = {
   frente: "linha de frente",
   meio: "meio",
   fundo: "fundo / apoio",
   acoes: "acoes",
 };
 
+const ROTULO_STYLE: Record<string, { bg: string; fg: string }> = {
+  "Favoravel": { bg: "hsl(130 35% 32%)", fg: "#fff" },
+  "Incerto": { bg: "hsl(46 75% 50%)", fg: "#1a1208" },
+  "Arriscado": { bg: "hsl(24 75% 45%)", fg: "#fff" },
+  "Quase impossivel": { bg: "hsl(348 60% 38%)", fg: "#fff" },
+};
+
 // Cardapio de acoes da cena (ja filtrado pela classe do jogador no backend).
 export function ChoiceMenu() {
   const { player, estado, declararAcao, loading, jaDecidiNesteRound } = useGame();
-  const [data, setData] = useState<{ esperadas?: Esperada[] } | null>(null);
+  const [data, setData] = useState<{ esperadas?: Esperada[]; cena?: any } | null>(null);
   const [carregando, setCarregando] = useState(false);
   const key = sceneKey(estado, (estado?.modo as string) ?? null);
 
@@ -72,7 +90,10 @@ export function ChoiceMenu() {
   }, [player?.player_id, key]);
 
   const esperadas = (data?.esperadas ?? []) as Esperada[];
-  if (!esperadas.length) {
+  const cena = data?.cena;
+  const dimLabels: Record<string, string> = { ...DIM_FALLBACK, ...(cena?.dimensoes ?? {}) };
+
+  if (!esperadas.length && !cena?.descricao) {
     if (carregando) {
       return (
         <div className="rpg-ink-soft text-xs flex items-center gap-1">
@@ -93,36 +114,75 @@ export function ChoiceMenu() {
   const desabilitado = loading || jaDecidiNesteRound;
 
   return (
-    <div className="rpg-card p-3 space-y-2">
-      <div className="rpg-title text-sm flex items-center justify-between">
-        <span>Escolhas</span>
-        {jaDecidiNesteRound ? (
-          <span className="rpg-ink-soft text-xs italic">escolhido — aguardando a mesa</span>
-        ) : null}
-      </div>
-      {[...grupos.entries()].map(([dim, lista]) => (
-        <div key={dim}>
-          {grupos.size > 1 ? (
-            <div className="rpg-ink-soft text-xs uppercase tracking-wider mb-1">{DIM_LABEL[dim] ?? dim}</div>
-          ) : null}
-          <div className="flex flex-wrap gap-2">
-            {lista.map((e) => (
-              <button
-                key={e.id}
-                className="rpg-btn text-sm"
-                disabled={desabilitado}
-                onClick={() =>
-                  declararAcao({ tipo: "discursiva_controlada", esperada_id: e.id, texto: e.intencao })
-                }
-                title={e.dimensao ?? undefined}
-                style={jaDecidiNesteRound ? { opacity: 0.55 } : undefined}
-              >
-                {e.intencao}
-              </button>
-            ))}
-          </div>
+    <div className="space-y-2">
+      {cena?.descricao ? (
+        <div className="rpg-card-scroll p-3 text-sm leading-relaxed whitespace-pre-wrap italic">
+          {cena.descricao}
         </div>
-      ))}
+      ) : null}
+      {esperadas.length ? (
+        <div className="rpg-card p-3 space-y-2">
+          <div className="rpg-title text-sm flex items-center justify-between">
+            <span>Escolhas</span>
+            {jaDecidiNesteRound ? (
+              <span className="rpg-ink-soft text-xs italic">escolhido — aguardando a mesa</span>
+            ) : null}
+          </div>
+          {[...grupos.entries()].map(([dim, lista]) => (
+            <div key={dim}>
+              {grupos.size > 1 ? (
+                <div className="rpg-ink-soft text-xs uppercase tracking-wider mb-1">{dimLabels[dim] ?? dim}</div>
+              ) : null}
+              <div className="flex flex-col gap-2">
+                {lista.map((e) => {
+                  const livre = e.rola === false || e.rotulo === "Automatico";
+                  const style = e.rotulo ? ROTULO_STYLE[e.rotulo] : undefined;
+                  return (
+                    <button
+                      key={e.id}
+                      className="rpg-btn text-sm text-left flex items-center justify-between gap-3"
+                      disabled={desabilitado}
+                      onClick={() =>
+                        declararAcao({ tipo: "discursiva_controlada", esperada_id: e.id, texto: e.intencao })
+                      }
+                      title={e.atributo ? `${e.atributo} CD ${e.dificuldade ?? "?"}` : undefined}
+                      style={jaDecidiNesteRound ? { opacity: 0.55 } : undefined}
+                    >
+                      <span className="flex items-center gap-2">
+                        <span aria-hidden>{livre ? "👁" : "🎲"}</span>
+                        <span>{e.intencao}</span>
+                      </span>
+                      {livre ? (
+                        <span
+                          className="text-[10px] px-1.5 py-0.5 rounded uppercase tracking-wide"
+                          style={{ background: "hsl(210 14% 88%)", color: "hsl(210 18% 30%)" }}
+                        >
+                          sem risco
+                        </span>
+                      ) : (
+                        <span className="flex items-center gap-1">
+                          {typeof e.chance === "number" ? (
+                            <span
+                              className="text-[11px] font-semibold px-2 py-0.5 rounded"
+                              style={style ? { background: style.bg, color: style.fg } : { background: "hsl(28 22% 30%)", color: "#fff" }}
+                              title={e.rotulo}
+                            >
+                              {e.chance}%
+                            </span>
+                          ) : null}
+                          {e.atributo ? (
+                            <span className="text-[10px] rpg-ink-soft uppercase">{e.atributo}</span>
+                          ) : null}
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -186,6 +246,9 @@ export function Cronica() {
               : `${e.nome ?? "Aventureiro"}${e.classe ? ` · ${e.classe}` : ""}`;
             const acaoLabel = e.acao_label ?? e.intencao ?? (typeof e.acao === "string" ? e.acao : null);
             const texto = e.narrativa ?? e.texto ?? "";
+            const dado = e.dado;
+            const livre = e.resultado?.livre === true || e.resultado?.banda === "auto";
+            const banda = e.resultado?.banda;
             return (
               <li key={e.id ?? i} className={`flex flex-col ${align}`}>
                 <div className="text-[11px] rpg-ink-soft">
@@ -198,6 +261,28 @@ export function Cronica() {
                 >
                   {texto || (acaoLabel ?? "")}
                 </div>
+                {!isNarr && (livre || typeof dado === "number" || banda) ? (
+                  <div className={`mt-1 flex items-center gap-2 ${isEu ? "justify-end" : "justify-start"}`}>
+                    {livre ? (
+                      <span
+                        className="text-[10px] px-1.5 py-0.5 rounded uppercase tracking-wide"
+                        style={{ background: "hsl(210 14% 88%)", color: "hsl(210 18% 30%)" }}
+                      >
+                        acao livre
+                      </span>
+                    ) : (
+                      <>
+                        {typeof dado === "number" ? (
+                          <span className="inline-flex items-center gap-1 text-[11px]">
+                            <span aria-hidden>🎲</span>
+                            <Dice value={dado} />
+                          </span>
+                        ) : null}
+                        {banda ? <BandBadge banda={banda} /> : null}
+                      </>
+                    )}
+                  </div>
+                ) : null}
               </li>
             );
           })}
