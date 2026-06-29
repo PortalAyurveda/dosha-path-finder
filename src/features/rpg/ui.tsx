@@ -74,11 +74,12 @@ export function EntityIcon({ dominio, chave, label }: { dominio: Dominio; chave?
 export function BandBadge({ banda, total }: { banda?: string | null; total?: number }) {
   if (!banda) return null;
   const map: Record<string, { label: string; bg: string; fg: string; emoji: string }> = {
-    critico_falha: { label: "Erro critico", bg: "hsl(348 55% 32%)", fg: "#fff", emoji: "💀" },
-    fraca: { label: "Sucesso parcial", bg: "hsl(28 35% 30%)", fg: "#fff", emoji: "·" },
-    mediana: { label: "Sucesso", bg: "hsl(130 30% 28%)", fg: "#fff", emoji: "✓" },
+    erro_critico: { label: "Erro critico", bg: "hsl(348 55% 32%)", fg: "#fff", emoji: "💀" },
+    fraco: { label: "Falha parcial", bg: "hsl(28 35% 30%)", fg: "#fff", emoji: "·" },
+    mediano: { label: "Sucesso", bg: "hsl(130 30% 28%)", fg: "#fff", emoji: "✓" },
     forte: { label: "Sucesso forte", bg: "hsl(41 70% 50%)", fg: "#1a1208", emoji: "✦" },
-    critico: { label: "Critico", bg: "hsl(41 90% 55%)", fg: "#1a1208", emoji: "⭐" },
+    especial: { label: "Sucesso pleno", bg: "hsl(41 90% 55%)", fg: "#1a1208", emoji: "⭐" },
+    auto: { label: "Acao livre", bg: "hsl(210 18% 45%)", fg: "#fff", emoji: "·" },
   };
   const m = map[banda] ?? { label: banda, bg: "hsl(28 22% 30%)", fg: "#fff", emoji: "?" };
   return (
@@ -87,7 +88,7 @@ export function BandBadge({ banda, total }: { banda?: string | null; total?: num
       style={{ background: m.bg, color: m.fg }}
     >
       <span aria-hidden>{m.emoji}</span> {m.label}
-      {typeof total === "number" ? <span className="opacity-80">({total})</span> : null}
+      {typeof total === "number" && banda !== "auto" ? <span className="opacity-80">({total})</span> : null}
     </span>
   );
 }
@@ -184,6 +185,9 @@ export function PartyBar() {
 export function NarrativaPainel() {
   const { lastNarrativa, lastResultado, estado, lastError } = useGame();
   const cenaTexto = estado?.cena?.texto || estado?.local?.descricao;
+  const banda = lastResultado?.banda as string | undefined;
+  const livre = lastResultado?.livre === true || banda === "auto";
+  const d20 = lastResultado?.teste?.d20;
   return (
     <div className="rpg-card-scroll p-4 md:p-6">
       {lastError ? (
@@ -196,11 +200,22 @@ export function NarrativaPainel() {
           <span className="rpg-ink-soft italic">A cena se desenrola...</span>
         )}
       </div>
-      {lastResultado?.banda ? (
-        <div className="mt-3 flex items-center gap-2">
-          <Dice value={lastResultado.d20} />
-          <BandBadge banda={lastResultado.banda} total={lastResultado.total} />
-          {lastResultado.consequencia ? (
+      {banda ? (
+        <div className="mt-3 flex items-center gap-2 flex-wrap">
+          {livre ? (
+            <span
+              className="inline-flex items-center gap-1 px-2 py-0.5 text-xs rounded"
+              style={{ background: "hsl(210 18% 45%)", color: "#fff" }}
+            >
+              · Acao livre
+            </span>
+          ) : (
+            <>
+              <Dice value={d20} />
+              <BandBadge banda={banda} total={lastResultado?.teste?.total ?? lastResultado?.total} />
+            </>
+          )}
+          {lastResultado?.consequencia ? (
             <span className="text-xs rpg-ink-soft">{lastResultado.consequencia.tipo}: {String(lastResultado.consequencia.valor)}</span>
           ) : null}
         </div>

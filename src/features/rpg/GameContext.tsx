@@ -92,6 +92,7 @@ interface GameApi extends GameState {
   setPlayer: (p: PlayerSave) => void;
   setPartyOnly: (party_id: string) => void;
   clearSession: () => void;
+  setSceneNarrativa: (text: string) => void;
   refresh: () => Promise<void>;
   acao: (acao: any) => Promise<void>;
   discursiva: (texto: string) => Promise<void>;
@@ -102,6 +103,12 @@ interface GameApi extends GameState {
 
 const GameCtx = createContext<GameApi | null>(null);
 
+function isOrphanError(msg?: string | null) {
+  if (!msg) return false;
+  const m = msg.toLowerCase();
+  return /(player|jogador|party|mesa).*(nao existe|inexistente|not found|nao encontrad)/.test(m);
+}
+
 export function GameProvider({ children }: { children: React.ReactNode }) {
   const [state, dispatch] = useReducer(reducer, initial, (s) => {
     const save = loadSave();
@@ -110,11 +117,13 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
 
   const refresh = useCallback(async () => {
     if (state.player?.player_id) {
-      const r = await rpcCenaAtual(state.player.player_id);
+      const r: any = await rpcCenaAtual(state.player.player_id);
       if (r.ok) dispatch({ type: "set_estado", estado: r.data });
+      else if (isOrphanError(r.error)) dispatch({ type: "clear_session" });
     } else if (state.party_id) {
-      const r = await rpcEstadoParty(state.party_id);
+      const r: any = await rpcEstadoParty(state.party_id);
       if (r.ok) dispatch({ type: "set_estado", estado: { modo: "lobby", party: r.data } });
+      else if (isOrphanError(r.error)) dispatch({ type: "clear_session" });
     }
   }, [state.player?.player_id, state.party_id]);
 
@@ -239,6 +248,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
   const setPlayer = useCallback((p: PlayerSave) => dispatch({ type: "set_player", player: p }), []);
   const setPartyOnly = useCallback((party_id: string) => dispatch({ type: "set_party", party_id }), []);
   const clearSession = useCallback(() => dispatch({ type: "clear_session" }), []);
+  const setSceneNarrativa = useCallback((t: string) => dispatch({ type: "set_response", narrativa: t }), []);
 
   const api = useMemo<GameApi>(
     () => ({
@@ -247,13 +257,14 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
       setPlayer,
       setPartyOnly,
       clearSession,
+      setSceneNarrativa,
       refresh,
       acao,
       discursiva,
       declararAcao,
       dispararRound,
     }),
-    [state, refresh, acao, discursiva, declararAcao, dispararRound, setPlayer, setPartyOnly, clearSession],
+    [state, refresh, acao, discursiva, declararAcao, dispararRound, setPlayer, setPartyOnly, clearSession, setSceneNarrativa],
   );
 
   return <GameCtx.Provider value={api}>{children}</GameCtx.Provider>;

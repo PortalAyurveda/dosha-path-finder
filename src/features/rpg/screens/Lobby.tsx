@@ -14,6 +14,7 @@ import {
   rpcIniciarJogo,
   rpcMarcarPronto,
   rpcMeusPersonagens,
+  rpcSairParty,
   rpcSalasAbertas,
 } from "../api";
 
@@ -535,7 +536,19 @@ function WaitRoom({ user, onLeave }: { user: any; onLeave: () => void }) {
             {todosProntos ? "Comecar aventura" : "Aguardando todos prontos..."}
           </button>
         ) : null}
-        <button className="rpg-btn" onClick={onLeave}>Sair</button>
+        <button
+          className="rpg-btn"
+          disabled={busy}
+          onClick={async () => {
+            if (!confirm("Sair da mesa? Voce perde este personagem.")) return;
+            setBusy(true);
+            if (player) await rpcSairParty(player.player_id);
+            setBusy(false);
+            onLeave();
+          }}
+        >
+          Sair da mesa
+        </button>
       </div>
     </div>
   );
