@@ -33,7 +33,8 @@ function RoundPanel() {
   if (!round?.aberto) return null;
   const deadlineMs = round.deadline ? new Date(round.deadline).getTime() : 0;
   const restante = deadlineMs ? Math.max(0, Math.ceil((deadlineMs - now) / 1000)) : null;
-  const declararam: string[] = round.declararam ?? [];
+  const declaracoes: Array<{ player_id: string; nome: string; classe?: string; acao?: string }> =
+    round.declaracoes_publicas ?? [];
   const aguardando: string[] = round.aguardando ?? [];
   return (
     <div className="rpg-card p-3 text-sm space-y-2" style={{ background: "hsl(38 60% 96%)" }}>
@@ -45,14 +46,20 @@ function RoundPanel() {
           <span className="rpg-ink-soft inline-flex items-center gap-1"><Clock size={12}/> resolvendo em {restante}s</span>
         ) : null}
       </div>
-      <div className="flex flex-wrap gap-1 text-xs">
-        {declararam.map((n) => (
-          <span key={`d-${n}`} className="px-2 py-0.5 rounded" style={{ background: "hsl(130 30% 28%)", color: "#fff" }}>✓ {n}</span>
+      <ul className="space-y-1 text-xs">
+        {declaracoes.map((d) => (
+          <li key={`d-${d.player_id}`} className="px-2 py-1 rounded" style={{ background: "hsl(130 30% 28% / 0.18)" }}>
+            <b>{d.nome}</b>
+            {d.classe ? <span className="rpg-ink-soft"> · {d.classe}</span> : null}
+            {d.acao ? <> — {d.acao}</> : null} <span className="rpg-gold">✓</span>
+          </li>
         ))}
         {aguardando.map((n) => (
-          <span key={`a-${n}`} className="px-2 py-0.5 rounded" style={{ background: "hsl(28 22% 30%)", color: "#fff" }}>⏳ {n}</span>
+          <li key={`a-${n}`} className="px-2 py-1 rounded rpg-ink-soft" style={{ background: "hsl(28 22% 30% / 0.12)" }}>
+            ⏳ {n} <span className="italic">— pensando...</span>
+          </li>
         ))}
-      </div>
+      </ul>
       {!jaDecidiNesteRound && !round.resolvido ? (
         <button className="rpg-btn text-xs" disabled={loading} onClick={() => declararAcao({ tipo: "passar" })}>Passar a vez</button>
       ) : null}

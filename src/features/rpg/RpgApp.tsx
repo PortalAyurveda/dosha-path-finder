@@ -3,6 +3,7 @@ import { Helmet } from "react-helmet-async";
 import { GameProvider, useGame } from "./GameContext";
 import { LobbyFlow } from "./screens/Lobby";
 import { City, Combat, Defeat, Exploration, Quest } from "./screens/Game";
+import { ChatMesa } from "./ChatMesa";
 
 function Switcher() {
   const { estado, mode, player } = useGame();
@@ -41,6 +42,7 @@ export default function RpgApp() {
       <main className="max-w-5xl mx-auto px-3 md:px-6 py-4 md:py-8">
         <GameProvider>
           <Switcher />
+          <ChatMesa />
         </GameProvider>
       </main>
     </div>
