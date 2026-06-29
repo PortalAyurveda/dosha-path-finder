@@ -3,8 +3,9 @@
 // Gerar via webhook /rpg-gerar-tudo (pipeline completo, ~5-8 min).
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Helmet } from "react-helmet-async";
-import { Castle, Eye, Loader2, Map as MapIcon, MessageSquare, NotebookPen, ScrollText, Skull, Sparkles, Users } from "lucide-react";
-import { adminSelect, postGerarTudo, rpcChatlog } from "../api";
+import { Castle, Eye, Loader2, Map as MapIcon, MessageSquare, NotebookPen, ScrollText, Skull, Sparkles, Users, CheckCircle2 } from "lucide-react";
+import { adminSelect, postGerarTudo, rpcChatlog, rpgRpc } from "../api";
+import { Progress } from "@/components/ui/progress";
 
 type TabId = "forja" | "mapa" | "quests" | "cidades" | "bestiario" | "parties" | "chatlog" | "devlog";
 const TABS: { id: TabId; label: string; Icon: any }[] = [
