@@ -57,7 +57,7 @@ function RoundPanel() {
         ))}
         {aguardando.map((n) => (
           <li key={`a-${n}`} className="px-2 py-1 rounded rpg-ink-soft" style={{ background: "hsl(28 22% 30% / 0.12)" }}>
-            ⏳ {n} <span className="italic">— pensando...</span>
+            ⏳ {n} <span>— pensando...</span>
           </li>
         ))}
       </ul>
@@ -157,7 +157,7 @@ export function GameShell({
       <div className="flex gap-2 flex-wrap">
         <FichaButton />
         {estado?.dica ? (
-          <div className="rpg-card px-3 py-1 text-xs italic">"{estado.dica}"</div>
+          <div className="rpg-card px-3 py-1 text-xs">"{estado.dica}"</div>
         ) : null}
         {loading ? <span className="inline-flex items-center gap-1 text-xs rpg-ink-soft"><Loader2 size={12} className="animate-spin"/> resolvendo...</span> : null}
       </div>
