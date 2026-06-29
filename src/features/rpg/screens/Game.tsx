@@ -284,26 +284,51 @@ function MapTimeline({ onTravel, blocked }: { onTravel: (node_id: string) => voi
   if (!data) return <div className="rpg-ink-soft text-sm flex items-center gap-2"><Loader2 size={12} className="animate-spin"/> abrindo mapa...</div>;
   return (
     <ol className="relative pl-10 py-3 space-y-3" style={{ borderLeft: "2px dashed hsl(41 70% 50% / 0.6)" }}>
-      {(data.nos ?? []).map((n: any, i: number) => (
-        <li key={n.id} className={`relative ${i % 2 ? "ml-6" : ""}`}>
-          <div className="absolute -left-12 top-0">
-            <NodeIcon tipo={n.tipo} locked={!n.liberado} atual={n.atual} limpo={n.limpo} />
-          </div>
-          <button
-            className="rpg-card p-2 text-left text-sm w-full hover:opacity-90 disabled:cursor-not-allowed"
-            disabled={!n.liberado || n.atual || blocked}
-            onClick={() => onTravel(n.id)}
-          >
-            <div className="font-semibold">
-              <EntityIcon dominio="lugar" chave={n.tipo} label={n.nome} />
-              {n.atual ? <span className="rpg-gold ml-2 text-xs">(atual)</span> : null}
+      {(data.nos ?? []).map((n: any, i: number) => {
+        const oculto = n.tipo === "oculto" || n.liberado === false;
+        if (oculto) {
+          return (
+            <li key={n.id ?? `oculto-${i}`} className={`relative ${i % 2 ? "ml-6" : ""}`}>
+              <div className="absolute -left-12 top-0">
+                <span
+                  className="inline-flex h-8 w-8 items-center justify-center rounded-full"
+                  style={{ background: "hsl(38 60% 96%)", border: "2px dashed hsl(28 22% 50%)", color: "hsl(28 22% 50%)" }}
+                  aria-label="nao revelado"
+                >
+                  <HelpCircle size={14} />
+                </span>
+              </div>
+              <div
+                className="rpg-card p-2 text-left text-sm w-full opacity-70"
+                style={{ cursor: "not-allowed" }}
+              >
+                <div className="font-semibold rpg-ink-soft">???</div>
+                <div className="rpg-ink-soft text-xs">a estrada se perde na bruma</div>
+              </div>
+            </li>
+          );
+        }
+        return (
+          <li key={n.id} className={`relative ${i % 2 ? "ml-6" : ""}`}>
+            <div className="absolute -left-12 top-0">
+              <NodeIcon tipo={n.tipo} locked={!n.liberado} atual={n.atual} limpo={n.limpo} />
             </div>
-            <div className="rpg-ink-soft text-xs">
-              {n.tipo} · tier {n.tier ?? "?"} {n.objetivo ? `· ${n.objetivo}` : ""}
-            </div>
-          </button>
-        </li>
-      ))}
+            <button
+              className="rpg-card p-2 text-left text-sm w-full hover:opacity-90 disabled:cursor-not-allowed"
+              disabled={!n.liberado || n.atual || blocked}
+              onClick={() => onTravel(n.id)}
+            >
+              <div className="font-semibold">
+                <EntityIcon dominio="lugar" chave={n.tipo} label={n.nome} />
+                {n.atual ? <span className="rpg-gold ml-2 text-xs">(atual)</span> : null}
+              </div>
+              <div className="rpg-ink-soft text-xs">
+                {n.tipo} · tier {n.tier ?? "?"} {n.objetivo ? `· ${n.objetivo}` : ""}
+              </div>
+            </button>
+          </li>
+        );
+      })}
     </ol>
   );
 }
