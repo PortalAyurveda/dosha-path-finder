@@ -1,11 +1,11 @@
 // Telas do jogo: exploracao, mapa, cidade, quest, combate, derrota.
 // Em exploracao/quest os jogadores DECLARAM acoes (round cooperativo).
 // Na cidade as acoes sao pessoais e livres. Combate continua turn-based.
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, ArrowRight, BedDouble, Clock, DoorOpen, Home, Loader2, MessageSquare, Shield, Swords, Zap } from "lucide-react";
+import { ArrowLeft, ArrowRight, BedDouble, Clock, DoorOpen, HelpCircle, Home, Loader2, MessageSquare, Shield, ShoppingBag, Swords, Zap } from "lucide-react";
 import { useGame } from "../GameContext";
-import { rpcEventoPendente, rpcMapa, rpcSairParty } from "../api";
+import { postNpc, rpcEventoPendente, rpcMapa, rpcSairParty } from "../api";
 import { EntityIcon, FichaButton, Hud, NarrativaPainel, NodeIcon, PartyBar } from "../ui";
 import { ChoiceMenu, Cronica, useSayHello } from "../scene";
 
