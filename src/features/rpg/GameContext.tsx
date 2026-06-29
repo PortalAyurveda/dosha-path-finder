@@ -117,11 +117,11 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
 
   const refresh = useCallback(async () => {
     if (state.player?.player_id) {
-      const r = await rpcCenaAtual(state.player.player_id);
+      const r: any = await rpcCenaAtual(state.player.player_id);
       if (r.ok) dispatch({ type: "set_estado", estado: r.data });
       else if (isOrphanError(r.error)) dispatch({ type: "clear_session" });
     } else if (state.party_id) {
-      const r = await rpcEstadoParty(state.party_id);
+      const r: any = await rpcEstadoParty(state.party_id);
       if (r.ok) dispatch({ type: "set_estado", estado: { modo: "lobby", party: r.data } });
       else if (isOrphanError(r.error)) dispatch({ type: "clear_session" });
     }
