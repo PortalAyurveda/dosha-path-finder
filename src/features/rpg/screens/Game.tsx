@@ -361,7 +361,7 @@ function NpcPainel({ npc, onClose }: { npc: any; onClose: () => void }) {
       setBolha(r.data?.narrativa ?? "...");
       setTipoUltimo(r.data?.tipo ?? null);
     } else {
-      setBolha(r.error || "Nao foi possivel falar agora.");
+      setBolha("Nao foi possivel falar agora.");
       setTipoUltimo("erro");
     }
   };
