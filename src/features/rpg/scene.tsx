@@ -261,7 +261,7 @@ export function Cronica() {
                   {acaoLabel ? ` · ${acaoLabel}` : ""}
                 </div>
                 <div
-                  className={`text-sm px-3 py-1 rounded mt-0.5 max-w-[85%] ${isNarr ? "italic" : ""}`}
+                  className="text-sm px-3 py-1 rounded mt-0.5 max-w-[85%]"
                   style={{ background: bg }}
                 >
                   {texto || (acaoLabel ?? "")}
