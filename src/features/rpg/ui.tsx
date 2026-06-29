@@ -197,7 +197,7 @@ export function NarrativaPainel() {
       ) : null}
       <div className="text-base md:text-lg leading-relaxed whitespace-pre-wrap">
         {lastNarrativa || cenaTexto || (
-          <span className="rpg-ink-soft italic">A cena se desenrola...</span>
+          <span className="rpg-ink-soft">A cena se desenrola...</span>
         )}
       </div>
       {banda ? (

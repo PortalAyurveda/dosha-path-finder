@@ -69,7 +69,13 @@ const ROTULO_STYLE: Record<string, { bg: string; fg: string }> = {
 };
 
 // Cardapio de acoes da cena (ja filtrado pela classe do jogador no backend).
-export function ChoiceMenu() {
+export function ChoiceMenu({
+  onCardapio,
+  onPicked,
+}: {
+  onCardapio?: (esperadas: Esperada[]) => void;
+  onPicked?: (esperada_id: string) => void;
+} = {}) {
   const { player, estado, declararAcao, loading, jaDecidiNesteRound } = useGame();
   const [data, setData] = useState<{ esperadas?: Esperada[]; cena?: any } | null>(null);
   const [carregando, setCarregando] = useState(false);
@@ -81,12 +87,17 @@ export function ChoiceMenu() {
     setCarregando(true);
     rpgRpc<any>("cardapio_discursiva", { p_player_id: player.player_id }).then((r) => {
       if (!alive) return;
-      if (r.ok) setData(r.data ?? null);
+      if (r.ok) {
+        setData(r.data ?? null);
+        const list = (r.data?.esperadas ?? []) as Esperada[];
+        onCardapio?.(list);
+      }
       setCarregando(false);
     });
     return () => {
       alive = false;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [player?.player_id, key]);
 
   const esperadas = (data?.esperadas ?? []) as Esperada[];
@@ -116,7 +127,7 @@ export function ChoiceMenu() {
   return (
     <div className="space-y-2">
       {cena?.descricao ? (
-        <div className="rpg-card-scroll p-3 text-sm leading-relaxed whitespace-pre-wrap italic">
+        <div className="rpg-card-scroll p-4 text-base leading-relaxed whitespace-pre-wrap">
           {cena.descricao}
         </div>
       ) : null}
@@ -125,7 +136,7 @@ export function ChoiceMenu() {
           <div className="rpg-title text-sm flex items-center justify-between">
             <span>Escolhas</span>
             {jaDecidiNesteRound ? (
-              <span className="rpg-ink-soft text-xs italic">escolhido — aguardando a mesa</span>
+              <span className="rpg-ink-soft text-xs">escolhido — aguardando a mesa</span>
             ) : null}
           </div>
           {[...grupos.entries()].map(([dim, lista]) => (
@@ -142,24 +153,18 @@ export function ChoiceMenu() {
                       key={e.id}
                       className="rpg-btn text-sm text-left flex items-center justify-between gap-3"
                       disabled={desabilitado}
-                      onClick={() =>
-                        declararAcao({ tipo: "discursiva_controlada", esperada_id: e.id, texto: e.intencao })
-                      }
+                      onClick={() => {
+                        onPicked?.(e.id);
+                        declararAcao({ tipo: "discursiva_controlada", esperada_id: e.id, texto: e.intencao });
+                      }}
                       title={e.atributo ? `${e.atributo} CD ${e.dificuldade ?? "?"}` : undefined}
                       style={jaDecidiNesteRound ? { opacity: 0.55 } : undefined}
                     >
                       <span className="flex items-center gap-2">
-                        <span aria-hidden>{livre ? "👁" : "🎲"}</span>
+                        <span aria-hidden className={livre ? "rpg-ink-soft" : ""}>{livre ? "👁" : "🎲"}</span>
                         <span>{e.intencao}</span>
                       </span>
-                      {livre ? (
-                        <span
-                          className="text-[10px] px-1.5 py-0.5 rounded uppercase tracking-wide"
-                          style={{ background: "hsl(210 14% 88%)", color: "hsl(210 18% 30%)" }}
-                        >
-                          sem risco
-                        </span>
-                      ) : (
+                      {livre ? null : (
                         <span className="flex items-center gap-1">
                           {typeof e.chance === "number" ? (
                             <span
@@ -256,7 +261,7 @@ export function Cronica() {
                   {acaoLabel ? ` · ${acaoLabel}` : ""}
                 </div>
                 <div
-                  className={`text-sm px-3 py-1 rounded mt-0.5 max-w-[85%] ${isNarr ? "italic" : ""}`}
+                  className="text-sm px-3 py-1 rounded mt-0.5 max-w-[85%]"
                   style={{ background: bg }}
                 >
                   {texto || (acaoLabel ?? "")}
@@ -287,7 +292,7 @@ export function Cronica() {
             );
           })}
           {!entradas.length ? (
-            <li className="rpg-ink-soft text-xs italic">Sem registros ainda.</li>
+            <li className="rpg-ink-soft text-xs">Sem registros ainda.</li>
           ) : null}
         </ol>
       ) : null}

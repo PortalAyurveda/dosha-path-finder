@@ -257,7 +257,7 @@ function EntryScreen({ user, onCreated }: { user: any; onCreated: (party_id: str
             ))}
           </select>
           {campanhaSel?.resumo ? (
-            <p className="rpg-ink-soft text-xs mb-3 italic">{campanhaSel.resumo}</p>
+            <p className="rpg-ink-soft text-xs mb-3">{campanhaSel.resumo}</p>
           ) : null}
           <label className="flex items-center gap-2 text-sm mb-3 cursor-pointer">
             <input type="checkbox" checked={isPublic} onChange={(e) => setIsPublic(e.target.checked)} />

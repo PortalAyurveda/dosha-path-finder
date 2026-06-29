@@ -1,11 +1,11 @@
 // Telas do jogo: exploracao, mapa, cidade, quest, combate, derrota.
 // Em exploracao/quest os jogadores DECLARAM acoes (round cooperativo).
 // Na cidade as acoes sao pessoais e livres. Combate continua turn-based.
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, ArrowRight, BedDouble, Clock, DoorOpen, Home, Loader2, MessageSquare, Shield, Swords, Zap } from "lucide-react";
+import { ArrowLeft, ArrowRight, BedDouble, Clock, DoorOpen, HelpCircle, Home, Loader2, MessageSquare, Shield, ShoppingBag, Swords, Zap } from "lucide-react";
 import { useGame } from "../GameContext";
-import { rpcEventoPendente, rpcMapa, rpcSairParty } from "../api";
+import { postNpc, rpcEventoPendente, rpcMapa, rpcSairParty } from "../api";
 import { EntityIcon, FichaButton, Hud, NarrativaPainel, NodeIcon, PartyBar } from "../ui";
 import { ChoiceMenu, Cronica, useSayHello } from "../scene";
 
@@ -57,7 +57,7 @@ function RoundPanel() {
         ))}
         {aguardando.map((n) => (
           <li key={`a-${n}`} className="px-2 py-1 rounded rpg-ink-soft" style={{ background: "hsl(28 22% 30% / 0.12)" }}>
-            ⏳ {n} <span className="italic">— pensando...</span>
+            ⏳ {n} <span>— pensando...</span>
           </li>
         ))}
       </ul>
@@ -157,7 +157,7 @@ export function GameShell({
       <div className="flex gap-2 flex-wrap">
         <FichaButton />
         {estado?.dica ? (
-          <div className="rpg-card px-3 py-1 text-xs italic">"{estado.dica}"</div>
+          <div className="rpg-card px-3 py-1 text-xs">"{estado.dica}"</div>
         ) : null}
         {loading ? <span className="inline-flex items-center gap-1 text-xs rpg-ink-soft"><Loader2 size={12} className="animate-spin"/> resolvendo...</span> : null}
       </div>
@@ -174,8 +174,16 @@ export function Exploration() {
   const { estado, acao, player } = useGame();
   const [evento, setEvento] = useState<any>(null);
   const [showMap, setShowMap] = useState(false);
+  const [esperadasTotal, setEsperadasTotal] = useState(0);
+  const [doneIds, setDoneIds] = useState<Set<string>>(new Set());
   const roundAberto = !!estado?.round?.aberto;
   const moveBlocked = roundAberto;
+  const localKey = estado?.local?.id ?? estado?.local?.nome ?? "";
+
+  useEffect(() => {
+    setDoneIds(new Set());
+    setEsperadasTotal(0);
+  }, [localKey]);
 
   useEffect(() => {
     if (!player) return;
@@ -184,8 +192,46 @@ export function Exploration() {
     });
   }, [player, estado?.local?.nome]);
 
+  const x = doneIds.size;
+  const y = esperadasTotal;
+  const completo = y > 0 && x >= y;
+
+  const tentarAvancar = () => {
+    if (moveBlocked) return;
+    if (!completo && y > 0) {
+      const ok = window.confirm("Ainda ha coisas a investigar aqui. Avancar mesmo assim?");
+      if (!ok) return;
+    }
+    acao({ tipo: "mover", direcao: "frente" });
+  };
+
   return (
-    <GameShell>
+    <GameShell showCardapio={false}>
+      <ChoiceMenu
+        onCardapio={(esp) => setEsperadasTotal(esp.length)}
+        onPicked={(id) =>
+          setDoneIds((s) => {
+            if (s.has(id)) return s;
+            const n = new Set(s);
+            n.add(id);
+            return n;
+          })
+        }
+      />
+
+      {y > 0 ? (
+        <div
+          className="text-xs px-3 py-1 inline-flex items-center gap-2 rounded"
+          style={{
+            background: completo ? "hsl(130 30% 28% / 0.18)" : "hsl(28 22% 30% / 0.10)",
+            color: completo ? "hsl(130 35% 22%)" : undefined,
+          }}
+        >
+          <span aria-hidden>{completo ? "✓" : "·"}</span>
+          <span>{x} de {y} explorado</span>
+        </div>
+      ) : null}
+
       {evento ? (
         <div className="rpg-card-scroll p-4 space-y-2">
           <div className="rpg-title text-base inline-flex items-center gap-1"><Zap size={16} className="rpg-gold"/> Evento</div>
@@ -203,22 +249,23 @@ export function Exploration() {
         </div>
       ) : null}
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-        <button className="rpg-btn" disabled={moveBlocked} onClick={() => acao({ tipo: "mover", direcao: "frente" })}>
-          <ArrowRight size={14} className="inline"/> Avancar
+      {/* Barra SECUNDARIA de navegacao */}
+      <div className="flex flex-wrap items-center gap-1 text-xs rpg-ink-soft pt-1">
+        <button className="rpg-btn text-xs px-2 py-1" disabled={moveBlocked} onClick={tentarAvancar}>
+          <ArrowRight size={12} className="inline"/> Avancar
         </button>
-        <button className="rpg-btn" disabled={moveBlocked} onClick={() => acao({ tipo: "mover", direcao: "tras" })}>
-          <ArrowLeft size={14} className="inline"/> Voltar
+        <button className="rpg-btn text-xs px-2 py-1" disabled={moveBlocked} onClick={() => acao({ tipo: "mover", direcao: "tras" })}>
+          <ArrowLeft size={12} className="inline"/> Voltar
         </button>
         {estado?.local?.tipo === "quest" ? (
-          <button className="rpg-btn rpg-btn-primary" disabled={moveBlocked} onClick={() => acao({ tipo: "entrar_quest" })}>
+          <button className="rpg-btn rpg-btn-primary text-xs px-2 py-1" disabled={moveBlocked} onClick={() => acao({ tipo: "entrar_quest" })}>
             Entrar na missao
           </button>
         ) : null}
-        <button className="rpg-btn" disabled={moveBlocked} onClick={() => acao({ tipo: "descansar" })}>
-          <BedDouble size={14} className="inline"/> Descansar
+        <button className="rpg-btn text-xs px-2 py-1" disabled={moveBlocked} onClick={() => acao({ tipo: "descansar" })}>
+          <BedDouble size={12} className="inline"/> Descansar
         </button>
-        <button className="rpg-btn" onClick={() => setShowMap((s) => !s)}>{showMap ? "Esconder mapa" : "Mapa"}</button>
+        <button className="rpg-btn text-xs px-2 py-1" onClick={() => setShowMap((s) => !s)}>{showMap ? "Esconder mapa" : "Mapa"}</button>
       </div>
 
       {showMap ? <MapTimeline onTravel={(node_id) => acao({ tipo: "viajar", node_id })} blocked={moveBlocked} /> : null}
@@ -237,39 +284,188 @@ function MapTimeline({ onTravel, blocked }: { onTravel: (node_id: string) => voi
   if (!data) return <div className="rpg-ink-soft text-sm flex items-center gap-2"><Loader2 size={12} className="animate-spin"/> abrindo mapa...</div>;
   return (
     <ol className="relative pl-10 py-3 space-y-3" style={{ borderLeft: "2px dashed hsl(41 70% 50% / 0.6)" }}>
-      {(data.nos ?? []).map((n: any, i: number) => (
-        <li key={n.id} className={`relative ${i % 2 ? "ml-6" : ""}`}>
-          <div className="absolute -left-12 top-0">
-            <NodeIcon tipo={n.tipo} locked={!n.liberado} atual={n.atual} limpo={n.limpo} />
-          </div>
-          <button
-            className="rpg-card p-2 text-left text-sm w-full hover:opacity-90 disabled:cursor-not-allowed"
-            disabled={!n.liberado || n.atual || blocked}
-            onClick={() => onTravel(n.id)}
-          >
-            <div className="font-semibold">
-              <EntityIcon dominio="lugar" chave={n.tipo} label={n.nome} />
-              {n.atual ? <span className="rpg-gold ml-2 text-xs">(atual)</span> : null}
+      {(data.nos ?? []).map((n: any, i: number) => {
+        const oculto = n.tipo === "oculto" || n.liberado === false;
+        if (oculto) {
+          return (
+            <li key={n.id ?? `oculto-${i}`} className={`relative ${i % 2 ? "ml-6" : ""}`}>
+              <div className="absolute -left-12 top-0">
+                <span
+                  className="inline-flex h-8 w-8 items-center justify-center rounded-full"
+                  style={{ background: "hsl(38 60% 96%)", border: "2px dashed hsl(28 22% 50%)", color: "hsl(28 22% 50%)" }}
+                  aria-label="nao revelado"
+                >
+                  <HelpCircle size={14} />
+                </span>
+              </div>
+              <div
+                className="rpg-card p-2 text-left text-sm w-full opacity-70"
+                style={{ cursor: "not-allowed" }}
+              >
+                <div className="font-semibold rpg-ink-soft">???</div>
+                <div className="rpg-ink-soft text-xs">a estrada se perde na bruma</div>
+              </div>
+            </li>
+          );
+        }
+        return (
+          <li key={n.id} className={`relative ${i % 2 ? "ml-6" : ""}`}>
+            <div className="absolute -left-12 top-0">
+              <NodeIcon tipo={n.tipo} locked={!n.liberado} atual={n.atual} limpo={n.limpo} />
             </div>
-            <div className="rpg-ink-soft text-xs">
-              {n.tipo} · tier {n.tier ?? "?"} {n.objetivo ? `· ${n.objetivo}` : ""}
-            </div>
-          </button>
-        </li>
-      ))}
+            <button
+              className="rpg-card p-2 text-left text-sm w-full hover:opacity-90 disabled:cursor-not-allowed"
+              disabled={!n.liberado || n.atual || blocked}
+              onClick={() => onTravel(n.id)}
+            >
+              <div className="font-semibold">
+                <EntityIcon dominio="lugar" chave={n.tipo} label={n.nome} />
+                {n.atual ? <span className="rpg-gold ml-2 text-xs">(atual)</span> : null}
+              </div>
+              <div className="rpg-ink-soft text-xs">
+                {n.tipo} · tier {n.tier ?? "?"} {n.objetivo ? `· ${n.objetivo}` : ""}
+              </div>
+            </button>
+          </li>
+        );
+      })}
     </ol>
   );
 }
 
-// ------------- Cidade (hub de NPCs) ------------
+// ------------- Cidade (hub de NPCs + mercado separado) ------------
+type NpcInteracao = { id: string; tipo: string; label?: string; disponivel?: boolean; dica_visivel?: string };
+
+function NpcPainel({ npc, onClose }: { npc: any; onClose: () => void }) {
+  const { player } = useGame();
+  const [bolha, setBolha] = useState<string | null>(null);
+  const [tipoUltimo, setTipoUltimo] = useState<string | null>(null);
+  const [busy, setBusy] = useState<string | null>(null);
+
+  // Backend retorna interacoes como { interacoes: [...] } (objeto), com fallback se vier array direto.
+  const lista: NpcInteracao[] = useMemo(() => {
+    const raw = npc?.interacoes;
+    if (Array.isArray(raw)) return raw as NpcInteracao[];
+    if (raw && Array.isArray(raw.interacoes)) return raw.interacoes as NpcInteracao[];
+    return [];
+  }, [npc]);
+
+  const visiveis = lista.filter((it) => it.tipo !== "comercio");
+
+  const interagir = async (it: NpcInteracao) => {
+    if (!player) return;
+    setBusy(it.id);
+    const r = await postNpc(player.player_id, npc.id, it.id);
+    setBusy(null);
+    if (r.ok) {
+      setBolha(r.data?.narrativa ?? "...");
+      setTipoUltimo(r.data?.tipo ?? null);
+    } else {
+      setBolha("Nao foi possivel falar agora.");
+      setTipoUltimo("erro");
+    }
+  };
+
+  return (
+    <section className="rpg-card-scroll p-3 space-y-3">
+      <div className="flex items-start justify-between gap-2">
+        <div>
+          <div className="rpg-title text-base">
+            <EntityIcon dominio="npc" chave={npc.role} label={npc.name} />
+          </div>
+          <div className="rpg-ink-soft text-xs">
+            {npc.role}{npc.resumo ? ` — ${npc.resumo}` : ""}
+          </div>
+        </div>
+        <button className="rpg-btn text-xs" onClick={onClose}>Fechar</button>
+      </div>
+
+      {bolha ? (
+        <div
+          className="text-sm px-3 py-2 rounded leading-relaxed whitespace-pre-wrap"
+          style={{ background: tipoUltimo === "bloqueada" ? "hsl(28 22% 30% / 0.10)" : "hsl(41 70% 50% / 0.14)" }}
+        >
+          <div className="rpg-ink-soft text-[11px] mb-1">{npc.name} diz</div>
+          {bolha}
+        </div>
+      ) : null}
+
+      {visiveis.length ? (
+        <div>
+          <div className="rpg-ink-soft text-xs uppercase tracking-wider mb-1">Conversa</div>
+          <div className="flex flex-wrap gap-2">
+            {visiveis.map((it) => {
+              const condicional = it.tipo === "condicional";
+              const label = condicional
+                ? "🌙 ???"
+                : (it.label || "Conversar");
+              return (
+                <button
+                  key={it.id}
+                  className="rpg-btn text-xs"
+                  disabled={busy === it.id}
+                  onClick={() => interagir(it)}
+                  title={condicional ? (it.dica_visivel || "Algo aqui pede um momento certo") : undefined}
+                >
+                  {busy === it.id ? <Loader2 size={10} className="inline animate-spin mr-1" /> : null}
+                  {label}
+                  {condicional && it.dica_visivel ? (
+                    <span className="rpg-ink-soft ml-1">· {it.dica_visivel}</span>
+                  ) : null}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      ) : (
+        <div className="rpg-ink-soft text-xs">Sem assunto agora.</div>
+      )}
+    </section>
+  );
+}
+
+function MercadoPainel({ loja }: { loja: any }) {
+  const { acao } = useGame();
+  if (!loja) return null;
+  const itens = loja.itens ?? [];
+  return (
+    <section className="rpg-card-scroll p-3 space-y-2">
+      <div className="rpg-title text-base inline-flex items-center gap-2">
+        <ShoppingBag size={16} className="rpg-gold" />
+        Mercado da cidade{loja.nome ? ` · ${loja.nome}` : ""}
+      </div>
+      <ul className="space-y-2">
+        {itens.map((it: any) => (
+          <li key={it.shop_item_id} className="flex items-center justify-between text-sm rpg-card p-2">
+            <span>
+              <EntityIcon dominio="item" chave={it.slot || it.nome} label={it.nome} />{" "}
+              <span className="rpg-ink-soft">
+                · {it.preco}g{typeof it.estoque === "number" ? ` · estoque ${it.estoque}` : ""}
+              </span>
+            </span>
+            <button
+              className="rpg-btn text-xs"
+              disabled={typeof it.estoque === "number" && it.estoque <= 0}
+              onClick={() => acao({ tipo: "comprar", shop_item_id: it.shop_item_id })}
+            >
+              Comprar
+            </button>
+          </li>
+        ))}
+        {!itens.length ? <li className="rpg-ink-soft text-sm">Sem itens a venda agora.</li> : null}
+      </ul>
+    </section>
+  );
+}
+
 export function City() {
-  const { estado, acao, discursiva } = useGame();
+  const { estado, acao } = useGame();
   const npcs: any[] = estado?.npcs ?? [];
+  const loja = estado?.loja ?? null;
   const partyReady = estado?.painel_pronto ?? null;
   const todosProntos = estado?.todos_prontos ?? false;
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const selected = npcs.find((n) => n.id === selectedId) ?? null;
-  const loja = selected?.loja ?? null;
 
   return (
     <GameShell showCardapio={false} showRound={false} freeMode="livre">
@@ -296,63 +492,12 @@ export function City() {
       </section>
 
       {selected ? (
-        <section className="rpg-card-scroll p-3 space-y-3">
-          <div>
-            <div className="rpg-title text-base">
-              <EntityIcon dominio="npc" chave={selected.role} label={selected.name} />
-            </div>
-            <div className="rpg-ink-soft text-xs">{selected.role}{selected.resumo ? ` — ${selected.resumo}` : ""}</div>
-          </div>
-
-          {Array.isArray(selected.interacoes) && selected.interacoes.length ? (
-            <div>
-              <div className="rpg-ink-soft text-xs uppercase tracking-wider mb-1">Conversa</div>
-              <div className="flex flex-wrap gap-2">
-                {selected.interacoes.map((it: any, i: number) => {
-                  const label = typeof it === "string" ? it : (it.label ?? it.texto ?? "Interagir");
-                  const texto = typeof it === "string" ? it : (it.texto ?? it.label ?? label);
-                  return (
-                    <button
-                      key={i}
-                      className="rpg-btn text-xs"
-                      onClick={() => discursiva(`${selected.name}: ${texto}`)}
-                    >
-                      {label}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          ) : null}
-
-          {loja ? (
-            <div>
-              <div className="rpg-ink-soft text-xs uppercase tracking-wider mb-1">
-                Loja{loja.nome ? ` · ${loja.nome}` : ""}
-              </div>
-              <ul className="space-y-2">
-                {(loja.itens ?? []).map((it: any) => (
-                  <li key={it.shop_item_id} className="flex items-center justify-between text-sm rpg-card p-2">
-                    <span>
-                      <EntityIcon dominio="item" chave={it.slot || it.nome} label={it.nome} />{" "}
-                      <span className="rpg-ink-soft">· {it.preco}g</span>
-                    </span>
-                    <button
-                      className="rpg-btn text-xs"
-                      onClick={() => acao({ tipo: "comprar", shop_item_id: it.shop_item_id, npc_id: selected.id })}
-                    >
-                      Comprar
-                    </button>
-                  </li>
-                ))}
-                {!(loja.itens ?? []).length ? <li className="rpg-ink-soft text-sm">Estoque vazio.</li> : null}
-              </ul>
-            </div>
-          ) : null}
-        </section>
+        <NpcPainel npc={selected} onClose={() => setSelectedId(null)} />
       ) : (
-        <div className="rpg-ink-soft text-xs italic">Clique em alguem para conversar ou comerciar.</div>
+        <div className="rpg-ink-soft text-xs">Clique em alguem para conversar.</div>
       )}
+
+      {loja ? <MercadoPainel loja={loja} /> : null}
 
       <div className="rpg-card p-3 text-sm">
         <div className="flex flex-wrap items-center gap-2">
@@ -406,7 +551,7 @@ export function Quest() {
             disabled={!resposta.trim()}
             onClick={() => { acao({ tipo: "puzzle", resposta, veredito: null }); setErros((n) => n + 1); setResposta(""); }}
           >Tentar</button>
-          {erros >= 2 ? <div className="text-xs rpg-ink-soft italic">"Um sussurro lembra: ...releia a sala com atencao."</div> : null}
+          {erros >= 2 ? <div className="text-xs rpg-ink-soft">"Um sussurro lembra: ...releia a sala com atencao."</div> : null}
         </div>
       ) : null}
 
