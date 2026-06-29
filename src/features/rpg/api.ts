@@ -57,12 +57,26 @@ export const postGerarTudo = (historia: string) =>
 
 // ----- Atalhos RPC mais usados -----
 export const rpcMeusPersonagens = (user_id: string) => rpgRpc("meus_personagens", { p_user_id: user_id });
-export const rpcCriarParty = (host_user_id: string) =>
+export const rpcCampanhasJogaveis = () =>
+  rpgRpc<Array<{ id: string; nome: string; resumo?: string }>>("campanhas_jogaveis", {});
+export const rpcSalasAbertas = () =>
+  rpgRpc<Array<any>>("salas_abertas", {});
+export const rpcCriarParty = (
+  host_user_id: string,
+  campaign_id: string = CAMPANHA_MOLDE_ID,
+  is_public: boolean = true,
+) =>
   rpgRpc<{ ok: boolean; party_id: string; join_code: string }>("criar_party", {
-    p_campaign_id: CAMPANHA_MOLDE_ID,
+    p_campaign_id: campaign_id,
     p_host_user_id: host_user_id,
     p_max: 4,
+    p_is_public: is_public,
   });
+export const rpcDeclararAcao = (player_id: string, acao: any) =>
+  rpgRpc<any>("declarar_acao", { p_player_id: player_id, p_acao: acao });
+export const postRound = (party_id: string) =>
+  postJson<any>("/rpg-round", { party_id }, 60_000);
+
 export const rpcEntrarParty = (join_code: string) =>
   rpgRpc<{ ok: boolean; party_id?: string; vagas?: number; erro?: string }>("entrar_party", {
     p_join_code: join_code.toUpperCase().trim(),
