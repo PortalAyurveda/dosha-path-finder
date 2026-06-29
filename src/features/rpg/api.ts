@@ -63,7 +63,7 @@ export const rpcSalasAbertas = () =>
   rpgRpc<Array<any>>("salas_abertas", {});
 export const rpcCriarParty = (
   host_user_id: string,
-  campaign_id: string = CAMPANHA_MOLDE_ID,
+  campaign_id: string,
   is_public: boolean = true,
 ) =>
   rpgRpc<{ ok: boolean; party_id: string; join_code: string }>("criar_party", {
@@ -72,6 +72,8 @@ export const rpcCriarParty = (
     p_max: 4,
     p_is_public: is_public,
   });
+export const rpcSairParty = (player_id: string) =>
+  rpgRpc<{ ok: boolean }>("sair_party", { p_player_id: player_id });
 export const rpcDeclararAcao = (player_id: string, acao: any) =>
   rpgRpc<any>("declarar_acao", { p_player_id: player_id, p_acao: acao });
 export const postRound = (party_id: string) =>
