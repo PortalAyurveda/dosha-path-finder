@@ -77,6 +77,14 @@ export const rpcDeclararAcao = (player_id: string, acao: any) =>
 export const postRound = (party_id: string) =>
   postJson<any>("/rpg-round", { party_id }, 60_000);
 
+export const rpcEnviarChat = (player_id: string, mensagem: string) =>
+  rpgRpc("enviar_chat", { p_player_id: player_id, p_mensagem: mensagem });
+export const rpcChatMesa = (party_id: string) =>
+  rpgRpc<Array<{ quando: string; player_id: string; nome: string; classe?: string; mensagem: string }>>(
+    "chat_mesa",
+    { p_party_id: party_id },
+  );
+
 export const rpcEntrarParty = (join_code: string) =>
   rpgRpc<{ ok: boolean; party_id?: string; vagas?: number; erro?: string }>("entrar_party", {
     p_join_code: join_code.toUpperCase().trim(),
