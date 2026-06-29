@@ -2,9 +2,10 @@
 // Em exploracao/quest os jogadores DECLARAM acoes (round cooperativo).
 // Na cidade as acoes sao pessoais e livres. Combate continua turn-based.
 import { useEffect, useState } from "react";
-import { ArrowLeft, ArrowRight, BedDouble, Clock, Loader2, MessageSquare, Shield, Swords, Zap } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { ArrowLeft, ArrowRight, BedDouble, Clock, DoorOpen, Home, Loader2, MessageSquare, Shield, Swords, Zap } from "lucide-react";
 import { useGame } from "../GameContext";
-import { rpcEventoPendente, rpcMapa } from "../api";
+import { rpcEventoPendente, rpcMapa, rpcSairParty } from "../api";
 import { EntityIcon, FichaButton, Hud, NarrativaPainel, NodeIcon, PartyBar } from "../ui";
 import { ChoiceMenu, Cronica, useSayHello } from "../scene";
 
