@@ -1,8 +1,8 @@
 // Telas do jogo: exploracao, mapa, cidade, quest, combate, derrota.
-// Todas as acoes estruturadas vao via useGame().acao(envelope) -> webhook rpg-acao.
-// Texto livre vai via useGame().discursiva().
+// Em exploracao/quest os jogadores DECLARAM acoes (round cooperativo).
+// Na cidade as acoes sao pessoais e livres. Combate continua turn-based.
 import { useEffect, useState } from "react";
-import { ArrowLeft, ArrowRight, BedDouble, Loader2, MessageSquare, Shield, Swords, Zap } from "lucide-react";
+import { ArrowLeft, ArrowRight, BedDouble, Clock, Loader2, MessageSquare, Shield, Swords, Zap } from "lucide-react";
 import { useGame } from "../GameContext";
 import { rpcEventoPendente, rpcMapa } from "../api";
 import { EntityIcon, FichaButton, Hud, NarrativaPainel, NodeIcon, PartyBar } from "../ui";
@@ -21,34 +21,92 @@ function TurnoBanner({ estado }: { estado: any }) {
   );
 }
 
-function DiscursivaInput() {
-  const { discursiva, loading } = useGame();
+// Painel da rodada cooperativa (exploracao/quest).
+function RoundPanel() {
+  const { estado, declararAcao, jaDecidiNesteRound, loading } = useGame();
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    const id = window.setInterval(() => setNow(Date.now()), 1000);
+    return () => window.clearInterval(id);
+  }, []);
+  const round = estado?.round;
+  if (!round?.aberto) return null;
+  const deadlineMs = round.deadline ? new Date(round.deadline).getTime() : 0;
+  const restante = deadlineMs ? Math.max(0, Math.ceil((deadlineMs - now) / 1000)) : null;
+  const declararam: string[] = round.declararam ?? [];
+  const aguardando: string[] = round.aguardando ?? [];
+  return (
+    <div className="rpg-card p-3 text-sm space-y-2" style={{ background: "hsl(38 60% 96%)" }}>
+      <div className="flex items-center justify-between flex-wrap gap-2">
+        <div className="rpg-title text-sm">Rodada em curso</div>
+        {round.resolvido ? (
+          <span className="rpg-ink-soft inline-flex items-center gap-1"><Loader2 className="animate-spin" size={12}/> Narrando a rodada...</span>
+        ) : restante != null ? (
+          <span className="rpg-ink-soft inline-flex items-center gap-1"><Clock size={12}/> resolvendo em {restante}s</span>
+        ) : null}
+      </div>
+      <div className="flex flex-wrap gap-1 text-xs">
+        {declararam.map((n) => (
+          <span key={`d-${n}`} className="px-2 py-0.5 rounded" style={{ background: "hsl(130 30% 28%)", color: "#fff" }}>✓ {n}</span>
+        ))}
+        {aguardando.map((n) => (
+          <span key={`a-${n}`} className="px-2 py-0.5 rounded" style={{ background: "hsl(28 22% 30%)", color: "#fff" }}>⏳ {n}</span>
+        ))}
+      </div>
+      {!jaDecidiNesteRound && !round.resolvido ? (
+        <button className="rpg-btn text-xs" disabled={loading} onClick={() => declararAcao({ tipo: "passar" })}>Passar a vez</button>
+      ) : null}
+    </div>
+  );
+}
+
+function DiscursivaInput({ mode = "round" }: { mode?: "round" | "livre" }) {
+  const { discursiva, declararAcao, loading, jaDecidiNesteRound } = useGame();
   const [texto, setTexto] = useState("");
+  const desabilitado = loading || (mode === "round" && jaDecidiNesteRound);
   return (
     <form
       className="flex gap-2 mt-2"
       onSubmit={(e) => {
         e.preventDefault();
-        if (!texto.trim() || loading) return;
-        discursiva(texto.trim());
+        const t = texto.trim();
+        if (!t || desabilitado) return;
+        if (mode === "round") declararAcao({ tipo: "discursiva", texto: t });
+        else discursiva(t);
         setTexto("");
       }}
     >
       <input
         className="flex-1 px-3 py-2"
-        placeholder="Outra acao... descreva (ex: arrombo a porta com o ombro)"
+        placeholder={mode === "round"
+          ? "Declarar acao... descreva (ex: arrombo a porta com o ombro)"
+          : "Acao livre (ex: falar com o ferreiro)"}
         value={texto}
         onChange={(e) => setTexto(e.target.value)}
-        disabled={loading}
+        disabled={desabilitado}
       />
-      <button type="submit" className="rpg-btn inline-flex items-center gap-1" disabled={loading || !texto.trim()}>
-        <MessageSquare size={14}/> Enviar
+      <button type="submit" className="rpg-btn inline-flex items-center gap-1" disabled={desabilitado || !texto.trim()}>
+        <MessageSquare size={14}/> {mode === "round" ? "Declarar" : "Enviar"}
       </button>
     </form>
   );
 }
 
-export function GameShell({ children, showCardapio = true }: { children: React.ReactNode; showCardapio?: boolean }) {
+interface GameShellProps {
+  children: React.ReactNode;
+  showCardapio?: boolean;
+  showRound?: boolean;
+  showTurnoBanner?: boolean;
+  freeMode?: "round" | "livre";
+}
+
+export function GameShell({
+  children,
+  showCardapio = true,
+  showRound = true,
+  showTurnoBanner = false,
+  freeMode = "round",
+}: GameShellProps) {
   const { estado, loading } = useGame();
   useSayHello();
   if (!estado) {
@@ -62,8 +120,9 @@ export function GameShell({ children, showCardapio = true }: { children: React.R
     <div className="space-y-3">
       <Hud />
       <PartyBar />
-      <TurnoBanner estado={estado} />
+      {showTurnoBanner ? <TurnoBanner estado={estado} /> : null}
       <NarrativaPainel />
+      {showRound ? <RoundPanel /> : null}
       <div className="flex gap-2 flex-wrap">
         <FichaButton />
         {estado?.dica ? (
@@ -73,7 +132,7 @@ export function GameShell({ children, showCardapio = true }: { children: React.R
       </div>
       {showCardapio ? <ChoiceMenu /> : null}
       {children}
-      <DiscursivaInput />
+      <DiscursivaInput mode={freeMode} />
       <Cronica />
     </div>
   );
@@ -84,7 +143,8 @@ export function Exploration() {
   const { estado, acao, player } = useGame();
   const [evento, setEvento] = useState<any>(null);
   const [showMap, setShowMap] = useState(false);
-  const isMine = meuTurno(estado);
+  const roundAberto = !!estado?.round?.aberto;
+  const moveBlocked = roundAberto;
 
   useEffect(() => {
     if (!player) return;
@@ -101,11 +161,11 @@ export function Exploration() {
           <p className="text-sm">{evento.narrativa}</p>
           <div className="flex gap-2">
             {evento.modo === "automatico" ? (
-              <button className="rpg-btn" disabled={!isMine} onClick={() => { setEvento(null); acao({ tipo: "evento" }); }}>Continuar</button>
+              <button className="rpg-btn" disabled={moveBlocked} onClick={() => { setEvento(null); acao({ tipo: "evento" }); }}>Continuar</button>
             ) : (
               <>
-                <button className="rpg-btn rpg-btn-primary" disabled={!isMine} onClick={() => { setEvento(null); acao({ tipo: "evento", aceitar: true }); }}>Encarar</button>
-                <button className="rpg-btn" disabled={!isMine} onClick={() => { setEvento(null); acao({ tipo: "evento", aceitar: false }); }}>Evitar</button>
+                <button className="rpg-btn rpg-btn-primary" disabled={moveBlocked} onClick={() => { setEvento(null); acao({ tipo: "evento", aceitar: true }); }}>Encarar</button>
+                <button className="rpg-btn" disabled={moveBlocked} onClick={() => { setEvento(null); acao({ tipo: "evento", aceitar: false }); }}>Evitar</button>
               </>
             )}
           </div>
@@ -113,30 +173,30 @@ export function Exploration() {
       ) : null}
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-        <button className="rpg-btn" disabled={!isMine} onClick={() => acao({ tipo: "mover", direcao: "frente" })}>
+        <button className="rpg-btn" disabled={moveBlocked} onClick={() => acao({ tipo: "mover", direcao: "frente" })}>
           <ArrowRight size={14} className="inline"/> Avancar
         </button>
-        <button className="rpg-btn" disabled={!isMine} onClick={() => acao({ tipo: "mover", direcao: "tras" })}>
+        <button className="rpg-btn" disabled={moveBlocked} onClick={() => acao({ tipo: "mover", direcao: "tras" })}>
           <ArrowLeft size={14} className="inline"/> Voltar
         </button>
         {estado?.local?.tipo === "quest" ? (
-          <button className="rpg-btn rpg-btn-primary" disabled={!isMine} onClick={() => acao({ tipo: "entrar_quest" })}>
+          <button className="rpg-btn rpg-btn-primary" disabled={moveBlocked} onClick={() => acao({ tipo: "entrar_quest" })}>
             Entrar na missao
           </button>
         ) : null}
-        <button className="rpg-btn" disabled={!isMine} onClick={() => acao({ tipo: "descansar" })}>
+        <button className="rpg-btn" disabled={moveBlocked} onClick={() => acao({ tipo: "descansar" })}>
           <BedDouble size={14} className="inline"/> Descansar
         </button>
         <button className="rpg-btn" onClick={() => setShowMap((s) => !s)}>{showMap ? "Esconder mapa" : "Mapa"}</button>
       </div>
 
-      {showMap ? <MapTimeline onTravel={(node_id) => acao({ tipo: "viajar", node_id })} /> : null}
+      {showMap ? <MapTimeline onTravel={(node_id) => acao({ tipo: "viajar", node_id })} blocked={moveBlocked} /> : null}
     </GameShell>
   );
 }
 
 // ------------- Mapa timeline ------------
-function MapTimeline({ onTravel }: { onTravel: (node_id: string) => void }) {
+function MapTimeline({ onTravel, blocked }: { onTravel: (node_id: string) => void; blocked?: boolean }) {
   const { player } = useGame();
   const [data, setData] = useState<any>(null);
   useEffect(() => {
@@ -153,7 +213,7 @@ function MapTimeline({ onTravel }: { onTravel: (node_id: string) => void }) {
           </div>
           <button
             className="rpg-card p-2 text-left text-sm w-full hover:opacity-90 disabled:cursor-not-allowed"
-            disabled={!n.liberado || n.atual}
+            disabled={!n.liberado || n.atual || blocked}
             onClick={() => onTravel(n.id)}
           >
             <div className="font-semibold">
@@ -173,7 +233,6 @@ function MapTimeline({ onTravel }: { onTravel: (node_id: string) => void }) {
 // ------------- Cidade ------------
 export function City() {
   const { estado, acao } = useGame();
-  const isMine = meuTurno(estado);
   const cidade = estado?.cidade ?? {};
   const npcs = estado?.npcs ?? [];
   const loja = estado?.loja ?? {};
@@ -181,7 +240,7 @@ export function City() {
   const todosProntos = estado?.todos_prontos ?? false;
 
   return (
-    <GameShell>
+    <GameShell showCardapio={false} showRound={false} freeMode="livre">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         <section className="rpg-card-scroll p-3">
           <h3 className="rpg-title text-base mb-2">NPCs</h3>
@@ -213,7 +272,7 @@ export function City() {
           <span className="font-semibold">Pronto para partir:</span>
           <button className="rpg-btn rpg-btn-primary" onClick={() => acao({ tipo: "pronto_cidade", ready: true })}>Estou pronto</button>
           <button className="rpg-btn" onClick={() => acao({ tipo: "pronto_cidade", ready: false })}>Aguardar</button>
-          {todosProntos && isMine ? (
+          {todosProntos ? (
             <button className="rpg-btn rpg-btn-primary" onClick={() => acao({ tipo: "mover", direcao: "frente" })}>Partir</button>
           ) : null}
         </div>
@@ -234,12 +293,13 @@ export function City() {
 // ------------- Quest / sala / puzzle ------------
 export function Quest() {
   const { estado, acao } = useGame();
-  const isMine = meuTurno(estado);
   const quest = estado?.quest ?? {};
   const sala = estado?.sala_atual ?? {};
   const acoesClasse = sala.acoes_classe ?? {};
   const [resposta, setResposta] = useState("");
   const [erros, setErros] = useState(0);
+  const roundAberto = !!estado?.round?.aberto;
+  const moveBlocked = roundAberto;
 
   return (
     <GameShell>
@@ -256,7 +316,7 @@ export function Quest() {
           <input className="w-full px-3 py-2" value={resposta} onChange={(e) => setResposta(e.target.value)} placeholder="Digite sua resposta" />
           <button
             className="rpg-btn rpg-btn-primary"
-            disabled={!isMine || !resposta.trim()}
+            disabled={!resposta.trim()}
             onClick={() => { acao({ tipo: "puzzle", resposta, veredito: null }); setErros((n) => n + 1); setResposta(""); }}
           >Tentar</button>
           {erros >= 2 ? <div className="text-xs rpg-ink-soft italic">"Um sussurro lembra: ...releia a sala com atencao."</div> : null}
@@ -265,26 +325,26 @@ export function Quest() {
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
         {acoesClasse.ataca ? (
-          <button className="rpg-btn" disabled={!isMine} onClick={() => acao({ tipo: "iniciar_combate" })}>
+          <button className="rpg-btn" disabled={moveBlocked} onClick={() => acao({ tipo: "iniciar_combate" })}>
             <Swords size={14} className="inline"/> Atacar
           </button>
         ) : null}
         {acoesClasse.protege ? (
-          <button className="rpg-btn" disabled={!isMine} onClick={() => acao({ tipo: "combate", acao: { tipo: "defender" } })}>
+          <button className="rpg-btn" onClick={() => acao({ tipo: "combate", acao: { tipo: "defender" } })}>
             <Shield size={14} className="inline"/> Defender
           </button>
         ) : null}
         {acoesClasse.afeto_1 ? (
-          <button className="rpg-btn" disabled={!isMine} onClick={() => acao({ tipo: "teste", atributo: acoesClasse.afeto_1.atributo ?? "INT", dificuldade: acoesClasse.afeto_1.dificuldade ?? 12 })}>
+          <button className="rpg-btn" onClick={() => acao({ tipo: "teste", atributo: acoesClasse.afeto_1.atributo ?? "INT", dificuldade: acoesClasse.afeto_1.dificuldade ?? 12 })}>
             {acoesClasse.afeto_1.label ?? "Afeto 1"}
           </button>
         ) : null}
         {acoesClasse.afeto_2 ? (
-          <button className="rpg-btn" disabled={!isMine} onClick={() => acao({ tipo: "teste", atributo: acoesClasse.afeto_2.atributo ?? "DES", dificuldade: acoesClasse.afeto_2.dificuldade ?? 12 })}>
+          <button className="rpg-btn" onClick={() => acao({ tipo: "teste", atributo: acoesClasse.afeto_2.atributo ?? "DES", dificuldade: acoesClasse.afeto_2.dificuldade ?? 12 })}>
             {acoesClasse.afeto_2.label ?? "Afeto 2"}
           </button>
         ) : null}
-        <button className="rpg-btn rpg-btn-primary" disabled={!isMine} onClick={() => acao({ tipo: "avancar_sala" })}>Avancar sala</button>
+        <button className="rpg-btn rpg-btn-primary" disabled={moveBlocked} onClick={() => acao({ tipo: "avancar_sala" })}>Avancar sala</button>
       </div>
     </GameShell>
   );
@@ -316,7 +376,7 @@ export function Combat() {
   };
 
   return (
-    <GameShell showCardapio={false}>
+    <GameShell showCardapio={false} showRound={false} showTurnoBanner>
       <div className="rpg-card-scroll p-3">
         <h3 className="rpg-title text-base mb-2">Round {combate.round ?? "?"}</h3>
         {[0, 1, 2].map((tile) => (
@@ -396,7 +456,7 @@ export function Combat() {
 export function Defeat() {
   const { lastNarrativa, refresh } = useGame();
   return (
-    <GameShell showCardapio={false}>
+    <GameShell showCardapio={false} showRound={false}>
       <div className="rpg-card-scroll p-6 text-center">
         <h2 className="rpg-title text-2xl mb-2">Voces despertam feridos mas vivos</h2>
         <p>{lastNarrativa ?? "A taverna esta quieta. Alguem cuidou de voces na ultima cidade."}</p>
