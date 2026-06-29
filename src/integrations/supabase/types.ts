@@ -2659,6 +2659,27 @@ export type Database = {
         }
         Relationships: []
       }
+      niveis: {
+        Row: {
+          descricao: string | null
+          marco: string
+          nome: string
+          tier: number
+        }
+        Insert: {
+          descricao?: string | null
+          marco: string
+          nome: string
+          tier: number
+        }
+        Update: {
+          descricao?: string | null
+          marco?: string
+          nome?: string
+          tier?: number
+        }
+        Relationships: []
+      }
       perfis: {
         Row: {
           created_at: string | null
@@ -4108,11 +4129,14 @@ export type Database = {
           pontos_ojas: number
           premium_since: string | null
           premium_until: string | null
+          streak_atual: number
+          streak_recorde: number
           stripe_customer_id: string | null
           stripe_subscription_id: string | null
           subscription_status: string | null
           telefone: string | null
           tokens_akasha: number
+          ultimo_dia_ativo: string | null
           visitor_id: string | null
         }
         Insert: {
@@ -4130,11 +4154,14 @@ export type Database = {
           pontos_ojas?: number
           premium_since?: string | null
           premium_until?: string | null
+          streak_atual?: number
+          streak_recorde?: number
           stripe_customer_id?: string | null
           stripe_subscription_id?: string | null
           subscription_status?: string | null
           telefone?: string | null
           tokens_akasha?: number
+          ultimo_dia_ativo?: string | null
           visitor_id?: string | null
         }
         Update: {
@@ -4152,11 +4179,14 @@ export type Database = {
           pontos_ojas?: number
           premium_since?: string | null
           premium_until?: string | null
+          streak_atual?: number
+          streak_recorde?: number
           stripe_customer_id?: string | null
           stripe_subscription_id?: string | null
           subscription_status?: string | null
           telefone?: string | null
           tokens_akasha?: number
+          ultimo_dia_ativo?: string | null
           visitor_id?: string | null
         }
         Relationships: []
@@ -4620,6 +4650,7 @@ export type Database = {
           isSetofReturn: true
         }
       }
+      recompute_user_level: { Args: { p_user: string }; Returns: undefined }
       restore_dosha_test_version: {
         Args: { _version_number: number }
         Returns: undefined

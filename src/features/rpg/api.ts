@@ -6,7 +6,7 @@ import { rpgRpc as rpgRpcRaw } from "@/integrations/supabase/rpg-client";
 
 const WEBHOOK_BASE = "https://n8n.portalayurveda.com/webhook";
 
-export const CAMPANHA_MOLDE_ID = "aaaaaaaa-0000-0000-0000-000000000002";
+
 
 type RpcResult<T> = { ok: true; data: T } | { ok: false; error: string };
 
