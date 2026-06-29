@@ -64,7 +64,7 @@ export function EntityIcon({ dominio, chave, label }: { dominio: Dominio; chave?
   const emoji = emojiDe(dominio, chave);
   return (
     <span className="inline-flex items-center gap-1">
-      <span aria-hidden>*{emoji}</span>
+      <span aria-hidden>{emoji}</span>
       {label ? <span>{label}</span> : null}
     </span>
   );
@@ -187,7 +187,7 @@ export function NarrativaPainel() {
   const cenaTexto = estado?.cena?.texto || estado?.local?.descricao;
   const banda = lastResultado?.banda as string | undefined;
   const livre = lastResultado?.livre === true || banda === "auto";
-  const d20 = lastResultado?.teste?.d20;
+  const d20 = lastResultado?.teste?.d20 ?? lastResultado?.d20;
   return (
     <div className="rpg-card-scroll p-4 md:p-6">
       {lastError ? (
@@ -216,7 +216,12 @@ export function NarrativaPainel() {
             </>
           )}
           {lastResultado?.consequencia ? (
-            <span className="text-xs rpg-ink-soft">{lastResultado.consequencia.tipo}: {String(lastResultado.consequencia.valor)}</span>
+            <span className="text-xs rpg-ink-soft">
+              {lastResultado.consequencia.tipo}
+              {lastResultado.consequencia.pista
+                ? `: ${lastResultado.consequencia.pista}`
+                : (lastResultado.consequencia.valor != null ? `: ${lastResultado.consequencia.valor}` : "")}
+            </span>
           ) : null}
         </div>
       ) : null}
