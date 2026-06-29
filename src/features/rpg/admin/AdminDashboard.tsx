@@ -329,7 +329,7 @@ function ChatlogTab() {
               <div className="font-semibold">{row.acao ?? row.tipo}</div>
               {row.dado ? <div className="text-xs">dado: {JSON.stringify(row.dado)}</div> : null}
               {row.resultado ? <div className="text-xs">resultado: {JSON.stringify(row.resultado)}</div> : null}
-              {row.narrativa ? <div className="italic mt-1">"{row.narrativa}"</div> : null}
+              {row.narrativa ? <div className="mt-1">"{row.narrativa}"</div> : null}
             </div>
           ))}
         </div>
