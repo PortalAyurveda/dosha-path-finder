@@ -551,7 +551,7 @@ export function Quest() {
             disabled={!resposta.trim()}
             onClick={() => { acao({ tipo: "puzzle", resposta, veredito: null }); setErros((n) => n + 1); setResposta(""); }}
           >Tentar</button>
-          {erros >= 2 ? <div className="text-xs rpg-ink-soft italic">"Um sussurro lembra: ...releia a sala com atencao."</div> : null}
+          {erros >= 2 ? <div className="text-xs rpg-ink-soft">"Um sussurro lembra: ...releia a sala com atencao."</div> : null}
         </div>
       ) : null}
 
