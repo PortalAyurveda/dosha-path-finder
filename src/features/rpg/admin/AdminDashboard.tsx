@@ -3,8 +3,9 @@
 // Gerar via webhook /rpg-gerar-tudo (pipeline completo, ~5-8 min).
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Helmet } from "react-helmet-async";
-import { Castle, Eye, Loader2, Map as MapIcon, MessageSquare, NotebookPen, ScrollText, Skull, Sparkles, Users } from "lucide-react";
-import { adminSelect, postGerarTudo, rpcChatlog } from "../api";
+import { Castle, Eye, Loader2, Map as MapIcon, MessageSquare, NotebookPen, ScrollText, Skull, Sparkles, Users, CheckCircle2 } from "lucide-react";
+import { adminSelect, postGerarTudo, rpcChatlog, rpgRpc } from "../api";
+import { Progress } from "@/components/ui/progress";
 
 type TabId = "forja" | "mapa" | "quests" | "cidades" | "bestiario" | "parties" | "chatlog" | "devlog";
 const TABS: { id: TabId; label: string; Icon: any }[] = [
@@ -53,39 +54,82 @@ export default function AdminRpgDashboard() {
 }
 
 // ---------- Forjar Mundo (escrita) ----------
+type ForjaStatus = {
+  existe?: boolean;
+  campaign_id?: string;
+  nome?: string;
+  quests?: number;
+  salas?: number;
+  nos?: number;
+  cidades?: number;
+  finalizada?: boolean;
+};
+
+const META = { quests: 8, salas: 40, nos: 12, cidades: 4 };
+
 function ForjaTab() {
   const [historia, setHistoria] = useState("");
-  const [status, setStatus] = useState<{ kind: "idle" } | { kind: "loading"; since: number } | { kind: "ok"; nome?: string; id?: string } | { kind: "warn"; msg: string }>({ kind: "idle" });
+  const [phase, setPhase] = useState<"idle" | "disparando" | "gerando" | "pronto" | "erro">("idle");
+  const [errMsg, setErrMsg] = useState<string>("");
+  const [status, setStatus] = useState<ForjaStatus>({});
   const [elapsed, setElapsed] = useState(0);
   const timerRef = useRef<number | null>(null);
+  const pollRef = useRef<number | null>(null);
 
-  useEffect(() => () => { if (timerRef.current) window.clearInterval(timerRef.current); }, []);
+  useEffect(() => () => {
+    if (timerRef.current) window.clearInterval(timerRef.current);
+    if (pollRef.current) window.clearInterval(pollRef.current);
+  }, []);
+
+  const startPolling = () => {
+    if (pollRef.current) window.clearInterval(pollRef.current);
+    const tick = async () => {
+      const r: any = await rpgRpc<ForjaStatus>("status_geracao", {});
+      if (r.ok && r.data) {
+        setStatus(r.data);
+        if (r.data.finalizada) {
+          if (pollRef.current) window.clearInterval(pollRef.current);
+          if (timerRef.current) window.clearInterval(timerRef.current);
+          setPhase("pronto");
+        }
+      }
+    };
+    tick();
+    pollRef.current = window.setInterval(tick, 8000);
+  };
 
   const gerar = async () => {
-    setStatus({ kind: "loading", since: Date.now() });
+    setPhase("disparando");
+    setErrMsg("");
+    setStatus({});
     setElapsed(0);
     if (timerRef.current) window.clearInterval(timerRef.current);
     timerRef.current = window.setInterval(() => setElapsed((s) => s + 1), 1000);
 
     const r: any = await postGerarTudo(historia.trim());
-    if (timerRef.current) window.clearInterval(timerRef.current);
-
-    if (r.ok && r.data?.ok && r.data?.campaign_id) {
-      setStatus({ kind: "ok", nome: r.data.nome, id: r.data.campaign_id });
-    } else if (r.ok) {
-      setStatus({ kind: "warn", msg: "O servidor respondeu sem confirmar sucesso. A geracao pode ainda estar rodando — verifique em alguns minutos." });
+    // Tratar como simples "disparo ok" — n8n responde NA HORA com { ok:true, status:"gerando" }
+    if (r.ok) {
+      setPhase("gerando");
+      startPolling();
     } else {
-      setStatus({ kind: "warn", msg: `Falha de rede ou timeout (${r.error}). A geracao pode estar rodando no servidor mesmo assim — verifique em alguns minutos.` });
+      // Mesmo em caso de timeout/falha aparente, pode estar gerando — comecar a pollar.
+      setPhase("gerando");
+      setErrMsg(`Webhook retornou erro (${r.error}); seguindo via polling.`);
+      startPolling();
     }
   };
 
-  const loading = status.kind === "loading";
+  const pct = (n: number | undefined, alvo: number) =>
+    Math.min(100, Math.round(((n ?? 0) / alvo) * 100));
+
+  const loading = phase === "disparando" || phase === "gerando";
+
   return (
     <div className="rpg-card-scroll p-4 md:p-6 max-w-3xl">
       <h2 className="rpg-title text-xl mb-2">Forjar novo mundo</h2>
       <p className="rpg-ink-soft text-sm mb-3">
-        Descreva a premissa. O pipeline COMPLETO sera executado (bioma → cidades → NPCs → quests → salas → mapa → bestiario → cardapio de acoes v3 → eventos).
-        Leva tipicamente <b>5 a 8 minutos</b>. Nao feche a aba.
+        Descreva a premissa. O webhook dispara o pipeline (bioma → cidades → NPCs → quests → salas → mapa → bestiario → cardapio v3 → eventos)
+        e responde NA HORA. O painel acompanha o progresso por polling (~4 min ate finalizar).
       </p>
       <textarea
         rows={8}
@@ -97,18 +141,37 @@ function ForjaTab() {
       />
       <div className="flex flex-wrap items-center gap-3">
         <button className="rpg-btn rpg-btn-primary inline-flex items-center gap-2" disabled={loading || !historia.trim()} onClick={gerar}>
-          {loading ? <><Loader2 className="animate-spin" size={14}/> Forjando ({Math.floor(elapsed/60)}m {elapsed % 60}s)</> : <><Sparkles size={14}/> Forjar mundo</>}
+          {loading ? <><Loader2 className="animate-spin" size={14}/> {phase === "disparando" ? "Disparando..." : `Forjando (${Math.floor(elapsed/60)}m ${elapsed % 60}s)`}</> : <><Sparkles size={14}/> Forjar mundo</>}
         </button>
-        {loading ? <span className="text-sm rpg-ink-soft">Pacientemente fiando o tear... nao feche a pagina.</span> : null}
+        {phase === "gerando" ? <span className="text-sm rpg-ink-soft">Pacientemente fiando o tear... pode acompanhar abaixo.</span> : null}
       </div>
-      {status.kind === "ok" ? (
-        <div className="mt-3 p-3 rounded text-sm" style={{ background: "hsl(130 30% 90%)", color: "hsl(130 30% 20%)" }}>
-          <b>Campanha forjada!</b> {status.nome ? ` "${status.nome}" · ` : ""}<code className="font-mono">{status.id}</code>
+
+      {phase === "gerando" ? (
+        <div className="mt-4 space-y-3">
+          {errMsg ? <div className="text-xs rpg-ink-soft">{errMsg}</div> : null}
+          {(["quests","salas","nos","cidades"] as const).map((k) => (
+            <div key={k}>
+              <div className="flex justify-between text-xs rpg-ink-soft mb-1">
+                <span className="uppercase">{k}</span>
+                <span>{status[k] ?? 0} / ~{META[k]}</span>
+              </div>
+              <Progress value={pct(status[k], META[k])} />
+            </div>
+          ))}
+          {status.nome ? <div className="text-sm">Forjando: <b>{status.nome}</b></div> : null}
         </div>
       ) : null}
-      {status.kind === "warn" ? (
-        <div className="mt-3 p-3 rounded text-sm" style={{ background: "hsl(41 70% 88%)", color: "hsl(28 35% 25%)" }}>
-          {status.msg}
+
+      {phase === "pronto" ? (
+        <div className="mt-4 p-3 rounded text-sm space-y-2" style={{ background: "hsl(130 30% 90%)", color: "hsl(130 30% 20%)" }}>
+          <div className="flex items-center gap-2 font-semibold"><CheckCircle2 size={16}/> Mundo pronto!</div>
+          {status.nome ? <div>"{status.nome}"</div> : null}
+          {status.campaign_id ? <div className="font-mono text-xs">{status.campaign_id}</div> : null}
+          <div className="text-xs">quests: {status.quests ?? 0} · salas: {status.salas ?? 0} · nos: {status.nos ?? 0} · cidades: {status.cidades ?? 0}</div>
+          <div className="flex gap-2 pt-1">
+            <a href="/rpg" className="rpg-btn rpg-btn-primary text-xs">Jogar</a>
+            <button className="rpg-btn text-xs" onClick={() => { setPhase("idle"); setStatus({}); setHistoria(""); }}>Forjar outro</button>
+          </div>
         </div>
       ) : null}
     </div>
