@@ -174,8 +174,16 @@ export function Exploration() {
   const { estado, acao, player } = useGame();
   const [evento, setEvento] = useState<any>(null);
   const [showMap, setShowMap] = useState(false);
+  const [esperadasTotal, setEsperadasTotal] = useState(0);
+  const [doneIds, setDoneIds] = useState<Set<string>>(new Set());
   const roundAberto = !!estado?.round?.aberto;
   const moveBlocked = roundAberto;
+  const localKey = estado?.local?.id ?? estado?.local?.nome ?? "";
+
+  useEffect(() => {
+    setDoneIds(new Set());
+    setEsperadasTotal(0);
+  }, [localKey]);
 
   useEffect(() => {
     if (!player) return;
@@ -184,8 +192,46 @@ export function Exploration() {
     });
   }, [player, estado?.local?.nome]);
 
+  const x = doneIds.size;
+  const y = esperadasTotal;
+  const completo = y > 0 && x >= y;
+
+  const tentarAvancar = () => {
+    if (moveBlocked) return;
+    if (!completo && y > 0) {
+      const ok = window.confirm("Ainda ha coisas a investigar aqui. Avancar mesmo assim?");
+      if (!ok) return;
+    }
+    acao({ tipo: "mover", direcao: "frente" });
+  };
+
   return (
-    <GameShell>
+    <GameShell showCardapio={false}>
+      <ChoiceMenu
+        onCardapio={(esp) => setEsperadasTotal(esp.length)}
+        onPicked={(id) =>
+          setDoneIds((s) => {
+            if (s.has(id)) return s;
+            const n = new Set(s);
+            n.add(id);
+            return n;
+          })
+        }
+      />
+
+      {y > 0 ? (
+        <div
+          className="text-xs px-3 py-1 inline-flex items-center gap-2 rounded"
+          style={{
+            background: completo ? "hsl(130 30% 28% / 0.18)" : "hsl(28 22% 30% / 0.10)",
+            color: completo ? "hsl(130 35% 22%)" : undefined,
+          }}
+        >
+          <span aria-hidden>{completo ? "✓" : "·"}</span>
+          <span>{x} de {y} explorado</span>
+        </div>
+      ) : null}
+
       {evento ? (
         <div className="rpg-card-scroll p-4 space-y-2">
           <div className="rpg-title text-base inline-flex items-center gap-1"><Zap size={16} className="rpg-gold"/> Evento</div>
@@ -203,22 +249,23 @@ export function Exploration() {
         </div>
       ) : null}
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-        <button className="rpg-btn" disabled={moveBlocked} onClick={() => acao({ tipo: "mover", direcao: "frente" })}>
-          <ArrowRight size={14} className="inline"/> Avancar
+      {/* Barra SECUNDARIA de navegacao */}
+      <div className="flex flex-wrap items-center gap-1 text-xs rpg-ink-soft pt-1">
+        <button className="rpg-btn text-xs px-2 py-1" disabled={moveBlocked} onClick={tentarAvancar}>
+          <ArrowRight size={12} className="inline"/> Avancar
         </button>
-        <button className="rpg-btn" disabled={moveBlocked} onClick={() => acao({ tipo: "mover", direcao: "tras" })}>
-          <ArrowLeft size={14} className="inline"/> Voltar
+        <button className="rpg-btn text-xs px-2 py-1" disabled={moveBlocked} onClick={() => acao({ tipo: "mover", direcao: "tras" })}>
+          <ArrowLeft size={12} className="inline"/> Voltar
         </button>
         {estado?.local?.tipo === "quest" ? (
-          <button className="rpg-btn rpg-btn-primary" disabled={moveBlocked} onClick={() => acao({ tipo: "entrar_quest" })}>
+          <button className="rpg-btn rpg-btn-primary text-xs px-2 py-1" disabled={moveBlocked} onClick={() => acao({ tipo: "entrar_quest" })}>
             Entrar na missao
           </button>
         ) : null}
-        <button className="rpg-btn" disabled={moveBlocked} onClick={() => acao({ tipo: "descansar" })}>
-          <BedDouble size={14} className="inline"/> Descansar
+        <button className="rpg-btn text-xs px-2 py-1" disabled={moveBlocked} onClick={() => acao({ tipo: "descansar" })}>
+          <BedDouble size={12} className="inline"/> Descansar
         </button>
-        <button className="rpg-btn" onClick={() => setShowMap((s) => !s)}>{showMap ? "Esconder mapa" : "Mapa"}</button>
+        <button className="rpg-btn text-xs px-2 py-1" onClick={() => setShowMap((s) => !s)}>{showMap ? "Esconder mapa" : "Mapa"}</button>
       </div>
 
       {showMap ? <MapTimeline onTravel={(node_id) => acao({ tipo: "viajar", node_id })} blocked={moveBlocked} /> : null}
