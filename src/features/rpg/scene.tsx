@@ -292,7 +292,7 @@ export function Cronica() {
             );
           })}
           {!entradas.length ? (
-            <li className="rpg-ink-soft text-xs italic">Sem registros ainda.</li>
+            <li className="rpg-ink-soft text-xs">Sem registros ainda.</li>
           ) : null}
         </ol>
       ) : null}
