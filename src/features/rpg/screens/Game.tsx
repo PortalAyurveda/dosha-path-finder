@@ -261,43 +261,99 @@ function MapTimeline({ onTravel, blocked }: { onTravel: (node_id: string) => voi
   );
 }
 
-// ------------- Cidade ------------
+// ------------- Cidade (hub de NPCs) ------------
 export function City() {
-  const { estado, acao } = useGame();
-  const cidade = estado?.cidade ?? {};
-  const npcs = estado?.npcs ?? [];
-  const loja = estado?.loja ?? {};
+  const { estado, acao, discursiva } = useGame();
+  const npcs: any[] = estado?.npcs ?? [];
   const partyReady = estado?.painel_pronto ?? null;
   const todosProntos = estado?.todos_prontos ?? false;
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const selected = npcs.find((n) => n.id === selectedId) ?? null;
+  const loja = selected?.loja ?? null;
 
   return (
     <GameShell showCardapio={false} showRound={false} freeMode="livre">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        <section className="rpg-card-scroll p-3">
-          <h3 className="rpg-title text-base mb-2">NPCs</h3>
-          <ul className="space-y-2">
+      <section className="rpg-card-scroll p-3">
+        <h3 className="rpg-title text-base mb-2">Pessoas pela cidade</h3>
+        {npcs.length ? (
+          <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {npcs.map((n: any) => (
-              <li key={n.id} className="rpg-card p-2 text-sm">
-                <div className="font-semibold"><EntityIcon dominio="npc" chave={n.role} label={n.name} /></div>
-                <div className="rpg-ink-soft text-xs">{n.role} — {n.resumo}</div>
+              <li key={n.id}>
+                <button
+                  className={`rpg-card p-2 text-sm w-full text-left hover:opacity-90 ${selectedId === n.id ? "rpg-pulse" : ""}`}
+                  style={selectedId === n.id ? { borderColor: "hsl(41 70% 50%)" } : undefined}
+                  onClick={() => setSelectedId((cur) => (cur === n.id ? null : n.id))}
+                >
+                  <div className="font-semibold"><EntityIcon dominio="npc" chave={n.role} label={n.name} /></div>
+                  <div className="rpg-ink-soft text-xs">{n.role}{n.resumo ? ` — ${n.resumo}` : ""}</div>
+                </button>
               </li>
             ))}
-            {!npcs.length ? <li className="rpg-ink-soft text-sm">Sem NPCs por aqui.</li> : null}
           </ul>
+        ) : (
+          <div className="rpg-ink-soft text-sm">Sem ninguem por aqui.</div>
+        )}
+      </section>
+
+      {selected ? (
+        <section className="rpg-card-scroll p-3 space-y-3">
+          <div>
+            <div className="rpg-title text-base">
+              <EntityIcon dominio="npc" chave={selected.role} label={selected.name} />
+            </div>
+            <div className="rpg-ink-soft text-xs">{selected.role}{selected.resumo ? ` — ${selected.resumo}` : ""}</div>
+          </div>
+
+          {Array.isArray(selected.interacoes) && selected.interacoes.length ? (
+            <div>
+              <div className="rpg-ink-soft text-xs uppercase tracking-wider mb-1">Conversa</div>
+              <div className="flex flex-wrap gap-2">
+                {selected.interacoes.map((it: any, i: number) => {
+                  const label = typeof it === "string" ? it : (it.label ?? it.texto ?? "Interagir");
+                  const texto = typeof it === "string" ? it : (it.texto ?? it.label ?? label);
+                  return (
+                    <button
+                      key={i}
+                      className="rpg-btn text-xs"
+                      onClick={() => discursiva(`${selected.name}: ${texto}`)}
+                    >
+                      {label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          ) : null}
+
+          {loja ? (
+            <div>
+              <div className="rpg-ink-soft text-xs uppercase tracking-wider mb-1">
+                Loja{loja.nome ? ` · ${loja.nome}` : ""}
+              </div>
+              <ul className="space-y-2">
+                {(loja.itens ?? []).map((it: any) => (
+                  <li key={it.shop_item_id} className="flex items-center justify-between text-sm rpg-card p-2">
+                    <span>
+                      <EntityIcon dominio="item" chave={it.slot || it.nome} label={it.nome} />{" "}
+                      <span className="rpg-ink-soft">· {it.preco}g</span>
+                    </span>
+                    <button
+                      className="rpg-btn text-xs"
+                      onClick={() => acao({ tipo: "comprar", shop_item_id: it.shop_item_id, npc_id: selected.id })}
+                    >
+                      Comprar
+                    </button>
+                  </li>
+                ))}
+                {!(loja.itens ?? []).length ? <li className="rpg-ink-soft text-sm">Estoque vazio.</li> : null}
+              </ul>
+            </div>
+          ) : null}
         </section>
-        <section className="rpg-card-scroll p-3">
-          <h3 className="rpg-title text-base mb-2">Loja {loja.nome ? `· ${loja.nome}` : ""}</h3>
-          <ul className="space-y-2">
-            {(loja.itens ?? []).map((it: any) => (
-              <li key={it.shop_item_id} className="flex items-center justify-between text-sm rpg-card p-2">
-                <span><EntityIcon dominio="item" chave={it.slot || it.nome} label={it.nome} /> <span className="rpg-ink-soft">· {it.preco}g</span></span>
-                <button className="rpg-btn text-xs" onClick={() => acao({ tipo: "comprar", shop_item_id: it.shop_item_id })}>Comprar</button>
-              </li>
-            ))}
-            {!(loja.itens ?? []).length ? <li className="rpg-ink-soft text-sm">Estoque vazio.</li> : null}
-          </ul>
-        </section>
-      </div>
+      ) : (
+        <div className="rpg-ink-soft text-xs italic">Clique em alguem para conversar ou comerciar.</div>
+      )}
+
       <div className="rpg-card p-3 text-sm">
         <div className="flex flex-wrap items-center gap-2">
           <span className="font-semibold">Pronto para partir:</span>
