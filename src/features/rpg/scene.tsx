@@ -127,7 +127,7 @@ export function ChoiceMenu({
   return (
     <div className="space-y-2">
       {cena?.descricao ? (
-        <div className="rpg-card-scroll p-3 text-sm leading-relaxed whitespace-pre-wrap italic">
+        <div className="rpg-card-scroll p-4 text-base leading-relaxed whitespace-pre-wrap">
           {cena.descricao}
         </div>
       ) : null}
@@ -136,7 +136,7 @@ export function ChoiceMenu({
           <div className="rpg-title text-sm flex items-center justify-between">
             <span>Escolhas</span>
             {jaDecidiNesteRound ? (
-              <span className="rpg-ink-soft text-xs italic">escolhido — aguardando a mesa</span>
+              <span className="rpg-ink-soft text-xs">escolhido — aguardando a mesa</span>
             ) : null}
           </div>
           {[...grupos.entries()].map(([dim, lista]) => (
@@ -153,24 +153,18 @@ export function ChoiceMenu({
                       key={e.id}
                       className="rpg-btn text-sm text-left flex items-center justify-between gap-3"
                       disabled={desabilitado}
-                      onClick={() =>
-                        declararAcao({ tipo: "discursiva_controlada", esperada_id: e.id, texto: e.intencao })
-                      }
+                      onClick={() => {
+                        onPicked?.(e.id);
+                        declararAcao({ tipo: "discursiva_controlada", esperada_id: e.id, texto: e.intencao });
+                      }}
                       title={e.atributo ? `${e.atributo} CD ${e.dificuldade ?? "?"}` : undefined}
                       style={jaDecidiNesteRound ? { opacity: 0.55 } : undefined}
                     >
                       <span className="flex items-center gap-2">
-                        <span aria-hidden>{livre ? "👁" : "🎲"}</span>
+                        <span aria-hidden className={livre ? "rpg-ink-soft" : ""}>{livre ? "👁" : "🎲"}</span>
                         <span>{e.intencao}</span>
                       </span>
-                      {livre ? (
-                        <span
-                          className="text-[10px] px-1.5 py-0.5 rounded uppercase tracking-wide"
-                          style={{ background: "hsl(210 14% 88%)", color: "hsl(210 18% 30%)" }}
-                        >
-                          sem risco
-                        </span>
-                      ) : (
+                      {livre ? null : (
                         <span className="flex items-center gap-1">
                           {typeof e.chance === "number" ? (
                             <span
