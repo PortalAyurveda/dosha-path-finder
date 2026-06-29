@@ -88,7 +88,7 @@ export function ChatMesa() {
               <X size={14} />
             </button>
           </div>
-          <div className="px-3 py-1 text-[11px] rpg-ink-soft italic border-b" style={{ borderColor: "hsl(41 70% 50% / 0.2)" }}>
+          <div className="px-3 py-1 text-[11px] rpg-ink-soft border-b" style={{ borderColor: "hsl(41 70% 50% / 0.2)" }}>
             Conversa entre jogadores (OOC). A narracao do jogo fica na Cronica.
           </div>
           <div ref={listRef} className="flex-1 overflow-y-auto px-3 py-2 space-y-2">
@@ -109,7 +109,7 @@ export function ChatMesa() {
               );
             })}
             {!msgs.length ? (
-              <div className="rpg-ink-soft text-xs italic">Diga um "ola" pra mesa.</div>
+              <div className="rpg-ink-soft text-xs">Diga um "ola" pra mesa.</div>
             ) : null}
           </div>
           <form onSubmit={enviar} className="flex gap-1 p-2 border-t" style={{ borderColor: "hsl(41 70% 50% / 0.3)" }}>

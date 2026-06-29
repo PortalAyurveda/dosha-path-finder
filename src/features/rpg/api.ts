@@ -47,6 +47,13 @@ export const postDiscursiva = (player_id: string, texto: string) =>
 export const postCena = (player_id: string) =>
   postJson<any>("/rpg-cena", { player_id }, 30_000);
 
+export const postNpc = (player_id: string, npc_id: string, interacao_id: string) =>
+  postJson<{ ok: boolean; narrativa?: string; tipo?: string; npc?: any; loja?: any; dica?: string; error?: string }>(
+    "/rpg-npc",
+    { player_id, npc_id, interacao_id },
+    30_000,
+  );
+
 // Pipeline COMPLETO de geracao — pode levar 5-8 min.
 export const postGerarTudo = (historia: string) =>
   postJson<{ ok: boolean; campaign_id?: string; nome?: string; error?: string }>(
