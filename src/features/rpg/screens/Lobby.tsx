@@ -5,6 +5,7 @@ import { Copy, Crown, Loader2, Plus, Sparkles, Users } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useGame } from "../GameContext";
 import {
+  rpcCampanhasJogaveis,
   rpcClasseConfig,
   rpcCriarParty,
   rpcCriarPersonagem,
@@ -13,7 +14,9 @@ import {
   rpcIniciarJogo,
   rpcMarcarPronto,
   rpcMeusPersonagens,
+  rpcSalasAbertas,
 } from "../api";
+
 
 type Step =
   | { name: "loading" }
