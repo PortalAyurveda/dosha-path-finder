@@ -5,6 +5,7 @@ import { Copy, Crown, Loader2, Plus, Sparkles, Users } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useGame } from "../GameContext";
 import {
+  rpcCampanhasJogaveis,
   rpcClasseConfig,
   rpcCriarParty,
   rpcCriarPersonagem,
@@ -13,7 +14,9 @@ import {
   rpcIniciarJogo,
   rpcMarcarPronto,
   rpcMeusPersonagens,
+  rpcSalasAbertas,
 } from "../api";
+
 
 type Step =
   | { name: "loading" }
@@ -176,10 +179,38 @@ function EntryScreen({ user, onCreated }: { user: any; onCreated: (party_id: str
   const [err, setErr] = useState<string | null>(null);
   const [code, setCode] = useState("");
   const [joinCode, setJoinCode] = useState<string | null>(null);
+  const [campanhas, setCampanhas] = useState<Array<{ id: string; nome: string; resumo?: string }>>([]);
+  const [campanhaId, setCampanhaId] = useState<string>("");
+  const [isPublic, setIsPublic] = useState(true);
+  const [salas, setSalas] = useState<any[]>([]);
+
+  useEffect(() => {
+    rpcCampanhasJogaveis().then((r) => {
+      if (r.ok && Array.isArray(r.data)) {
+        setCampanhas(r.data);
+        if (r.data.length && !campanhaId) setCampanhaId(r.data[0].id);
+      }
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    let alive = true;
+    const tick = async () => {
+      const r = await rpcSalasAbertas();
+      if (!alive) return;
+      if (r.ok && Array.isArray(r.data)) setSalas(r.data);
+    };
+    tick();
+    const id = window.setInterval(tick, 4000);
+    return () => { alive = false; window.clearInterval(id); };
+  }, []);
+
+  const campanhaSel = campanhas.find((c) => c.id === campanhaId);
 
   const criar = async () => {
     setBusy(true); setErr(null);
-    const r: any = await rpcCriarParty(user.id);
+    const r: any = await rpcCriarParty(user.id, campanhaId || undefined, isPublic);
     if (!r.ok) { setErr(r.error); setBusy(false); return; }
     const d = r.data as any;
     setJoinCode(d.join_code);
@@ -197,37 +228,93 @@ function EntryScreen({ user, onCreated }: { user: any; onCreated: (party_id: str
     onCreated(d.party_id);
   };
 
+  const entrarSala = async (jc: string) => {
+    setBusy(true); setErr(null);
+    const r: any = await rpcEntrarParty(jc);
+    setBusy(false);
+    if (!r.ok) return setErr(r.error);
+    const d = r.data as any;
+    if (!d.ok || !d.party_id) return setErr(d.erro || "Mesa indisponivel");
+    onCreated(d.party_id);
+  };
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-3xl">
-      <div className="rpg-card-scroll p-5">
-        <h2 className="rpg-title text-xl mb-3 inline-flex items-center gap-2"><Sparkles size={18}/> Criar mesa</h2>
-        <p className="rpg-ink-soft mb-4 text-sm">Voce sera o mestre da sala. Convide ate 3 amigos com o codigo gerado.</p>
-        <button className="rpg-btn rpg-btn-primary" disabled={busy} onClick={criar}>
-          {busy ? <Loader2 className="animate-spin" size={14}/> : "Criar mesa"}
-        </button>
-        {joinCode ? (
-          <div className="mt-3 text-sm">
-            Codigo: <span className="font-mono font-bold">{joinCode}</span>
-          </div>
-        ) : null}
+    <div className="space-y-4 max-w-3xl">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="rpg-card-scroll p-5">
+          <h2 className="rpg-title text-xl mb-3 inline-flex items-center gap-2"><Sparkles size={18}/> Criar mesa</h2>
+          <label className="text-xs rpg-ink-soft uppercase block mb-1">Campanha</label>
+          <select
+            className="w-full px-2 py-2 mb-2"
+            value={campanhaId}
+            onChange={(e) => setCampanhaId(e.target.value)}
+            disabled={busy || !campanhas.length}
+          >
+            {campanhas.length === 0 ? <option value="">(sem campanhas)</option> : null}
+            {campanhas.map((c) => (
+              <option key={c.id} value={c.id}>{c.nome}</option>
+            ))}
+          </select>
+          {campanhaSel?.resumo ? (
+            <p className="rpg-ink-soft text-xs mb-3 italic">{campanhaSel.resumo}</p>
+          ) : null}
+          <label className="flex items-center gap-2 text-sm mb-3 cursor-pointer">
+            <input type="checkbox" checked={isPublic} onChange={(e) => setIsPublic(e.target.checked)} />
+            <span>{isPublic ? "Mesa publica (aparece no saguao)" : "Mesa privada (so por codigo)"}</span>
+          </label>
+          <button className="rpg-btn rpg-btn-primary" disabled={busy || !campanhaId} onClick={criar}>
+            {busy ? <Loader2 className="animate-spin" size={14}/> : "Criar mesa"}
+          </button>
+          {joinCode ? (
+            <div className="mt-3 text-sm">
+              Codigo: <span className="font-mono font-bold">{joinCode}</span>
+            </div>
+          ) : null}
+        </div>
+        <div className="rpg-card-scroll p-5">
+          <h2 className="rpg-title text-xl mb-3 inline-flex items-center gap-2"><Users size={18}/> Entrar com codigo</h2>
+          <input
+            className="w-full px-3 py-2 mb-3 font-mono uppercase tracking-widest"
+            value={code}
+            onChange={(e) => setCode(e.target.value.toUpperCase())}
+            placeholder="EX: 46F9A9"
+            maxLength={8}
+          />
+          <button className="rpg-btn" disabled={busy || !code.trim()} onClick={entrar}>
+            {busy ? <Loader2 className="animate-spin" size={14}/> : "Entrar"}
+          </button>
+          {err ? <div className="text-sm mt-2" style={{ color: "hsl(348 55% 32%)" }}>{err}</div> : null}
+        </div>
       </div>
+
       <div className="rpg-card-scroll p-5">
-        <h2 className="rpg-title text-xl mb-3 inline-flex items-center gap-2"><Users size={18}/> Entrar com codigo</h2>
-        <input
-          className="w-full px-3 py-2 mb-3 font-mono uppercase tracking-widest"
-          value={code}
-          onChange={(e) => setCode(e.target.value.toUpperCase())}
-          placeholder="EX: 46F9A9"
-          maxLength={8}
-        />
-        <button className="rpg-btn" disabled={busy || !code.trim()} onClick={entrar}>
-          {busy ? <Loader2 className="animate-spin" size={14}/> : "Entrar"}
-        </button>
-        {err ? <div className="text-sm mt-2" style={{ color: "hsl(348 55% 32%)" }}>{err}</div> : null}
+        <h2 className="rpg-title text-lg mb-3 inline-flex items-center gap-2"><Users size={16}/> Mesas abertas</h2>
+        {salas.length === 0 ? (
+          <p className="rpg-ink-soft text-sm">Nenhuma mesa publica aberta no momento.</p>
+        ) : (
+          <ul className="space-y-2">
+            {salas.map((s) => (
+              <li key={s.party_id} className="rpg-card p-3 flex items-center justify-between gap-3 flex-wrap">
+                <div className="text-sm">
+                  <div className="font-semibold">
+                    {s.campanha ?? "Campanha"} <span className="rpg-ink-soft">· {s.n_jogadores}/{s.max}</span>
+                  </div>
+                  <div className="rpg-ink-soft text-xs">
+                    host: {s.host ?? "?"}{Array.isArray(s.jogadores) && s.jogadores.length ? " · " + s.jogadores.map((j: any) => `${j.nome}·${j.classe}`).join(", ") : ""}
+                  </div>
+                </div>
+                <button className="rpg-btn text-xs" disabled={busy || (s.vagas ?? 0) <= 0} onClick={() => entrarSala(s.join_code)}>
+                  {(s.vagas ?? 0) <= 0 ? "Cheia" : "Entrar"}
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
     </div>
   );
 }
+
 
 // ----- Criar personagem -----
 const CLASSES: { id: "guerreiro" | "arqueiro" | "mago"; nome: string; desc: string }[] = [

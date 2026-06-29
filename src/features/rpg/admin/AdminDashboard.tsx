@@ -69,12 +69,13 @@ const META = { quests: 8, salas: 40, nos: 12, cidades: 4 };
 
 function ForjaTab() {
   const [historia, setHistoria] = useState("");
-  const [phase, setPhase] = useState<"idle" | "disparando" | "gerando" | "pronto" | "erro">("idle");
+  const [phase, setPhase] = useState<"idle" | "disparando" | "iniciando" | "gerando" | "pronto" | "erro">("idle");
   const [errMsg, setErrMsg] = useState<string>("");
   const [status, setStatus] = useState<ForjaStatus>({});
   const [elapsed, setElapsed] = useState(0);
   const timerRef = useRef<number | null>(null);
   const pollRef = useRef<number | null>(null);
+  const prevIdRef = useRef<string | null>(null);
 
   useEffect(() => () => {
     if (timerRef.current) window.clearInterval(timerRef.current);
@@ -85,13 +86,19 @@ function ForjaTab() {
     if (pollRef.current) window.clearInterval(pollRef.current);
     const tick = async () => {
       const r: any = await rpgRpc<ForjaStatus>("status_geracao", {});
-      if (r.ok && r.data) {
-        setStatus(r.data);
-        if (r.data.finalizada) {
-          if (pollRef.current) window.clearInterval(pollRef.current);
-          if (timerRef.current) window.clearInterval(timerRef.current);
-          setPhase("pronto");
-        }
+      if (!r.ok || !r.data) return;
+      const s: ForjaStatus = r.data;
+      const novoNasceu = !!s.campaign_id && s.campaign_id !== prevIdRef.current;
+      if (!novoNasceu) {
+        // Ainda e a campanha velha; ignora finalizada.
+        setPhase("iniciando");
+        return;
+      }
+      setStatus(s);
+      setPhase(s.finalizada ? "pronto" : "gerando");
+      if (s.finalizada) {
+        if (pollRef.current) window.clearInterval(pollRef.current);
+        if (timerRef.current) window.clearInterval(timerRef.current);
       }
     };
     tick();
@@ -106,30 +113,33 @@ function ForjaTab() {
     if (timerRef.current) window.clearInterval(timerRef.current);
     timerRef.current = window.setInterval(() => setElapsed((s) => s + 1), 1000);
 
+    // 1) Snapshot do id atual (campanha velha) ANTES de disparar.
+    const prev: any = await rpgRpc<ForjaStatus>("status_geracao", {});
+    prevIdRef.current = prev.ok && prev.data?.campaign_id ? prev.data.campaign_id : null;
+
+    // 2) Dispara webhook (n8n responde NA HORA).
     const r: any = await postGerarTudo(historia.trim());
-    // Tratar como simples "disparo ok" — n8n responde NA HORA com { ok:true, status:"gerando" }
-    if (r.ok) {
-      setPhase("gerando");
-      startPolling();
-    } else {
-      // Mesmo em caso de timeout/falha aparente, pode estar gerando — comecar a pollar.
-      setPhase("gerando");
-      setErrMsg(`Webhook retornou erro (${r.error}); seguindo via polling.`);
-      startPolling();
+    if (!r.ok) {
+      setPhase("erro");
+      setErrMsg(r.error || "Falha ao disparar webhook");
+      if (timerRef.current) window.clearInterval(timerRef.current);
+      return;
     }
+    setPhase("iniciando");
+    startPolling();
   };
 
   const pct = (n: number | undefined, alvo: number) =>
     Math.min(100, Math.round(((n ?? 0) / alvo) * 100));
 
-  const loading = phase === "disparando" || phase === "gerando";
+  const loading = phase === "disparando" || phase === "iniciando" || phase === "gerando";
 
   return (
     <div className="rpg-card-scroll p-4 md:p-6 max-w-3xl">
       <h2 className="rpg-title text-xl mb-2">Forjar novo mundo</h2>
       <p className="rpg-ink-soft text-sm mb-3">
         Descreva a premissa. O webhook dispara o pipeline (bioma → cidades → NPCs → quests → salas → mapa → bestiario → cardapio v3 → eventos)
-        e responde NA HORA. O painel acompanha o progresso por polling (~4 min ate finalizar).
+        e responde NA HORA. O painel acompanha o progresso por polling (~8-10 min ate finalizar).
       </p>
       <textarea
         rows={8}
@@ -143,12 +153,17 @@ function ForjaTab() {
         <button className="rpg-btn rpg-btn-primary inline-flex items-center gap-2" disabled={loading || !historia.trim()} onClick={gerar}>
           {loading ? <><Loader2 className="animate-spin" size={14}/> {phase === "disparando" ? "Disparando..." : `Forjando (${Math.floor(elapsed/60)}m ${elapsed % 60}s)`}</> : <><Sparkles size={14}/> Forjar mundo</>}
         </button>
-        {phase === "gerando" ? <span className="text-sm rpg-ink-soft">Pacientemente fiando o tear... pode acompanhar abaixo.</span> : null}
+        {phase === "iniciando" ? <span className="text-sm rpg-ink-soft">Iniciando a forja...</span> : null}
+        {phase === "gerando" ? <span className="text-sm rpg-ink-soft">Pacientemente fiando o tear...</span> : null}
       </div>
+
+      {phase === "erro" ? (
+        <div className="mt-3 text-sm" style={{ color: "hsl(348 55% 32%)" }}>{errMsg}</div>
+      ) : null}
 
       {phase === "gerando" ? (
         <div className="mt-4 space-y-3">
-          {errMsg ? <div className="text-xs rpg-ink-soft">{errMsg}</div> : null}
+          {status.nome ? <div className="text-sm">Forjando: <b>{status.nome}</b></div> : null}
           {(["quests","salas","nos","cidades"] as const).map((k) => (
             <div key={k}>
               <div className="flex justify-between text-xs rpg-ink-soft mb-1">
@@ -158,7 +173,6 @@ function ForjaTab() {
               <Progress value={pct(status[k], META[k])} />
             </div>
           ))}
-          {status.nome ? <div className="text-sm">Forjando: <b>{status.nome}</b></div> : null}
         </div>
       ) : null}
 
@@ -170,13 +184,14 @@ function ForjaTab() {
           <div className="text-xs">quests: {status.quests ?? 0} · salas: {status.salas ?? 0} · nos: {status.nos ?? 0} · cidades: {status.cidades ?? 0}</div>
           <div className="flex gap-2 pt-1">
             <a href="/rpg" className="rpg-btn rpg-btn-primary text-xs">Jogar</a>
-            <button className="rpg-btn text-xs" onClick={() => { setPhase("idle"); setStatus({}); setHistoria(""); }}>Forjar outro</button>
+            <button className="rpg-btn text-xs" onClick={() => { setPhase("idle"); setStatus({}); setHistoria(""); prevIdRef.current = null; }}>Forjar outro</button>
           </div>
         </div>
       ) : null}
     </div>
   );
 }
+
 
 // ---------- Tabela generica ----------
 function Table({ table, columns, order }: { table: string; columns: string[]; order?: string }) {
