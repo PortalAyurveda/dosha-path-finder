@@ -3,6 +3,7 @@ import { Helmet } from "react-helmet-async";
 import { GameProvider, useGame } from "./GameContext";
 import { LobbyFlow } from "./screens/Lobby";
 import { City, Combat, Defeat, Exploration, Quest } from "./screens/Game";
+import { ChatMesa } from "./ChatMesa";
 
 function Switcher() {
   const { estado, mode, player } = useGame();
