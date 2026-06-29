@@ -14,6 +14,7 @@ import {
   rpcIniciarJogo,
   rpcMarcarPronto,
   rpcMeusPersonagens,
+  rpcSairParty,
   rpcSalasAbertas,
 } from "../api";
 
