@@ -108,6 +108,28 @@ interface GameShellProps {
   freeMode?: "round" | "livre";
 }
 
+export function SessionBar() {
+  const { player, clearSession } = useGame();
+  const navigate = useNavigate();
+  const sair = async () => {
+    if (!player) return;
+    if (!confirm("Sair da mesa? Voce perde este personagem.")) return;
+    await rpcSairParty(player.player_id);
+    clearSession();
+    navigate("/rpg");
+  };
+  return (
+    <div className="flex justify-end gap-2 text-xs">
+      <button className="rpg-btn inline-flex items-center gap-1" onClick={() => navigate("/")}>
+        <Home size={12}/> Voltar ao menu
+      </button>
+      <button className="rpg-btn inline-flex items-center gap-1" onClick={sair}>
+        <DoorOpen size={12}/> Sair da mesa
+      </button>
+    </div>
+  );
+}
+
 export function GameShell({
   children,
   showCardapio = true,
@@ -126,6 +148,7 @@ export function GameShell({
   }
   return (
     <div className="space-y-3">
+      <SessionBar />
       <Hud />
       <PartyBar />
       {showTurnoBanner ? <TurnoBanner estado={estado} /> : null}
