@@ -69,7 +69,13 @@ const ROTULO_STYLE: Record<string, { bg: string; fg: string }> = {
 };
 
 // Cardapio de acoes da cena (ja filtrado pela classe do jogador no backend).
-export function ChoiceMenu() {
+export function ChoiceMenu({
+  onCardapio,
+  onPicked,
+}: {
+  onCardapio?: (esperadas: Esperada[]) => void;
+  onPicked?: (esperada_id: string) => void;
+} = {}) {
   const { player, estado, declararAcao, loading, jaDecidiNesteRound } = useGame();
   const [data, setData] = useState<{ esperadas?: Esperada[]; cena?: any } | null>(null);
   const [carregando, setCarregando] = useState(false);
@@ -81,12 +87,17 @@ export function ChoiceMenu() {
     setCarregando(true);
     rpgRpc<any>("cardapio_discursiva", { p_player_id: player.player_id }).then((r) => {
       if (!alive) return;
-      if (r.ok) setData(r.data ?? null);
+      if (r.ok) {
+        setData(r.data ?? null);
+        const list = (r.data?.esperadas ?? []) as Esperada[];
+        onCardapio?.(list);
+      }
       setCarregando(false);
     });
     return () => {
       alive = false;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [player?.player_id, key]);
 
   const esperadas = (data?.esperadas ?? []) as Esperada[];
