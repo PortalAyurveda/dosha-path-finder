@@ -52,7 +52,7 @@ const DIM_LABEL: Record<string, string> = {
 
 // Cardapio de acoes da cena (ja filtrado pela classe do jogador no backend).
 export function ChoiceMenu() {
-  const { player, estado, acao, loading } = useGame();
+  const { player, estado, declararAcao, loading, jaDecidiNesteRound } = useGame();
   const [data, setData] = useState<{ esperadas?: Esperada[] } | null>(null);
   const [carregando, setCarregando] = useState(false);
   const key = sceneKey(estado, (estado?.modo as string) ?? null);
@@ -90,11 +90,16 @@ export function ChoiceMenu() {
     grupos.get(dim)!.push(e);
   }
 
-  const podeAgir = meuTurno(estado);
+  const desabilitado = loading || jaDecidiNesteRound;
 
   return (
     <div className="rpg-card p-3 space-y-2">
-      <div className="rpg-title text-sm">Escolhas</div>
+      <div className="rpg-title text-sm flex items-center justify-between">
+        <span>Escolhas</span>
+        {jaDecidiNesteRound ? (
+          <span className="rpg-ink-soft text-xs italic">escolhido — aguardando a mesa</span>
+        ) : null}
+      </div>
       {[...grupos.entries()].map(([dim, lista]) => (
         <div key={dim}>
           {grupos.size > 1 ? (
@@ -105,9 +110,12 @@ export function ChoiceMenu() {
               <button
                 key={e.id}
                 className="rpg-btn text-sm"
-                disabled={loading || !podeAgir}
-                onClick={() => acao({ tipo: "discursiva_controlada", esperada_id: e.id })}
+                disabled={desabilitado}
+                onClick={() =>
+                  declararAcao({ tipo: "discursiva_controlada", esperada_id: e.id, texto: e.intencao })
+                }
                 title={e.dimensao ?? undefined}
+                style={jaDecidiNesteRound ? { opacity: 0.55 } : undefined}
               >
                 {e.intencao}
               </button>
@@ -118,6 +126,7 @@ export function ChoiceMenu() {
     </div>
   );
 }
+
 
 // Cronica da mesa: chatlog, recolhivel, com layout estilo conversa.
 export function Cronica() {
