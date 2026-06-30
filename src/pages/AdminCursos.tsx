@@ -428,8 +428,7 @@ const AulaEditor = ({
   );
 };
 
-// Contexto pra passar cursoId pro AulaEditor sem prop drilling de quem renderiza dentro do módulo
-import { createContext } from "react";
+// Contexto pra passar cursoId pro AulaEditor sem prop drilling
 const CursoIdContext = createContext<string>("");
 
 // ============= EDITAR MÓDULO =============
