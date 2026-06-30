@@ -4656,6 +4656,7 @@ export type Database = {
         Returns: undefined
       }
       rpg_admin_select: { Args: { _table: string }; Returns: Json }
+      rpg_play: { Args: { _args?: Json; _fn: string }; Returns: Json }
       rpg_rpc: { Args: { _args?: Json; _fn: string }; Returns: Json }
       text_to_bytea: { Args: { data: string }; Returns: string }
       unaccent: { Args: { "": string }; Returns: string }
