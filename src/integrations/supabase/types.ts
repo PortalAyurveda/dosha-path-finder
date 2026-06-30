@@ -900,6 +900,165 @@ export type Database = {
         }
         Relationships: []
       }
+      curso_aulas: {
+        Row: {
+          created_at: string
+          descricao: string | null
+          duracao_segundos: number | null
+          id: string
+          modulo_id: string
+          ordem: number
+          titulo: string
+          updated_at: string
+          youtube_url: string | null
+        }
+        Insert: {
+          created_at?: string
+          descricao?: string | null
+          duracao_segundos?: number | null
+          id?: string
+          modulo_id: string
+          ordem?: number
+          titulo: string
+          updated_at?: string
+          youtube_url?: string | null
+        }
+        Update: {
+          created_at?: string
+          descricao?: string | null
+          duracao_segundos?: number | null
+          id?: string
+          modulo_id?: string
+          ordem?: number
+          titulo?: string
+          updated_at?: string
+          youtube_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "curso_aulas_modulo_id_fkey"
+            columns: ["modulo_id"]
+            isOneToOne: false
+            referencedRelation: "curso_modulos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      curso_materiais: {
+        Row: {
+          aula_id: string
+          created_at: string
+          id: string
+          ordem: number
+          storage_path: string | null
+          tipo: string
+          titulo: string
+          url: string | null
+        }
+        Insert: {
+          aula_id: string
+          created_at?: string
+          id?: string
+          ordem?: number
+          storage_path?: string | null
+          tipo?: string
+          titulo: string
+          url?: string | null
+        }
+        Update: {
+          aula_id?: string
+          created_at?: string
+          id?: string
+          ordem?: number
+          storage_path?: string | null
+          tipo?: string
+          titulo?: string
+          url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "curso_materiais_aula_id_fkey"
+            columns: ["aula_id"]
+            isOneToOne: false
+            referencedRelation: "curso_aulas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      curso_modulos: {
+        Row: {
+          created_at: string
+          curso_id: string
+          descricao: string | null
+          id: string
+          ordem: number
+          titulo: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          curso_id: string
+          descricao?: string | null
+          id?: string
+          ordem?: number
+          titulo: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          curso_id?: string
+          descricao?: string | null
+          id?: string
+          ordem?: number
+          titulo?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "curso_modulos_curso_id_fkey"
+            columns: ["curso_id"]
+            isOneToOne: false
+            referencedRelation: "cursos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cursos: {
+        Row: {
+          ativo: boolean
+          capa_url: string | null
+          created_at: string
+          descricao: string | null
+          id: string
+          ordem: number
+          slug: string
+          titulo: string
+          updated_at: string
+        }
+        Insert: {
+          ativo?: boolean
+          capa_url?: string | null
+          created_at?: string
+          descricao?: string | null
+          id?: string
+          ordem?: number
+          slug: string
+          titulo: string
+          updated_at?: string
+        }
+        Update: {
+          ativo?: boolean
+          capa_url?: string | null
+          created_at?: string
+          descricao?: string | null
+          id?: string
+          ordem?: number
+          slug?: string
+          titulo?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       devlog: {
         Row: {
           criado_em: string | null
