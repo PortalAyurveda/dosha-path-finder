@@ -13,6 +13,7 @@ const links = [
   { to: "/admin/biblioteca", label: "Biblioteca", icon: Library },
   { to: "/admin/banners", label: "Banners", icon: LayoutTemplate },
   { to: "/admin/cupons", label: "Cupons", icon: Ticket },
+  { to: "/admin/cursos", label: "Cursos", icon: BookOpen },
   { to: "/admin/escola", label: "Escola", icon: GraduationCap },
   { to: "/admin/devlog", label: "Devlog", icon: History },
   { to: "/admin/financeiro", label: "Financeiro", icon: DollarSign },
