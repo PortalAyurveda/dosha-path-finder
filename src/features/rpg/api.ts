@@ -1,16 +1,133 @@
-// API helpers do modulo RPG.
-// - rpgRpc: chama funcoes Postgres do schema `rpg` (PostgREST).
-// - webhooks: chama n8n; SEMPRE com fallback para RPC quando o webhook cair.
+// Gateway de API do módulo RPG.
+// - rpg(fn,args): RPC pública sem auth (rpg_play).
+// - webhooks n8n: /rpg-cena, /rpg-acao, /rpg-npc (narração + estado).
+// - Legacy helpers pro AdminDashboard (rpg_rpc / rpg_admin_select / postGerarTudo / chatlog).
 import { supabase } from "@/integrations/supabase/client";
-import { rpgRpc as rpgRpcRaw } from "@/integrations/supabase/rpg-client";
 
+const SUPABASE_URL = "https://fwezkasjfguarjmjxifh.supabase.co";
+const PUBLISHABLE =
+  "sb_publishable_B-AA5YM5VnjbAKgmKkq10g_jtVZLtiK";
 const WEBHOOK_BASE = "https://n8n.portalayurveda.com/webhook";
 
+// ---------- Storage / identidade ----------
+export const STORAGE = {
+  userId: "rpg_user_id",
+  playerId: "rpg_player_id",
+  partyId: "rpg_party_id",
+  joinCode: "rpg_join_code",
+  onboarding: "rpg_onboarding_seen",
+} as const;
 
+function uuidv4(): string {
+  if (typeof crypto !== "undefined" && "randomUUID" in crypto) return crypto.randomUUID();
+  // fallback
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0;
+    return (c === "x" ? r : (r & 0x3) | 0x8).toString(16);
+  });
+}
 
+export function getOrCreateUserId(): string {
+  if (typeof window === "undefined") return "";
+  let id = localStorage.getItem(STORAGE.userId);
+  if (!id) {
+    id = uuidv4();
+    localStorage.setItem(STORAGE.userId, id);
+  }
+  return id;
+}
+
+export const store = {
+  get: (k: string) => (typeof window === "undefined" ? null : localStorage.getItem(k)),
+  set: (k: string, v: string | null) => {
+    if (typeof window === "undefined") return;
+    if (v === null || v === undefined) localStorage.removeItem(k);
+    else localStorage.setItem(k, v);
+  },
+};
+
+// ---------- RPC público ----------
+export async function rpg<T = any>(fn: string, args: Record<string, any> = {}): Promise<T> {
+  const r = await fetch(`${SUPABASE_URL}/rest/v1/rpc/rpg_play`, {
+    method: "POST",
+    headers: {
+      apikey: PUBLISHABLE,
+      Authorization: `Bearer ${PUBLISHABLE}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ _fn: fn, _args: args }),
+  });
+  if (!r.ok) throw new Error(`HTTP ${r.status}`);
+  return (await r.json()) as T;
+}
+
+// ---------- Webhooks n8n (narração) ----------
+async function webhook<T = any>(path: string, body: any, timeoutMs = 60_000): Promise<T> {
+  const ctrl = new AbortController();
+  const tid = setTimeout(() => ctrl.abort(), timeoutMs);
+  try {
+    const r = await fetch(`${WEBHOOK_BASE}${path}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+      signal: ctrl.signal,
+    });
+    let data: any = null;
+    try {
+      data = await r.json();
+    } catch {
+      return { ok: false, erro: "resposta invalida" } as any;
+    }
+    if (!r.ok) return { ok: false, erro: data?.erro || data?.error || `HTTP ${r.status}` } as any;
+    return data as T;
+  } catch (e: any) {
+    return { ok: false, erro: e?.message || "falha de rede" } as any;
+  } finally {
+    clearTimeout(tid);
+  }
+}
+
+export const webhookCena = (player_id: string) => webhook("/rpg-cena", { player_id }, 30_000);
+export const webhookAcao = (player_id: string, acao: any) =>
+  webhook("/rpg-acao", { player_id, acao }, 60_000);
+export const webhookNpc = (player_id: string, npc_id: string, interacao_id: string) =>
+  webhook("/rpg-npc", { player_id, npc_id, interacao_id }, 30_000);
+
+// ---------- Tradução de erros ----------
+const ERROR_MAP: Array<[RegExp, string]> = [
+  [/codigo\s+invalido|join.*invalido|not\s+found.*(code|codigo)/i, "Código não encontrado"],
+  [/(party|mesa).*(cheia|full)/i, "Mesa cheia"],
+  [/mana.*insuficiente/i, "Mana insuficiente"],
+  [/(fora\s+de\s+alcance|out\s+of\s+range|longe\s+demais)/i, "Longe demais — mova-se para perto"],
+  [/ouro.*insuficiente|gold.*insufficient/i, "Ouro insuficiente"],
+  [/nao\s+e\s+seu\s+turno|not\s+your\s+turn/i, "Não é seu turno"],
+  [/cooldown/i, "Skill em recarga"],
+  [/estoque|out\s+of\s+stock/i, "Sem estoque"],
+  [/ja\s+existe|classe.*ocupada|slot.*taken/i, "Essa classe já foi escolhida"],
+  [/orphan|nao\s+existe|inexistente/i, "Personagem não existe mais"],
+];
+
+export function translateError(msg: string | undefined | null): string {
+  if (!msg) return "Algo deu errado, tente de novo";
+  for (const [re, out] of ERROR_MAP) if (re.test(msg)) return out;
+  return msg.length < 80 ? msg : "Algo deu errado, tente de novo";
+}
+
+// ---------- Legacy helpers usados pelo AdminDashboard ----------
 type RpcResult<T> = { ok: true; data: T } | { ok: false; error: string };
 
-export const rpgRpc = rpgRpcRaw;
+export async function rpgRpc<T = any>(fn: string, args: Record<string, unknown> = {}): Promise<RpcResult<T>> {
+  const { data, error } = await (supabase as any).rpc("rpg_rpc", { _fn: fn, _args: args });
+  if (error) return { ok: false, error: error.message || "Erro no RPG" };
+  if (data?.ok === false && typeof data.error === "string") return { ok: false, error: data.error };
+  return { ok: true, data: data as T };
+}
+
+export async function adminSelect<T = any>(table: string): Promise<RpcResult<T[]>> {
+  const { data, error } = await (supabase as any).rpc("rpg_admin_select", { _table: table });
+  if (error) return { ok: false, error: error.message };
+  return { ok: true, data: (Array.isArray(data) ? data : []) as T[] };
+}
 
 async function postJson<T>(path: string, body: unknown, timeoutMs = 60_000): Promise<RpcResult<T>> {
   const ctrl = new AbortController();
@@ -37,24 +154,6 @@ async function postJson<T>(path: string, body: unknown, timeoutMs = 60_000): Pro
   }
 }
 
-// ----- Webhooks principais -----
-export const postAcao = (player_id: string, acao: any) =>
-  postJson<any>("/rpg-acao", { player_id, acao }, 45_000);
-
-export const postDiscursiva = (player_id: string, texto: string) =>
-  postJson<any>("/rpg-discursiva", { player_id, texto }, 60_000);
-
-export const postCena = (player_id: string) =>
-  postJson<any>("/rpg-cena", { player_id }, 30_000);
-
-export const postNpc = (player_id: string, npc_id: string, interacao_id: string) =>
-  postJson<{ ok: boolean; narrativa?: string; tipo?: string; npc?: any; loja?: any; dica?: string; error?: string }>(
-    "/rpg-npc",
-    { player_id, npc_id, interacao_id },
-    30_000,
-  );
-
-// Pipeline COMPLETO de geracao — pode levar 5-8 min.
 export const postGerarTudo = (historia: string) =>
   postJson<{ ok: boolean; campaign_id?: string; nome?: string; error?: string }>(
     "/rpg-gerar-tudo",
@@ -62,79 +161,4 @@ export const postGerarTudo = (historia: string) =>
     10 * 60_000,
   );
 
-// ----- Atalhos RPC mais usados -----
-export const rpcMeusPersonagens = (user_id: string) => rpgRpc("meus_personagens", { p_user_id: user_id });
-export const rpcCampanhasJogaveis = () =>
-  rpgRpc<Array<{ id: string; nome: string; resumo?: string }>>("campanhas_jogaveis", {});
-export const rpcSalasAbertas = () =>
-  rpgRpc<Array<any>>("salas_abertas", {});
-export const rpcCriarParty = (
-  host_user_id: string,
-  campaign_id: string,
-  is_public: boolean = true,
-) =>
-  rpgRpc<{ ok: boolean; party_id: string; join_code: string }>("criar_party", {
-    p_campaign_id: campaign_id,
-    p_host_user_id: host_user_id,
-    p_max: 4,
-    p_is_public: is_public,
-  });
-export const rpcSairParty = (player_id: string) =>
-  rpgRpc<{ ok: boolean }>("sair_party", { p_player_id: player_id });
-export const rpcDeclararAcao = (player_id: string, acao: any) =>
-  rpgRpc<any>("declarar_acao", { p_player_id: player_id, p_acao: acao });
-export const postRound = (party_id: string) =>
-  postJson<any>("/rpg-round", { party_id }, 60_000);
-
-export const rpcEnviarChat = (player_id: string, mensagem: string) =>
-  rpgRpc("enviar_chat", { p_player_id: player_id, p_mensagem: mensagem });
-export const rpcChatMesa = (party_id: string) =>
-  rpgRpc<Array<{ quando: string; player_id: string; nome: string; classe?: string; mensagem: string }>>(
-    "chat_mesa",
-    { p_party_id: party_id },
-  );
-
-export const rpcEntrarParty = (join_code: string) =>
-  rpgRpc<{ ok: boolean; party_id?: string; vagas?: number; erro?: string }>("entrar_party", {
-    p_join_code: join_code.toUpperCase().trim(),
-  });
-export const rpcEstadoParty = (party_id: string) => rpgRpc("estado_party", { p_party_id: party_id });
-export const rpcMarcarPronto = (player_id: string, ready: boolean) =>
-  rpgRpc("marcar_pronto", { p_player_id: player_id, p_ready: ready });
-export const rpcIniciarJogo = (party_id: string, host_user_id: string) =>
-  rpgRpc("iniciar_jogo", { p_party_id: party_id, p_host_user_id: host_user_id });
-export const rpcCenaAtual = (player_id: string) => rpgRpc("cena_atual", { p_player_id: player_id });
-export const rpcClasseConfig = (classe: string) =>
-  rpgRpc<{ base: Record<string, number>; caps: Record<string, number>; pontos_livres: number; base_hp: number; base_mp: number }>(
-    "classe_config",
-    { p_classe: classe },
-  );
-export const rpcCriarPersonagem = (
-  party_id: string,
-  user_id: string,
-  nome: string,
-  classe: string,
-  pontos: Record<string, number>,
-) =>
-  rpgRpc<{ ok: boolean; player_id: string; seat: number }>("criar_personagem", {
-    p_party_id: party_id,
-    p_user_id: user_id,
-    p_nome: nome,
-    p_classe: classe,
-    p_pontos: pontos,
-  });
-export const rpcInventario = (player_id: string) => rpgRpc("inventario", { p_player_id: player_id });
-export const rpcEquipar = (player_id: string, item_instance_id: string) =>
-  rpgRpc("equipar", { p_player_id: player_id, p_item_instance_id: item_instance_id });
-export const rpcDesequipar = (player_id: string, item_instance_id: string) =>
-  rpgRpc("desequipar", { p_player_id: player_id, p_item_instance_id: item_instance_id });
-export const rpcMapa = (player_id: string) => rpgRpc("mapa", { p_player_id: player_id });
 export const rpcChatlog = (party_id: string) => rpgRpc("chatlog", { p_party_id: party_id });
-export const rpcEventoPendente = (player_id: string) => rpgRpc("evento_pendente", { p_player_id: player_id });
-
-// Admin (leitura de tabelas rpg.* via funcao publica criada anteriormente).
-export const adminSelect = async <T = any>(table: string): Promise<RpcResult<T[]>> => {
-  const { data, error } = await (supabase as any).rpc("rpg_admin_select", { _table: table });
-  if (error) return { ok: false, error: error.message };
-  return { ok: true, data: (Array.isArray(data) ? data : []) as T[] };
-};
