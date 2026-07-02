@@ -3453,6 +3453,7 @@ export type Database = {
           "terapeutas(dinamica)": string | null
           title: string | null
           "updated date": string | null
+          user_id: string | null
           website: string | null
           whatsapp: string | null
         }
@@ -3475,6 +3476,7 @@ export type Database = {
           "terapeutas(dinamica)"?: string | null
           title?: string | null
           "updated date"?: string | null
+          user_id?: string | null
           website?: string | null
           whatsapp?: string | null
         }
@@ -3497,6 +3499,7 @@ export type Database = {
           "terapeutas(dinamica)"?: string | null
           title?: string | null
           "updated date"?: string | null
+          user_id?: string | null
           website?: string | null
           whatsapp?: string | null
         }
@@ -4524,6 +4527,7 @@ export type Database = {
       }
     }
     Functions: {
+      admin_dashboard_resumo: { Args: never; Returns: Json }
       admin_set_portal_conteudo_destaques: {
         Args: { _ids: string[] }
         Returns: {
