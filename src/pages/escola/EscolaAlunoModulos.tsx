@@ -332,8 +332,9 @@ const Conteudo = ({ aluno }: { aluno: AlunoRow }) => {
       setLoading(true);
       const { data } = await supabase
         .from("escola_modulos")
-        .select("id,numero,semestre,titulo,tipo,data_inicio,data_fim,slug,liberado")
+        .select("id,numero,semestre,titulo,tipo,data_inicio,data_fim,slug,liberado,palette_key")
         .order("numero", { ascending: true });
+
       setModulos((data ?? []) as Modulo[]);
       setLoading(false);
     })();
