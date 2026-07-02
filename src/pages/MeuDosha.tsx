@@ -1,11 +1,11 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { trackPixel } from "@/lib/metaPixel";
 import PageContainer from "@/components/PageContainer";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, ChevronDown, ChevronUp, Calendar, Play, BookOpen, Brain, LineChart, Lock, RefreshCw } from "lucide-react";
+import { Loader2, ChevronDown, ChevronUp, Calendar, CalendarDays, Play, Video as VideoIcon, BookOpen, Brain, LineChart, Lock, RefreshCw, ChevronRight } from "lucide-react";
 import EvolucaoSheet from "@/components/meudosha/EvolucaoSheet";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -20,6 +20,9 @@ import AkashaTab from "@/components/meudosha/AkashaTab";
 import RetesteCard from "@/components/meudosha/RetesteCard";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 import { useUser } from "@/contexts/UserContext";
+import { useEscolaAluno } from "@/hooks/useEscolaAluno";
+import { getPaletteBranding } from "@/data/landingPalettes";
+import { formatModuloFimDeSemana, formatModuloHorarios } from "@/lib/escolaModuloDatas";
 
 interface DoshaResult {
   nome: string | null;
@@ -230,6 +233,118 @@ function isValidContent(content: string | null): boolean {
 }
 
 const LEVEL_LABELS = ['Fixado', 'Adoecido', 'Acúmulo', 'Normal', 'Pouco'];
+
+type Modulo = {
+  id: string;
+  numero: number;
+  semestre: number | null;
+  titulo: string;
+  tipo: string;
+  data_inicio: string;
+  data_fim: string;
+  zoom_url: string | null;
+  slug: string | null;
+  liberado: boolean;
+};
+
+const pickCurrentModulo = (mods: Modulo[]): Modulo | null => {
+  if (mods.length === 0) return null;
+  const now = Date.now();
+  const emCurso = mods.find((m) => {
+    const start = new Date(m.data_inicio).getTime();
+    const end = new Date(m.data_fim).getTime();
+    return start <= now && now <= end;
+  });
+  if (emCurso) return emCurso;
+  const futuros = mods
+    .filter((m) => new Date(m.data_inicio).getTime() > now)
+    .sort((a, b) => +new Date(a.data_inicio) - +new Date(b.data_inicio));
+  if (futuros[0]) return futuros[0];
+  const passados = mods
+    .filter((m) => new Date(m.data_fim).getTime() < now)
+    .sort((a, b) => +new Date(b.data_fim) - +new Date(a.data_fim));
+  return passados[0] ?? mods[0];
+};
+
+const FormacaoDestaqueCard = () => {
+  const { aluno } = useEscolaAluno();
+  const [modulos, setModulos] = useState<Modulo[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const load = useCallback(async () => {
+    if (!aluno) {
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
+    const { data } = await supabase
+      .from("escola_modulos")
+      .select("id,numero,semestre,titulo,tipo,data_inicio,data_fim,zoom_url,slug,liberado")
+      .order("numero", { ascending: true });
+    setModulos((data ?? []) as Modulo[]);
+    setLoading(false);
+  }, [aluno]);
+
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  if (!aluno || loading) return null;
+
+  const atual = pickCurrentModulo(modulos);
+  const theme = getPaletteBranding("formacao-azul");
+
+  return (
+    <div
+      className="relative overflow-hidden rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm border bg-white"
+      style={{ borderColor: `${theme.primaryColor}33` }}
+    >
+      <div
+        className="absolute top-0 left-0 right-0 h-1.5"
+        style={{ background: theme.primaryColor }}
+      />
+      <img
+        src="https://api.portalayurveda.com/storage/v1/object/public/portal_images/simbolo-positivo-mono.webp"
+        alt=""
+        aria-hidden
+        className="absolute right-0 top-1/2 -translate-y-1/2 h-[110%] w-auto opacity-[0.09] pointer-events-none"
+      />
+      <div className="relative p-5 md:p-6 space-y-3">
+        <div className="flex items-center gap-2 text-xs uppercase tracking-wider" style={{ color: theme.primaryColor }}>
+          <CalendarDays className="w-3.5 h-3.5" />
+          <span>Formação em Ayurveda</span>
+        </div>
+        <h2
+          className="font-serif text-xl md:text-2xl font-bold italic leading-snug"
+          style={{ color: theme.darkColor }}
+        >
+          Sua Formação em Ayurveda
+        </h2>
+        {atual ? (
+          <div className="space-y-1">
+            <p className="text-sm text-foreground/80">
+              Próximo módulo: <span className="font-semibold" style={{ color: theme.darkColor }}>{atual.titulo}</span>
+            </p>
+            <p className="text-xs text-muted-foreground">
+              {formatModuloFimDeSemana(atual.data_inicio)} · {formatModuloHorarios(atual.tipo)}
+            </p>
+          </div>
+        ) : (
+          <p className="text-sm text-muted-foreground">Acesse a Área do Aluno para ver seus módulos.</p>
+        )}
+        <Button
+          asChild
+          className="rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm h-11 px-5"
+          style={{ background: theme.primaryColor, color: "#fff" }}
+        >
+          <Link to="/escola/aluno">
+            Entrar na Área do Aluno <ChevronRight className="w-4 h-4" />
+          </Link>
+        </Button>
+      </div>
+    </div>
+  );
+};
 
 const ClinicalThermometer = ({ doshaScores }: { doshaScores: { name: string; score: number }[] }) => {
   const doshaData = doshaScores.map(d => {
@@ -802,6 +917,8 @@ const MeuDosha = () => {
           {formattedNome ? `Resultado do teste de dosha de ${formattedNome}` : "Resultado do teste de dosha"}
           {result.doshaprincipal ? ` — Dosha ${result.doshaprincipal}` : ""}
         </h1>
+
+        <FormacaoDestaqueCard />
 
         <RetesteCard />
 
