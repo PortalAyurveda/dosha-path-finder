@@ -492,9 +492,8 @@ const Conteudo = ({ aluno }: { aluno: AlunoRow }) => {
           );
         })
       )}
-
-      <MuralTurma aluno={aluno} />
     </div>
+
   );
 };
 
