@@ -89,6 +89,23 @@ const FloatingAkasha = () => {
   const pittascore = doshaResult?.pittascore ?? null;
   const kaphascore = doshaResult?.kaphascore ?? null;
 
+  // Busca idade/imc do registro atual para enriquecer o payload
+  const { data: registroExtra } = useQuery({
+    queryKey: ["akasha-registro-extra", idPublico],
+    enabled: !!idPublico,
+    staleTime: 30 * 60 * 1000,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("doshas_registros")
+        .select("idade, imc")
+        .eq("idPublico", idPublico!)
+        .maybeSingle();
+      return data as { idade: number | null; imc: number | string | null } | null;
+    },
+  });
+  const idade = registroExtra?.idade ?? null;
+  const imc = registroExtra?.imc ?? null;
+
   // Mesma cacheKey de AkashaTab → compartilha histórico instantaneamente
   const cacheKey = ["akasha-history", resolvedEmail] as const;
 
@@ -199,54 +216,20 @@ const FloatingAkasha = () => {
     };
   }, [shouldHide, location.pathname, open]);
 
-  // Say-hello na primeira abertura quando histórico está vazio
-  const sendInitialMessage = useCallback(async () => {
+  // Say-hello local — apenas exibe mensagem da Akasha, sem chamar o webhook nem gravar no servidor
+  const sendInitialMessage = useCallback(() => {
     if (initialSentRef.current) return;
     if (!user || !idPublico) return;
     initialSentRef.current = true;
 
     const doshaAgravado = doshaprincipal || "não identificado";
-    const nomeDisplay = resolvedNome || "Visitante";
-    const autoMessage = `Olá meu nome é ${nomeDisplay}. Acabei de chegar aqui e vim conhecer você. Meu dosha agravado é ${doshaAgravado}. Vamos conversar??`;
+    const primeiroNome = (resolvedNome || "Visitante").trim().split(/\s+/)[0];
+    const hello = `Olá, ${primeiroNome}! Vi que seu dosha agravado é ${doshaAgravado}. Posso te indicar receitas, produtos e práticas do Portal — ou escreva Portal para ajuda com o site. Por onde começamos?`;
 
-    setSending(true);
-    const userMsg: ChatMessage = { role: "user", content: autoMessage, time: getNowBrazilTime() };
-    setMessages([userMsg]);
-    updateCache([userMsg]);
-
-    try {
-      const payload = {
-        message: autoMessage,
-        email: resolvedEmail,
-        contactId: idPublico,
-        nome: resolvedNome,
-        dosha: doshaprincipal,
-        scores: { vata: vatascore, pitta: pittascore, kapha: kaphascore },
-      };
-      const response = await fetch(WEBHOOK_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      const data = await response.json();
-      const botReply = data?.resposta || data?.output || data?.text || "Olá! Bem-vindo(a). Como posso te ajudar?";
-      const botMsg: ChatMessage = { role: "assistant", content: botReply, time: getNowBrazilTime() };
-      setMessages(prev => {
-        const next = [...prev, botMsg];
-        updateCache(next);
-        return next;
-      });
-    } catch {
-      const errMsg: ChatMessage = { role: "assistant", content: "Erro ao conectar com a Akasha. Tente novamente.", time: getNowBrazilTime() };
-      setMessages(prev => {
-        const next = [...prev, errMsg];
-        updateCache(next);
-        return next;
-      });
-    } finally {
-      setSending(false);
-    }
-  }, [user, idPublico, doshaprincipal, resolvedNome, resolvedEmail, vatascore, pittascore, kaphascore, updateCache]);
+    const botMsg: ChatMessage = { role: "assistant", content: hello, time: getNowBrazilTime() };
+    setMessages([botMsg]);
+    // Não atualiza cache do React Query para não persistir localmente entre sessões como histórico "real"
+  }, [user, idPublico, doshaprincipal, resolvedNome]);
 
   // Dispara say-hello quando o chat abre pela 1ª vez com histórico vazio
   useEffect(() => {
@@ -304,6 +287,8 @@ const FloatingAkasha = () => {
         nome: resolvedNome,
         dosha: doshaprincipal,
         scores: { vata: vatascore, pitta: pittascore, kapha: kaphascore },
+        ...(idade != null ? { idade } : {}),
+        ...(imc != null ? { imc } : {}),
       };
 
       const response = await fetch(WEBHOOK_URL, {
