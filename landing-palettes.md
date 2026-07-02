@@ -27,6 +27,12 @@ Source-of-truth de código: [`src/data/landingPalettes.ts`](src/data/landingPale
 | `vata-azul` | Landing dedicada ao dosha Vata | Azul `#6B8AFF` |
 | `pitta-salmao` | Landing dedicada ao dosha Pitta | Salmão `#FF7676` |
 | `kapha-verde` | Landing dedicada ao dosha Kapha | Verde escuro `#9ED88B` / `#15803D` |
+| `doshas-ambar` | Conteúdo institucional dos três doshas | Âmbar `#DD8C0D` + creme `#FFF5CC` |
+| `terapias-teal` | Terapias corporais, massagens | Teal `#3FA8A0` + verde-água `#D5F0EE` |
+| `pratica-terra` | Práticas fundamentais e vivências | Terra `#B0713A` + areia `#F3E4D5` |
+| `tratamento-esmeralda` | Tratamentos e panchakarma | Esmeralda `#34A06A` + verde claro `#D1F4E0` |
+| `rasayana-ouro` | Rasayana, longevidade, formulações nobres | Ouro `#C8922A` + trigo `#F6EBD2` |
+
 
 ## Como usar
 
