@@ -918,6 +918,8 @@ const MeuDosha = () => {
           {result.doshaprincipal ? ` — Dosha ${result.doshaprincipal}` : ""}
         </h1>
 
+        <FormacaoDestaqueCard />
+
         <RetesteCard />
 
 
