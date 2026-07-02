@@ -287,6 +287,8 @@ const FloatingAkasha = () => {
         nome: resolvedNome,
         dosha: doshaprincipal,
         scores: { vata: vatascore, pitta: pittascore, kapha: kaphascore },
+        ...(idade != null ? { idade } : {}),
+        ...(imc != null ? { imc } : {}),
       };
 
       const response = await fetch(WEBHOOK_URL, {
