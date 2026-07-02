@@ -1752,6 +1752,13 @@ export type Database = {
             referencedRelation: "escola_alunos"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "escola_anotacoes_aluno_id_fkey"
+            columns: ["aluno_id"]
+            isOneToOne: false
+            referencedRelation: "escola_colegas"
+            referencedColumns: ["id"]
+          },
         ]
       }
       escola_avaliacao_perguntas: {
@@ -1820,6 +1827,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "escola_avaliacao_respostas_aluno_id_fkey"
+            columns: ["aluno_id"]
+            isOneToOne: false
+            referencedRelation: "escola_colegas"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "escola_avaliacao_respostas_pergunta_id_fkey"
             columns: ["pergunta_id"]
             isOneToOne: false
@@ -1832,9 +1846,11 @@ export type Database = {
         Row: {
           conteudo: string | null
           created_at: string | null
+          curadoria: Json | null
           dia: string
           id: string
           modulo_id: string
+          nugget_ids: string[] | null
           ordem: number | null
           refeicao: string
           updated_at: string | null
@@ -1842,9 +1858,11 @@ export type Database = {
         Insert: {
           conteudo?: string | null
           created_at?: string | null
+          curadoria?: Json | null
           dia: string
           id?: string
           modulo_id: string
+          nugget_ids?: string[] | null
           ordem?: number | null
           refeicao: string
           updated_at?: string | null
@@ -1852,9 +1870,11 @@ export type Database = {
         Update: {
           conteudo?: string | null
           created_at?: string | null
+          curadoria?: Json | null
           dia?: string
           id?: string
           modulo_id?: string
+          nugget_ids?: string[] | null
           ordem?: number | null
           refeicao?: string
           updated_at?: string | null
@@ -1900,6 +1920,13 @@ export type Database = {
             columns: ["aluno_id"]
             isOneToOne: false
             referencedRelation: "escola_alunos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "escola_diario_aluno_id_fkey"
+            columns: ["aluno_id"]
+            isOneToOne: false
+            referencedRelation: "escola_colegas"
             referencedColumns: ["id"]
           },
           {
@@ -1963,6 +1990,7 @@ export type Database = {
           id: string
           liberado: boolean
           numero: number
+          palette_key: string | null
           semestre: number | null
           slides_url: string | null
           slug: string | null
@@ -1982,6 +2010,7 @@ export type Database = {
           id?: string
           liberado?: boolean
           numero: number
+          palette_key?: string | null
           semestre?: number | null
           slides_url?: string | null
           slug?: string | null
@@ -2001,6 +2030,7 @@ export type Database = {
           id?: string
           liberado?: boolean
           numero?: number
+          palette_key?: string | null
           semestre?: number | null
           slides_url?: string | null
           slug?: string | null
@@ -2065,6 +2095,13 @@ export type Database = {
             referencedRelation: "escola_alunos"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "escola_pagamentos_aluno_id_fkey"
+            columns: ["aluno_id"]
+            isOneToOne: false
+            referencedRelation: "escola_colegas"
+            referencedColumns: ["id"]
+          },
         ]
       }
       escola_postits: {
@@ -2101,6 +2138,13 @@ export type Database = {
             columns: ["aluno_id"]
             isOneToOne: false
             referencedRelation: "escola_alunos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "escola_postits_aluno_id_fkey"
+            columns: ["aluno_id"]
+            isOneToOne: false
+            referencedRelation: "escola_colegas"
             referencedColumns: ["id"]
           },
           {
@@ -2911,6 +2955,45 @@ export type Database = {
           total_dias?: number | null
           total_dicas_usadas?: number | null
           user_email?: string
+        }
+        Relationships: []
+      }
+      portal_ajuda: {
+        Row: {
+          assunto: string
+          ativo: boolean | null
+          categoria: string | null
+          created_at: string | null
+          id: string
+          link: string | null
+          ordem: number | null
+          palavras_chave: string | null
+          resposta_curta: string
+          updated_at: string | null
+        }
+        Insert: {
+          assunto: string
+          ativo?: boolean | null
+          categoria?: string | null
+          created_at?: string | null
+          id?: string
+          link?: string | null
+          ordem?: number | null
+          palavras_chave?: string | null
+          resposta_curta: string
+          updated_at?: string | null
+        }
+        Update: {
+          assunto?: string
+          ativo?: boolean | null
+          categoria?: string | null
+          created_at?: string | null
+          id?: string
+          link?: string | null
+          ordem?: number | null
+          palavras_chave?: string | null
+          resposta_curta?: string
+          updated_at?: string | null
         }
         Relationships: []
       }
@@ -3872,6 +3955,13 @@ export type Database = {
             referencedRelation: "rotina_nuggets"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "rotina_favoritos_nugget_id_fkey"
+            columns: ["nugget_id"]
+            isOneToOne: false
+            referencedRelation: "v_receitas"
+            referencedColumns: ["id"]
+          },
         ]
       }
       rotina_nuggets: {
@@ -3881,12 +3971,15 @@ export type Database = {
           created_at: string | null
           icone_lucide: string | null
           id: string
+          imagem_prompt: string | null
+          imagem_url: string | null
           kapha: number | null
           nugget_json: Json | null
           periodo: string | null
           pitta: number | null
           revisado: boolean | null
           score: number | null
+          slug: string | null
           subcategoria: string | null
           tags: string[] | null
           tipo: string | null
@@ -3902,12 +3995,15 @@ export type Database = {
           created_at?: string | null
           icone_lucide?: string | null
           id?: string
+          imagem_prompt?: string | null
+          imagem_url?: string | null
           kapha?: number | null
           nugget_json?: Json | null
           periodo?: string | null
           pitta?: number | null
           revisado?: boolean | null
           score?: number | null
+          slug?: string | null
           subcategoria?: string | null
           tags?: string[] | null
           tipo?: string | null
@@ -3923,12 +4019,15 @@ export type Database = {
           created_at?: string | null
           icone_lucide?: string | null
           id?: string
+          imagem_prompt?: string | null
+          imagem_url?: string | null
           kapha?: number | null
           nugget_json?: Json | null
           periodo?: string | null
           pitta?: number | null
           revisado?: boolean | null
           score?: number | null
+          slug?: string | null
           subcategoria?: string | null
           tags?: string[] | null
           tipo?: string | null
@@ -4111,6 +4210,13 @@ export type Database = {
             referencedRelation: "rotina_nuggets"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "rotina_pontos_nugget_id_fkey"
+            columns: ["nugget_id"]
+            isOneToOne: false
+            referencedRelation: "v_receitas"
+            referencedColumns: ["id"]
+          },
         ]
       }
       rotinas_usuario: {
@@ -4150,6 +4256,13 @@ export type Database = {
             columns: ["nugget_id"]
             isOneToOne: false
             referencedRelation: "rotina_nuggets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rotinas_usuario_nugget_id_fkey"
+            columns: ["nugget_id"]
+            isOneToOne: false
+            referencedRelation: "v_receitas"
             referencedColumns: ["id"]
           },
           {
@@ -4525,6 +4638,101 @@ export type Database = {
         }
         Relationships: []
       }
+      escola_colegas: {
+        Row: {
+          cidade: string | null
+          estado: string | null
+          foto_url: string | null
+          id: string | null
+          nome_completo: string | null
+          turma_id: string | null
+        }
+        Insert: {
+          cidade?: string | null
+          estado?: string | null
+          foto_url?: string | null
+          id?: string | null
+          nome_completo?: string | null
+          turma_id?: string | null
+        }
+        Update: {
+          cidade?: string | null
+          estado?: string | null
+          foto_url?: string | null
+          id?: string | null
+          nome_completo?: string | null
+          turma_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "escola_alunos_turma_id_fkey"
+            columns: ["turma_id"]
+            isOneToOne: false
+            referencedRelation: "escola_turmas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      v_receitas: {
+        Row: {
+          dicas: string | null
+          dravya_guna: Json | null
+          efeito_esperado: string | null
+          icone: string | null
+          id: string | null
+          imagem_prompt: string | null
+          imagem_url: string | null
+          ingredientes: Json | null
+          kapha: number | null
+          modo_preparo: Json | null
+          pitta: number | null
+          resumo: string | null
+          slug: string | null
+          subcategoria: string | null
+          tags: string[] | null
+          titulo: string | null
+          vata: number | null
+        }
+        Insert: {
+          dicas?: never
+          dravya_guna?: never
+          efeito_esperado?: never
+          icone?: never
+          id?: string | null
+          imagem_prompt?: string | null
+          imagem_url?: string | null
+          ingredientes?: never
+          kapha?: number | null
+          modo_preparo?: never
+          pitta?: number | null
+          resumo?: never
+          slug?: string | null
+          subcategoria?: string | null
+          tags?: string[] | null
+          titulo?: never
+          vata?: number | null
+        }
+        Update: {
+          dicas?: never
+          dravya_guna?: never
+          efeito_esperado?: never
+          icone?: never
+          id?: string | null
+          imagem_prompt?: string | null
+          imagem_url?: string | null
+          ingredientes?: never
+          kapha?: number | null
+          modo_preparo?: never
+          pitta?: number | null
+          resumo?: never
+          slug?: string | null
+          subcategoria?: string | null
+          tags?: string[] | null
+          titulo?: never
+          vata?: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       admin_dashboard_resumo: { Args: never; Returns: Json }
@@ -4576,6 +4784,39 @@ export type Database = {
         }
       }
       atualizar_estatisticas_globais: { Args: never; Returns: undefined }
+      buscar_ajuda: {
+        Args: { p_termo?: string }
+        Returns: {
+          assunto: string
+          categoria: string
+          link: string
+          resposta_curta: string
+        }[]
+      }
+      buscar_produto: {
+        Args: { p_dosha?: string; p_termo?: string }
+        Returns: {
+          imagem_url: string
+          link: string
+          nome: string
+          preco: number
+          resumo: string
+          tags: string
+        }[]
+      }
+      buscar_receita: {
+        Args: { p_dosha?: string; p_termo?: string }
+        Returns: {
+          dicas: string
+          dosha_fit: string
+          imagem_url: string
+          ingredientes: Json
+          modo_preparo: Json
+          resumo: string
+          slug: string
+          titulo: string
+        }[]
+      }
       bytea_to_text: { Args: { data: string }; Returns: string }
       calc_dosha_status: {
         Args: { dosha: string; score: number }
@@ -4583,6 +4824,16 @@ export type Database = {
       }
       claim_dosha_test: { Args: { p_id_publico?: string }; Returns: Json }
       escola_aluno_atual: { Args: never; Returns: string }
+      escola_cardapio_do_modulo: {
+        Args: { p_slug: string }
+        Returns: {
+          dia: string
+          nota: string
+          nuggets: Json
+          ordem: number
+          refeicao: string
+        }[]
+      }
       escola_vincular_minha_conta: { Args: never; Returns: undefined }
       find_akasha_by_slug: {
         Args: { _slug: string }
