@@ -31,14 +31,6 @@ type Modulo = {
 };
 
 
-type Postit = {
-  id: string;
-  aluno_id: string | null;
-  conteudo: string;
-  created_at: string | null;
-  parent_id: string | null;
-  autor?: { nome_completo: string | null; foto_url: string | null } | null;
-};
 
 
 const SEMESTRES = [
