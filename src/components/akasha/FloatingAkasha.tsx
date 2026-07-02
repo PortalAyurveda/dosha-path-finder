@@ -89,6 +89,23 @@ const FloatingAkasha = () => {
   const pittascore = doshaResult?.pittascore ?? null;
   const kaphascore = doshaResult?.kaphascore ?? null;
 
+  // Busca idade/imc do registro atual para enriquecer o payload
+  const { data: registroExtra } = useQuery({
+    queryKey: ["akasha-registro-extra", idPublico],
+    enabled: !!idPublico,
+    staleTime: 30 * 60 * 1000,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("doshas_registros")
+        .select("idade, imc")
+        .eq("idPublico", idPublico!)
+        .maybeSingle();
+      return data as { idade: number | null; imc: number | string | null } | null;
+    },
+  });
+  const idade = registroExtra?.idade ?? null;
+  const imc = registroExtra?.imc ?? null;
+
   // Mesma cacheKey de AkashaTab → compartilha histórico instantaneamente
   const cacheKey = ["akasha-history", resolvedEmail] as const;
 
