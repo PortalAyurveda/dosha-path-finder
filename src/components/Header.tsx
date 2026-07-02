@@ -194,24 +194,33 @@ const Header = () => {
             >
               <SheetTitle className="sr-only">Menu de navegação</SheetTitle>
               <nav className="flex flex-col gap-2">
-                {navLinks.map((link) => (
-                  <Link
-                    key={link.to}
-                    to={link.to}
-                    onClick={() => setOpen(false)}
-                    className={`px-4 py-3 rounded-xl text-base font-medium transition-colors ${
-                      link.label === "Minha rotina"
-                        ? isActive(link.to)
-                          ? "bg-secondary/30 text-white font-bold"
-                          : "bg-secondary/20 text-white font-semibold hover:bg-secondary/30"
-                        : isActive(link.to)
-                          ? "bg-white/20 text-white font-bold"
-                          : "text-white/70 hover:text-white hover:bg-white/10"
-                    }`}
-                  >
-                    {link.label}
-                  </Link>
-                ))}
+                {navLinks.map((link) => {
+                  const isAreaAluno = link.label === "Área do Aluno";
+                  const active = isActive(link.to);
+                  const base = "px-4 py-3 rounded-xl text-base font-medium transition-colors";
+                  const areaAlunoClasses = active
+                    ? "bg-[#EAB308] text-[#352F54] font-bold"
+                    : "bg-[#FACC15] text-[#352F54] font-semibold hover:bg-[#EAB308]";
+                  const classes = isAreaAluno
+                    ? `${base} ${areaAlunoClasses}`
+                    : link.label === "Minha rotina"
+                      ? active
+                        ? `${base} bg-secondary/30 text-white font-bold`
+                        : `${base} bg-secondary/20 text-white font-semibold hover:bg-secondary/30`
+                      : active
+                        ? `${base} bg-white/20 text-white font-bold`
+                        : `${base} text-white/70 hover:text-white hover:bg-white/10`;
+                  return (
+                    <Link
+                      key={link.to}
+                      to={link.to}
+                      onClick={() => setOpen(false)}
+                      className={classes}
+                    >
+                      {link.label}
+                    </Link>
+                  );
+                })}
                 {user && (
                   <>
                     <div className="border-t border-white/20 my-2" />
