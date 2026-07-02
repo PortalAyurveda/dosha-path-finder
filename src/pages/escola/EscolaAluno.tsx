@@ -279,6 +279,10 @@ const Conteudo = ({ aluno }: { aluno: AlunoRow }) => {
         )}
       </section>
 
+      {/* Mural da turma */}
+      <MuralTurma aluno={aluno} />
+
+
       {/* Atalho */}
       <div className="pt-2">
         <Button
