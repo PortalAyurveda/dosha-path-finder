@@ -24,7 +24,13 @@ export type LandingPaletteKey =
   | "akasha-roxo"
   | "vata-azul"
   | "pitta-salmao"
-  | "kapha-verde";
+  | "kapha-verde"
+  | "doshas-ambar"
+  | "terapias-teal"
+  | "pratica-terra"
+  | "tratamento-esmeralda"
+  | "rasayana-ouro";
+
 
 export type LandingPaletteTheme = "light" | "warm" | "dark";
 
