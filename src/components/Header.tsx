@@ -78,6 +78,8 @@ const Header = () => {
   const { user, doshaResult, profile, signOut } = useUser();
   const { totalItens, abrirCarrinho } = useCart();
   const { immersive } = useImmersive();
+  const { aluno: escolaAluno } = useEscolaAluno();
+
 
   const isSamkhya = location.pathname.startsWith("/samkhya");
 
