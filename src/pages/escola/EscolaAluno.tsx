@@ -8,6 +8,7 @@ import { Pin, Video as VideoIcon, ChevronRight, CalendarDays } from "lucide-reac
 import EscolaAlunoShell, { escolaBranding as branding } from "./EscolaAlunoShell";
 import { formatModuloFimDeSemana, formatModuloHorarios } from "@/lib/escolaModuloDatas";
 import type { AlunoRow } from "@/hooks/useEscolaAluno";
+import MuralTurma from "@/components/escola/MuralTurma";
 
 type Modulo = {
   id: string;
@@ -277,6 +278,10 @@ const Conteudo = ({ aluno }: { aluno: AlunoRow }) => {
           </div>
         )}
       </section>
+
+      {/* Mural da turma */}
+      <MuralTurma aluno={aluno} />
+
 
       {/* Atalho */}
       <div className="pt-2">
