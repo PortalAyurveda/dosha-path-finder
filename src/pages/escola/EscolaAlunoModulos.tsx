@@ -37,8 +37,9 @@ type Postit = {
   conteudo: string;
   created_at: string | null;
   parent_id: string | null;
-  aluno?: { nome_completo: string } | null;
+  autor?: { nome_completo: string | null; foto_url: string | null } | null;
 };
+
 
 const SEMESTRES = [
   { num: 1, titulo: "Semestre 1", subtitulo: "Fundamentos (1–5)" },
