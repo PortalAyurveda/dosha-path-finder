@@ -60,7 +60,7 @@ const findCurrentId = (mods: Modulo[]): string | null => {
 
 
 // =================== LISTA ===================
-const Conteudo = ({ aluno }: { aluno: AlunoRow }) => {
+const Conteudo = (_: { aluno: AlunoRow }) => {
   const [loading, setLoading] = useState(true);
   const [modulos, setModulos] = useState<Modulo[]>([]);
   const currentRef = useRef<HTMLDivElement | null>(null);
