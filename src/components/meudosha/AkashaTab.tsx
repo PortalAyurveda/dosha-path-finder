@@ -216,6 +216,7 @@ const AkashaTab = ({
         nome: resolvedNome,
         dosha: doshaprincipal,
         imc,
+        idade,
         scores: { vata: vatascore, pitta: pittascore, kapha: kaphascore, agni: agniPrincipal },
         nivelDeConhecimento: conhecimentoAyurveda,
       };
