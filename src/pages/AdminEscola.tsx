@@ -29,6 +29,10 @@ import {
   Lock,
   Unlock,
   Utensils,
+  ArrowUp,
+  ArrowDown,
+  X,
+  Search,
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { formatModuloFimDeSemana, formatModuloHorarios } from "@/lib/escolaModuloDatas";
@@ -59,7 +63,11 @@ type CardapioRow = {
   refeicao: string;
   conteudo: string | null;
   ordem: number | null;
+  nugget_ids: string[] | null;
+  curadoria: Record<string, string> | null;
 };
+
+type NuggetLite = { id: string; titulo: string; subcategoria: string | null };
 
 type Recurso = {
   id: string;
@@ -382,24 +390,54 @@ const REFEICAO_LABEL_ADMIN: Record<string, string> = {
   jantar: "Jantar",
 };
 
+type SlotDraft = {
+  conteudo: string;
+  nugget_ids: string[];
+  curadoria: Record<string, string>;
+};
+
 const CardapioEditor = ({ moduloId }: { moduloId: string }) => {
   const [linhas, setLinhas] = useState<CardapioRow[]>([]);
-  const [drafts, setDrafts] = useState<Record<string, string>>({});
+  const [drafts, setDrafts] = useState<Record<string, SlotDraft>>({});
+  const [nuggetsMap, setNuggetsMap] = useState<Record<string, NuggetLite>>({});
   const [loading, setLoading] = useState(true);
   const [savingId, setSavingId] = useState<string | null>(null);
+  const [addingFor, setAddingFor] = useState<string | null>(null);
+  const [search, setSearch] = useState("");
+  const [results, setResults] = useState<NuggetLite[]>([]);
+  const [searching, setSearching] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
     const { data } = await supabase
       .from("escola_cardapio")
-      .select("id,modulo_id,dia,refeicao,conteudo,ordem")
+      .select("id,modulo_id,dia,refeicao,conteudo,ordem,nugget_ids,curadoria")
       .eq("modulo_id", moduloId)
       .order("ordem", { ascending: true });
     const rows = (data ?? []) as CardapioRow[];
     setLinhas(rows);
-    const d: Record<string, string> = {};
-    rows.forEach((r) => (d[r.id] = r.conteudo ?? ""));
+    const d: Record<string, SlotDraft> = {};
+    const allIds = new Set<string>();
+    rows.forEach((r) => {
+      d[r.id] = {
+        conteudo: r.conteudo ?? "",
+        nugget_ids: Array.isArray(r.nugget_ids) ? [...r.nugget_ids] : [],
+        curadoria: (r.curadoria && typeof r.curadoria === "object" ? { ...r.curadoria } : {}) as Record<string, string>,
+      };
+      (r.nugget_ids ?? []).forEach((id) => allIds.add(id));
+    });
     setDrafts(d);
+    if (allIds.size > 0) {
+      const { data: nugs } = await supabase
+        .from("rotina_nuggets")
+        .select("id,titulo,subcategoria")
+        .in("id", Array.from(allIds));
+      const map: Record<string, NuggetLite> = {};
+      (nugs ?? []).forEach((n: any) => (map[n.id] = n));
+      setNuggetsMap(map);
+    } else {
+      setNuggetsMap({});
+    }
     setLoading(false);
   }, [moduloId]);
 
@@ -407,12 +445,83 @@ const CardapioEditor = ({ moduloId }: { moduloId: string }) => {
     load();
   }, [load]);
 
+  // Debounced search
+  useEffect(() => {
+    if (!addingFor) return;
+    const q = search.trim();
+    let cancel = false;
+    setSearching(true);
+    const t = setTimeout(async () => {
+      let query = supabase
+        .from("rotina_nuggets")
+        .select("id,titulo,subcategoria")
+        .in("categoria", ["Alimentação", "Rotinas Diárias"])
+        .limit(20);
+      if (q) query = query.ilike("titulo", `%${q}%`);
+      const { data } = await query;
+      if (!cancel) {
+        setResults((data ?? []) as NuggetLite[]);
+        setSearching(false);
+      }
+    }, 200);
+    return () => {
+      cancel = true;
+      clearTimeout(t);
+    };
+  }, [search, addingFor]);
+
+  const updateDraft = (rowId: string, patch: Partial<SlotDraft>) =>
+    setDrafts((p) => ({ ...p, [rowId]: { ...p[rowId], ...patch } }));
+
+  const moveNugget = (rowId: string, idx: number, dir: -1 | 1) => {
+    const d = drafts[rowId];
+    if (!d) return;
+    const arr = [...d.nugget_ids];
+    const j = idx + dir;
+    if (j < 0 || j >= arr.length) return;
+    [arr[idx], arr[j]] = [arr[j], arr[idx]];
+    updateDraft(rowId, { nugget_ids: arr });
+  };
+
+  const removeNugget = (rowId: string, nuggetId: string) => {
+    const d = drafts[rowId];
+    if (!d) return;
+    const arr = d.nugget_ids.filter((x) => x !== nuggetId);
+    const cur = { ...d.curadoria };
+    delete cur[nuggetId];
+    updateDraft(rowId, { nugget_ids: arr, curadoria: cur });
+  };
+
+  const addNugget = (rowId: string, n: NuggetLite) => {
+    const d = drafts[rowId];
+    if (!d) return;
+    if (d.nugget_ids.includes(n.id)) {
+      toast({ title: "Receita já adicionada" });
+      return;
+    }
+    setNuggetsMap((p) => ({ ...p, [n.id]: n }));
+    updateDraft(rowId, { nugget_ids: [...d.nugget_ids, n.id] });
+    setAddingFor(null);
+    setSearch("");
+    setResults([]);
+  };
+
   const salvar = async (row: CardapioRow) => {
     setSavingId(row.id);
-    const conteudo = (drafts[row.id] ?? "").trim();
+    const d = drafts[row.id];
+    const conteudo = d.conteudo.trim();
+    // strip curadoria keys not in nugget_ids
+    const curClean: Record<string, string> = {};
+    d.nugget_ids.forEach((id) => {
+      if (d.curadoria[id]) curClean[id] = d.curadoria[id];
+    });
     const { error } = await supabase
       .from("escola_cardapio")
-      .update({ conteudo: conteudo || null })
+      .update({
+        conteudo: conteudo || null,
+        nugget_ids: d.nugget_ids,
+        curadoria: curClean,
+      })
       .eq("id", row.id);
     setSavingId(null);
     if (error) toast({ title: "Erro ao salvar", description: error.message });
@@ -438,26 +547,164 @@ const CardapioEditor = ({ moduloId }: { moduloId: string }) => {
             return (
               <div key={d.key} className="space-y-2">
                 <h3 className="font-medium text-sm text-foreground">{d.label}</h3>
-                <div className="space-y-2">
-                  {itens.map((r) => (
-                    <div key={r.id} className="rounded-lg border border-border p-3 bg-card space-y-2">
-                      <Label className="text-xs uppercase tracking-wide text-primary">
-                        {REFEICAO_LABEL_ADMIN[r.refeicao] ?? r.refeicao}
-                      </Label>
-                      <Textarea
-                        rows={2}
-                        value={drafts[r.id] ?? ""}
-                        onChange={(e) => setDrafts((p) => ({ ...p, [r.id]: e.target.value }))}
-                        placeholder="Descreva a refeição…"
-                      />
-                      <div className="flex justify-end">
-                        <Button size="sm" variant="outline" onClick={() => salvar(r)} disabled={savingId === r.id}>
-                          {savingId === r.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-                          Salvar
-                        </Button>
+                <div className="space-y-3">
+                  {itens.map((r) => {
+                    const draft = drafts[r.id] ?? { conteudo: "", nugget_ids: [], curadoria: {} };
+                    return (
+                      <div key={r.id} className="rounded-lg border border-border p-3 bg-card space-y-3">
+                        <Label className="text-xs uppercase tracking-wide text-primary">
+                          {REFEICAO_LABEL_ADMIN[r.refeicao] ?? r.refeicao}
+                        </Label>
+
+                        <div className="space-y-1">
+                          <Label className="text-xs text-muted-foreground">Nota do momento (rituais)</Label>
+                          <Textarea
+                            rows={2}
+                            value={draft.conteudo}
+                            onChange={(e) => updateDraft(r.id, { conteudo: e.target.value })}
+                            placeholder="Rituais, atmosfera, contexto…"
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label className="text-xs text-muted-foreground">Receitas deste slot</Label>
+                          {draft.nugget_ids.length === 0 ? (
+                            <p className="text-xs text-muted-foreground italic">Nenhuma receita anexada.</p>
+                          ) : (
+                            <div className="space-y-2">
+                              {draft.nugget_ids.map((nid, idx) => {
+                                const n = nuggetsMap[nid];
+                                return (
+                                  <div key={nid} className="rounded-md border border-border bg-background p-2 space-y-2">
+                                    <div className="flex items-start gap-2">
+                                      <div className="flex-1 min-w-0">
+                                        <p className="text-sm font-medium truncate">
+                                          {n?.titulo ?? <span className="text-muted-foreground">Receita removida ({nid.slice(0, 8)})</span>}
+                                        </p>
+                                        {n?.subcategoria && (
+                                          <p className="text-xs text-muted-foreground">{n.subcategoria}</p>
+                                        )}
+                                      </div>
+                                      <div className="flex items-center gap-1 shrink-0">
+                                        <Button
+                                          type="button"
+                                          size="icon"
+                                          variant="ghost"
+                                          className="h-7 w-7"
+                                          disabled={idx === 0}
+                                          onClick={() => moveNugget(r.id, idx, -1)}
+                                          aria-label="Subir"
+                                        >
+                                          <ArrowUp className="w-3.5 h-3.5" />
+                                        </Button>
+                                        <Button
+                                          type="button"
+                                          size="icon"
+                                          variant="ghost"
+                                          className="h-7 w-7"
+                                          disabled={idx === draft.nugget_ids.length - 1}
+                                          onClick={() => moveNugget(r.id, idx, 1)}
+                                          aria-label="Descer"
+                                        >
+                                          <ArrowDown className="w-3.5 h-3.5" />
+                                        </Button>
+                                        <Button
+                                          type="button"
+                                          size="icon"
+                                          variant="ghost"
+                                          className="h-7 w-7 text-destructive hover:text-destructive"
+                                          onClick={() => removeNugget(r.id, nid)}
+                                          aria-label="Remover"
+                                        >
+                                          <X className="w-3.5 h-3.5" />
+                                        </Button>
+                                      </div>
+                                    </div>
+                                    <Input
+                                      placeholder="Por que aqui"
+                                      value={draft.curadoria[nid] ?? ""}
+                                      onChange={(e) =>
+                                        updateDraft(r.id, {
+                                          curadoria: { ...draft.curadoria, [nid]: e.target.value },
+                                        })
+                                      }
+                                    />
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          )}
+
+                          {addingFor === r.id ? (
+                            <div className="rounded-md border border-border bg-background p-2 space-y-2">
+                              <div className="flex items-center gap-2">
+                                <Search className="w-3.5 h-3.5 text-muted-foreground" />
+                                <Input
+                                  autoFocus
+                                  placeholder="Buscar receita por título…"
+                                  value={search}
+                                  onChange={(e) => setSearch(e.target.value)}
+                                />
+                                <Button
+                                  type="button"
+                                  size="sm"
+                                  variant="ghost"
+                                  onClick={() => {
+                                    setAddingFor(null);
+                                    setSearch("");
+                                    setResults([]);
+                                  }}
+                                >
+                                  Cancelar
+                                </Button>
+                              </div>
+                              <div className="max-h-56 overflow-y-auto space-y-1">
+                                {searching ? (
+                                  <p className="text-xs text-muted-foreground px-1 py-2">Buscando…</p>
+                                ) : results.length === 0 ? (
+                                  <p className="text-xs text-muted-foreground px-1 py-2">Nenhuma receita encontrada.</p>
+                                ) : (
+                                  results.map((n) => (
+                                    <button
+                                      key={n.id}
+                                      type="button"
+                                      onClick={() => addNugget(r.id, n)}
+                                      className="w-full text-left rounded-sm px-2 py-1.5 hover:bg-accent hover:text-accent-foreground"
+                                    >
+                                      <p className="text-sm font-medium truncate">{n.titulo}</p>
+                                      {n.subcategoria && (
+                                        <p className="text-xs text-muted-foreground">{n.subcategoria}</p>
+                                      )}
+                                    </button>
+                                  ))
+                                )}
+                              </div>
+                            </div>
+                          ) : (
+                            <Button
+                              type="button"
+                              size="sm"
+                              variant="outline"
+                              onClick={() => {
+                                setAddingFor(r.id);
+                                setSearch("");
+                                setResults([]);
+                              }}
+                            >
+                              <Plus className="w-4 h-4" /> Adicionar receita
+                            </Button>
+                          )}
+                        </div>
+
+                        <div className="flex justify-end">
+                          <Button size="sm" variant="outline" onClick={() => salvar(r)} disabled={savingId === r.id}>
+                            {savingId === r.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                            Salvar
+                          </Button>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             );
