@@ -4793,6 +4793,15 @@ export type Database = {
           resposta_curta: string
         }[]
       }
+      buscar_minha_rotina: {
+        Args: { p_dia?: number; p_email?: string }
+        Returns: {
+          dia: number
+          resumo: string
+          slot: string
+          titulo: string
+        }[]
+      }
       buscar_produto: {
         Args: { p_dosha?: string; p_termo?: string }
         Returns: {
