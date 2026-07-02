@@ -1,13 +1,16 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import * as LucideIcons from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
   ArrowLeft,
+  ChevronDown,
+  Circle,
   Download,
   FileText,
   Loader2,
@@ -19,11 +22,23 @@ import {
   Link2,
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
-import EscolaAlunoShell, { escolaBranding as branding } from "./EscolaAlunoShell";
+import EscolaAlunoShell from "./EscolaAlunoShell";
 import { formatModuloFimDeSemana, formatModuloHorarios } from "@/lib/escolaModuloDatas";
 import type { AlunoRow } from "@/hooks/useEscolaAluno";
+import { getPaletteBranding, type LandingPaletteKey } from "@/data/landingPalettes";
 
 const BUCKET = "escola";
+const SIMBOLO_MONO =
+  "https://api.portalayurveda.com/storage/v1/object/public/portal_images/simbolo-positivo-mono.webp";
+
+type Theme = {
+  primaryColor: string;
+  darkColor: string;
+  lightColor: string;
+  accentColor: string;
+  warmBg: string;
+  logo: string;
+};
 
 type Modulo = {
   id: string;
@@ -39,14 +54,7 @@ type Modulo = {
   zoom_url: string | null;
   slides_url: string | null;
   apostila_url: string | null;
-};
-
-type CardapioRow = {
-  id: string;
-  dia: string;
-  refeicao: string;
-  conteudo: string | null;
-  ordem: number | null;
+  palette_key: string | null;
 };
 
 type Recurso = {
@@ -61,26 +69,37 @@ type Recurso = {
 type Pergunta = { id: string; pergunta: string; ordem: number | null };
 type Resposta = { id: string; pergunta_id: string; resposta: string | null };
 
+type NuggetJson = {
+  resumo?: string;
+  ingredientes?: { qtd?: string; item?: string }[];
+  modo_preparo?: string[];
+  dicas?: string;
+  efeito_esperado?: string;
+  dravya_guna?: any;
+};
+
+type CardapioNugget = {
+  titulo: string;
+  icone_lucide: string | null;
+  porque: string | null;
+  imagem_url: string | null;
+  video_id: string | null;
+  nugget_json: NuggetJson | null;
+};
+
+type CardapioRpcRow = {
+  dia: string;
+  refeicao: string;
+  ordem: number | null;
+  nota: string | null;
+  nuggets: CardapioNugget[];
+};
 
 const RECURSO_GROUPS: { tipo: string; label: string; icon: typeof VideoIcon }[] = [
-  { tipo: "video_recomendado", label: "Vídeos recomendados", icon: VideoIcon },
   { tipo: "cardapio", label: "Cardápio prático", icon: Utensils },
   { tipo: "dinacharya", label: "Rotina de dinacharya", icon: Sparkles },
   { tipo: "experiencia", label: "Experiências vivenciais", icon: Sparkles },
 ];
-
-const formatDateLong = (iso: string | null) => {
-  if (!iso) return "";
-  try {
-    return new Date(iso).toLocaleDateString("pt-BR", {
-      day: "2-digit",
-      month: "long",
-      year: "numeric",
-    });
-  } catch {
-    return iso;
-  }
-};
 
 const formatRelative = (iso: string | null) => {
   if (!iso) return "";
@@ -115,17 +134,25 @@ const extractYoutubeId = (url: string): string | null => {
 
 // ============= SEÇÕES =============
 
-const SectionTitle = ({ icon: Icon, children }: { icon: typeof VideoIcon; children: React.ReactNode }) => (
+const SectionTitle = ({
+  icon: Icon,
+  children,
+  theme,
+}: {
+  icon: typeof VideoIcon;
+  children: React.ReactNode;
+  theme: Theme;
+}) => (
   <h2
     className="font-serif text-xl font-bold italic flex items-center gap-2"
-    style={{ color: branding.darkColor }}
+    style={{ color: theme.darkColor }}
   >
-    <Icon className="w-5 h-5" style={{ color: branding.primaryColor }} />
+    <Icon className="w-5 h-5" style={{ color: theme.primaryColor }} />
     {children}
   </h2>
 );
 
-const MaterialBlock = ({ modulo }: { modulo: Modulo }) => {
+const MaterialBlock = ({ modulo, theme }: { modulo: Modulo; theme: Theme }) => {
   const [apostilaUrl, setApostilaUrl] = useState<string | null>(null);
   const videoId = modulo.video_url ? extractYoutubeId(modulo.video_url) : null;
 
@@ -172,7 +199,7 @@ const MaterialBlock = ({ modulo }: { modulo: Modulo }) => {
               target="_blank"
               rel="noreferrer"
               className="inline-flex items-center gap-2 text-sm"
-              style={{ color: branding.primaryColor }}
+              style={{ color: theme.primaryColor }}
             >
               <VideoIcon className="w-4 h-4" /> abrir vídeo
             </a>
@@ -189,9 +216,9 @@ const MaterialBlock = ({ modulo }: { modulo: Modulo }) => {
             className={`inline-flex items-center gap-2 text-sm px-4 h-11 rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm border bg-white ${
               apostilaUrl ? "" : "opacity-50 pointer-events-none"
             }`}
-            style={{ borderColor: `${branding.primaryColor}55`, color: branding.darkColor }}
+            style={{ borderColor: `${theme.primaryColor}55`, color: theme.darkColor }}
           >
-            <FileText className="w-4 h-4" style={{ color: branding.primaryColor }} />
+            <FileText className="w-4 h-4" style={{ color: theme.primaryColor }} />
             Apostila <Download className="w-3.5 h-3.5" />
           </a>
         )}
@@ -201,9 +228,9 @@ const MaterialBlock = ({ modulo }: { modulo: Modulo }) => {
             target="_blank"
             rel="noreferrer"
             className="inline-flex items-center gap-2 text-sm px-4 h-11 rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm border bg-white"
-            style={{ borderColor: `${branding.primaryColor}55`, color: branding.darkColor }}
+            style={{ borderColor: `${theme.primaryColor}55`, color: theme.darkColor }}
           >
-            <Link2 className="w-4 h-4" style={{ color: branding.primaryColor }} /> Slides
+            <Link2 className="w-4 h-4" style={{ color: theme.primaryColor }} /> Slides
           </a>
         )}
       </div>
@@ -211,7 +238,64 @@ const MaterialBlock = ({ modulo }: { modulo: Modulo }) => {
   );
 };
 
-const RecursosBlock = ({ moduloId }: { moduloId: string }) => {
+const VideosRecomendadosBlock = ({ recursos, theme }: { recursos: Recurso[]; theme: Theme }) => {
+  if (recursos.length === 0) return null;
+  return (
+    <section className="space-y-3">
+      <SectionTitle icon={VideoIcon} theme={theme}>
+        Vídeos recomendados
+      </SectionTitle>
+      <div className="grid gap-4 md:grid-cols-2">
+        {recursos.map((r) => {
+          const yt = r.url ? extractYoutubeId(r.url) : null;
+          return (
+            <div
+              key={r.id}
+              className="bg-white rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm border overflow-hidden"
+              style={{ borderColor: `${theme.primaryColor}22` }}
+            >
+              {yt ? (
+                <div className="aspect-video w-full bg-black">
+                  <iframe
+                    src={`https://www.youtube.com/embed/${yt}`}
+                    title={r.titulo}
+                    className="w-full h-full"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
+                </div>
+              ) : null}
+              <div className="p-4 space-y-1.5">
+                <h3
+                  className="font-serif font-bold text-base leading-snug"
+                  style={{ color: theme.darkColor }}
+                >
+                  {r.titulo}
+                </h3>
+                {r.descricao && (
+                  <p className="text-sm text-foreground/80 whitespace-pre-wrap">{r.descricao}</p>
+                )}
+                {!yt && r.url && (
+                  <a
+                    href={r.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-1 text-sm pt-1"
+                    style={{ color: theme.primaryColor }}
+                  >
+                    <Link2 className="w-3.5 h-3.5" /> abrir
+                  </a>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </section>
+  );
+};
+
+const RecursosBlock = ({ moduloId, theme }: { moduloId: string; theme: Theme }) => {
   const [recursos, setRecursos] = useState<Recurso[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -230,24 +314,29 @@ const RecursosBlock = ({ moduloId }: { moduloId: string }) => {
 
   if (loading) return <Skeleton className="h-32 w-full" />;
 
+  const videos = recursos.filter((r) => r.tipo === "video_recomendado");
+
   return (
     <div className="space-y-8">
+      <VideosRecomendadosBlock recursos={videos} theme={theme} />
       {RECURSO_GROUPS.map((g) => {
         const itens = recursos.filter((r) => r.tipo === g.tipo);
         if (itens.length === 0) return null;
         return (
           <section key={g.tipo} className="space-y-3">
-            <SectionTitle icon={g.icon}>{g.label}</SectionTitle>
+            <SectionTitle icon={g.icon} theme={theme}>
+              {g.label}
+            </SectionTitle>
             <div className="grid gap-3 md:grid-cols-2">
               {itens.map((r) => (
                 <div
                   key={r.id}
                   className="bg-white rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm border p-4 space-y-2"
-                  style={{ borderColor: `${branding.primaryColor}22` }}
+                  style={{ borderColor: `${theme.primaryColor}22` }}
                 >
                   <h3
                     className="font-serif font-bold text-base leading-snug"
-                    style={{ color: branding.darkColor }}
+                    style={{ color: theme.darkColor }}
                   >
                     {r.titulo}
                   </h3>
@@ -260,7 +349,7 @@ const RecursosBlock = ({ moduloId }: { moduloId: string }) => {
                       target="_blank"
                       rel="noreferrer"
                       className="inline-flex items-center gap-1 text-sm pt-1"
-                      style={{ color: branding.primaryColor }}
+                      style={{ color: theme.primaryColor }}
                     >
                       <Link2 className="w-3.5 h-3.5" /> abrir
                     </a>
@@ -275,7 +364,15 @@ const RecursosBlock = ({ moduloId }: { moduloId: string }) => {
   );
 };
 
-const AutoavaliacaoBlock = ({ moduloId, alunoId }: { moduloId: string; alunoId: string }) => {
+const AutoavaliacaoBlock = ({
+  moduloId,
+  alunoId,
+  theme,
+}: {
+  moduloId: string;
+  alunoId: string;
+  theme: Theme;
+}) => {
   const [perguntas, setPerguntas] = useState<Pergunta[]>([]);
   const [respostas, setRespostas] = useState<Record<string, Resposta | null>>({});
   const [drafts, setDrafts] = useState<Record<string, string>>({});
@@ -361,9 +458,9 @@ const AutoavaliacaoBlock = ({ moduloId, alunoId }: { moduloId: string; alunoId: 
         <div
           key={p.id}
           className="bg-white rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm border p-4 space-y-2"
-          style={{ borderColor: `${branding.primaryColor}22` }}
+          style={{ borderColor: `${theme.primaryColor}22` }}
         >
-          <p className="font-serif font-bold text-sm" style={{ color: branding.darkColor }}>
+          <p className="font-serif font-bold text-sm" style={{ color: theme.darkColor }}>
             {idx + 1}. {p.pergunta}
           </p>
           <Textarea
@@ -378,7 +475,7 @@ const AutoavaliacaoBlock = ({ moduloId, alunoId }: { moduloId: string; alunoId: 
               onClick={() => salvar(p.id)}
               disabled={saving[p.id]}
               className="rounded-tl-xl rounded-br-xl rounded-tr-sm rounded-bl-sm"
-              style={{ background: branding.primaryColor, color: "#fff" }}
+              style={{ background: theme.primaryColor, color: "#fff" }}
             >
               {saving[p.id] ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
               Salvar
@@ -390,7 +487,15 @@ const AutoavaliacaoBlock = ({ moduloId, alunoId }: { moduloId: string; alunoId: 
   );
 };
 
-const DiarioBlock = ({ moduloId, alunoId }: { moduloId: string; alunoId: string }) => {
+const DiarioBlock = ({
+  moduloId,
+  alunoId,
+  theme,
+}: {
+  moduloId: string;
+  alunoId: string;
+  theme: Theme;
+}) => {
   const [rowId, setRowId] = useState<string | null>(null);
   const [conteudo, setConteudo] = useState("");
   const [loading, setLoading] = useState(true);
@@ -455,7 +560,7 @@ const DiarioBlock = ({ moduloId, alunoId }: { moduloId: string; alunoId: string 
           onClick={salvar}
           disabled={saving}
           className="rounded-tl-xl rounded-br-xl rounded-tr-sm rounded-bl-sm"
-          style={{ background: branding.primaryColor, color: "#fff" }}
+          style={{ background: theme.primaryColor, color: "#fff" }}
         >
           {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
           Salvar diário
@@ -474,65 +579,201 @@ const REFEICAO_LABEL: Record<string, string> = {
   cafe: "Café da manhã",
   almoco: "Almoço",
   jantar: "Jantar",
+  lanche: "Lanche",
+  ceia: "Ceia",
 };
 
-const CardapioBlock = ({ moduloId }: { moduloId: string }) => {
-  const [linhas, setLinhas] = useState<CardapioRow[]>([]);
+const NuggetCard = ({ nugget, theme }: { nugget: CardapioNugget; theme: Theme }) => {
+  const [open, setOpen] = useState(false);
+  const [porqueOpen, setPorqueOpen] = useState(false);
+
+  const iconName = nugget.icone_lucide || "Circle";
+  const IconCmp =
+    ((LucideIcons as unknown) as Record<string, React.ComponentType<{ className?: string }>>)[
+      iconName
+    ] ?? Circle;
+
+  const nj = nugget.nugget_json ?? {};
+  const dg = (nj.dravya_guna ?? {}) as any;
+
+  return (
+    <div
+      className="bg-white rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm border overflow-hidden"
+      style={{ borderColor: `${theme.primaryColor}22` }}
+    >
+      <Collapsible open={open} onOpenChange={setOpen}>
+        <div className="flex items-start gap-3 p-4">
+          <div
+            className="h-10 w-10 rounded-full flex items-center justify-center shrink-0"
+            style={{ background: `${theme.primaryColor}18`, color: theme.primaryColor }}
+          >
+            <IconCmp className="h-5 w-5" />
+          </div>
+          <div className="flex-1 min-w-0 space-y-1">
+            <div
+              className="font-serif font-bold text-base leading-snug"
+              style={{ color: theme.darkColor }}
+            >
+              {nugget.titulo}
+            </div>
+            {nugget.porque && (
+              <p className="text-xs text-muted-foreground">
+                <span className="font-medium" style={{ color: theme.primaryColor }}>
+                  Por que aqui:
+                </span>{" "}
+                {nugget.porque}
+              </p>
+            )}
+            <CollapsibleTrigger asChild>
+              <button
+                className="inline-flex items-center gap-1 text-xs font-medium pt-1"
+                style={{ color: theme.primaryColor }}
+              >
+                ver receita
+                <ChevronDown
+                  className={`h-3.5 w-3.5 transition-transform ${open ? "rotate-180" : ""}`}
+                />
+              </button>
+            </CollapsibleTrigger>
+          </div>
+        </div>
+        <CollapsibleContent>
+          <div className="px-4 pb-4 border-t pt-3 space-y-3 text-sm" style={{ borderColor: `${theme.primaryColor}18` }}>
+            {nj.resumo && <p className="text-muted-foreground leading-relaxed">{nj.resumo}</p>}
+            {nj.ingredientes && nj.ingredientes.length > 0 && (
+              <div>
+                <h4 className="font-semibold mb-1" style={{ color: theme.darkColor }}>Ingredientes</h4>
+                <ul className="list-disc pl-5 space-y-0.5 text-muted-foreground">
+                  {nj.ingredientes.map((i, idx) => (
+                    <li key={idx}>{[i.qtd, i.item].filter(Boolean).join(" ")}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {nj.modo_preparo && nj.modo_preparo.length > 0 && (
+              <div>
+                <h4 className="font-semibold mb-1" style={{ color: theme.darkColor }}>Modo de preparo</h4>
+                <ol className="list-decimal pl-5 space-y-1 text-muted-foreground">
+                  {nj.modo_preparo.map((p, idx) => (
+                    <li key={idx}>{p}</li>
+                  ))}
+                </ol>
+              </div>
+            )}
+            {nj.dicas && (
+              <div>
+                <h4 className="font-semibold mb-1" style={{ color: theme.darkColor }}>Dicas</h4>
+                <p className="text-muted-foreground">{nj.dicas}</p>
+              </div>
+            )}
+            {nj.efeito_esperado && (
+              <div>
+                <h4 className="font-semibold mb-1" style={{ color: theme.darkColor }}>Efeito esperado</h4>
+                <p className="text-muted-foreground">{nj.efeito_esperado}</p>
+              </div>
+            )}
+            {dg && Object.keys(dg).length > 0 && (
+              <Collapsible open={porqueOpen} onOpenChange={setPorqueOpen}>
+                <CollapsibleTrigger asChild>
+                  <button
+                    className="inline-flex items-center gap-1 text-xs font-medium"
+                    style={{ color: theme.primaryColor }}
+                  >
+                    por que funciona
+                    <ChevronDown className={`h-3.5 w-3.5 transition-transform ${porqueOpen ? "rotate-180" : ""}`} />
+                  </button>
+                </CollapsibleTrigger>
+                <CollapsibleContent className="pt-2 space-y-1 text-xs text-muted-foreground">
+                  {dg.rasa && dg.rasa.length > 0 && (
+                    <p>
+                      <span className="font-medium text-foreground">Sabores:</span> {dg.rasa.join(", ")}
+                    </p>
+                  )}
+                  <p className="leading-relaxed">
+                    {dg.virya && (
+                      <>
+                        <span className="font-medium text-foreground">Potência:</span> {dg.virya}
+                        {" · "}
+                      </>
+                    )}
+                    {dg.gunas && dg.gunas.length > 0 && (
+                      <>
+                        <span className="font-medium text-foreground">Qualidades:</span> {dg.gunas.join("/")}
+                        {" · "}
+                      </>
+                    )}
+                    {dg.karma && dg.karma.length > 0 && (
+                      <>
+                        <span className="font-medium text-foreground">Ações:</span> {dg.karma.join("/")}
+                      </>
+                    )}
+                  </p>
+                </CollapsibleContent>
+              </Collapsible>
+            )}
+          </div>
+        </CollapsibleContent>
+      </Collapsible>
+    </div>
+  );
+};
+
+const CardapioBlock = ({ slug, theme }: { slug: string; theme: Theme }) => {
+  const [rows, setRows] = useState<CardapioRpcRow[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     (async () => {
       setLoading(true);
-      const { data } = await supabase
-        .from("escola_cardapio")
-        .select("id,dia,refeicao,conteudo,ordem")
-        .eq("modulo_id", moduloId)
-        .order("ordem", { ascending: true });
-      setLinhas((data ?? []) as CardapioRow[]);
+      const { data } = await supabase.rpc("escola_cardapio_do_modulo" as any, { p_slug: slug });
+      setRows(((data ?? []) as any) as CardapioRpcRow[]);
       setLoading(false);
     })();
-  }, [moduloId]);
+  }, [slug]);
 
   if (loading) return <Skeleton className="h-32 w-full" />;
-  if (linhas.length === 0) {
-    return <p className="text-sm text-muted-foreground italic">Cardápio ainda não publicado.</p>;
-  }
-
-  const algumComConteudo = linhas.some((l) => (l.conteudo ?? "").trim().length > 0);
-  if (!algumComConteudo) {
+  if (!rows || rows.length === 0) {
     return <p className="text-sm text-muted-foreground italic">Cardápio ainda não publicado.</p>;
   }
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       {DIAS.map((d) => {
-        const itens = linhas.filter((l) => l.dia === d.key);
-        if (itens.length === 0) return null;
+        const itensDia = rows
+          .filter((r) => r.dia === d.key)
+          .sort((a, b) => (a.ordem ?? 0) - (b.ordem ?? 0));
+        if (itensDia.length === 0) return null;
         return (
-          <div key={d.key} className="space-y-2">
-            <h3 className="font-serif font-bold italic text-base" style={{ color: branding.darkColor }}>
+          <div key={d.key} className="space-y-3">
+            <h3
+              className="font-serif font-bold italic text-lg pl-3 border-l-4"
+              style={{ color: theme.darkColor, borderColor: theme.primaryColor }}
+            >
               {d.label}
             </h3>
-            <div className="grid gap-2 md:grid-cols-3">
-              {itens.map((r) => {
-                const vazio = !(r.conteudo ?? "").trim();
-                return (
-                  <div
-                    key={r.id}
-                    className="bg-white rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm border p-3"
-                    style={{ borderColor: `${branding.primaryColor}22` }}
+            <div className="space-y-4">
+              {itensDia.map((refeicao) => (
+                <div key={`${d.key}-${refeicao.refeicao}`} className="space-y-2">
+                  <p
+                    className="text-[11px] uppercase tracking-wider font-semibold"
+                    style={{ color: theme.primaryColor }}
                   >
-                    <p className="text-[11px] uppercase tracking-wide" style={{ color: branding.primaryColor }}>
-                      {REFEICAO_LABEL[r.refeicao] ?? r.refeicao}
-                    </p>
-                    {vazio ? (
-                      <p className="text-xs italic text-muted-foreground mt-1">a definir</p>
-                    ) : (
-                      <p className="text-sm whitespace-pre-wrap text-foreground/85 mt-1">{r.conteudo}</p>
-                    )}
-                  </div>
-                );
-              })}
+                    {REFEICAO_LABEL[refeicao.refeicao] ?? refeicao.refeicao}
+                  </p>
+                  {refeicao.nota && (
+                    <p className="text-xs italic text-muted-foreground">{refeicao.nota}</p>
+                  )}
+                  {refeicao.nuggets && refeicao.nuggets.length > 0 ? (
+                    <div className="grid gap-3 md:grid-cols-2">
+                      {refeicao.nuggets.map((n, i) => (
+                        <NuggetCard key={i} nugget={n} theme={theme} />
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-xs italic text-muted-foreground">a definir</p>
+                  )}
+                </div>
+              ))}
             </div>
           </div>
         );
@@ -555,16 +796,16 @@ const Conteudo = ({ aluno }: { aluno: AlunoRow }) => {
     (async () => {
       if (!slug) return;
       setLoading(true);
-      // tenta por slug; se não achar e parecer UUID, fallback por id
+      const columns = "id,numero,semestre,titulo,tipo,data_inicio,data_fim,slug,liberado,video_url,zoom_url,slides_url,apostila_url,palette_key";
       let { data } = await supabase
         .from("escola_modulos")
-        .select("id,numero,semestre,titulo,tipo,data_inicio,data_fim,slug,liberado,video_url,zoom_url,slides_url,apostila_url")
+        .select(columns)
         .eq("slug", slug)
         .maybeSingle();
       if (!data && /^[0-9a-f-]{36}$/i.test(slug)) {
         const r = await supabase
           .from("escola_modulos")
-          .select("id,numero,semestre,titulo,tipo,data_inicio,data_fim,slug,liberado,video_url,zoom_url,slides_url,apostila_url")
+          .select(columns)
           .eq("id", slug)
           .maybeSingle();
         data = r.data;
@@ -579,16 +820,10 @@ const Conteudo = ({ aluno }: { aluno: AlunoRow }) => {
     };
   }, [slug]);
 
-  const arc = useMemo(
-    () => (
-      <div
-        aria-hidden
-        className="absolute -top-24 left-1/2 -translate-x-1/2 w-[120%] h-40 rounded-b-full opacity-10"
-        style={{ background: branding.primaryColor }}
-      />
-    ),
-    []
-  );
+  const theme: Theme = useMemo(() => {
+    const key = (modulo?.palette_key as LandingPaletteKey) || "formacao-azul";
+    return getPaletteBranding(key) as Theme;
+  }, [modulo?.palette_key]);
 
   if (loading) {
     return (
@@ -611,6 +846,7 @@ const Conteudo = ({ aluno }: { aluno: AlunoRow }) => {
   }
 
   const locked = !modulo.liberado;
+  const currentSlug = modulo.slug ?? modulo.id;
 
   return (
     <div className="space-y-10">
@@ -620,7 +856,7 @@ const Conteudo = ({ aluno }: { aluno: AlunoRow }) => {
           variant="outline"
           size="sm"
           className="rounded-tl-xl rounded-br-xl rounded-tr-sm rounded-bl-sm mb-4"
-          style={{ borderColor: branding.primaryColor, color: branding.primaryColor }}
+          style={{ borderColor: theme.primaryColor, color: theme.primaryColor }}
         >
           <Link to="/escola/aluno/modulos">
             <ArrowLeft className="w-4 h-4" /> Todos os módulos
@@ -628,24 +864,35 @@ const Conteudo = ({ aluno }: { aluno: AlunoRow }) => {
         </Button>
 
         <div
-          className="relative overflow-hidden rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm bg-white border p-6 md:p-8"
-          style={{ borderColor: `${branding.primaryColor}33` }}
+          className="relative overflow-hidden rounded-tl-[48px] rounded-tr-[48px] rounded-br-3xl rounded-bl-sm border p-6 md:p-8"
+          style={{
+            borderColor: `${theme.primaryColor}33`,
+            background: `linear-gradient(180deg, ${theme.lightColor}80 0%, #ffffff 100%)`,
+          }}
         >
-          {arc}
+          {/* Marca d'água símbolo Portal */}
+          <img
+            src={SIMBOLO_MONO}
+            alt=""
+            aria-hidden
+            className="pointer-events-none absolute -right-6 top-1/2 -translate-y-1/2 h-[110%] w-auto object-contain"
+            style={{ opacity: 0.09 }}
+          />
+
           <div className="relative flex items-start gap-4">
             <span
               className="inline-flex items-center justify-center w-14 h-14 rounded-full text-white font-serif font-bold text-xl shrink-0"
-              style={{ background: branding.primaryColor }}
+              style={{ background: theme.primaryColor }}
             >
               {modulo.numero}
             </span>
             <div className="min-w-0">
-              <p className="text-xs uppercase tracking-wider text-muted-foreground">
+              <p className="text-xs uppercase tracking-wider" style={{ color: theme.primaryColor }}>
                 Semestre {modulo.semestre} · Módulo {modulo.numero} de 15
               </p>
               <h1
                 className="font-serif text-2xl md:text-3xl font-bold italic leading-tight mt-1"
-                style={{ color: branding.darkColor }}
+                style={{ color: theme.darkColor }}
               >
                 {modulo.titulo}
               </h1>
@@ -656,7 +903,7 @@ const Conteudo = ({ aluno }: { aluno: AlunoRow }) => {
                   <Badge
                     variant="secondary"
                     className="text-[10px] inline-flex items-center gap-1"
-                    style={{ background: `${branding.primaryColor}1A`, color: branding.primaryColor }}
+                    style={{ background: `${theme.primaryColor}1A`, color: theme.darkColor }}
                   >
                     <Lock className="w-3 h-3" /> cadeado
                   </Badge>
@@ -664,7 +911,7 @@ const Conteudo = ({ aluno }: { aluno: AlunoRow }) => {
                 {modulo.tipo === "presencial" && (
                   <Badge
                     className="text-[10px]"
-                    style={{ background: `${branding.primaryColor}1A`, color: branding.primaryColor }}
+                    style={{ background: `${theme.primaryColor}1A`, color: theme.darkColor }}
                   >
                     Presencial em SP
                   </Badge>
@@ -678,10 +925,10 @@ const Conteudo = ({ aluno }: { aluno: AlunoRow }) => {
       {locked ? (
         <div
           className="rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm border bg-white p-8 text-center space-y-3"
-          style={{ borderColor: `${branding.primaryColor}33` }}
+          style={{ borderColor: `${theme.primaryColor}33` }}
         >
-          <Lock className="w-8 h-8 mx-auto" style={{ color: branding.primaryColor }} />
-          <h2 className="font-serif text-xl italic font-bold" style={{ color: branding.darkColor }}>
+          <Lock className="w-8 h-8 mx-auto" style={{ color: theme.primaryColor }} />
+          <h2 className="font-serif text-xl italic font-bold" style={{ color: theme.darkColor }}>
             Este módulo ainda será liberado.
           </h2>
           <p className="text-sm text-muted-foreground">
@@ -692,29 +939,29 @@ const Conteudo = ({ aluno }: { aluno: AlunoRow }) => {
         <>
           {/* Material */}
           <section className="space-y-4">
-            <SectionTitle icon={VideoIcon}>Material</SectionTitle>
-            <MaterialBlock modulo={modulo} />
+            <SectionTitle icon={VideoIcon} theme={theme}>Material</SectionTitle>
+            <MaterialBlock modulo={modulo} theme={theme} />
           </section>
 
           {/* Recursos */}
-          <RecursosBlock moduloId={modulo.id} />
+          <RecursosBlock moduloId={modulo.id} theme={theme} />
 
           {/* Cardápio */}
           <section className="space-y-4">
-            <SectionTitle icon={Utensils}>Cardápio do fim de semana</SectionTitle>
-            <CardapioBlock moduloId={modulo.id} />
+            <SectionTitle icon={Utensils} theme={theme}>Cardápio do fim de semana</SectionTitle>
+            <CardapioBlock slug={currentSlug} theme={theme} />
           </section>
 
           {/* Autoavaliação */}
           <section className="space-y-4">
-            <SectionTitle icon={FileText}>Autoavaliação</SectionTitle>
-            <AutoavaliacaoBlock moduloId={modulo.id} alunoId={aluno.id} />
+            <SectionTitle icon={FileText} theme={theme}>Autoavaliação</SectionTitle>
+            <AutoavaliacaoBlock moduloId={modulo.id} alunoId={aluno.id} theme={theme} />
           </section>
 
           {/* Diário */}
           <section className="space-y-4">
-            <SectionTitle icon={Sparkles}>Diário de evolução clínica</SectionTitle>
-            <DiarioBlock moduloId={modulo.id} alunoId={aluno.id} />
+            <SectionTitle icon={Sparkles} theme={theme}>Diário de evolução clínica</SectionTitle>
+            <DiarioBlock moduloId={modulo.id} alunoId={aluno.id} theme={theme} />
           </section>
         </>
       )}

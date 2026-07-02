@@ -6,9 +6,11 @@ import { Button } from "@/components/ui/button";
 import { useUser } from "@/contexts/UserContext";
 import { useCart } from "@/contexts/CartContext";
 import { useImmersive } from "@/contexts/ImmersiveContext";
+import { useEscolaAluno } from "@/hooks/useEscolaAluno";
 import { samkhyaTokens } from "@/components/samkhya/tokens";
 import samkhyaLogo from "@/assets/samkhya-logo-cropped.png";
 import GlobalSearch from "@/components/GlobalSearch";
+
 
 const PIE_COLORS: Record<string, string> = {
   Vata: '#4F75FF',
@@ -76,6 +78,8 @@ const Header = () => {
   const { user, doshaResult, profile, signOut } = useUser();
   const { totalItens, abrirCarrinho } = useCart();
   const { immersive } = useImmersive();
+  const { aluno: escolaAluno } = useEscolaAluno();
+
 
   const isSamkhya = location.pathname.startsWith("/samkhya");
 
@@ -109,7 +113,9 @@ const Header = () => {
        : fezTeste
          ? [{ label: "Minha rotina", to: "/minha-rotina" }]
          : []),
+    ...(escolaAluno ? [{ label: "Área do Aluno", to: "/escola/aluno" }] : []),
   ];
+
 
   const firstName = doshaResult?.nome?.split(" ")[0] 
     || profile?.nome?.split(" ")[0] 

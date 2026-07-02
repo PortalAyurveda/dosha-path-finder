@@ -11,6 +11,11 @@ import { toast } from "@/hooks/use-toast";
 import EscolaAlunoShell, { escolaBranding as branding } from "./EscolaAlunoShell";
 import { formatModuloFimDeSemana, formatModuloHorarios } from "@/lib/escolaModuloDatas";
 import type { AlunoRow } from "@/hooks/useEscolaAluno";
+import { getPaletteBranding, type LandingPaletteKey } from "@/data/landingPalettes";
+
+const SIMBOLO_MONO =
+  "https://api.portalayurveda.com/storage/v1/object/public/portal_images/simbolo-positivo-mono.webp";
+
 
 type Modulo = {
   id: string;
@@ -22,7 +27,9 @@ type Modulo = {
   data_fim: string;
   slug: string | null;
   liberado: boolean;
+  palette_key: string | null;
 };
+
 
 type Postit = {
   id: string;
@@ -30,8 +37,9 @@ type Postit = {
   conteudo: string;
   created_at: string | null;
   parent_id: string | null;
-  aluno?: { nome_completo: string } | null;
+  autor?: { nome_completo: string | null; foto_url: string | null } | null;
 };
+
 
 const SEMESTRES = [
   { num: 1, titulo: "Semestre 1", subtitulo: "Fundamentos (1–5)" },
@@ -90,12 +98,29 @@ const MuralTurma = ({ aluno }: { aluno: AlunoRow }) => {
     setLoading(true);
     const { data } = await supabase
       .from("escola_postits")
-      .select("id,aluno_id,conteudo,created_at,parent_id, aluno:escola_alunos(nome_completo)")
+      .select("id,aluno_id,conteudo,created_at,parent_id")
       .eq("turma_id", turmaId)
       .order("created_at", { ascending: true });
-    setPostits((data ?? []) as any as Postit[]);
+    const rows = (data ?? []) as Postit[];
+
+    const ids = Array.from(new Set(rows.map((r) => r.aluno_id).filter((v): v is string => !!v)));
+    let colegasMap: Record<string, { nome_completo: string | null; foto_url: string | null }> = {};
+    if (ids.length > 0) {
+      const { data: colegas } = await supabase
+        .from("escola_colegas" as any)
+        .select("aluno_id,nome_completo,foto_url")
+        .in("aluno_id", ids);
+      (colegas ?? []).forEach((c: any) => {
+        colegasMap[c.aluno_id] = { nome_completo: c.nome_completo, foto_url: c.foto_url };
+      });
+    }
+    rows.forEach((r) => {
+      r.autor = r.aluno_id ? colegasMap[r.aluno_id] ?? null : null;
+    });
+    setPostits(rows);
     setLoading(false);
   }, [turmaId]);
+
 
   useEffect(() => {
     load();
@@ -146,7 +171,7 @@ const MuralTurma = ({ aluno }: { aluno: AlunoRow }) => {
 
   const principais = postits.filter((p) => !p.parent_id);
   const respostasDe = (parentId: string) => postits.filter((p) => p.parent_id === parentId);
-  const authorName = (p: Postit) => p.aluno?.nome_completo?.split(" ")[0] ?? "Aluno";
+  const authorName = (p: Postit) => p.autor?.nome_completo?.split(" ")[0] ?? "Aluno";
 
   return (
     <section className="space-y-4">
@@ -307,8 +332,9 @@ const Conteudo = ({ aluno }: { aluno: AlunoRow }) => {
       setLoading(true);
       const { data } = await supabase
         .from("escola_modulos")
-        .select("id,numero,semestre,titulo,tipo,data_inicio,data_fim,slug,liberado")
+        .select("id,numero,semestre,titulo,tipo,data_inicio,data_fim,slug,liberado,palette_key")
         .order("numero", { ascending: true });
+
       setModulos((data ?? []) as Modulo[]);
       setLoading(false);
     })();
@@ -369,39 +395,40 @@ const Conteudo = ({ aluno }: { aluno: AlunoRow }) => {
                   const isFuture = new Date(m.data_inicio).getTime() > now && !isCurrent;
                   const locked = !m.liberado;
                   const slugOrId = m.slug ?? m.id;
+                  const theme = getPaletteBranding((m.palette_key as LandingPaletteKey) || "formacao-azul");
+                  const activeTheme = locked
+                    ? { primaryColor: "#94a3b8", darkColor: "#475569", lightColor: "#e5e7eb" }
+                    : theme;
 
                   const cardInner = (
-                    <div className="flex items-start gap-3">
+                    <div className="relative flex items-start gap-3">
                       <span
-                        className="inline-flex items-center justify-center w-10 h-10 rounded-full shrink-0 font-serif font-bold text-base"
-                        style={{
-                          background: isCurrent && !locked ? branding.primaryColor : `${branding.primaryColor}15`,
-                          color: isCurrent && !locked ? "#fff" : branding.primaryColor,
-                        }}
+                        className="relative z-10 inline-flex items-center justify-center w-10 h-10 rounded-full shrink-0 font-serif font-bold text-base text-white"
+                        style={{ background: activeTheme.primaryColor }}
                       >
                         {m.numero}
                       </span>
-                      <div className="min-w-0 flex-1">
+                      <div className="min-w-0 flex-1 relative z-10">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <h3 className="font-serif font-bold italic leading-snug text-base" style={{ color: branding.darkColor }}>
+                          <h3 className="font-serif font-bold italic leading-snug text-base" style={{ color: activeTheme.darkColor }}>
                             {m.titulo}
                           </h3>
                           {locked && (
                             <Badge
                               variant="secondary"
                               className="text-[10px] inline-flex items-center gap-1"
-                              style={{ background: `${branding.primaryColor}10`, color: branding.primaryColor }}
+                              style={{ background: `${activeTheme.primaryColor}20`, color: activeTheme.darkColor }}
                             >
                               <Lock className="w-3 h-3" /> cadeado
                             </Badge>
                           )}
                           {!locked && isCurrent && (
-                            <Badge className="text-[10px] uppercase tracking-wide" style={{ background: branding.primaryColor, color: "#fff" }}>
+                            <Badge className="text-[10px] uppercase tracking-wide" style={{ background: activeTheme.primaryColor, color: "#fff" }}>
                               Atual
                             </Badge>
                           )}
                           {m.tipo === "presencial" && (
-                            <Badge variant="secondary" className="text-[10px]" style={{ background: `${branding.primaryColor}1A`, color: branding.primaryColor }}>
+                            <Badge variant="secondary" className="text-[10px]" style={{ background: `${activeTheme.primaryColor}1A`, color: activeTheme.darkColor }}>
                               Presencial em SP
                             </Badge>
                           )}
@@ -413,19 +440,30 @@ const Conteudo = ({ aluno }: { aluno: AlunoRow }) => {
                         )}
                       </div>
                       {locked ? (
-                        <Lock className="w-4 h-4 mt-2 shrink-0" style={{ color: branding.primaryColor }} />
+                        <Lock className="w-4 h-4 mt-2 shrink-0 relative z-10" style={{ color: activeTheme.darkColor }} />
                       ) : (
-                        <ChevronRight className="w-4 h-4 mt-2 shrink-0 group-hover:translate-x-1 transition-transform" style={{ color: branding.primaryColor }} />
+                        <ChevronRight className="w-4 h-4 mt-2 shrink-0 group-hover:translate-x-1 transition-transform relative z-10" style={{ color: activeTheme.darkColor }} />
                       )}
+                      {/* Marca d'água — símbolo Portal, atrás do texto mas nunca sobre o número */}
+                      <img
+                        src={SIMBOLO_MONO}
+                        alt=""
+                        aria-hidden
+                        className="pointer-events-none absolute -right-2 top-1/2 -translate-y-1/2 w-[72px] h-[72px] object-contain z-0"
+                        style={{ opacity: 0.09 }}
+                      />
                     </div>
                   );
 
-                  const baseClass = `block bg-white rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm border p-4 transition-all ${
-                    locked ? "opacity-60 cursor-not-allowed" : isFuture ? "opacity-70 hover:opacity-100" : ""
+                  const bgTint = locked ? "#f1f5f9" : `${theme.lightColor}55`;
+                  const baseClass = `relative overflow-hidden block rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm border p-4 transition-all pl-5 ${
+                    locked ? "opacity-70 cursor-not-allowed grayscale" : isFuture ? "opacity-80 hover:opacity-100" : ""
                   }`;
                   const style = {
-                    borderColor: isCurrent && !locked ? branding.primaryColor : `${branding.primaryColor}22`,
-                    boxShadow: isCurrent && !locked ? `0 8px 24px -12px ${branding.primaryColor}66` : undefined,
+                    background: bgTint,
+                    borderColor: isCurrent && !locked ? activeTheme.primaryColor : `${activeTheme.primaryColor}33`,
+                    boxShadow: isCurrent && !locked ? `0 8px 24px -12px ${activeTheme.primaryColor}66` : undefined,
+                    borderLeft: `4px solid ${activeTheme.primaryColor}`,
                   } as const;
 
                   return (
@@ -449,6 +487,7 @@ const Conteudo = ({ aluno }: { aluno: AlunoRow }) => {
                   );
                 })}
               </div>
+
             </section>
           );
         })

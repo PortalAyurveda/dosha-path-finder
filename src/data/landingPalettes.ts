@@ -24,7 +24,13 @@ export type LandingPaletteKey =
   | "akasha-roxo"
   | "vata-azul"
   | "pitta-salmao"
-  | "kapha-verde";
+  | "kapha-verde"
+  | "doshas-ambar"
+  | "terapias-teal"
+  | "pratica-terra"
+  | "tratamento-esmeralda"
+  | "rasayana-ouro";
+
 
 export type LandingPaletteTheme = "light" | "warm" | "dark";
 
@@ -193,6 +199,82 @@ export const LANDING_PALETTES: LandingPalette[] = [
       warmBg: "#F5FBF3",
     },
   },
+  {
+    key: "doshas-ambar",
+    label: "Doshas (Âmbar)",
+    description: "Conteúdo institucional dos três doshas — âmbar quente e dourado.",
+    theme: "warm",
+    swatch: ["#DD8C0D", "#FFF5CC", "#A35E1A"],
+    branding: {
+      logo: PORTAL_LOGO,
+      primaryColor: "#DD8C0D",
+      darkColor: "#A35E1A",
+      lightColor: "#FFF5CC",
+      accentColor: "#FACC15",
+      warmBg: "#FFFDF2",
+    },
+  },
+  {
+    key: "terapias-teal",
+    label: "Terapias (Teal)",
+    description: "Terapias corporais, massagens e cuidados manuais.",
+    theme: "light",
+    swatch: ["#3FA8A0", "#D5F0EE", "#1F6E68"],
+    branding: {
+      logo: PORTAL_LOGO,
+      primaryColor: "#3FA8A0",
+      darkColor: "#1F6E68",
+      lightColor: "#D5F0EE",
+      accentColor: "#FACC15",
+      warmBg: "#F2FBFA",
+    },
+  },
+  {
+    key: "pratica-terra",
+    label: "Prática (Terra)",
+    description: "Práticas fundamentais, exercícios e vivências enraizadas.",
+    theme: "warm",
+    swatch: ["#B0713A", "#F3E4D5", "#7A4A22"],
+    branding: {
+      logo: PORTAL_LOGO,
+      primaryColor: "#B0713A",
+      darkColor: "#7A4A22",
+      lightColor: "#F3E4D5",
+      accentColor: "#FACC15",
+      warmBg: "#FBF6F0",
+    },
+  },
+  {
+    key: "tratamento-esmeralda",
+    label: "Tratamento (Esmeralda)",
+    description: "Protocolos de tratamento e panchakarma.",
+    theme: "light",
+    swatch: ["#34A06A", "#D1F4E0", "#15803D"],
+    branding: {
+      logo: PORTAL_LOGO,
+      primaryColor: "#34A06A",
+      darkColor: "#15803D",
+      lightColor: "#D1F4E0",
+      accentColor: "#FACC15",
+      warmBg: "#F3FBF6",
+    },
+  },
+  {
+    key: "rasayana-ouro",
+    label: "Rasayana (Ouro)",
+    description: "Rasayana, longevidade e formulações nobres.",
+    theme: "warm",
+    swatch: ["#C8922A", "#F6EBD2", "#8C641C"],
+    branding: {
+      logo: PORTAL_LOGO,
+      primaryColor: "#C8922A",
+      darkColor: "#8C641C",
+      lightColor: "#F6EBD2",
+      accentColor: "#FACC15",
+      warmBg: "#FCF9F1",
+    },
+  },
+
 ];
 
 const PALETTE_MAP: Record<LandingPaletteKey, LandingPalette> = LANDING_PALETTES.reduce(

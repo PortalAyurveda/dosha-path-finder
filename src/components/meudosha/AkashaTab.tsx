@@ -368,32 +368,38 @@ const AkashaTab = ({
         style={{ paddingBottom: "calc(0.5rem + env(safe-area-inset-bottom))" }}
       >
         {(isPremium || tokens > 0) ? (
-          <div className="flex items-center gap-2 bg-card border border-border rounded-full px-4 py-2 shadow-lg shadow-akasha/5">
-            <input
-              type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={handleKeyDown}
-              onFocus={(e) => {
-                // Garante que o input não fique escondido atrás do teclado no mobile
-                setTimeout(() => e.currentTarget?.scrollIntoView({ block: "nearest", behavior: "smooth" }), 200);
-              }}
-              placeholder="Pergunte à Akasha..."
-              disabled={sending}
-              enterKeyHint="send"
-              autoComplete="off"
-              className="flex-1 bg-transparent border-none outline-none text-foreground placeholder:text-muted-foreground text-base"
-              style={{ fontSize: "16px" }}
-            />
-            <button
-              onClick={sendMessage}
-              disabled={sending || !input.trim()}
-              className="shrink-0 w-9 h-9 rounded-full bg-akasha text-white flex items-center justify-center disabled:opacity-40 transition-opacity hover:opacity-90"
-              aria-label="Enviar"
-            >
-              {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-            </button>
+          <div className="space-y-1.5">
+            <div className="flex items-center gap-2 bg-card border border-border rounded-full px-4 py-2 shadow-lg shadow-akasha/5">
+              <input
+                type="text"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={handleKeyDown}
+                onFocus={(e) => {
+                  // Garante que o input não fique escondido atrás do teclado no mobile
+                  setTimeout(() => e.currentTarget?.scrollIntoView({ block: "nearest", behavior: "smooth" }), 200);
+                }}
+                placeholder="Pergunte sobre Ayurveda… ou escreva Portal para ajuda com links e acesso"
+                disabled={sending}
+                enterKeyHint="send"
+                autoComplete="off"
+                className="flex-1 bg-transparent border-none outline-none text-foreground placeholder:text-muted-foreground text-base"
+                style={{ fontSize: "16px" }}
+              />
+              <button
+                onClick={sendMessage}
+                disabled={sending || !input.trim()}
+                className="shrink-0 w-9 h-9 rounded-full bg-akasha text-white flex items-center justify-center disabled:opacity-40 transition-opacity hover:opacity-90"
+                aria-label="Enviar"
+              >
+                {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+              </button>
+            </div>
+            <p className="text-xs text-muted-foreground text-center px-2">
+              Escreva <span className="font-medium">Portal</span> para ajuda com o site • escreva <span className="font-medium">Akasha</span> para voltar
+            </p>
           </div>
+
 
         ) : (
           <div

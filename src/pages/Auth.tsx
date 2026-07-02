@@ -43,6 +43,15 @@ const Auth = () => {
 
   useEffect(() => {
     if (!waitingForDosha) return;
+    const redirectParam = searchParams.get("redirect");
+    const safeRedirect =
+      redirectParam && redirectParam.startsWith("/") && !redirectParam.startsWith("//")
+        ? redirectParam
+        : null;
+    if (safeRedirect) {
+      navigate(safeRedirect, { replace: true });
+      return;
+    }
     const fallbackId = searchParams.get("claim") || doshaResult?.idPublico || localStorage.getItem("activeDoshaId");
     if (fallbackId) {
       navigate(`/meu-dosha?id=${fallbackId}`, { replace: true });
@@ -53,6 +62,7 @@ const Auth = () => {
     }, 3000);
     return () => clearTimeout(timer);
   }, [waitingForDosha, doshaResult, navigate]);
+
 
   useEffect(() => {
     const idPublico = searchParams.get("claim");
