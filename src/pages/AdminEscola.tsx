@@ -59,7 +59,11 @@ type CardapioRow = {
   refeicao: string;
   conteudo: string | null;
   ordem: number | null;
+  nugget_ids: string[] | null;
+  curadoria: Record<string, string> | null;
 };
+
+type NuggetLite = { id: string; titulo: string; subcategoria: string | null };
 
 type Recurso = {
   id: string;
