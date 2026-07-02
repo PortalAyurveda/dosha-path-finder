@@ -29,6 +29,10 @@ import {
   Lock,
   Unlock,
   Utensils,
+  ArrowUp,
+  ArrowDown,
+  X,
+  Search,
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { formatModuloFimDeSemana, formatModuloHorarios } from "@/lib/escolaModuloDatas";
