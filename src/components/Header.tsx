@@ -6,9 +6,11 @@ import { Button } from "@/components/ui/button";
 import { useUser } from "@/contexts/UserContext";
 import { useCart } from "@/contexts/CartContext";
 import { useImmersive } from "@/contexts/ImmersiveContext";
+import { useEscolaAluno } from "@/hooks/useEscolaAluno";
 import { samkhyaTokens } from "@/components/samkhya/tokens";
 import samkhyaLogo from "@/assets/samkhya-logo-cropped.png";
 import GlobalSearch from "@/components/GlobalSearch";
+
 
 const PIE_COLORS: Record<string, string> = {
   Vata: '#4F75FF',
