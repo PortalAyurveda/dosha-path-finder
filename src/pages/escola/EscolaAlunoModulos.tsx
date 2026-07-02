@@ -171,7 +171,7 @@ const MuralTurma = ({ aluno }: { aluno: AlunoRow }) => {
 
   const principais = postits.filter((p) => !p.parent_id);
   const respostasDe = (parentId: string) => postits.filter((p) => p.parent_id === parentId);
-  const authorName = (p: Postit) => p.aluno?.nome_completo?.split(" ")[0] ?? "Aluno";
+  const authorName = (p: Postit) => p.autor?.nome_completo?.split(" ")[0] ?? "Aluno";
 
   return (
     <section className="space-y-4">
