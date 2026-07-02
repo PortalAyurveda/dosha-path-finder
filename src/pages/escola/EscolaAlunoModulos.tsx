@@ -98,12 +98,29 @@ const MuralTurma = ({ aluno }: { aluno: AlunoRow }) => {
     setLoading(true);
     const { data } = await supabase
       .from("escola_postits")
-      .select("id,aluno_id,conteudo,created_at,parent_id, aluno:escola_alunos(nome_completo)")
+      .select("id,aluno_id,conteudo,created_at,parent_id")
       .eq("turma_id", turmaId)
       .order("created_at", { ascending: true });
-    setPostits((data ?? []) as any as Postit[]);
+    const rows = (data ?? []) as Postit[];
+
+    const ids = Array.from(new Set(rows.map((r) => r.aluno_id).filter((v): v is string => !!v)));
+    let colegasMap: Record<string, { nome_completo: string | null; foto_url: string | null }> = {};
+    if (ids.length > 0) {
+      const { data: colegas } = await supabase
+        .from("escola_colegas" as any)
+        .select("aluno_id,nome_completo,foto_url")
+        .in("aluno_id", ids);
+      (colegas ?? []).forEach((c: any) => {
+        colegasMap[c.aluno_id] = { nome_completo: c.nome_completo, foto_url: c.foto_url };
+      });
+    }
+    rows.forEach((r) => {
+      r.autor = r.aluno_id ? colegasMap[r.aluno_id] ?? null : null;
+    });
+    setPostits(rows);
     setLoading(false);
   }, [turmaId]);
+
 
   useEffect(() => {
     load();
