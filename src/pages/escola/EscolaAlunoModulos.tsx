@@ -27,7 +27,9 @@ type Modulo = {
   data_fim: string;
   slug: string | null;
   liberado: boolean;
+  palette_key: string | null;
 };
+
 
 type Postit = {
   id: string;
