@@ -1,13 +1,17 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import * as LucideIcons from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
   ArrowLeft,
+  ChevronDown,
+  Circle,
   Download,
   FileText,
   Loader2,
@@ -19,11 +23,23 @@ import {
   Link2,
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
-import EscolaAlunoShell, { escolaBranding as branding } from "./EscolaAlunoShell";
+import EscolaAlunoShell, { escolaBranding as shellBranding } from "./EscolaAlunoShell";
 import { formatModuloFimDeSemana, formatModuloHorarios } from "@/lib/escolaModuloDatas";
 import type { AlunoRow } from "@/hooks/useEscolaAluno";
+import { getPaletteBranding, type LandingPaletteKey } from "@/data/landingPalettes";
 
 const BUCKET = "escola";
+const SIMBOLO_MONO =
+  "https://api.portalayurveda.com/storage/v1/object/public/portal_images/simbolo-positivo-mono.webp";
+
+type Theme = {
+  primaryColor: string;
+  darkColor: string;
+  lightColor: string;
+  accentColor: string;
+  warmBg: string;
+  logo: string;
+};
 
 type Modulo = {
   id: string;
@@ -39,14 +55,7 @@ type Modulo = {
   zoom_url: string | null;
   slides_url: string | null;
   apostila_url: string | null;
-};
-
-type CardapioRow = {
-  id: string;
-  dia: string;
-  refeicao: string;
-  conteudo: string | null;
-  ordem: number | null;
+  palette_key: string | null;
 };
 
 type Recurso = {
@@ -68,6 +77,7 @@ const RECURSO_GROUPS: { tipo: string; label: string; icon: typeof VideoIcon }[] 
   { tipo: "dinacharya", label: "Rotina de dinacharya", icon: Sparkles },
   { tipo: "experiencia", label: "Experiências vivenciais", icon: Sparkles },
 ];
+
 
 const formatDateLong = (iso: string | null) => {
   if (!iso) return "";
