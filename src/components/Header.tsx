@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { ArrowLeft, Menu, LogIn, LogOut, ShoppingBag, ShoppingCart, Home, CalendarHeart, GraduationCap } from "lucide-react";
+import { ArrowLeft, Menu, LogIn, LogOut, ShoppingBag, ShoppingCart, Home, CalendarHeart } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { useUser } from "@/contexts/UserContext";
