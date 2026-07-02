@@ -11,6 +11,11 @@ import { toast } from "@/hooks/use-toast";
 import EscolaAlunoShell, { escolaBranding as branding } from "./EscolaAlunoShell";
 import { formatModuloFimDeSemana, formatModuloHorarios } from "@/lib/escolaModuloDatas";
 import type { AlunoRow } from "@/hooks/useEscolaAluno";
+import { getPaletteBranding, type LandingPaletteKey } from "@/data/landingPalettes";
+
+const SIMBOLO_MONO =
+  "https://api.portalayurveda.com/storage/v1/object/public/portal_images/simbolo-positivo-mono.webp";
+
 
 type Modulo = {
   id: string;
