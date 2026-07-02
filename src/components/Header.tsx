@@ -113,7 +113,9 @@ const Header = () => {
        : fezTeste
          ? [{ label: "Minha rotina", to: "/minha-rotina" }]
          : []),
+    ...(escolaAluno ? [{ label: "Área do Aluno", to: "/escola/aluno" }] : []),
   ];
+
 
   const firstName = doshaResult?.nome?.split(" ")[0] 
     || profile?.nome?.split(" ")[0] 
