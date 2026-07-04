@@ -295,7 +295,7 @@ const AdminVendasAkasha = () => {
     setLoading(true);
       const { data, error } = await supabase
         .from("user_profiles")
-        .select("nome, nome_completo, email, subscription_status, premium_since, premium_until, is_premium, stripe_subscription_id, is_cortesia")
+        .select("nome, nome_completo, email, subscription_status, premium_since, premium_until, is_premium, stripe_subscription_id, is_cortesia, tokens_akasha")
         .eq("is_premium", true)
         .order("premium_since", { ascending: false, nullsFirst: false });
       if (!error && data) {
@@ -312,6 +312,8 @@ const AdminVendasAkasha = () => {
             valor,
             stripe_subscription_id: stripeId ?? null,
             isCortesia: !!r.is_cortesia,
+            is_premium: !!r.is_premium,
+            tokens_akasha: r.tokens_akasha ?? null,
           };
         });
         setData(rows);
