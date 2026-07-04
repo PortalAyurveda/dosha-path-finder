@@ -498,6 +498,7 @@ const AdminVendasAkasha = () => {
         premium_since: now.toISOString(),
         premium_until: until.toISOString(),
         stripe_subscription_id: "manual",
+        is_cortesia: cortesiaSel,
       })
       .ilike("email", foundUser.email)
       .select("id, email");
