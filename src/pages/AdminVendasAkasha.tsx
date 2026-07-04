@@ -181,6 +181,7 @@ const AssinaturasTable = ({
           <TableHead>Plano</TableHead>
           <TableHead>Valor</TableHead>
           <TableHead>Status</TableHead>
+          <TableHead>Acesso Akasha</TableHead>
           <TableHead className="w-[60px]">Ações</TableHead>
         </TableRow>
       </TableHeader>
@@ -203,6 +204,15 @@ const AssinaturasTable = ({
             <TableCell>{formatBRL(Number(a.valor))}</TableCell>
             <TableCell>{statusBadge(a.subscription_status)}</TableCell>
             <TableCell>
+              {a.is_premium === true ? (
+                <Badge className="bg-green-500 hover:bg-green-600 text-white border-transparent">Premium ✓</Badge>
+              ) : (a.tokens_akasha ?? 0) > 0 ? (
+                <Badge className="bg-amber-500 hover:bg-amber-600 text-white border-transparent">{a.tokens_akasha} tokens</Badge>
+              ) : (
+                <Badge className="bg-red-500 hover:bg-red-600 text-white border-transparent">SEM acesso</Badge>
+              )}
+            </TableCell>
+            <TableCell>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="icon" className="h-8 w-8">
@@ -210,6 +220,19 @@ const AssinaturasTable = ({
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
+                  <DropdownMenuSub>
+                    <DropdownMenuSubTrigger>Dar Premium (Akasha)</DropdownMenuSubTrigger>
+                    <DropdownMenuPortal>
+                      <DropdownMenuSubContent>
+                        <DropdownMenuItem onClick={() => darPremium(a, "anual")}>Anual (cortesia)</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => darPremium(a, "mensal")}>Mensal (cortesia)</DropdownMenuItem>
+                      </DropdownMenuSubContent>
+                    </DropdownMenuPortal>
+                  </DropdownMenuSub>
+                  {a.is_premium === true && (
+                    <DropdownMenuItem onClick={() => removerPremium(a)}>Remover Premium</DropdownMenuItem>
+                  )}
+                  <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={() => toggleCortesia(a)}>
                     {a.isCortesia ? "Remover cortesia" : "Marcar como cortesia"}
                   </DropdownMenuItem>
