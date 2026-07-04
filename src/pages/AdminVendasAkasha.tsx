@@ -34,6 +34,8 @@ interface Assinante {
   valor: number;
   stripe_subscription_id: string | null;
   isCortesia: boolean;
+  is_premium: boolean;
+  tokens_akasha: number | null;
 }
 
 const formatBRL = (v: number) =>
@@ -120,6 +122,41 @@ const AssinaturasTable = ({
     onChanged();
   };
 
+  const darPremium = async (a: Assinante, plano: "mensal" | "anual") => {
+    const now = new Date();
+    const until = new Date(now);
+    until.setMonth(until.getMonth() + (plano === "anual" ? 12 : 1));
+    const { error } = await supabase
+      .from("user_profiles")
+      .update({
+        is_premium: true,
+        subscription_status: "active",
+        premium_since: now.toISOString(),
+        premium_until: until.toISOString(),
+        is_cortesia: true,
+      } as any)
+      .ilike("email", a.email);
+    if (error) {
+      toast.error(`Erro: ${error.message}`);
+      return;
+    }
+    toast.success(`Premium ${plano} (cortesia) ativado`);
+    onChanged();
+  };
+
+  const removerPremium = async (a: Assinante) => {
+    const { error } = await supabase
+      .from("user_profiles")
+      .update({ is_premium: false } as any)
+      .ilike("email", a.email);
+    if (error) {
+      toast.error(`Erro: ${error.message}`);
+      return;
+    }
+    toast.success("Premium removido");
+    onChanged();
+  };
+
   if (loading) {
     return (
       <div className="p-6 space-y-3">
@@ -144,6 +181,7 @@ const AssinaturasTable = ({
           <TableHead>Plano</TableHead>
           <TableHead>Valor</TableHead>
           <TableHead>Status</TableHead>
+          <TableHead>Acesso Akasha</TableHead>
           <TableHead className="w-[60px]">Ações</TableHead>
         </TableRow>
       </TableHeader>
@@ -166,6 +204,15 @@ const AssinaturasTable = ({
             <TableCell>{formatBRL(Number(a.valor))}</TableCell>
             <TableCell>{statusBadge(a.subscription_status)}</TableCell>
             <TableCell>
+              {a.is_premium === true ? (
+                <Badge className="bg-green-500 hover:bg-green-600 text-white border-transparent">Premium ✓</Badge>
+              ) : (a.tokens_akasha ?? 0) > 0 ? (
+                <Badge className="bg-amber-500 hover:bg-amber-600 text-white border-transparent">{a.tokens_akasha} tokens</Badge>
+              ) : (
+                <Badge className="bg-red-500 hover:bg-red-600 text-white border-transparent">SEM acesso</Badge>
+              )}
+            </TableCell>
+            <TableCell>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="icon" className="h-8 w-8">
@@ -173,6 +220,19 @@ const AssinaturasTable = ({
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
+                  <DropdownMenuSub>
+                    <DropdownMenuSubTrigger>Dar Premium (Akasha)</DropdownMenuSubTrigger>
+                    <DropdownMenuPortal>
+                      <DropdownMenuSubContent>
+                        <DropdownMenuItem onClick={() => darPremium(a, "anual")}>Anual (cortesia)</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => darPremium(a, "mensal")}>Mensal (cortesia)</DropdownMenuItem>
+                      </DropdownMenuSubContent>
+                    </DropdownMenuPortal>
+                  </DropdownMenuSub>
+                  {a.is_premium === true && (
+                    <DropdownMenuItem onClick={() => removerPremium(a)}>Remover Premium</DropdownMenuItem>
+                  )}
+                  <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={() => toggleCortesia(a)}>
                     {a.isCortesia ? "Remover cortesia" : "Marcar como cortesia"}
                   </DropdownMenuItem>
@@ -293,7 +353,7 @@ const AdminVendasAkasha = () => {
     setLoading(true);
       const { data, error } = await supabase
         .from("user_profiles")
-        .select("nome, nome_completo, email, subscription_status, premium_since, premium_until, is_premium, stripe_subscription_id, is_cortesia")
+        .select("nome, nome_completo, email, subscription_status, premium_since, premium_until, is_premium, stripe_subscription_id, is_cortesia, tokens_akasha")
         .eq("is_premium", true)
         .order("premium_since", { ascending: false, nullsFirst: false });
       if (!error && data) {
@@ -310,6 +370,8 @@ const AdminVendasAkasha = () => {
             valor,
             stripe_subscription_id: stripeId ?? null,
             isCortesia: !!r.is_cortesia,
+            is_premium: !!r.is_premium,
+            tokens_akasha: r.tokens_akasha ?? null,
           };
         });
         setData(rows);
@@ -325,7 +387,7 @@ const AdminVendasAkasha = () => {
     setRotinasLoading(true);
       const { data, error } = await supabase
         .from("user_profiles")
-        .select("nome, nome_completo, email, subscription_status, premium_since, premium_until, plano, stripe_subscription_id, is_cortesia")
+        .select("nome, nome_completo, email, subscription_status, premium_since, premium_until, plano, stripe_subscription_id, is_cortesia, is_premium, tokens_akasha")
         .eq("plano", "rotina")
         .order("premium_since", { ascending: false, nullsFirst: false });
       if (!error && data) {
@@ -341,6 +403,8 @@ const AdminVendasAkasha = () => {
             valor: 30.0,
             stripe_subscription_id: stripeId ?? null,
             isCortesia: !!r.is_cortesia,
+            is_premium: !!r.is_premium,
+            tokens_akasha: r.tokens_akasha ?? null,
           };
         });
         setRotinasData(rows);
@@ -363,6 +427,7 @@ const AdminVendasAkasha = () => {
     subscription_status: string | null;
   } | null>(null);
   const [planoSel, setPlanoSel] = useState<"mensal" | "anual">("mensal");
+  const [cortesiaSel, setCortesiaSel] = useState(true);
   const [activating, setActivating] = useState(false);
 
   const handleBuscar = async () => {
@@ -433,6 +498,7 @@ const AdminVendasAkasha = () => {
         premium_since: now.toISOString(),
         premium_until: until.toISOString(),
         stripe_subscription_id: "manual",
+        is_cortesia: cortesiaSel,
       })
       .ilike("email", foundUser.email)
       .select("id, email");
@@ -557,6 +623,16 @@ const AdminVendasAkasha = () => {
                       </div>
                     </div>
 
+                    <label className="flex items-center gap-2 text-sm text-foreground select-none">
+                      <input
+                        type="checkbox"
+                        checked={cortesiaSel}
+                        onChange={(e) => setCortesiaSel(e.target.checked)}
+                        className="h-4 w-4"
+                      />
+                      É cortesia (não conta no faturamento)
+                    </label>
+
                     <Button onClick={handleAtivar} disabled={activating} className="w-full sm:w-auto">
                       {activating ? "Ativando..." : "Ativar Premium"}
                     </Button>
@@ -565,6 +641,9 @@ const AdminVendasAkasha = () => {
               </CardContent>
             </Card>
 
+            <p className="text-xs text-muted-foreground">
+              Só "Dar Premium" libera a Akasha. "Trocar plano" e "Marcar cortesia" são apenas rótulos de cobrança e não dão acesso.
+            </p>
             <Card>
               <CardContent className="p-0">
                 <AssinaturasTable data={data} loading={loading} onChanged={() => { loadAssinaturas(); loadRotinas(); }} />
@@ -575,6 +654,9 @@ const AdminVendasAkasha = () => {
           <TabsContent value="rotinas" className="space-y-6">
             <ResumoCardsRotinas data={rotinasData} />
 
+            <p className="text-xs text-muted-foreground">
+              Só "Dar Premium" libera a Akasha. "Trocar plano" e "Marcar cortesia" são apenas rótulos de cobrança e não dão acesso.
+            </p>
             <Card>
               <CardContent className="p-0">
                 <AssinaturasTable data={rotinasData} loading={rotinasLoading} onChanged={() => { loadAssinaturas(); loadRotinas(); }} />

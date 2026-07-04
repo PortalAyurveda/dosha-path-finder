@@ -22,7 +22,7 @@ const HIDDEN_PREFIXES = [
   "/admin/rpg",
 ];
 const HIDDEN_INCLUDES = ["/obrigado"];
-const AUTO_OPEN_DELAY_MS = 30_000;
+
 
 interface ChatMessage {
   role: "user" | "assistant";
@@ -78,7 +78,7 @@ const FloatingAkasha = () => {
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const hasHydratedRef = useRef(false);
   const initialSentRef = useRef(false);
-  const autoOpenTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  
   const inputRef = useRef<HTMLInputElement>(null);
 
   const resolvedEmail = user?.email || "visitante@portalayurveda.com";
@@ -181,40 +181,8 @@ const FloatingAkasha = () => {
     }
   }, [cachedHistory]);
 
-  // Auto-abertura única por navegador, 30s após page load, em qualquer rota visível
-  useEffect(() => {
-    if (shouldHide) return;
-    if (open) return;
 
-    const storageKey = "akasha_auto_opened";
-    try {
-      if (localStorage.getItem(storageKey)) return;
-    } catch {
-      return;
-    }
 
-    const schedule = () => {
-      autoOpenTimerRef.current = setTimeout(() => {
-        try { localStorage.setItem(storageKey, "1"); } catch {}
-        setOpen(true);
-      }, AUTO_OPEN_DELAY_MS);
-    };
-
-    if (document.readyState === "complete") {
-      schedule();
-    } else {
-      const onLoad = () => schedule();
-      window.addEventListener("load", onLoad, { once: true });
-      return () => {
-        window.removeEventListener("load", onLoad);
-        if (autoOpenTimerRef.current) clearTimeout(autoOpenTimerRef.current);
-      };
-    }
-
-    return () => {
-      if (autoOpenTimerRef.current) clearTimeout(autoOpenTimerRef.current);
-    };
-  }, [shouldHide, location.pathname, open]);
 
   // Say-hello local — apenas exibe mensagem da Akasha, sem chamar o webhook nem gravar no servidor
   const sendInitialMessage = useCallback(() => {
@@ -462,7 +430,7 @@ const FloatingAkasha = () => {
       {/* Botão flutuante */}
       <button
         onClick={() => setOpen((o) => !o)}
-        className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-[60] w-14 h-14 rounded-full bg-white border border-akasha/20 shadow-xl shadow-akasha/30 flex items-center justify-center text-akasha hover:scale-105 transition-transform overflow-hidden"
+        className={`fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-[60] w-14 h-14 rounded-full bg-white border border-akasha/20 shadow-xl shadow-akasha/30 flex items-center justify-center text-akasha hover:scale-105 transition-transform overflow-hidden ${!open ? "motion-safe:animate-pulse" : ""}`}
         aria-label={open ? "Fechar Akasha" : "Abrir Akasha"}
       >
         {open ? (
