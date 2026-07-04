@@ -427,6 +427,7 @@ const AdminVendasAkasha = () => {
     subscription_status: string | null;
   } | null>(null);
   const [planoSel, setPlanoSel] = useState<"mensal" | "anual">("mensal");
+  const [cortesiaSel, setCortesiaSel] = useState(true);
   const [activating, setActivating] = useState(false);
 
   const handleBuscar = async () => {
