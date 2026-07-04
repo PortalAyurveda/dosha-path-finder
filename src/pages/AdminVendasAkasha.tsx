@@ -34,6 +34,8 @@ interface Assinante {
   valor: number;
   stripe_subscription_id: string | null;
   isCortesia: boolean;
+  is_premium: boolean;
+  tokens_akasha: number | null;
 }
 
 const formatBRL = (v: number) =>
