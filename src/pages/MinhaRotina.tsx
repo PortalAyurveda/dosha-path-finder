@@ -343,6 +343,34 @@ const MinhaRotina = () => {
     );
   }
 
+  // Se o polling do pagamento chegou aqui com acesso liberado, encerre-o e limpe a URL.
+  if (confirmandoPagamento) {
+    setTimeout(() => {
+      setConfirmandoPagamento(false);
+      if (window.location.search.includes("assinatura=ok")) {
+        window.history.replaceState({}, "", "/minha-rotina");
+      }
+    }, 0);
+  }
+
+  if (!doshaResult) {
+    return (
+      <PageContainer title="Minha rotina" description="Sua rotina ayurvédica personalizada.">
+        <div className="max-w-xl mx-auto text-center py-12 px-4">
+          <h1 className="font-serif text-3xl text-foreground mb-3">
+            Falta um passo pra montar sua rotina
+          </h1>
+          <p className="text-muted-foreground mb-6">
+            Faça seu teste de dosha e eu monto sua rotina personalizada na hora.
+          </p>
+          <Link to="/teste-de-dosha">
+            <Button size="lg">Fazer meu teste de dosha</Button>
+          </Link>
+        </div>
+      </PageContainer>
+    );
+  }
+
 
   // Rotina filtrada do dia
   const rowsDoDia = (rotinaRows ?? []).filter((r) => r.dia === diaSelecionado);
