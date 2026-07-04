@@ -122,6 +122,41 @@ const AssinaturasTable = ({
     onChanged();
   };
 
+  const darPremium = async (a: Assinante, plano: "mensal" | "anual") => {
+    const now = new Date();
+    const until = new Date(now);
+    until.setMonth(until.getMonth() + (plano === "anual" ? 12 : 1));
+    const { error } = await supabase
+      .from("user_profiles")
+      .update({
+        is_premium: true,
+        subscription_status: "active",
+        premium_since: now.toISOString(),
+        premium_until: until.toISOString(),
+        is_cortesia: true,
+      } as any)
+      .ilike("email", a.email);
+    if (error) {
+      toast.error(`Erro: ${error.message}`);
+      return;
+    }
+    toast.success(`Premium ${plano} (cortesia) ativado`);
+    onChanged();
+  };
+
+  const removerPremium = async (a: Assinante) => {
+    const { error } = await supabase
+      .from("user_profiles")
+      .update({ is_premium: false } as any)
+      .ilike("email", a.email);
+    if (error) {
+      toast.error(`Erro: ${error.message}`);
+      return;
+    }
+    toast.success("Premium removido");
+    onChanged();
+  };
+
   if (loading) {
     return (
       <div className="p-6 space-y-3">
