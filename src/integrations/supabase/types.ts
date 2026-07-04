@@ -1644,6 +1644,7 @@ export type Database = {
           plano_descricao: string | null
           plano_pagamento: string
           status: string
+          tipo: string
           turma_id: string | null
           updated_at: string | null
           user_id: string | null
@@ -1675,6 +1676,7 @@ export type Database = {
           plano_descricao?: string | null
           plano_pagamento?: string
           status?: string
+          tipo?: string
           turma_id?: string | null
           updated_at?: string | null
           user_id?: string | null
@@ -1706,6 +1708,7 @@ export type Database = {
           plano_descricao?: string | null
           plano_pagamento?: string
           status?: string
+          tipo?: string
           turma_id?: string | null
           updated_at?: string | null
           user_id?: string | null
@@ -2540,10 +2543,13 @@ export type Database = {
           assunto: string
           created_at: string
           email: string
+          enviado_em: string | null
+          enviado_por: string | null
           id: string
           mensagem: string
           nome: string
           resposta_admin: string | null
+          resposta_enviada: string | null
           status: string
           tipo: string
           updated_at: string
@@ -2553,10 +2559,13 @@ export type Database = {
           assunto: string
           created_at?: string
           email: string
+          enviado_em?: string | null
+          enviado_por?: string | null
           id?: string
           mensagem: string
           nome: string
           resposta_admin?: string | null
+          resposta_enviada?: string | null
           status?: string
           tipo?: string
           updated_at?: string
@@ -2566,10 +2575,13 @@ export type Database = {
           assunto?: string
           created_at?: string
           email?: string
+          enviado_em?: string | null
+          enviado_por?: string | null
           id?: string
           mensagem?: string
           nome?: string
           resposta_admin?: string | null
+          resposta_enviada?: string | null
           status?: string
           tipo?: string
           updated_at?: string
@@ -4759,6 +4771,27 @@ export type Database = {
           usuarios: number
         }[]
       }
+      arpg_record_rename: {
+        Args: { p_nick: string; p_player: string }
+        Returns: Json
+      }
+      arpg_record_submit: {
+        Args: {
+          p_buffs: Json
+          p_cls: string
+          p_lv: number
+          p_map: number
+          p_nick: string
+          p_player: string
+          p_seed: number
+          p_ticks: number
+        }
+        Returns: Json
+      }
+      arpg_record_top: {
+        Args: { p_map: number; p_player?: string }
+        Returns: Json
+      }
       artigo_do_dia: {
         Args: never
         Returns: {
@@ -4793,15 +4826,25 @@ export type Database = {
           resposta_curta: string
         }[]
       }
-      buscar_minha_rotina: {
-        Args: { p_dia?: number; p_email?: string }
-        Returns: {
-          dia: number
-          resumo: string
-          slot: string
-          titulo: string
-        }[]
-      }
+      buscar_minha_rotina:
+        | {
+            Args: { p_dia?: number; p_email?: string }
+            Returns: {
+              dia: number
+              resumo: string
+              slot: string
+              titulo: string
+            }[]
+          }
+        | {
+            Args: { p_chave: string; p_dia: number; p_email: string }
+            Returns: {
+              dia: number
+              resumo: string
+              slot: string
+              titulo: string
+            }[]
+          }
       buscar_produto: {
         Args: { p_dosha?: string; p_termo?: string }
         Returns: {
