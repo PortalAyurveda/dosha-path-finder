@@ -430,7 +430,7 @@ const FloatingAkasha = () => {
       {/* Botão flutuante */}
       <button
         onClick={() => setOpen((o) => !o)}
-        className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-[60] w-14 h-14 rounded-full bg-white border border-akasha/20 shadow-xl shadow-akasha/30 flex items-center justify-center text-akasha hover:scale-105 transition-transform overflow-hidden"
+        className={`fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-[60] w-14 h-14 rounded-full bg-white border border-akasha/20 shadow-xl shadow-akasha/30 flex items-center justify-center text-akasha hover:scale-105 transition-transform overflow-hidden ${!open ? "motion-safe:animate-pulse" : ""}`}
         aria-label={open ? "Fechar Akasha" : "Abrir Akasha"}
       >
         {open ? (
