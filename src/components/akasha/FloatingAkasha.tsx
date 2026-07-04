@@ -78,7 +78,7 @@ const FloatingAkasha = () => {
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const hasHydratedRef = useRef(false);
   const initialSentRef = useRef(false);
-  const autoOpenTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  
   const inputRef = useRef<HTMLInputElement>(null);
 
   const resolvedEmail = user?.email || "visitante@portalayurveda.com";
