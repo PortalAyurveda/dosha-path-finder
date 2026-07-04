@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/contexts/UserContext";
+import { toast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
@@ -579,8 +580,21 @@ const orgSchema = {
 };
 
 const Index = () => {
-  const { doshaResult, user, loading } = useUser();
+  const { doshaResult, user, loading, refreshProfile } = useUser();
   const isLoggedWithDosha = !!(user && doshaResult?.idPublico);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("premium") === "ok") {
+      toast({ title: "Assinatura confirmada! ✨" });
+      refreshProfile();
+      params.delete("premium");
+      const qs = params.toString();
+      window.history.replaceState({}, "", window.location.pathname + (qs ? `?${qs}` : ""));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   // While auth is still resolving AND we have a session token in storage,
   // hold off rendering the public Hero so it doesn't flash before LoggedHero.
   const hasStoredSession =

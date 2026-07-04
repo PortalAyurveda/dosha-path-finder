@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { useUser } from "@/contexts/UserContext";
 import AdminNav from "@/components/admin/AdminNav";
 import Seo from "@/components/Seo";
 import { Button } from "@/components/ui/button";
@@ -33,6 +34,9 @@ interface Mensagem {
   mensagem: string;
   status: string;
   resposta_admin: string | null;
+  resposta_enviada: string | null;
+  enviado_em: string | null;
+  enviado_por: string | null;
   created_at: string;
 }
 
@@ -66,11 +70,14 @@ const formatDate = (iso: string) =>
   });
 
 const AdminMensagens = () => {
+  const { user } = useUser();
   const [items, setItems] = useState<Mensagem[]>([]);
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<Mensagem | null>(null);
   const [resposta, setResposta] = useState("");
+  const [respostaEmail, setRespostaEmail] = useState("");
   const [saving, setSaving] = useState(false);
+  const [sendingEmail, setSendingEmail] = useState(false);
 
   const load = async () => {
     setLoading(true);
@@ -93,6 +100,7 @@ const AdminMensagens = () => {
   const openMessage = async (m: Mensagem) => {
     setSelected(m);
     setResposta(m.resposta_admin ?? "");
+    setRespostaEmail(m.resposta_enviada ?? "");
     if (m.status === "novo") {
       await supabase.from("mensagens").update({ status: "lido" }).eq("id", m.id);
       setItems((prev) =>
@@ -121,19 +129,65 @@ const AdminMensagens = () => {
     setSaving(true);
     const { error } = await supabase
       .from("mensagens")
-      .update({ resposta_admin: resposta, status: "respondido" })
+      .update({ resposta_admin: resposta })
       .eq("id", selected.id);
     setSaving(false);
-    if (error) return toast.error("Erro ao salvar resposta");
-    toast.success("Resposta salva");
+    if (error) return toast.error("Erro ao salvar nota");
+    toast.success("Nota interna salva");
     setItems((prev) =>
       prev.map((x) =>
-        x.id === selected.id
-          ? { ...x, resposta_admin: resposta, status: "respondido" }
-          : x
+        x.id === selected.id ? { ...x, resposta_admin: resposta } : x
       )
     );
-    setSelected({ ...selected, resposta_admin: resposta, status: "respondido" });
+    setSelected({ ...selected, resposta_admin: resposta });
+  };
+
+  const enviarPorEmail = async () => {
+    if (!selected) return;
+    const texto = respostaEmail.trim();
+    if (!texto) {
+      toast.error("Escreva uma resposta antes de enviar");
+      return;
+    }
+    setSendingEmail(true);
+    try {
+      const res = await fetch("https://n8n.portalayurveda.com/webhook/responder-contato", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: selected.email,
+          nome: selected.nome,
+          assunto: selected.assunto,
+          resposta: texto,
+        }),
+      });
+      if (!res.ok) throw new Error("webhook falhou");
+      const nowIso = new Date().toISOString();
+      const adminEmail = user?.email ?? null;
+      const { error } = await supabase
+        .from("mensagens")
+        .update({
+          resposta_enviada: texto,
+          enviado_em: nowIso,
+          enviado_por: adminEmail,
+          status: "respondido",
+        })
+        .eq("id", selected.id);
+      if (error) throw error;
+      toast.success("Resposta enviada por e-mail ✅");
+      setSelected({
+        ...selected,
+        resposta_enviada: texto,
+        enviado_em: nowIso,
+        enviado_por: adminEmail,
+        status: "respondido",
+      });
+      load();
+    } catch {
+      toast.error("Não consegui enviar o e-mail. Tente de novo.");
+    } finally {
+      setSendingEmail(false);
+    }
   };
 
   const counts = useMemo(() => {
@@ -229,6 +283,13 @@ const AdminMensagens = () => {
                 </DialogDescription>
               </DialogHeader>
 
+              {selected.resposta_enviada && selected.enviado_em && (
+                <div className="text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-md px-3 py-2">
+                  ✅ Respondido por e-mail em {formatDate(selected.enviado_em)}
+                  {selected.enviado_por ? ` · ${selected.enviado_por}` : ""}
+                </div>
+              )}
+
               <div className="flex items-center gap-2">
                 <Badge className={tipoVariant(selected.tipo).className}>
                   {selected.tipo}
@@ -244,12 +305,29 @@ const AdminMensagens = () => {
 
               <div className="space-y-2">
                 <label className="text-sm font-medium">
-                  Resposta interna (visível só para admin)
+                  Resposta ao aluno (vai por e-mail)
+                </label>
+                <Textarea
+                  value={respostaEmail}
+                  onChange={(e) => setRespostaEmail(e.target.value)}
+                  rows={5}
+                  placeholder="Escreva a resposta que será enviada por e-mail..."
+                />
+                <div className="flex justify-end">
+                  <Button onClick={enviarPorEmail} disabled={sendingEmail}>
+                    {sendingEmail ? "Enviando..." : "Enviar por e-mail"}
+                  </Button>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium">
+                  Nota interna (só admin)
                 </label>
                 <Textarea
                   value={resposta}
                   onChange={(e) => setResposta(e.target.value)}
-                  rows={5}
+                  rows={4}
                   placeholder="Anote aqui sua resposta ou observação..."
                 />
               </div>
@@ -260,8 +338,8 @@ const AdminMensagens = () => {
                     Marcar como lido
                   </Button>
                 )}
-                <Button onClick={salvarResposta} disabled={saving}>
-                  {saving ? "Salvando..." : "Salvar resposta"}
+                <Button variant="outline" onClick={salvarResposta} disabled={saving}>
+                  {saving ? "Salvando..." : "Salvar nota interna"}
                 </Button>
               </div>
             </>

@@ -129,15 +129,32 @@ const MinhaRotina = () => {
   const queryClient = useQueryClient();
   const [diaSelecionado, setDiaSelecionado] = useState<number>(1);
 
-  // Retorno do Stripe: /minha-rotina?assinatura=ok
+  // Retorno do Stripe: /minha-rotina?assinatura=ok — polling do perfil até 30s
+  const [confirmandoPagamento, setConfirmandoPagamento] = useState<boolean>(() => {
+    if (typeof window === "undefined") return false;
+    return new URLSearchParams(window.location.search).get("assinatura") === "ok";
+  });
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    if (params.get("assinatura") === "ok") {
-      toast({ title: "Bem-vindo à sua rotina! ✨", description: "Sua assinatura está ativa." });
-      const t = setTimeout(() => { refreshProfile(); }, 2000);
-      window.history.replaceState({}, "", "/minha-rotina");
-      return () => clearTimeout(t);
-    }
+    if (params.get("assinatura") !== "ok") return;
+    toast({ title: "Confirmando seu pagamento…", description: "Estamos ativando sua rotina." });
+    let cancelled = false;
+    let tries = 0;
+    const maxTries = 15; // 15 * 2s = 30s
+    const tick = async () => {
+      if (cancelled) return;
+      tries++;
+      await refreshProfile();
+      // Deixa o React re-renderizar; o próprio efeito abaixo encerrará quando temAcessoRotina virar true.
+      if (tries >= maxTries) {
+        setConfirmandoPagamento(false);
+        window.history.replaceState({}, "", "/minha-rotina");
+        return;
+      }
+      setTimeout(tick, 2000);
+    };
+    const first = setTimeout(tick, 2000);
+    return () => { cancelled = true; clearTimeout(first); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -300,7 +317,7 @@ const MinhaRotina = () => {
     );
   }
   if (!user) {
-    return <Navigate to="/entrar" replace />;
+    return <Navigate to="/entrar?redirect=/minha-rotina" replace />;
   }
 
   // Gate de assinatura
@@ -322,6 +339,34 @@ const MinhaRotina = () => {
           userId={user.id}
           doshaPrincipal={doshaResult?.doshaprincipal ?? null}
         />
+      </PageContainer>
+    );
+  }
+
+  // Se o polling do pagamento chegou aqui com acesso liberado, encerre-o e limpe a URL.
+  if (confirmandoPagamento) {
+    setTimeout(() => {
+      setConfirmandoPagamento(false);
+      if (window.location.search.includes("assinatura=ok")) {
+        window.history.replaceState({}, "", "/minha-rotina");
+      }
+    }, 0);
+  }
+
+  if (!doshaResult) {
+    return (
+      <PageContainer title="Minha rotina" description="Sua rotina ayurvédica personalizada.">
+        <div className="max-w-xl mx-auto text-center py-12 px-4">
+          <h1 className="font-serif text-3xl text-foreground mb-3">
+            Falta um passo pra montar sua rotina
+          </h1>
+          <p className="text-muted-foreground mb-6">
+            Faça seu teste de dosha e eu monto sua rotina personalizada na hora.
+          </p>
+          <Link to="/teste-de-dosha">
+            <Button size="lg">Fazer meu teste de dosha</Button>
+          </Link>
+        </div>
       </PageContainer>
     );
   }
