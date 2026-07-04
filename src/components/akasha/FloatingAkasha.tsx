@@ -22,7 +22,7 @@ const HIDDEN_PREFIXES = [
   "/admin/rpg",
 ];
 const HIDDEN_INCLUDES = ["/obrigado"];
-const AUTO_OPEN_DELAY_MS = 30_000;
+
 
 interface ChatMessage {
   role: "user" | "assistant";
