@@ -181,40 +181,8 @@ const FloatingAkasha = () => {
     }
   }, [cachedHistory]);
 
-  // Auto-abertura única por navegador, 30s após page load, em qualquer rota visível
-  useEffect(() => {
-    if (shouldHide) return;
-    if (open) return;
 
-    const storageKey = "akasha_auto_opened";
-    try {
-      if (localStorage.getItem(storageKey)) return;
-    } catch {
-      return;
-    }
 
-    const schedule = () => {
-      autoOpenTimerRef.current = setTimeout(() => {
-        try { localStorage.setItem(storageKey, "1"); } catch {}
-        setOpen(true);
-      }, AUTO_OPEN_DELAY_MS);
-    };
-
-    if (document.readyState === "complete") {
-      schedule();
-    } else {
-      const onLoad = () => schedule();
-      window.addEventListener("load", onLoad, { once: true });
-      return () => {
-        window.removeEventListener("load", onLoad);
-        if (autoOpenTimerRef.current) clearTimeout(autoOpenTimerRef.current);
-      };
-    }
-
-    return () => {
-      if (autoOpenTimerRef.current) clearTimeout(autoOpenTimerRef.current);
-    };
-  }, [shouldHide, location.pathname, open]);
 
   // Say-hello local — apenas exibe mensagem da Akasha, sem chamar o webhook nem gravar no servidor
   const sendInitialMessage = useCallback(() => {
