@@ -623,6 +623,16 @@ const AdminVendasAkasha = () => {
                       </div>
                     </div>
 
+                    <label className="flex items-center gap-2 text-sm text-foreground select-none">
+                      <input
+                        type="checkbox"
+                        checked={cortesiaSel}
+                        onChange={(e) => setCortesiaSel(e.target.checked)}
+                        className="h-4 w-4"
+                      />
+                      É cortesia (não conta no faturamento)
+                    </label>
+
                     <Button onClick={handleAtivar} disabled={activating} className="w-full sm:w-auto">
                       {activating ? "Ativando..." : "Ativar Premium"}
                     </Button>
@@ -631,6 +641,9 @@ const AdminVendasAkasha = () => {
               </CardContent>
             </Card>
 
+            <p className="text-xs text-muted-foreground">
+              Só "Dar Premium" libera a Akasha. "Trocar plano" e "Marcar cortesia" são apenas rótulos de cobrança e não dão acesso.
+            </p>
             <Card>
               <CardContent className="p-0">
                 <AssinaturasTable data={data} loading={loading} onChanged={() => { loadAssinaturas(); loadRotinas(); }} />
@@ -641,6 +654,9 @@ const AdminVendasAkasha = () => {
           <TabsContent value="rotinas" className="space-y-6">
             <ResumoCardsRotinas data={rotinasData} />
 
+            <p className="text-xs text-muted-foreground">
+              Só "Dar Premium" libera a Akasha. "Trocar plano" e "Marcar cortesia" são apenas rótulos de cobrança e não dão acesso.
+            </p>
             <Card>
               <CardContent className="p-0">
                 <AssinaturasTable data={rotinasData} loading={rotinasLoading} onChanged={() => { loadAssinaturas(); loadRotinas(); }} />
