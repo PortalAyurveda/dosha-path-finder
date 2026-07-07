@@ -84,8 +84,8 @@ const AkashaTab = ({
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
-  const [initialSent, setInitialSent] = useState(false);
   const chatContainerRef = useRef<HTMLDivElement>(null);
+
   const hasHydratedRef = useRef(false);
 
   const resolvedEmail = email || user?.email || `${idPublico}@visitante.com`;
