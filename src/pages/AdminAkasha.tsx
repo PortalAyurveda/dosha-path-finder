@@ -51,11 +51,13 @@ const AdminAkasha = () => {
 
   const load = async () => {
     setLoading(true);
+    console.log("[AdminAkasha] rpc admin_akasha_conversas", { p_busca: buscaAtiva, p_offset: page * PAGE_SIZE });
     const { data, error } = await supabase.rpc("admin_akasha_conversas", {
       p_busca: buscaAtiva,
       p_limit: PAGE_SIZE,
       p_offset: page * PAGE_SIZE,
     });
+    console.log("[AdminAkasha] rpc result", { data, error });
     if (!error && data) {
       setConversas(data as Conversa[]);
       setTotal((data[0] as any)?.total_geral ?? 0);
