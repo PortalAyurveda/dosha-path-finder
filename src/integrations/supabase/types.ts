@@ -14,6 +14,63 @@ export type Database = {
   }
   public: {
     Tables: {
+      agenda_semana: {
+        Row: {
+          artigos: Json | null
+          ativo: boolean
+          corpo: string | null
+          dosha: string
+          id: number
+          receitas: Json | null
+          semana: string
+          titulo: string
+        }
+        Insert: {
+          artigos?: Json | null
+          ativo?: boolean
+          corpo?: string | null
+          dosha: string
+          id?: never
+          receitas?: Json | null
+          semana: string
+          titulo: string
+        }
+        Update: {
+          artigos?: Json | null
+          ativo?: boolean
+          corpo?: string | null
+          dosha?: string
+          id?: never
+          receitas?: Json | null
+          semana?: string
+          titulo?: string
+        }
+        Relationships: []
+      }
+      akasha_demo: {
+        Row: {
+          ativo: boolean
+          id: number
+          ordem: number
+          pergunta: string
+          resposta: string
+        }
+        Insert: {
+          ativo?: boolean
+          id?: never
+          ordem: number
+          pergunta: string
+          resposta: string
+        }
+        Update: {
+          ativo?: boolean
+          id?: never
+          ordem?: number
+          pergunta?: string
+          resposta?: string
+        }
+        Relationships: []
+      }
       akasha_memory: {
         Row: {
           data_postagem: string | null
@@ -2442,6 +2499,119 @@ export type Database = {
         }
         Relationships: []
       }
+      jogo_config: {
+        Row: {
+          chave: string
+          valor: Json
+        }
+        Insert: {
+          chave: string
+          valor: Json
+        }
+        Update: {
+          chave?: string
+          valor?: Json
+        }
+        Relationships: []
+      }
+      jogo_niveis: {
+        Row: {
+          ativo: boolean
+          desconto_pct: number
+          icone: string | null
+          nome: string
+          ordem: number
+          requisito: string | null
+          tipo: string
+          xp_min: number | null
+        }
+        Insert: {
+          ativo?: boolean
+          desconto_pct?: number
+          icone?: string | null
+          nome: string
+          ordem: number
+          requisito?: string | null
+          tipo: string
+          xp_min?: number | null
+        }
+        Update: {
+          ativo?: boolean
+          desconto_pct?: number
+          icone?: string | null
+          nome?: string
+          ordem?: number
+          requisito?: string | null
+          tipo?: string
+          xp_min?: number | null
+        }
+        Relationships: []
+      }
+      jogo_xp_eventos: {
+        Row: {
+          acao: string
+          created_at: string
+          email: string
+          id: number
+          referencia: string | null
+          user_id: string | null
+          xp: number
+        }
+        Insert: {
+          acao: string
+          created_at?: string
+          email: string
+          id?: never
+          referencia?: string | null
+          user_id?: string | null
+          xp: number
+        }
+        Update: {
+          acao?: string
+          created_at?: string
+          email?: string
+          id?: never
+          referencia?: string | null
+          user_id?: string | null
+          xp?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "jogo_xp_eventos_acao_fkey"
+            columns: ["acao"]
+            isOneToOne: false
+            referencedRelation: "jogo_xp_regras"
+            referencedColumns: ["acao"]
+          },
+        ]
+      }
+      jogo_xp_regras: {
+        Row: {
+          acao: string
+          ativo: boolean
+          cap_diario: number | null
+          descricao: string | null
+          unidade: string
+          xp: number
+        }
+        Insert: {
+          acao: string
+          ativo?: boolean
+          cap_diario?: number | null
+          descricao?: string | null
+          unidade?: string
+          xp: number
+        }
+        Update: {
+          acao?: string
+          ativo?: boolean
+          cap_diario?: number | null
+          descricao?: string | null
+          unidade?: string
+          xp?: number
+        }
+        Relationships: []
+      }
       jornada_autodi: {
         Row: {
           "Created Date": string | null
@@ -2478,6 +2648,45 @@ export type Database = {
           Title?: string | null
           "Updated Date"?: string | null
           whatsapp?: number | null
+        }
+        Relationships: []
+      }
+      jornada_degraus: {
+        Row: {
+          ativo: boolean
+          cta: string | null
+          id: number
+          link: string | null
+          ordem: number
+          preco_display: string | null
+          slug: string
+          subtitulo: string | null
+          titulo: string
+          trilha: string
+        }
+        Insert: {
+          ativo?: boolean
+          cta?: string | null
+          id?: never
+          link?: string | null
+          ordem: number
+          preco_display?: string | null
+          slug: string
+          subtitulo?: string | null
+          titulo: string
+          trilha: string
+        }
+        Update: {
+          ativo?: boolean
+          cta?: string | null
+          id?: never
+          link?: string | null
+          ordem?: number
+          preco_display?: string | null
+          slug?: string
+          subtitulo?: string | null
+          titulo?: string
+          trilha?: string
         }
         Relationships: []
       }
@@ -3600,6 +3809,33 @@ export type Database = {
         }
         Relationships: []
       }
+      portal_termos_canonicos: {
+        Row: {
+          ativo: boolean
+          canonico: string
+          id: number
+          link: string
+          tipo: string
+          variante: string
+        }
+        Insert: {
+          ativo?: boolean
+          canonico: string
+          id?: never
+          link: string
+          tipo?: string
+          variante: string
+        }
+        Update: {
+          ativo?: boolean
+          canonico?: string
+          id?: never
+          link?: string
+          tipo?: string
+          variante?: string
+        }
+        Relationships: []
+      }
       portal_vata: {
         Row: {
           criado_em: string | null
@@ -4499,6 +4735,36 @@ export type Database = {
         }
         Relationships: []
       }
+      user_salvos: {
+        Row: {
+          conteudo: string | null
+          created_at: string
+          id: number
+          referencia: string
+          tipo: string
+          titulo: string | null
+          user_id: string
+        }
+        Insert: {
+          conteudo?: string | null
+          created_at?: string
+          id?: never
+          referencia: string
+          tipo: string
+          titulo?: string | null
+          user_id: string
+        }
+        Update: {
+          conteudo?: string | null
+          created_at?: string
+          id?: never
+          referencia?: string
+          tipo?: string
+          titulo?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       videos_seo: {
         Row: {
           criado_em: string | null
@@ -4771,6 +5037,8 @@ export type Database = {
           usuarios: number
         }[]
       }
+      akasha_gate: { Args: { p_email: string }; Returns: Json }
+      akasha_reset_mensal: { Args: never; Returns: number }
       arpg_record_rename: {
         Args: { p_nick: string; p_player: string }
         Returns: Json
@@ -4826,25 +5094,15 @@ export type Database = {
           resposta_curta: string
         }[]
       }
-      buscar_minha_rotina:
-        | {
-            Args: { p_dia?: number; p_email?: string }
-            Returns: {
-              dia: number
-              resumo: string
-              slot: string
-              titulo: string
-            }[]
-          }
-        | {
-            Args: { p_chave: string; p_dia: number; p_email: string }
-            Returns: {
-              dia: number
-              resumo: string
-              slot: string
-              titulo: string
-            }[]
-          }
+      buscar_minha_rotina: {
+        Args: { p_chave: string; p_dia: number; p_email: string }
+        Returns: {
+          dia: number
+          resumo: string
+          slot: string
+          titulo: string
+        }[]
+      }
       buscar_produto: {
         Args: { p_dosha?: string; p_termo?: string }
         Returns: {
@@ -5050,6 +5308,14 @@ export type Database = {
         Returns: boolean
       }
       is_admin: { Args: never; Returns: boolean }
+      jogo_nivel_de: {
+        Args: { p_email: string }
+        Returns: {
+          nivel_nome: string
+          nivel_ordem: number
+          xp_total: number
+        }[]
+      }
       match_documents: {
         Args: {
           filter?: Json
