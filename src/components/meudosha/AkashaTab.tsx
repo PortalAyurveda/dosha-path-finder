@@ -156,21 +156,10 @@ const AkashaTab = ({
 
     if (cachedHistory.length > 0) {
       setMessages(cachedHistory);
-    } else if (!initialSent) {
-      setInitialSent(true);
-      sendInitialMessage();
     }
   }, [cachedHistory]);
 
-  const sendInitialMessage = () => {
-    const doshaAgravado = doshaprincipal || "não identificado";
-    const primeiroNome = (resolvedNome || "Visitante").trim().split(/\s+/)[0];
-    const hello = `Olá, ${primeiroNome}! Vi que seu dosha agravado é ${doshaAgravado}. Posso te indicar receitas, produtos e práticas do Portal — ou escreva Portal para ajuda com o site. Por onde começamos?`;
 
-    const botMsg: ChatMessage = { role: "assistant", content: hello, time: getNowBrazilTime() };
-    setMessages([botMsg]);
-    // Não persiste no cache/webhook — mensagem local só de boas-vindas
-  };
 
   const sendMessage = async () => {
     if (!input.trim() || sending) return;
