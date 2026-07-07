@@ -77,7 +77,7 @@ const FloatingAkasha = () => {
   const [sending, setSending] = useState(false);
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const hasHydratedRef = useRef(false);
-  const initialSentRef = useRef(false);
+  
   
   const inputRef = useRef<HTMLInputElement>(null);
 
