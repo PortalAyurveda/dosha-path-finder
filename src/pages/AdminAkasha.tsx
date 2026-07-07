@@ -48,16 +48,15 @@ const AdminAkasha = () => {
   const [openNome, setOpenNome] = useState<string | null>(null);
   const [historico, setHistorico] = useState<Mensagem[]>([]);
   const [loadingHist, setLoadingHist] = useState(false);
+  const [histError, setHistError] = useState<string | null>(null);
 
   const load = async () => {
     setLoading(true);
-    console.log("[AdminAkasha] rpc admin_akasha_conversas", { p_busca: buscaAtiva, p_offset: page * PAGE_SIZE });
     const { data, error } = await supabase.rpc("admin_akasha_conversas", {
       p_busca: buscaAtiva,
       p_limit: PAGE_SIZE,
       p_offset: page * PAGE_SIZE,
     });
-    console.log("[AdminAkasha] rpc result", { data, error });
     if (!error && data) {
       setConversas(data as Conversa[]);
       setTotal((data[0] as any)?.total_geral ?? 0);
@@ -75,7 +74,17 @@ const AdminAkasha = () => {
 
   const loadHistorico = async (email: string) => {
     setLoadingHist(true);
-    const { data } = await supabase.rpc("admin_akasha_historico", { p_email: email });
+    setHistError(null);
+    const { data, error } = await supabase.rpc("admin_akasha_historico", { p_email: email });
+
+    if (error) {
+      console.error("[AdminAkasha] erro ao carregar histórico", error);
+      setHistorico([]);
+      setHistError("Não foi possível carregar esta conversa.");
+      setLoadingHist(false);
+      return;
+    }
+
     setHistorico((data as Mensagem[]) ?? []);
     setLoadingHist(false);
     setTimeout(() => {
@@ -88,6 +97,7 @@ const AdminAkasha = () => {
     setOpenEmail(c.email);
     setOpenNome(c.nome || c.email);
     setHistorico([]);
+    setHistError(null);
     loadHistorico(c.email);
   };
 
@@ -264,6 +274,10 @@ const AdminAkasha = () => {
               <div className="flex items-center justify-center py-16 text-muted-foreground">
                 <Loader2 className="w-5 h-5 animate-spin" />
               </div>
+            ) : histError ? (
+              <p className="text-center text-destructive text-sm py-16">
+                {histError}
+              </p>
             ) : historico.length === 0 ? (
               <p className="text-center text-muted-foreground text-sm py-16">
                 Nenhuma mensagem.
