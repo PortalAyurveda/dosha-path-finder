@@ -1,24 +1,33 @@
-## Bug: "Criar mesa" volta sozinha pra tela de entrada (+ salas duplicadas)
+## O que está acontecendo hoje
 
-Aplicar exatamente as duas correções identificadas. Sem mexer em mais nada do fluxo.
+A Akasha (webchat) tem uma **mensagem automática de boas-vindas** que aparece sozinha assim que o chat abre pela 1ª vez, sem o usuário ter digitado nada. O texto é:
 
-### 1. `src/features/rpg/GameContext.tsx` — estabilizar handlers
+> "Olá, {nome}! Vi que seu dosha agravado é {dosha}. Posso te indicar receitas, produtos e práticas do Portal — ou escreva Portal para ajuda com o site. Por onde começamos?"
 
-- Extrair `setPlayer`, `setPartyOnly` e `clearSession` do objeto `api` para `useCallback` com **deps vazias** (`[]`), declarados antes do `useMemo`. O `dispatch` do `useReducer` é estável e não precisa ser listado.
-- No `useMemo` que monta `api`, apenas referenciar essas funções já estáveis (mantém o resto: `refresh`, `acao`, `discursiva`, `mode`, spread do `state`).
-- Resultado: a referência de `setPartyOnly` deixa de mudar a cada tick do polling / mudança de estado.
+Essa saudação está em **dois lugares** que renderizam a Akasha:
 
-### 2. `src/features/rpg/screens/Lobby.tsx` — não re-decidir a tela inicial
+1. `src/components/akasha/FloatingAkasha.tsx` — o botão flutuante da Akasha (linhas ~187‑211: função `sendInitialMessage` + `useEffect` que a dispara quando `open` fica true e o histórico está vazio).
+2. `src/components/meudosha/AkashaTab.tsx` — a aba Akasha dentro do "Meu Dosha" (linhas ~152‑173: `sendInitialMessage` disparado no `useEffect` de hidratação quando não há histórico).
 
-No segundo `useEffect` (o que chama `rpcEntrarParty` via `params.code` e/ou `rpcMeusPersonagens` e faz `setStep('entry' | 'saves')`):
+Observação importante: essas duas mensagens são **locais** (só exibem texto na tela, não chamam o webhook n8n nem gravam nada no Supabase — comentários no código confirmam isso). Então o webhook n8n *não* está sendo disparado por elas hoje. O que a gente vai remover é a exibição automática da bolha de boas-vindas — a Akasha só vai falar depois que o usuário mandar a primeira mensagem.
 
-- **Guarda de entrada** logo no topo: `if (step.name !== 'loading') return;` — assim, depois que já avançamos para `char`/`wait`/`entry`/`saves`, qualquer re-disparo é ignorado.
-- **Remover `setPartyOnly`** da lista de dependências (manter `user`, `params`, `player`).
+Não vou mexer no `RetesteChat.tsx` (página de reteste), que é fluxo diferente e realmente dispara um webhook `__INICIO_RETESTE__` — o pedido é sobre a Akasha (webchat).
 
-### Fora de escopo
+## Mudanças
 
-Sala de espera, criação de personagem, tela de jogo, polling, RPCs e qualquer outro arquivo permanecem inalterados.
+### 1) `src/components/akasha/FloatingAkasha.tsx`
+- Remover a função `sendInitialMessage` (linhas ~187‑200).
+- Remover o `useEffect` que a chama (linhas ~202‑211).
+- Manter `initialSentRef` só se ainda for usado em outros pontos; se ficar órfão, remover também.
 
-### Resultado esperado
+### 2) `src/components/meudosha/AkashaTab.tsx`
+- Remover a função `sendInitialMessage` (linhas ~165‑173).
+- No `useEffect` de hidratação (linhas ~152‑163), remover o branch `else if (!initialSent) { setInitialSent(true); sendInitialMessage(); }`, deixando apenas a hidratação a partir do `cachedHistory`.
+- Remover `initialSent` / `setInitialSent` se ficarem sem uso.
 
-Clicar "Criar mesa" navega para a etapa de classe e **permanece** lá; o polling não reverte mais o `step`; nenhuma party duplicada é criada por re-disparo do efeito.
+## Resultado esperado
+
+- Abrir a Akasha (flutuante ou aba) com histórico vazio → **nenhuma bolha aparece**, o chat fica em branco esperando o usuário digitar.
+- Se já existe histórico salvo, ele continua sendo carregado normalmente.
+- Quando o usuário digita a 1ª mensagem, o fluxo normal (`sendMessage` → webhook `chat-ayurveda`) roda como antes.
+- Nenhuma alteração no backend, no n8n, ou no fluxo do Reteste.
