@@ -701,14 +701,33 @@ const CartDrawer = () => {
             </div>
 
             {step === "cart" ? (
-              <Button
-                onClick={() => setStep("checkout")}
-                disabled={!freteSelecionado}
-                className="w-full"
-                style={{ background: samkhyaTokens.ouro, color: "#fff" }}
-              >
-                Continuar
-              </Button>
+              <>
+                <Button
+                  onClick={async () => {
+                    if (freteSelecionado) {
+                      setStep("checkout");
+                      return;
+                    }
+                    if (onlyDigits(cep).length === 8 && opcoesFrete.length === 0 && !calculandoFrete) {
+                      await handleCalcularFrete();
+                      toast.info("Escolha a opção de frete e toque em Continuar novamente.");
+                    } else if (onlyDigits(cep).length !== 8) {
+                      toast.error("Digite seu CEP e toque em Calcular para ver o frete.");
+                    } else {
+                      toast.error("Escolha uma opção de frete para continuar.");
+                    }
+                  }}
+                  className="w-full"
+                  style={{ background: samkhyaTokens.ouro, color: "#fff" }}
+                >
+                  Continuar
+                </Button>
+                {!freteSelecionado && (
+                  <p className="text-xs text-center" style={{ color: samkhyaTokens.textoSec }}>
+                    Calcule o frete acima para continuar.
+                  </p>
+                )}
+              </>
             ) : (
               <Button
                 onClick={handleFinalizar}
