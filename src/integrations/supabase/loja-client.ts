@@ -9,18 +9,25 @@
 // The schema "loja" must be exposed via `pgrst.db_schemas` (handled in migration).
 
 import { createClient } from "@supabase/supabase-js";
+import { supabase as mainClient } from "./client";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
 const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string;
 
+// Compartilha a sessão do cliente principal: assim as RLS que dependem de
+// auth.uid() / is_admin() funcionam nas queries do schema "loja".
 export const lojaSupabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
   db: { schema: "loja" as never },
   auth: {
-    persistSession: false, // auth handled by main client
+    persistSession: false,
     autoRefreshToken: false,
     storageKey: 'sb-loja-noauth',
   },
-});
+  accessToken: async () => {
+    const { data } = await mainClient.auth.getSession();
+    return data.session?.access_token ?? null;
+  },
+} as any);
 
 // ---------- Types (manually maintained — schema is small and stable) ----------
 
