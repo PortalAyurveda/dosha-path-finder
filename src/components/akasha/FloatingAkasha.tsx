@@ -177,38 +177,10 @@ const FloatingAkasha = () => {
     hasHydratedRef.current = true;
     if (cachedHistory.length > 0) {
       setMessages(cachedHistory);
-      initialSentRef.current = true; // já há histórico, não disparar say-hello
     }
   }, [cachedHistory]);
 
 
-
-
-  // Say-hello local — apenas exibe mensagem da Akasha, sem chamar o webhook nem gravar no servidor
-  const sendInitialMessage = useCallback(() => {
-    if (initialSentRef.current) return;
-    if (!user || !idPublico) return;
-    initialSentRef.current = true;
-
-    const doshaAgravado = doshaprincipal || "não identificado";
-    const primeiroNome = (resolvedNome || "Visitante").trim().split(/\s+/)[0];
-    const hello = `Olá, ${primeiroNome}! Vi que seu dosha agravado é ${doshaAgravado}. Posso te indicar receitas, produtos e práticas do Portal — ou escreva Portal para ajuda com o site. Por onde começamos?`;
-
-    const botMsg: ChatMessage = { role: "assistant", content: hello, time: getNowBrazilTime() };
-    setMessages([botMsg]);
-    // Não atualiza cache do React Query para não persistir localmente entre sessões como histórico "real"
-  }, [user, idPublico, doshaprincipal, resolvedNome]);
-
-  // Dispara say-hello quando o chat abre pela 1ª vez com histórico vazio
-  useEffect(() => {
-    if (!open) return;
-    if (initialSentRef.current) return;
-    if (cachedHistory === undefined) return; // espera query terminar
-    if (cachedHistory.length > 0) return;
-    if (messages.length > 0) return;
-    if (!user || !idPublico) return;
-    sendInitialMessage();
-  }, [open, cachedHistory, messages.length, user, idPublico, sendInitialMessage]);
 
 
   const sendMessage = async () => {
