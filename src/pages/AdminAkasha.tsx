@@ -308,7 +308,7 @@ const AdminAkasha = () => {
                             {m.conteudo}
                           </div>
                           <span className="text-[10px] text-muted-foreground px-1">
-                            {fmtHour(m.data_hora)}
+                            {new Date(m.data_hora).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" })} · {fmtHour(m.data_hora)}
                           </span>
                         </div>
                       </div>
