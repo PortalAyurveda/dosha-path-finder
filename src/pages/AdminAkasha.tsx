@@ -1,434 +1,310 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { useUser } from "@/contexts/UserContext";
+import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
 import { Helmet } from "react-helmet-async";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
-import { Search, Send, Loader2, ShieldCheck, MessageCircle, User, Flame, Utensils, AlertTriangle, FileText } from "lucide-react";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { Search, X, MessageCircle, Loader2, ShieldCheck } from "lucide-react";
 import AdminNav from "@/components/admin/AdminNav";
 
-type SearchType = "email" | "idPublico";
-
-interface DoshaRegistro {
-  idPublico: string;
+interface Conversa {
+  email: string;
   nome: string | null;
-  email: string | null;
-  idade: number | null;
-  imc: number | null;
-  altura: string | null;
-  peso: string | null;
-  vatascore: number | null;
-  pittascore: number | null;
-  kaphascore: number | null;
-  doshaprincipal: string | null;
-  agniPrincipal: string | null;
-  agniforte: number | null;
-  agnifraco: number | null;
-  agniirregular: number | null;
-  alimVata: string | null;
-  alimPitta: string | null;
-  alimKapha: string | null;
-  agravVataTags: string | null;
-  agravPittaTags: string | null;
-  agravKaphaTags: string | null;
-  relato_aberto: string | null;
-  [key: string]: any;
+  total_msgs: number;
+  ultima_pergunta: string | null;
+  ultima_resposta: string | null;
+  ultima_data: string;
+  total_geral: number;
 }
 
-interface SearchResponse {
-  dosha: DoshaRegistro;
-  messageCount: number;
+interface Mensagem {
+  msg_id: number;
+  tipo: string;
+  conteudo: string;
+  data_hora: string;
 }
 
-// --------- Helpers ----------
-type Nivel = "Fixado" | "Adoecido" | "Acúmulo" | "Normal" | "Pouco";
+const PAGE_SIZE = 20;
 
-const getVataNivel = (score: number): Nivel =>
-  score >= 50 ? "Fixado" : score >= 36 ? "Adoecido" : score >= 25 ? "Acúmulo" : score >= 17 ? "Normal" : "Pouco";
-const getPittaNivel = (score: number): Nivel =>
-  score >= 50 ? "Fixado" : score >= 41 ? "Adoecido" : score >= 31 ? "Acúmulo" : score >= 20 ? "Normal" : "Pouco";
-const getKaphaNivel = (score: number): Nivel =>
-  score >= 60 ? "Fixado" : score >= 51 ? "Adoecido" : score >= 36 ? "Acúmulo" : score >= 15 ? "Normal" : "Pouco";
+const fmtDate = (iso: string) =>
+  new Date(iso).toLocaleString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" });
 
-const nivelColor: Record<Nivel, string> = {
-  Fixado: "bg-red-500 text-white",
-  Adoecido: "bg-orange-500 text-white",
-  Acúmulo: "bg-yellow-500 text-white",
-  Normal: "bg-green-500 text-white",
-  Pouco: "bg-blue-500 text-white",
-};
+const fmtDay = (iso: string) =>
+  new Date(iso).toLocaleDateString("pt-BR", { weekday: "long", day: "2-digit", month: "long", year: "numeric" });
 
-const countItems = (raw: string | null): number => {
-  if (!raw) return 0;
-  return raw.split(",").map((s) => s.trim()).filter(Boolean).length;
-};
-
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
+const fmtHour = (iso: string) =>
+  new Date(iso).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
 
 const AdminAkasha = () => {
-  const { user, role, loading: authLoading, roleLoading } = useUser();
-  const navigate = useNavigate();
-  const accessLoading = authLoading || (!!user && roleLoading);
-
-  const [searchType, setSearchType] = useState<SearchType>("email");
-  const [searchValue, setSearchValue] = useState("");
+  const [busca, setBusca] = useState("");
+  const [buscaAtiva, setBuscaAtiva] = useState<string | null>(null);
+  const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [sending, setSending] = useState(false);
-  const [result, setResult] = useState<SearchResponse | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [conversas, setConversas] = useState<Conversa[]>([]);
+  const [total, setTotal] = useState(0);
 
-  // Auth guard removed: /admin is open during testing
+  const [openEmail, setOpenEmail] = useState<string | null>(null);
+  const [openNome, setOpenNome] = useState<string | null>(null);
+  const [historico, setHistorico] = useState<Mensagem[]>([]);
+  const [loadingHist, setLoadingHist] = useState(false);
 
-
-  const handleSearch = async () => {
-    const value = searchValue.trim();
-    if (!value) {
-      toast.error("Digite um valor para pesquisar");
-      return;
-    }
-
+  const load = async () => {
     setLoading(true);
-    setError(null);
-    setResult(null);
-
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      const token = session?.access_token;
-
-      const resp = await fetch(`${SUPABASE_URL}/functions/v1/get-dosha-with-chat-count`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-        body: JSON.stringify({ searchType, searchValue: value }),
-      });
-
-      if (resp.status === 404) {
-        setError("Usuário não encontrado");
-        return;
-      }
-      if (!resp.ok) {
-        setError("Erro ao buscar dados");
-        return;
-      }
-
-      const data: SearchResponse = await resp.json();
-      setResult(data);
-    } catch (e) {
-      console.error("[AdminAkasha] search error:", e);
-      setError("Erro ao buscar dados");
-    } finally {
-      setLoading(false);
+    const { data, error } = await supabase.rpc("admin_akasha_conversas", {
+      p_busca: buscaAtiva,
+      p_limit: PAGE_SIZE,
+      p_offset: page * PAGE_SIZE,
+    });
+    if (!error && data) {
+      setConversas(data as Conversa[]);
+      setTotal((data[0] as any)?.total_geral ?? 0);
+    } else {
+      setConversas([]);
+      setTotal(0);
     }
+    setLoading(false);
   };
 
-  const handleSendToAkasha = async () => {
-    if (!result) return;
-    setSending(true);
+  useEffect(() => {
+    load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [buscaAtiva, page]);
 
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      const token = session?.access_token;
-
-      const resp = await fetch(`${SUPABASE_URL}/functions/v1/send-to-n8n-webhook`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-        body: JSON.stringify({ searchType, searchValue: searchValue.trim() }),
-      });
-
-      if (!resp.ok) {
-        toast.error("Erro ao enviar dados");
-        return;
-      }
-      toast.success("Dados enviados com sucesso!");
-    } catch (e) {
-      console.error("[AdminAkasha] send error:", e);
-      toast.error("Erro ao enviar dados");
-    } finally {
-      setSending(false);
-    }
+  const loadHistorico = async (email: string) => {
+    setLoadingHist(true);
+    const { data } = await supabase.rpc("admin_akasha_historico", { p_email: email });
+    setHistorico((data as Mensagem[]) ?? []);
+    setLoadingHist(false);
+    setTimeout(() => {
+      const el = document.getElementById("hist-scroll");
+      if (el) el.scrollTop = el.scrollHeight;
+    }, 50);
   };
 
-  if (accessLoading) {
-    return (
-      <div className="min-h-screen bg-background p-8">
-        <div className="max-w-4xl mx-auto space-y-6">
-          <Skeleton className="h-10 w-64" />
-          <Skeleton className="h-32 w-full rounded-xl" />
-        </div>
-      </div>
-    );
-  }
+  const openConversa = (c: Conversa) => {
+    setOpenEmail(c.email);
+    setOpenNome(c.nome || c.email);
+    setHistorico([]);
+    loadHistorico(c.email);
+  };
 
-  const dosha = result?.dosha;
+  const handleBusca = () => {
+    setPage(0);
+    setBuscaAtiva(busca.trim() || null);
+  };
+
+  const limpar = () => {
+    setBusca("");
+    setBuscaAtiva(null);
+    setPage(0);
+  };
+
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  const inicio = total === 0 ? 0 : page * PAGE_SIZE + 1;
+  const fim = Math.min((page + 1) * PAGE_SIZE, total);
+
+  // Agrupar mensagens por dia
+  const grupos: { dia: string; msgs: Mensagem[] }[] = [];
+  historico.forEach((m) => {
+    const dia = new Date(m.data_hora).toDateString();
+    const last = grupos[grupos.length - 1];
+    if (last && last.dia === dia) last.msgs.push(m);
+    else grupos.push({ dia, msgs: [m] });
+  });
 
   return (
     <>
       <Helmet>
-        <title>Admin Akasha – Portal Ayurveda</title>
+        <title>Akasha — Auditoria de Conversas</title>
         <meta name="robots" content="noindex, nofollow" />
       </Helmet>
 
       <div className="min-h-screen bg-background">
         <AdminNav />
-        <div className="max-w-4xl mx-auto px-4 py-8 space-y-6">
-          {/* Header */}
+        <div className="max-w-6xl mx-auto px-4 py-8 space-y-6">
           <div className="flex items-center gap-3">
             <ShieldCheck className="w-7 h-7 text-primary" />
             <h1 className="text-2xl font-heading font-bold text-foreground">
-              Análise Akasha
+              Akasha — Auditoria de Conversas
             </h1>
           </div>
 
-          {/* Search */}
-          <section className="bg-card border border-border rounded-xl p-5 space-y-3">
-            <h2 className="text-sm font-semibold text-foreground">Buscar teste de dosha</h2>
-            <div className="flex flex-col sm:flex-row gap-2">
-              <Select value={searchType} onValueChange={(v) => setSearchType(v as SearchType)}>
-                <SelectTrigger className="sm:w-[160px]">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="email">Email</SelectItem>
-                  <SelectItem value="idPublico">ID Público</SelectItem>
-                </SelectContent>
-              </Select>
-              <Input
-                value={searchValue}
-                onChange={(e) => setSearchValue(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-                placeholder={searchType === "email" ? "email@exemplo.com" : "ID público"}
-                className="flex-1"
-              />
-              <Button onClick={handleSearch} disabled={loading} className="gap-2">
-                {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
-                Pesquisar
+          {/* Busca */}
+          <section className="bg-card border border-border rounded-xl p-4 flex flex-col sm:flex-row gap-2">
+            <Input
+              value={busca}
+              onChange={(e) => setBusca(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleBusca()}
+              placeholder="Buscar por email…"
+              className="flex-1"
+            />
+            <Button onClick={handleBusca} className="gap-2">
+              <Search className="w-4 h-4" /> Buscar
+            </Button>
+            {buscaAtiva && (
+              <Button onClick={limpar} variant="outline" className="gap-2">
+                <X className="w-4 h-4" /> Limpar
               </Button>
-            </div>
+            )}
           </section>
 
-          {/* Loading */}
-          {loading && (
-            <div className="space-y-4">
-              <Skeleton className="h-20 w-full rounded-xl" />
-              <Skeleton className="h-40 w-full rounded-xl" />
-              <Skeleton className="h-40 w-full rounded-xl" />
+          {/* Grid */}
+          {loading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <Skeleton key={i} className="h-48 rounded-xl" />
+              ))}
             </div>
-          )}
-
-          {/* Error */}
-          {!loading && error && (
-            <div className="bg-destructive/10 text-destructive border border-destructive/30 rounded-xl p-4 text-sm">
-              {error}
+          ) : conversas.length === 0 ? (
+            <div className="text-center py-16 text-muted-foreground">
+              Nenhuma conversa encontrada.
             </div>
-          )}
+          ) : (
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {conversas.map((c) => {
+                  const isVisitante = c.email.toLowerCase().endsWith("@visitante.com");
+                  const label = c.nome || c.email;
+                  return (
+                    <button
+                      key={c.email}
+                      onClick={() => openConversa(c)}
+                      className="text-left bg-card border border-border rounded-xl p-4 space-y-3 hover:border-primary/50 hover:shadow-sm transition"
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="min-w-0">
+                          <p className="font-semibold text-foreground truncate">{label}</p>
+                          {c.nome && (
+                            <p className="text-xs text-muted-foreground truncate">{c.email}</p>
+                          )}
+                        </div>
+                        {isVisitante && (
+                          <span className="shrink-0 text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-muted text-muted-foreground">
+                            visitante
+                          </span>
+                        )}
+                      </div>
 
-          {/* Result */}
-          {!loading && dosha && (
-            <div className="space-y-4">
-              {/* Result Header */}
-              <div className="bg-card border border-border rounded-xl p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-                <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
-                  <span className="font-semibold text-foreground">{dosha.idPublico}</span>
-                  <span className="text-muted-foreground">|</span>
-                  <span className="font-semibold text-foreground">{dosha.email ?? "—"}</span>
-                  <span className="text-muted-foreground">|</span>
-                  <span className="inline-flex items-center gap-1 text-muted-foreground">
-                    <MessageCircle className="w-4 h-4" />
-                    Mensagens: <strong className="text-foreground">{result.messageCount}</strong>
-                  </span>
-                </div>
-                <Button onClick={handleSendToAkasha} disabled={sending} className="gap-2">
-                  {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-                  Enviar para Akasha
-                </Button>
+                      <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                        <span className="inline-flex items-center gap-1">
+                          <MessageCircle className="w-3.5 h-3.5" />
+                          {c.total_msgs}
+                        </span>
+                        <span>{fmtDate(c.ultima_data)}</span>
+                      </div>
+
+                      {c.ultima_pergunta && (
+                        <p className="text-sm text-foreground line-clamp-2">
+                          <span className="mr-1">👤</span>
+                          {c.ultima_pergunta}
+                        </p>
+                      )}
+                      {c.ultima_resposta && (
+                        <p className="text-sm text-muted-foreground line-clamp-3">
+                          <span className="mr-1">🌸</span>
+                          {c.ultima_resposta}
+                        </p>
+                      )}
+                    </button>
+                  );
+                })}
               </div>
 
-              {/* 1. Dados Pessoais */}
-              <section className="bg-card border border-border rounded-xl p-5 space-y-3">
-                <h3 className="flex items-center gap-2 text-base font-semibold text-foreground">
-                  <User className="w-4 h-4" /> Dados Pessoais
-                </h3>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-3 text-sm">
-                  <Info label="Nome" value={dosha.nome} />
-                  <Info label="Email" value={dosha.email} />
-                  <Info label="ID Público" value={dosha.idPublico} />
-                  <Info label="Idade" value={dosha.idade} />
-                  <Info label="IMC" value={dosha.imc} />
-                  <Info label="Dosha Principal" value={dosha.doshaprincipal} />
+              {/* Paginação */}
+              <div className="flex items-center justify-between pt-2">
+                <p className="text-xs text-muted-foreground">
+                  {inicio}–{fim} de {total}
+                </p>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={page === 0}
+                    onClick={() => setPage((p) => Math.max(0, p - 1))}
+                  >
+                    Anterior
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={page + 1 >= totalPages}
+                    onClick={() => setPage((p) => p + 1)}
+                  >
+                    Próxima
+                  </Button>
                 </div>
-              </section>
-
-              {/* 2. Níveis de Doshas */}
-              <section className="bg-card border border-border rounded-xl p-5 space-y-3">
-                <h3 className="text-base font-semibold text-foreground">Níveis de Doshas</h3>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  <DoshaRow label="Vata" score={dosha.vatascore} getNivel={getVataNivel} />
-                  <DoshaRow label="Pitta" score={dosha.pittascore} getNivel={getPittaNivel} />
-                  <DoshaRow label="Kapha" score={dosha.kaphascore} getNivel={getKaphaNivel} />
-                </div>
-              </section>
-
-              {/* 3. Agni */}
-              <section className="bg-card border border-border rounded-xl p-5 space-y-3">
-                <h3 className="flex items-center gap-2 text-base font-semibold text-foreground">
-                  <Flame className="w-4 h-4" /> Agni (Fogo Digestivo)
-                </h3>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
-                  <Info label="Irregular (Vishma)" value={dosha.agniirregular} />
-                  <Info label="Forte (Tikshna)" value={dosha.agniforte} />
-                  <Info label="Fraco (Manda)" value={dosha.agnifraco} />
-                </div>
-                {dosha.agniPrincipal && (
-                  <p className="text-xs text-muted-foreground">
-                    Principal: <span className="text-foreground font-medium">{dosha.agniPrincipal}</span>
-                  </p>
-                )}
-              </section>
-
-              {/* 4. Alimentos Consumidos */}
-              <section className="bg-card border border-border rounded-xl p-5 space-y-3">
-                <h3 className="flex items-center gap-2 text-base font-semibold text-foreground">
-                  <Utensils className="w-4 h-4" /> Alimentos Consumidos
-                </h3>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
-                  <Info label="Alimentos Vata" value={countItems(dosha.alimVata)} />
-                  <Info label="Alimentos Pitta" value={countItems(dosha.alimPitta)} />
-                  <Info label="Alimentos Kapha" value={countItems(dosha.alimKapha)} />
-                </div>
-                <Accordion type="multiple" className="w-full">
-                  {dosha.alimVata && (
-                    <AccordionItem value="av">
-                      <AccordionTrigger className="text-sm">Detalhe Vata</AccordionTrigger>
-                      <AccordionContent className="text-sm text-muted-foreground whitespace-pre-wrap">
-                        {dosha.alimVata}
-                      </AccordionContent>
-                    </AccordionItem>
-                  )}
-                  {dosha.alimPitta && (
-                    <AccordionItem value="ap">
-                      <AccordionTrigger className="text-sm">Detalhe Pitta</AccordionTrigger>
-                      <AccordionContent className="text-sm text-muted-foreground whitespace-pre-wrap">
-                        {dosha.alimPitta}
-                      </AccordionContent>
-                    </AccordionItem>
-                  )}
-                  {dosha.alimKapha && (
-                    <AccordionItem value="ak">
-                      <AccordionTrigger className="text-sm">Detalhe Kapha</AccordionTrigger>
-                      <AccordionContent className="text-sm text-muted-foreground whitespace-pre-wrap">
-                        {dosha.alimKapha}
-                      </AccordionContent>
-                    </AccordionItem>
-                  )}
-                </Accordion>
-              </section>
-
-              {/* 5. Agravamentos */}
-              <section className="bg-card border border-border rounded-xl p-5 space-y-3">
-                <h3 className="flex items-center gap-2 text-base font-semibold text-foreground">
-                  <AlertTriangle className="w-4 h-4" /> Agravamentos
-                </h3>
-                <Accordion type="multiple" className="w-full">
-                  <AccordionItem value="gv">
-                    <AccordionTrigger className="text-sm">
-                      Vata ({countItems(dosha.agravVataTags)})
-                    </AccordionTrigger>
-                    <AccordionContent className="text-sm text-muted-foreground whitespace-pre-wrap">
-                      {dosha.agravVataTags || "—"}
-                    </AccordionContent>
-                  </AccordionItem>
-                  <AccordionItem value="gp">
-                    <AccordionTrigger className="text-sm">
-                      Pitta ({countItems(dosha.agravPittaTags)})
-                    </AccordionTrigger>
-                    <AccordionContent className="text-sm text-muted-foreground whitespace-pre-wrap">
-                      {dosha.agravPittaTags || "—"}
-                    </AccordionContent>
-                  </AccordionItem>
-                  <AccordionItem value="gk">
-                    <AccordionTrigger className="text-sm">
-                      Kapha ({countItems(dosha.agravKaphaTags)})
-                    </AccordionTrigger>
-                    <AccordionContent className="text-sm text-muted-foreground whitespace-pre-wrap">
-                      {dosha.agravKaphaTags || "—"}
-                    </AccordionContent>
-                  </AccordionItem>
-                </Accordion>
-              </section>
-
-              {/* 6. Relato */}
-              <section className="bg-card border border-border rounded-xl p-5 space-y-3">
-                <h3 className="flex items-center gap-2 text-base font-semibold text-foreground">
-                  <FileText className="w-4 h-4" /> Relato do Paciente
-                </h3>
-                <Accordion type="single" collapsible defaultValue="r">
-                  <AccordionItem value="r">
-                    <AccordionTrigger className="text-sm">Ver relato</AccordionTrigger>
-                    <AccordionContent className="text-sm text-muted-foreground whitespace-pre-wrap">
-                      {dosha.relato_aberto || "—"}
-                    </AccordionContent>
-                  </AccordionItem>
-                </Accordion>
-              </section>
-            </div>
+              </div>
+            </>
           )}
         </div>
       </div>
+
+      {/* Sheet conversa */}
+      <Sheet open={!!openEmail} onOpenChange={(v) => !v && setOpenEmail(null)}>
+        <SheetContent side="right" className="w-full sm:max-w-2xl flex flex-col p-0">
+          <SheetHeader className="p-5 border-b border-border">
+            <SheetTitle className="text-left">
+              {openNome}
+              {openNome !== openEmail && (
+                <span className="block text-xs text-muted-foreground font-normal mt-0.5">
+                  {openEmail}
+                </span>
+              )}
+            </SheetTitle>
+          </SheetHeader>
+
+          <div
+            id="hist-scroll"
+            className="flex-1 overflow-y-auto p-5 space-y-6 bg-muted/20"
+          >
+            {loadingHist ? (
+              <div className="flex items-center justify-center py-16 text-muted-foreground">
+                <Loader2 className="w-5 h-5 animate-spin" />
+              </div>
+            ) : historico.length === 0 ? (
+              <p className="text-center text-muted-foreground text-sm py-16">
+                Nenhuma mensagem.
+              </p>
+            ) : (
+              grupos.map((g) => (
+                <div key={g.dia} className="space-y-3">
+                  <div className="sticky top-0 z-10 flex justify-center">
+                    <span className="text-[10px] uppercase tracking-wider font-semibold bg-background border border-border rounded-full px-3 py-1 text-muted-foreground">
+                      {fmtDay(g.msgs[0].data_hora)}
+                    </span>
+                  </div>
+                  {g.msgs.map((m) => {
+                    const isUser = m.tipo === "human";
+                    return (
+                      <div
+                        key={m.msg_id}
+                        className={`flex ${isUser ? "justify-end" : "justify-start"}`}
+                      >
+                        <div className={`max-w-[85%] space-y-1 ${isUser ? "items-end" : "items-start"} flex flex-col`}>
+                          <div
+                            className={`rounded-2xl px-4 py-2.5 text-sm whitespace-pre-wrap break-words ${
+                              isUser
+                                ? "bg-primary/10 text-foreground rounded-br-sm"
+                                : "bg-card border border-border text-foreground rounded-bl-sm"
+                            }`}
+                          >
+                            {m.conteudo}
+                          </div>
+                          <span className="text-[10px] text-muted-foreground px-1">
+                            {fmtHour(m.data_hora)}
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              ))
+            )}
+          </div>
+        </SheetContent>
+      </Sheet>
     </>
-  );
-};
-
-const Info = ({ label, value }: { label: string; value: string | number | null | undefined }) => (
-  <div>
-    <p className="text-xs text-muted-foreground">{label}</p>
-    <p className="text-sm text-foreground font-medium break-words">
-      {value === null || value === undefined || value === "" ? "—" : value}
-    </p>
-  </div>
-);
-
-const DoshaRow = ({
-  label,
-  score,
-  getNivel,
-}: {
-  label: string;
-  score: number | null;
-  getNivel: (s: number) => Nivel;
-}) => {
-  const val = score ?? 0;
-  const nivel = getNivel(val);
-  return (
-    <div className="flex items-center justify-between bg-muted/40 rounded-lg p-3">
-      <div>
-        <p className="text-xs text-muted-foreground">{label}</p>
-        <p className="text-lg font-bold text-foreground">{score ?? "—"}</p>
-      </div>
-      <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${nivelColor[nivel]}`}>
-        {nivel}
-      </span>
-    </div>
   );
 };
 

@@ -5013,6 +5013,27 @@ export type Database = {
       }
     }
     Functions: {
+      admin_akasha_conversas: {
+        Args: { p_busca?: string; p_limit?: number; p_offset?: number }
+        Returns: {
+          email: string
+          nome: string
+          total_geral: number
+          total_msgs: number
+          ultima_data: string
+          ultima_pergunta: string
+          ultima_resposta: string
+        }[]
+      }
+      admin_akasha_historico: {
+        Args: { p_email: string }
+        Returns: {
+          conteudo: string
+          data_hora: string
+          msg_id: number
+          tipo: string
+        }[]
+      }
       admin_dashboard_resumo: { Args: never; Returns: Json }
       admin_set_portal_conteudo_destaques: {
         Args: { _ids: string[] }
