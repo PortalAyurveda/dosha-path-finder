@@ -322,6 +322,27 @@ const Auth = () => {
                   </button>
                 </div>
               </div>
+            ) : step === "confirm" ? (
+              <div className="space-y-5">
+                <div className="text-center space-y-2">
+                  <Mail className="w-10 h-10 mx-auto text-primary" />
+                  <h2 className="text-lg font-heading font-semibold text-foreground">
+                    Quase lá!
+                  </h2>
+                  <p className="text-sm text-muted-foreground">
+                    Confirme seu acesso para entrar no portal.
+                  </p>
+                </div>
+                <Button
+                  type="button"
+                  className="w-full"
+                  onClick={handleConfirmLink}
+                  disabled={loading}
+                >
+                  {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                  Confirmar e entrar no portal
+                </Button>
+              </div>
             ) : (
               <form onSubmit={handleVerify} className="space-y-5">
                 <div className="text-center space-y-2">
