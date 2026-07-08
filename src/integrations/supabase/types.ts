@@ -5380,6 +5380,10 @@ export type Database = {
         }[]
       }
       owns_rotina: { Args: { p_test_id: string }; Returns: boolean }
+      preparar_login_contexto: {
+        Args: { p_contexto: string; p_email: string }
+        Returns: undefined
+      }
       receita_do_dia: {
         Args: never
         Returns: {

@@ -14,7 +14,7 @@ import { Loader2, Mail, Sparkles, ArrowLeft } from "lucide-react";
 const Auth = () => {
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
-  const [step, setStep] = useState<"email" | "code" | "link">("email");
+  const [step, setStep] = useState<"email" | "code" | "link" | "confirm">("email");
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [resending, setResending] = useState(false);
@@ -84,6 +84,14 @@ const Auth = () => {
       if (!cancelled && data?.email) setEmail(data.email);
     })();
     return () => { cancelled = true; };
+  }, [searchParams]);
+
+  useEffect(() => {
+    const tokenHash = searchParams.get("token_hash");
+    const type = searchParams.get("type");
+    if (tokenHash && type) {
+      setStep("confirm");
+    }
   }, [searchParams]);
 
   const handleGoogleLogin = async () => {
@@ -179,6 +187,30 @@ const Auth = () => {
         description: "Código inválido ou expirado. Tente novamente.",
         variant: "destructive",
       });
+      setLoading(false);
+    }
+    // sucesso: useEffect cuida do redirect
+  };
+
+  const handleConfirmLink = async () => {
+    setLoading(true);
+    const token_hash = searchParams.get("token_hash") || "";
+    const type = searchParams.get("type") || "";
+    let { error } = await supabase.auth.verifyOtp({
+      token_hash,
+      type: (type as any) || "email",
+    });
+    if (error && type !== "email") {
+      const result = await supabase.auth.verifyOtp({ token_hash, type: "email" });
+      error = result.error;
+    }
+    if (error) {
+      toast({
+        title: "Link expirado",
+        description: "Este link já foi usado ou expirou. Peça um novo abaixo.",
+        variant: "destructive",
+      });
+      setStep("email");
       setLoading(false);
     }
     // sucesso: useEffect cuida do redirect
@@ -289,6 +321,27 @@ const Auth = () => {
                     {resending ? "Reenviando..." : "Reenviar link"}
                   </button>
                 </div>
+              </div>
+            ) : step === "confirm" ? (
+              <div className="space-y-5">
+                <div className="text-center space-y-2">
+                  <Mail className="w-10 h-10 mx-auto text-primary" />
+                  <h2 className="text-lg font-heading font-semibold text-foreground">
+                    Quase lá!
+                  </h2>
+                  <p className="text-sm text-muted-foreground">
+                    Confirme seu acesso para entrar no portal.
+                  </p>
+                </div>
+                <Button
+                  type="button"
+                  className="w-full"
+                  onClick={handleConfirmLink}
+                  disabled={loading}
+                >
+                  {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                  Confirmar e entrar no portal
+                </Button>
               </div>
             ) : (
               <form onSubmit={handleVerify} className="space-y-5">
