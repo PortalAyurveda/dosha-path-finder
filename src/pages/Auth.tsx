@@ -192,6 +192,30 @@ const Auth = () => {
     // sucesso: useEffect cuida do redirect
   };
 
+  const handleConfirmLink = async () => {
+    setLoading(true);
+    const token_hash = searchParams.get("token_hash") || "";
+    const type = searchParams.get("type") || "";
+    let { error } = await supabase.auth.verifyOtp({
+      token_hash,
+      type: (type as any) || "email",
+    });
+    if (error && type !== "email") {
+      const result = await supabase.auth.verifyOtp({ token_hash, type: "email" });
+      error = result.error;
+    }
+    if (error) {
+      toast({
+        title: "Link expirado",
+        description: "Este link já foi usado ou expirou. Peça um novo abaixo.",
+        variant: "destructive",
+      });
+      setStep("email");
+      setLoading(false);
+    }
+    // sucesso: useEffect cuida do redirect
+  };
+
   return (
     <>
       <Helmet>
