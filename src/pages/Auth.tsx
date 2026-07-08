@@ -14,7 +14,7 @@ import { Loader2, Mail, Sparkles, ArrowLeft } from "lucide-react";
 const Auth = () => {
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
-  const [step, setStep] = useState<"email" | "code" | "link">("email");
+  const [step, setStep] = useState<"email" | "code" | "link" | "confirm">("email");
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [resending, setResending] = useState(false);
@@ -84,6 +84,14 @@ const Auth = () => {
       if (!cancelled && data?.email) setEmail(data.email);
     })();
     return () => { cancelled = true; };
+  }, [searchParams]);
+
+  useEffect(() => {
+    const tokenHash = searchParams.get("token_hash");
+    const type = searchParams.get("type");
+    if (tokenHash && type) {
+      setStep("confirm");
+    }
   }, [searchParams]);
 
   const handleGoogleLogin = async () => {
