@@ -123,6 +123,9 @@ const Auth = () => {
         ? `${window.location.origin}/entrar?claim=${idParaClaim}`
         : `${window.location.origin}/entrar`;
     }
+    try {
+      await supabase.functions.invoke("preparar-login", { body: { email, contexto } });
+    } catch (_) { /* não bloquear o login */ }
     const { error } = await supabase.auth.signInWithOtp({ email, options });
     if (error) throw error;
   };
