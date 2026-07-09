@@ -191,6 +191,14 @@ const AdminAlunos = () => {
   const [novoForm, setNovoForm] = useState({ ...blankNovo });
   const [savingNovo, setSavingNovo] = useState(false);
 
+  // Contrato
+  const [contratoOpen, setContratoOpen] = useState(false);
+  const [contratoValor, setContratoValor] = useState("");
+  const [contratoFormaPag, setContratoFormaPag] = useState("");
+  const [contratoObs, setContratoObs] = useState("");
+  const [contratoCidade, setContratoCidade] = useState("");
+  const [contratoData, setContratoData] = useState(() => new Date().toISOString().slice(0, 10));
+
   const load = async () => {
     setLoading(true);
     const { data, error } = await supabase
