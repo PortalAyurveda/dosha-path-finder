@@ -60,6 +60,7 @@ const AdminRotinas = lazy(() => import("./pages/AdminRotinas"));
 const AdminEstoque = lazy(() => import("./pages/AdminEstoque"));
 const AdminTags = lazy(() => import("./pages/AdminTags"));
 const AdminCupons = lazy(() => import("./pages/AdminCupons"));
+const AdminCobranca = lazy(() => import("./pages/AdminCobranca"));
 const AdminAlunos = lazy(() => import("./pages/AdminAlunos"));
 const AdminEscola = lazy(() => import("./pages/AdminEscola"));
 const AdminCursos = lazy(() => import("./pages/AdminCursos"));
