@@ -12,6 +12,7 @@ const links = [
   { to: "/admin/aula", label: "Aulas", icon: Video },
   { to: "/admin/biblioteca", label: "Biblioteca", icon: Library },
   { to: "/admin/banners", label: "Banners", icon: LayoutTemplate },
+  { to: "/admin/cobranca", label: "Cobranças", icon: DollarSign },
   { to: "/admin/cupons", label: "Cupons", icon: Ticket },
   { to: "/admin/cursos", label: "Cursos", icon: BookOpen },
   { to: "/admin/escola", label: "Escola", icon: GraduationCap },
