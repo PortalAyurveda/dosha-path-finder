@@ -227,6 +227,12 @@ const AdminAlunos = () => {
     setEmailSubject("");
     setEmailBody("");
 
+    setContratoValor("");
+    setContratoFormaPag(a.plano_descricao || "");
+    setContratoObs("");
+    setContratoCidade(a.cidade || "");
+    setContratoData(new Date().toISOString().slice(0, 10));
+
     const [pg, an] = await Promise.all([
       supabase
         .from("escola_pagamentos")
