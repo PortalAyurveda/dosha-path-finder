@@ -49,6 +49,35 @@ if (!globalRef[GLOBAL_KEY] && LEGACY_STORAGE_HOST) {
       }
       return result;
     }) as typeof bucket.getPublicUrl;
+
+    const originalCreateSignedUrl = bucket.createSignedUrl.bind(bucket);
+
+    bucket.createSignedUrl = (async (...args: Parameters<typeof originalCreateSignedUrl>) => {
+      const result = await originalCreateSignedUrl(...args);
+
+      if (result?.data?.signedUrl?.startsWith(LEGACY_STORAGE_HOST)) {
+        result.data.signedUrl = PUBLIC_IMAGE_HOST + result.data.signedUrl.slice(LEGACY_STORAGE_HOST.length);
+      }
+
+      return result;
+    }) as typeof bucket.createSignedUrl;
+
+    const originalCreateSignedUrls = bucket.createSignedUrls.bind(bucket);
+
+    bucket.createSignedUrls = (async (...args: Parameters<typeof originalCreateSignedUrls>) => {
+      const result = await originalCreateSignedUrls(...args);
+
+      if (Array.isArray(result?.data)) {
+        for (const item of result.data) {
+          if (item?.signedUrl?.startsWith(LEGACY_STORAGE_HOST)) {
+            item.signedUrl = PUBLIC_IMAGE_HOST + item.signedUrl.slice(LEGACY_STORAGE_HOST.length);
+          }
+        }
+      }
+
+      return result;
+    }) as typeof bucket.createSignedUrls;
+
     return bucket;
   }) as typeof supabase.storage.from;
 }
