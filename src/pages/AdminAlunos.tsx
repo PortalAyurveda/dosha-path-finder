@@ -629,6 +629,58 @@ const AdminAlunos = () => {
                   </div>
                 </section>
 
+                {/* Seção Contrato */}
+                <section className="space-y-3 border-t border-border pt-6">
+                  <h3 className="font-heading font-semibold">Contrato</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                    <div>
+                      <Label className="text-xs text-muted-foreground">Valor total</Label>
+                      <Input
+                        placeholder="R$ 8.100,00"
+                        value={contratoValor}
+                        onChange={(e) => setContratoValor(e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-xs text-muted-foreground">Forma de pagamento</Label>
+                      <Input
+                        value={contratoFormaPag}
+                        onChange={(e) => setContratoFormaPag(e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-xs text-muted-foreground">Cidade da assinatura</Label>
+                      <Input
+                        value={contratoCidade}
+                        onChange={(e) => setContratoCidade(e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-xs text-muted-foreground">Data da assinatura</Label>
+                      <Input
+                        type="date"
+                        value={contratoData}
+                        onChange={(e) => setContratoData(e.target.value)}
+                      />
+                    </div>
+                    <div className="sm:col-span-2">
+                      <Label className="text-xs text-muted-foreground">Observação</Label>
+                      <Textarea
+                        value={contratoObs}
+                        onChange={(e) => setContratoObs(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                  <Button
+                    variant="outline"
+                    className="gap-2"
+                    onClick={() => setContratoOpen(true)}
+                  >
+                    <FileText className="w-4 h-4" /> Gerar contrato para impressão
+                  </Button>
+                </section>
+
+
                 {/* Seção 2 — Status e financeiro */}
                 <section className="space-y-3 border-t border-border pt-6">
                   <h3 className="font-heading font-semibold">Status e financeiro</h3>
