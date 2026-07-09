@@ -906,6 +906,63 @@ export type Database = {
         }
         Relationships: []
       }
+      cobrancas: {
+        Row: {
+          created_at: string
+          criado_por: string | null
+          descricao: string
+          email_cliente: string | null
+          id: string
+          moeda: string
+          nome_cliente: string | null
+          paid_at: string | null
+          status: string
+          stripe_payment_intent_id: string | null
+          stripe_payment_link_id: string | null
+          stripe_price_id: string | null
+          stripe_product_id: string | null
+          stripe_session_id: string | null
+          url: string | null
+          valor: number
+        }
+        Insert: {
+          created_at?: string
+          criado_por?: string | null
+          descricao: string
+          email_cliente?: string | null
+          id?: string
+          moeda?: string
+          nome_cliente?: string | null
+          paid_at?: string | null
+          status?: string
+          stripe_payment_intent_id?: string | null
+          stripe_payment_link_id?: string | null
+          stripe_price_id?: string | null
+          stripe_product_id?: string | null
+          stripe_session_id?: string | null
+          url?: string | null
+          valor: number
+        }
+        Update: {
+          created_at?: string
+          criado_por?: string | null
+          descricao?: string
+          email_cliente?: string | null
+          id?: string
+          moeda?: string
+          nome_cliente?: string | null
+          paid_at?: string | null
+          status?: string
+          stripe_payment_intent_id?: string | null
+          stripe_payment_link_id?: string | null
+          stripe_price_id?: string | null
+          stripe_product_id?: string | null
+          stripe_session_id?: string | null
+          url?: string | null
+          valor?: number
+        }
+        Relationships: []
+      }
       config_live: {
         Row: {
           ativo: boolean | null
