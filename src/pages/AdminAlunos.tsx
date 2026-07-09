@@ -37,7 +37,21 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { GraduationCap, Plus, Pencil, Mail, Save } from "lucide-react";
+import { GraduationCap, Plus, Pencil, Mail, Save, FileText, Printer, X } from "lucide-react";
+
+const ENDERECO_EMPRESA = "Henrique Homem de Melo 189, Pindamonhangaba - SP";
+
+const MESES_PT = [
+  "janeiro", "fevereiro", "março", "abril", "maio", "junho",
+  "julho", "agosto", "setembro", "outubro", "novembro", "dezembro",
+];
+
+function dataPorExtenso(iso: string): { dia: string; mes: string; ano: string } {
+  if (!iso) return { dia: "", mes: "", ano: "" };
+  const [y, m, d] = iso.split("-");
+  const mesIdx = Math.max(0, Math.min(11, Number(m) - 1));
+  return { dia: String(Number(d)), mes: MESES_PT[mesIdx], ano: String(Number(y)) };
+}
 
 type Aluno = {
   id: string;
@@ -177,6 +191,14 @@ const AdminAlunos = () => {
   const [novoForm, setNovoForm] = useState({ ...blankNovo });
   const [savingNovo, setSavingNovo] = useState(false);
 
+  // Contrato
+  const [contratoOpen, setContratoOpen] = useState(false);
+  const [contratoValor, setContratoValor] = useState("");
+  const [contratoFormaPag, setContratoFormaPag] = useState("");
+  const [contratoObs, setContratoObs] = useState("");
+  const [contratoCidade, setContratoCidade] = useState("");
+  const [contratoData, setContratoData] = useState(() => new Date().toISOString().slice(0, 10));
+
   const load = async () => {
     setLoading(true);
     const { data, error } = await supabase
@@ -204,6 +226,12 @@ const AdminAlunos = () => {
     setNovaNota("");
     setEmailSubject("");
     setEmailBody("");
+
+    setContratoValor("");
+    setContratoFormaPag(a.plano_descricao || "");
+    setContratoObs("");
+    setContratoCidade(a.cidade || "");
+    setContratoData(new Date().toISOString().slice(0, 10));
 
     const [pg, an] = await Promise.all([
       supabase
@@ -601,6 +629,58 @@ const AdminAlunos = () => {
                   </div>
                 </section>
 
+                {/* Seção Contrato */}
+                <section className="space-y-3 border-t border-border pt-6">
+                  <h3 className="font-heading font-semibold">Contrato</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                    <div>
+                      <Label className="text-xs text-muted-foreground">Valor total</Label>
+                      <Input
+                        placeholder="R$ 8.100,00"
+                        value={contratoValor}
+                        onChange={(e) => setContratoValor(e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-xs text-muted-foreground">Forma de pagamento</Label>
+                      <Input
+                        value={contratoFormaPag}
+                        onChange={(e) => setContratoFormaPag(e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-xs text-muted-foreground">Cidade da assinatura</Label>
+                      <Input
+                        value={contratoCidade}
+                        onChange={(e) => setContratoCidade(e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-xs text-muted-foreground">Data da assinatura</Label>
+                      <Input
+                        type="date"
+                        value={contratoData}
+                        onChange={(e) => setContratoData(e.target.value)}
+                      />
+                    </div>
+                    <div className="sm:col-span-2">
+                      <Label className="text-xs text-muted-foreground">Observação</Label>
+                      <Textarea
+                        value={contratoObs}
+                        onChange={(e) => setContratoObs(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                  <Button
+                    variant="outline"
+                    className="gap-2"
+                    onClick={() => setContratoOpen(true)}
+                  >
+                    <FileText className="w-4 h-4" /> Gerar contrato para impressão
+                  </Button>
+                </section>
+
+
                 {/* Seção 2 — Status e financeiro */}
                 <section className="space-y-3 border-t border-border pt-6">
                   <h3 className="font-heading font-semibold">Status e financeiro</h3>
@@ -797,6 +877,118 @@ const AdminAlunos = () => {
           )}
         </SheetContent>
       </Sheet>
+
+      {contratoOpen && selected && (() => {
+        const d = dataPorExtenso(contratoData);
+        return (
+          <div
+            id="contrato-print"
+            className="fixed inset-0 bg-white z-[9999] overflow-auto"
+          >
+            <div className="no-print sticky top-0 z-10 flex items-center justify-between gap-2 bg-white border-b border-border px-4 py-3 shadow-sm">
+              <div className="text-sm text-muted-foreground">
+                Pré-visualização do contrato
+              </div>
+              <div className="flex gap-2">
+                <Button size="sm" onClick={() => window.print()} className="gap-2">
+                  <Printer className="w-4 h-4" /> Imprimir / Salvar PDF
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => setContratoOpen(false)}
+                  className="gap-2"
+                >
+                  <X className="w-4 h-4" /> Fechar
+                </Button>
+              </div>
+            </div>
+
+            <div
+              className="mx-auto my-8 bg-white px-10 py-12"
+              style={{
+                maxWidth: 720,
+                fontFamily: "'Georgia', 'Times New Roman', serif",
+                fontSize: 14,
+                lineHeight: 1.7,
+                color: "#111",
+              }}
+            >
+              <h1 style={{ fontSize: 18, fontWeight: 700, textAlign: "center", marginBottom: 4 }}>
+                CONTRATO DE PRESTAÇÃO DE SERVIÇOS EDUCACIONAIS
+              </h1>
+              <h2 style={{ fontSize: 15, fontWeight: 600, textAlign: "center", marginBottom: 24 }}>
+                FORMAÇÃO AYURVEDA PROFISSIONALIZANTE — TURMA 2026/2027
+              </h2>
+
+              <p style={{ textAlign: "justify", marginBottom: 18 }}>
+                De um lado, Samkhya &amp; Portal Ayurveda LTDA, CNPJ nº 34.806.611/0001-43,
+                com sede em {ENDERECO_EMPRESA}, representada por Edson Osorio ("CONTRATADA");
+                de outro, {selected.nome_completo}, CPF nº {selected.cpf || "—"},
+                e-mail {selected.email}, telefone {selected.whatsapp} ("CONTRATANTE").
+                As partes firmam o presente contrato de prestação de serviços educacionais,
+                mediante as cláusulas a seguir:
+              </p>
+
+              <p style={{ fontWeight: 700, marginTop: 16 }}>1. Objeto</p>
+              <p style={{ textAlign: "justify" }}>
+                Prestação de serviços educacionais referentes à Formação Ayurveda
+                Profissionalizante — Turma 2026/2027, com 15 módulos em 3 semestres e
+                carga horária certificada de 400 horas (12 módulos on-line e 3 presenciais
+                em São Paulo/SP), conforme programa e calendário já disponibilizados ao
+                CONTRATANTE.
+              </p>
+
+              <p style={{ fontWeight: 700, marginTop: 16 }}>2. Obrigações da Contratada</p>
+              <p style={{ textAlign: "justify" }}>
+                Ministrar as aulas nas datas previstas, disponibilizar gravações, apostilas
+                e material de cada módulo, manter a qualidade do conteúdo, e emitir
+                certificado de conclusão ao CONTRATANTE que cumprir os requisitos do curso
+                (questionários, diário clínico, TCC e estágio supervisionado).
+              </p>
+
+              <p style={{ fontWeight: 700, marginTop: 16 }}>3. Obrigações do Contratante</p>
+              <p style={{ textAlign: "justify" }}>
+                Participar das aulas e atividades do curso, efetuar o pagamento conforme a
+                Cláusula 4ª, e utilizar o material recebido (aulas, gravações, apostilas)
+                exclusivamente para uso pessoal, sem reprodução, compartilhamento ou revenda
+                a terceiros.
+              </p>
+
+              <p style={{ fontWeight: 700, marginTop: 16 }}>4. Investimento</p>
+              <p>Valor total: {contratoValor || "—"}</p>
+              <p>Forma de pagamento: {contratoFormaPag || "—"}</p>
+              <p style={{ whiteSpace: "pre-wrap" }}>Observação: {contratoObs || "—"}</p>
+
+              <p style={{ fontWeight: 700, marginTop: 16 }}>5. Disposições Finais</p>
+              <p style={{ textAlign: "justify" }}>
+                Os dados pessoais do CONTRATANTE serão usados apenas para os fins deste
+                contrato. Qualquer alteração deste contrato só é válida se feita por escrito
+                e assinada por ambas as partes.
+              </p>
+
+              <p style={{ marginTop: 24 }}>
+                E, por estarem de acordo, as partes assinam o presente instrumento.
+              </p>
+
+              <p style={{ marginTop: 24 }}>
+                {(contratoCidade || "—")}, {d.dia || "—"} de {d.mes || "—"} de {d.ano || "—"}.
+              </p>
+
+              <div style={{ marginTop: 64 }}>
+                <div style={{ borderTop: "1px solid #111", width: 320, marginBottom: 4 }} />
+                <p>CONTRATADA — Edson Osorio</p>
+              </div>
+
+              <div style={{ marginTop: 64 }}>
+                <div style={{ borderTop: "1px solid #111", width: 320, marginBottom: 4 }} />
+                <p>CONTRATANTE — {selected.nome_completo}</p>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
+
 
       {/* Dialog novo aluno */}
       <Dialog open={novoOpen} onOpenChange={setNovoOpen}>

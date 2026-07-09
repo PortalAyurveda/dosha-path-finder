@@ -5249,6 +5249,7 @@ export type Database = {
         Args: { p_registro_id: string }
         Returns: Json
       }
+      gerar_rotina_para: { Args: { p_idpublico: string }; Returns: number }
       get_dosha_principal: {
         Args: { k: number; p: number; v: number }
         Returns: string
