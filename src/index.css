@@ -303,3 +303,10 @@ body {
   outline: 2px solid hsl(var(--rpg-gold) / 0.6);
   outline-offset: 1px;
 }
+
+@media print {
+  body * { visibility: hidden !important; }
+  #contrato-print, #contrato-print * { visibility: visible !important; }
+  #contrato-print { position: absolute !important; inset: 0 !important; }
+  #contrato-print .no-print { display: none !important; }
+}
