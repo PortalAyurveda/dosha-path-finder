@@ -976,8 +976,12 @@ const AdminAlunos = () => {
               </p>
 
               <div style={{ marginTop: 64 }}>
-                <div style={{ borderTop: "1px solid #111", width: 320, marginBottom: 4 }} />
-                <p>CONTRATADA — Edson Osorio</p>
+                <div style={{ fontFamily: "'Great Vibes', cursive", fontSize: 42, lineHeight: 1.1, color: "#1a1a1a", marginBottom: 2 }}>
+                  Edson Osorio
+                </div>
+                <div style={{ borderTop: "1px solid #333", width: 300, paddingTop: 4, fontSize: 14 }}>
+                  CONTRATADA — Edson Osorio
+                </div>
               </div>
 
               <div style={{ marginTop: 64 }}>
