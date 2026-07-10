@@ -39,19 +39,7 @@ import {
 } from "@/components/ui/select";
 import { GraduationCap, Plus, Pencil, Mail, Save, FileText, Printer, X } from "lucide-react";
 
-const ENDERECO_EMPRESA = "Henrique Homem de Melo 189, Pindamonhangaba - SP";
-
-const MESES_PT = [
-  "janeiro", "fevereiro", "março", "abril", "maio", "junho",
-  "julho", "agosto", "setembro", "outubro", "novembro", "dezembro",
-];
-
-function dataPorExtenso(iso: string): { dia: string; mes: string; ano: string } {
-  if (!iso) return { dia: "", mes: "", ano: "" };
-  const [y, m, d] = iso.split("-");
-  const mesIdx = Math.max(0, Math.min(11, Number(m) - 1));
-  return { dia: String(Number(d)), mes: MESES_PT[mesIdx], ano: String(Number(y)) };
-}
+import ContratoFormacao from "@/components/ContratoFormacao";
 
 type Aluno = {
   id: string;
