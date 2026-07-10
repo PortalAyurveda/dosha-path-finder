@@ -1,33 +1,30 @@
-## O que está acontecendo hoje
+## Varredura por auto-mensagem da Akasha
 
-A Akasha (webchat) tem uma **mensagem automática de boas-vindas** que aparece sozinha assim que o chat abre pela 1ª vez, sem o usuário ter digitado nada. O texto é:
+Rodei uma busca ampla em `src/` e `supabase/` pelos padrões pedidos: `"Acabei de chegar"`, `"vim conhecer você"`, `"Vamos conversar"`, `"Vi que seu dosha agravado"`, `sendInitialMessage`, `__INICIO` e qualquer `fetch` para `/webhook/chat-ayurveda`.
 
-> "Olá, {nome}! Vi que seu dosha agravado é {dosha}. Posso te indicar receitas, produtos e práticas do Portal — ou escreva Portal para ajuda com o site. Por onde começamos?"
+### Ocorrências encontradas
 
-Essa saudação está em **dois lugares** que renderizam a Akasha:
+**1. Fluxo do reteste (fora do escopo — mantém)**
+- `src/components/reteste/RetesteChat.tsx:63` — `const sendInitialMessage = useCallback(...)`
+- `src/components/reteste/RetesteChat.tsx:72` — payload `message: "__INICIO_RETESTE__"`
+- `src/components/reteste/RetesteChat.tsx:99` — `sendInitialMessage()` no mount
+- `src/components/reteste/RetesteChat.tsx:101` — dependências do effect
 
-1. `src/components/akasha/FloatingAkasha.tsx` — o botão flutuante da Akasha (linhas ~187‑211: função `sendInitialMessage` + `useEffect` que a dispara quando `open` fica true e o histórico está vazio).
-2. `src/components/meudosha/AkashaTab.tsx` — a aba Akasha dentro do "Meu Dosha" (linhas ~152‑173: `sendInitialMessage` disparado no `useEffect` de hidratação quando não há histórico).
+Você pediu explicitamente para **não tocar no RetesteChat**. Ele usa outro webhook (`/webhook/reteste-dosha`), não `chat-ayurveda`. Fica como está.
 
-Observação importante: essas duas mensagens são **locais** (só exibem texto na tela, não chamam o webhook n8n nem gravam nada no Supabase — comentários no código confirmam isso). Então o webhook n8n *não* está sendo disparado por elas hoje. O que a gente vai remover é a exibição automática da bolha de boas-vindas — a Akasha só vai falar depois que o usuário mandar a primeira mensagem.
+**2. Chat Akasha (FloatingAkasha e AkashaTab)**
+- `src/components/akasha/FloatingAkasha.tsx:136` — `fetch(WEBHOOK_URL, ...)` dentro de `useQuery`
+- `src/components/meudosha/AkashaTab.tsx:112` — `fetch(WEBHOOK_URL, ...)` dentro de `useQuery`
 
-Não vou mexer no `RetesteChat.tsx` (página de reteste), que é fluxo diferente e realmente dispara um webhook `__INICIO_RETESTE__` — o pedido é sobre a Akasha (webchat).
+Ambos os `fetch` disparam apenas com `body: { action: "get_history", session_id }` — é **leitura de histórico**, não envia mensagem de usuário nem cria turno novo no agente. Não há mais nenhum `sendInitialMessage`, nenhuma bolha automática, nenhum `__INICIO*` e nenhum texto tipo "Acabei de chegar" / "vim conhecer você" / "Vi que seu dosha agravado" em nenhum lugar do projeto.
 
-## Mudanças
+### Conclusão
 
-### 1) `src/components/akasha/FloatingAkasha.tsx`
-- Remover a função `sendInitialMessage` (linhas ~187‑200).
-- Remover o `useEffect` que a chama (linhas ~202‑211).
-- Manter `initialSentRef` só se ainda for usado em outros pontos; se ficar órfão, remover também.
+**Está limpo.** O auto-trigger da Akasha (chat-ayurveda) já foi removido em passes anteriores — não sobrou nada para apagar. A Akasha só fala depois que o usuário mandar a 1ª mensagem via `sendMessage`. O único disparo automático que ainda existe é o do RetesteChat, que você mandou preservar.
 
-### 2) `src/components/meudosha/AkashaTab.tsx`
-- Remover a função `sendInitialMessage` (linhas ~165‑173).
-- No `useEffect` de hidratação (linhas ~152‑163), remover o branch `else if (!initialSent) { setInitialSent(true); sendInitialMessage(); }`, deixando apenas a hidratação a partir do `cachedHistory`.
-- Remover `initialSent` / `setInitialSent` se ficarem sem uso.
+### Ação proposta
 
-## Resultado esperado
+Nenhuma alteração de código. Se você quiser, posso ainda assim:
+- (opcional) Renomear/comentar os `useQuery` de `get_history` para deixar explícito no código que são "read-only, não geram turno".
 
-- Abrir a Akasha (flutuante ou aba) com histórico vazio → **nenhuma bolha aparece**, o chat fica em branco esperando o usuário digitar.
-- Se já existe histórico salvo, ele continua sendo carregado normalmente.
-- Quando o usuário digita a 1ª mensagem, o fluxo normal (`sendMessage` → webhook `chat-ayurveda`) roda como antes.
-- Nenhuma alteração no backend, no n8n, ou no fluxo do Reteste.
+Confirma que não precisa mexer em nada?
