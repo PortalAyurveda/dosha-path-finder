@@ -76,6 +76,10 @@ type Aluno = {
   eh_bolsista: boolean | null;
   percentual_bolsa: number | null;
   valor_mensalidade: number | null;
+  contrato_valor_total: string | null;
+  contrato_forma_pagamento: string | null;
+  contrato_observacao: string | null;
+  contrato_disponivel_aluno: boolean | null;
   created_at: string | null;
 };
 
