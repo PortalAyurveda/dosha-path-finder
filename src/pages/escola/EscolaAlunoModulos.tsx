@@ -1,15 +1,17 @@
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ArrowLeft, ChevronRight, Lock } from "lucide-react";
+import { ArrowLeft, ChevronRight, Lock, FileText, Printer, X } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import EscolaAlunoShell, { escolaBranding as branding } from "./EscolaAlunoShell";
 import { formatModuloFimDeSemana, formatModuloHorarios } from "@/lib/escolaModuloDatas";
 import type { AlunoRow } from "@/hooks/useEscolaAluno";
 import { getPaletteBranding, type LandingPaletteKey } from "@/data/landingPalettes";
+import ContratoFormacao from "@/components/ContratoFormacao";
 
 const SIMBOLO_MONO =
   "https://api.portalayurveda.com/storage/v1/object/public/portal_images/simbolo-positivo-mono.webp";
@@ -60,7 +62,80 @@ const findCurrentId = (mods: Modulo[]): string | null => {
 
 
 // =================== LISTA ===================
-const Conteudo = (_: { aluno: AlunoRow }) => {
+function DocumentosSection({ aluno }: { aluno: AlunoRow }) {
+  const [open, setOpen] = useState(false);
+  if (!aluno.contrato_disponivel_aluno) return null;
+  const hoje = new Date().toISOString().slice(0, 10);
+
+  return (
+    <section className="pt-6 border-t border-border">
+      <h2
+        className="font-serif text-xl font-bold italic mb-3"
+        style={{ color: branding.darkColor }}
+      >
+        Documentos
+      </h2>
+      <div
+        className="flex items-center gap-3 rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm border p-4"
+        style={{ borderColor: `${branding.primaryColor}33`, background: "#fff" }}
+      >
+        <div
+          className="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
+          style={{ background: `${branding.primaryColor}1A`, color: branding.primaryColor }}
+        >
+          <FileText className="w-5 h-5" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <h3 className="font-serif font-bold italic text-base" style={{ color: branding.darkColor }}>
+            Contrato de Prestação de Serviços — Formação Ayurveda
+          </h3>
+          <p className="text-xs text-muted-foreground">Turma 2026/2027</p>
+        </div>
+        <Button
+          size="sm"
+          onClick={() => setOpen(true)}
+          style={{ background: branding.primaryColor, color: "#fff" }}
+        >
+          Ver contrato
+        </Button>
+      </div>
+
+      {open && createPortal(
+        <div
+          id="contrato-print"
+          className="fixed inset-0 bg-white z-[9999] overflow-y-auto"
+        >
+          <div className="no-print sticky top-0 z-10 flex items-center justify-between gap-2 bg-white border-b border-border px-4 py-3 shadow-sm">
+            <div className="text-sm text-muted-foreground">Contrato</div>
+            <div className="flex gap-2">
+              <Button size="sm" onClick={() => window.print()} className="gap-2">
+                <Printer className="w-4 h-4" /> Baixar / Imprimir
+              </Button>
+              <Button size="sm" variant="outline" onClick={() => setOpen(false)} className="gap-2">
+                <X className="w-4 h-4" /> Fechar
+              </Button>
+            </div>
+          </div>
+          <ContratoFormacao
+            nome_completo={aluno.nome_completo}
+            cpf={aluno.cpf}
+            email={aluno.email}
+            whatsapp={aluno.whatsapp}
+            cidade={aluno.cidade}
+            contrato_valor_total={aluno.contrato_valor_total}
+            contrato_forma_pagamento={aluno.contrato_forma_pagamento}
+            contrato_observacao={aluno.contrato_observacao}
+            data={hoje}
+          />
+        </div>,
+        document.body
+      )}
+    </section>
+  );
+}
+
+// =================== LISTA ===================
+const Conteudo = ({ aluno }: { aluno: AlunoRow }) => {
   const [loading, setLoading] = useState(true);
   const [modulos, setModulos] = useState<Modulo[]>([]);
   const currentRef = useRef<HTMLDivElement | null>(null);
@@ -230,6 +305,8 @@ const Conteudo = (_: { aluno: AlunoRow }) => {
           );
         })
       )}
+
+      <DocumentosSection aluno={aluno} />
     </div>
 
   );
