@@ -1,15 +1,17 @@
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ArrowLeft, ChevronRight, Lock } from "lucide-react";
+import { ArrowLeft, ChevronRight, Lock, FileText, Printer, X } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import EscolaAlunoShell, { escolaBranding as branding } from "./EscolaAlunoShell";
 import { formatModuloFimDeSemana, formatModuloHorarios } from "@/lib/escolaModuloDatas";
 import type { AlunoRow } from "@/hooks/useEscolaAluno";
 import { getPaletteBranding, type LandingPaletteKey } from "@/data/landingPalettes";
+import ContratoFormacao from "@/components/ContratoFormacao";
 
 const SIMBOLO_MONO =
   "https://api.portalayurveda.com/storage/v1/object/public/portal_images/simbolo-positivo-mono.webp";
