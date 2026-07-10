@@ -675,13 +675,33 @@ const AdminAlunos = () => {
                       />
                     </div>
                   </div>
-                  <Button
-                    variant="outline"
-                    className="gap-2"
-                    onClick={() => setContratoOpen(true)}
-                  >
-                    <FileText className="w-4 h-4" /> Gerar contrato para impressão
-                  </Button>
+
+                  <div className="flex items-center gap-3">
+                    <Switch
+                      checked={!!selected.contrato_disponivel_aluno}
+                      onCheckedChange={toggleContratoDisponivel}
+                    />
+                    <Label className="text-sm">
+                      Disponibilizar contrato na área do aluno
+                    </Label>
+                  </div>
+
+                  <div className="flex flex-wrap gap-2">
+                    <Button
+                      size="sm"
+                      className="gap-2"
+                      onClick={salvarDadosContrato}
+                    >
+                      <Save className="w-4 h-4" /> Salvar dados do contrato
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="gap-2"
+                      onClick={() => setContratoOpen(true)}
+                    >
+                      <FileText className="w-4 h-4" /> Gerar contrato para impressão
+                    </Button>
+                  </div>
                 </section>
 
 
