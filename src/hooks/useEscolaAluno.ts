@@ -9,6 +9,13 @@ export type AlunoRow = {
   status: string;
   turma_id: string | null;
   matricula: string | null;
+  cpf: string | null;
+  whatsapp: string | null;
+  cidade: string | null;
+  contrato_valor_total: string | null;
+  contrato_forma_pagamento: string | null;
+  contrato_observacao: string | null;
+  contrato_disponivel_aluno: boolean | null;
 };
 
 type Result = {
