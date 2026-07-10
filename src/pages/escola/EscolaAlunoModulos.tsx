@@ -305,6 +305,8 @@ const Conteudo = ({ aluno }: { aluno: AlunoRow }) => {
           );
         })
       )}
+
+      <DocumentosSection aluno={aluno} />
     </div>
 
   );
