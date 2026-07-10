@@ -1738,6 +1738,10 @@ export type Database = {
           aprovado_por: string | null
           cidade: string | null
           como_conheceu: string | null
+          contrato_disponivel_aluno: boolean
+          contrato_forma_pagamento: string | null
+          contrato_observacao: string | null
+          contrato_valor_total: string | null
           cpf: string | null
           created_at: string | null
           dosha_k: number | null
@@ -1770,6 +1774,10 @@ export type Database = {
           aprovado_por?: string | null
           cidade?: string | null
           como_conheceu?: string | null
+          contrato_disponivel_aluno?: boolean
+          contrato_forma_pagamento?: string | null
+          contrato_observacao?: string | null
+          contrato_valor_total?: string | null
           cpf?: string | null
           created_at?: string | null
           dosha_k?: number | null
@@ -1802,6 +1810,10 @@ export type Database = {
           aprovado_por?: string | null
           cidade?: string | null
           como_conheceu?: string | null
+          contrato_disponivel_aluno?: boolean
+          contrato_forma_pagamento?: string | null
+          contrato_observacao?: string | null
+          contrato_valor_total?: string | null
           cpf?: string | null
           created_at?: string | null
           dosha_k?: number | null

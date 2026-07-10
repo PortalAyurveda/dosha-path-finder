@@ -76,6 +76,10 @@ type Aluno = {
   eh_bolsista: boolean | null;
   percentual_bolsa: number | null;
   valor_mensalidade: number | null;
+  contrato_valor_total: string | null;
+  contrato_forma_pagamento: string | null;
+  contrato_observacao: string | null;
+  contrato_disponivel_aluno: boolean | null;
   created_at: string | null;
 };
 
@@ -227,9 +231,9 @@ const AdminAlunos = () => {
     setEmailSubject("");
     setEmailBody("");
 
-    setContratoValor("");
-    setContratoFormaPag(a.plano_descricao || "");
-    setContratoObs("");
+    setContratoValor(a.contrato_valor_total || "");
+    setContratoFormaPag(a.contrato_forma_pagamento || a.plano_descricao || "");
+    setContratoObs(a.contrato_observacao || "");
     setContratoCidade(a.cidade || "");
     setContratoData(new Date().toISOString().slice(0, 10));
 
@@ -428,6 +432,32 @@ const AdminAlunos = () => {
     setNovoOpen(false);
     setNovoForm({ ...blankNovo });
     load();
+  };
+
+  const salvarDadosContrato = async () => {
+    if (!selected) return;
+    const { error } = await supabase
+      .from("escola_alunos")
+      .update({
+        contrato_valor_total: contratoValor || null,
+        contrato_forma_pagamento: contratoFormaPag || null,
+        contrato_observacao: contratoObs || null,
+      })
+      .eq("id", selected.id);
+    if (error) return toast.error("Erro ao salvar dados do contrato");
+    toast.success("Dados do contrato salvos");
+    refreshSelected();
+  };
+
+  const toggleContratoDisponivel = async (novo: boolean) => {
+    if (!selected) return;
+    const { error } = await supabase
+      .from("escola_alunos")
+      .update({ contrato_disponivel_aluno: novo })
+      .eq("id", selected.id);
+    if (error) return toast.error("Erro ao atualizar disponibilidade");
+    toast.success(novo ? "Contrato disponibilizado" : "Contrato ocultado");
+    refreshSelected();
   };
 
   return (
@@ -671,13 +701,33 @@ const AdminAlunos = () => {
                       />
                     </div>
                   </div>
-                  <Button
-                    variant="outline"
-                    className="gap-2"
-                    onClick={() => setContratoOpen(true)}
-                  >
-                    <FileText className="w-4 h-4" /> Gerar contrato para impressão
-                  </Button>
+
+                  <div className="flex items-center gap-3">
+                    <Switch
+                      checked={!!selected.contrato_disponivel_aluno}
+                      onCheckedChange={toggleContratoDisponivel}
+                    />
+                    <Label className="text-sm">
+                      Disponibilizar contrato na área do aluno
+                    </Label>
+                  </div>
+
+                  <div className="flex flex-wrap gap-2">
+                    <Button
+                      size="sm"
+                      className="gap-2"
+                      onClick={salvarDadosContrato}
+                    >
+                      <Save className="w-4 h-4" /> Salvar dados do contrato
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="gap-2"
+                      onClick={() => setContratoOpen(true)}
+                    >
+                      <FileText className="w-4 h-4" /> Gerar contrato para impressão
+                    </Button>
+                  </div>
                 </section>
 
 
