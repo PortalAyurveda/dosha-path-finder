@@ -46,7 +46,7 @@ export function useEscolaAluno(): Result {
       setLoading(true);
       const { data } = await supabase
         .from("escola_alunos")
-        .select("id,email,nome_completo,status,turma_id,matricula")
+        .select("id,email,nome_completo,status,turma_id,matricula,cpf,whatsapp,cidade,contrato_valor_total,contrato_forma_pagamento,contrato_observacao,contrato_disponivel_aluno")
         .eq("email", user.email!.toLowerCase())
         .eq("status", "aprovado")
         .maybeSingle();
