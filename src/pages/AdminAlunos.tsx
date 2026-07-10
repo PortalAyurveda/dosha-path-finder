@@ -434,6 +434,32 @@ const AdminAlunos = () => {
     load();
   };
 
+  const salvarDadosContrato = async () => {
+    if (!selected) return;
+    const { error } = await supabase
+      .from("escola_alunos")
+      .update({
+        contrato_valor_total: contratoValor || null,
+        contrato_forma_pagamento: contratoFormaPag || null,
+        contrato_observacao: contratoObs || null,
+      })
+      .eq("id", selected.id);
+    if (error) return toast.error("Erro ao salvar dados do contrato");
+    toast.success("Dados do contrato salvos");
+    refreshSelected();
+  };
+
+  const toggleContratoDisponivel = async (novo: boolean) => {
+    if (!selected) return;
+    const { error } = await supabase
+      .from("escola_alunos")
+      .update({ contrato_disponivel_aluno: novo })
+      .eq("id", selected.id);
+    if (error) return toast.error("Erro ao atualizar disponibilidade");
+    toast.success(novo ? "Contrato disponibilizado" : "Contrato ocultado");
+    refreshSelected();
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Seo title="Alunos — Admin" description="Gestão dos alunos da Formação Ayurveda" />
