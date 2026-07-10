@@ -231,9 +231,9 @@ const AdminAlunos = () => {
     setEmailSubject("");
     setEmailBody("");
 
-    setContratoValor("");
-    setContratoFormaPag(a.plano_descricao || "");
-    setContratoObs("");
+    setContratoValor(a.contrato_valor_total || "");
+    setContratoFormaPag(a.contrato_forma_pagamento || a.plano_descricao || "");
+    setContratoObs(a.contrato_observacao || "");
     setContratoCidade(a.cidade || "");
     setContratoData(new Date().toISOString().slice(0, 10));
 
