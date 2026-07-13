@@ -224,7 +224,7 @@ const LoggedHero = () => {
           {/* ESQUERDA: Slot A + Slot B */}
           <div className="lg:col-span-3 flex flex-col gap-4 order-2 lg:order-1">
             {/* SLOT A */}
-            <div className="group/slotA contents">
+            <div className="group/slotA">
               <BannerSlot slot="loggedhero" />
               <div className="group-has-[div]/slotA:hidden bg-card rounded-2xl p-5 md:p-6 border border-border shadow-md">
                 <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
@@ -263,7 +263,7 @@ const LoggedHero = () => {
             </div>
 
             {/* SLOT B */}
-            <div className="group/slotB contents">
+            <div className="group/slotB">
               <BannerSlot slot="loggedhero_b" />
               <div className="group-has-[div]/slotB:hidden bg-card rounded-2xl p-4 md:p-5 border border-border shadow-sm flex gap-4 items-center">
                 <div
