@@ -2364,6 +2364,95 @@ export type Database = {
         }
         Relationships: []
       }
+      evolucao_classes: {
+        Row: {
+          min_pontos: number
+          nome: string
+          ordem: number
+          requer_selo_terapeuta: boolean
+        }
+        Insert: {
+          min_pontos: number
+          nome: string
+          ordem: number
+          requer_selo_terapeuta?: boolean
+        }
+        Update: {
+          min_pontos?: number
+          nome?: string
+          ordem?: number
+          requer_selo_terapeuta?: boolean
+        }
+        Relationships: []
+      }
+      evolucao_eventos: {
+        Row: {
+          chave: string
+          criado_em: string
+          dia: string
+          id: string
+          pontos: number
+          ref: string | null
+          tipo: string
+          user_id: string
+        }
+        Insert: {
+          chave: string
+          criado_em?: string
+          dia: string
+          id?: string
+          pontos: number
+          ref?: string | null
+          tipo: string
+          user_id: string
+        }
+        Update: {
+          chave?: string
+          criado_em?: string
+          dia?: string
+          id?: string
+          pontos?: number
+          ref?: string | null
+          tipo?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "evolucao_eventos_tipo_fkey"
+            columns: ["tipo"]
+            isOneToOne: false
+            referencedRelation: "evolucao_regras"
+            referencedColumns: ["tipo"]
+          },
+        ]
+      }
+      evolucao_regras: {
+        Row: {
+          ativo: boolean
+          cadencia: string
+          descricao: string | null
+          origem: string
+          pontos: number
+          tipo: string
+        }
+        Insert: {
+          ativo?: boolean
+          cadencia: string
+          descricao?: string | null
+          origem: string
+          pontos: number
+          tipo: string
+        }
+        Update: {
+          ativo?: boolean
+          cadencia?: string
+          descricao?: string | null
+          origem?: string
+          pontos?: number
+          tipo?: string
+        }
+        Relationships: []
+      }
       feed_resultados: {
         Row: {
           created_at: string | null
@@ -5273,6 +5362,16 @@ export type Database = {
         }[]
       }
       escola_vincular_minha_conta: { Args: never; Returns: undefined }
+      evolucao_chave: {
+        Args: { p_cadencia: string; p_dia: string; p_ref: string }
+        Returns: string
+      }
+      evolucao_recomputar: { Args: { p_user: string }; Returns: undefined }
+      evolucao_registrar: {
+        Args: { p_ref?: string; p_tipo: string }
+        Returns: Json
+      }
+      evolucao_sincronizar: { Args: { p_user?: string }; Returns: number }
       find_akasha_by_slug: {
         Args: { _slug: string }
         Returns: {
@@ -5304,6 +5403,7 @@ export type Database = {
         Args: { k: number; p: number; v: number }
         Returns: string
       }
+      get_minha_evolucao: { Args: never; Returns: Json }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
