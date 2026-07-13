@@ -131,9 +131,6 @@ const Header = () => {
     || user?.email?.split("@")[0] 
     || "";
 
-  const profileLink = doshaResult?.idPublico
-    ? `/meu-dosha?id=${doshaResult.idPublico}`
-    : "/meu-dosha";
 
   const userInitial = profile?.nome?.[0] || user?.email?.[0] || "?";
 
