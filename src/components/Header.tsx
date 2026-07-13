@@ -300,13 +300,13 @@ const Header = () => {
           </Sheet>
 
           {/* Desktop nav */}
-          <nav className="hidden lg:flex items-center gap-1">
+          <nav className="hidden lg:flex items-center gap-3 whitespace-nowrap">
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <button className="px-3 py-2 rounded-lg text-sm font-semibold text-white hover:bg-white/10 transition-colors inline-flex items-center gap-1">
+                  <button className="px-2 py-2 rounded-lg text-sm font-medium text-white/85 hover:text-white hover:bg-white/10 transition-colors inline-flex items-center gap-1 whitespace-nowrap">
                     Minha Jornada
-                    <ChevronDown className="h-4 w-4" />
+                    <ChevronDown className="h-3.5 w-3.5" />
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="start" className="bg-white">
@@ -320,7 +320,7 @@ const Header = () => {
             ) : (
               <Link
                 to="/teste-de-dosha"
-                className="px-3 py-2 rounded-lg text-sm font-bold bg-white text-primary hover:bg-white/90 transition-colors"
+                className="px-3 py-2 rounded-lg text-sm font-bold bg-white text-primary hover:bg-white/90 transition-colors whitespace-nowrap"
               >
                 Teste de Dosha
               </Link>
@@ -331,7 +331,7 @@ const Header = () => {
                 <Link
                   key={link.to}
                   to={link.to}
-                  className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${active ? "bg-white/20 text-white" : "text-white/85 hover:text-white hover:bg-white/10"}`}
+                  className={`px-2 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${active ? "bg-white/20 text-white" : "text-white/85 hover:text-white hover:bg-white/10"}`}
                 >
                   {link.label}
                 </Link>
@@ -339,14 +339,14 @@ const Header = () => {
             })}
             <Link
               to="/samkhya"
-              className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${isActive("/samkhya") ? "bg-white/20 text-white" : "text-white/85 hover:text-white hover:bg-white/10"}`}
+              className={`px-2 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${isActive("/samkhya") ? "bg-white/20 text-white" : "text-white/85 hover:text-white hover:bg-white/10"}`}
             >
               Loja
             </Link>
             {escolaAluno && (
               <Link
                 to="/escola/aluno"
-                className="ml-1 px-3 py-2 rounded-lg text-sm font-semibold bg-[#FACC15] text-[#352F54] hover:bg-[#EAB308] transition-colors"
+                className={`px-2 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${isActive("/escola/aluno") ? "bg-white/20 text-white" : "text-white/85 hover:text-white hover:bg-white/10"}`}
               >
                 Área do Aluno
               </Link>
