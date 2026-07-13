@@ -1,8 +1,14 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { ArrowLeft, Menu, LogIn, LogOut, ShoppingBag, ShoppingCart, Home, CalendarHeart } from "lucide-react";
+import { ArrowLeft, Menu, LogIn, LogOut, ShoppingBag, ShoppingCart, Home, CalendarHeart, ChevronDown } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useUser } from "@/contexts/UserContext";
 import { useCart } from "@/contexts/CartContext";
 import { useImmersive } from "@/contexts/ImmersiveContext";
@@ -13,9 +19,9 @@ import GlobalSearch from "@/components/GlobalSearch";
 
 
 const PIE_COLORS: Record<string, string> = {
-  Vata: '#4F75FF',
-  Pitta: '#FF5C5C',
-  Kapha: '#22C55E',
+  Vata: '#6B8AFF',
+  Pitta: '#FF7676',
+  Kapha: '#9ED88B',
 };
 
 const HeaderDoshaPie = ({ vata, pitta, kapha, size = 22 }: { vata: number; pitta: number; kapha: number; size?: number }) => {
@@ -100,20 +106,23 @@ const Header = () => {
 
   const fezTeste = !!doshaResult?.idPublico;
 
-  const navLinks = [
-    { label: "Portal", to: "/" },
-    { label: "Loja Samkhya", to: "/samkhya" },
+  const profileLink = doshaResult?.idPublico
+    ? `/meu-dosha?id=${doshaResult.idPublico}`
+    : "/meu-dosha";
+
+  const jornadaLinks = [
+    { label: "Meu Dosha", to: profileLink },
+    { label: "Minha Rotina", to: "/minha-rotina" },
+    { label: "Revisão Mensal", to: "/revisao" },
+  ];
+  const aprenderLinks = [
     { label: "Biblioteca", to: "/biblioteca" },
     { label: "Artigos", to: "/blog" },
     { label: "Cursos", to: "/cursos" },
+  ];
+  const cuidarLinks = [
+    { label: "Loja Samkhya", to: "/samkhya" },
     { label: "Terapeutas", to: "/terapeutas-do-brasil" },
-    { label: "Métricas", to: "/metricas" },
-    ...(temAcessoRotina
-       ? [{ label: "Minha rotina", to: "/minha-rotina" }]
-       : fezTeste
-         ? [{ label: "Minha rotina", to: "/minha-rotina" }]
-         : []),
-    ...(escolaAluno ? [{ label: "Área do Aluno", to: "/escola/aluno" }] : []),
   ];
 
 
@@ -122,9 +131,6 @@ const Header = () => {
     || user?.email?.split("@")[0] 
     || "";
 
-  const profileLink = doshaResult?.idPublico
-    ? `/meu-dosha?id=${doshaResult.idPublico}`
-    : "/meu-dosha";
 
   const userInitial = profile?.nome?.[0] || user?.email?.[0] || "?";
 
@@ -176,13 +182,13 @@ const Header = () => {
       style={headerBg}
     >
       <div className="max-w-6xl mx-auto grid h-16 grid-cols-[1fr_auto_1fr] items-center gap-3 px-4 sm:px-6">
-        {/* LEFT — Hamburger menu + lupa */}
+        {/* LEFT — Hamburger (mobile) + Desktop nav + search */}
         <div className="flex items-center gap-1.5 justify-self-start">
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
               <Button
                 size="sm"
-                className="bg-white font-semibold hover:bg-white/90 gap-1.5"
+                className="bg-white font-semibold hover:bg-white/90 gap-1.5 lg:hidden"
                 style={buttonTextColor ? { color: buttonTextColor } : undefined}
               >
                 <Menu className="h-5 w-5 bg-primary-foreground text-primary" />
@@ -191,41 +197,95 @@ const Header = () => {
             </SheetTrigger>
             <SheetContent
               side="left"
-              className={`w-72 pt-12 text-primary-foreground border-primary ${isSamkhya ? "" : "bg-primary"}`}
+              className={`w-72 pt-12 text-primary-foreground border-primary overflow-y-auto ${isSamkhya ? "" : "bg-primary"}`}
               style={sheetBg}
             >
               <SheetTitle className="sr-only">Menu de navegação</SheetTitle>
-              <nav className="flex flex-col gap-2">
-                {navLinks.map((link) => {
-                  const isAreaAluno = link.label === "Área do Aluno";
-                  const active = isActive(link.to);
-                  const base = "px-4 py-3 rounded-xl text-base font-medium transition-colors";
-                  const areaAlunoClasses = active
-                    ? "bg-[#EAB308] text-[#352F54] font-bold"
-                    : "bg-[#FACC15] text-[#352F54] font-semibold hover:bg-[#EAB308]";
-                  const classes = isAreaAluno
-                    ? `${base} ${areaAlunoClasses}`
-                    : link.label === "Minha rotina"
-                      ? active
-                        ? `${base} bg-secondary/30 text-white font-bold`
-                        : `${base} bg-secondary/20 text-white font-semibold hover:bg-secondary/30`
-                      : active
-                        ? `${base} bg-white/20 text-white font-bold`
-                        : `${base} text-white/70 hover:text-white hover:bg-white/10`;
-                  return (
-                    <Link
-                      key={link.to}
-                      to={link.to}
-                      onClick={() => setOpen(false)}
-                      className={classes}
-                    >
-                      {link.label}
-                    </Link>
-                  );
-                })}
+              <nav className="flex flex-col gap-4">
+                {!user && (
+                  <Link
+                    to="/teste-de-dosha"
+                    onClick={() => setOpen(false)}
+                    className="px-4 py-3 rounded-xl text-base font-bold bg-white text-primary hover:bg-white/90 transition-colors text-center"
+                  >
+                    Fazer Teste de Dosha
+                  </Link>
+                )}
+
+                {user && (
+                  <div className="flex flex-col gap-1">
+                    <div className="px-2 pb-1 text-[11px] font-semibold uppercase tracking-wider text-white/50">Minha Jornada</div>
+                    {jornadaLinks.map((link) => {
+                      const active = isActive(link.to);
+                      return (
+                        <Link
+                          key={link.to}
+                          to={link.to}
+                          onClick={() => setOpen(false)}
+                          className={`px-4 py-3 rounded-xl text-base font-medium transition-colors ${active ? "bg-secondary/30 text-white font-bold" : "bg-secondary/20 text-white hover:bg-secondary/30"}`}
+                        >
+                          {link.label}
+                        </Link>
+                      );
+                    })}
+                  </div>
+                )}
+
+                <div className="flex flex-col gap-1">
+                  <div className="px-2 pb-1 text-[11px] font-semibold uppercase tracking-wider text-white/50">Aprender</div>
+                  {aprenderLinks.map((link) => {
+                    const active = isActive(link.to);
+                    return (
+                      <Link
+                        key={link.to}
+                        to={link.to}
+                        onClick={() => setOpen(false)}
+                        className={`px-4 py-3 rounded-xl text-base font-medium transition-colors ${active ? "bg-white/20 text-white font-bold" : "text-white/80 hover:text-white hover:bg-white/10"}`}
+                      >
+                        {link.label}
+                      </Link>
+                    );
+                  })}
+                </div>
+
+                <div className="flex flex-col gap-1">
+                  <div className="px-2 pb-1 text-[11px] font-semibold uppercase tracking-wider text-white/50">Cuidar</div>
+                  {cuidarLinks.map((link) => {
+                    const active = isActive(link.to);
+                    return (
+                      <Link
+                        key={link.to}
+                        to={link.to}
+                        onClick={() => setOpen(false)}
+                        className={`px-4 py-3 rounded-xl text-base font-medium transition-colors ${active ? "bg-white/20 text-white font-bold" : "text-white/80 hover:text-white hover:bg-white/10"}`}
+                      >
+                        {link.label}
+                      </Link>
+                    );
+                  })}
+                </div>
+
+                {escolaAluno && (
+                  <Link
+                    to="/escola/aluno"
+                    onClick={() => setOpen(false)}
+                    className="px-4 py-3 rounded-xl text-base font-semibold bg-[#FACC15] text-[#352F54] hover:bg-[#EAB308] transition-colors text-center"
+                  >
+                    Área do Aluno
+                  </Link>
+                )}
+
+                <Link
+                  to="/assinar"
+                  onClick={() => setOpen(false)}
+                  className="px-4 py-3 rounded-xl text-base font-bold bg-white text-primary hover:bg-white/90 transition-colors text-center"
+                >
+                  Assinar
+                </Link>
+
                 {user && (
                   <>
-                    <div className="border-t border-white/20 my-2" />
+                    <div className="border-t border-white/20 my-1" />
                     <button
                       onClick={() => { setOpen(false); handleSignOut(); }}
                       className="px-4 py-3 rounded-xl text-base font-medium text-white/70 hover:text-white hover:bg-white/10 transition-colors flex items-center gap-2 text-left"
@@ -238,8 +298,65 @@ const Header = () => {
               </nav>
             </SheetContent>
           </Sheet>
+
+          {/* Desktop nav */}
+          <nav className="hidden lg:flex items-center gap-1">
+            {user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className="px-3 py-2 rounded-lg text-sm font-semibold text-white hover:bg-white/10 transition-colors inline-flex items-center gap-1">
+                    Minha Jornada
+                    <ChevronDown className="h-4 w-4" />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start" className="bg-white">
+                  {jornadaLinks.map((link) => (
+                    <DropdownMenuItem key={link.to} asChild>
+                      <Link to={link.to}>{link.label}</Link>
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Link
+                to="/teste-de-dosha"
+                className="px-3 py-2 rounded-lg text-sm font-bold bg-white text-primary hover:bg-white/90 transition-colors"
+              >
+                Teste de Dosha
+              </Link>
+            )}
+            {aprenderLinks.map((link) => {
+              const active = isActive(link.to);
+              return (
+                <Link
+                  key={link.to}
+                  to={link.to}
+                  className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${active ? "bg-white/20 text-white" : "text-white/85 hover:text-white hover:bg-white/10"}`}
+                >
+                  {link.label}
+                </Link>
+              );
+            })}
+            <Link
+              to="/samkhya"
+              className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${isActive("/samkhya") ? "bg-white/20 text-white" : "text-white/85 hover:text-white hover:bg-white/10"}`}
+            >
+              Loja
+            </Link>
+            {escolaAluno && (
+              <Link
+                to="/escola/aluno"
+                className="ml-1 px-3 py-2 rounded-lg text-sm font-semibold bg-[#FACC15] text-[#352F54] hover:bg-[#EAB308] transition-colors"
+              >
+                Área do Aluno
+              </Link>
+            )}
+          </nav>
+
           <GlobalSearch />
         </div>
+
+
 
         {/* CENTER — Logo (swap when in /samkhya/*) */}
         <div className="flex min-w-0 justify-center justify-self-center items-center h-full overflow-visible">

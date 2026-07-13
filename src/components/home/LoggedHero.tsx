@@ -8,9 +8,9 @@ import BannerSlot from "@/components/banners/BannerSlot";
 
 const C = {
   primary: "#352F54",
-  vata: "#4F75FF",
-  pitta: "#FF5C5C",
-  kapha: "#22C55E",
+  vata: "#6B8AFF",
+  pitta: "#FF7676",
+  kapha: "#9ED88B",
   surface: "#FFF8EE",
 };
 
@@ -48,9 +48,9 @@ const LEVELS_BY: Record<string, typeof VATA_LEVELS> = {
 };
 
 const SCALE: Record<string, string[]> = {
-  Vata: ["#D6E0FF", "#A3C1FF", "#709AFF", "#4F75FF", "#2A4BCC"],
-  Pitta: ["#FFE0E0", "#FFB3B3", "#FF8585", "#FF5C5C", "#CC3333"],
-  Kapha: ["#D1F4E0", "#9AE6B8", "#5ED58F", "#22C55E", "#15803D"],
+  Vata: ["#D6E0FF", "#A3C1FF", "#709AFF", "#6B8AFF", "#2A4BCC"],
+  Pitta: ["#FFE0E0", "#FFB3B3", "#FF8585", "#FF7676", "#CC3333"],
+  Kapha: ["#D1F4E0", "#9AE6B8", "#5ED58F", "#9ED88B", "#15803D"],
 };
 
 const LEVEL_LABELS = ["Fixado", "Adoecido", "Acúmulo", "Normal", "Pouco"];

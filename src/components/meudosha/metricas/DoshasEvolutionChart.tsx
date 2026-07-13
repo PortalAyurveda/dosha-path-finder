@@ -16,9 +16,9 @@ interface Props {
   window: SixMonthWindow;
 }
 
-const VATA = "#4F75FF";
-const PITTA = "#FF5C5C";
-const KAPHA = "#22C55E";
+const VATA = "#6B8AFF";
+const PITTA = "#FF7676";
+const KAPHA = "#9ED88B";
 
 function ZoneTooltip({ active, payload }: { active?: boolean; payload?: any[] }) {
   if (!active || !payload?.length) return null;
