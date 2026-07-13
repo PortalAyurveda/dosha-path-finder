@@ -106,20 +106,23 @@ const Header = () => {
 
   const fezTeste = !!doshaResult?.idPublico;
 
-  const navLinks = [
-    { label: "Portal", to: "/" },
-    { label: "Loja Samkhya", to: "/samkhya" },
+  const profileLink = doshaResult?.idPublico
+    ? `/meu-dosha?id=${doshaResult.idPublico}`
+    : "/meu-dosha";
+
+  const jornadaLinks = [
+    { label: "Meu Dosha", to: profileLink },
+    { label: "Minha Rotina", to: "/minha-rotina" },
+    { label: "Revisão Mensal", to: "/revisao" },
+  ];
+  const aprenderLinks = [
     { label: "Biblioteca", to: "/biblioteca" },
     { label: "Artigos", to: "/blog" },
     { label: "Cursos", to: "/cursos" },
+  ];
+  const cuidarLinks = [
+    { label: "Loja Samkhya", to: "/samkhya" },
     { label: "Terapeutas", to: "/terapeutas-do-brasil" },
-    { label: "Métricas", to: "/metricas" },
-    ...(temAcessoRotina
-       ? [{ label: "Minha rotina", to: "/minha-rotina" }]
-       : fezTeste
-         ? [{ label: "Minha rotina", to: "/minha-rotina" }]
-         : []),
-    ...(escolaAluno ? [{ label: "Área do Aluno", to: "/escola/aluno" }] : []),
   ];
 
 
