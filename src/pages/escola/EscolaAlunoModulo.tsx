@@ -152,8 +152,49 @@ const SectionTitle = ({
   </h2>
 );
 
+type MaterialExtra = { id: string; tipo: string; titulo: string; url: string | null };
+
+const ApostilaExtraLink = ({
+  item,
+  theme,
+}: {
+  item: MaterialExtra;
+  theme: Theme;
+}) => {
+  const [signed, setSigned] = useState<string | null>(null);
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      if (!item.url) {
+        setSigned(null);
+        return;
+      }
+      const { data } = await supabase.storage.from(BUCKET).createSignedUrl(item.url, 60 * 60);
+      if (!cancelled) setSigned(data?.signedUrl ?? null);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [item.url]);
+  return (
+    <a
+      href={signed ?? "#"}
+      target="_blank"
+      rel="noreferrer"
+      className={`inline-flex items-center gap-2 text-sm px-4 h-11 rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm border bg-white ${
+        signed ? "" : "opacity-50 pointer-events-none"
+      }`}
+      style={{ borderColor: `${theme.primaryColor}55`, color: theme.darkColor }}
+    >
+      <FileText className="w-4 h-4" style={{ color: theme.primaryColor }} />
+      {item.titulo} <Download className="w-3.5 h-3.5" />
+    </a>
+  );
+};
+
 const MaterialBlock = ({ modulo, theme }: { modulo: Modulo; theme: Theme }) => {
   const [apostilaUrl, setApostilaUrl] = useState<string | null>(null);
+  const [extras, setExtras] = useState<MaterialExtra[]>([]);
   const videoId = modulo.video_url ? extractYoutubeId(modulo.video_url) : null;
 
   useEffect(() => {
@@ -173,7 +214,31 @@ const MaterialBlock = ({ modulo, theme }: { modulo: Modulo; theme: Theme }) => {
     };
   }, [modulo.apostila_url]);
 
-  const hasAny = modulo.video_url || modulo.apostila_url || modulo.slides_url;
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const { data } = await supabase
+        .from("escola_modulo_recursos")
+        .select("id,tipo,titulo,url")
+        .eq("modulo_id", modulo.id)
+        .in("tipo", ["material_video", "material_zoom", "material_apostila"])
+        .order("ordem", { ascending: true });
+      if (!cancelled) setExtras((data ?? []) as MaterialExtra[]);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [modulo.id]);
+
+  const videosExtra = extras.filter((e) => e.tipo === "material_video");
+  const zoomsExtra = extras.filter((e) => e.tipo === "material_zoom");
+  const apostilasExtra = extras.filter((e) => e.tipo === "material_apostila");
+
+  const hasAny =
+    modulo.video_url ||
+    modulo.apostila_url ||
+    modulo.slides_url ||
+    extras.length > 0;
   if (!hasAny) {
     return <p className="text-sm text-muted-foreground italic">Ainda não há material aqui.</p>;
   }
@@ -207,6 +272,42 @@ const MaterialBlock = ({ modulo, theme }: { modulo: Modulo; theme: Theme }) => {
         </div>
       )}
 
+      {videosExtra.length > 0 && (
+        <div className="space-y-3">
+          {videosExtra.map((v) => {
+            const yt = v.url ? extractYoutubeId(v.url) : null;
+            return (
+              <div key={v.id}>
+                <p className="text-xs uppercase tracking-wide text-muted-foreground mb-2">
+                  {v.titulo}
+                </p>
+                {yt ? (
+                  <div className="aspect-video w-full overflow-hidden rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm bg-black">
+                    <iframe
+                      src={`https://www.youtube.com/embed/${yt}`}
+                      title={v.titulo}
+                      className="w-full h-full"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    />
+                  </div>
+                ) : v.url ? (
+                  <a
+                    href={v.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-2 text-sm"
+                    style={{ color: theme.primaryColor }}
+                  >
+                    <VideoIcon className="w-4 h-4" /> abrir vídeo
+                  </a>
+                ) : null}
+              </div>
+            );
+          })}
+        </div>
+      )}
+
       <div className="flex flex-wrap gap-3">
         {modulo.apostila_url && (
           <a
@@ -222,6 +323,9 @@ const MaterialBlock = ({ modulo, theme }: { modulo: Modulo; theme: Theme }) => {
             Apostila <Download className="w-3.5 h-3.5" />
           </a>
         )}
+        {apostilasExtra.map((a) =>
+          a.url ? <ApostilaExtraLink key={a.id} item={a} theme={theme} /> : null
+        )}
         {modulo.slides_url && (
           <a
             href={modulo.slides_url}
@@ -232,6 +336,20 @@ const MaterialBlock = ({ modulo, theme }: { modulo: Modulo; theme: Theme }) => {
           >
             <Link2 className="w-4 h-4" style={{ color: theme.primaryColor }} /> Slides
           </a>
+        )}
+        {zoomsExtra.map((z) =>
+          z.url ? (
+            <a
+              key={z.id}
+              href={z.url}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-2 text-sm px-4 h-11 rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm border bg-white"
+              style={{ borderColor: `${theme.primaryColor}55`, color: theme.darkColor }}
+            >
+              <Link2 className="w-4 h-4" style={{ color: theme.primaryColor }} /> {z.titulo}
+            </a>
+          ) : null
         )}
       </div>
     </div>
