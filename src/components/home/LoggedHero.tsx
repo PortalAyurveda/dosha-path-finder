@@ -224,9 +224,9 @@ const LoggedHero = () => {
           {/* ESQUERDA: Slot A + Slot B */}
           <div className="lg:col-span-3 flex flex-col gap-4 order-2 lg:order-1">
             {/* SLOT A */}
-            <BannerSlot slot="loggedhero" className="[&:empty]:hidden" />
-            <div className="[&:not(:empty)+div.slot-a-fallback]:hidden slot-a-fallback">
-              <div className="bg-card rounded-2xl p-5 md:p-6 border border-border shadow-md">
+            <div className="group/slotA contents">
+              <BannerSlot slot="loggedhero" />
+              <div className="group-has-[div]/slotA:hidden bg-card rounded-2xl p-5 md:p-6 border border-border shadow-md">
                 <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
                   Próximo passo da sua jornada
                 </p>
@@ -263,9 +263,9 @@ const LoggedHero = () => {
             </div>
 
             {/* SLOT B */}
-            <BannerSlot slot="loggedhero_b" className="[&:empty]:hidden" />
-            <div className="[&:not(:empty)+div.slot-b-fallback]:hidden slot-b-fallback">
-              <div className="bg-card rounded-2xl p-4 md:p-5 border border-border shadow-sm flex gap-4 items-center">
+            <div className="group/slotB contents">
+              <BannerSlot slot="loggedhero_b" />
+              <div className="group-has-[div]/slotB:hidden bg-card rounded-2xl p-4 md:p-5 border border-border shadow-sm flex gap-4 items-center">
                 <div
                   className="shrink-0 w-14 h-14 rounded-xl flex items-center justify-center"
                   style={{ background: `${C.pitta}22` }}
