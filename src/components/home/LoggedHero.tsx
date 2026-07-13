@@ -135,7 +135,7 @@ const LoggedHero = () => {
 
   return (
     <section
-      className="relative overflow-hidden"
+      className="relative overflow-hidden min-h-[560px]"
       style={{
         background: "linear-gradient(100deg, hsl(228 70% 96%) 0%, hsl(0 70% 97%) 50%, hsl(48 80% 95%) 100%)",
       }}
@@ -251,7 +251,7 @@ const LoggedHero = () => {
         <BannerSlot slot="loggedhero" className="mt-4 [&:empty]:hidden" />
 
         {/* Bottom: 3 dados personalizados — métrica, artigo, vídeo */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-4 min-h-[280px] md:min-h-[96px]">
           {/* Métrica destaque — mini barras */}
           <Link
             to={`${meuDoshaBase}&tab=metricas`}
@@ -308,6 +308,8 @@ const LoggedHero = () => {
                 <img
                   src={artigo.image_url}
                   alt={artigo.title || "Artigo"}
+                  width={64}
+                  height={64}
                   className="w-full h-full object-cover"
                   loading="lazy"
                   onError={(e) => {
@@ -346,6 +348,8 @@ const LoggedHero = () => {
                   <img
                     src={`https://img.youtube.com/vi/${video.video_id}/mqdefault.jpg`}
                     alt={video.novo_titulo || "Vídeo"}
+                    width={64}
+                    height={64}
                     className="w-full h-full object-cover"
                     loading="lazy"
                     onError={(e) => {

@@ -1,5 +1,8 @@
-// Edge function: validar-cupom
+// Edge function: validar-cupom (v7)
 // Valida um cupom da tabela loja.cupons e retorna o desconto calculado.
+// v7: falhas de regra de negócio (expirado, esgotado, inativo...) retornam
+// HTTP 200 com { valido:false, erro } para o front exibir a mensagem amigável
+// (antes retornavam 400/404 e o front mostrava "Edge Function returned a non-2xx status code").
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
@@ -23,6 +26,9 @@ const json = (status: number, body: Record<string, unknown>) =>
     headers: { ...corsHeaders, "Content-Type": "application/json" },
   });
 
+// Falha de regra de negócio: SEMPRE 200, o front lê { valido:false, erro }
+const invalido = (erro: string) => json(200, { valido: false, erro });
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
@@ -30,7 +36,7 @@ Deno.serve(async (req) => {
   try {
     payload = await req.json();
   } catch {
-    return json(400, { valido: false, erro: "Payload inválido" });
+    return invalido("Payload inválido");
   }
 
   const codigo = String(payload.codigo || "").trim().toUpperCase();
@@ -39,8 +45,8 @@ Deno.serve(async (req) => {
   const userId = payload.user_id ?? null;
   const email = (payload.email_comprador || "").trim().toLowerCase() || null;
 
-  if (!codigo) return json(400, { valido: false, erro: "Informe um código" });
-  if (!(subtotal > 0)) return json(400, { valido: false, erro: "Subtotal inválido" });
+  if (!codigo) return invalido("Informe um código");
+  if (!(subtotal > 0)) return invalido("Subtotal inválido");
 
   const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
   const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -58,27 +64,27 @@ Deno.serve(async (req) => {
     .ilike("codigo", codigo)
     .maybeSingle();
 
-  if (error) return json(500, { valido: false, erro: "Erro ao buscar cupom" });
-  if (!cupom) return json(404, { valido: false, erro: "Cupom não encontrado" });
+  if (error) return invalido("Erro ao buscar cupom, tente novamente");
+  if (!cupom) return invalido("Cupom não encontrado");
 
-  if (!cupom.ativo) return json(400, { valido: false, erro: "Cupom inativo" });
+  if (!cupom.ativo) return invalido("Cupom inativo");
 
   const now = new Date();
   if (cupom.valido_de && new Date(cupom.valido_de) > now)
-    return json(400, { valido: false, erro: "Cupom ainda não está válido" });
+    return invalido("Cupom ainda não está válido");
   if (cupom.valido_ate && new Date(cupom.valido_ate) < now)
-    return json(400, { valido: false, erro: "Cupom expirado" });
+    return invalido("Este cupom expirou. Fale com a gente no WhatsApp que renovamos para você!");
 
   // Escopo: aceita "ambos" ou igual ao requisitado
   if (cupom.escopo && cupom.escopo !== "ambos" && cupom.escopo !== escopoReq)
-    return json(400, { valido: false, erro: "Cupom não válido para esta compra" });
+    return invalido("Cupom não válido para esta compra");
 
   // Limite total de usos
   if (
     cupom.limite_usos_total != null &&
     Number(cupom.usos_realizados || 0) >= Number(cupom.limite_usos_total)
   )
-    return json(400, { valido: false, erro: "Cupom esgotado" });
+    return invalido("Cupom esgotado");
 
   // Limite por usuário
   if (cupom.limite_usos_por_usuario != null && (userId || email)) {
@@ -87,19 +93,19 @@ Deno.serve(async (req) => {
     else if (email) q = q.eq("email_comprador", email);
     const { count } = await q;
     if ((count ?? 0) >= Number(cupom.limite_usos_por_usuario))
-      return json(400, { valido: false, erro: "Você já utilizou este cupom o número máximo de vezes" });
+      return invalido("Você já utilizou este cupom o número máximo de vezes");
   }
 
   // Regras por tipo
   if (cupom.tipo_cupom === "premium") {
-    if (!userId) return json(400, { valido: false, erro: "Faça login para usar este cupom" });
+    if (!userId) return invalido("Faça login para usar este cupom");
     const { data: prof } = await dbPublic
       .from("user_profiles")
       .select("is_premium")
       .eq("id", userId)
       .maybeSingle();
     if (!prof?.is_premium)
-      return json(400, { valido: false, erro: "Cupom exclusivo para assinantes Premium" });
+      return invalido("Cupom exclusivo para assinantes Premium");
   }
 
   // Cálculo do desconto sobre o subtotal (sem frete)

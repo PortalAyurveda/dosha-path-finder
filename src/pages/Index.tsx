@@ -114,7 +114,7 @@ const FeedSocial = () => {
   return (
     <Link
       to="/metricas"
-      className="sticky top-16 z-40 block overflow-hidden py-3 group cursor-pointer transition-colors hover:bg-[color:var(--marquee-hover)] bg-background"
+      className="sticky top-16 z-40 block overflow-hidden py-3 min-h-[44px] group cursor-pointer transition-colors hover:bg-[color:var(--marquee-hover)] bg-background"
       style={{
         backgroundImage: `linear-gradient(${C.primary}14, ${C.primary}14)`,
         borderTop: `1px solid ${C.primary}1A`,
