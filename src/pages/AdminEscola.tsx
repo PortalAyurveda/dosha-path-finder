@@ -733,6 +733,32 @@ const MaterialExtras = ({ moduloId, moduloNumero }: { moduloId: string; moduloNu
   const [itens, setItens] = useState<Recurso[]>([]);
   const [loading, setLoading] = useState(true);
   const [uploadingId, setUploadingId] = useState<string | null>(null);
+  const [dragging, setDragging] = useState<{ tipo: string; id: string } | null>(null);
+  const [dragOverId, setDragOverId] = useState<string | null>(null);
+
+  const reorder = async (tipo: string, fromId: string, toId: string) => {
+    if (fromId === toId) return;
+    const lista = itens.filter((r) => r.tipo === tipo);
+    const fromIdx = lista.findIndex((r) => r.id === fromId);
+    const toIdx = lista.findIndex((r) => r.id === toId);
+    if (fromIdx < 0 || toIdx < 0) return;
+    const novo = [...lista];
+    const [moved] = novo.splice(fromIdx, 1);
+    novo.splice(toIdx, 0, moved);
+    // update local state
+    setItens((prev) => {
+      const others = prev.filter((r) => r.tipo !== tipo);
+      return [...others, ...novo.map((r, i) => ({ ...r, ordem: i }))];
+    });
+    // persist
+    await Promise.all(
+      novo.map((r, i) =>
+        supabase.from("escola_modulo_recursos").update({ ordem: i }).eq("id", r.id)
+      )
+    );
+    load();
+  };
+
 
   const load = useCallback(async () => {
     setLoading(true);
