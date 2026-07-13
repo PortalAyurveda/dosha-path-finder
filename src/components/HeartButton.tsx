@@ -66,9 +66,23 @@ const HeartButton = ({ contentType, contentId, className }: HeartButtonProps) =>
       queryClient.setQueryData(cacheKey, { count: likeCount + 1, liked: true });
       setAnimating(true);
       setTimeout(() => setAnimating(false), 600);
-      await supabase
+      const { error } = await supabase
         .from("content_likes" as any)
         .insert({ user_id: user.id, content_type: contentType, content_id: contentId } as any);
+      if (!error) {
+        try {
+          const { data } = await (supabase.rpc as any)("evolucao_registrar", {
+            p_tipo: "retorno_diario",
+            p_ref: `${contentType}:${contentId}`,
+          });
+          if (data?.ok && (data?.pontos_ganhos ?? 0) > 0) {
+            toast.success(`+${data.pontos_ganhos} ponto! 🔥 streak de ${data.streak ?? 0} dias`);
+            queryClient.invalidateQueries({ queryKey: ["minha-evolucao", user.id] });
+          }
+        } catch {
+          /* silencioso */
+        }
+      }
     }
   };
 
