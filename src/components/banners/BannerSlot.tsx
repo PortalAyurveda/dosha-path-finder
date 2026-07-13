@@ -7,6 +7,7 @@ import { useUser } from "@/contexts/UserContext";
 interface BannerSlotProps {
   slot: string;
   className?: string;
+  fallback?: React.ReactNode;
 }
 
 const PRIORIDADE: Record<string, number> = { Vata: 0, Pitta: 1, Kapha: 2 };
@@ -43,7 +44,7 @@ function agniTag(agni: string | null | undefined): string | null {
   return null;
 }
 
-const BannerSlot = ({ slot, className }: BannerSlotProps) => {
+const BannerSlot = ({ slot, className, fallback }: BannerSlotProps) => {
   const { user, profile, doshaResult } = useUser();
 
   // Fetch agniPrincipal apart (não está no DoshaResult padrão)
@@ -111,7 +112,7 @@ const BannerSlot = ({ slot, className }: BannerSlotProps) => {
     });
   }, [escolhido]);
 
-  if (!escolhido) return null;
+  if (!escolhido) return <>{fallback ?? null}</>;
 
   return (
     <div className={className} dangerouslySetInnerHTML={{ __html: cleanHtml }} />

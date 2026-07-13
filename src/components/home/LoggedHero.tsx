@@ -224,82 +224,86 @@ const LoggedHero = () => {
           {/* ESQUERDA: Slot A + Slot B */}
           <div className="lg:col-span-3 flex flex-col gap-4 order-2 lg:order-1">
             {/* SLOT A */}
-            <div className="group/slotA">
-              <BannerSlot slot="loggedhero" />
-              <div className="group-has-[div]/slotA:hidden bg-card rounded-2xl p-5 md:p-6 border border-border shadow-md">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-                  Próximo passo da sua jornada
-                </p>
-                {temAcessoRotina ? (
-                  <>
-                    <h3 className="font-serif font-bold text-lg md:text-xl mt-1" style={{ color: C.primary }}>
-                      Sua rotina de hoje
-                    </h3>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      Os cuidados personalizados desenhados para o seu momento.
-                    </p>
-                    <Link
-                      to="/minha-rotina"
-                      className="inline-flex items-center gap-1.5 mt-3 text-sm font-semibold"
-                      style={{ color: C.primary }}
-                    >
-                      Sua rotina de hoje <ArrowRight className="h-4 w-4" />
-                    </Link>
-                  </>
-                ) : (
-                  <>
-                    <h3 className="font-serif font-bold text-lg md:text-xl mt-1" style={{ color: C.primary }}>
-                      Monte sua rotina personalizada
-                    </h3>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      Alimentação, sono e cuidados diários baseados no seu dosha.
-                    </p>
-                    <Button asChild size="lg" variant="secondary" className="mt-3">
-                      <Link to="/minha-rotina">Começar agora</Link>
-                    </Button>
-                  </>
-                )}
-              </div>
-            </div>
-
-            {/* SLOT B */}
-            <div className="group/slotB">
-              <BannerSlot slot="loggedhero_b" />
-              <div className="group-has-[div]/slotB:hidden bg-card rounded-2xl p-4 md:p-5 border border-border shadow-sm flex gap-4 items-center">
-                <div
-                  className="shrink-0 w-14 h-14 rounded-xl flex items-center justify-center"
-                  style={{ background: `${C.pitta}22` }}
-                >
-                  <ChefHat className="h-7 w-7" style={{ color: C.pitta }} />
-                </div>
-                <div className="min-w-0 flex-1">
+            <BannerSlot
+              slot="loggedhero"
+              fallback={
+                <div className="bg-card rounded-2xl p-5 md:p-6 border border-border shadow-md">
                   <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-                    Receita do dia
+                    Próximo passo da sua jornada
                   </p>
-                  <p className="font-serif font-bold text-sm md:text-base leading-tight mt-0.5 line-clamp-1" style={{ color: C.primary }}>
-                    {receitaTitulo}
-                  </p>
-                  {receitaResumo && (
-                    <p className="text-xs text-muted-foreground line-clamp-1 mt-0.5">{receitaResumo}</p>
-                  )}
-                </div>
-                <Button
-                  size="sm"
-                  variant={receitaFeitaHoje ? "outline" : "secondary"}
-                  disabled={receitaFeitaHoje || !user}
-                  onClick={marcarReceita}
-                  className="shrink-0"
-                >
-                  {receitaFeitaHoje ? (
+                  {temAcessoRotina ? (
                     <>
-                      <Check className="h-4 w-4 mr-1" /> Feita hoje
+                      <h3 className="font-serif font-bold text-lg md:text-xl mt-1" style={{ color: C.primary }}>
+                        Sua rotina de hoje
+                      </h3>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        Os cuidados personalizados desenhados para o seu momento.
+                      </p>
+                      <Link
+                        to="/minha-rotina"
+                        className="inline-flex items-center gap-1.5 mt-3 text-sm font-semibold"
+                        style={{ color: C.primary }}
+                      >
+                        Sua rotina de hoje <ArrowRight className="h-4 w-4" />
+                      </Link>
                     </>
                   ) : (
-                    "Fiz (+2 pts)"
+                    <>
+                      <h3 className="font-serif font-bold text-lg md:text-xl mt-1" style={{ color: C.primary }}>
+                        Monte sua rotina personalizada
+                      </h3>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        Alimentação, sono e cuidados diários baseados no seu dosha.
+                      </p>
+                      <Button asChild size="lg" variant="secondary" className="mt-3">
+                        <Link to="/minha-rotina">Começar agora</Link>
+                      </Button>
+                    </>
                   )}
-                </Button>
-              </div>
-            </div>
+                </div>
+              }
+            />
+
+            {/* SLOT B */}
+            <BannerSlot
+              slot="loggedhero_b"
+              fallback={
+                <div className="bg-card rounded-2xl p-4 md:p-5 border border-border shadow-sm flex gap-4 items-center">
+                  <div
+                    className="shrink-0 w-14 h-14 rounded-xl flex items-center justify-center"
+                    style={{ background: `${C.pitta}22` }}
+                  >
+                    <ChefHat className="h-7 w-7" style={{ color: C.pitta }} />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                      Receita do dia
+                    </p>
+                    <p className="font-serif font-bold text-sm md:text-base leading-tight mt-0.5 line-clamp-1" style={{ color: C.primary }}>
+                      {receitaTitulo}
+                    </p>
+                    {receitaResumo && (
+                      <p className="text-xs text-muted-foreground line-clamp-1 mt-0.5">{receitaResumo}</p>
+                    )}
+                  </div>
+                  <Button
+                    size="sm"
+                    variant={receitaFeitaHoje ? "outline" : "secondary"}
+                    disabled={receitaFeitaHoje || !user}
+                    onClick={marcarReceita}
+                    className="shrink-0"
+                  >
+                    {receitaFeitaHoje ? (
+                      <>
+                        <Check className="h-4 w-4 mr-1" /> Feita hoje
+                      </>
+                    ) : (
+                      "Fiz (+2 pts)"
+                    )}
+                  </Button>
+                </div>
+              }
+            />
           </div>
 
           {/* DIREITA: SEU HOJE — forma de folha */}
