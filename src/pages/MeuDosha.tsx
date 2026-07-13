@@ -1066,29 +1066,59 @@ const MeuDosha = () => {
 
           {/* ===== TAB: MÉTRICAS ===== */}
           <TabsContent forceMount value="metricas" className="data-[state=inactive]:hidden" tabIndex={-1}>
-            <MetricasTab registroUuid={registroUuid} insights={insights} isLoading={insightsLoading} />
+            {isVisitor ? (
+              <ClaimLock idPublico={id!}>
+                <MetricasTab registroUuid={registroUuid} insights={insights} isLoading={insightsLoading} />
+              </ClaimLock>
+            ) : (
+              <MetricasTab registroUuid={registroUuid} insights={insights} isLoading={insightsLoading} />
+            )}
           </TabsContent>
 
           {/* ===== TAB: ARTIGOS ===== */}
           <TabsContent forceMount value="artigos" className="data-[state=inactive]:hidden" tabIndex={-1}>
-            <ArtigosTab
-              doshaprincipal={result.doshaprincipal}
-              agravVataTags={result.agravVataTags}
-              agravPittaTags={result.agravPittaTags}
-              agravKaphaTags={result.agravKaphaTags}
-              initialMode={initialMode === 'personalizado' ? 'personalizado' : 'geral'}
-            />
+            {isVisitor ? (
+              <ClaimLock idPublico={id!}>
+                <ArtigosTab
+                  doshaprincipal={result.doshaprincipal}
+                  agravVataTags={result.agravVataTags}
+                  agravPittaTags={result.agravPittaTags}
+                  agravKaphaTags={result.agravKaphaTags}
+                  initialMode={initialMode === 'personalizado' ? 'personalizado' : 'geral'}
+                />
+              </ClaimLock>
+            ) : (
+              <ArtigosTab
+                doshaprincipal={result.doshaprincipal}
+                agravVataTags={result.agravVataTags}
+                agravPittaTags={result.agravPittaTags}
+                agravKaphaTags={result.agravKaphaTags}
+                initialMode={initialMode === 'personalizado' ? 'personalizado' : 'geral'}
+              />
+            )}
           </TabsContent>
 
           {/* ===== TAB: VÍDEOS ===== */}
           <TabsContent forceMount value="videos" className="data-[state=inactive]:hidden" tabIndex={-1}>
-            <VideosTab
-              doshaprincipal={result.doshaprincipal}
-              agravVataTags={result.agravVataTags}
-              agravPittaTags={result.agravPittaTags}
-              agravKaphaTags={result.agravKaphaTags}
-              initialMode={initialMode}
-            />
+            {isVisitor ? (
+              <ClaimLock idPublico={id!}>
+                <VideosTab
+                  doshaprincipal={result.doshaprincipal}
+                  agravVataTags={result.agravVataTags}
+                  agravPittaTags={result.agravPittaTags}
+                  agravKaphaTags={result.agravKaphaTags}
+                  initialMode={initialMode}
+                />
+              </ClaimLock>
+            ) : (
+              <VideosTab
+                doshaprincipal={result.doshaprincipal}
+                agravVataTags={result.agravVataTags}
+                agravPittaTags={result.agravPittaTags}
+                agravKaphaTags={result.agravKaphaTags}
+                initialMode={initialMode}
+              />
+            )}
           </TabsContent>
 
           {/* ===== TAB: AKASHA ===== */}
