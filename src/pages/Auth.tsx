@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Mail, Sparkles, ArrowLeft } from "lucide-react";
+import { Loader2, Mail, Sparkles, ArrowLeft, Info } from "lucide-react";
 
 const Auth = () => {
   const [email, setEmail] = useState("");
