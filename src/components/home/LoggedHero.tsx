@@ -8,9 +8,9 @@ import BannerSlot from "@/components/banners/BannerSlot";
 
 const C = {
   primary: "#352F54",
-  vata: "#4F75FF",
-  pitta: "#FF5C5C",
-  kapha: "#22C55E",
+  vata: "#6B8AFF",
+  pitta: "#FF7676",
+  kapha: "#9ED88B",
   surface: "#FFF8EE",
 };
 
