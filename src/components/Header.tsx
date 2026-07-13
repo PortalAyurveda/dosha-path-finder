@@ -13,9 +13,9 @@ import GlobalSearch from "@/components/GlobalSearch";
 
 
 const PIE_COLORS: Record<string, string> = {
-  Vata: '#4F75FF',
-  Pitta: '#FF5C5C',
-  Kapha: '#22C55E',
+  Vata: '#6B8AFF',
+  Pitta: '#FF7676',
+  Kapha: '#9ED88B',
 };
 
 const HeaderDoshaPie = ({ vata, pitta, kapha, size = 22 }: { vata: number; pitta: number; kapha: number; size?: number }) => {
