@@ -112,7 +112,7 @@ const BannerSlot = ({ slot, className, fallback }: BannerSlotProps) => {
     });
   }, [escolhido]);
 
-  if (!escolhido) return null;
+  if (!escolhido) return <>{fallback ?? null}</>;
 
   return (
     <div className={className} dangerouslySetInnerHTML={{ __html: cleanHtml }} />
