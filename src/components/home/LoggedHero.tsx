@@ -308,6 +308,8 @@ const LoggedHero = () => {
                 <img
                   src={artigo.image_url}
                   alt={artigo.title || "Artigo"}
+                  width={64}
+                  height={64}
                   className="w-full h-full object-cover"
                   loading="lazy"
                   onError={(e) => {
