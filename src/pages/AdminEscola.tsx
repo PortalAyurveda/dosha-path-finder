@@ -1170,6 +1170,8 @@ const EditarModulo = ({
             </label>
           </div>
 
+          <MaterialExtras moduloId={modulo.id} moduloNumero={modulo.numero} />
+
           <div className="flex justify-end">
             <Button onClick={salvarMaterial} disabled={savingMaterial}>
               {savingMaterial ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
