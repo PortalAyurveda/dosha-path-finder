@@ -31,6 +31,7 @@ import {
   Utensils,
   ArrowUp,
   ArrowDown,
+  GripVertical,
   X,
   Search,
 } from "lucide-react";
