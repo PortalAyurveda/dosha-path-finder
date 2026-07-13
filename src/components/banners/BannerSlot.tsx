@@ -44,7 +44,7 @@ function agniTag(agni: string | null | undefined): string | null {
   return null;
 }
 
-const BannerSlot = ({ slot, className }: BannerSlotProps) => {
+const BannerSlot = ({ slot, className, fallback }: BannerSlotProps) => {
   const { user, profile, doshaResult } = useUser();
 
   // Fetch agniPrincipal apart (não está no DoshaResult padrão)
