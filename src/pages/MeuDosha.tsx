@@ -992,6 +992,7 @@ const MeuDosha = () => {
                     >
                       Recomeçar o teste
                     </button>
+                    {!isVisitor && (
                     <div className="flex items-center gap-2">
                       <button
                         type="button"
@@ -1046,6 +1047,7 @@ const MeuDosha = () => {
                         );
                       })()}
                     </div>
+                    )}
                   </div>
                 </div>
                 <ClinicalThermometer doshaScores={doshaScores} />
