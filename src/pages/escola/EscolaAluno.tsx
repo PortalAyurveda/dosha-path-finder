@@ -140,7 +140,7 @@ const Conteudo = ({ aluno }: { aluno: AlunoRow }) => {
           <div className="relative p-6 md:p-8 space-y-4">
             <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground">
               <CalendarDays className="w-3.5 h-3.5" />
-              <span>Próxima aula ao vivo</span>
+              <span>Módulo liberado</span>
             </div>
             <div className="flex items-start gap-4">
               <span
