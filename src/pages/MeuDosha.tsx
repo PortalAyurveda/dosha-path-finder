@@ -167,9 +167,9 @@ const DOSHA_LEVELS: Record<string, typeof VATA_LEVELS> = {
 };
 
 const DOSHA_COLOR_SCALE: Record<string, string[]> = {
-  Vata: ['#D6E0FF', '#A3C1FF', '#709AFF', '#4F75FF', '#2A4BCC'],
-  Pitta: ['#FFE0E0', '#FFB3B3', '#FF8585', '#FF5C5C', '#CC3333'],
-  Kapha: ['#D1F4E0', '#9AE6B8', '#5ED58F', '#22C55E', '#15803D'],
+  Vata: ['#D6E0FF', '#A3C1FF', '#709AFF', '#6B8AFF', '#2A4BCC'],
+  Pitta: ['#FFE0E0', '#FFB3B3', '#FF8585', '#FF7676', '#CC3333'],
+  Kapha: ['#D1F4E0', '#9AE6B8', '#5ED58F', '#9ED88B', '#15803D'],
 };
 
 // Dosha level interpretations
