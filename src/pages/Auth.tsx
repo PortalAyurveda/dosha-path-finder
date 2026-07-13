@@ -370,6 +370,7 @@ const Auth = () => {
                     onChange={setCode}
                     pattern="^[0-9]+$"
                     inputMode="numeric"
+                    autoComplete="one-time-code"
                   >
                     <InputOTPGroup>
                       {[0, 1, 2, 3, 4, 5].map((i) => (
