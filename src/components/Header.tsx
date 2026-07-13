@@ -159,6 +159,8 @@ const Header = () => {
             <img
               src="https://api.portalayurveda.com/storage/v1/object/public/portal_images/simbolo-positivo.svg"
               alt="Portal Ayurveda"
+              width={28}
+              height={28}
               className="h-7 w-auto"
             />
           </div>
