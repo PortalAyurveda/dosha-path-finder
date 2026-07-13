@@ -715,6 +715,188 @@ const CardapioEditor = ({ moduloId }: { moduloId: string }) => {
   );
 };
 
+// ============ Material extras (múltiplos itens) ============
+const MATERIAL_KINDS: {
+  tipo: string;
+  label: string;
+  icon: typeof VideoIcon;
+  placeholder: string;
+  isUpload?: boolean;
+}[] = [
+  { tipo: "material_video", label: "Aulas (YouTube)", icon: VideoIcon, placeholder: "https://youtube.com/…" },
+  { tipo: "material_zoom", label: "Salas de Zoom", icon: Link2, placeholder: "https://us02web.zoom.us/…" },
+  { tipo: "material_apostila", label: "Apostilas (PDF)", icon: FileText, placeholder: "", isUpload: true },
+];
+
+const MaterialExtras = ({ moduloId, moduloNumero }: { moduloId: string; moduloNumero: number }) => {
+  const [itens, setItens] = useState<Recurso[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [uploadingId, setUploadingId] = useState<string | null>(null);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    const { data } = await supabase
+      .from("escola_modulo_recursos")
+      .select("*")
+      .eq("modulo_id", moduloId)
+      .in("tipo", MATERIAL_KINDS.map((k) => k.tipo))
+      .order("ordem", { ascending: true });
+    setItens((data ?? []) as Recurso[]);
+    setLoading(false);
+  }, [moduloId]);
+
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  const add = async (tipo: string) => {
+    const ordem = itens.filter((r) => r.tipo === tipo).length;
+    const { error } = await supabase.from("escola_modulo_recursos").insert({
+      modulo_id: moduloId,
+      tipo,
+      titulo: tipo === "material_video" ? "Nova aula" : tipo === "material_zoom" ? "Nova sala" : "Nova apostila",
+      ordem,
+    });
+    if (error) toast({ title: "Erro", description: error.message });
+    else load();
+  };
+
+  const patch = (id: string, p: Partial<Recurso>) =>
+    setItens((prev) => prev.map((r) => (r.id === id ? { ...r, ...p } : r)));
+
+  const persist = async (r: Recurso) => {
+    const { error } = await supabase
+      .from("escola_modulo_recursos")
+      .update({ titulo: r.titulo, descricao: r.descricao, url: r.url })
+      .eq("id", r.id);
+    if (error) toast({ title: "Erro", description: error.message });
+  };
+
+  const remove = async (r: Recurso) => {
+    if (!confirm("Remover este item?")) return;
+    if (r.tipo === "material_apostila" && r.url) {
+      await supabase.storage.from(BUCKET).remove([r.url]);
+    }
+    const { error } = await supabase.from("escola_modulo_recursos").delete().eq("id", r.id);
+    if (error) toast({ title: "Erro", description: error.message });
+    else load();
+  };
+
+  const uploadApostila = async (r: Recurso, file: File) => {
+    setUploadingId(r.id);
+    const safeName = file.name.replace(/[^a-zA-Z0-9._-]+/g, "-");
+    const path = `modulo-${moduloNumero}/extras/${Date.now()}-${safeName}`;
+    const { error } = await supabase.storage.from(BUCKET).upload(path, file, {
+      upsert: false,
+      contentType: file.type || "application/pdf",
+    });
+    if (error) {
+      toast({ title: "Erro no upload", description: error.message });
+      setUploadingId(null);
+      return;
+    }
+    if (r.url) {
+      await supabase.storage.from(BUCKET).remove([r.url]);
+    }
+    const { error: upErr } = await supabase
+      .from("escola_modulo_recursos")
+      .update({ url: path })
+      .eq("id", r.id);
+    if (upErr) toast({ title: "Erro", description: upErr.message });
+    else {
+      toast({ title: "Apostila enviada" });
+      load();
+    }
+    setUploadingId(null);
+  };
+
+  if (loading) return <Skeleton className="h-24 w-full" />;
+
+  return (
+    <div className="space-y-5 pt-2 border-t border-border">
+      {MATERIAL_KINDS.map((k) => {
+        const lista = itens.filter((r) => r.tipo === k.tipo);
+        const Icon = k.icon;
+        return (
+          <div key={k.tipo} className="space-y-2">
+            <div className="flex items-center justify-between">
+              <h4 className="text-sm font-medium flex items-center gap-2">
+                <Icon className="w-4 h-4 text-muted-foreground" /> {k.label}
+              </h4>
+              <Button size="sm" variant="outline" onClick={() => add(k.tipo)}>
+                <Plus className="w-4 h-4" /> adicionar
+              </Button>
+            </div>
+            {lista.length === 0 ? (
+              <p className="text-xs text-muted-foreground">Nenhum item.</p>
+            ) : (
+              <div className="space-y-2">
+                {lista.map((r) => (
+                  <div key={r.id} className="rounded-lg border border-border p-3 bg-card space-y-2">
+                    <div className="flex gap-2">
+                      <Input
+                        value={r.titulo}
+                        onChange={(e) => patch(r.id, { titulo: e.target.value })}
+                        onBlur={() => persist(r)}
+                        placeholder="Ex.: Aula 1, parte 1"
+                      />
+                      <Button size="icon" variant="ghost" onClick={() => remove(r)} title="Remover">
+                        <Trash2 className="w-4 h-4 text-destructive" />
+                      </Button>
+                    </div>
+                    {k.isUpload ? (
+                      <div className="flex items-center gap-2 flex-wrap">
+                        {r.url ? (
+                          <span className="text-xs text-muted-foreground truncate flex-1 min-w-0">
+                            {r.url.split("/").pop()}
+                          </span>
+                        ) : (
+                          <span className="text-xs text-muted-foreground">Sem arquivo.</span>
+                        )}
+                        <label className="inline-flex">
+                          <input
+                            type="file"
+                            accept="application/pdf"
+                            className="hidden"
+                            onChange={(e) => {
+                              const f = e.target.files?.[0];
+                              if (f) uploadApostila(r, f);
+                              e.target.value = "";
+                            }}
+                          />
+                          <span
+                            className={`inline-flex items-center gap-2 text-xs px-3 h-8 rounded-md border border-input bg-background hover:bg-accent cursor-pointer ${
+                              uploadingId === r.id ? "opacity-60 pointer-events-none" : ""
+                            }`}
+                          >
+                            {uploadingId === r.id ? (
+                              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                            ) : (
+                              <Upload className="w-3.5 h-3.5" />
+                            )}
+                            {r.url ? "substituir" : "enviar PDF"}
+                          </span>
+                        </label>
+                      </div>
+                    ) : (
+                      <Input
+                        value={r.url ?? ""}
+                        onChange={(e) => patch(r.id, { url: e.target.value })}
+                        onBlur={() => persist(r)}
+                        placeholder={k.placeholder}
+                      />
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+
 // ============ TELA 2: Editar módulo ============
 const EditarModulo = ({
   modulo,
