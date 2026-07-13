@@ -1,8 +1,14 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { ArrowLeft, Menu, LogIn, LogOut, ShoppingBag, ShoppingCart, Home, CalendarHeart } from "lucide-react";
+import { ArrowLeft, Menu, LogIn, LogOut, ShoppingBag, ShoppingCart, Home, CalendarHeart, ChevronDown } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useUser } from "@/contexts/UserContext";
 import { useCart } from "@/contexts/CartContext";
 import { useImmersive } from "@/contexts/ImmersiveContext";
