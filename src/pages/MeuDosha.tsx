@@ -847,9 +847,9 @@ const MeuDosha = () => {
           {result.doshaprincipal ? ` — Dosha ${result.doshaprincipal}` : ""}
         </h1>
 
-        <FormacaoDestaqueCard />
+        {!isVisitor && <FormacaoDestaqueCard />}
 
-        <RetesteCard />
+        {!isVisitor && <RetesteCard />}
 
 
 
