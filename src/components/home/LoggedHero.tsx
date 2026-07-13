@@ -251,7 +251,7 @@ const LoggedHero = () => {
         <BannerSlot slot="loggedhero" className="mt-4 [&:empty]:hidden" />
 
         {/* Bottom: 3 dados personalizados — métrica, artigo, vídeo */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-4 min-h-[280px] md:min-h-[96px]">
           {/* Métrica destaque — mini barras */}
           <Link
             to={`${meuDoshaBase}&tab=metricas`}
