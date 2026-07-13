@@ -7,6 +7,7 @@ import { useUser } from "@/contexts/UserContext";
 interface BannerSlotProps {
   slot: string;
   className?: string;
+  fallback?: React.ReactNode;
 }
 
 const PRIORIDADE: Record<string, number> = { Vata: 0, Pitta: 1, Kapha: 2 };
