@@ -71,9 +71,9 @@ const DOSHA_COLORS_BADGE: Record<string, string> = {
 };
 
 const PIE_COLORS: Record<string, string> = {
-  Vata: '#4F75FF',
-  Pitta: '#FF5C5C',
-  Kapha: '#22C55E',
+  Vata: '#6B8AFF',
+  Pitta: '#FF7676',
+  Kapha: '#9ED88B',
 };
 
 // Fixed orientation: Vata at 12h → clockwise → Pitta → Kapha. Donut shape, same in all sizes.
