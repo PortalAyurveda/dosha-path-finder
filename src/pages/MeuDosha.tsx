@@ -856,32 +856,8 @@ const MeuDosha = () => {
 
         {/* ===== Vitrine da Rotina ===== */}
         {(() => {
-          const temAcessoRotina =
-            profile?.is_premium === true ||
-            (profile?.subscription_status === "active" &&
-              ["rotina", "mensal", "anual"].includes(profile?.plano ?? "") &&
-              (!profile?.premium_until || new Date(profile.premium_until) > new Date()));
-
-          if (temAcessoRotina) {
-            return (
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 rounded-2xl border border-secondary/30 bg-secondary/10 px-5 py-4">
-                <span className="text-sm font-medium text-foreground">
-                  Sua rotina de hoje está pronta
-                </span>
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  onClick={() => navigate("/minha-rotina")}
-                  className="self-start sm:self-auto"
-                >
-                  Ver minha rotina →
-                </Button>
-              </div>
-            );
-          }
-
           const doshaNome = result?.doshaprincipal || "seu dosha";
-          return (
+          const vitrineCard = (
             <div className="relative overflow-hidden rounded-2xl border border-border bg-secondary/10 p-5 md:p-6">
               <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-secondary to-primary" />
               <p className="text-xs uppercase tracking-widest text-muted-foreground font-medium mb-2">
@@ -907,6 +883,36 @@ const MeuDosha = () => {
               </div>
             </div>
           );
+
+          if (isVisitor) {
+            return <ClaimLock idPublico={id!}>{vitrineCard}</ClaimLock>;
+          }
+
+          const temAcessoRotina =
+            profile?.is_premium === true ||
+            (profile?.subscription_status === "active" &&
+              ["rotina", "mensal", "anual"].includes(profile?.plano ?? "") &&
+              (!profile?.premium_until || new Date(profile.premium_until) > new Date()));
+
+          if (temAcessoRotina) {
+            return (
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 rounded-2xl border border-secondary/30 bg-secondary/10 px-5 py-4">
+                <span className="text-sm font-medium text-foreground">
+                  Sua rotina de hoje está pronta
+                </span>
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => navigate("/minha-rotina")}
+                  className="self-start sm:self-auto"
+                >
+                  Ver minha rotina →
+                </Button>
+              </div>
+            );
+          }
+
+          return vitrineCard;
         })()}
 
 
