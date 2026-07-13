@@ -348,6 +348,8 @@ const LoggedHero = () => {
                   <img
                     src={`https://img.youtube.com/vi/${video.video_id}/mqdefault.jpg`}
                     alt={video.novo_titulo || "Vídeo"}
+                    width={64}
+                    height={64}
                     className="w-full h-full object-cover"
                     loading="lazy"
                     onError={(e) => {
