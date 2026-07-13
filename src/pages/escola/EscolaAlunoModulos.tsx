@@ -41,21 +41,9 @@ const SEMESTRES = [
 
 const findCurrentId = (mods: Modulo[]): string | null => {
   if (mods.length === 0) return null;
-  const now = Date.now();
-  const emCurso = mods.find((m) => {
-    const s = new Date(m.data_inicio).getTime();
-    const e = new Date(m.data_fim).getTime();
-    return s <= now && now <= e;
-  });
-  if (emCurso) return emCurso.id;
-  const futuros = mods
-    .filter((m) => new Date(m.data_inicio).getTime() > now)
-    .sort((a, b) => +new Date(a.data_inicio) - +new Date(b.data_inicio));
-  if (futuros[0]) return futuros[0].id;
-  const passados = mods
-    .filter((m) => new Date(m.data_fim).getTime() < now)
-    .sort((a, b) => +new Date(b.data_fim) - +new Date(a.data_fim));
-  return passados[0]?.id ?? null;
+  const liberados = mods.filter((m) => m.liberado);
+  if (liberados.length === 0) return null;
+  return [...liberados].sort((a, b) => b.numero - a.numero)[0].id;
 };
 
 
