@@ -838,9 +838,11 @@ const MeuDosha = () => {
 
   return (
     <PageContainer title={`Meu Dosha — ${formattedNome}`} description={`Resultado do teste de dosha de ${formattedNome}: ${result.doshaprincipal}`}>
-      <Helmet>
-        <meta name="robots" content="noindex, nofollow" />
-      </Helmet>
+      {isVisitor && (
+        <Helmet>
+          <meta name="robots" content="noindex, nofollow" />
+        </Helmet>
+      )}
       <div className="max-w-3xl mx-auto space-y-6">
         <h1 className="sr-only">
           {formattedNome ? `Resultado do teste de dosha de ${formattedNome}` : "Resultado do teste de dosha"}
