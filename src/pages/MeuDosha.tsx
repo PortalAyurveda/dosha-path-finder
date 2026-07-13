@@ -831,81 +831,9 @@ const MeuDosha = () => {
     );
   }
 
-  if (!user) {
-    return (
-      <PageContainer title={`Meu Dosha — ${formattedNome}`} description={`Prévia do resultado do teste de dosha de ${formattedNome}: ${result.doshaprincipal}`}>
-        <Helmet>
-          <meta name="robots" content="noindex, nofollow" />
-        </Helmet>
-        <div className="max-w-3xl mx-auto space-y-6">
-          <h1 className="sr-only">
-            {formattedNome ? `Prévia do resultado de ${formattedNome}` : "Prévia do resultado"}
-            {result.doshaprincipal ? ` — Dosha ${result.doshaprincipal}` : ""}
-          </h1>
+  const isVisitor = !user;
 
-          {/* Clinical Dashboard (preview — sem ações) */}
-          <div className="bg-card rounded-xl border border-border p-4 space-y-4">
-            <div className="grid grid-cols-1 sm:grid-cols-[1.2fr_1fr] gap-4">
-              <div className="flex flex-col items-center">
-                <h2 className="font-serif font-bold text-foreground text-base mb-2 text-center">
-                  Seu Dosha agravado é: <span style={{ color: PIE_COLORS[primaryDosha] }}>{result.doshaprincipal}</span>
-                </h2>
-                <div className="w-full" style={{ height: 240 }}>
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart margin={{ top: 20, right: 60, bottom: 20, left: 60 }}>
-                      <Pie data={pieData} cx="50%" cy="50%" outerRadius={70} innerRadius={32} dataKey="value" startAngle={90} endAngle={-270} label={CustomPieLabel} labelLine={false} strokeWidth={2} stroke="hsl(var(--card))">
-                        {pieData.map((entry) => (
-                          <Cell key={entry.name} fill={PIE_COLORS[entry.name]} />
-                        ))}
-                      </Pie>
-                      <Tooltip
-                        formatter={(value: number, name: string) => [`${value} pts (${totalScore > 0 ? Math.round((value / totalScore) * 100) : 0}%)`, name]}
-                        contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '8px', fontSize: '12px' }}
-                      />
-                    </PieChart>
-                  </ResponsiveContainer>
-                </div>
-                {result.agniPrincipal && (
-                  <div className="w-full bg-surface-sun rounded-lg border border-border p-3 mt-3">
-                    <h3 className="font-serif font-bold text-foreground text-sm mb-1">Fogo Digestivo (Agni)</h3>
-                    <p className="text-xs text-muted-foreground">{result.agniPrincipal}</p>
-                  </div>
-                )}
-              </div>
-              <ClinicalThermometer doshaScores={doshaScores} />
-            </div>
-          </div>
 
-          <DoshaLevelBullets doshaScores={doshaScores} />
-
-          {/* Parede de login */}
-          <div className="bg-card rounded-xl border border-border p-6 shadow-sm ring-1 ring-primary/20 space-y-4">
-            <h2 className="font-serif font-bold text-xl text-foreground">
-              Seu plano completo está pronto
-            </h2>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              Você já viu seu retrato. Falta o mais importante: o que está causando seu desequilíbrio, seus caminhos de tratamento, seu protocolo de produtos e sua rotina personalizada de 30 dias.
-            </p>
-            <Button
-              size="lg"
-              className="w-full"
-              onClick={() => {
-                if (!id) return;
-                localStorage.setItem("activeDoshaId", id);
-                localStorage.setItem("pendingClaimIdPublico", id);
-                navigate(`/entrar?claim=${id}`);
-              }}
-            >
-              Criar conta grátis e ver meu plano
-            </Button>
-            <p className="text-xs text-muted-foreground text-center">
-              Leva menos de 1 minuto. Seu diagnóstico fica salvo na sua conta, de graça.
-            </p>
-          </div>
-        </div>
-      </PageContainer>
-    );
-  }
 
 
   return (
