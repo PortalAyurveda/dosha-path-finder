@@ -59,24 +59,11 @@ const formatDate = (iso: string | null) => {
 
 const pickCurrentModulo = (mods: Modulo[]): Modulo | null => {
   if (mods.length === 0) return null;
-  const now = Date.now();
-  // Em andamento
-  const emCurso = mods.find((m) => {
-    const start = new Date(m.data_inicio).getTime();
-    const end = new Date(m.data_fim).getTime();
-    return start <= now && now <= end;
-  });
-  if (emCurso) return emCurso;
-  // Próximo futuro
-  const futuros = mods
-    .filter((m) => new Date(m.data_inicio).getTime() > now)
-    .sort((a, b) => +new Date(a.data_inicio) - +new Date(b.data_inicio));
-  if (futuros[0]) return futuros[0];
-  // Último passado
-  const passados = mods
-    .filter((m) => new Date(m.data_fim).getTime() < now)
-    .sort((a, b) => +new Date(b.data_fim) - +new Date(a.data_fim));
-  return passados[0] ?? mods[0];
+  // Só considera módulos liberados manualmente pelo admin.
+  const liberados = mods.filter((m) => m.liberado);
+  if (liberados.length === 0) return null;
+  // Mostra o mais recente liberado (maior número).
+  return [...liberados].sort((a, b) => b.numero - a.numero)[0];
 };
 
 const Conteudo = ({ aluno }: { aluno: AlunoRow }) => {
@@ -153,7 +140,7 @@ const Conteudo = ({ aluno }: { aluno: AlunoRow }) => {
           <div className="relative p-6 md:p-8 space-y-4">
             <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground">
               <CalendarDays className="w-3.5 h-3.5" />
-              <span>Próxima aula ao vivo</span>
+              <span>Módulo liberado</span>
             </div>
             <div className="flex items-start gap-4">
               <span
