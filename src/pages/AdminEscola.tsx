@@ -31,6 +31,7 @@ import {
   Utensils,
   ArrowUp,
   ArrowDown,
+  GripVertical,
   X,
   Search,
 } from "lucide-react";
@@ -732,6 +733,32 @@ const MaterialExtras = ({ moduloId, moduloNumero }: { moduloId: string; moduloNu
   const [itens, setItens] = useState<Recurso[]>([]);
   const [loading, setLoading] = useState(true);
   const [uploadingId, setUploadingId] = useState<string | null>(null);
+  const [dragging, setDragging] = useState<{ tipo: string; id: string } | null>(null);
+  const [dragOverId, setDragOverId] = useState<string | null>(null);
+
+  const reorder = async (tipo: string, fromId: string, toId: string) => {
+    if (fromId === toId) return;
+    const lista = itens.filter((r) => r.tipo === tipo);
+    const fromIdx = lista.findIndex((r) => r.id === fromId);
+    const toIdx = lista.findIndex((r) => r.id === toId);
+    if (fromIdx < 0 || toIdx < 0) return;
+    const novo = [...lista];
+    const [moved] = novo.splice(fromIdx, 1);
+    novo.splice(toIdx, 0, moved);
+    // update local state
+    setItens((prev) => {
+      const others = prev.filter((r) => r.tipo !== tipo);
+      return [...others, ...novo.map((r, i) => ({ ...r, ordem: i }))];
+    });
+    // persist
+    await Promise.all(
+      novo.map((r, i) =>
+        supabase.from("escola_modulo_recursos").update({ ordem: i }).eq("id", r.id)
+      )
+    );
+    load();
+  };
+
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -832,8 +859,40 @@ const MaterialExtras = ({ moduloId, moduloNumero }: { moduloId: string; moduloNu
             ) : (
               <div className="space-y-2">
                 {lista.map((r) => (
-                  <div key={r.id} className="rounded-lg border border-border p-3 bg-card space-y-2">
-                    <div className="flex gap-2">
+                  <div
+                    key={r.id}
+                    draggable
+                    onDragStart={() => setDragging({ tipo: k.tipo, id: r.id })}
+                    onDragOver={(e) => {
+                      if (dragging?.tipo === k.tipo) {
+                        e.preventDefault();
+                        setDragOverId(r.id);
+                      }
+                    }}
+                    onDragLeave={() => setDragOverId((prev) => (prev === r.id ? null : prev))}
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      if (dragging?.tipo === k.tipo) reorder(k.tipo, dragging.id, r.id);
+                      setDragging(null);
+                      setDragOverId(null);
+                    }}
+                    onDragEnd={() => {
+                      setDragging(null);
+                      setDragOverId(null);
+                    }}
+                    className={`rounded-lg border p-3 bg-card space-y-2 transition-colors ${
+                      dragOverId === r.id && dragging?.tipo === k.tipo
+                        ? "border-primary ring-2 ring-primary/30"
+                        : "border-border"
+                    } ${dragging?.id === r.id ? "opacity-50" : ""}`}
+                  >
+                    <div className="flex items-center gap-2">
+                      <span
+                        className="cursor-grab active:cursor-grabbing text-muted-foreground shrink-0"
+                        title="Arraste para reordenar"
+                      >
+                        <GripVertical className="w-4 h-4" />
+                      </span>
                       <Input
                         value={r.titulo}
                         onChange={(e) => patch(r.id, { titulo: e.target.value })}
@@ -844,6 +903,7 @@ const MaterialExtras = ({ moduloId, moduloNumero }: { moduloId: string; moduloNu
                         <Trash2 className="w-4 h-4 text-destructive" />
                       </Button>
                     </div>
+
                     {k.isUpload ? (
                       <div className="flex items-center gap-2 flex-wrap">
                         {r.url ? (

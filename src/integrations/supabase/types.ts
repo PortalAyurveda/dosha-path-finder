@@ -2816,6 +2816,33 @@ export type Database = {
         }
         Relationships: []
       }
+      login_eventos: {
+        Row: {
+          contexto: string
+          criado_em: string
+          email: string
+          id: string
+          in_app: boolean | null
+          user_agent: string | null
+        }
+        Insert: {
+          contexto: string
+          criado_em?: string
+          email: string
+          id?: string
+          in_app?: boolean | null
+          user_agent?: string | null
+        }
+        Update: {
+          contexto?: string
+          criado_em?: string
+          email?: string
+          id?: string
+          in_app?: boolean | null
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       mensagens: {
         Row: {
           assunto: string
@@ -5019,6 +5046,17 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      login_funil_diario: {
+        Row: {
+          contexto: string | null
+          dia: string | null
+          emails: number | null
+          envios: number | null
+          in_app: boolean | null
+          logaram_24h: number | null
+        }
+        Relationships: []
       }
       v_receitas: {
         Row: {
