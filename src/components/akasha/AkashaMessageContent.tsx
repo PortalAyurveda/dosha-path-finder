@@ -25,6 +25,15 @@ const humanize = (segment: string) => {
   return decoded.charAt(0).toUpperCase() + decoded.slice(1);
 };
 
+const extractRParam = (path: string): string | null => {
+  const q = path.split("?")[1];
+  if (!q) return null;
+  const hash = q.split("#")[0];
+  const params = new URLSearchParams(hash);
+  const r = params.get("r");
+  return r && r.trim() ? r.trim() : null;
+};
+
 const classifyPath = (path: string): InternalCard["kind"] => {
   if (path.startsWith("/video/")) {
     if (/receita/i.test(path)) return "receita";
@@ -90,7 +99,10 @@ const extractInternalCards = (
     if (!path) return match;
     if (seen.has(path) || cards.length >= 3) return "";
     seen.add(path);
-    cards.push({ path, title: title.trim(), kind: classifyPath(path) });
+    const rValue = extractRParam(path);
+    const kind: InternalCard["kind"] = rValue ? "receita" : classifyPath(path);
+    const finalTitle = rValue ? humanize(rValue) : title.trim();
+    cards.push({ path, title: finalTitle, kind });
     return "";
   });
 
@@ -101,17 +113,24 @@ const extractInternalCards = (
     if (!path) return match;
     if (seen.has(path) || cards.length >= 3) return "";
     seen.add(path);
-    const lastSeg = path.split("?")[0].split("#")[0].replace(/\/$/, "").split("/").pop() || "";
-    cards.push({ path, title: humanize(lastSeg), kind: classifyPath(path) });
+    const rValue = extractRParam(path);
+    if (rValue) {
+      cards.push({ path, title: humanize(rValue), kind: "receita" });
+    } else {
+      const lastSeg = path.split("?")[0].split("#")[0].replace(/\/$/, "").split("/").pop() || "";
+      cards.push({ path, title: humanize(lastSeg), kind: classifyPath(path) });
+    }
     return "";
   });
 
-  // Cleanup: extra spaces / orphan punctuation
+  // Cleanup: extra spaces / orphan punctuation / orphan blank lines
   const cleanText = text
     .replace(/[ \t]{2,}/g, " ")
     .replace(/\s+([,.;:!?])/g, "$1")
     .replace(/\(\s*\)/g, "")
+    .replace(/^[ \t]+$/gm, "")
     .replace(/\n{3,}/g, "\n\n")
+    .replace(/[ \t]+\n/g, "\n")
     .trim();
 
   return { cleanText, cards };
