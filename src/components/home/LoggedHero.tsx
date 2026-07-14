@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { TrendingUp, FileText, Play, AlertTriangle, Flame, Award, ChefHat, ArrowRight, Check } from "lucide-react";
+import * as LucideIcons from "lucide-react";
+import { Flame, Award, ChefHat, ArrowRight, Check, Leaf } from "lucide-react";
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 
 import { supabase } from "@/integrations/supabase/client";
@@ -14,6 +15,94 @@ const C = {
   pitta: "hsl(var(--pitta))",
   kapha: "hsl(var(--kapha))",
 };
+
+const DOSHA_HSL: Record<string, string> = {
+  Vata: "var(--vata)",
+  Pitta: "var(--pitta)",
+  Kapha: "var(--kapha)",
+};
+
+// Forma de folha: dois cantos opostos arredondados
+const LEAF_RADIUS = {
+  borderTopLeftRadius: "1rem",
+  borderBottomRightRadius: "1rem",
+  borderTopRightRadius: "0.125rem",
+  borderBottomLeftRadius: "0.125rem",
+} as const;
+
+const LEAF_RADIUS_SM = {
+  borderTopLeftRadius: "0.625rem",
+  borderBottomRightRadius: "0.625rem",
+  borderTopRightRadius: "0.125rem",
+  borderBottomLeftRadius: "0.125rem",
+} as const;
+
+type Objetivo = { verbo: "Acalmar" | "Nutrir"; dosha: "Vata" | "Pitta" | "Kapha" };
+
+function calcObjetivos(v: number, p: number, k: number): Objetivo[] {
+  const arr = [
+    { dosha: "Vata" as const, score: v },
+    { dosha: "Pitta" as const, score: p },
+    { dosha: "Kapha" as const, score: k },
+  ].sort((a, b) => b.score - a.score);
+  const [top, mid, low] = arr;
+  const out: Objetivo[] = [{ verbo: "Acalmar", dosha: top.dosha }];
+  if (top.score > 0 && mid.score >= 0.8 * top.score) {
+    out.push({ verbo: "Acalmar", dosha: mid.dosha });
+  }
+  out.push({ verbo: "Nutrir", dosha: low.dosha });
+  return out;
+}
+
+const ObjetivoChip = ({ verbo, dosha }: Objetivo) => {
+  const token = DOSHA_HSL[dosha];
+  return (
+    <span
+      className="inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-semibold"
+      style={{
+        ...LEAF_RADIUS_SM,
+        background: `hsl(${token} / 0.14)`,
+        color: `hsl(${token})`,
+        boxShadow: `0 0 10px hsl(${token} / 0.28)`,
+      }}
+    >
+      <Leaf className="h-2.5 w-2.5" />
+      {verbo} {dosha}
+    </span>
+  );
+};
+
+const ScoreMiniChip = ({ dosha, score }: { dosha: "Vata" | "Pitta" | "Kapha"; score: number }) => {
+  const token = DOSHA_HSL[dosha];
+  const sign = score > 0 ? "+" : "−";
+  return (
+    <span
+      className="inline-flex items-center px-1.5 py-0.5 text-[10px] font-semibold rounded-md"
+      style={{
+        background: `hsl(${token} / 0.14)`,
+        color: `hsl(${token})`,
+        boxShadow: `0 0 6px hsl(${token} / 0.25)`,
+      }}
+    >
+      {dosha.charAt(0)} {sign}{Math.abs(score)}
+    </span>
+  );
+};
+
+const ObjetivosRow = ({ objetivos }: { objetivos: Objetivo[] }) => (
+  <div>
+    <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+      Seu objetivo
+    </p>
+    <div className="flex flex-wrap gap-1.5 mt-1.5">
+      {objetivos.map((o, i) => (
+        <ObjetivoChip key={`${o.verbo}-${o.dosha}-${i}`} {...o} />
+      ))}
+    </div>
+  </div>
+);
+
+
 
 const PIE_COLORS: Record<string, string> = {
   Vata: C.vata,
