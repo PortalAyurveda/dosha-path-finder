@@ -152,7 +152,7 @@ const RoutedApp = () => {
               <Route path="/terapeutas-do-brasil/cadastro" element={<TerapeutaCadastro />} />
               <Route path="/terapeutas-do-brasil/:slug" element={<TerapeutaPerfil />} />
               <Route path="/terapeutas/:slug" element={<TerapeutaPerfil />} />
-              <Route path="/akasha" element={<Navigate to="/meu-dosha" replace />} />
+              <Route path="/akasha" element={<AkashaRedirect />} />
               <Route path="/video/:slug" element={<Video />} />
 
               {/* Vata */}
