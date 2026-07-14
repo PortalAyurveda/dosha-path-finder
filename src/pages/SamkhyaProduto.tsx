@@ -50,6 +50,17 @@ const SamkhyaProduto = () => {
       const produtoTyped = prod as unknown as LojaProdutoComCategorias;
       setProduto(produtoTyped);
 
+      // "Quem levou este também levou" — via RPC
+      const { data: qlRaw } = await (supabase.rpc as any)("produtos_relacionados", {
+        p_slug: slug,
+        p_limite: 3,
+      });
+      if (!cancelled && Array.isArray(qlRaw)) {
+        setQuemLevou(qlRaw as any);
+      }
+
+
+
 
 
 
