@@ -33,10 +33,8 @@ const ease = (t: number) => 1 - Math.pow(1 - t, 3);
 
 const useCountUp = (target: number | null | undefined, run: boolean, duration = 1200) => {
   const [val, setVal] = useState(0);
-  const startedRef = useRef(false);
   useEffect(() => {
-    if (!run || target == null || startedRef.current) return;
-    startedRef.current = true;
+    if (!run || target == null) return;
     const to = Number(target) || 0;
     const t0 = performance.now();
     let raf = 0;
