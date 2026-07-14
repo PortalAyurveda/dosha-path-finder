@@ -555,8 +555,8 @@ const LoggedHero = () => {
                                 </div>
                               </div>
 
-                              {/* Miniatura decorativa — só desktop */}
-                              <RecipeMiniThumb nug={nug} IconEl={IconEl} />
+                              {/* Baralho decorativo — só desktop */}
+                              <RecipeDeck front={nug} back={backNugs} IconEl={IconEl} />
                             </Link>
                           ) : (
                             <p className="text-sm text-muted-foreground">
