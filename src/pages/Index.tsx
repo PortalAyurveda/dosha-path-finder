@@ -658,6 +658,7 @@ const Index = () => {
       ) : (
         <Hero />
       )}
+      <HojeNoPortal />
       <FeedSocial />
       <FundamentosAyurveda />
       <BibliotecaSection />
