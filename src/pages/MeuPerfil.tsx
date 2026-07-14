@@ -112,7 +112,9 @@ type Assinatura = {
   proxima_cobranca: string | null;
   cancela_no_fim: boolean | null;
   valor: number | null;
+  cortesia?: boolean | null;
 } | null;
+
 
 type Matricula = {
   id: string;
