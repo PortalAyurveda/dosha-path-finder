@@ -90,6 +90,60 @@ const Video = () => {
     enabled: !!slug,
   });
 
+  const tagList = useMemo(() => parseTags((video as any)?.tags), [video]);
+  const currentVideoId = (video as any)?.video_id;
+
+  const { data: relacionados } = useQuery({
+    queryKey: ["video-relacionados", currentVideoId, tagList.join("|")],
+    enabled: !!currentVideoId,
+    staleTime: 10 * 60 * 1000,
+    queryFn: async () => {
+      const out: any[] = [];
+      const seen = new Set<string>([currentVideoId!]);
+      // 1) mesma tag
+      if (tagList.length > 0) {
+        const orClause = tagList
+          .slice(0, 4)
+          .map((t) => `tags.ilike.%${t.replace(/,/g, " ")}%`)
+          .join(",");
+        const { data } = await (supabase.from("videos_canonicos") as any)
+          .select("video_id, slug, novo_titulo, is_receita, is_live, is_oficial")
+          .or(orClause)
+          .limit(12);
+        for (const r of (data ?? []) as any[]) {
+          if (!seen.has(r.video_id)) {
+            seen.add(r.video_id);
+            out.push(r);
+          }
+          if (out.length >= 4) break;
+        }
+      }
+      // 2) completar com mesma categoria
+      if (out.length < 4) {
+        const v: any = video;
+        const catFilter = v?.is_receita
+          ? { col: "is_receita", val: true }
+          : v?.is_live
+          ? { col: "is_live", val: true }
+          : { col: "is_oficial", val: true };
+        const { data } = await (supabase.from("videos_canonicos") as any)
+          .select("video_id, slug, novo_titulo, is_receita, is_live, is_oficial")
+          .eq(catFilter.col, catFilter.val)
+          .order("criado_em", { ascending: false })
+          .limit(12);
+        for (const r of (data ?? []) as any[]) {
+          if (!seen.has(r.video_id)) {
+            seen.add(r.video_id);
+            out.push(r);
+          }
+          if (out.length >= 4) break;
+        }
+      }
+      return out;
+    },
+  });
+
+
   const videoId = video?.video_id;
   const isReceita = (video as any)?.is_receita === true || receitaDoDiaParam;
 
