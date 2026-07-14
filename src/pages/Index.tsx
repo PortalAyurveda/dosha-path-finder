@@ -73,6 +73,7 @@ const MARQUEE_TEMPLATE: { id: string; emoji: string; tone: string; tpl: (pct: st
 const MARQUEE_IDS = MARQUEE_TEMPLATE.map((m) => m.id);
 
 const FeedSocial = () => {
+  const { user } = useUser();
   const { data } = useQuery({
     queryKey: ["marquee_metricas_v1"],
     queryFn: async () => {
