@@ -382,6 +382,8 @@ const Conteudo = ({
 
       <HistoriaCard stats={stats} />
 
+      <CaminhadaCard />
+
       <div className="space-y-3 md:space-y-4">
         <AccordionCard
           id="dados"
@@ -563,6 +565,162 @@ const Cabecalho = ({
             No portal desde {formatMesAno(perfil.created_at)}.
           </div>
         </div>
+      </div>
+    </Card>
+  );
+};
+
+// ---------- Sua Caminhada (evolução completa) ----------
+type Evolucao = {
+  pontos?: number;
+  classe?: string | null;
+  streak?: number;
+  streak_recorde?: number;
+  proxima_classe?: string | null;
+  pontos_para_proxima?: number | null;
+  selo_terapeuta?: boolean;
+};
+
+const CLASSES_CAMINHADA = [
+  "Curioso",
+  "Entusiasta",
+  "Engajado",
+  "Estudante",
+  "Praticante",
+  "Expert",
+  "Terapeuta",
+];
+
+const CaminhadaCard = () => {
+  const [data, setData] = useState<Evolucao | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const { data: resp } = await (supabase.rpc as any)("get_minha_evolucao");
+      if (cancelled) return;
+      setData((resp as Evolucao) ?? {});
+      setLoading(false);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  if (loading) {
+    return (
+      <Card>
+        <Skeleton className="h-40 w-full" />
+      </Card>
+    );
+  }
+
+  const classe = data?.classe ?? "Curioso";
+  const pontos = data?.pontos ?? 0;
+  const streak = data?.streak ?? 0;
+  const streakRecorde = data?.streak_recorde ?? 0;
+  const proxima = data?.proxima_classe;
+  const faltam = data?.pontos_para_proxima;
+  const idxAtual = Math.max(0, CLASSES_CAMINHADA.indexOf(classe));
+  const progressoPct =
+    faltam != null && faltam > 0
+      ? Math.max(0, Math.min(100, (pontos / (pontos + faltam)) * 100))
+      : 100;
+
+  return (
+    <Card>
+      <h2 className="text-xl font-serif font-semibold mb-1">Sua caminhada</h2>
+      <p className="text-sm text-muted-foreground mb-6">
+        Seu crescimento no Portal Ayurveda.
+      </p>
+
+      <div className="flex items-baseline justify-between gap-3">
+        <div>
+          <p className="text-xs uppercase tracking-widest text-muted-foreground font-semibold">
+            Você está em
+          </p>
+          <p className="font-serif text-2xl md:text-3xl text-primary font-semibold mt-0.5">
+            {classe}
+          </p>
+        </div>
+        <div className="text-right">
+          <p className="text-2xl md:text-3xl font-serif font-semibold text-primary">
+            {pontos}
+          </p>
+          <p className="text-xs text-muted-foreground">pontos</p>
+        </div>
+      </div>
+
+      <div className="mt-4">
+        <div className="h-2 rounded-full overflow-hidden bg-muted">
+          <div
+            className="h-full transition-all bg-primary"
+            style={{ width: `${progressoPct}%` }}
+          />
+        </div>
+        <p className="text-xs text-muted-foreground mt-2">
+          {proxima && faltam != null && faltam > 0
+            ? <>Faltam <span className="font-semibold text-foreground">{faltam} pts</span> para <span className="font-semibold text-foreground">{proxima}</span>.</>
+            : "Você chegou à classe máxima. 🌿"}
+        </p>
+      </div>
+
+      <div className="mt-5 grid grid-cols-2 gap-3">
+        <div className="rounded-2xl border border-border/60 bg-muted/30 p-3">
+          <p className="text-[11px] uppercase tracking-widest text-muted-foreground font-semibold">Constância</p>
+          <p className="text-lg font-serif font-semibold text-foreground mt-0.5">
+            {streak > 0 ? `${streak} ${streak === 1 ? "dia" : "dias"}` : "começa hoje"}
+          </p>
+        </div>
+        <div className="rounded-2xl border border-border/60 bg-muted/30 p-3">
+          <p className="text-[11px] uppercase tracking-widest text-muted-foreground font-semibold">Recorde</p>
+          <p className="text-lg font-serif font-semibold text-foreground mt-0.5">
+            {streakRecorde > 0 ? `${streakRecorde} dias` : "—"}
+          </p>
+        </div>
+      </div>
+
+      <div className="mt-6">
+        <p className="text-xs uppercase tracking-widest text-muted-foreground font-semibold mb-3">
+          Próximos degraus
+        </p>
+        <ol className="space-y-1.5">
+          {CLASSES_CAMINHADA.map((c, i) => {
+            const passou = i < idxAtual;
+            const atual = i === idxAtual;
+            return (
+              <li
+                key={c}
+                className={`flex items-center gap-3 text-sm ${
+                  atual
+                    ? "text-foreground font-semibold"
+                    : passou
+                    ? "text-muted-foreground line-through"
+                    : "text-muted-foreground"
+                }`}
+              >
+                <span
+                  className={`inline-flex h-6 w-6 items-center justify-center rounded-full text-[11px] font-semibold ${
+                    atual
+                      ? "bg-primary text-primary-foreground"
+                      : passou
+                      ? "bg-muted text-muted-foreground"
+                      : "border border-border bg-white text-muted-foreground"
+                  }`}
+                >
+                  {i + 1}
+                </span>
+                <span>{c}</span>
+                {atual && (
+                  <span className="ml-auto text-[10px] uppercase tracking-wider text-primary">
+                    você
+                  </span>
+                )}
+              </li>
+            );
+          })}
+        </ol>
       </div>
     </Card>
   );
