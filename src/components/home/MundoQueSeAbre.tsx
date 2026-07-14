@@ -138,9 +138,9 @@ const MundoQueSeAbre = () => {
         </div>
       ) : (
         <div className="grid grid-cols-3 gap-2 md:gap-4 items-start">
-          <NumberBlock value={data.aulas} label="aulas" delta={data.aulas_30d} run={visible} />
-          <NumberBlock value={data.artigos} label="artigos" delta={data.artigos_30d} run={visible} />
-          <NumberBlock value={data.receitas} label="receitas" delta={data.receitas_30d} run={visible} />
+          <NumberBlock value={data.aulas} label="aulas" delta={data.aulas_30d} run={visible && !!data} />
+          <NumberBlock value={data.artigos} label="artigos" delta={data.artigos_30d} run={visible && !!data} />
+          <NumberBlock value={data.receitas} label="receitas" delta={data.receitas_30d} run={visible && !!data} />
         </div>
       )}
 
