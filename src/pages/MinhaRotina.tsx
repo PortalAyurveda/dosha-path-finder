@@ -1096,6 +1096,14 @@ const RotinaSlotCard = ({
         <CollapsibleContent>
           {nugget && (
             <div className="px-4 pb-4 border-t border-border pt-4 space-y-4 text-sm text-foreground">
+              {nugget.imagem_url && (
+                <img
+                  src={nugget.imagem_url}
+                  alt={nugget.titulo}
+                  loading="lazy"
+                  className="float-right ml-4 mb-2 w-32 sm:w-40 aspect-square object-cover rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm shadow-sm"
+                />
+              )}
               {nj.resumo && (
                 <p className="text-muted-foreground leading-relaxed">
                   {nj.resumo}
