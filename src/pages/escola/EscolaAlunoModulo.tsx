@@ -274,37 +274,54 @@ const MaterialBlock = ({ modulo, theme }: { modulo: Modulo; theme: Theme }) => {
 
       {videosExtra.length > 0 && (
         <div className="space-y-3">
-          {videosExtra.map((v) => {
-            const yt = v.url ? extractYoutubeId(v.url) : null;
-            return (
-              <div key={v.id}>
-                <p className="text-xs uppercase tracking-wide text-muted-foreground mb-2">
-                  {v.titulo}
-                </p>
-                {yt ? (
-                  <div className="aspect-video w-full overflow-hidden rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm bg-black">
-                    <iframe
-                      src={`https://www.youtube.com/embed/${yt}`}
-                      title={v.titulo}
-                      className="w-full h-full"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                    />
+          <p className="text-xs uppercase tracking-wide text-muted-foreground">Aulas</p>
+          <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
+            {videosExtra.map((v) => {
+              const yt = v.url ? extractYoutubeId(v.url) : null;
+              return (
+                <Link
+                  key={v.id}
+                  to={`/escola/aluno/aula/${v.id}`}
+                  className="group bg-white rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm border overflow-hidden hover:shadow-md transition-shadow"
+                  style={{ borderColor: `${theme.primaryColor}22` }}
+                >
+                  <div className="aspect-video w-full bg-black relative overflow-hidden">
+                    {yt ? (
+                      <img
+                        src={`https://img.youtube.com/vi/${yt}/mqdefault.jpg`}
+                        alt={v.titulo}
+                        loading="lazy"
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-white/50">
+                        <VideoIcon className="w-8 h-8" />
+                      </div>
+                    )}
+                    <div
+                      className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                      style={{ background: `${theme.darkColor}55` }}
+                    >
+                      <span
+                        className="inline-flex items-center justify-center w-12 h-12 rounded-full text-white"
+                        style={{ background: theme.primaryColor }}
+                      >
+                        <VideoIcon className="w-5 h-5" />
+                      </span>
+                    </div>
                   </div>
-                ) : v.url ? (
-                  <a
-                    href={v.url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex items-center gap-2 text-sm"
-                    style={{ color: theme.primaryColor }}
-                  >
-                    <VideoIcon className="w-4 h-4" /> abrir vídeo
-                  </a>
-                ) : null}
-              </div>
-            );
-          })}
+                  <div className="p-3">
+                    <h4
+                      className="font-serif font-bold text-sm leading-snug line-clamp-2"
+                      style={{ color: theme.darkColor }}
+                    >
+                      {v.titulo}
+                    </h4>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
         </div>
       )}
 
