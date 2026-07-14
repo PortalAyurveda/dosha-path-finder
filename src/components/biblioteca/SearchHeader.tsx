@@ -1,7 +1,7 @@
-import { Search, Star, UtensilsCrossed, Radio, LayoutGrid } from "lucide-react";
+import { Search, Star, UtensilsCrossed, Radio, LayoutGrid, FileText } from "lucide-react";
 import { Input } from "@/components/ui/input";
 
-export type VideoCategory = "todos" | "aulas" | "lives" | "receitas";
+export type VideoCategory = "todos" | "aulas" | "lives" | "receitas" | "artigos";
 
 interface SearchHeaderProps {
   searchTerm: string;
@@ -16,6 +16,7 @@ const categories: { key: VideoCategory; label: string; icon: React.ReactNode }[]
   { key: "aulas", label: "Aulas", icon: <Star className="h-4 w-4" /> },
   { key: "lives", label: "Lives", icon: <Radio className="h-4 w-4" /> },
   { key: "receitas", label: "Receitas", icon: <UtensilsCrossed className="h-4 w-4" /> },
+  { key: "artigos", label: "Artigos", icon: <FileText className="h-4 w-4" /> },
 ];
 
 const SearchHeader = ({ searchTerm, onSearchChange, category, onCategoryChange, counts }: SearchHeaderProps) => {
