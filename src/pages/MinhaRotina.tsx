@@ -1003,6 +1003,7 @@ interface SlotCardProps {
   agniFracoOuIrregular: boolean;
   onToggleFeito: () => void;
   focus?: boolean;
+  compact?: boolean;
 }
 
 const RotinaSlotCard = ({
@@ -1013,6 +1014,7 @@ const RotinaSlotCard = ({
   agniFracoOuIrregular,
   onToggleFeito,
   focus = false,
+  compact = false,
 }: SlotCardProps) => {
   const [open, setOpen] = useState(false);
   const [porqueOpen, setPorqueOpen] = useState(false);
