@@ -33,10 +33,8 @@ const ease = (t: number) => 1 - Math.pow(1 - t, 3);
 
 const useCountUp = (target: number | null | undefined, run: boolean, duration = 1200) => {
   const [val, setVal] = useState(0);
-  const startedRef = useRef(false);
   useEffect(() => {
-    if (!run || target == null || startedRef.current) return;
-    startedRef.current = true;
+    if (!run || target == null) return;
     const to = Number(target) || 0;
     const t0 = performance.now();
     let raf = 0;
@@ -140,9 +138,9 @@ const MundoQueSeAbre = () => {
         </div>
       ) : (
         <div className="grid grid-cols-3 gap-2 md:gap-4 items-start">
-          <NumberBlock value={data.aulas} label="aulas" delta={data.aulas_30d} run={visible} />
-          <NumberBlock value={data.artigos} label="artigos" delta={data.artigos_30d} run={visible} />
-          <NumberBlock value={data.receitas} label="receitas" delta={data.receitas_30d} run={visible} />
+          <NumberBlock value={data.aulas} label="aulas" delta={data.aulas_30d} run={visible && !!data} />
+          <NumberBlock value={data.artigos} label="artigos" delta={data.artigos_30d} run={visible && !!data} />
+          <NumberBlock value={data.receitas} label="receitas" delta={data.receitas_30d} run={visible && !!data} />
         </div>
       )}
 
