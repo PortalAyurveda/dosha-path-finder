@@ -497,7 +497,8 @@ const LoggedHero = () => {
                 className="w-full flex"
                 fallback={(() => {
                   const objetivos = total > 0 ? calcObjetivos(vata, pitta, kapha) : [];
-                  const nug = (rotinaPreview as any)?.nug;
+                  const nug = (rotinaPreviewTop as any)?.nug;
+                  const backNugs = rotinaPreviewBack.map((r: any) => r.nug).filter(Boolean);
                   const IconEl = nug?.icone_lucide
                     ? (LucideIcons as any)[nug.icone_lucide]
                     : null;
