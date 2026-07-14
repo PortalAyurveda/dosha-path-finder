@@ -117,7 +117,6 @@ const Header = () => {
   ];
   const aprenderLinks = [
     { label: "Biblioteca", to: "/biblioteca" },
-    { label: "Artigos", to: "/blog" },
     { label: "Cursos", to: "/cursos" },
   ];
   const cuidarLinks = [
