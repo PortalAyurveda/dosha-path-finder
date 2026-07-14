@@ -27,6 +27,7 @@ import FundamentosAyurveda from "@/components/index/FundamentosAyurveda";
 import Hero from "@/components/home/Hero";
 import LoggedHero from "@/components/home/LoggedHero";
 import SamkhyaBanner from "@/components/home/SamkhyaBanner";
+import HojeNoPortal from "@/components/home/HojeNoPortal";
 
 
 /* ---------- Design tokens (scoped to this page) ---------- */
