@@ -8,6 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import PageContainer from "@/components/PageContainer";
 import Seo from "@/components/Seo";
 import { getTransformedImageUrl } from "@/lib/imageTransform";
+import BannerSlot from "@/components/banners/BannerSlot";
 
 type Tipo = "video" | "receita" | "artigo" | "produto";
 interface Resultado {
