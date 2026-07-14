@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { ArrowLeft, Menu, LogIn, LogOut, ShoppingBag, ShoppingCart, Home, CalendarHeart, ChevronDown } from "lucide-react";
+import { ArrowLeft, Menu, LogIn, LogOut, ShoppingBag, ShoppingCart, Home, CalendarHeart, ChevronDown, Search } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import {
@@ -79,6 +79,8 @@ const HeaderDoshaPie = ({ vata, pitta, kapha, size = 22 }: { vata: number; pitta
 
 const Header = () => {
   const [open, setOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+
   const location = useLocation();
   const navigate = useNavigate();
   const { user, doshaResult, profile, signOut } = useUser();
@@ -408,15 +410,39 @@ const Header = () => {
         </div>
 
         {/* RIGHT — Search + cart + agenda + profile */}
-        <div className="flex items-center gap-1.5 justify-self-end">
-          <div className="hidden lg:block">
-            <GlobalSearch />
-          </div>
+        <div className="flex items-center gap-1.5 justify-self-end w-full">
+          {/* Desktop: inline expanded search takes cart/agenda space */}
+          {searchOpen && (
+            <div className="hidden lg:flex flex-1 min-w-0 justify-end">
+              <div className="w-full max-w-md">
+                <GlobalSearch open layout="inline" onOpenChange={setSearchOpen} />
+              </div>
+            </div>
+          )}
+
+          {/* Desktop: compact search icon when closed */}
+          {!searchOpen && (
+            <div className="hidden lg:block ml-auto">
+              <GlobalSearch open={false} onOpenChange={setSearchOpen} />
+            </div>
+          )}
+
+          {/* Mobile: search trigger (icon) — opens row below header */}
+          <button
+            type="button"
+            onClick={() => setSearchOpen((v) => !v)}
+            aria-label="Pesquisar"
+            aria-expanded={searchOpen}
+            className="lg:hidden ml-auto flex items-center justify-center w-9 h-9 rounded-full bg-white hover:bg-white/90 transition-colors shadow-sm"
+          >
+            <Search className="h-[18px] w-[18px] text-primary" strokeWidth={2.2} />
+          </button>
+
           <button
             type="button"
             onClick={abrirCarrinho}
             aria-label={`Abrir carrinho (${totalItens} itens)`}
-            className="relative flex items-center justify-center w-9 h-9 rounded-full bg-white hover:bg-white/90 transition-colors shadow-sm"
+            className={`relative flex items-center justify-center w-9 h-9 rounded-full bg-white hover:bg-white/90 transition-colors shadow-sm ${searchOpen ? "lg:hidden" : ""}`}
             style={buttonTextColor ? { color: buttonTextColor } : { color: "hsl(var(--primary))" }}
           >
             <ShoppingCart className="h-[18px] w-[18px]" strokeWidth={2.2} />
@@ -433,7 +459,7 @@ const Header = () => {
             <Link
               to="/minha-rotina"
               aria-label="Minha rotina"
-              className="flex items-center justify-center w-9 h-9 rounded-full bg-white hover:bg-white/90 transition-colors shadow-sm"
+              className={`flex items-center justify-center w-9 h-9 rounded-full bg-white hover:bg-white/90 transition-colors shadow-sm ${searchOpen ? "lg:hidden" : ""}`}
             >
               <CalendarHeart className="h-[18px] w-[18px] text-secondary" strokeWidth={2.2} />
             </Link>
@@ -476,8 +502,16 @@ const Header = () => {
           )}
         </div>
       </div>
+
+      {/* Mobile: full-width search row below header */}
+      {searchOpen && (
+        <div className="lg:hidden px-4 pb-3 pt-1">
+          <GlobalSearch open layout="inline" onOpenChange={setSearchOpen} />
+        </div>
+      )}
     </header>
   );
 };
+
 
 export default Header;
