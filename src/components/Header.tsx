@@ -182,8 +182,8 @@ const Header = () => {
       style={headerBg}
     >
       <div className="max-w-6xl mx-auto grid h-16 grid-cols-[1fr_auto_1fr] items-center gap-3 px-4 sm:px-6">
-        {/* LEFT — Hamburger (mobile) + Desktop nav + search */}
-        <div className="flex items-center gap-1.5 justify-self-start">
+        {/* LEFT — Hamburger (mobile) + Desktop nav */}
+        <div className="flex items-center gap-1.5 justify-self-start min-w-0">
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
               <Button
@@ -271,7 +271,7 @@ const Header = () => {
                     onClick={() => setOpen(false)}
                     className="px-4 py-3 rounded-xl text-base font-semibold bg-[#FACC15] text-[#352F54] hover:bg-[#EAB308] transition-colors text-center"
                   >
-                    Área do Aluno
+                    Escola
                   </Link>
                 )}
 
@@ -337,23 +337,43 @@ const Header = () => {
                 </Link>
               );
             })}
+
+            {/* xl+ : Loja e Escola inline */}
             <Link
               to="/samkhya"
-              className={`px-2 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${isActive("/samkhya") ? "bg-white/20 text-white" : "text-white/85 hover:text-white hover:bg-white/10"}`}
+              className={`hidden xl:inline-flex px-2 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${isActive("/samkhya") ? "bg-white/20 text-white" : "text-white/85 hover:text-white hover:bg-white/10"}`}
             >
               Loja
             </Link>
             {escolaAluno && (
               <Link
                 to="/escola/aluno"
-                className={`px-2 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${isActive("/escola/aluno") ? "bg-white/20 text-white" : "text-white/85 hover:text-white hover:bg-white/10"}`}
+                className={`hidden xl:inline-flex px-2 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${isActive("/escola/aluno") ? "bg-white/20 text-white" : "text-white/85 hover:text-white hover:bg-white/10"}`}
               >
-                Área do Aluno
+                Escola
               </Link>
             )}
-          </nav>
 
-          <GlobalSearch />
+            {/* lg até xl : agrupa Loja + Escola em "Mais ▾" */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="xl:hidden px-2 py-2 rounded-lg text-sm font-medium text-white/85 hover:text-white hover:bg-white/10 transition-colors inline-flex items-center gap-1 whitespace-nowrap">
+                  Mais
+                  <ChevronDown className="h-3.5 w-3.5" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="bg-white">
+                <DropdownMenuItem asChild>
+                  <Link to="/samkhya">Loja</Link>
+                </DropdownMenuItem>
+                {escolaAluno && (
+                  <DropdownMenuItem asChild>
+                    <Link to="/escola/aluno">Escola</Link>
+                  </DropdownMenuItem>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </nav>
         </div>
 
 
