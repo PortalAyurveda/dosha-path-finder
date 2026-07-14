@@ -88,7 +88,7 @@ const CursoLanding = () => {
           : Promise.resolve({ data: null } as any),
       ]);
       setModulos((mods as Modulo[]) ?? []);
-      setAulas((idx as AulaIndice[]) ?? []);
+      setAulas(((idx as unknown) as AulaIndice[]) ?? []);
       setMatriculada(!!(matRes as any)?.data);
       setLoading(false);
     })();
