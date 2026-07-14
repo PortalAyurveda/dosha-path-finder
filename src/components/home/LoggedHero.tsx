@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { TrendingUp, FileText, Play, AlertTriangle, Flame, Award, ChefHat, ArrowRight, Check } from "lucide-react";
+import * as LucideIcons from "lucide-react";
+import { Flame, Award, ChefHat, ArrowRight, Check, Leaf } from "lucide-react";
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 
 import { supabase } from "@/integrations/supabase/client";
@@ -14,6 +15,94 @@ const C = {
   pitta: "hsl(var(--pitta))",
   kapha: "hsl(var(--kapha))",
 };
+
+const DOSHA_HSL: Record<string, string> = {
+  Vata: "var(--vata)",
+  Pitta: "var(--pitta)",
+  Kapha: "var(--kapha)",
+};
+
+// Forma de folha: dois cantos opostos arredondados
+const LEAF_RADIUS = {
+  borderTopLeftRadius: "1rem",
+  borderBottomRightRadius: "1rem",
+  borderTopRightRadius: "0.125rem",
+  borderBottomLeftRadius: "0.125rem",
+} as const;
+
+const LEAF_RADIUS_SM = {
+  borderTopLeftRadius: "0.625rem",
+  borderBottomRightRadius: "0.625rem",
+  borderTopRightRadius: "0.125rem",
+  borderBottomLeftRadius: "0.125rem",
+} as const;
+
+type Objetivo = { verbo: "Acalmar" | "Nutrir"; dosha: "Vata" | "Pitta" | "Kapha" };
+
+function calcObjetivos(v: number, p: number, k: number): Objetivo[] {
+  const arr = [
+    { dosha: "Vata" as const, score: v },
+    { dosha: "Pitta" as const, score: p },
+    { dosha: "Kapha" as const, score: k },
+  ].sort((a, b) => b.score - a.score);
+  const [top, mid, low] = arr;
+  const out: Objetivo[] = [{ verbo: "Acalmar", dosha: top.dosha }];
+  if (top.score > 0 && mid.score >= 0.8 * top.score) {
+    out.push({ verbo: "Acalmar", dosha: mid.dosha });
+  }
+  out.push({ verbo: "Nutrir", dosha: low.dosha });
+  return out;
+}
+
+const ObjetivoChip = ({ verbo, dosha }: Objetivo) => {
+  const token = DOSHA_HSL[dosha];
+  return (
+    <span
+      className="inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-semibold"
+      style={{
+        ...LEAF_RADIUS_SM,
+        background: `hsl(${token} / 0.14)`,
+        color: `hsl(${token})`,
+        boxShadow: `0 0 10px hsl(${token} / 0.28)`,
+      }}
+    >
+      <Leaf className="h-2.5 w-2.5" />
+      {verbo} {dosha}
+    </span>
+  );
+};
+
+const ScoreMiniChip = ({ dosha, score }: { dosha: "Vata" | "Pitta" | "Kapha"; score: number }) => {
+  const token = DOSHA_HSL[dosha];
+  const sign = score > 0 ? "+" : "−";
+  return (
+    <span
+      className="inline-flex items-center px-1.5 py-0.5 text-[10px] font-semibold rounded-md"
+      style={{
+        background: `hsl(${token} / 0.14)`,
+        color: `hsl(${token})`,
+        boxShadow: `0 0 6px hsl(${token} / 0.25)`,
+      }}
+    >
+      {dosha.charAt(0)} {sign}{Math.abs(score)}
+    </span>
+  );
+};
+
+const ObjetivosRow = ({ objetivos }: { objetivos: Objetivo[] }) => (
+  <div>
+    <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+      Seu objetivo
+    </p>
+    <div className="flex flex-wrap gap-1.5 mt-1.5">
+      {objetivos.map((o, i) => (
+        <ObjetivoChip key={`${o.verbo}-${o.dosha}-${i}`} {...o} />
+      ))}
+    </div>
+  </div>
+);
+
+
 
 const PIE_COLORS: Record<string, string> = {
   Vata: C.vata,
@@ -144,24 +233,59 @@ const LoggedHero = () => {
     staleTime: 30 * 60 * 1000,
   });
 
-  const { data: video } = useQuery({
-    queryKey: ["logged-hero-video", primaryDosha],
+  // Preview da rotina de hoje (só quando o usuário tem acesso)
+  const { data: testeId } = useQuery({
+    queryKey: ["logged-hero-teste-id", doshaResult?.idPublico],
+    enabled: !!doshaResult?.idPublico && !!temAcessoRotina,
     queryFn: async () => {
-      const table = (
-        primaryDosha === "Pitta" ? "portal_pitta" : primaryDosha === "Kapha" ? "portal_kapha" : "portal_vata"
-      ) as "portal_pitta" | "portal_kapha" | "portal_vata";
       const { data } = await supabase
-        .from(table)
-        .select("video_id, novo_titulo")
-        .not("novo_titulo", "is", null)
-        .order("criado_em", { ascending: false })
-        .limit(1)
+        .from("doshas_registros")
+        .select("id")
+        .eq("idPublico", doshaResult!.idPublico)
         .maybeSingle();
-      return data;
+      return (data?.id as string | undefined) ?? null;
     },
-    enabled: !!primaryDosha,
-    staleTime: 30 * 60 * 1000,
   });
+
+  const { data: rotinaPreview } = useQuery({
+    queryKey: ["logged-hero-rotina-preview", testeId],
+    enabled: !!testeId,
+    queryFn: async () => {
+      const { data: rows } = await (supabase.from("rotinas_usuario") as any)
+        .select("dia, slot, nugget_id")
+        .eq("user_id", testeId!);
+      const list = (rows ?? []) as { dia: number; slot: string; nugget_id: string | null }[];
+      if (!list.length) return null;
+      const menorDia = Math.min(...list.map((r) => r.dia));
+      const doDia = list.filter((r) => r.dia === menorDia && !!r.nugget_id);
+      if (!doDia.length) return null;
+      const ids = Array.from(new Set(doDia.map((r) => r.nugget_id!).filter(Boolean)));
+      const { data: nugs } = await supabase
+        .from("rotina_nuggets")
+        .select("id, titulo, icone_lucide, imagem_url, vata, pitta, kapha, periodo")
+        .in("id", ids);
+      const byId = new Map<string, any>();
+      (nugs ?? []).forEach((n: any) => byId.set(n.id, n));
+
+      const hora = new Date().getHours();
+      const periodoAtual = hora < 12 ? "manhã" : hora < 18 ? "tarde" : "noite";
+      const norm = (s?: string | null) => (s || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      const periodoAtualN = norm(periodoAtual);
+      const rank = (p?: string | null) => {
+        const n = norm(p);
+        if (n === periodoAtualN) return 0;
+        if (n === "qualquer" || !n) return 1;
+        return 2;
+      };
+      const enriched = doDia
+        .map((r) => ({ row: r, nug: byId.get(r.nugget_id!) }))
+        .filter((x) => x.nug);
+      enriched.sort((a, b) => rank(a.nug.periodo) - rank(b.nug.periodo));
+      return enriched[0] ?? null;
+    },
+  });
+
+
 
   const rawFirst = doshaResult?.nome?.split(" ")[0] || profile?.nome?.split(" ")[0] || "";
   const firstName = rawFirst ? rawFirst.charAt(0).toUpperCase() + rawFirst.slice(1).toLowerCase() : "";
@@ -221,42 +345,101 @@ const LoggedHero = () => {
               <BannerSlot
                 slot="loggedhero"
                 className="w-full flex"
-                fallback={
-                  <div className="bg-card rounded-2xl p-5 md:p-6 border border-border shadow-md w-full h-full flex flex-col justify-center">
-                    <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-                      Próximo passo da sua jornada
-                    </p>
-                    {temAcessoRotina ? (
-                      <>
-                        <h3 className="font-serif font-bold text-lg md:text-xl mt-1" style={{ color: C.primary }}>
-                          Sua rotina de hoje
-                        </h3>
-                        <p className="text-sm text-muted-foreground mt-1">
-                          Os cuidados personalizados desenhados para o seu momento.
-                        </p>
-                        <Link
-                          to="/minha-rotina"
-                          className="inline-flex items-center gap-1.5 mt-3 text-sm font-semibold"
-                          style={{ color: C.primary }}
-                        >
-                          Sua rotina de hoje <ArrowRight className="h-4 w-4" />
-                        </Link>
-                      </>
-                    ) : (
-                      <>
-                        <h3 className="font-serif font-bold text-lg md:text-xl mt-1" style={{ color: C.primary }}>
-                          Monte sua rotina personalizada
-                        </h3>
-                        <p className="text-sm text-muted-foreground mt-1">
-                          Alimentação, sono e cuidados diários baseados no seu dosha.
-                        </p>
-                        <Button asChild size="lg" variant="secondary" className="mt-3 w-fit">
-                          <Link to="/minha-rotina">Começar agora</Link>
-                        </Button>
-                      </>
-                    )}
-                  </div>
-                }
+                fallback={(() => {
+                  const objetivos = total > 0 ? calcObjetivos(vata, pitta, kapha) : [];
+                  const nug = (rotinaPreview as any)?.nug;
+                  const IconEl = nug?.icone_lucide
+                    ? (LucideIcons as any)[nug.icone_lucide]
+                    : null;
+                  return (
+                    <div className="bg-card rounded-2xl p-5 md:p-6 border border-border shadow-md w-full h-full flex flex-col gap-4">
+                      {objetivos.length > 0 && <ObjetivosRow objetivos={objetivos} />}
+
+                      {temAcessoRotina ? (
+                        <>
+                          {nug ? (
+                            <div className="flex gap-3 items-start">
+                              <div
+                                className="shrink-0 w-12 h-12 flex items-center justify-center overflow-hidden"
+                                style={{
+                                  ...LEAF_RADIUS_SM,
+                                  background: `${C.primary}14`,
+                                }}
+                              >
+                                {nug.imagem_url ? (
+                                  <img
+                                    src={nug.imagem_url}
+                                    alt={nug.titulo}
+                                    width={48}
+                                    height={48}
+                                    className="w-full h-full object-cover"
+                                    loading="lazy"
+                                  />
+                                ) : IconEl ? (
+                                  <IconEl className="h-6 w-6" style={{ color: C.primary }} />
+                                ) : (
+                                  <Leaf className="h-6 w-6" style={{ color: C.primary }} />
+                                )}
+                              </div>
+                              <div className="min-w-0 flex-1">
+                                <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                                  Sua rotina agora
+                                </p>
+                                <p
+                                  className="font-serif font-bold text-base leading-tight mt-0.5 line-clamp-2"
+                                  style={{ color: C.primary }}
+                                >
+                                  {nug.titulo}
+                                </p>
+                                <div className="flex flex-wrap gap-1 mt-1.5">
+                                  {(["Vata", "Pitta", "Kapha"] as const).map((d) => {
+                                    const key = d.toLowerCase() as "vata" | "pitta" | "kapha";
+                                    const s = Number(nug[key] ?? 0);
+                                    if (!s) return null;
+                                    return <ScoreMiniChip key={d} dosha={d} score={s} />;
+                                  })}
+                                </div>
+                              </div>
+                            </div>
+                          ) : (
+                            <p className="text-sm text-muted-foreground">
+                              Os cuidados personalizados desenhados para o seu momento.
+                            </p>
+                          )}
+                          <Link
+                            to="/minha-rotina"
+                            className="inline-flex items-center gap-1.5 text-sm font-semibold w-fit"
+                            style={{ color: C.primary }}
+                          >
+                            abrir minha rotina <ArrowRight className="h-4 w-4" />
+                          </Link>
+                        </>
+                      ) : (
+                        <>
+                          {objetivos.length > 0 && (
+                            <p className="text-sm text-muted-foreground -mt-1">
+                              Sua rotina seria desenhada exatamente para isso.
+                            </p>
+                          )}
+                          <div>
+                            <h3
+                              className="font-serif font-bold text-lg md:text-xl"
+                              style={{ color: C.primary }}
+                            >
+                              Monte sua rotina personalizada
+                            </h3>
+                            <p className="text-sm text-muted-foreground mt-1">
+                              Alimentação, sono e cuidados diários baseados no seu dosha.
+                            </p>
+                          </div>
+                          <Button asChild size="lg" variant="secondary" className="w-fit">
+                            <Link to="/minha-rotina">Começar agora</Link>
+                          </Button>
+                        </>
+                      )}
+                    </div>
+                  );
+                })()}
               />
             </div>
 
@@ -433,124 +616,6 @@ const LoggedHero = () => {
         </div>
 
         {/* Bottom: 3 dados personalizados */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-4 min-h-[280px] md:min-h-[96px]">
-          <Link
-            to={`${meuDoshaBase}&tab=metricas`}
-            className="group bg-card rounded-2xl p-3 border border-border shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md flex gap-3"
-          >
-            <div className="shrink-0 w-16 h-16 rounded-xl flex items-end justify-center gap-1 p-1.5"
-              style={{ background: `${PIE_COLORS[primaryDosha]}14` }}
-            >
-              {doshaScores.map((d) => {
-                const info = getLevelInfo(d.name, d.score);
-                const heightPct = (info.levelNum / 5) * 100;
-                return (
-                  <div
-                    key={d.name}
-                    className="w-2.5 rounded-t-sm"
-                    style={{
-                      height: `${heightPct}%`,
-                      background: PIE_COLORS[d.name],
-                      minHeight: 4,
-                    }}
-                  />
-                );
-              })}
-            </div>
-            <div className="min-w-0 flex-1">
-              <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1">
-                {topInfo.label === "Fixado" || topInfo.label === "Adoecido" ? (
-                  <AlertTriangle className="h-3 w-3" style={{ color: PIE_COLORS[primaryDosha] }} />
-                ) : (
-                  <TrendingUp className="h-3 w-3" style={{ color: PIE_COLORS[primaryDosha] }} />
-                )}
-                Métrica em destaque
-              </p>
-              <p className="font-serif font-bold text-sm leading-tight mt-0.5" style={{ color: C.primary }}>
-                {primaryDosha} — {topInfo.label}
-              </p>
-              <p className="text-xs text-muted-foreground mt-0.5">
-                {primaryScore} pts
-                {total > 0 ? ` (${Math.round((primaryScore / total) * 100)}%)` : ""}
-              </p>
-            </div>
-          </Link>
-
-          <Link
-            to={`${meuDoshaBase}&tab=artigos&mode=personalizado`}
-            className="group bg-card rounded-2xl p-3 border border-border shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md flex gap-3"
-          >
-            <div className="shrink-0 w-16 h-16 rounded-xl overflow-hidden bg-muted flex items-center justify-center"
-              style={{ background: `${C.primary}14` }}
-            >
-              {artigo?.image_url ? (
-                <img
-                  src={artigo.image_url}
-                  alt={artigo.title || "Artigo"}
-                  width={64}
-                  height={64}
-                  className="w-full h-full object-cover"
-                  loading="lazy"
-                  onError={(e) => {
-                    (e.currentTarget as HTMLImageElement).style.display = "none";
-                  }}
-                />
-              ) : (
-                <FileText className="h-6 w-6" style={{ color: C.primary }} />
-              )}
-            </div>
-            <div className="min-w-0 flex-1">
-              <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1">
-                <FileText className="h-3 w-3" style={{ color: C.primary }} />
-                Artigo pra você
-              </p>
-              <p className="font-serif font-bold text-sm leading-tight mt-0.5 line-clamp-2" style={{ color: C.primary }}>
-                {artigo?.title || "Carregando…"}
-              </p>
-              <p className="text-xs text-muted-foreground mt-0.5">Recomendação personalizada</p>
-            </div>
-          </Link>
-
-          <Link
-            to={`${meuDoshaBase}&tab=videos&mode=personalizado`}
-            className="group bg-card rounded-2xl p-3 border border-border shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md flex gap-3"
-          >
-            <div className="shrink-0 relative w-16 h-16 rounded-xl overflow-hidden bg-muted flex items-center justify-center"
-              style={{ background: `${C.pitta}14` }}
-            >
-              {video?.video_id ? (
-                <>
-                  <img
-                    src={`https://img.youtube.com/vi/${video.video_id}/mqdefault.jpg`}
-                    alt={video.novo_titulo || "Vídeo"}
-                    width={64}
-                    height={64}
-                    className="w-full h-full object-cover"
-                    loading="lazy"
-                    onError={(e) => {
-                      (e.currentTarget as HTMLImageElement).style.display = "none";
-                    }}
-                  />
-                  <span className="absolute inset-0 flex items-center justify-center bg-black/20">
-                    <Play className="h-5 w-5 text-white drop-shadow" fill="white" />
-                  </span>
-                </>
-              ) : (
-                <Play className="h-6 w-6" style={{ color: C.pitta }} fill="currentColor" />
-              )}
-            </div>
-            <div className="min-w-0 flex-1">
-              <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1">
-                <Play className="h-3 w-3" style={{ color: C.pitta }} fill="currentColor" />
-                Vídeo pra você
-              </p>
-              <p className="font-serif font-bold text-sm leading-tight mt-0.5 line-clamp-2" style={{ color: C.primary }}>
-                {video?.novo_titulo || "Carregando…"}
-              </p>
-              <p className="text-xs text-muted-foreground mt-0.5">Recomendação personalizada</p>
-            </div>
-          </Link>
-        </div>
       </div>
     </section>
   );
