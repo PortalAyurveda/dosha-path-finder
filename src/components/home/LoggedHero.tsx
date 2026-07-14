@@ -233,24 +233,59 @@ const LoggedHero = () => {
     staleTime: 30 * 60 * 1000,
   });
 
-  const { data: video } = useQuery({
-    queryKey: ["logged-hero-video", primaryDosha],
+  // Preview da rotina de hoje (só quando o usuário tem acesso)
+  const { data: testeId } = useQuery({
+    queryKey: ["logged-hero-teste-id", doshaResult?.idPublico],
+    enabled: !!doshaResult?.idPublico && !!temAcessoRotina,
     queryFn: async () => {
-      const table = (
-        primaryDosha === "Pitta" ? "portal_pitta" : primaryDosha === "Kapha" ? "portal_kapha" : "portal_vata"
-      ) as "portal_pitta" | "portal_kapha" | "portal_vata";
       const { data } = await supabase
-        .from(table)
-        .select("video_id, novo_titulo")
-        .not("novo_titulo", "is", null)
-        .order("criado_em", { ascending: false })
-        .limit(1)
+        .from("doshas_registros")
+        .select("id")
+        .eq("idPublico", doshaResult!.idPublico)
         .maybeSingle();
-      return data;
+      return (data?.id as string | undefined) ?? null;
     },
-    enabled: !!primaryDosha,
-    staleTime: 30 * 60 * 1000,
   });
+
+  const { data: rotinaPreview } = useQuery({
+    queryKey: ["logged-hero-rotina-preview", testeId],
+    enabled: !!testeId,
+    queryFn: async () => {
+      const { data: rows } = await (supabase.from("rotinas_usuario") as any)
+        .select("dia, slot, nugget_id")
+        .eq("user_id", testeId!);
+      const list = (rows ?? []) as { dia: number; slot: string; nugget_id: string | null }[];
+      if (!list.length) return null;
+      const menorDia = Math.min(...list.map((r) => r.dia));
+      const doDia = list.filter((r) => r.dia === menorDia && !!r.nugget_id);
+      if (!doDia.length) return null;
+      const ids = Array.from(new Set(doDia.map((r) => r.nugget_id!).filter(Boolean)));
+      const { data: nugs } = await supabase
+        .from("rotina_nuggets")
+        .select("id, titulo, icone_lucide, imagem_url, vata, pitta, kapha, periodo")
+        .in("id", ids);
+      const byId = new Map<string, any>();
+      (nugs ?? []).forEach((n: any) => byId.set(n.id, n));
+
+      const hora = new Date().getHours();
+      const periodoAtual = hora < 12 ? "manhã" : hora < 18 ? "tarde" : "noite";
+      const norm = (s?: string | null) => (s || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      const periodoAtualN = norm(periodoAtual);
+      const rank = (p?: string | null) => {
+        const n = norm(p);
+        if (n === periodoAtualN) return 0;
+        if (n === "qualquer" || !n) return 1;
+        return 2;
+      };
+      const enriched = doDia
+        .map((r) => ({ row: r, nug: byId.get(r.nugget_id!) }))
+        .filter((x) => x.nug);
+      enriched.sort((a, b) => rank(a.nug.periodo) - rank(b.nug.periodo));
+      return enriched[0] ?? null;
+    },
+  });
+
+
 
   const rawFirst = doshaResult?.nome?.split(" ")[0] || profile?.nome?.split(" ")[0] || "";
   const firstName = rawFirst ? rawFirst.charAt(0).toUpperCase() + rawFirst.slice(1).toLowerCase() : "";
