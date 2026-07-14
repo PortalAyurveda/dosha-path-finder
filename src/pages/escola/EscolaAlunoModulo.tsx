@@ -1098,6 +1098,12 @@ const Conteudo = ({ aluno }: { aluno: AlunoRow }) => {
             <SectionTitle icon={Sparkles} theme={theme}>Diário de evolução clínica</SectionTitle>
             <DiarioBlock moduloId={modulo.id} alunoId={aluno.id} theme={theme} />
           </section>
+
+          {/* Materiais da turma */}
+          <section className="space-y-4">
+            <SectionTitle icon={FileText} theme={theme}>Materiais da turma</SectionTitle>
+            <MateriaisTurmaBlock moduloId={modulo.id} aluno={aluno} theme={theme} />
+          </section>
         </>
       )}
     </div>
