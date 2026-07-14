@@ -6,6 +6,7 @@ import {
   lojaSupabase,
   type LojaProdutoComCategorias,
 } from "@/integrations/supabase/loja-client";
+import { supabase } from "@/integrations/supabase/client";
 import SamkhyaLayout from "@/components/samkhya/SamkhyaLayout";
 import PrecoDisplay from "@/components/samkhya/PrecoDisplay";
 import BotaoWhatsApp from "@/components/samkhya/BotaoWhatsApp";
