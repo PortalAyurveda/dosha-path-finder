@@ -95,6 +95,7 @@ interface Nugget {
   id: string;
   titulo: string;
   icone_lucide: string | null;
+  imagem_url: string | null;
   video_id: string | null;
   video_timestamp: string | null;
   vata: number | null;
@@ -237,7 +238,7 @@ const MinhaRotina = () => {
       const { data, error } = await supabase
         .from("rotina_nuggets")
         .select(
-          "id, titulo, icone_lucide, video_id, video_timestamp, vata, pitta, kapha, nugget_json"
+          "id, titulo, icone_lucide, imagem_url, video_id, video_timestamp, vata, pitta, kapha, nugget_json"
         );
       if (error) throw error;
       return (data ?? []) as Nugget[];
@@ -1050,6 +1051,21 @@ const RotinaSlotCard = ({
         ringOn && "ring-2 ring-primary ring-offset-2 ring-offset-background"
       )}
     >
+      {nugget?.imagem_url && (
+        <button
+          type="button"
+          onClick={() => setOpen((v) => !v)}
+          className="block w-full aspect-[16/9] overflow-hidden rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm bg-muted"
+          aria-label={`Abrir ${nugget.titulo}`}
+        >
+          <img
+            src={nugget.imagem_url}
+            alt={nugget.titulo}
+            loading="lazy"
+            className="w-full h-full object-cover"
+          />
+        </button>
+      )}
       <Collapsible open={open} onOpenChange={setOpen}>
         <div className="flex items-center gap-3 p-4">
           <div className="h-10 w-10 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0">
