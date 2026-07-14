@@ -140,7 +140,7 @@ const BlogArticle = () => {
 
         {/* Bottom heart for readers who finish the article */}
         <div className="flex items-center justify-center gap-2 py-8 border-t border-border mt-8">
-          <span className="text-sm text-muted-foreground">Gostou do artigo?</span>
+          <span className="text-sm text-muted-foreground">Isso te fez bem?</span>
           <HeartButton contentType="artigo" contentId={article.id} />
         </div>
       </article>
