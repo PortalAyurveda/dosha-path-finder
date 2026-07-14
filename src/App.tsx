@@ -30,6 +30,8 @@ const TesteDeDosha = lazy(() => import("./pages/TesteDeDosha"));
 const MeuDosha = lazy(() => import("./pages/MeuDosha"));
 const MeuPerfil = lazy(() => import("./pages/MeuPerfil"));
 const Biblioteca = lazy(() => import("./pages/Biblioteca"));
+const CursosVitrine = lazy(() => import("./pages/CursosVitrine"));
+const CursoLanding = lazy(() => import("./pages/CursoLanding"));
 const CursoAlimentacao = lazy(() => import("./pages/curso/Alimentacao"));
 const CursoFormacao = lazy(() => import("./pages/curso/Formacao"));
 const CursoFormacaoLive = lazy(() => import("./pages/curso/FormacaoLive"));
