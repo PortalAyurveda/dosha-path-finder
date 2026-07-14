@@ -24,7 +24,6 @@ function useDebounce(value: string, delay: number) {
 }
 
 const Biblioteca = () => {
-  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [category, setCategory] = useState<VideoCategory>("todos");
   const debouncedSearch = useDebounce(searchTerm, 300);
