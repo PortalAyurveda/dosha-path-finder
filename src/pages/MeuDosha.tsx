@@ -348,6 +348,46 @@ const FormacaoDestaqueCard = () => {
   );
 };
 
+// Mini card compacto da caminhada — 1 linha, link p/ /meu-perfil
+const MiniCaminhadaCard = () => {
+  const { user } = useUser();
+  const { data } = useQuery({
+    queryKey: ["mini-caminhada", user?.id],
+    enabled: !!user,
+    queryFn: async () => {
+      const { data } = await (supabase.rpc as any)("get_minha_evolucao");
+      return (data ?? {}) as {
+        pontos?: number;
+        classe?: string;
+        proxima_classe?: string | null;
+        pontos_para_proxima?: number | null;
+      };
+    },
+    staleTime: 60_000,
+  });
+  if (!user) return null;
+  const classe = data?.classe ?? "Iniciante";
+  const pontos = data?.pontos ?? 0;
+  const prox = data?.proxima_classe;
+  const faltam = data?.pontos_para_proxima;
+  return (
+    <Link
+      to="/meu-perfil"
+      className="flex items-center justify-between gap-3 rounded-2xl border border-kapha/30 bg-kapha/5 px-4 py-2.5 text-sm hover:bg-kapha/10 transition-colors"
+    >
+      <span className="min-w-0 truncate text-foreground">
+        <span className="text-[11px] uppercase tracking-widest text-kapha font-semibold mr-2">Sua caminhada</span>
+        <span className="font-semibold">{classe}</span>
+        <span className="text-muted-foreground"> · {pontos} pts</span>
+        {prox && faltam != null && faltam > 0 && (
+          <span className="text-muted-foreground hidden sm:inline"> · faltam {faltam} pts para {prox}</span>
+        )}
+      </span>
+      <ChevronRight className="w-4 h-4 shrink-0 text-kapha" />
+    </Link>
+  );
+};
+
 const ClinicalThermometer = ({ doshaScores }: { doshaScores: { name: string; score: number }[] }) => {
   const doshaData = doshaScores.map(d => {
     const levels = DOSHA_LEVELS[d.name] || VATA_LEVELS;
