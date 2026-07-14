@@ -576,6 +576,16 @@ const LoggedHero = () => {
                               Os cuidados personalizados desenhados para o seu momento.
                             </p>
                           )}
+                          {(() => {
+                            const nj = nug?.nugget_json || {};
+                            const apoio = nj.resumo || nj.efeito_esperado || nj.dicas;
+                            if (!apoio) return null;
+                            return (
+                              <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3">
+                                {apoio}
+                              </p>
+                            );
+                          })()}
                           <Link
                             to={nug ? `/minha-rotina?item=${encodeURIComponent(nug.id)}` : "/minha-rotina"}
                             className="inline-flex items-center gap-1.5 text-sm font-semibold w-fit"
