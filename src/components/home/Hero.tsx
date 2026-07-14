@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import MetricasMiniBanner from "./MetricasMiniBanner";
+import MundoQueSeAbre from "./MundoQueSeAbre";
 
 const DoshaPreview = () => (
   <div className="relative select-none pointer-events-none">
