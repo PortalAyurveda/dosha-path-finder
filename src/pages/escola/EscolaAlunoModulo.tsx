@@ -705,6 +705,164 @@ const DiarioBlock = ({
   );
 };
 
+type MaterialAluno = {
+  id: string;
+  aluno_nome: string | null;
+  titulo: string;
+  storage_path: string;
+  created_at: string | null;
+  user_id: string | null;
+};
+
+const MAX_UPLOAD_BYTES = 50 * 1024 * 1024;
+
+const MateriaisTurmaBlock = ({
+  moduloId,
+  aluno,
+  theme,
+}: {
+  moduloId: string;
+  aluno: AlunoRow;
+  theme: Theme;
+}) => {
+  const [items, setItems] = useState<MaterialAluno[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [uploading, setUploading] = useState(false);
+  const [titulo, setTitulo] = useState("");
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    const { data } = await supabase
+      .from("escola_modulo_materiais_alunos")
+      .select("id,aluno_nome,titulo,storage_path,created_at,user_id")
+      .eq("modulo_id", moduloId)
+      .order("created_at", { ascending: false });
+    setItems((data ?? []) as MaterialAluno[]);
+    setLoading(false);
+  }, [moduloId]);
+
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  const handleUpload = async (file: File) => {
+    if (!file) return;
+    if (file.size > MAX_UPLOAD_BYTES) {
+      toast({ title: "Arquivo grande demais", description: "Limite de 50MB por arquivo." });
+      return;
+    }
+    setUploading(true);
+    const safeName = file.name.replace(/[^\w.\-]+/g, "_");
+    const path = `alunos/${moduloId}/${Date.now()}_${safeName}`;
+    const { error: upErr } = await supabase.storage.from(BUCKET).upload(path, file);
+    if (upErr) {
+      setUploading(false);
+      toast({ title: "Erro ao enviar", description: upErr.message });
+      return;
+    }
+    const { error: insErr } = await supabase.from("escola_modulo_materiais_alunos").insert({
+      modulo_id: moduloId,
+      user_id: aluno.id,
+      aluno_nome: aluno.nome_completo,
+      titulo: titulo.trim() || file.name,
+      storage_path: path,
+    });
+    setUploading(false);
+    if (insErr) {
+      toast({ title: "Erro ao registrar", description: insErr.message });
+      return;
+    }
+    setTitulo("");
+    toast({ title: "Material enviado" });
+    load();
+  };
+
+  const download = async (path: string) => {
+    const { data, error } = await supabase.storage.from(BUCKET).createSignedUrl(path, 60 * 10);
+    if (error || !data?.signedUrl) {
+      toast({ title: "Erro ao abrir", description: error?.message ?? "Sem URL" });
+      return;
+    }
+    window.open(data.signedUrl, "_blank", "noreferrer");
+  };
+
+  return (
+    <div className="space-y-4">
+      <div
+        className="rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm border p-4 bg-white space-y-3"
+        style={{ borderColor: `${theme.primaryColor}33` }}
+      >
+        <p className="text-xs text-muted-foreground italic">
+          Envie um arquivo (até 50MB) para compartilhar com toda a turma.
+        </p>
+        <input
+          type="text"
+          value={titulo}
+          onChange={(e) => setTitulo(e.target.value)}
+          placeholder="Título (opcional)"
+          className="w-full h-10 px-3 rounded-lg border border-input bg-background text-sm"
+        />
+        <label className="inline-flex">
+          <input
+            type="file"
+            className="hidden"
+            onChange={(e) => {
+              const f = e.target.files?.[0];
+              if (f) handleUpload(f);
+              e.target.value = "";
+            }}
+          />
+          <span
+            className={`inline-flex items-center gap-2 text-sm px-4 h-10 rounded-tl-xl rounded-br-xl rounded-tr-sm rounded-bl-sm cursor-pointer text-white ${
+              uploading ? "opacity-60 pointer-events-none" : ""
+            }`}
+            style={{ background: theme.primaryColor }}
+          >
+            {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileText className="w-4 h-4" />}
+            {uploading ? "Enviando…" : "Enviar arquivo"}
+          </span>
+        </label>
+      </div>
+
+      {loading ? (
+        <Skeleton className="h-20 w-full" />
+      ) : items.length === 0 ? (
+        <p className="text-sm text-muted-foreground italic">
+          Nenhum material da turma enviado ainda.
+        </p>
+      ) : (
+        <div className="grid gap-2 md:grid-cols-2">
+          {items.map((m) => (
+            <button
+              key={m.id}
+              type="button"
+              onClick={() => download(m.storage_path)}
+              className="text-left bg-white rounded-tl-xl rounded-br-xl rounded-tr-sm rounded-bl-sm border p-3 flex items-start gap-3 hover:shadow-sm transition-shadow"
+              style={{ borderColor: `${theme.primaryColor}22` }}
+            >
+              <FileText className="w-4 h-4 mt-0.5 shrink-0" style={{ color: theme.primaryColor }} />
+              <div className="min-w-0 flex-1">
+                <p className="font-serif font-bold text-sm truncate" style={{ color: theme.darkColor }}>
+                  {m.titulo}
+                </p>
+                <p className="text-[11px] text-muted-foreground">
+                  {m.aluno_nome ?? "—"}
+                  {m.created_at
+                    ? ` · ${new Date(m.created_at).toLocaleDateString("pt-BR")}`
+                    : ""}
+                </p>
+              </div>
+              <Download className="w-4 h-4 text-muted-foreground shrink-0" />
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+
+
 const DIAS: { key: "sexta" | "sabado" | "domingo"; label: string }[] = [
   { key: "sexta", label: "Sexta" },
   { key: "sabado", label: "Sábado" },
