@@ -5367,6 +5367,14 @@ export type Database = {
         }
         Relationships: []
       }
+      sitemap_urls: {
+        Row: {
+          lastmod: string | null
+          prio: number | null
+          rota: string | null
+        }
+        Relationships: []
+      }
       v_receitas: {
         Row: {
           dicas: string | null
@@ -5706,6 +5714,7 @@ export type Database = {
         Args: { k: number; p: number; v: number }
         Returns: string
       }
+      get_meu_perfil_home: { Args: never; Returns: Json }
       get_meu_perfil_stats: { Args: never; Returns: Json }
       get_minha_evolucao: { Args: never; Returns: Json }
       get_minha_jornada: { Args: never; Returns: Json }
@@ -5716,6 +5725,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      hoje_no_portal: { Args: never; Returns: Json }
       http: {
         Args: { request: Database["public"]["CompositeTypes"]["http_request"] }
         Returns: Database["public"]["CompositeTypes"]["http_response"]
@@ -5936,6 +5946,7 @@ export type Database = {
           isSetofReturn: true
         }
       }
+      receita_teaser: { Args: { p_item: string }; Returns: Json }
       recompute_user_level: { Args: { p_user: string }; Returns: undefined }
       restore_dosha_test_version: {
         Args: { _version_number: number }
