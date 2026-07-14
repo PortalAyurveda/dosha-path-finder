@@ -110,7 +110,11 @@ const FeedSocial = () => {
   );
 
   if (items.length === 0) return null;
-  const loop = [...items, ...items];
+  const ctaText = user ? "Ver meu mapa completo →" : "Descubra o seu: fazer o teste de dosha →";
+  const ctaHref = user ? "/meu-dosha" : "/teste-de-dosha";
+  const ctaItem = { id: "__cta__", emoji: "✦", tone: C.primary, text: ctaText, href: ctaHref } as const;
+  const withCta = [...items, ctaItem];
+  const loop = [...withCta, ...withCta];
 
   return (
     <Link
@@ -125,22 +129,42 @@ const FeedSocial = () => {
       aria-label="Ver todas as métricas do Portal Ayurveda"
     >
       <div className="marquee-track flex gap-8 whitespace-nowrap">
-        {loop.map((it, i) => (
-          <span
-            key={i}
-            className="text-sm font-sans inline-flex items-center gap-2"
-            style={{ color: `${C.primary}CC` }}
-          >
-            <span aria-hidden="true" className="text-base">
-              {it.emoji}
+        {loop.map((it: any, i) => {
+          if (it.id === "__cta__") {
+            return (
+              <span
+                key={i}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  window.location.href = it.href;
+                }}
+                className="text-sm font-sans inline-flex items-center gap-2 font-semibold underline underline-offset-4"
+                style={{ color: it.tone }}
+              >
+                <span aria-hidden="true" className="text-base">{it.emoji}</span>
+                {it.text}
+                <span className="mx-2 opacity-40">·</span>
+              </span>
+            );
+          }
+          return (
+            <span
+              key={i}
+              className="text-sm font-sans inline-flex items-center gap-2"
+              style={{ color: `${C.primary}CC` }}
+            >
+              <span aria-hidden="true" className="text-base">
+                {it.emoji}
+              </span>
+              <span style={{ color: it.tone, fontWeight: 700 }}>
+                {it.text.split(" ")[0]}
+              </span>
+              <span className="group-hover:underline underline-offset-2">{it.text.split(" ").slice(1).join(" ")}</span>
+              <span className="mx-2 opacity-40">·</span>
             </span>
-            <span style={{ color: it.tone, fontWeight: 700 }}>
-              {it.text.split(" ")[0]}
-            </span>
-            <span className="group-hover:underline underline-offset-2">{it.text.split(" ").slice(1).join(" ")}</span>
-            <span className="mx-2 opacity-40">·</span>
-          </span>
-        ))}
+          );
+        })}
       </div>
       <style>{`
         @keyframes marqueeX {
