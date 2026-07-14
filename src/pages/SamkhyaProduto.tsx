@@ -21,6 +21,7 @@ const SamkhyaProduto = () => {
   const { slug } = useParams<{ slug: string }>();
   const [produto, setProduto] = useState<LojaProdutoComCategorias | null>(null);
   const [relacionados, setRelacionados] = useState<LojaProdutoComCategorias[]>([]);
+  const [quemLevou, setQuemLevou] = useState<Array<{ slug: string; nome: string; preco: number; imagem: string | null; resumo: string | null; pontos?: number }>>([]);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
 
