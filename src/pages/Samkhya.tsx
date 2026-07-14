@@ -141,6 +141,7 @@ const Samkhya = () => {
       </Helmet>
 
       <SamkhyaLayout showHero>
+        <BannerSlot slot="samkhya_home" className="[&:empty]:hidden mb-6" />
         {loading ? (
           <>
             <div className="text-center py-10">
