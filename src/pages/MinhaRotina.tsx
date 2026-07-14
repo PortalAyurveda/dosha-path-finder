@@ -238,7 +238,7 @@ const MinhaRotina = () => {
       const { data, error } = await supabase
         .from("rotina_nuggets")
         .select(
-          "id, titulo, icone_lucide, video_id, video_timestamp, vata, pitta, kapha, nugget_json"
+          "id, titulo, icone_lucide, imagem_url, video_id, video_timestamp, vata, pitta, kapha, nugget_json"
         );
       if (error) throw error;
       return (data ?? []) as Nugget[];
