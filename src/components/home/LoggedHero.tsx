@@ -358,7 +358,10 @@ const LoggedHero = () => {
                       {temAcessoRotina ? (
                         <>
                           {nug ? (
-                            <div className="flex gap-3 items-start">
+                            <Link
+                              to={`/minha-rotina?item=${encodeURIComponent(nug.id)}`}
+                              className="flex gap-3 items-start hover:opacity-95 transition-opacity"
+                            >
                               <div
                                 className="shrink-0 w-12 h-12 flex items-center justify-center overflow-hidden"
                                 style={{
@@ -400,14 +403,17 @@ const LoggedHero = () => {
                                   })}
                                 </div>
                               </div>
-                            </div>
+
+                              {/* Miniatura decorativa — só desktop */}
+                              <RecipeMiniThumb nug={nug} IconEl={IconEl} />
+                            </Link>
                           ) : (
                             <p className="text-sm text-muted-foreground">
                               Os cuidados personalizados desenhados para o seu momento.
                             </p>
                           )}
                           <Link
-                            to="/minha-rotina"
+                            to={nug ? `/minha-rotina?item=${encodeURIComponent(nug.id)}` : "/minha-rotina"}
                             className="inline-flex items-center gap-1.5 text-sm font-semibold w-fit"
                             style={{ color: C.primary }}
                           >
