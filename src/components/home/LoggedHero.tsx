@@ -102,33 +102,33 @@ const ObjetivosRow = ({ objetivos }: { objetivos: Objetivo[] }) => (
   </div>
 );
 
-// Miniatura decorativa "ficha de receita" — só desktop (lg+)
-const RecipeMiniThumb = ({
+// Uma carta "ficha de receita" — usada na frente e nas cartas de trás do baralho
+const RecipeCard = ({
   nug,
   IconEl,
+  variant = "front",
 }: {
   nug: any;
   IconEl: React.ComponentType<{ className?: string; style?: React.CSSProperties }> | null;
+  variant?: "front" | "back";
 }) => {
+  const isBack = variant === "back";
   const ingredientes: { qtd?: string; item?: string }[] =
     Array.isArray(nug?.nugget_json?.ingredientes) ? nug.nugget_json.ingredientes : [];
   const primeiros = ingredientes.slice(0, 3);
 
   return (
     <div
-      aria-hidden
-      className="hidden lg:block shrink-0 self-center relative overflow-hidden select-none pointer-events-none"
+      className="relative overflow-hidden select-none"
       style={{
         width: 130,
         height: 150,
         background: "#FDFBF5",
         border: "1px solid rgba(53,47,84,0.08)",
-        boxShadow: "0 8px 22px -12px rgba(53,47,84,0.25)",
-        transform: "rotate(-2deg)",
         ...LEAF_RADIUS_SM,
       }}
     >
-      {nug?.imagem_url ? (
+      {nug?.imagem_url && !isBack ? (
         <img
           src={nug.imagem_url}
           alt=""
@@ -150,37 +150,99 @@ const RecipeMiniThumb = ({
           </div>
           <p
             className="font-serif font-bold leading-tight line-clamp-2"
-            style={{ color: C.primary, fontSize: 10 }}
+            style={{
+              color: C.primary,
+              fontSize: 10,
+              minHeight: 26,
+            }}
           >
             {nug?.titulo || "Receita"}
           </p>
-          <ul
-            className="mt-1.5 space-y-0.5 flex-1"
-            style={{ color: "rgba(53,47,84,0.75)", fontSize: 8, lineHeight: 1.35 }}
-          >
-            {primeiros.length > 0 ? (
-              primeiros.map((i, idx) => (
-                <li key={idx} className="truncate">
-                  • {i.qtd ? `${i.qtd} ` : ""}{i.item || ""}
-                </li>
-              ))
-            ) : (
-              <>
-                <li className="truncate">• ingrediente 1</li>
-                <li className="truncate">• ingrediente 2</li>
-                <li className="truncate">• ingrediente 3</li>
-              </>
-            )}
-          </ul>
-          {/* fade prévia de página */}
-          <div
-            className="absolute left-0 right-0 bottom-0 h-10 pointer-events-none"
-            style={{
-              background: "linear-gradient(to bottom, rgba(253,251,245,0) 0%, #FDFBF5 90%)",
-            }}
-          />
+          {!isBack && (
+            <ul
+              className="mt-1.5 space-y-0.5 flex-1"
+              style={{ color: "rgba(53,47,84,0.75)", fontSize: 8, lineHeight: 1.35 }}
+            >
+              {primeiros.length > 0 ? (
+                primeiros.slice(0, 2).map((i, idx) => (
+                  <li key={idx} className="line-clamp-1">
+                    • {i.qtd ? `${i.qtd} ` : ""}{i.item || ""}
+                  </li>
+                ))
+              ) : (
+                <>
+                  <li className="line-clamp-1">• ingrediente 1</li>
+                  <li className="line-clamp-1">• ingrediente 2</li>
+                </>
+              )}
+            </ul>
+          )}
+          {!isBack && (
+            <div
+              className="absolute left-0 right-0 bottom-0 h-10 pointer-events-none"
+              style={{
+                background: "linear-gradient(to bottom, rgba(253,251,245,0) 0%, #FDFBF5 90%)",
+              }}
+            />
+          )}
         </div>
       )}
+    </div>
+  );
+};
+
+// Baralho decorativo — frente + até 2 cartas atrás. Só desktop (lg+).
+const RecipeDeck = ({
+  front,
+  back,
+  IconEl,
+}: {
+  front: any;
+  back: any[];
+  IconEl: React.ComponentType<{ className?: string; style?: React.CSSProperties }> | null;
+}) => {
+  const backCards = back.slice(0, 2);
+  const rotations = [-6, 5];
+  const offsetsX = [-10, 12];
+  const offsetsY = [6, 10];
+
+  return (
+    <div
+      className="hidden lg:block shrink-0 self-center relative"
+      style={{
+        width: 156,
+        height: 172,
+        filter:
+          "drop-shadow(0 4px 8px rgba(53,47,84,0.18)) drop-shadow(0 18px 30px rgba(53,47,84,0.12))",
+      }}
+    >
+      {backCards.map((nug, i) => (
+        <div
+          key={nug?.id ?? i}
+          aria-hidden
+          className="absolute pointer-events-none"
+          style={{
+            top: "50%",
+            left: "50%",
+            transform: `translate(-50%, -50%) translate(${offsetsX[i]}px, ${offsetsY[i]}px) rotate(${rotations[i]}deg) scale(0.92)`,
+            opacity: 0.85,
+            zIndex: i + 1,
+          }}
+        >
+          <RecipeCard nug={nug} IconEl={IconEl} variant="back" />
+        </div>
+      ))}
+      <div
+        className="absolute"
+        style={{
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%) rotate(-2deg)",
+          zIndex: 10,
+        }}
+      >
+        <RecipeCard nug={front} IconEl={IconEl} variant="front" />
+      </div>
     </div>
   );
 };
@@ -366,9 +428,12 @@ const LoggedHero = () => {
         .map((r) => ({ row: r, nug: byId.get(r.nugget_id!) }))
         .filter((x) => x.nug);
       enriched.sort((a, b) => rank(a.nug.periodo) - rank(b.nug.periodo));
-      return enriched[0] ?? null;
+      return enriched;
     },
   });
+
+  const rotinaPreviewTop = Array.isArray(rotinaPreview) ? rotinaPreview[0] : rotinaPreview;
+  const rotinaPreviewBack = Array.isArray(rotinaPreview) ? rotinaPreview.slice(1, 3) : [];
 
 
 
@@ -432,7 +497,8 @@ const LoggedHero = () => {
                 className="w-full flex"
                 fallback={(() => {
                   const objetivos = total > 0 ? calcObjetivos(vata, pitta, kapha) : [];
-                  const nug = (rotinaPreview as any)?.nug;
+                  const nug = (rotinaPreviewTop as any)?.nug;
+                  const backNugs = rotinaPreviewBack.map((r: any) => r.nug).filter(Boolean);
                   const IconEl = nug?.icone_lucide
                     ? (LucideIcons as any)[nug.icone_lucide]
                     : null;
@@ -489,8 +555,8 @@ const LoggedHero = () => {
                                 </div>
                               </div>
 
-                              {/* Miniatura decorativa — só desktop */}
-                              <RecipeMiniThumb nug={nug} IconEl={IconEl} />
+                              {/* Baralho decorativo — só desktop */}
+                              <RecipeDeck front={nug} back={backNugs} IconEl={IconEl} />
                             </Link>
                           ) : (
                             <p className="text-sm text-muted-foreground">

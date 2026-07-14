@@ -5396,9 +5396,9 @@ export type Database = {
           dosha_fit: string
           imagem_url: string
           ingredientes: Json
+          link: string
           modo_preparo: Json
           resumo: string
-          slug: string
           titulo: string
         }[]
       }
@@ -5478,6 +5478,7 @@ export type Database = {
         Returns: string
       }
       get_minha_evolucao: { Args: never; Returns: Json }
+      get_minha_jornada: { Args: never; Returns: Json }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
