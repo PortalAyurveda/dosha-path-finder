@@ -244,6 +244,21 @@ const MinhaRotina = () => {
     },
   });
 
+  // Deep-link ?item= : ao carregar rotinaRows, pular pro dia do nugget-alvo
+  useEffect(() => {
+    if (!focusNuggetId || focusHandled || !rotinaRows) return;
+    const match = rotinaRows.find((r) => r.nugget_id === focusNuggetId);
+    if (!match) return;
+    if (match.dia !== diaSelecionado) setDiaSelecionado(match.dia);
+    setFocusHandled(true);
+    // limpa da URL (mantém os outros params)
+    const url = new URL(window.location.href);
+    url.searchParams.delete("item");
+    window.history.replaceState({}, "", url.pathname + (url.search ? url.search : ""));
+  }, [focusNuggetId, focusHandled, rotinaRows, diaSelecionado]);
+
+
+
 
   const nuggetsById = useMemo(() => {
     const m = new Map<string, Nugget>();
