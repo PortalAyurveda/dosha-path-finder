@@ -357,6 +357,7 @@ const MinhaRotina = () => {
           email={user?.email ?? null}
           userId={user?.id ?? null}
           doshaPrincipal={doshaResult?.doshaprincipal ?? null}
+          itemId={focusNuggetId}
         />
       </PageContainer>
     );
