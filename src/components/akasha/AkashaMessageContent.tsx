@@ -25,6 +25,15 @@ const humanize = (segment: string) => {
   return decoded.charAt(0).toUpperCase() + decoded.slice(1);
 };
 
+const extractRParam = (path: string): string | null => {
+  const q = path.split("?")[1];
+  if (!q) return null;
+  const hash = q.split("#")[0];
+  const params = new URLSearchParams(hash);
+  const r = params.get("r");
+  return r && r.trim() ? r.trim() : null;
+};
+
 const classifyPath = (path: string): InternalCard["kind"] => {
   if (path.startsWith("/video/")) {
     if (/receita/i.test(path)) return "receita";
