@@ -428,6 +428,12 @@ const LoggedHero = () => {
         .map((r) => ({ row: r, nug: byId.get(r.nugget_id!) }))
         .filter((x) => x.nug);
       enriched.sort((a, b) => rank(a.nug.periodo) - rank(b.nug.periodo));
+      return enriched;
+    },
+  });
+
+  const rotinaPreviewTop = Array.isArray(rotinaPreview) ? rotinaPreview[0] : rotinaPreview;
+  const rotinaPreviewBack = Array.isArray(rotinaPreview) ? rotinaPreview.slice(1, 3) : [];
       return enriched[0] ?? null;
     },
   });
