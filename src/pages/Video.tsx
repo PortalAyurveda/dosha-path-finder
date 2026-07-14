@@ -219,7 +219,7 @@ const Video = () => {
               )}
 
               {/* Marcar receita do dia como feita */}
-              {isReceitaDoDia && user && videoId && (
+              {isReceita && user && videoId && (
                 <div>
                   <Button
                     variant="outline"
