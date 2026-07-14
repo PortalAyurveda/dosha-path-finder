@@ -188,17 +188,52 @@ const BlogArticle = () => {
           </div>
         )}
 
-        {article.summary && (
-          <div
-            className="prose prose-lg max-w-none text-foreground 
-              prose-headings:font-serif prose-headings:text-foreground
-              prose-p:text-muted-foreground prose-p:leading-relaxed
-              prose-li:text-muted-foreground
-              prose-strong:text-foreground
-              prose-a:text-primary prose-a:no-underline hover:prose-a:underline"
-            dangerouslySetInnerHTML={{ __html: article.summary }}
-          />
-        )}
+        {(() => {
+          const videoUrl = (article as any).video_url as string | undefined;
+          const hasVideo = !!videoUrl && !!extractYoutubeId(videoUrl);
+          const summary = article.summary || "";
+          if (!summary && !hasVideo) return null;
+
+          if (hasVideo && summary) {
+            const marker = "</h2>";
+            const idx = summary.toLowerCase().indexOf(marker);
+            const proseClass =
+              "prose prose-lg max-w-none text-foreground prose-headings:font-serif prose-headings:text-foreground prose-p:text-muted-foreground prose-p:leading-relaxed prose-li:text-muted-foreground prose-strong:text-foreground prose-a:text-primary prose-a:no-underline hover:prose-a:underline";
+            if (idx >= 0) {
+              const before = summary.slice(0, idx + marker.length);
+              const after = summary.slice(idx + marker.length);
+              return (
+                <>
+                  <div className={proseClass} dangerouslySetInnerHTML={{ __html: before }} />
+                  <AulaEmbed videoUrl={videoUrl!} title={article.title} />
+                  <div className={proseClass} dangerouslySetInnerHTML={{ __html: after }} />
+                </>
+              );
+            }
+            return (
+              <>
+                <AulaEmbed videoUrl={videoUrl!} title={article.title} />
+                <div className={proseClass} dangerouslySetInnerHTML={{ __html: summary }} />
+              </>
+            );
+          }
+
+          if (hasVideo) {
+            return <AulaEmbed videoUrl={videoUrl!} title={article.title} />;
+          }
+
+          return (
+            <div
+              className="prose prose-lg max-w-none text-foreground 
+                prose-headings:font-serif prose-headings:text-foreground
+                prose-p:text-muted-foreground prose-p:leading-relaxed
+                prose-li:text-muted-foreground
+                prose-strong:text-foreground
+                prose-a:text-primary prose-a:no-underline hover:prose-a:underline"
+              dangerouslySetInnerHTML={{ __html: summary }}
+            />
+          );
+        })()}
 
         {/* Bottom heart for readers who finish the article */}
         <div className="flex items-center justify-center gap-2 py-8 border-t border-border mt-8">
