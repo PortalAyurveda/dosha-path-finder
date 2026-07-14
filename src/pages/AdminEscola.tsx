@@ -78,6 +78,7 @@ type Recurso = {
   descricao: string | null;
   url: string | null;
   ordem: number | null;
+  timestamps?: { t: number; titulo: string }[] | null;
 };
 
 type Pergunta = {
