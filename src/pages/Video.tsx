@@ -207,6 +207,31 @@ const Video = () => {
                 </div>
               )}
 
+              {/* Marcar receita do dia como feita */}
+              {isReceitaDoDia && user && videoId && (
+                <div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={receitaFeitaHoje}
+                    onClick={marcarReceita}
+                  >
+                    {receitaFeitaHoje ? (
+                      <><Check className="h-4 w-4 mr-1.5" /> Feita hoje</>
+                    ) : (
+                      "Marquei que fiz esta receita"
+                    )}
+                  </Button>
+                </div>
+              )}
+
+              {/* Heart destaque na linha do título */}
+              <div className="flex items-start justify-between gap-3">
+                <h1 className="font-serif text-2xl md:text-3xl font-bold text-primary flex-1">{title}</h1>
+                {videoId && <HeartButton contentType="video" contentId={videoId} variant="destaque" className="mt-1 shrink-0" />}
+              </div>
+
+
               {/* Title & Tags & Heart */}
               <div className="space-y-3">
                 <div className="flex items-start justify-between gap-3">
