@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { TrendingUp, FileText, Play, AlertTriangle, Flame, Award, ChefHat, ArrowRight, Check } from "lucide-react";
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 
