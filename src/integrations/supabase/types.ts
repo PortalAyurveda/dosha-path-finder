@@ -1099,6 +1099,47 @@ export type Database = {
           },
         ]
       }
+      curso_matriculas: {
+        Row: {
+          criado_em: string
+          curso_id: string
+          id: string
+          origem: string
+          status: string
+          stripe_session_id: string | null
+          user_id: string
+          valor_pago: number | null
+        }
+        Insert: {
+          criado_em?: string
+          curso_id: string
+          id?: string
+          origem?: string
+          status?: string
+          stripe_session_id?: string | null
+          user_id: string
+          valor_pago?: number | null
+        }
+        Update: {
+          criado_em?: string
+          curso_id?: string
+          id?: string
+          origem?: string
+          status?: string
+          stripe_session_id?: string | null
+          user_id?: string
+          valor_pago?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "curso_matriculas_curso_id_fkey"
+            columns: ["curso_id"]
+            isOneToOne: false
+            referencedRelation: "cursos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       curso_modulos: {
         Row: {
           created_at: string
@@ -1145,6 +1186,8 @@ export type Database = {
           descricao: string | null
           id: string
           ordem: number
+          preco: number | null
+          preco_pix: number | null
           slug: string
           titulo: string
           updated_at: string
@@ -1156,6 +1199,8 @@ export type Database = {
           descricao?: string | null
           id?: string
           ordem?: number
+          preco?: number | null
+          preco_pix?: number | null
           slug: string
           titulo: string
           updated_at?: string
@@ -1167,6 +1212,8 @@ export type Database = {
           descricao?: string | null
           id?: string
           ordem?: number
+          preco?: number | null
+          preco_pix?: number | null
           slug?: string
           titulo?: string
           updated_at?: string
@@ -5698,6 +5745,7 @@ export type Database = {
       rpg_admin_select: { Args: { _table: string }; Returns: Json }
       rpg_play: { Args: { _args?: Json; _fn: string }; Returns: Json }
       rpg_rpc: { Args: { _args?: Json; _fn: string }; Returns: Json }
+      tem_acesso_curso: { Args: { p_curso_id: string }; Returns: boolean }
       termos_aplicar: { Args: { p_html: string }; Returns: string }
       text_to_bytea: { Args: { data: string }; Returns: string }
       unaccent: { Args: { "": string }; Returns: string }
