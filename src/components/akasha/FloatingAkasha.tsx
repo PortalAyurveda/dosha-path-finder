@@ -335,9 +335,11 @@ const FloatingAkasha = () => {
                 {msg.role === "user" ? (
                   <p className="whitespace-pre-wrap text-sm">{msg.content}</p>
                 ) : (
-                  <div className="prose prose-sm max-w-none [&_p]:text-sm [&_p]:leading-relaxed [&_p]:text-foreground [&_p]:my-1 [&_li]:text-sm [&_strong]:text-foreground">
-                    <ReactMarkdown skipHtml>{msg.content}</ReactMarkdown>
-                  </div>
+                  <AkashaMessageContent
+                    content={msg.content}
+                    proseClassName="prose prose-sm max-w-none [&_p]:text-sm [&_p]:leading-relaxed [&_p]:text-foreground [&_p]:my-1 [&_li]:text-sm [&_strong]:text-foreground"
+                  />
+
                 )}
                 {msg.time && (
                   <p className={`mt-1 text-[10px] ${msg.role === "user" ? "text-right text-foreground/60" : "text-muted-foreground"}`}>
