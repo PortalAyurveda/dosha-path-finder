@@ -4,7 +4,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/contexts/UserContext";
 import { Send, Loader2, X } from "lucide-react";
-import ReactMarkdown from "react-markdown";
+import AkashaMessageContent from "@/components/akasha/AkashaMessageContent";
 import { Link } from "react-router-dom";
 
 const AKASHA_LOGO = "https://static.wixstatic.com/media/b8f47f_105371e1ade24ccd9bd3406b83bd925e~mv2.png";
@@ -335,9 +335,11 @@ const FloatingAkasha = () => {
                 {msg.role === "user" ? (
                   <p className="whitespace-pre-wrap text-sm">{msg.content}</p>
                 ) : (
-                  <div className="prose prose-sm max-w-none [&_p]:text-sm [&_p]:leading-relaxed [&_p]:text-foreground [&_p]:my-1 [&_li]:text-sm [&_strong]:text-foreground">
-                    <ReactMarkdown skipHtml>{msg.content}</ReactMarkdown>
-                  </div>
+                  <AkashaMessageContent
+                    content={msg.content}
+                    proseClassName="prose prose-sm max-w-none [&_p]:text-sm [&_p]:leading-relaxed [&_p]:text-foreground [&_p]:my-1 [&_li]:text-sm [&_strong]:text-foreground"
+                  />
+
                 )}
                 {msg.time && (
                   <p className={`mt-1 text-[10px] ${msg.role === "user" ? "text-right text-foreground/60" : "text-muted-foreground"}`}>
