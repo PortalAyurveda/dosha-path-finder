@@ -1014,6 +1014,39 @@ export type Database = {
         }
         Relationships: []
       }
+      curso_aula_progresso: {
+        Row: {
+          aula_id: string
+          concluida_em: string
+          user_id: string
+        }
+        Insert: {
+          aula_id: string
+          concluida_em?: string
+          user_id: string
+        }
+        Update: {
+          aula_id?: string
+          concluida_em?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "curso_aula_progresso_aula_id_fkey"
+            columns: ["aula_id"]
+            isOneToOne: false
+            referencedRelation: "curso_aulas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "curso_aula_progresso_aula_id_fkey"
+            columns: ["aula_id"]
+            isOneToOne: false
+            referencedRelation: "curso_aulas_indice"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       curso_aulas: {
         Row: {
           created_at: string
@@ -1095,6 +1128,13 @@ export type Database = {
             columns: ["aula_id"]
             isOneToOne: false
             referencedRelation: "curso_aulas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "curso_materiais_aula_id_fkey"
+            columns: ["aula_id"]
+            isOneToOne: false
+            referencedRelation: "curso_aulas_indice"
             referencedColumns: ["id"]
           },
         ]
@@ -5147,6 +5187,38 @@ export type Database = {
           tabela: string | null
         }
         Relationships: []
+      }
+      curso_aulas_indice: {
+        Row: {
+          duracao_segundos: number | null
+          id: string | null
+          modulo_id: string | null
+          ordem: number | null
+          titulo: string | null
+        }
+        Insert: {
+          duracao_segundos?: number | null
+          id?: string | null
+          modulo_id?: string | null
+          ordem?: number | null
+          titulo?: string | null
+        }
+        Update: {
+          duracao_segundos?: number | null
+          id?: string | null
+          modulo_id?: string | null
+          ordem?: number | null
+          titulo?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "curso_aulas_modulo_id_fkey"
+            columns: ["modulo_id"]
+            isOneToOne: false
+            referencedRelation: "curso_modulos"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       escola_colegas: {
         Row: {
