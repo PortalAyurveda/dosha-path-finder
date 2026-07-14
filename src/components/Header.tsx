@@ -408,8 +408,11 @@ const Header = () => {
           </Link>
         </div>
 
-        {/* RIGHT — Profile with pie favicon */}
+        {/* RIGHT — Search + cart + agenda + profile */}
         <div className="flex items-center gap-1.5 justify-self-end">
+          <div className="hidden lg:block">
+            <GlobalSearch />
+          </div>
           <button
             type="button"
             onClick={abrirCarrinho}
