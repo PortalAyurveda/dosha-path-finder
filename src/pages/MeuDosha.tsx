@@ -854,7 +854,13 @@ const MeuDosha = () => {
 
         {!isVisitor && <FormacaoDestaqueCard />}
 
-        {!isVisitor && <RetesteCard />}
+        {!isVisitor && (
+          <div id="reteste-anchor" className="rounded-2xl transition-shadow">
+            <RetesteCard />
+          </div>
+        )}
+
+        {!isVisitor && <MinhaCaminhadaSection />}
 
 
 
