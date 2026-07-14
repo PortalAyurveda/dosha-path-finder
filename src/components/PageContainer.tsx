@@ -13,7 +13,7 @@ const PageContainer = ({ title, description, children, className = "", noindex =
   const fullTitle = `${title} — Portal Ayurveda`;
   return (
     <>
-      <Helmet>
+      <Helmet defer={false}>
         <title>{fullTitle}</title>
         <meta name="description" content={description} />
         {noindex ? <meta name="robots" content="noindex, nofollow" /> : null}

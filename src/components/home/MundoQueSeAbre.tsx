@@ -31,21 +31,78 @@ const fmt = (n: number | null | undefined) =>
 // easeOutCubic
 const ease = (t: number) => 1 - Math.pow(1 - t, 3);
 
-const useCountUp = (target: number | null | undefined, run: boolean, duration = 1200) => {
+const isInViewport = (el: HTMLElement) => {
+  const rect = el.getBoundingClientRect();
+  const h = window.innerHeight || document.documentElement.clientHeight;
+  const w = window.innerWidth || document.documentElement.clientWidth;
+  return rect.bottom > 0 && rect.right > 0 && rect.top < h && rect.left < w;
+};
+
+const useCountUp = (
+  target: number | null | undefined,
+  run: boolean,
+  forceFinal: boolean,
+  duration = 1200,
+) => {
   const [val, setVal] = useState(0);
+
   useEffect(() => {
-    if (!run || target == null) return;
-    const to = Number(target) || 0;
-    const t0 = performance.now();
+    if (target == null) {
+      setVal(0);
+      return;
+    }
+
+    const final = Math.max(0, Number(target) || 0);
+
+    if (final === 0) {
+      setVal(0);
+      return;
+    }
+
+    if (forceFinal) {
+      setVal(final);
+      return;
+    }
+
+    if (!run) {
+      setVal((current) => (current > 0 ? current : 1));
+      return;
+    }
+
+    const startedAt = performance.now();
     let raf = 0;
-    const step = (now: number) => {
-      const p = Math.min(1, (now - t0) / duration);
-      setVal(Math.round(to * ease(p)));
-      if (p < 1) raf = requestAnimationFrame(step);
+    let hardFallback = 0;
+    let active = true;
+
+    const finish = () => {
+      if (!active) return;
+      setVal(final);
     };
+
+    const step = (now: number) => {
+      if (!active) return;
+      const progress = Math.min(1, Math.max(0, (now - startedAt) / duration));
+
+      if (progress >= 1) {
+        finish();
+        return;
+      }
+
+      setVal(Math.max(1, Math.round(final * ease(progress))));
+      raf = requestAnimationFrame(step);
+    };
+
+    setVal(1);
     raf = requestAnimationFrame(step);
-    return () => cancelAnimationFrame(raf);
-  }, [run, target, duration]);
+    hardFallback = window.setTimeout(finish, 3000);
+
+    return () => {
+      active = false;
+      cancelAnimationFrame(raf);
+      window.clearTimeout(hardFallback);
+    };
+  }, [run, target, forceFinal, duration]);
+
   return val;
 };
 
@@ -54,13 +111,15 @@ const NumberBlock = ({
   label,
   delta,
   run,
+  forceFinal,
 }: {
   value: number | null | undefined;
   label: string;
   delta: number | null | undefined;
   run: boolean;
+  forceFinal: boolean;
 }) => {
-  const n = useCountUp(value, run);
+  const n = useCountUp(value, run, forceFinal);
   return (
     <div className="flex flex-col items-center text-center min-w-0">
       <span
@@ -105,7 +164,9 @@ const MundoQueSeAbre = () => {
   });
 
   const [visible, setVisible] = useState(false);
+  const [forceFinal, setForceFinal] = useState(false);
   const ref = useRef<HTMLDivElement | null>(null);
+
   useEffect(() => {
     if (!ref.current) return;
     const el = ref.current;
@@ -118,6 +179,36 @@ const MundoQueSeAbre = () => {
     io.observe(el);
     return () => io.disconnect();
   }, []);
+
+  const dataReady = !isLoading && !!data;
+
+  useEffect(() => {
+    if (!dataReady) {
+      setForceFinal(false);
+      return;
+    }
+
+    const checkVisibility = () => {
+      if (ref.current && isInViewport(ref.current)) setVisible(true);
+    };
+
+    checkVisibility();
+    window.addEventListener("scroll", checkVisibility, { passive: true });
+    window.addEventListener("resize", checkVisibility);
+
+    const fallback = window.setTimeout(() => {
+      if (ref.current && isInViewport(ref.current)) {
+        setVisible(true);
+        setForceFinal(true);
+      }
+    }, 3000);
+
+    return () => {
+      window.removeEventListener("scroll", checkVisibility);
+      window.removeEventListener("resize", checkVisibility);
+      window.clearTimeout(fallback);
+    };
+  }, [dataReady]);
 
   if (error) return null;
 
@@ -138,9 +229,9 @@ const MundoQueSeAbre = () => {
         </div>
       ) : (
         <div className="grid grid-cols-3 gap-2 md:gap-4 items-start">
-          <NumberBlock value={data.aulas} label="aulas" delta={data.aulas_30d} run={visible && !!data} />
-          <NumberBlock value={data.artigos} label="artigos" delta={data.artigos_30d} run={visible && !!data} />
-          <NumberBlock value={data.receitas} label="receitas" delta={data.receitas_30d} run={visible && !!data} />
+          <NumberBlock value={data.aulas} label="aulas" delta={data.aulas_30d} run={visible && dataReady} forceFinal={forceFinal} />
+          <NumberBlock value={data.artigos} label="artigos" delta={data.artigos_30d} run={visible && dataReady} forceFinal={forceFinal} />
+          <NumberBlock value={data.receitas} label="receitas" delta={data.receitas_30d} run={visible && dataReady} forceFinal={forceFinal} />
         </div>
       )}
 
