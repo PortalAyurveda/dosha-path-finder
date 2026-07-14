@@ -340,6 +340,8 @@ const Video = () => {
                 </article>
               )}
 
+              <BannerSlot slot="video_fim" className="[&:empty]:hidden" />
+
               {/* Assista também */}
               {relacionados && relacionados.length > 0 && (
                 <section className="mt-8 pt-6 border-t border-border">
