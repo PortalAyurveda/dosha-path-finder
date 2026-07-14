@@ -73,7 +73,7 @@ interface EvolucaoData {
 
 const LoggedHero = () => {
   const { doshaResult, profile, user } = useUser();
-  const queryClient = useQueryClient();
+  
   const id = doshaResult?.idPublico;
   const meuDoshaBase = id ? `/meu-dosha?id=${id}` : "/meu-dosha";
 
