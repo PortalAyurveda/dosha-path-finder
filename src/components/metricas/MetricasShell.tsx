@@ -1,9 +1,10 @@
 import { ReactNode } from "react";
 import { Helmet } from "react-helmet-async";
 import { Link, useLocation } from "react-router-dom";
-import { BarChart3, MessageCircle, LineChart } from "lucide-react";
+import { BarChart3, MessageCircle, LineChart, ArrowRight } from "lucide-react";
 import { C, SERIF, SANS, LEAF, fmtDate } from "./theme";
 import { useLatestDate } from "./useMetricasData";
+import { useUser } from "@/contexts/UserContext";
 
 interface MetricasShellProps {
   children: ReactNode;
