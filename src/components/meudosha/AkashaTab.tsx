@@ -292,9 +292,11 @@ const AkashaTab = ({
                   <p className="whitespace-pre-wrap">{msg.content}</p>
                 </div>
               ) : (
-                <div className="prose prose-sm max-w-none [&_p]:text-sm [&_p]:leading-relaxed [&_p]:text-foreground [&_li]:text-sm [&_li]:text-foreground [&_strong]:text-foreground">
-                  <ReactMarkdown skipHtml>{msg.content}</ReactMarkdown>
-                </div>
+                <AkashaMessageContent
+                  content={msg.content}
+                  proseClassName="prose prose-sm max-w-none [&_p]:text-sm [&_p]:leading-relaxed [&_p]:text-foreground [&_li]:text-sm [&_li]:text-foreground [&_strong]:text-foreground"
+                />
+
               )}
               {msg.time && (
                 <p className={`mt-1 text-[10px] ${msg.role === "user" ? "text-right text-primary-foreground/70" : "text-muted-foreground"}`}>
