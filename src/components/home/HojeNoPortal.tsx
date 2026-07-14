@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
@@ -21,6 +22,10 @@ const rotaVideo = (v: any) => v?.url || (v?.slug ? `/video/${v.slug}` : v?.id ? 
 const rotaReceita = (r: any) => (r?.slug ? `/receita/${r.slug}` : r?.id ? `/receita/${r.id}` : "/biblioteca");
 const rotaDica = (d: any) => (d?.slug ? `/dica/${d.slug}` : d?.id ? `/dica/${d.id}` : "/biblioteca");
 
+const SALMAO = "#FF7676";
+const SALMAO_SOFT = "#FF76761F";
+const HOVER_SHADOW = "hover:shadow-[0_10px_30px_-10px_rgba(255,118,118,0.45)]";
+
 const MiniCard = ({
   to,
   selo,
@@ -35,29 +40,62 @@ const MiniCard = ({
   titulo: string;
   imagem?: string | null;
   texto?: string | null;
-}) => (
-  <Link to={to} className="shrink-0 w-[80%] sm:w-auto sm:flex-1 min-w-0">
-    <Card className="h-full overflow-hidden rounded-xl hover:shadow-md transition-shadow">
-      {imagem ? (
-        <div className="w-full aspect-[16/9] bg-muted overflow-hidden">
-          <img src={imagem} alt={titulo} loading="lazy" className="w-full h-full object-cover" />
-        </div>
-      ) : (
-        <div className="w-full aspect-[16/9] bg-gradient-to-br from-muted to-muted/50 flex items-center justify-center text-muted-foreground">
-          {icon}
-        </div>
-      )}
-      <div className="p-3 space-y-1.5">
-        <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-muted-foreground font-medium">
-          {icon}
-          <span>{selo}</span>
-        </div>
-        <h3 className="font-serif text-sm text-foreground leading-tight line-clamp-2">{titulo}</h3>
-        {texto && <p className="text-xs text-muted-foreground line-clamp-2">{texto}</p>}
-      </div>
-    </Card>
-  </Link>
-);
+}) => {
+  const [imgOk, setImgOk] = useState<boolean>(!!imagem);
+  const showImage = !!imagem && imgOk;
+
+  return (
+    <Link to={to} className="shrink-0 w-[80%] sm:w-auto sm:flex-1 min-w-0">
+      <Card
+        className={`h-full overflow-hidden rounded-xl transition-shadow ${HOVER_SHADOW}`}
+      >
+        {showImage ? (
+          <>
+            <div className="w-full aspect-[16/9] bg-muted overflow-hidden">
+              <img
+                src={imagem!}
+                alt={titulo}
+                loading="lazy"
+                className="w-full h-full object-cover"
+                onError={() => setImgOk(false)}
+              />
+            </div>
+            <div className="p-3 space-y-1.5">
+              <div
+                className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider font-medium"
+                style={{ color: SALMAO }}
+              >
+                {icon}
+                <span>{selo}</span>
+              </div>
+              <h3 className="font-serif text-sm text-foreground leading-tight line-clamp-2">{titulo}</h3>
+              {texto && <p className="text-xs text-muted-foreground line-clamp-2">{texto}</p>}
+            </div>
+          </>
+        ) : (
+          <div className="p-3 flex items-center gap-3">
+            <div
+              className="shrink-0 w-11 h-11 rounded-full flex items-center justify-center"
+              style={{ background: SALMAO_SOFT, color: SALMAO }}
+            >
+              {icon}
+            </div>
+            <div className="min-w-0 flex-1 space-y-1">
+              <div
+                className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider font-medium"
+                style={{ color: SALMAO }}
+              >
+                <span>{selo}</span>
+              </div>
+              <h3 className="font-serif text-sm text-foreground leading-tight line-clamp-2">{titulo}</h3>
+              {texto && <p className="text-xs text-muted-foreground line-clamp-2">{texto}</p>}
+            </div>
+          </div>
+        )}
+      </Card>
+    </Link>
+  );
+};
 
 export const HojeNoPortal = () => {
   const { data } = useQuery({
@@ -86,7 +124,7 @@ export const HojeNoPortal = () => {
           <MiniCard
             to={rotaVideo(video)}
             selo="Vídeo novo"
-            icon={<Play className="h-3 w-3" />}
+            icon={<Play className="h-4 w-4" />}
             titulo={video.titulo ?? "Novo vídeo"}
             imagem={video.imagem}
           />
@@ -95,7 +133,7 @@ export const HojeNoPortal = () => {
           <MiniCard
             to={rotaReceita(receita)}
             selo="Receita do dia"
-            icon={<UtensilsCrossed className="h-3 w-3" />}
+            icon={<UtensilsCrossed className="h-4 w-4" />}
             titulo={receita.titulo ?? "Receita do dia"}
             imagem={receita.imagem}
           />
@@ -104,7 +142,7 @@ export const HojeNoPortal = () => {
           <MiniCard
             to={rotaDica(dica)}
             selo="Gesto do dia"
-            icon={<Sparkles className="h-3 w-3" />}
+            icon={<Sparkles className="h-4 w-4" />}
             titulo={dica.titulo ?? "Gesto do dia"}
             imagem={dica.imagem}
             texto={dica.texto}
