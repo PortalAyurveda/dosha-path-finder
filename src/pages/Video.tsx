@@ -339,6 +339,43 @@ const Video = () => {
                   {description}
                 </article>
               )}
+
+              {/* Assista também */}
+              {relacionados && relacionados.length > 0 && (
+                <section className="mt-8 pt-6 border-t border-border">
+                  <h2 className="text-xs uppercase tracking-wider text-muted-foreground font-semibold mb-3">
+                    Assista também
+                  </h2>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    {relacionados.map((r: any) => (
+                      <a
+                        key={r.video_id}
+                        href={`/video/${r.slug}`}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          navigate(`/video/${r.slug}`, { state: { videoId: r.video_id } });
+                        }}
+                        className="group block"
+                      >
+                        <div className="aspect-video rounded-lg overflow-hidden bg-muted relative">
+                          <img
+                            src={`https://img.youtube.com/vi/${r.video_id}/mqdefault.jpg`}
+                            alt={r.novo_titulo || "Vídeo"}
+                            loading="lazy"
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                          />
+                          <span className="absolute inset-0 flex items-center justify-center bg-black/10 group-hover:bg-black/0">
+                            <Play className="h-6 w-6 text-white drop-shadow" fill="white" />
+                          </span>
+                        </div>
+                        <p className="text-xs font-medium text-foreground mt-1.5 line-clamp-2 leading-snug">
+                          {r.novo_titulo}
+                        </p>
+                      </a>
+                    ))}
+                  </div>
+                </section>
+              )}
             </div>
 
             <aside className="lg:col-span-1 lg:sticky lg:top-4">
