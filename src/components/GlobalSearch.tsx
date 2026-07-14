@@ -1,51 +1,43 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, X, Package, Video as VideoIcon, FileText } from "lucide-react";
+import { Search, X, Package, Video as VideoIcon, FileText, UtensilsCrossed, Sparkles } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { lojaSupabase } from "@/integrations/supabase/loja-client";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { slugify } from "@/lib/slugify";
 import { getTransformedImageUrl } from "@/lib/imageTransform";
 
-const VIDEO_TABLES = ["portal_vata", "portal_pitta", "portal_kapha"] as const;
+type Tipo = "video" | "receita" | "artigo" | "produto";
+
+interface Resultado {
+  tipo: Tipo;
+  id: string;
+  titulo: string | null;
+  subtitulo: string | null;
+  imagem: string | null;
+  rota: string;
+  pontuacao: number | null;
+}
 
 export async function searchAll(termo: string, limitPer = 3) {
   const term = termo.trim();
-  if (term.length < 2) return { produtos: [], videos: [], artigos: [] };
+  if (term.length < 2) return { produtos: [], receitas: [], videos: [], artigos: [] };
 
-  const [prodRes, artRes, ...vidRes] = await Promise.all([
-    lojaSupabase
-      .from("produtos")
-      .select("slug, nome_display, imagem_url")
-      .ilike("nome_display", `%${term}%`)
-      .eq("ativo", true)
-      .limit(limitPer),
-    supabase
-      .from("portal_conteudo")
-      .select("id, title, link_do_artigo, image_url, meta_description")
-      .ilike("title", `%${term}%`)
-      .limit(limitPer),
-    ...VIDEO_TABLES.map((t) =>
-      supabase
-        .from(t)
-        .select("video_id, novo_titulo, mini_resumo")
-        .ilike("novo_titulo", `%${term}%`)
-        .limit(limitPer)
-    ),
-  ]);
+  const { data, error } = await (supabase.rpc as any)("busca_global", {
+    p_termo: term,
+    p_limite_por_tipo: limitPer,
+  });
+  if (error) {
+    console.error("busca_global error:", error);
+    return { produtos: [], receitas: [], videos: [], artigos: [] };
+  }
 
-  const seen = new Set<string>();
-  const videos = vidRes
-    .flatMap((r: any) => r.data || [])
-    .filter((v: any) => (seen.has(v.video_id) ? false : (seen.add(v.video_id), true)))
-    .slice(0, limitPer);
-
+  const rows = (data || []) as Resultado[];
   return {
-    produtos: (prodRes.data || []) as any[],
-    videos: videos as any[],
-    artigos: (artRes.data || []) as any[],
+    produtos: rows.filter((r) => r.tipo === "produto"),
+    receitas: rows.filter((r) => r.tipo === "receita"),
+    videos: rows.filter((r) => r.tipo === "video"),
+    artigos: rows.filter((r) => r.tipo === "artigo"),
   };
 }
 
@@ -95,8 +87,22 @@ const GlobalSearch = () => {
     close();
   };
 
+  const askAkasha = () => {
+    if (!debounced) return;
+    navigate(`/akasha?pergunta=${encodeURIComponent(debounced)}`);
+    close();
+  };
+
   const totalResults =
-    (data?.produtos.length || 0) + (data?.videos.length || 0) + (data?.artigos.length || 0);
+    (data?.produtos.length || 0) +
+    (data?.receitas.length || 0) +
+    (data?.videos.length || 0) +
+    (data?.artigos.length || 0);
+
+  const goRota = (rota: string) => {
+    close();
+    navigate(rota);
+  };
 
   return (
     <div ref={containerRef} className="relative">
@@ -141,65 +147,62 @@ const GlobalSearch = () => {
               <Skeleton className="h-12 w-full" />
               <Skeleton className="h-12 w-full" />
             </div>
-          ) : totalResults === 0 ? (
-            <div className="p-6 text-center text-sm text-muted-foreground">
-              Nenhum resultado encontrado para "{debounced}"
-            </div>
           ) : (
             <div className="max-h-[70vh] overflow-y-auto">
-              {data!.produtos.length > 0 && (
-                <Section title="Produtos" icon={<Package className="h-3.5 w-3.5" />}>
-                  {data!.produtos.map((p: any) => (
-                    <ResultItem
-                      key={p.slug}
-                      title={p.nome_display}
-                      image={p.imagem_url}
-                      onClick={() => {
-                        navigate(`/samkhya/produto/${p.slug}`);
-                        close();
-                      }}
-                    />
-                  ))}
-                </Section>
+              {totalResults === 0 ? (
+                <div className="p-6 text-center text-sm text-muted-foreground">
+                  Nenhum resultado encontrado para "{debounced}"
+                </div>
+              ) : (
+                <>
+                  {data!.produtos.length > 0 && (
+                    <Section title="Produtos" icon={<Package className="h-3.5 w-3.5" />}>
+                      {data!.produtos.map((r) => (
+                        <ResultItem key={`p-${r.id}`} r={r} onClick={() => goRota(r.rota)} />
+                      ))}
+                    </Section>
+                  )}
+                  {data!.receitas.length > 0 && (
+                    <Section title="Receitas" icon={<UtensilsCrossed className="h-3.5 w-3.5" />}>
+                      {data!.receitas.map((r) => (
+                        <ResultItem key={`r-${r.id}`} r={r} onClick={() => goRota(r.rota)} />
+                      ))}
+                    </Section>
+                  )}
+                  {data!.videos.length > 0 && (
+                    <Section title="Vídeos" icon={<VideoIcon className="h-3.5 w-3.5" />}>
+                      {data!.videos.map((r) => (
+                        <ResultItem key={`v-${r.id}`} r={r} onClick={() => goRota(r.rota)} />
+                      ))}
+                    </Section>
+                  )}
+                  {data!.artigos.length > 0 && (
+                    <Section title="Artigos" icon={<FileText className="h-3.5 w-3.5" />}>
+                      {data!.artigos.map((r) => (
+                        <ResultItem key={`a-${r.id}`} r={r} onClick={() => goRota(r.rota)} />
+                      ))}
+                    </Section>
+                  )}
+                  {totalResults > 0 && (
+                    <button
+                      onClick={goAll}
+                      className="w-full px-4 py-3 text-sm font-medium text-primary hover:bg-muted/50 border-t border-border"
+                    >
+                      Ver todos os resultados
+                    </button>
+                  )}
+                </>
               )}
-              {data!.videos.length > 0 && (
-                <Section title="Vídeos" icon={<VideoIcon className="h-3.5 w-3.5" />}>
-                  {data!.videos.map((v: any) => (
-                    <ResultItem
-                      key={v.video_id}
-                      title={v.novo_titulo || "Sem título"}
-                      subtitle={v.mini_resumo}
-                      onClick={() => {
-                        navigate(`/video/${slugify(v.novo_titulo || "video")}`, {
-                          state: { videoId: v.video_id },
-                        });
-                        close();
-                      }}
-                    />
-                  ))}
-                </Section>
-              )}
-              {data!.artigos.length > 0 && (
-                <Section title="Artigos" icon={<FileText className="h-3.5 w-3.5" />}>
-                  {data!.artigos.map((a: any) => (
-                    <ResultItem
-                      key={a.id}
-                      title={a.title}
-                      subtitle={a.meta_description}
-                      image={a.image_url}
-                      onClick={() => {
-                        navigate(`/blog/${a.link_do_artigo || a.id}`);
-                        close();
-                      }}
-                    />
-                  ))}
-                </Section>
-              )}
+
+              {/* Perguntar à Akasha — sempre presente */}
               <button
-                onClick={goAll}
-                className="w-full px-4 py-3 text-sm font-medium text-primary hover:bg-muted/50 border-t border-border"
+                onClick={askAkasha}
+                className="w-full flex items-center gap-2 px-4 py-3 text-sm font-medium text-akasha hover:bg-akasha/10 border-t border-border text-left"
               >
-                Ver todos os resultados
+                <Sparkles className="h-4 w-4 shrink-0" />
+                <span className="truncate">
+                  Perguntar à Akasha: <span className="italic">"{debounced}"</span>
+                </span>
               </button>
             </div>
           )}
@@ -227,25 +230,15 @@ const Section = ({
   </div>
 );
 
-const ResultItem = ({
-  title,
-  subtitle,
-  image,
-  onClick,
-}: {
-  title: string;
-  subtitle?: string | null;
-  image?: string | null;
-  onClick: () => void;
-}) => (
+const ResultItem = ({ r, onClick }: { r: Resultado; onClick: () => void }) => (
   <button
     type="button"
     onClick={onClick}
     className="w-full flex items-center gap-3 px-3 py-2 hover:bg-muted/50 transition-colors text-left"
   >
-    {image ? (
+    {r.imagem ? (
       <img
-        src={getTransformedImageUrl(image)}
+        src={getTransformedImageUrl(r.imagem)}
         alt=""
         className="w-10 h-10 rounded-md object-cover shrink-0 bg-muted"
         loading="lazy"
@@ -254,9 +247,9 @@ const ResultItem = ({
       <div className="w-10 h-10 rounded-md bg-muted shrink-0" />
     )}
     <div className="flex-1 min-w-0">
-      <p className="text-sm font-medium text-foreground line-clamp-1">{title}</p>
-      {subtitle && (
-        <p className="text-xs text-muted-foreground line-clamp-1">{subtitle}</p>
+      <p className="text-sm font-medium text-foreground line-clamp-1">{r.titulo || "Sem título"}</p>
+      {r.subtitulo && (
+        <p className="text-xs text-muted-foreground line-clamp-1">{r.subtitulo}</p>
       )}
     </div>
   </button>
