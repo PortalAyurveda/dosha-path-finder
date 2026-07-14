@@ -595,12 +595,6 @@ const LoggedHero = () => {
                           >
                             abrir minha rotina <ArrowRight className="h-4 w-4" />
                           </Link>
-                            to={nug ? `/minha-rotina?item=${encodeURIComponent(nug.id)}` : "/minha-rotina"}
-                            className="inline-flex items-center gap-1.5 text-sm font-semibold w-fit"
-                            style={{ color: C.primary }}
-                          >
-                            abrir minha rotina <ArrowRight className="h-4 w-4" />
-                          </Link>
                         </>
                       ) : (
                         <>
