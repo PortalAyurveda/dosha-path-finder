@@ -1061,31 +1061,180 @@ const RotinaSlotCard = ({
   const dg = nj.dravya_guna ?? {};
   const tsSec = parseTimestamp(nugget?.video_timestamp ?? null);
 
-  return (
-    <Card
-      ref={cardRef}
-      className={cn(
-        "overflow-hidden transition-shadow duration-500",
-        ringOn && "ring-2 ring-primary ring-offset-2 ring-offset-background"
+  const detalhes = nugget ? (
+    <div className="space-y-4 text-sm text-foreground">
+      {nugget.imagem_url && (
+        <img
+          src={nugget.imagem_url}
+          alt={nugget.titulo}
+          loading="lazy"
+          className="float-right ml-4 mb-2 w-32 sm:w-40 aspect-square object-cover rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm shadow-sm"
+        />
       )}
-    >
-      <Collapsible open={open} onOpenChange={setOpen}>
-        {compact ? (
-          <div className="relative">
-            <button
-              onClick={onToggleFeito}
-              disabled={!row}
-              className="absolute top-2 right-2 z-10 p-1.5 rounded-full bg-background/80 backdrop-blur hover:bg-muted disabled:opacity-40"
-              aria-label="marcar como praticado"
-            >
-              <Star
-                className={cn(
-                  "h-5 w-5",
-                  feito ? "fill-secondary text-secondary" : "text-muted-foreground"
-                )}
-              />
-            </button>
-            <CollapsibleTrigger asChild>
+      {nj.resumo && (
+        <p className="text-muted-foreground leading-relaxed">{nj.resumo}</p>
+      )}
+
+      {nj.ingredientes && nj.ingredientes.length > 0 && (
+        <div>
+          <h4 className="font-semibold mb-1">Ingredientes</h4>
+          <ul className="list-disc pl-5 space-y-0.5 text-muted-foreground">
+            {nj.ingredientes.map((i, idx) => (
+              <li key={idx}>{[i.qtd, i.item].filter(Boolean).join(" ")}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {nj.modo_preparo && nj.modo_preparo.length > 0 && (
+        <div>
+          <h4 className="font-semibold mb-1">Modo de preparo</h4>
+          <ol className="list-decimal pl-5 space-y-1 text-muted-foreground">
+            {nj.modo_preparo.map((p, idx) => (
+              <li key={idx}>{p}</li>
+            ))}
+          </ol>
+        </div>
+      )}
+
+      {nj.dicas && (
+        <div>
+          <h4 className="font-semibold mb-1">Dicas</h4>
+          <p className="text-muted-foreground">{nj.dicas}</p>
+        </div>
+      )}
+
+      {nj.efeito_esperado && (
+        <div>
+          <h4 className="font-semibold mb-1">Efeito esperado</h4>
+          <p className="text-muted-foreground">{nj.efeito_esperado}</p>
+        </div>
+      )}
+
+      <div className="clear-both flex flex-wrap items-center gap-2">
+        {nugget.video_id && (
+          <Button
+            type="button"
+            variant="secondary"
+            size="sm"
+            onClick={() => setVideoOpen(true)}
+            className="gap-2"
+          >
+            <Play className="h-4 w-4" />
+            ver o prof. ensinar
+          </Button>
+        )}
+        {row && (
+          <Button
+            type="button"
+            variant={feito ? "default" : "outline"}
+            size="sm"
+            onClick={onToggleFeito}
+            className="gap-2"
+          >
+            <Star className={cn("h-4 w-4", feito && "fill-current")} />
+            {feito ? "praticado hoje" : "marcar como praticado"}
+          </Button>
+        )}
+      </div>
+
+      {/* Camada 2 */}
+      <Collapsible open={porqueOpen} onOpenChange={setPorqueOpen}>
+        <CollapsibleTrigger asChild>
+          <button className="flex items-center gap-1.5 text-sm font-medium text-primary hover:underline">
+            por que funciona
+            <ChevronDown
+              className={cn(
+                "h-4 w-4 transition-transform",
+                porqueOpen && "rotate-180"
+              )}
+            />
+          </button>
+        </CollapsibleTrigger>
+        <CollapsibleContent className="pt-3 space-y-2 text-sm text-muted-foreground">
+          {dg.rasa && dg.rasa.length > 0 && (
+            <p>
+              <span className="font-medium text-foreground">Sabores:</span>{" "}
+              {dg.rasa.join(", ")}
+            </p>
+          )}
+          <p className="leading-relaxed">
+            {dg.virya && (
+              <>
+                <span className="font-medium text-foreground">Potência:</span>{" "}
+                {dg.virya}
+                {" · "}
+              </>
+            )}
+            {dg.gunas && dg.gunas.length > 0 && (
+              <>
+                <span className="font-medium text-foreground">Qualidades:</span>{" "}
+                {dg.gunas.join("/")}
+                {" · "}
+              </>
+            )}
+            {dg.karma && dg.karma.length > 0 && (
+              <>
+                <span className="font-medium text-foreground">Ações:</span>{" "}
+                {dg.karma.join("/")}
+                {" · "}
+              </>
+            )}
+            {dg.efeito_tecidos && (
+              <>
+                <span className="font-medium text-foreground">
+                  Efeito nos tecidos:
+                </span>{" "}
+                {dg.efeito_tecidos}
+              </>
+            )}
+          </p>
+          <p>
+            <span className="font-medium text-foreground">Efeito nos doshas:</span>{" "}
+            Vata {formatScore(nugget.vata)} · Pitta {formatScore(nugget.pitta)} ·
+            Kapha {formatScore(nugget.kapha)}
+          </p>
+        </CollapsibleContent>
+      </Collapsible>
+    </div>
+  ) : null;
+
+  const videoDialog = nugget?.video_id ? (
+    <VideoPlayerDialog
+      open={videoOpen}
+      onOpenChange={setVideoOpen}
+      videoId={nugget.video_id}
+      title={nugget.titulo}
+      description={nj.resumo ?? ""}
+      initialSeconds={tsSec}
+    />
+  ) : null;
+
+  if (compact) {
+    return (
+      <>
+        <Card
+          ref={cardRef}
+          className={cn(
+            "overflow-hidden transition-shadow duration-500 relative",
+            ringOn && "ring-2 ring-primary ring-offset-2 ring-offset-background"
+          )}
+        >
+          <button
+            onClick={onToggleFeito}
+            disabled={!row}
+            className="absolute top-2 right-2 z-10 p-1.5 rounded-full bg-background/80 backdrop-blur hover:bg-muted disabled:opacity-40"
+            aria-label="marcar como praticado"
+          >
+            <Star
+              className={cn(
+                "h-5 w-5",
+                feito ? "fill-secondary text-secondary" : "text-muted-foreground"
+              )}
+            />
+          </button>
+          <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>
               <button className="w-full text-left">
                 <div className="aspect-[4/3] w-full bg-muted overflow-hidden">
                   {nugget?.imagem_url ? (
@@ -1120,203 +1269,86 @@ const RotinaSlotCard = ({
                   )}
                 </div>
               </button>
-            </CollapsibleTrigger>
-          </div>
-        ) : (
-          <div className="flex items-center gap-3 p-4">
-            <div className="h-10 w-10 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0">
-              <IconCmp className="h-5 w-5" />
-            </div>
-
-            <CollapsibleTrigger asChild>
-              <button className="flex-1 text-left min-w-0">
-                <div className="text-[11px] uppercase tracking-wider text-muted-foreground">
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
                   {slotLabel}
                 </div>
-                <div className="flex items-center gap-1.5 min-w-0">
-                  <span className="font-medium text-foreground truncate">
-                    {nugget?.titulo ?? "—"}
-                  </span>
+                <DialogTitle className="font-serif text-2xl leading-tight flex items-center gap-2">
+                  {nugget?.titulo ?? "—"}
                   {mostrarChama && (
-                    <Flame
-                      className="h-4 w-4 text-secondary shrink-0"
-                      aria-label="bom para o seu agni"
-                    />
+                    <Flame className="h-5 w-5 text-secondary shrink-0" aria-label="bom para o seu agni" />
                   )}
-                </div>
-              </button>
-            </CollapsibleTrigger>
+                </DialogTitle>
+              </DialogHeader>
+              {detalhes}
+            </DialogContent>
+          </Dialog>
+        </Card>
+        {videoDialog}
+      </>
+    );
+  }
 
-            <button
-              onClick={onToggleFeito}
-              disabled={!row}
-              className="p-2 rounded-full hover:bg-muted disabled:opacity-40"
-              aria-label="marcar como praticado"
-            >
-              <Star
-                className={cn(
-                  "h-7 w-7",
-                  feito
-                    ? "fill-secondary text-secondary"
-                    : "text-muted-foreground"
-                )}
-              />
-            </button>
+  return (
+    <Card
+      ref={cardRef}
+      className={cn(
+        "overflow-hidden transition-shadow duration-500",
+        ringOn && "ring-2 ring-primary ring-offset-2 ring-offset-background"
+      )}
+    >
+      <Collapsible open={open} onOpenChange={setOpen}>
+        <div className="flex items-center gap-3 p-4">
+          <div className="h-10 w-10 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0">
+            <IconCmp className="h-5 w-5" />
           </div>
-        )}
+
+          <CollapsibleTrigger asChild>
+            <button className="flex-1 text-left min-w-0">
+              <div className="text-[11px] uppercase tracking-wider text-muted-foreground">
+                {slotLabel}
+              </div>
+              <div className="flex items-center gap-1.5 min-w-0">
+                <span className="font-medium text-foreground truncate">
+                  {nugget?.titulo ?? "—"}
+                </span>
+                {mostrarChama && (
+                  <Flame
+                    className="h-4 w-4 text-secondary shrink-0"
+                    aria-label="bom para o seu agni"
+                  />
+                )}
+              </div>
+            </button>
+          </CollapsibleTrigger>
+
+          <button
+            onClick={onToggleFeito}
+            disabled={!row}
+            className="p-2 rounded-full hover:bg-muted disabled:opacity-40"
+            aria-label="marcar como praticado"
+          >
+            <Star
+              className={cn(
+                "h-7 w-7",
+                feito ? "fill-secondary text-secondary" : "text-muted-foreground"
+              )}
+            />
+          </button>
+        </div>
 
         <CollapsibleContent>
           {nugget && (
-            <div className="px-4 pb-4 border-t border-border pt-4 space-y-4 text-sm text-foreground">
-              {nugget.imagem_url && (
-                <img
-                  src={nugget.imagem_url}
-                  alt={nugget.titulo}
-                  loading="lazy"
-                  className="float-right ml-4 mb-2 w-32 sm:w-40 aspect-square object-cover rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm shadow-sm"
-                />
-              )}
-              {nj.resumo && (
-                <p className="text-muted-foreground leading-relaxed">
-                  {nj.resumo}
-                </p>
-              )}
-
-              {nj.ingredientes && nj.ingredientes.length > 0 && (
-                <div>
-                  <h4 className="font-semibold mb-1">Ingredientes</h4>
-                  <ul className="list-disc pl-5 space-y-0.5 text-muted-foreground">
-                    {nj.ingredientes.map((i, idx) => (
-                      <li key={idx}>
-                        {[i.qtd, i.item].filter(Boolean).join(" ")}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {nj.modo_preparo && nj.modo_preparo.length > 0 && (
-                <div>
-                  <h4 className="font-semibold mb-1">Modo de preparo</h4>
-                  <ol className="list-decimal pl-5 space-y-1 text-muted-foreground">
-                    {nj.modo_preparo.map((p, idx) => (
-                      <li key={idx}>{p}</li>
-                    ))}
-                  </ol>
-                </div>
-              )}
-
-              {nj.dicas && (
-                <div>
-                  <h4 className="font-semibold mb-1">Dicas</h4>
-                  <p className="text-muted-foreground">{nj.dicas}</p>
-                </div>
-              )}
-
-              {nj.efeito_esperado && (
-                <div>
-                  <h4 className="font-semibold mb-1">Efeito esperado</h4>
-                  <p className="text-muted-foreground">{nj.efeito_esperado}</p>
-                </div>
-              )}
-
-              {nugget.video_id && (
-                <Button
-                  type="button"
-                  variant="secondary"
-                  size="sm"
-                  onClick={() => setVideoOpen(true)}
-                  className="gap-2"
-                >
-                  <Play className="h-4 w-4" />
-                  ver o prof. ensinar
-                </Button>
-              )}
-
-              {/* Camada 2 */}
-              <Collapsible open={porqueOpen} onOpenChange={setPorqueOpen}>
-                <CollapsibleTrigger asChild>
-                  <button className="flex items-center gap-1.5 text-sm font-medium text-primary hover:underline">
-                    por que funciona
-                    <ChevronDown
-                      className={cn(
-                        "h-4 w-4 transition-transform",
-                        porqueOpen && "rotate-180"
-                      )}
-                    />
-                  </button>
-                </CollapsibleTrigger>
-                <CollapsibleContent className="pt-3 space-y-2 text-sm text-muted-foreground">
-                  {dg.rasa && dg.rasa.length > 0 && (
-                    <p>
-                      <span className="font-medium text-foreground">
-                        Sabores:
-                      </span>{" "}
-                      {dg.rasa.join(", ")}
-                    </p>
-                  )}
-                  <p className="leading-relaxed">
-                    {dg.virya && (
-                      <>
-                        <span className="font-medium text-foreground">
-                          Potência:
-                        </span>{" "}
-                        {dg.virya}
-                        {" · "}
-                      </>
-                    )}
-                    {dg.gunas && dg.gunas.length > 0 && (
-                      <>
-                        <span className="font-medium text-foreground">
-                          Qualidades:
-                        </span>{" "}
-                        {dg.gunas.join("/")}
-                        {" · "}
-                      </>
-                    )}
-                    {dg.karma && dg.karma.length > 0 && (
-                      <>
-                        <span className="font-medium text-foreground">
-                          Ações:
-                        </span>{" "}
-                        {dg.karma.join("/")}
-                        {" · "}
-                      </>
-                    )}
-                    {dg.efeito_tecidos && (
-                      <>
-                        <span className="font-medium text-foreground">
-                          Efeito nos tecidos:
-                        </span>{" "}
-                        {dg.efeito_tecidos}
-                      </>
-                    )}
-                  </p>
-                  <p>
-                    <span className="font-medium text-foreground">
-                      Efeito nos doshas:
-                    </span>{" "}
-                    Vata {formatScore(nugget.vata)} · Pitta{" "}
-                    {formatScore(nugget.pitta)} · Kapha{" "}
-                    {formatScore(nugget.kapha)}
-                  </p>
-                </CollapsibleContent>
-              </Collapsible>
+            <div className="px-4 pb-4 border-t border-border pt-4">
+              {detalhes}
             </div>
           )}
         </CollapsibleContent>
       </Collapsible>
 
-      {nugget?.video_id && (
-        <VideoPlayerDialog
-          open={videoOpen}
-          onOpenChange={setVideoOpen}
-          videoId={nugget.video_id}
-          title={nugget.titulo}
-          description={nj.resumo ?? ""}
-          initialSeconds={tsSec}
-        />
-      )}
+      {videoDialog}
     </Card>
   );
 };
