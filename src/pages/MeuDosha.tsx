@@ -863,6 +863,8 @@ const MeuDosha = () => {
 
         {!isVisitor && <MinhaCaminhadaSection />}
 
+        {!isVisitor && <PraVoceRail doshaPrincipal={result?.doshaprincipal} />}
+
 
 
 
