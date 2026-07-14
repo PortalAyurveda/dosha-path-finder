@@ -241,6 +241,8 @@ const BlogArticle = () => {
           <span className="text-sm text-muted-foreground">Isso te fez bem?</span>
           <HeartButton contentType="artigo" contentId={article.id} />
         </div>
+
+        <BannerSlot slot="blog_fim" className="[&:empty]:hidden mt-6" />
       </article>
     </>
   );
