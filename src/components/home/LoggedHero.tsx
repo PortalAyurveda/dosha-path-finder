@@ -102,6 +102,91 @@ const ObjetivosRow = ({ objetivos }: { objetivos: Objetivo[] }) => (
   </div>
 );
 
+// Miniatura decorativa "ficha de receita" — só desktop (lg+)
+const RecipeMiniThumb = ({
+  nug,
+  IconEl,
+}: {
+  nug: any;
+  IconEl: React.ComponentType<{ className?: string; style?: React.CSSProperties }> | null;
+}) => {
+  const ingredientes: { qtd?: string; item?: string }[] =
+    Array.isArray(nug?.nugget_json?.ingredientes) ? nug.nugget_json.ingredientes : [];
+  const primeiros = ingredientes.slice(0, 3);
+
+  return (
+    <div
+      aria-hidden
+      className="hidden lg:block shrink-0 self-center relative overflow-hidden select-none pointer-events-none"
+      style={{
+        width: 130,
+        height: 150,
+        background: "#FDFBF5",
+        border: "1px solid rgba(53,47,84,0.08)",
+        boxShadow: "0 8px 22px -12px rgba(53,47,84,0.25)",
+        transform: "rotate(-2deg)",
+        ...LEAF_RADIUS_SM,
+      }}
+    >
+      {nug?.imagem_url ? (
+        <img
+          src={nug.imagem_url}
+          alt=""
+          className="absolute inset-0 w-full h-full object-cover"
+          loading="lazy"
+        />
+      ) : (
+        <div className="p-2.5 h-full flex flex-col">
+          <div className="flex items-center gap-1.5 mb-1">
+            {IconEl ? (
+              <IconEl className="h-3 w-3" style={{ color: C.primary }} />
+            ) : (
+              <Leaf className="h-3 w-3" style={{ color: C.primary }} />
+            )}
+            <div
+              className="h-px flex-1"
+              style={{ background: "rgba(53,47,84,0.15)" }}
+            />
+          </div>
+          <p
+            className="font-serif font-bold leading-tight line-clamp-2"
+            style={{ color: C.primary, fontSize: 10 }}
+          >
+            {nug?.titulo || "Receita"}
+          </p>
+          <ul
+            className="mt-1.5 space-y-0.5 flex-1"
+            style={{ color: "rgba(53,47,84,0.75)", fontSize: 8, lineHeight: 1.35 }}
+          >
+            {primeiros.length > 0 ? (
+              primeiros.map((i, idx) => (
+                <li key={idx} className="truncate">
+                  • {i.qtd ? `${i.qtd} ` : ""}{i.item || ""}
+                </li>
+              ))
+            ) : (
+              <>
+                <li className="truncate">• ingrediente 1</li>
+                <li className="truncate">• ingrediente 2</li>
+                <li className="truncate">• ingrediente 3</li>
+              </>
+            )}
+          </ul>
+          {/* fade prévia de página */}
+          <div
+            className="absolute left-0 right-0 bottom-0 h-10 pointer-events-none"
+            style={{
+              background: "linear-gradient(to bottom, rgba(253,251,245,0) 0%, #FDFBF5 90%)",
+            }}
+          />
+        </div>
+      )}
+    </div>
+  );
+};
+
+
+
 
 
 const PIE_COLORS: Record<string, string> = {
