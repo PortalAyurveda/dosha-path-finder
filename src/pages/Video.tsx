@@ -188,7 +188,7 @@ const Video = () => {
     });
   }, [video?.texto_para_embedding, video?.nova_descricao, video?.mini_resumo]);
 
-  const tagList = parseTags(video?.tags ?? null);
+  
 
   const iframeSrc = videoId
     ? startSeconds !== null
