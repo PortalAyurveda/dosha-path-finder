@@ -30,6 +30,7 @@ interface AkashaTabProps {
   agniPrincipal: string | null;
   conhecimentoAyurveda: string | null;
   email?: string | null;
+  initialPergunta?: string;
 }
 
 interface ChatMessage {
