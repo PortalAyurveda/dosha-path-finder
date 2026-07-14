@@ -28,6 +28,7 @@ const LaunchPage = lazy(() => import("./pages/LaunchPage"));
 const PreviewLoading = lazy(() => import("./pages/PreviewLoading"));
 const TesteDeDosha = lazy(() => import("./pages/TesteDeDosha"));
 const MeuDosha = lazy(() => import("./pages/MeuDosha"));
+const MeuPerfil = lazy(() => import("./pages/MeuPerfil"));
 const Biblioteca = lazy(() => import("./pages/Biblioteca"));
 const CursoAlimentacao = lazy(() => import("./pages/curso/Alimentacao"));
 const CursoFormacao = lazy(() => import("./pages/curso/Formacao"));
@@ -150,6 +151,7 @@ const RoutedApp = () => {
               <Route path="/preview-loading" element={<PreviewLoading />} />
               <Route path="/teste-de-dosha" element={<TesteDeDosha />} />
               <Route path="/meu-dosha" element={<MeuDosha />} />
+              <Route path="/meu-perfil" element={<MeuPerfil />} />
               <Route path="/minha-rotina" element={<MinhaRotina />} />
               <Route path="/biblioteca" element={<Biblioteca />} />
               <Route path="/cursos" element={<Navigate to="/curso/alimentacao" replace />} />
