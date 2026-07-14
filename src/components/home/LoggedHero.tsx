@@ -129,12 +129,24 @@ const RecipeCard = ({
       }}
     >
       {nug?.imagem_url && !isBack ? (
-        <img
-          src={nug.imagem_url}
-          alt=""
-          className="absolute inset-0 w-full h-full object-cover"
-          loading="lazy"
-        />
+        <div className="h-full w-full flex flex-col">
+          <div className="w-full overflow-hidden" style={{ aspectRatio: "4 / 3" }}>
+            <img
+              src={nug.imagem_url}
+              alt={nug?.titulo || ""}
+              className="w-full h-full object-cover"
+              loading="lazy"
+            />
+          </div>
+          <div className="px-2 py-1.5 flex-1 flex items-center">
+            <p
+              className="font-serif font-bold leading-tight line-clamp-2"
+              style={{ color: C.primary, fontSize: 10 }}
+            >
+              {nug?.titulo || "Receita"}
+            </p>
+          </div>
+        </div>
       ) : (
         <div className="p-2.5 h-full flex flex-col">
           <div className="flex items-center gap-1.5 mb-1">
@@ -576,16 +588,6 @@ const LoggedHero = () => {
                               Os cuidados personalizados desenhados para o seu momento.
                             </p>
                           )}
-                          {nug?.imagem_url ? (
-                            <div className="lg:mr-40">
-                              <img
-                                src={nug.imagem_url}
-                                alt={nug.titulo}
-                                loading="lazy"
-                                className="w-full aspect-[16/9] object-cover rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm"
-                              />
-                            </div>
-                          ) : null}
                           <Link
                             to={nug ? `/minha-rotina?item=${encodeURIComponent(nug.id)}` : "/minha-rotina"}
                             className="inline-flex items-center gap-1.5 text-sm font-semibold w-fit"
