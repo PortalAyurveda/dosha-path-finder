@@ -15,6 +15,7 @@ interface UserProfile {
   subscription_status: string | null;
   premium_until: string | null;
   created_at: string;
+  avatar_url?: string | null;
 }
 
 type UserRole = 'admin' | 'user' | null;
