@@ -1188,6 +1188,8 @@ const MeuDosha = () => {
             />
           </TabsContent>
         </Tabs>
+
+        {!isVisitor && <PraVoceRail doshaPrincipal={result?.doshaprincipal} />}
       </div>
       <EvolucaoSheet open={evolucaoOpen} onOpenChange={setEvolucaoOpen} registroUuid={registroUuid} />
     </PageContainer>
