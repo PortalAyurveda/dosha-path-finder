@@ -155,7 +155,7 @@ const MundoQueSeAbre = () => {
           className="text-[13px] leading-snug font-semibold"
           style={{ color: C.primary, fontFamily: SERIF }}
         >
-          E a Akasha — a inteligência que estudou tudo isso — pronta para te responder depois do teste.
+          E a Akasha — a inteligência que estudou tudo isso e está pronta para te guiar durante toda a jornada.
         </p>
       </div>
     </div>
