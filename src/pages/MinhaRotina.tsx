@@ -656,7 +656,7 @@ const MinhaRotina = () => {
           <h2 className="text-xs uppercase tracking-wider text-muted-foreground font-semibold mb-2">
             Sua rotina
           </h2>
-          <div className="space-y-3">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
             {MEAL_SLOTS.map((s) => {
               const row = rowBySlot.get(s.slot);
               const nugget = row?.nugget_id ? nuggetsById.get(row.nugget_id) : undefined;
@@ -670,6 +670,7 @@ const MinhaRotina = () => {
                   agniFracoOuIrregular={agniFracoOuIrregular}
                   onToggleFeito={() => row && toggleFeito(row)}
                   focus={!!nugget && nugget.id === focusNuggetId}
+                  compact
                 />
               );
             })}
