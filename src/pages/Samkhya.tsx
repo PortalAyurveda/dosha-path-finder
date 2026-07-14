@@ -13,6 +13,7 @@ import CarouselSection from "@/components/samkhya/CarouselSection";
 import MinimalProductCard from "@/components/samkhya/MinimalProductCard";
 import KitCard from "@/components/samkhya/KitCard";
 import { samkhyaTokens } from "@/components/samkhya/tokens";
+import BannerSlot from "@/components/banners/BannerSlot";
 
 const DESTAQUES_SLUGS = ["tonico-forca", "panaceia-desidratada", "madhu-vata"];
 
@@ -140,6 +141,7 @@ const Samkhya = () => {
       </Helmet>
 
       <SamkhyaLayout showHero>
+        <BannerSlot slot="samkhya_home" className="[&:empty]:hidden mb-6" />
         {loading ? (
           <>
             <div className="text-center py-10">

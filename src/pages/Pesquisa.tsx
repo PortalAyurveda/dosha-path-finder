@@ -8,6 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import PageContainer from "@/components/PageContainer";
 import Seo from "@/components/Seo";
 import { getTransformedImageUrl } from "@/lib/imageTransform";
+import BannerSlot from "@/components/banners/BannerSlot";
 
 type Tipo = "video" | "receita" | "artigo" | "produto";
 interface Resultado {
@@ -147,6 +148,8 @@ const Pesquisa = () => {
               <Sparkles className="h-5 w-5" />
               Perguntar à Akasha: <span className="italic">"{debounced}"</span>
             </button>
+
+            <BannerSlot slot="pesquisa_pos" className="[&:empty]:hidden" />
           </div>
         )}
       </div>
