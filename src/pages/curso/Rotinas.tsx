@@ -33,7 +33,10 @@ import {
 //   Salmão (CTA): #ff7676
 // ============================================================
 
-const HOTMART = "https://pay.hotmart.com/F101182057Y";
+// A oferta externa do curso (Hotmart) foi descontinuada. Os cursos passam a
+// nascer dentro do portal — enquanto isso, os CTAs levam para a escada oficial
+// de assinaturas em /assinar.
+const INTERNAL_CTA = "/assinar";
 const LOGO =
   "https://api.portalayurveda.com/storage/v1/object/public/portal_images/lg-rotinas-extenso.svg";
 const HERO_IMG =
@@ -47,7 +50,7 @@ const SALMON = "#ff7676";
 // ---------------- BOTÃO BASE (Forma de Folha) ----------------
 const LeafCTA = ({
   children,
-  href = HOTMART,
+  href = INTERNAL_CTA,
   variant = "yellow",
   className = "",
 }: {
@@ -62,11 +65,13 @@ const LeafCTA = ({
     variant === "navy"
       ? "bg-[#1a2347] text-[#f2cb05] hover:bg-[#1a2347]/90"
       : "bg-[#f2cb05] text-[#1a2347] hover:bg-[#f2cb05]/90";
+  // Âncoras internas (#algo) continuam como <a>. Rotas do portal e o fallback
+  // usam navegação normal — sem target=_blank pra não perder o usuário.
+  const isHash = href.startsWith("#");
   return (
     <a
       href={href}
-      target="_blank"
-      rel="noopener noreferrer"
+      {...(isHash ? {} : { rel: "noopener" })}
       className={`${base} ${styles} ${className}`}
     >
       {children}
@@ -702,13 +707,14 @@ const Investimento = () => (
 
         <div className="pt-6 border-t border-[#1a2347]/15 text-center">
           <p className="font-serif italic font-bold text-2xl md:text-3xl mb-2 text-[#1a2347]">
-            12x de R$ 9,68
+            Nova versão em breve
           </p>
           <p className="text-sm md:text-base text-[#1a2347]/70 mb-6">
-            ou <strong className="text-[#1a2347]">R$ 97,00</strong> à vista
+            Estamos trazendo este curso pra dentro do Portal Ayurveda.
+            Enquanto isso, comece pela <strong className="text-[#1a2347]">Rotina Personalizada</strong>.
           </p>
-          <LeafCTA className="!px-8 md:!px-10 !py-4 !text-sm">
-            Quero assumir o controle agora
+          <LeafCTA href="/assinar" className="!px-8 md:!px-10 !py-4 !text-sm">
+            Conhecer a Rotina Personalizada
           </LeafCTA>
         </div>
       </motion.div>
