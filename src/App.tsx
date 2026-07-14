@@ -77,6 +77,7 @@ const AdminCursos = lazy(() => import("./pages/AdminCursos"));
 const EscolaAluno = lazy(() => import("./pages/escola/EscolaAluno"));
 const EscolaAlunoModulos = lazy(() => import("./pages/escola/EscolaAlunoModulos"));
 const EscolaAlunoModulo = lazy(() => import("./pages/escola/EscolaAlunoModulo"));
+const EscolaAlunoAula = lazy(() => import("./pages/escola/EscolaAlunoAula"));
 
 const AulaDispatcher = lazy(() => import("./pages/AulaDispatcher"));
 const WebinarConfirmado = lazy(() => import("./pages/WebinarConfirmado"));
