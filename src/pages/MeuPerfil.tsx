@@ -10,13 +10,14 @@ import {
   ExternalLink,
   ShoppingBag,
   BookOpen,
-  Sparkles,
   GraduationCap,
   ChevronRight,
+  ChevronDown,
+  User as UserIcon,
+  CreditCard,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/contexts/UserContext";
-import { useEscolaAluno } from "@/hooks/useEscolaAluno";
 import { optimizeImageToWebP } from "@/lib/imageOptimize";
 import PageContainer from "@/components/PageContainer";
 import { Button } from "@/components/ui/button";
@@ -61,6 +62,15 @@ const formatDataExtenso = (iso: string | null | undefined) => {
   return `${d.getDate()} de ${MESES[d.getMonth()]} de ${d.getFullYear()}`;
 };
 
+const formatDataCurta = (iso: string | null | undefined) => {
+  if (!iso) return null;
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return null;
+  const dd = String(d.getDate()).padStart(2, "0");
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  return `${dd}/${mm}`;
+};
+
 const formatMoeda = (v: number | string | null | undefined) => {
   const n = typeof v === "string" ? Number(v) : v;
   if (n == null || isNaN(Number(n))) return "—";
@@ -74,6 +84,11 @@ const iniciais = (nome?: string | null, email?: string | null) => {
   const first = parts[0]?.[0] ?? "";
   const last = parts.length > 1 ? parts[parts.length - 1][0] : "";
   return (first + last).toUpperCase() || base[0].toUpperCase();
+};
+
+const primeiroNome = (nome?: string | null) => {
+  if (!nome) return "";
+  return nome.trim().split(/\s+/)[0] || "";
 };
 
 // ---------- types ----------
@@ -115,11 +130,11 @@ type Assinatura = {
   cortesia?: boolean | null;
 } | null;
 
-
 type Matricula = {
   id: string;
   curso_id: string;
-  cursos?: { titulo: string | null } | null;
+  titulo: string | null;
+  slug: string | null;
 };
 
 type PedidoLoja = {
@@ -131,10 +146,19 @@ type PedidoLoja = {
   rastreio?: string | null;
 };
 
+type HomePayload = {
+  ok?: boolean;
+  perfil: PerfilRow;
+  stats: Stats;
+  assinatura: Assinatura;
+  matriculas: Matricula[];
+  pedidos: PedidoLoja[];
+  escola: boolean;
+};
+
 // ---------- page ----------
 const MeuPerfil = () => {
   const { user, loading: authLoading, doshaResult, refreshProfile } = useUser();
-  const { aluno } = useEscolaAluno();
 
   if (!authLoading && !user) {
     return <Navigate to="/entrar?redirect=/meu-perfil" replace />;
@@ -152,7 +176,12 @@ const MeuPerfil = () => {
           <Skeleton className="h-32 w-full rounded-2xl" />
         </div>
       ) : (
-        <Conteudo userId={user.id} email={user.email ?? ""} doshaNome={doshaResult?.doshaprincipal ?? null} alunoAprovado={!!aluno} refreshProfile={refreshProfile} />
+        <Conteudo
+          userId={user.id}
+          email={user.email ?? ""}
+          doshaNome={doshaResult?.doshaprincipal ?? null}
+          refreshProfile={refreshProfile}
+        />
       )}
     </PageContainer>
   );
@@ -167,17 +196,64 @@ const Card = ({ children, className = "" }: { children: React.ReactNode; classNa
   </section>
 );
 
+// ---------- Accordion ----------
+type AccordionKey = "dados" | "assinatura" | "cursos" | "pedidos" | "escola";
+
+const AccordionCard = ({
+  id,
+  icon,
+  title,
+  resumo,
+  open,
+  onToggle,
+  children,
+  className = "",
+}: {
+  id: AccordionKey;
+  icon: React.ReactNode;
+  title: string;
+  resumo: string;
+  open: boolean;
+  onToggle: (id: AccordionKey) => void;
+  children: React.ReactNode;
+  className?: string;
+}) => (
+  <section
+    className={`bg-white border border-border/60 rounded-[28px] shadow-sm overflow-hidden ${className}`}
+    style={{ borderRadius: "28px 28px 22px 22px" }}
+  >
+    <button
+      type="button"
+      onClick={() => onToggle(id)}
+      className="w-full flex items-center gap-3 px-6 md:px-8 py-4 md:py-5 text-left hover:bg-muted/30 transition-colors"
+      aria-expanded={open}
+    >
+      <span className="text-primary shrink-0">{icon}</span>
+      <span className="font-serif font-semibold text-foreground shrink-0">{title}</span>
+      <span className="hidden md:block text-sm text-muted-foreground truncate flex-1 text-right pr-2">
+        {resumo}
+      </span>
+      <ChevronDown
+        className={`h-4 w-4 text-muted-foreground shrink-0 transition-transform ${open ? "rotate-180" : ""}`}
+      />
+    </button>
+    {!open && (
+      <div className="md:hidden px-6 pb-3 -mt-2 text-xs text-muted-foreground truncate">
+        {resumo}
+      </div>
+    )}
+    {open && <div className="px-6 md:px-8 pb-6 md:pb-8 pt-1">{children}</div>}
+  </section>
+);
+
 const Conteudo = ({
   userId,
-  email,
   doshaNome,
-  alunoAprovado,
   refreshProfile,
 }: {
   userId: string;
   email: string;
   doshaNome: string | null;
-  alunoAprovado: boolean;
   refreshProfile: () => Promise<void>;
 }) => {
   const navigate = useNavigate();
@@ -186,43 +262,25 @@ const Conteudo = ({
   const [assinatura, setAssinatura] = useState<Assinatura>(null);
   const [matriculas, setMatriculas] = useState<Matricula[]>([]);
   const [pedidos, setPedidos] = useState<PedidoLoja[]>([]);
+  const [escola, setEscola] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [openKey, setOpenKey] = useState<AccordionKey | null>(null);
+
+  const toggle = (k: AccordionKey) =>
+    setOpenKey((prev) => (prev === k ? null : k));
 
   const load = async () => {
     setLoading(true);
-    const [pRes, sRes, aRes, mRes] = await Promise.all([
-      supabase
-        .from("user_profiles")
-        .select("id,nome_completo,email,telefone,cpf,endereco,avatar_url,created_at")
-        .eq("id", userId)
-        .maybeSingle(),
-      supabase.rpc("get_meu_perfil_stats"),
-      supabase.functions.invoke("gerenciar-assinatura", { body: { action: "listar" } }),
-      supabase
-        .from("curso_matriculas")
-        .select("id,curso_id,cursos(titulo)")
-        .eq("user_id", userId),
-    ]);
-
-    if (pRes.data) setPerfil(pRes.data as any);
-    if (sRes.data) setStats(sRes.data as any);
-    if (aRes.data && typeof aRes.data === "object" && "assinatura" in (aRes.data as any)) {
-      setAssinatura((aRes.data as any).assinatura ?? null);
+    const { data, error } = await supabase.rpc("get_meu_perfil_home");
+    if (!error && data) {
+      const d = data as unknown as HomePayload;
+      setPerfil(d.perfil ?? null);
+      setStats(d.stats ?? null);
+      setAssinatura(d.assinatura ?? null);
+      setMatriculas(Array.isArray(d.matriculas) ? d.matriculas : []);
+      setPedidos(Array.isArray(d.pedidos) ? d.pedidos : []);
+      setEscola(!!d.escola);
     }
-    if (mRes.data) setMatriculas(mRes.data as any);
-
-    try {
-      const { data: pedidosData } = await supabase.functions.invoke("meus-pedidos", { body: {} });
-      const arr = Array.isArray((pedidosData as any)?.pedidos)
-        ? (pedidosData as any).pedidos
-        : Array.isArray(pedidosData)
-          ? (pedidosData as any)
-          : [];
-      setPedidos(arr.slice(0, 3));
-    } catch {
-      setPedidos([]);
-    }
-
     setLoading(false);
   };
 
@@ -231,12 +289,82 @@ const Conteudo = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId]);
 
+  // Refina o card de assinatura DEPOIS da pintura, apenas para assinaturas com cobrança.
+  useEffect(() => {
+    if (loading) return;
+    if (!assinatura || assinatura.cortesia) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const { data } = await supabase.functions.invoke("gerenciar-assinatura", {
+          body: { action: "listar" },
+        });
+        if (cancelled) return;
+        if (data && typeof data === "object" && "assinatura" in (data as any)) {
+          const viva = (data as any).assinatura;
+          if (viva) setAssinatura(viva);
+        }
+      } catch {
+        /* silencioso */
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading]);
+
+  const refinarAssinatura = async () => {
+    try {
+      const { data } = await supabase.functions.invoke("gerenciar-assinatura", {
+        body: { action: "listar" },
+      });
+      if (data && typeof data === "object" && "assinatura" in (data as any)) {
+        setAssinatura((data as any).assinatura ?? null);
+      }
+    } catch {
+      /* silencioso */
+    }
+  };
+
+  // Resumos vivos
+  const dadosResumo = useMemo(() => {
+    if (!perfil) return "";
+    const nome = primeiroNome(perfil.nome_completo);
+    const cidade = perfil.endereco?.cidade;
+    const uf = perfil.endereco?.uf;
+    const local = cidade ? `${cidade}${uf ? "/" + uf : ""}` : null;
+    return [nome || "seu nome", local].filter(Boolean).join(" · ");
+  }, [perfil]);
+
+  const assinaturaResumo = useMemo(() => {
+    if (!assinatura) return "sem assinatura ativa";
+    if (assinatura.cortesia) return "cortesia da casa 🌿";
+    const p = assinatura.plano?.toLowerCase() ?? "";
+    if (p === "rotina") return "Rotina Personalizada";
+    if (p === "mensal" || p === "anual" || p === "premium") return "Premium";
+    return assinatura.plano || "ativa";
+  }, [assinatura]);
+
+  const cursosResumo = useMemo(() => {
+    if (!matriculas.length) return "nenhum curso ainda";
+    if (matriculas.length === 1) return matriculas[0].titulo || "1 curso";
+    return `${matriculas.length} cursos`;
+  }, [matriculas]);
+
+  const pedidosResumo = useMemo(() => {
+    if (!pedidos.length) return "nenhuma compra ainda";
+    const ultimo = formatDataCurta(pedidos[0].data);
+    return ultimo ? `último em ${ultimo}` : `${pedidos.length} pedidos`;
+  }, [pedidos]);
+
   if (loading || !perfil) {
     return (
       <div className="space-y-6">
         <Skeleton className="h-56 w-full rounded-2xl" />
         <Skeleton className="h-32 w-full rounded-2xl" />
-        <Skeleton className="h-40 w-full rounded-2xl" />
+        <Skeleton className="h-16 w-full rounded-2xl" />
+        <Skeleton className="h-16 w-full rounded-2xl" />
       </div>
     );
   }
@@ -254,18 +382,68 @@ const Conteudo = ({
 
       <HistoriaCard stats={stats} />
 
-      <DadosCard
-        perfil={perfil}
-        onSaved={(patch) => setPerfil((p) => (p ? { ...p, ...patch } : p))}
-      />
+      <div className="space-y-3 md:space-y-4">
+        <AccordionCard
+          id="dados"
+          icon={<UserIcon className="h-5 w-5" />}
+          title="Meus dados"
+          resumo={dadosResumo}
+          open={openKey === "dados"}
+          onToggle={toggle}
+        >
+          <DadosCard
+            perfil={perfil}
+            onSaved={(patch) => setPerfil((p) => (p ? { ...p, ...patch } : p))}
+          />
+        </AccordionCard>
 
-      <AssinaturaCard assinatura={assinatura} onChanged={load} />
+        <AccordionCard
+          id="assinatura"
+          icon={<CreditCard className="h-5 w-5" />}
+          title="Minha assinatura"
+          resumo={assinaturaResumo}
+          open={openKey === "assinatura"}
+          onToggle={toggle}
+        >
+          <AssinaturaCard assinatura={assinatura} onChanged={refinarAssinatura} />
+        </AccordionCard>
 
-      <CursosCard matriculas={matriculas} />
+        <AccordionCard
+          id="cursos"
+          icon={<BookOpen className="h-5 w-5" />}
+          title="Meus cursos"
+          resumo={cursosResumo}
+          open={openKey === "cursos"}
+          onToggle={toggle}
+        >
+          <CursosCard matriculas={matriculas} />
+        </AccordionCard>
 
-      <PedidosCard pedidos={pedidos} />
+        <AccordionCard
+          id="pedidos"
+          icon={<ShoppingBag className="h-5 w-5" />}
+          title="Meus pedidos"
+          resumo={pedidosResumo}
+          open={openKey === "pedidos"}
+          onToggle={toggle}
+        >
+          <PedidosCard pedidos={pedidos} />
+        </AccordionCard>
 
-      {alunoAprovado && <EscolaCard />}
+        {escola && (
+          <AccordionCard
+            id="escola"
+            icon={<GraduationCap className="h-5 w-5" />}
+            title="Escola"
+            resumo="Formação Ayurveda Profissionalizante"
+            open={openKey === "escola"}
+            onToggle={toggle}
+            className="border-[#FACC15]/60"
+          >
+            <EscolaCard />
+          </AccordionCard>
+        )}
+      </div>
 
       <div className="pt-2 flex justify-center">
         <Button
@@ -523,14 +701,11 @@ const DadosCard = ({
   };
 
   return (
-    <Card>
+    <div>
       <div className="flex items-start justify-between gap-4 mb-4">
-        <div>
-          <h2 className="text-xl font-serif font-semibold">Meus dados</h2>
-          <p className="text-xs text-muted-foreground mt-1">
-            Este endereço é o padrão de entrega da loja.
-          </p>
-        </div>
+        <p className="text-xs text-muted-foreground">
+          Este endereço é o padrão de entrega da loja.
+        </p>
         {!editing && (
           <Button variant="outline" size="sm" onClick={() => setEditing(true)} className="rounded-full">
             <Pencil className="h-3.5 w-3.5 mr-1.5" />
@@ -591,7 +766,7 @@ const DadosCard = ({
           </div>
         </div>
       )}
-    </Card>
+    </div>
   );
 };
 
@@ -680,187 +855,183 @@ const AssinaturaCard = ({
     }
   };
 
-  return (
-    <Card>
-      <h2 className="text-xl font-serif font-semibold mb-4">Minha assinatura</h2>
+  if (!assinatura) {
+    return (
+      <div className="text-sm text-muted-foreground">
+        Você não tem assinatura ativa.{" "}
+        <Link to="/assinar" className="text-primary hover:underline font-medium">
+          conhecer os planos
+        </Link>
+      </div>
+    );
+  }
 
-      {!assinatura ? (
-        <div className="text-sm text-muted-foreground">
-          Você não tem assinatura ativa.{" "}
+  if (assinatura.cortesia) {
+    return (
+      <div className="space-y-3">
+        <div className="text-lg font-semibold text-foreground">
+          Acesso cortesia — um presente da casa 🌿
+        </div>
+        <div className="text-sm text-muted-foreground">{planoLabel}</div>
+        <div className="text-sm">
           <Link to="/assinar" className="text-primary hover:underline font-medium">
             conhecer os planos
           </Link>
         </div>
-      ) : assinatura.cortesia ? (
-        <div className="space-y-3">
-          <div className="text-lg font-semibold text-foreground">
-            Acesso cortesia — um presente da casa 🌿
-          </div>
-          <div className="text-sm text-muted-foreground">{planoLabel}</div>
-          <div className="text-sm">
-            <Link to="/assinar" className="text-primary hover:underline font-medium">
-              conhecer os planos
-            </Link>
-          </div>
-        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
+        <div className="text-lg font-semibold text-foreground">{planoLabel}</div>
+        {assinatura.valor != null && (
+          <div className="text-sm text-muted-foreground">{formatMoeda(assinatura.valor)}</div>
+        )}
+      </div>
+
+      {assinatura.cancela_no_fim ? (
+        <>
+          <p className="text-sm text-foreground">
+            Sua assinatura encerra em{" "}
+            <span className="font-medium">{formatDataExtenso(assinatura.proxima_cobranca)}</span>{" "}
+            — você tem acesso até lá.
+          </p>
+          <Button onClick={reativar} disabled={working}>
+            {working && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+            Continuar assinando
+          </Button>
+        </>
       ) : (
-        <div className="space-y-4">
-          <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
-            <div className="text-lg font-semibold text-foreground">{planoLabel}</div>
-            {assinatura.valor != null && (
-              <div className="text-sm text-muted-foreground">{formatMoeda(assinatura.valor)}</div>
-            )}
-          </div>
-
-          {assinatura.cancela_no_fim ? (
-            <>
-              <p className="text-sm text-foreground">
-                Sua assinatura encerra em{" "}
-                <span className="font-medium">{formatDataExtenso(assinatura.proxima_cobranca)}</span>{" "}
-                — você tem acesso até lá.
-              </p>
-              <Button onClick={reativar} disabled={working}>
-                {working && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-                Continuar assinando
-              </Button>
-            </>
-          ) : (
-            <>
-              {assinatura.proxima_cobranca && (
-                <p className="text-sm text-muted-foreground">
-                  Próxima cobrança em{" "}
-                  <span className="font-medium text-foreground">
-                    {formatDataExtenso(assinatura.proxima_cobranca)}
-                  </span>
-                  .
-                </p>
-              )}
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <button className="text-sm text-muted-foreground hover:text-foreground underline underline-offset-4">
-                    Cancelar assinatura
-                  </button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Cancelar assinatura?</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      Você mantém o acesso até{" "}
-                      {formatDataExtenso(assinatura.proxima_cobranca)}. Nada é cobrado depois disso.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel disabled={working}>Voltar</AlertDialogCancel>
-                    <AlertDialogAction onClick={cancelar} disabled={working}>
-                      {working && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-                      Confirmar cancelamento
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-            </>
+        <>
+          {assinatura.proxima_cobranca && (
+            <p className="text-sm text-muted-foreground">
+              Próxima cobrança em{" "}
+              <span className="font-medium text-foreground">
+                {formatDataExtenso(assinatura.proxima_cobranca)}
+              </span>
+              .
+            </p>
           )}
-        </div>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <button className="text-sm text-muted-foreground hover:text-foreground underline underline-offset-4">
+                Cancelar assinatura
+              </button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Cancelar assinatura?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Você mantém o acesso até{" "}
+                  {formatDataExtenso(assinatura.proxima_cobranca)}. Nada é cobrado depois disso.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel disabled={working}>Voltar</AlertDialogCancel>
+                <AlertDialogAction onClick={cancelar} disabled={working}>
+                  {working && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                  Confirmar cancelamento
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </>
       )}
-
-    </Card>
+    </div>
   );
 };
 
 // ---------- 5. Cursos ----------
-const CursosCard = ({ matriculas }: { matriculas: Matricula[] }) => (
-  <Card>
-    <div className="flex items-center gap-2 mb-4">
-      <BookOpen className="h-5 w-5 text-primary" />
-      <h2 className="text-xl font-serif font-semibold">Meus cursos</h2>
-    </div>
-    {matriculas.length === 0 ? (
-      <p className="text-sm text-muted-foreground">Seus cursos aparecerão aqui.</p>
-    ) : (
+const CursosCard = ({ matriculas }: { matriculas: Matricula[] }) => {
+  if (!matriculas.length) {
+    return (
+      <p className="text-sm text-muted-foreground">
+        Seus cursos aparecerão aqui.{" "}
+        <Link to="/cursos" className="text-primary hover:underline font-medium">
+          conhecer os cursos
+        </Link>
+      </p>
+    );
+  }
+  return (
+    <ul className="divide-y divide-border/60">
+      {matriculas.map((m) => (
+        <li key={m.id} className="flex items-center justify-between gap-3 py-3">
+          <div className="min-w-0">
+            <div className="font-medium text-foreground truncate">
+              {m.titulo || "Curso"}
+            </div>
+            <div className="text-xs text-muted-foreground">acesso permanente</div>
+          </div>
+          <Link
+            to={m.slug ? `/escola/curso/${m.slug}` : "/escola"}
+            className="text-sm text-primary hover:underline whitespace-nowrap inline-flex items-center gap-1"
+          >
+            abrir <ChevronRight className="h-3.5 w-3.5" />
+          </Link>
+        </li>
+      ))}
+    </ul>
+  );
+};
+
+// ---------- 6. Pedidos ----------
+const PedidosCard = ({ pedidos }: { pedidos: PedidoLoja[] }) => {
+  if (!pedidos.length) {
+    return <p className="text-sm text-muted-foreground">Suas compras da Samkhya aparecerão aqui.</p>;
+  }
+  return (
+    <>
       <ul className="divide-y divide-border/60">
-        {matriculas.map((m) => (
-          <li key={m.id} className="flex items-center justify-between gap-3 py-3">
+        {pedidos.map((p) => (
+          <li key={p.id} className="py-3 flex items-center justify-between gap-4">
             <div className="min-w-0">
               <div className="font-medium text-foreground truncate">
-                {m.cursos?.titulo || "Curso"}
+                Pedido {p.numero || `#${p.id.slice(0, 6)}`}
               </div>
-              <div className="text-xs text-muted-foreground">acesso permanente</div>
+              <div className="text-xs text-muted-foreground">
+                {p.data ? formatDataExtenso(p.data) : "—"} · {formatMoeda(p.total)}
+                {p.rastreio ? ` · rastreio ${p.rastreio}` : ""}
+              </div>
             </div>
-            <Link
-              to="/cursos"
-              className="text-sm text-primary hover:underline whitespace-nowrap inline-flex items-center gap-1"
-            >
-              abrir <ChevronRight className="h-3.5 w-3.5" />
-            </Link>
+            <span className="text-xs px-2 py-1 rounded-full bg-muted text-foreground/70 whitespace-nowrap">
+              {p.status || "—"}
+            </span>
           </li>
         ))}
       </ul>
-    )}
-  </Card>
-);
-
-// ---------- 6. Pedidos ----------
-const PedidosCard = ({ pedidos }: { pedidos: PedidoLoja[] }) => (
-  <Card>
-    <div className="flex items-center gap-2 mb-4">
-      <ShoppingBag className="h-5 w-5 text-primary" />
-      <h2 className="text-xl font-serif font-semibold">Meus pedidos da loja</h2>
-    </div>
-    {pedidos.length === 0 ? (
-      <p className="text-sm text-muted-foreground">Suas compras da Samkhya aparecerão aqui.</p>
-    ) : (
-      <>
-        <ul className="divide-y divide-border/60">
-          {pedidos.map((p) => (
-            <li key={p.id} className="py-3 flex items-center justify-between gap-4">
-              <div className="min-w-0">
-                <div className="font-medium text-foreground truncate">
-                  Pedido {p.numero || `#${p.id.slice(0, 6)}`}
-                </div>
-                <div className="text-xs text-muted-foreground">
-                  {p.data ? formatDataExtenso(p.data) : "—"} · {formatMoeda(p.total)}
-                  {p.rastreio ? ` · rastreio ${p.rastreio}` : ""}
-                </div>
-              </div>
-              <span className="text-xs px-2 py-1 rounded-full bg-muted text-foreground/70 whitespace-nowrap">
-                {p.status || "—"}
-              </span>
-            </li>
-          ))}
-        </ul>
-        <div className="mt-4 text-right">
-          <Link
-            to="/samkhya/compras"
-            className="text-sm text-primary hover:underline inline-flex items-center gap-1"
-          >
-            ver todos <ExternalLink className="h-3.5 w-3.5" />
-          </Link>
-        </div>
-      </>
-    )}
-  </Card>
-);
+      <div className="mt-4 text-right">
+        <Link
+          to="/samkhya/compras"
+          className="text-sm text-primary hover:underline inline-flex items-center gap-1"
+        >
+          ver todos <ExternalLink className="h-3.5 w-3.5" />
+        </Link>
+      </div>
+    </>
+  );
+};
 
 // ---------- 7. Escola ----------
 const EscolaCard = () => (
-  <Card className="border-[#FACC15]/60">
-    <div className="flex items-center gap-3">
-      <div className="w-10 h-10 rounded-full bg-[#FACC15]/20 flex items-center justify-center shrink-0">
-        <GraduationCap className="h-5 w-5 text-[#8A6D0B]" />
-      </div>
-      <div className="flex-1 min-w-0">
-        <div className="font-serif font-semibold text-foreground">
-          Aluna da Formação Ayurveda Profissionalizante
-        </div>
-      </div>
-      <Link
-        to="/escola/aluno"
-        className="text-sm font-semibold text-primary hover:underline whitespace-nowrap inline-flex items-center gap-1"
-      >
-        minha área <ChevronRight className="h-4 w-4" />
-      </Link>
+  <div className="flex items-center gap-3">
+    <div className="w-10 h-10 rounded-full bg-[#FACC15]/20 flex items-center justify-center shrink-0">
+      <GraduationCap className="h-5 w-5 text-[#8A6D0B]" />
     </div>
-  </Card>
+    <div className="flex-1 min-w-0">
+      <div className="font-serif font-semibold text-foreground">
+        Aluna da Formação Ayurveda Profissionalizante
+      </div>
+    </div>
+    <Link
+      to="/escola/aluno"
+      className="text-sm font-semibold text-primary hover:underline whitespace-nowrap inline-flex items-center gap-1"
+    >
+      minha área <ChevronRight className="h-4 w-4" />
+    </Link>
+  </div>
 );
 
 export default MeuPerfil;
