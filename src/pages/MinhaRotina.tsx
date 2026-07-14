@@ -664,21 +664,29 @@ const MinhaRotina = () => {
             Sua rotina
           </h2>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-            {MEAL_SLOTS.map((s) => {
+            {MEAL_SLOTS.map((s, idx) => {
               const row = rowBySlot.get(s.slot);
               const nugget = row?.nugget_id ? nuggetsById.get(row.nugget_id) : undefined;
+              const isLast = idx === MEAL_SLOTS.length - 1;
               return (
-                <RotinaSlotCard
-                  key={s.slot}
-                  slotLabel={s.label}
-                  row={row}
-                  nugget={nugget}
-                  feito={acertoRotinaSlots.has(s.slot)}
-                  agniFracoOuIrregular={agniFracoOuIrregular}
-                  onToggleFeito={() => row && toggleFeito(row)}
-                  focus={!!nugget && nugget.id === focusNuggetId}
-                  compact
-                />
+                <div key={s.slot} className="relative">
+                  <RotinaSlotCard
+                    slotLabel={s.label}
+                    row={row}
+                    nugget={nugget}
+                    feito={acertoRotinaSlots.has(s.slot)}
+                    agniFracoOuIrregular={agniFracoOuIrregular}
+                    onToggleFeito={() => row && toggleFeito(row)}
+                    focus={!!nugget && nugget.id === focusNuggetId}
+                    compact
+                  />
+                  {!isLast && (
+                    <ArrowRight
+                      aria-hidden
+                      className="pointer-events-none absolute top-1/2 -right-3 -translate-y-1/2 h-5 w-5 text-primary/40 z-10"
+                    />
+                  )}
+                </div>
               );
             })}
           </div>
