@@ -77,6 +77,8 @@ const AdminCobranca = lazy(() => import("./pages/AdminCobranca"));
 const AdminAlunos = lazy(() => import("./pages/AdminAlunos"));
 const AdminEscola = lazy(() => import("./pages/AdminEscola"));
 const AdminCursos = lazy(() => import("./pages/AdminCursos"));
+const EscolaHub = lazy(() => import("./pages/escola/EscolaHub"));
+const EscolaCurso = lazy(() => import("./pages/escola/EscolaCurso"));
 const EscolaAluno = lazy(() => import("./pages/escola/EscolaAluno"));
 const EscolaAlunoModulos = lazy(() => import("./pages/escola/EscolaAlunoModulos"));
 const EscolaAlunoModulo = lazy(() => import("./pages/escola/EscolaAlunoModulo"));
