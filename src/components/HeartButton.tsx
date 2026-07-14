@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Heart } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/contexts/UserContext";
@@ -10,11 +11,14 @@ interface HeartButtonProps {
   contentType: "video" | "artigo";
   contentId: string;
   className?: string;
+  variant?: "compact" | "destaque";
 }
 
-const HeartButton = ({ contentType, contentId, className }: HeartButtonProps) => {
+const HeartButton = ({ contentType, contentId, className, variant = "compact" }: HeartButtonProps) => {
   const { user } = useUser();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
+  const location = useLocation();
   const [animating, setAnimating] = useState(false);
 
   const { data: likeData } = useQuery({
@@ -49,12 +53,15 @@ const HeartButton = ({ contentType, contentId, className }: HeartButtonProps) =>
   const likeCount = likeData?.count ?? 0;
 
   const toggle = async () => {
-    if (!user) return;
+    if (!user) {
+      const redirect = encodeURIComponent(location.pathname + location.search);
+      navigate(`/entrar?redirect=${redirect}`);
+      return;
+    }
 
     const cacheKey = ["content-like", contentType, contentId, user.id];
 
     if (liked) {
-      // Optimistic update
       queryClient.setQueryData(cacheKey, { count: Math.max(0, likeCount - 1), liked: false });
       await supabase
         .from("content_likes" as any)
@@ -76,7 +83,7 @@ const HeartButton = ({ contentType, contentId, className }: HeartButtonProps) =>
             p_ref: `${contentType}:${contentId}`,
           });
           if (data?.ok && (data?.pontos_ganhos ?? 0) > 0) {
-            toast.success(`+${data.pontos_ganhos} ponto! 🔥 streak de ${data.streak ?? 0} dias`);
+            toast.success("✓ Registrado no seu dia");
             queryClient.invalidateQueries({ queryKey: ["minha-evolucao", user.id] });
           }
         } catch {
@@ -86,21 +93,25 @@ const HeartButton = ({ contentType, contentId, className }: HeartButtonProps) =>
     }
   };
 
+  const isDestaque = variant === "destaque";
+  const iconSize = isDestaque ? "h-6 w-6" : "h-5 w-5";
+  const countSize = isDestaque ? "text-sm" : "text-xs";
+
   return (
     <button
       onClick={toggle}
-      disabled={!user}
       className={cn(
-        "inline-flex items-center gap-1.5 transition-all group",
-        !user && "opacity-50 cursor-default",
+        "inline-flex items-center gap-1.5 transition-all group bg-transparent border-0 p-0",
         className
       )}
-      title={user ? (liked ? "Remover curtida" : "Curtir") : "Faça login para curtir"}
+      title={user ? (liked ? "Remover curtida" : "Curtir") : "Entrar para curtir"}
+      aria-label={liked ? "Remover curtida" : "Curtir"}
     >
       <span className={cn("relative", animating && "animate-heart-burst")}>
         <Heart
           className={cn(
-            "h-5 w-5 transition-all duration-200",
+            iconSize,
+            "transition-all duration-200",
             liked
               ? "fill-red-500 text-red-500 scale-110"
               : "text-muted-foreground group-hover:text-red-400"
@@ -108,12 +119,12 @@ const HeartButton = ({ contentType, contentId, className }: HeartButtonProps) =>
         />
         {animating && (
           <span className="absolute inset-0 animate-ping">
-            <Heart className="h-5 w-5 fill-red-500 text-red-500 opacity-40" />
+            <Heart className={cn(iconSize, "fill-red-500 text-red-500 opacity-40")} />
           </span>
         )}
       </span>
       {likeCount > 0 && (
-        <span className={cn("text-xs font-medium", liked ? "text-red-500" : "text-muted-foreground")}>
+        <span className={cn(countSize, "font-medium", liked ? "text-red-500" : "text-muted-foreground")}>
           {likeCount}
         </span>
       )}
