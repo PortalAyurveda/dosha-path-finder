@@ -1138,6 +1138,7 @@ const MeuDosha = () => {
               kaphascore={result.kaphascore}
               agniPrincipal={result.agniPrincipal}
               conhecimentoAyurveda={result.conhecimentoAyurveda}
+              initialPergunta={searchParams.get('pergunta') || ''}
             />
           </TabsContent>
         </Tabs>

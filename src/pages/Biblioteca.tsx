@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { slugify } from "@/lib/slugify";
@@ -7,8 +7,6 @@ import PageContainer from "@/components/PageContainer";
 import DoshaSelector from "@/components/dosha/DoshaSelector";
 import SearchHeader, { type VideoCategory } from "@/components/biblioteca/SearchHeader";
 import VideoResultCard from "@/components/biblioteca/VideoResultCard";
-import AdvancedVideoCard from "@/components/biblioteca/AdvancedVideoCard";
-import AdvancedVideoResult from "@/components/biblioteca/AdvancedVideoResult";
 import { Skeleton } from "@/components/ui/skeleton";
 import PaginationControls from "@/components/PaginationControls";
 import Seo from "@/components/Seo";
@@ -25,99 +23,43 @@ function useDebounce(value: string, delay: number) {
   return debounced;
 }
 
-const TABLE_MAP: Record<VideoCategory, "portal_oficial" | "portal_receitas" | "portal_lives"> = {
-  selecao: "portal_oficial",
-  receitas: "portal_receitas",
-  lives: "portal_lives",
-};
-
-const ALL_TABLES = ["portal_oficial", "portal_receitas", "portal_lives"] as const;
-
 const Biblioteca = () => {
-  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
-  const [isAdvanced, setIsAdvanced] = useState(false);
-  const [category, setCategory] = useState<VideoCategory>("selecao");
+  const [category, setCategory] = useState<VideoCategory>("todos");
   const debouncedSearch = useDebounce(searchTerm, 300);
   const [page, setPage] = useState(1);
 
-  const [selectedAdvancedVideo, setSelectedAdvancedVideo] = useState<{
-    video_id: string;
-    novo_titulo: string;
-    texto_para_embedding: string;
-    initialSeconds: number;
-  } | null>(null);
-
-  useEffect(() => {
-    setSelectedAdvancedVideo(null);
-  }, [debouncedSearch]);
-
-  // Reset pagination when filters change
   useEffect(() => {
     setPage(1);
-  }, [debouncedSearch, category, isAdvanced]);
+  }, [debouncedSearch, category]);
 
-  // Common search — single table based on category
-  const { data: videos, isLoading } = useQuery({
-    queryKey: ["biblioteca-videos", debouncedSearch, category],
+  const { data, isLoading } = useQuery({
+    queryKey: ["biblioteca-canonicos", debouncedSearch, category, page],
     queryFn: async () => {
-      const table = TABLE_MAP[category];
-      let query = supabase
-        .from(table)
-        .select("video_id, novo_titulo, mini_resumo, nova_descricao, tags, texto_para_embedding, criado_em")
-        .order("criado_em", { ascending: false })
-        .limit(120);
+      const from = (page - 1) * PAGE_SIZE;
+      const to = from + PAGE_SIZE - 1;
 
-      if (debouncedSearch.trim()) {
-        query = query.ilike("novo_titulo", `%${debouncedSearch.trim()}%`);
+      let q = (supabase.from as any)("videos_canonicos")
+        .select("video_id, slug, novo_titulo, mini_resumo, tags, criado_em, is_oficial, is_live, is_receita", { count: "exact" })
+        .order("criado_em", { ascending: false });
+
+      if (category === "aulas") q = q.eq("is_oficial", true);
+      else if (category === "lives") q = q.eq("is_live", true);
+      else if (category === "receitas") q = q.eq("is_receita", true);
+
+      const term = debouncedSearch.trim();
+      if (term) {
+        q = q.or(`novo_titulo.ilike.%${term}%,tags.ilike.%${term}%`);
       }
 
-      const { data, error } = await query;
+      const { data, error, count } = await q.range(from, to);
       if (error) throw error;
-      return data;
+      return { rows: (data || []) as any[], count: count ?? 0 };
     },
-    enabled: !isAdvanced,
   });
 
-  // Advanced search — all tables
-  const { data: advancedResults, isLoading: isAdvancedLoading } = useQuery({
-    queryKey: ["biblioteca-advanced", debouncedSearch],
-    queryFn: async () => {
-      if (!debouncedSearch.trim()) return null;
-
-      const results = await Promise.all(
-        ALL_TABLES.map(async (table) => {
-          const { data, error } = await supabase
-            .from(table)
-            .select("video_id, novo_titulo, texto_para_embedding, criado_em")
-            .ilike("texto_para_embedding", `%${debouncedSearch.trim()}%`)
-            .order("criado_em", { ascending: false })
-            .limit(60);
-          if (error) throw error;
-          return data ?? [];
-        })
-      );
-
-      const merged = results.flat();
-      // Deduplicate by video_id
-      const seen = new Set<string>();
-      const unique = merged.filter((v) => {
-        if (seen.has(v.video_id)) return false;
-        seen.add(v.video_id);
-        return true;
-      });
-
-      return unique.length > 0 ? unique : null;
-    },
-    enabled: isAdvanced && debouncedSearch.trim().length > 0,
-  });
-
-  const loading = isAdvanced ? isAdvancedLoading : isLoading;
-
-  const sourceList = isAdvanced ? advancedResults ?? [] : videos ?? [];
-  const totalPages = Math.max(1, Math.ceil(sourceList.length / PAGE_SIZE));
-  const pagedVideos = (videos ?? []).slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
-  const pagedAdvanced = (advancedResults ?? []).slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const totalPages = Math.max(1, Math.ceil((data?.count ?? 0) / PAGE_SIZE));
+  const rows = data?.rows ?? [];
 
   const goToPage = (p: number) => {
     setPage(Math.min(Math.max(1, p), totalPages));
@@ -135,81 +77,31 @@ const Biblioteca = () => {
         title="Biblioteca — Sommelier Ayurveda"
         description="Encontre vídeos sobre Ayurveda: busque por sintomas, doshas, alimentos e muito mais."
       >
-      <SearchHeader
-        searchTerm={searchTerm}
-        onSearchChange={setSearchTerm}
-        isAdvanced={isAdvanced}
-        onAdvancedChange={setIsAdvanced}
-        category={category}
-        onCategoryChange={setCategory}
-      />
+        <SearchHeader
+          searchTerm={searchTerm}
+          onSearchChange={setSearchTerm}
+          category={category}
+          onCategoryChange={setCategory}
+        />
 
-      <BannerSlot slot="biblioteca" className="my-4 [&:empty]:hidden" />
+        <BannerSlot slot="biblioteca" className="my-4 [&:empty]:hidden" />
 
-      {loading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm overflow-hidden border border-border">
-              <Skeleton className="aspect-video w-full" />
-              <div className="p-4 space-y-2">
-                <Skeleton className="h-5 w-3/4" />
-                <Skeleton className="h-4 w-full" />
+        {isLoading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm overflow-hidden border border-border">
+                <Skeleton className="aspect-video w-full" />
+                <div className="p-4 space-y-2">
+                  <Skeleton className="h-5 w-3/4" />
+                  <Skeleton className="h-4 w-full" />
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
-      ) : isAdvanced ? (
-        selectedAdvancedVideo ? (
-          <AdvancedVideoResult
-            videoId={selectedAdvancedVideo.video_id}
-            title={selectedAdvancedVideo.novo_titulo}
-            textoParaEmbedding={selectedAdvancedVideo.texto_para_embedding}
-            initialSeconds={selectedAdvancedVideo.initialSeconds}
-            searchTerm={debouncedSearch}
-            onBack={() => setSelectedAdvancedVideo(null)}
-          />
-        ) : !debouncedSearch.trim() ? (
-          <div className="flex items-center justify-center min-h-[30vh]">
-            <div className="text-center p-12 rounded-2xl bg-surface-sun border border-border">
-              <p className="text-muted-foreground text-lg">
-                🔍 Digite um termo para buscar no conteúdo de todos os vídeos.
-              </p>
-            </div>
+            ))}
           </div>
-        ) : advancedResults && advancedResults.length > 0 ? (
+        ) : rows.length > 0 ? (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {pagedAdvanced.map((v) => (
-                <AdvancedVideoCard
-                  key={v.video_id}
-                  videoId={v.video_id}
-                  title={v.novo_titulo || "Sem título"}
-                  textoParaEmbedding={v.texto_para_embedding || ""}
-                  searchTerm={debouncedSearch}
-                  onClick={(initialSeconds) =>
-                    navigate(`/video/${slugify(v.novo_titulo || "Sem título")}?t=${initialSeconds}`, { state: { videoId: v.video_id } })
-                  }
-                />
-              ))}
-            </div>
-            {totalPages > 1 && (
-              <PaginationControls page={page} totalPages={totalPages} onPageChange={goToPage} />
-            )}
-          </>
-        ) : (
-          <div className="flex items-center justify-center min-h-[30vh]">
-            <div className="text-center p-12 rounded-2xl bg-surface-sun border border-border">
-              <p className="text-muted-foreground text-lg">
-                🔍 Nenhum vídeo encontrado para essa busca avançada.
-              </p>
-            </div>
-          </div>
-        )
-      ) : (
-        videos && videos.length > 0 ? (
-          <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {pagedVideos.map((v) => (
+              {rows.map((v) => (
                 <VideoResultCard
                   key={v.video_id}
                   videoId={v.video_id}
@@ -231,9 +123,7 @@ const Biblioteca = () => {
               </p>
             </div>
           </div>
-        )
-      )}
-
+        )}
       </PageContainer>
     </>
   );

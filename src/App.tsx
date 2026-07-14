@@ -12,6 +12,16 @@ import AdminRoute from "./components/admin/AdminRoute";
 import { CartProvider } from "./contexts/CartContext";
 import CartDrawer from "./components/loja/CartDrawer";
 
+const AkashaRedirect = () => {
+  const loc = useLocation();
+  const params = new URLSearchParams(loc.search);
+  const pergunta = params.get("pergunta") || "";
+  const target = pergunta
+    ? `/meu-dosha?tab=akasha&pergunta=${encodeURIComponent(pergunta)}`
+    : "/meu-dosha?tab=akasha";
+  return <Navigate to={target} replace />;
+};
+
 import Index from "./pages/Index";
 const MinhaRotina = lazy(() => import("./pages/MinhaRotina"));
 const LaunchPage = lazy(() => import("./pages/LaunchPage"));
@@ -152,7 +162,7 @@ const RoutedApp = () => {
               <Route path="/terapeutas-do-brasil/cadastro" element={<TerapeutaCadastro />} />
               <Route path="/terapeutas-do-brasil/:slug" element={<TerapeutaPerfil />} />
               <Route path="/terapeutas/:slug" element={<TerapeutaPerfil />} />
-              <Route path="/akasha" element={<Navigate to="/meu-dosha" replace />} />
+              <Route path="/akasha" element={<AkashaRedirect />} />
               <Route path="/video/:slug" element={<Video />} />
 
               {/* Vata */}

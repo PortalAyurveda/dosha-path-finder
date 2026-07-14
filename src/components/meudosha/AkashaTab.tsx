@@ -30,6 +30,7 @@ interface AkashaTabProps {
   agniPrincipal: string | null;
   conhecimentoAyurveda: string | null;
   email?: string | null;
+  initialPergunta?: string;
 }
 
 interface ChatMessage {
@@ -77,13 +78,20 @@ const mapDbHistoryMessage = (row: any): ChatMessage | null => {
 const AkashaTab = ({
   idPublico, nome, doshaprincipal, imc, idade,
   vatascore, pittascore, kaphascore, agniPrincipal,
-  conhecimentoAyurveda, email,
+  conhecimentoAyurveda, email, initialPergunta,
 }: AkashaTabProps) => {
   const { user, profile } = useUser();
   const queryClient = useQueryClient();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [input, setInput] = useState("");
+  const [input, setInput] = useState(initialPergunta || "");
   const [sending, setSending] = useState(false);
+  const prefilledRef = useRef(false);
+  useEffect(() => {
+    if (initialPergunta && !prefilledRef.current) {
+      prefilledRef.current = true;
+      setInput(initialPergunta);
+    }
+  }, [initialPergunta]);
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
   const hasHydratedRef = useRef(false);
