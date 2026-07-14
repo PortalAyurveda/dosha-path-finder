@@ -95,6 +95,7 @@ interface Nugget {
   id: string;
   titulo: string;
   icone_lucide: string | null;
+  imagem_url: string | null;
   video_id: string | null;
   video_timestamp: string | null;
   vata: number | null;
