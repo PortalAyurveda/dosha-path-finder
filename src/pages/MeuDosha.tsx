@@ -859,10 +859,7 @@ const MeuDosha = () => {
             <RetesteCard />
           </div>
         )}
-
-        {!isVisitor && <MinhaCaminhadaSection />}
-
-        {!isVisitor && <PraVoceRail doshaPrincipal={result?.doshaprincipal} />}
+        {!isVisitor && <MiniCaminhadaCard />}
 
 
 
