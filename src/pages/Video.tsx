@@ -82,6 +82,34 @@ const Video = () => {
 
   const videoId = video?.video_id;
 
+  // Marca essa receita como feita no dia (quando abrimos com ?receita_do_dia=1)
+  const { data: evolucao } = useQuery({
+    queryKey: ["minha-evolucao", user?.id],
+    queryFn: async () => {
+      const { data } = await (supabase.rpc as any)("get_minha_evolucao");
+      return data ?? {};
+    },
+    enabled: !!user && isReceitaDoDia,
+    staleTime: 60 * 1000,
+  });
+  const receitaFeitaHoje = (evolucao as any)?.receita_feita_hoje === true || receitaMarcada;
+
+  const marcarReceita = async () => {
+    if (!user || !videoId || receitaFeitaHoje) return;
+    try {
+      const { data } = await (supabase.rpc as any)("evolucao_registrar", {
+        p_tipo: "receita_feita",
+        p_ref: String(videoId),
+      });
+      setReceitaMarcada(true);
+      if (data?.ok && (data?.pontos_ganhos ?? 0) > 0) {
+        toast.success("✓ Registrado no seu dia");
+      }
+    } catch {
+      /* silencioso */
+    }
+  };
+
   const timestamps = useMemo(() => {
     const source = video?.texto_para_embedding || video?.nova_descricao || video?.mini_resumo || "";
     if (!source) return [];
