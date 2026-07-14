@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import * as LucideIcons from "lucide-react";
 import {
@@ -357,6 +357,7 @@ const MinhaRotina = () => {
           email={user?.email ?? null}
           userId={user?.id ?? null}
           doshaPrincipal={doshaResult?.doshaprincipal ?? null}
+          itemId={focusNuggetId}
         />
       </PageContainer>
     );
@@ -1494,11 +1495,31 @@ interface PaywallRotinaProps {
   email: string | null;
   userId: string | null;
   doshaPrincipal: string | null;
+  itemId?: string | null;
 }
 
-const PaywallRotina = ({ email, userId, doshaPrincipal }: PaywallRotinaProps) => {
+type ReceitaTeaser = {
+  titulo?: string | null;
+  imagem?: string | null;
+  resumo?: string | null;
+  ingredientes_amostra?: { qtd?: string | null; item?: string | null }[] | null;
+  bom_para?: string | null;
+};
+
+const PaywallRotina = ({ email, userId, doshaPrincipal, itemId }: PaywallRotinaProps) => {
   const [carregando, setCarregando] = useState(false);
   const navigate = useNavigate();
+
+  const { data: teaser } = useQuery({
+    queryKey: ["receita-teaser", itemId],
+    enabled: !!itemId,
+    queryFn: async () => {
+      const { data } = await (supabase.rpc as any)("receita_teaser", { p_item: itemId });
+      const row = Array.isArray(data) ? data[0] : data;
+      return (row ?? null) as ReceitaTeaser | null;
+    },
+    staleTime: 5 * 60 * 1000,
+  });
 
   const desbloquear = async () => {
     // Deslogado: manda pra tela de login e volta pra cá pra fechar o checkout
@@ -1536,6 +1557,9 @@ const PaywallRotina = ({ email, userId, doshaPrincipal }: PaywallRotinaProps) =>
     "Seu progresso e seus pontos, dia após dia",
   ];
 
+  const temTeaser = !!(itemId && teaser);
+  const ingredientesAmostra = (teaser?.ingredientes_amostra ?? []).slice(0, 2);
+
   return (
     <div className="max-w-2xl mx-auto px-4 py-6">
       <Card className="relative overflow-hidden rounded-2xl">
@@ -1551,28 +1575,82 @@ const PaywallRotina = ({ email, userId, doshaPrincipal }: PaywallRotinaProps) =>
             <p className="text-sm text-muted-foreground">{subtitulo}</p>
           </div>
 
-          {/* Preview borrado */}
-          <div className="relative rounded-xl border border-border bg-muted/30 p-4 overflow-hidden">
-            <div className="space-y-3 blur-sm select-none pointer-events-none" aria-hidden="true">
-              {[0, 1, 2, 3].map((i) => (
-                <div key={i} className="flex items-center gap-3">
-                  <div className="h-8 w-8 rounded-full bg-muted-foreground/20" />
-                  <div className="flex-1 space-y-1.5">
-                    <div className="h-2.5 w-1/3 rounded bg-muted-foreground/20" />
-                    <div className="h-2 w-3/4 rounded bg-muted-foreground/15" />
+          {temTeaser ? (
+            <div className="rounded-xl border border-border bg-card overflow-hidden">
+              {teaser?.imagem && (
+                <div className="w-full aspect-[16/9] bg-muted overflow-hidden">
+                  <img
+                    src={teaser.imagem}
+                    alt={teaser.titulo ?? "Receita da rotina"}
+                    className="w-full h-full object-cover"
+                    loading="lazy"
+                  />
+                </div>
+              )}
+              <div className="p-4 md:p-5 space-y-3">
+                <h3 className="font-serif text-lg md:text-xl text-foreground leading-tight">
+                  {teaser?.titulo ?? "Receita da rotina"}
+                </h3>
+                {teaser?.resumo && (
+                  <p className="text-sm text-muted-foreground leading-relaxed">{teaser.resumo}</p>
+                )}
+                {ingredientesAmostra.length > 0 && (
+                  <div>
+                    <p className="text-xs uppercase tracking-wider text-muted-foreground font-medium mb-1.5">
+                      Ingredientes
+                    </p>
+                    <ul className="space-y-1 text-sm text-foreground">
+                      {ingredientesAmostra.map((ing, i) => (
+                        <li key={i}>
+                          • {ing.qtd ? `${ing.qtd} ` : ""}{ing.item ?? ""}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                <div className="relative rounded-lg border border-border bg-muted/30 overflow-hidden">
+                  <div className="p-4 space-y-2 blur-sm select-none pointer-events-none" aria-hidden="true">
+                    <div className="h-2.5 w-2/3 rounded bg-muted-foreground/30" />
+                    <div className="h-2 w-4/5 rounded bg-muted-foreground/20" />
+                    <div className="h-2 w-3/5 rounded bg-muted-foreground/20" />
+                    <div className="h-2 w-1/2 rounded bg-muted-foreground/20" />
+                    <div className="h-2 w-3/4 rounded bg-muted-foreground/20" />
+                  </div>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="h-10 w-10 rounded-full bg-primary flex items-center justify-center shadow-md">
+                      <Lock className="h-4 w-4 text-primary-foreground" />
+                    </div>
                   </div>
                 </div>
-              ))}
-            </div>
-            <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
-              <div className="h-12 w-12 rounded-full bg-primary flex items-center justify-center shadow-md">
-                <Lock className="h-5 w-5 text-primary-foreground" />
+                <p className="text-sm text-foreground font-medium">
+                  Essa receita faz parte da rotina desenhada pro seu dosha.
+                </p>
               </div>
-              <p className="text-sm text-foreground font-medium text-center px-4">
-                7 dias · 8 momentos do dia · personalizada pra você
-              </p>
             </div>
-          </div>
+          ) : (
+            /* Preview borrado padrão (sem ?item=) */
+            <div className="relative rounded-xl border border-border bg-muted/30 p-4 overflow-hidden">
+              <div className="space-y-3 blur-sm select-none pointer-events-none" aria-hidden="true">
+                {[0, 1, 2, 3].map((i) => (
+                  <div key={i} className="flex items-center gap-3">
+                    <div className="h-8 w-8 rounded-full bg-muted-foreground/20" />
+                    <div className="flex-1 space-y-1.5">
+                      <div className="h-2.5 w-1/3 rounded bg-muted-foreground/20" />
+                      <div className="h-2 w-3/4 rounded bg-muted-foreground/15" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
+                <div className="h-12 w-12 rounded-full bg-primary flex items-center justify-center shadow-md">
+                  <Lock className="h-5 w-5 text-primary-foreground" />
+                </div>
+                <p className="text-sm text-foreground font-medium text-center px-4">
+                  7 dias · 8 momentos do dia · personalizada pra você
+                </p>
+              </div>
+            </div>
+          )}
 
           {/* Benefícios */}
           <ul className="space-y-2.5">

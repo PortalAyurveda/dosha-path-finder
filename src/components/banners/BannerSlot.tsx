@@ -98,10 +98,17 @@ const BannerSlot = ({ slot, className, fallback }: BannerSlotProps) => {
 
   const escolhido = useMemo(() => {
     if (!banners || banners.length === 0) return null;
-    return banners.find((b) => {
+    const elegiveis = banners.filter((b) => {
       const tags = (b.tags ?? []) as string[];
       return tags.every((t) => userTags.has(t));
-    }) ?? null;
+    });
+    if (elegiveis.length === 0) return null;
+    if (elegiveis.length === 1) return elegiveis[0];
+    // Estável durante o dia, gira no dia seguinte: dia_do_ano % n
+    const now = new Date();
+    const start = new Date(now.getFullYear(), 0, 0);
+    const dayOfYear = Math.floor((now.getTime() - start.getTime()) / 86400000);
+    return elegiveis[dayOfYear % elegiveis.length];
   }, [banners, userTags]);
 
   const cleanHtml = useMemo(() => {

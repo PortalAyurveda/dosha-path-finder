@@ -414,26 +414,39 @@ const LoggedHero = () => {
       const byId = new Map<string, any>();
       (nugs ?? []).forEach((n: any) => byId.set(n.id, n));
 
-      const hora = new Date().getHours();
-      const periodoAtual = hora < 12 ? "manhã" : hora < 18 ? "tarde" : "noite";
-      const norm = (s?: string | null) => (s || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-      const periodoAtualN = norm(periodoAtual);
-      const rank = (p?: string | null) => {
-        const n = norm(p);
-        if (n === periodoAtualN) return 0;
-        if (n === "qualquer" || !n) return 1;
-        return 2;
-      };
       const enriched = doDia
         .map((r) => ({ row: r, nug: byId.get(r.nugget_id!) }))
         .filter((x) => x.nug);
-      enriched.sort((a, b) => rank(a.nug.periodo) - rank(b.nug.periodo));
-      return enriched;
+
+      const hora = new Date().getHours();
+      const periodoAtual = hora < 12 ? "manha" : hora < 18 ? "tarde" : "noite";
+      const norm = (s?: string | null) => (s || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      const bucketFor = (p?: string | null): "manha" | "tarde" | "noite" | "outro" => {
+        const n = norm(p);
+        if (!n) return "outro";
+        if (n.startsWith("manh") || n === "amanhecer" || n === "cafe") return "manha";
+        if (n.startsWith("tarde") || n.includes("almoc") || n === "meio-dia" || n === "meio dia") return "tarde";
+        if (n.startsWith("noit") || n === "jantar") return "noite";
+        return "outro";
+      };
+      const buckets: Record<string, any[]> = { manha: [], tarde: [], noite: [], outro: [] };
+      enriched.forEach((x) => buckets[bucketFor(x.nug.periodo)].push(x));
+
+      const ordem =
+        periodoAtual === "manha"
+          ? (["manha", "tarde", "noite"] as const)
+          : periodoAtual === "tarde"
+          ? (["tarde", "noite", "manha"] as const)
+          : (["noite", "manha", "tarde"] as const);
+      const pick = (b: string) => buckets[b]?.[0] || null;
+      const front = pick(ordem[0]) || pick("outro") || enriched[0] || null;
+      const back = [pick(ordem[1]), pick(ordem[2])].filter((x) => x && x !== front);
+      return { front, back };
     },
   });
 
-  const rotinaPreviewTop = Array.isArray(rotinaPreview) ? rotinaPreview[0] : rotinaPreview;
-  const rotinaPreviewBack = Array.isArray(rotinaPreview) ? rotinaPreview.slice(1, 3) : [];
+  const rotinaPreviewTop = (rotinaPreview as any)?.front ?? null;
+  const rotinaPreviewBack = (rotinaPreview as any)?.back ?? [];
 
 
 
