@@ -5255,6 +5255,24 @@ export type Database = {
         }
         Relationships: []
       }
+      videos_youtube_indisponiveis: {
+        Row: {
+          motivo: string
+          verificado_em: string
+          video_id: string
+        }
+        Insert: {
+          motivo?: string
+          verificado_em?: string
+          video_id: string
+        }
+        Update: {
+          motivo?: string
+          verificado_em?: string
+          video_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       arquitetura_saude: {
