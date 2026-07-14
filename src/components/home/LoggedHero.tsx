@@ -345,42 +345,101 @@ const LoggedHero = () => {
               <BannerSlot
                 slot="loggedhero"
                 className="w-full flex"
-                fallback={
-                  <div className="bg-card rounded-2xl p-5 md:p-6 border border-border shadow-md w-full h-full flex flex-col justify-center">
-                    <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-                      Próximo passo da sua jornada
-                    </p>
-                    {temAcessoRotina ? (
-                      <>
-                        <h3 className="font-serif font-bold text-lg md:text-xl mt-1" style={{ color: C.primary }}>
-                          Sua rotina de hoje
-                        </h3>
-                        <p className="text-sm text-muted-foreground mt-1">
-                          Os cuidados personalizados desenhados para o seu momento.
-                        </p>
-                        <Link
-                          to="/minha-rotina"
-                          className="inline-flex items-center gap-1.5 mt-3 text-sm font-semibold"
-                          style={{ color: C.primary }}
-                        >
-                          Sua rotina de hoje <ArrowRight className="h-4 w-4" />
-                        </Link>
-                      </>
-                    ) : (
-                      <>
-                        <h3 className="font-serif font-bold text-lg md:text-xl mt-1" style={{ color: C.primary }}>
-                          Monte sua rotina personalizada
-                        </h3>
-                        <p className="text-sm text-muted-foreground mt-1">
-                          Alimentação, sono e cuidados diários baseados no seu dosha.
-                        </p>
-                        <Button asChild size="lg" variant="secondary" className="mt-3 w-fit">
-                          <Link to="/minha-rotina">Começar agora</Link>
-                        </Button>
-                      </>
-                    )}
-                  </div>
-                }
+                fallback={(() => {
+                  const objetivos = total > 0 ? calcObjetivos(vata, pitta, kapha) : [];
+                  const nug = (rotinaPreview as any)?.nug;
+                  const IconEl = nug?.icone_lucide
+                    ? (LucideIcons as any)[nug.icone_lucide]
+                    : null;
+                  return (
+                    <div className="bg-card rounded-2xl p-5 md:p-6 border border-border shadow-md w-full h-full flex flex-col gap-4">
+                      {objetivos.length > 0 && <ObjetivosRow objetivos={objetivos} />}
+
+                      {temAcessoRotina ? (
+                        <>
+                          {nug ? (
+                            <div className="flex gap-3 items-start">
+                              <div
+                                className="shrink-0 w-12 h-12 flex items-center justify-center overflow-hidden"
+                                style={{
+                                  ...LEAF_RADIUS_SM,
+                                  background: `${C.primary}14`,
+                                }}
+                              >
+                                {nug.imagem_url ? (
+                                  <img
+                                    src={nug.imagem_url}
+                                    alt={nug.titulo}
+                                    width={48}
+                                    height={48}
+                                    className="w-full h-full object-cover"
+                                    loading="lazy"
+                                  />
+                                ) : IconEl ? (
+                                  <IconEl className="h-6 w-6" style={{ color: C.primary }} />
+                                ) : (
+                                  <Leaf className="h-6 w-6" style={{ color: C.primary }} />
+                                )}
+                              </div>
+                              <div className="min-w-0 flex-1">
+                                <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                                  Sua rotina agora
+                                </p>
+                                <p
+                                  className="font-serif font-bold text-base leading-tight mt-0.5 line-clamp-2"
+                                  style={{ color: C.primary }}
+                                >
+                                  {nug.titulo}
+                                </p>
+                                <div className="flex flex-wrap gap-1 mt-1.5">
+                                  {(["Vata", "Pitta", "Kapha"] as const).map((d) => {
+                                    const key = d.toLowerCase() as "vata" | "pitta" | "kapha";
+                                    const s = Number(nug[key] ?? 0);
+                                    if (!s) return null;
+                                    return <ScoreMiniChip key={d} dosha={d} score={s} />;
+                                  })}
+                                </div>
+                              </div>
+                            </div>
+                          ) : (
+                            <p className="text-sm text-muted-foreground">
+                              Os cuidados personalizados desenhados para o seu momento.
+                            </p>
+                          )}
+                          <Link
+                            to="/minha-rotina"
+                            className="inline-flex items-center gap-1.5 text-sm font-semibold w-fit"
+                            style={{ color: C.primary }}
+                          >
+                            abrir minha rotina <ArrowRight className="h-4 w-4" />
+                          </Link>
+                        </>
+                      ) : (
+                        <>
+                          {objetivos.length > 0 && (
+                            <p className="text-sm text-muted-foreground -mt-1">
+                              Sua rotina seria desenhada exatamente para isso.
+                            </p>
+                          )}
+                          <div>
+                            <h3
+                              className="font-serif font-bold text-lg md:text-xl"
+                              style={{ color: C.primary }}
+                            >
+                              Monte sua rotina personalizada
+                            </h3>
+                            <p className="text-sm text-muted-foreground mt-1">
+                              Alimentação, sono e cuidados diários baseados no seu dosha.
+                            </p>
+                          </div>
+                          <Button asChild size="lg" variant="secondary" className="w-fit">
+                            <Link to="/minha-rotina">Começar agora</Link>
+                          </Button>
+                        </>
+                      )}
+                    </div>
+                  );
+                })()}
               />
             </div>
 
