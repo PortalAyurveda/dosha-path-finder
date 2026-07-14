@@ -2,7 +2,20 @@ import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { useNavigate } from "react-router-dom";
 import { trackPixel } from "@/lib/metaPixel";
-import { Brain, BookOpen, Video, RefreshCw, CalendarDays, MessageCircle, ShieldCheck, Check } from "lucide-react";
+import {
+  Brain,
+  BookOpen,
+  Video,
+  RefreshCw,
+  CalendarDays,
+  MessageCircle,
+  ShieldCheck,
+  Check,
+  Sparkles,
+  ShoppingBag,
+  LineChart,
+  Utensils,
+} from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/contexts/UserContext";
 import { toast } from "@/hooks/use-toast";
@@ -15,30 +28,23 @@ const SALMAO = "#E8806A";
 const SALMAO_HOVER = "#D26B55";
 const SURFACE = "#FFF8EE";
 
-const beneficios = [
-  { Icon: Brain, titulo: "Akasha ilimitada", desc: "Tire suas dúvidas a qualquer hora com uma IA treinada com mais de 1.000 aulas de Ayurveda. Sem limite de mensagens." },
-  { Icon: BookOpen, titulo: "Artigos personalizados", desc: "Conteúdo filtrado pelo seu dosha. Alimentação, rotinas, ervas e muito mais — só o que é relevante pra você." },
-  { Icon: Video, titulo: "Vídeos com pesquisa avançada", desc: "Encontre exatamente o que precisa dentro de horas de conteúdo gravado." },
-  { Icon: RefreshCw, titulo: "Reteste mensal do dosha", desc: "Seu dosha muda com as estações e com a vida. Refaça o teste todo mês e receba orientações atualizadas." },
-  { Icon: CalendarDays, titulo: "Rotina completa personalizada", desc: "Uma rotina ayurvédica feita para você: alimentação, sono, práticas e receitas para cada fase da sua vida." },
-  { Icon: MessageCircle, titulo: "Comunidade no WhatsApp", desc: "Acesso à comunidade exclusiva de alunos do Portal Ayurveda. Em breve." },
-];
+type Plano = "rotina" | "mensal" | "anual";
 
 const Assinar = () => {
   const { user, profile } = useUser();
   const navigate = useNavigate();
-  const [loadingPlan, setLoadingPlan] = useState<"mensal" | "anual" | null>(null);
+  const [loadingPlan, setLoadingPlan] = useState<Plano | null>(null);
 
   useEffect(() => {
     trackPixel("ViewContent", { content_name: "Pagina Assinar" });
   }, []);
 
-  const handleAssinar = async (plano: "mensal" | "anual") => {
+  const handleAssinar = async (plano: Plano) => {
     if (!user) {
-      navigate("/entrar?redirect=/assinar");
+      navigate(`/entrar?redirect=/assinar`);
       return;
     }
-    trackPixel("InitiateCheckout", { content_type: "subscription" });
+    trackPixel("InitiateCheckout", { content_type: "subscription", plano });
     setLoadingPlan(plano);
     try {
       const { data, error } = await supabase.functions.invoke("create-subscription-checkout", {
@@ -61,13 +67,30 @@ const Assinar = () => {
     document.getElementById("planos")?.scrollIntoView({ behavior: "smooth" });
   };
 
+  const rotinaIncluye = [
+    { Icon: CalendarDays, texto: "Rotina de 30 dias desenhada pro seu dosha" },
+    { Icon: Utensils, texto: "Receitas do dia — café, almoço, jantar, chás e tônicos" },
+    { Icon: ShoppingBag, texto: "Lista de compras semanal pronta" },
+    { Icon: RefreshCw, texto: "Revisão mensal do plano" },
+  ];
+
+  const premiumInclue = [
+    { Icon: Sparkles, texto: "Tudo da Rotina Personalizada, incluso" },
+    { Icon: Brain, texto: "Akasha ilimitada — a IA treinada em 1.000+ aulas de Ayurveda" },
+    { Icon: BookOpen, texto: "Artigos personalizados pelo seu dosha" },
+    { Icon: Video, texto: "Biblioteca de vídeos com busca avançada" },
+    { Icon: LineChart, texto: "Gráficos de evolução e reteste mensal do dosha" },
+    { Icon: ShoppingBag, texto: "Cupons exclusivos na loja Samkhya" },
+    { Icon: MessageCircle, texto: "Comunidade no WhatsApp (em breve)" },
+  ];
+
   return (
     <>
       <Helmet>
-        <title>Portal Ayurveda Premium — Assine agora</title>
+        <title>Assine o Portal Ayurveda — Rotina ou Premium</title>
         <meta
           name="description"
-          content="Tudo que você precisa para viver o Ayurveda: 1.000+ aulas, artigos e vídeos personalizados, e a Akasha — IA disponível 24h."
+          content="Comece pela Rotina Personalizada por R$30/mês ou vá direto para o Premium, com Akasha ilimitada, biblioteca completa e evolução do seu dosha."
         />
       </Helmet>
 
@@ -76,31 +99,32 @@ const Assinar = () => {
         className="w-full"
         style={{ background: `linear-gradient(160deg, ${SURFACE} 0%, #F5F0FF 100%)` }}
       >
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-16 md:py-24 text-center">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-14 md:py-20 text-center">
           <img
             src={AKASHA_LOGO}
             alt="Akasha — Portal Ayurveda"
-            className="h-16 md:h-20 w-auto mx-auto mb-6"
+            className="h-14 md:h-16 w-auto mx-auto mb-6"
             loading="eager"
           />
           <p
-            className="text-xs md:text-sm font-bold uppercase tracking-[0.25em] mb-5"
+            className="text-xs md:text-sm font-bold uppercase tracking-[0.25em] mb-4"
             style={{ color: PRIMARY, opacity: 0.7 }}
           >
-            Seu novo lar da Ayurveda
+            Dois caminhos para viver o Ayurveda
           </p>
           <h1
             className="font-serif italic font-bold text-3xl md:text-5xl leading-tight mb-5"
             style={{ color: PRIMARY }}
           >
-            Tudo que você precisa para viver o Ayurveda de verdade — num só lugar.
+            Comece pela rotina. Ou vá direto para tudo.
           </h1>
           <p
             className="text-base md:text-lg max-w-2xl mx-auto mb-8 leading-relaxed"
             style={{ color: PRIMARY, opacity: 0.85, fontFamily: "'DM Sans', sans-serif" }}
           >
-            Mais de 1.000 aulas refinadas em artigos, vídeos e a Akasha: uma IA treinada com 17 anos de
-            ensino ayurvédico, disponível pra você 24 horas por dia.
+            A <strong>Rotina Personalizada</strong> é o primeiro degrau: um plano diário pro seu dosha,
+            por R$30/mês. O <strong>Premium</strong> inclui a rotina e tudo mais — Akasha ilimitada,
+            biblioteca completa e sua evolução acompanhada.
           </p>
           <button
             onClick={scrollToPlanos}
@@ -109,116 +133,178 @@ const Assinar = () => {
             onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = SALMAO_HOVER)}
             onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = SALMAO)}
           >
-            Quero ser Premium
+            Ver planos
           </button>
         </div>
       </section>
 
-      {/* Benefícios */}
-      <section className="bg-background">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-16 md:py-20">
-          <h2
-            className="font-serif italic font-bold text-3xl md:text-4xl text-center mb-12"
-            style={{ color: PRIMARY }}
-          >
-            Tudo incluso no Portal Ayurveda Premium
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-            {beneficios.map(({ Icon, titulo, desc }) => (
-              <div
-                key={titulo}
-                className="bg-card p-6 rounded-2xl border border-border hover:shadow-lg transition-shadow"
-              >
-                <div
-                  className="w-12 h-12 rounded-xl flex items-center justify-center mb-4"
-                  style={{ background: `${PRIMARY}14` }}
-                >
-                  <Icon className="w-6 h-6" style={{ color: PRIMARY }} strokeWidth={1.6} />
-                </div>
-                <h3
-                  className="font-serif font-bold text-lg mb-2"
-                  style={{ color: PRIMARY }}
-                >
-                  {titulo}
-                </h3>
-                <p
-                  className="text-sm leading-relaxed text-muted-foreground"
-                  style={{ fontFamily: "'DM Sans', sans-serif" }}
-                >
-                  {desc}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Planos */}
+      {/* Planos — a escada */}
       <section id="planos" style={{ background: SURFACE }}>
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-16 md:py-20">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-16 md:py-20">
           <h2
-            className="font-serif italic font-bold text-3xl md:text-4xl text-center mb-10"
+            className="font-serif italic font-bold text-3xl md:text-4xl text-center mb-3"
             style={{ color: PRIMARY }}
           >
             Escolha seu plano
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 max-w-3xl mx-auto">
-            {/* Mensal */}
+          <p
+            className="text-center text-sm md:text-base mb-10 max-w-2xl mx-auto"
+            style={{ color: PRIMARY, opacity: 0.75, fontFamily: "'DM Sans', sans-serif" }}
+          >
+            Quem assina Premium <strong>já tem a Rotina inclusa</strong> — não precisa comprar as duas.
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
+            {/* COLUNA 1 — Rotina Personalizada */}
             <div className="bg-white rounded-2xl border border-border p-7 flex flex-col">
-              <p className="text-xs uppercase tracking-wider font-bold mb-2" style={{ color: PRIMARY, opacity: 0.7 }}>
-                Mensal
+              <p
+                className="text-xs uppercase tracking-wider font-bold mb-2"
+                style={{ color: PRIMARY, opacity: 0.7 }}
+              >
+                Primeiro degrau
               </p>
+              <h3
+                className="font-serif font-bold text-2xl mb-1"
+                style={{ color: PRIMARY }}
+              >
+                Rotina Personalizada
+              </h3>
               <p className="font-serif font-bold text-3xl mb-1" style={{ color: PRIMARY }}>
-                R$ 79,90<span className="text-base font-normal opacity-70">/mês</span>
+                R$ 30<span className="text-base font-normal opacity-70">/mês</span>
               </p>
-              <p className="text-sm text-muted-foreground mb-6" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+              <p
+                className="text-sm text-muted-foreground mb-6"
+                style={{ fontFamily: "'DM Sans', sans-serif" }}
+              >
                 Cancele quando quiser
               </p>
+
+              <ul className="space-y-3 mb-8">
+                {rotinaIncluye.map(({ Icon, texto }) => (
+                  <li key={texto} className="flex items-start gap-3">
+                    <div
+                      className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
+                      style={{ background: `${PRIMARY}14` }}
+                    >
+                      <Icon className="w-4 h-4" style={{ color: PRIMARY }} strokeWidth={1.7} />
+                    </div>
+                    <span
+                      className="text-sm leading-relaxed"
+                      style={{ color: PRIMARY, fontFamily: "'DM Sans', sans-serif" }}
+                    >
+                      {texto}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+
               <button
-                onClick={() => handleAssinar("mensal")}
+                onClick={() => handleAssinar("rotina")}
                 disabled={loadingPlan !== null}
-                className="mt-auto w-full py-3 rounded-full text-white font-semibold text-sm transition-colors disabled:opacity-60"
-                style={{ backgroundColor: SALMAO }}
-                onMouseEnter={(e) => !loadingPlan && (e.currentTarget.style.backgroundColor = SALMAO_HOVER)}
-                onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = SALMAO)}
+                className="mt-auto w-full py-3 rounded-full font-semibold text-sm transition-colors disabled:opacity-60 border-2"
+                style={{ color: PRIMARY, borderColor: PRIMARY, background: "transparent" }}
+                onMouseEnter={(e) => {
+                  if (!loadingPlan) {
+                    e.currentTarget.style.background = PRIMARY;
+                    e.currentTarget.style.color = "#fff";
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = "transparent";
+                  e.currentTarget.style.color = PRIMARY;
+                }}
               >
-                {loadingPlan === "mensal" ? "Redirecionando..." : "Assinar agora"}
+                {loadingPlan === "rotina" ? "Redirecionando..." : "Assinar Rotina"}
               </button>
             </div>
 
-            {/* Anual */}
+            {/* COLUNA 2 — Premium */}
             <div
               className="bg-white rounded-2xl p-7 flex flex-col relative shadow-lg"
               style={{ border: `2px solid ${SALMAO}` }}
             >
               <span
-                className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider text-white"
+                className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider text-white whitespace-nowrap"
                 style={{ backgroundColor: SALMAO }}
               >
-                Mais popular
+                Mais completo · inclui a rotina
               </span>
-              <p className="text-xs uppercase tracking-wider font-bold mb-2" style={{ color: PRIMARY, opacity: 0.7 }}>
-                Anual
-              </p>
-              <p className="font-serif font-bold text-3xl mb-1" style={{ color: PRIMARY }}>
-                R$ 49,75<span className="text-base font-normal opacity-70">/mês</span>
-              </p>
-              <p className="text-sm text-muted-foreground mb-2" style={{ fontFamily: "'DM Sans', sans-serif" }}>
-                Equivale a R$ 597,00 por ano
-              </p>
-              <p className="text-sm font-semibold mb-6 inline-flex items-center gap-1" style={{ color: SALMAO }}>
-                <Check className="w-4 h-4" /> 2 meses grátis
-              </p>
-              <button
-                onClick={() => handleAssinar("anual")}
-                disabled={loadingPlan !== null}
-                className="mt-auto w-full py-3 rounded-full text-white font-semibold text-sm transition-colors disabled:opacity-60"
-                style={{ backgroundColor: SALMAO }}
-                onMouseEnter={(e) => !loadingPlan && (e.currentTarget.style.backgroundColor = SALMAO_HOVER)}
-                onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = SALMAO)}
+              <p
+                className="text-xs uppercase tracking-wider font-bold mb-2 mt-1"
+                style={{ color: PRIMARY, opacity: 0.7 }}
               >
-                {loadingPlan === "anual" ? "Redirecionando..." : "Assinar agora"}
-              </button>
+                Portal completo
+              </p>
+              <h3
+                className="font-serif font-bold text-2xl mb-1"
+                style={{ color: PRIMARY }}
+              >
+                Premium
+              </h3>
+              <div className="mb-1">
+                <p className="font-serif font-bold text-3xl" style={{ color: PRIMARY }}>
+                  R$ 79,90<span className="text-base font-normal opacity-70">/mês</span>
+                </p>
+                <p
+                  className="text-sm mt-1"
+                  style={{ color: PRIMARY, opacity: 0.8, fontFamily: "'DM Sans', sans-serif" }}
+                >
+                  ou <strong>R$ 597/ano</strong>{" "}
+                  <span className="opacity-70">(sai a R$ 49,75/mês)</span>
+                </p>
+              </div>
+              <p
+                className="text-sm font-semibold mb-5 mt-2 inline-flex items-center gap-1"
+                style={{ color: SALMAO }}
+              >
+                <Check className="w-4 h-4" /> Anual: 2 meses grátis
+              </p>
+
+              <ul className="space-y-3 mb-6">
+                {premiumInclue.map(({ Icon, texto }) => (
+                  <li key={texto} className="flex items-start gap-3">
+                    <div
+                      className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
+                      style={{ background: `${SALMAO}20` }}
+                    >
+                      <Icon className="w-4 h-4" style={{ color: SALMAO }} strokeWidth={1.7} />
+                    </div>
+                    <span
+                      className="text-sm leading-relaxed"
+                      style={{ color: PRIMARY, fontFamily: "'DM Sans', sans-serif" }}
+                    >
+                      {texto}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+
+              <div className="mt-auto space-y-2">
+                <button
+                  onClick={() => handleAssinar("anual")}
+                  disabled={loadingPlan !== null}
+                  className="w-full py-3 rounded-full text-white font-semibold text-sm transition-colors disabled:opacity-60"
+                  style={{ backgroundColor: SALMAO }}
+                  onMouseEnter={(e) =>
+                    !loadingPlan && (e.currentTarget.style.backgroundColor = SALMAO_HOVER)
+                  }
+                  onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = SALMAO)}
+                >
+                  {loadingPlan === "anual"
+                    ? "Redirecionando..."
+                    : "Assinar Anual · R$ 597/ano"}
+                </button>
+                <button
+                  onClick={() => handleAssinar("mensal")}
+                  disabled={loadingPlan !== null}
+                  className="w-full py-2.5 rounded-full font-medium text-sm transition-colors disabled:opacity-60"
+                  style={{ color: PRIMARY, background: "transparent" }}
+                >
+                  {loadingPlan === "mensal"
+                    ? "Redirecionando..."
+                    : "Ou assinar mensal · R$ 79,90/mês"}
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -227,8 +313,15 @@ const Assinar = () => {
       {/* Garantia */}
       <section className="bg-background">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 py-12 md:py-16 text-center">
-          <ShieldCheck className="w-12 h-12 mx-auto mb-4" style={{ color: PRIMARY }} strokeWidth={1.5} />
-          <p className="text-base md:text-lg leading-relaxed" style={{ color: PRIMARY, fontFamily: "'DM Sans', sans-serif" }}>
+          <ShieldCheck
+            className="w-12 h-12 mx-auto mb-4"
+            style={{ color: PRIMARY }}
+            strokeWidth={1.5}
+          />
+          <p
+            className="text-base md:text-lg leading-relaxed"
+            style={{ color: PRIMARY, fontFamily: "'DM Sans', sans-serif" }}
+          >
             <strong>7 dias de garantia.</strong> Se não for o que você esperava, devolvemos 100% do
             valor. Sem perguntas.
           </p>
@@ -236,10 +329,12 @@ const Assinar = () => {
       </section>
 
       {/* CTA Final */}
-      <section style={{ background: `linear-gradient(160deg, ${PRIMARY} 0%, #1f1a3a 100%)` }}>
+      <section
+        style={{ background: `linear-gradient(160deg, ${PRIMARY} 0%, #1f1a3a 100%)` }}
+      >
         <div className="max-w-3xl mx-auto px-4 sm:px-6 py-16 md:py-20 text-center">
           <h2 className="font-serif italic font-bold text-3xl md:text-4xl text-white mb-8 leading-tight">
-            Pronto para transformar sua saúde com Ayurveda?
+            Comece hoje o cuidado que combina com o seu corpo.
           </h2>
           <button
             onClick={scrollToPlanos}
@@ -248,7 +343,7 @@ const Assinar = () => {
             onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = SALMAO_HOVER)}
             onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = SALMAO)}
           >
-            Começar agora
+            Escolher meu plano
           </button>
         </div>
       </section>

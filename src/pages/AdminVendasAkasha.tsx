@@ -281,7 +281,7 @@ const ResumoCards = ({ data }: { data: Assinante[] }) => {
         <CardContent>
           <p className="text-3xl font-bold text-foreground">{formatBRL(mrr)}</p>
           <p className="text-xs text-muted-foreground mt-1">
-            {mensaisAtivos} mensal × R$ 79,90 + {anuaisAtivos} anual × R$ 49,75
+            {mensaisAtivos} mensal × R$ 79,90/mês + {anuaisAtivos} anual × R$ 597/ano (sai a R$ 49,75/mês)
             {cortesiasAtivas > 0 && (
               <span className="block text-amber-600">({cortesiasAtivas} cortesia{cortesiasAtivas > 1 ? "s" : ""} não contabilizada{cortesiasAtivas > 1 ? "s" : ""})</span>
             )}
