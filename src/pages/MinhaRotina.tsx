@@ -1002,6 +1002,7 @@ interface SlotCardProps {
   feito: boolean;
   agniFracoOuIrregular: boolean;
   onToggleFeito: () => void;
+  focus?: boolean;
 }
 
 const RotinaSlotCard = ({
@@ -1011,10 +1012,24 @@ const RotinaSlotCard = ({
   feito,
   agniFracoOuIrregular,
   onToggleFeito,
+  focus = false,
 }: SlotCardProps) => {
   const [open, setOpen] = useState(false);
   const [porqueOpen, setPorqueOpen] = useState(false);
   const [videoOpen, setVideoOpen] = useState(false);
+  const cardRef = useRef<HTMLDivElement | null>(null);
+  const [ringOn, setRingOn] = useState(false);
+
+  useEffect(() => {
+    if (!focus) return;
+    setOpen(true);
+    setRingOn(true);
+    const t1 = setTimeout(() => {
+      cardRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 60);
+    const t2 = setTimeout(() => setRingOn(false), 2200);
+    return () => { clearTimeout(t1); clearTimeout(t2); };
+  }, [focus]);
 
   const iconName = nugget?.icone_lucide || "Circle";
   const IconCmp =
@@ -1030,7 +1045,13 @@ const RotinaSlotCard = ({
   const tsSec = parseTimestamp(nugget?.video_timestamp ?? null);
 
   return (
-    <Card className="overflow-hidden">
+    <Card
+      ref={cardRef}
+      className={cn(
+        "overflow-hidden transition-shadow duration-500",
+        ringOn && "ring-2 ring-primary ring-offset-2 ring-offset-background"
+      )}
+    >
       <Collapsible open={open} onOpenChange={setOpen}>
         <div className="flex items-center gap-3 p-4">
           <div className="h-10 w-10 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0">
