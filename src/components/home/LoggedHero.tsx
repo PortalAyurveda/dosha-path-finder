@@ -181,24 +181,17 @@ const LoggedHero = () => {
       ? Math.max(0, Math.min(100, (pontos / (pontos + pontosParaProxima)) * 100))
       : 100;
 
-  const receitaSlug = (receita as any)?.video_id ?? (receita as any)?.url ?? "receita";
-  const marcarReceita = async () => {
-    if (receitaFeitaHoje) return;
-    const { data, error } = await (supabase.rpc as any)("evolucao_registrar", {
-      p_tipo: "receita_feita",
-      p_ref: String(receitaSlug),
-    });
-    if (error) return;
-    if (data?.ok) {
-      toast.success(`+${data.pontos_ganhos ?? 2} pts! 🔥 streak de ${data.streak ?? streak} dias`);
-      queryClient.invalidateQueries({ queryKey: ["minha-evolucao", user?.id] });
-    } else if (data?.erro) {
-      toast(data.erro);
-    }
-  };
+  const receitaVideoId = (receita as any)?.video_id ?? null;
+  const receitaSlugPath = receitaVideoId
+    ? `/video/${encodeURIComponent(String(receitaVideoId))}?receita_do_dia=1`
+    : "/biblioteca";
 
   const receitaTitulo = (receita as any)?.novo_titulo ?? (receita as any)?.titulo_original ?? "Receita do dia";
   const receitaResumo = (receita as any)?.mini_resumo ?? (receita as any)?.legenda ?? "";
+
+  const pluralPts = (n: number | null | undefined) =>
+    n === 1 ? "falta 1 pt" : `faltam ${n ?? 0} pts`;
+
 
   return (
     <section
