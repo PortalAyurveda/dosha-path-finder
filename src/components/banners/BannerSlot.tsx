@@ -89,7 +89,13 @@ const BannerSlot = ({ slot, className, fallback }: BannerSlotProps) => {
     else set.add("sem_conta");
     // Dosha
     const dt = normalizarDoshaTag(doshaResult?.doshaprincipal);
-    if (dt) set.add(dt);
+    if (dt) {
+      set.add(dt);
+      // Combo (ex "vata-pitta") também elegível aos banners de cada dosha individual
+      if (dt.includes("-")) {
+        dt.split("-").forEach((d) => d && set.add(d));
+      }
+    }
     // Agni
     const at = agniTag(agniPrincipal);
     if (at) set.add(at);
