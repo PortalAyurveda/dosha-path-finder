@@ -138,7 +138,7 @@ const CursoLanding = () => {
 
   if (loading) {
     return (
-      <PageContainer title="Carregando curso…">
+      <PageContainer title="Carregando curso…" description="">
         <div className="max-w-5xl mx-auto px-4 py-12 space-y-6">
           <div className="h-72 rounded-2xl bg-muted/40 animate-pulse" />
           <div className="h-8 w-2/3 bg-muted/40 animate-pulse rounded" />
@@ -148,7 +148,7 @@ const CursoLanding = () => {
   }
   if (!curso || !curso.ativo) {
     return (
-      <PageContainer title="Curso não encontrado">
+      <PageContainer title="Curso não encontrado" description="Curso não encontrado no Portal Ayurveda.">
         <div className="max-w-3xl mx-auto px-4 py-16 text-center">
           <h1 className="mb-4">Curso não encontrado</h1>
           <Button asChild>
