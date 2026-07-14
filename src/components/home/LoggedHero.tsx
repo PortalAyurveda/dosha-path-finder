@@ -173,7 +173,7 @@ const LoggedHero = () => {
   const streak = evolucao?.streak ?? 0;
   const streakRecorde = evolucao?.streak_recorde ?? 0;
   const retornoFeitoHoje = evolucao?.retorno_feito_hoje === true;
-  const receitaFeitaHoje = evolucao?.receita_feita_hoje === true;
+  
   const seloTerapeuta = evolucao?.selo_terapeuta === true;
 
   const progressoPct =
