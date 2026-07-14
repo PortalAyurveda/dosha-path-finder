@@ -208,6 +208,81 @@ const SamkhyaProduto = () => {
               })()}
             </div>
 
+            {quemLevou.length > 0 && (
+              <section className="mt-16 md:mt-24" aria-labelledby="quem-levou">
+                <div className="text-center mb-8">
+                  <h2
+                    id="quem-levou"
+                    className="text-2xl md:text-3xl italic font-light tracking-wide"
+                    style={{
+                      color: samkhyaTokens.roxo,
+                      fontFamily: "Georgia, 'Times New Roman', serif",
+                    }}
+                  >
+                    ✦ Quem levou este também levou ✦
+                  </h2>
+                </div>
+                <div className="flex md:grid md:grid-cols-3 gap-4 md:gap-8 overflow-x-auto md:overflow-visible snap-x snap-mandatory -mx-4 px-4 md:mx-0 md:px-0">
+                  {quemLevou.map((p) => (
+                    <Link
+                      key={p.slug}
+                      to={`/samkhya/produto/${p.slug}`}
+                      className="group flex-shrink-0 w-[70%] sm:w-[45%] md:w-auto snap-start flex flex-col items-center text-center transition-transform duration-200 hover:scale-[1.02]"
+                    >
+                      <div className="aspect-square w-full flex items-center justify-center p-4 overflow-hidden">
+                        {p.imagem ? (
+                          <img
+                            src={p.imagem}
+                            alt={p.nome}
+                            loading="lazy"
+                            className="max-h-full max-w-full object-contain"
+                          />
+                        ) : (
+                          <span className="text-xs" style={{ color: samkhyaTokens.textoSec }}>
+                            Sem imagem
+                          </span>
+                        )}
+                      </div>
+                      <h3
+                        className="mt-3"
+                        style={{
+                          color: samkhyaTokens.roxo,
+                          fontFamily: "Helvetica, 'Helvetica Neue', Arial, sans-serif",
+                          fontSize: "18px",
+                          fontWeight: 600,
+                        }}
+                      >
+                        {p.nome}
+                      </h3>
+                      <p
+                        className="mt-1"
+                        style={{
+                          color: samkhyaTokens.roxo,
+                          fontFamily: "Helvetica, 'Helvetica Neue', Arial, sans-serif",
+                          fontSize: "15px",
+                          fontWeight: 600,
+                        }}
+                      >
+                        {Number(p.preco).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+                      </p>
+                      {p.resumo && (
+                        <p
+                          className="mt-1 px-2 line-clamp-1"
+                          style={{
+                            color: samkhyaTokens.textoSec,
+                            fontFamily: "Helvetica, 'Helvetica Neue', Arial, sans-serif",
+                            fontSize: "13px",
+                          }}
+                        >
+                          {p.resumo}
+                        </p>
+                      )}
+                    </Link>
+                  ))}
+                </div>
+              </section>
+            )}
+
             {relacionados.length > 0 && (
               <section className="mt-16 md:mt-24" aria-labelledby="relacionados">
                 <div className="text-center mb-8">
