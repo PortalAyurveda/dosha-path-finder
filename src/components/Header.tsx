@@ -464,31 +464,61 @@ const Header = () => {
               <CalendarHeart className="h-[18px] w-[18px] text-secondary" strokeWidth={2.2} />
             </Link>
           )}
-          {doshaResult ? (
-            <Link
-              to={profileLink}
-              className="flex items-center gap-2 h-9 pl-3 pr-2.5 rounded-full bg-white hover:bg-white/90 transition-colors border border-border/30 shadow-sm"
-            >
-              <span className="text-xs sm:text-sm font-semibold text-foreground truncate max-w-[80px] sm:max-w-[120px] leading-none">
-                {firstName ? firstName.charAt(0).toUpperCase() + firstName.slice(1).toLowerCase() : ""}
-              </span>
-              <span className="shrink-0 inline-flex items-center justify-center">
-                <HeaderDoshaPie
-                  vata={doshaResult.vatascore ?? 0}
-                  pitta={doshaResult.pittascore ?? 0}
-                  kapha={doshaResult.kaphascore ?? 0}
-                  size={20}
-                />
-              </span>
-            </Link>
-          ) : user ? (
-            <Link
-              to="/meu-dosha"
-              className="flex items-center justify-center w-9 h-9 rounded-full bg-white font-bold text-sm hover:bg-white/90 transition-colors shadow-sm"
-              style={buttonTextColor ? { color: buttonTextColor } : { color: "hsl(var(--primary))" }}
-            >
-              {userInitial.toUpperCase()}
-            </Link>
+          {user ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                {doshaResult ? (
+                  <button className="flex items-center gap-2 h-9 pl-3 pr-2.5 rounded-full bg-white hover:bg-white/90 transition-colors border border-border/30 shadow-sm">
+                    <span className="text-xs sm:text-sm font-semibold text-foreground truncate max-w-[80px] sm:max-w-[120px] leading-none">
+                      {firstName ? firstName.charAt(0).toUpperCase() + firstName.slice(1).toLowerCase() : ""}
+                    </span>
+                    <span className="shrink-0 inline-flex items-center justify-center">
+                      {profile?.avatar_url ? (
+                        <img
+                          src={profile.avatar_url}
+                          alt=""
+                          width={20}
+                          height={20}
+                          className="w-5 h-5 rounded-full object-cover"
+                        />
+                      ) : (
+                        <HeaderDoshaPie
+                          vata={doshaResult.vatascore ?? 0}
+                          pitta={doshaResult.pittascore ?? 0}
+                          kapha={doshaResult.kaphascore ?? 0}
+                          size={20}
+                        />
+                      )}
+                    </span>
+                  </button>
+                ) : (
+                  <button
+                    className="flex items-center justify-center w-9 h-9 rounded-full bg-white font-bold text-sm hover:bg-white/90 transition-colors shadow-sm overflow-hidden"
+                    style={buttonTextColor ? { color: buttonTextColor } : { color: "hsl(var(--primary))" }}
+                    aria-label="Minha conta"
+                  >
+                    {profile?.avatar_url ? (
+                      <img src={profile.avatar_url} alt="" width={36} height={36} className="w-9 h-9 object-cover" />
+                    ) : (
+                      userInitial.toUpperCase()
+                    )}
+                  </button>
+                )}
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="bg-white">
+                {doshaResult && (
+                  <DropdownMenuItem asChild>
+                    <Link to={profileLink}>Meu dosha</Link>
+                  </DropdownMenuItem>
+                )}
+                <DropdownMenuItem asChild>
+                  <Link to="/meu-perfil">Minha conta</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleSignOut}>
+                  <LogOut className="h-4 w-4 mr-2" /> Sair
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           ) : (
             <Link to="/entrar">
               <Button
