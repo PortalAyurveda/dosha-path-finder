@@ -946,6 +946,9 @@ const MaterialExtras = ({ moduloId, moduloNumero }: { moduloId: string; moduloNu
                         placeholder={k.placeholder}
                       />
                     )}
+                    {k.tipo === "material_video" && (
+                      <ChaptersEditor recurso={r} onSaved={load} />
+                    )}
                   </div>
                 ))}
               </div>
@@ -953,6 +956,76 @@ const MaterialExtras = ({ moduloId, moduloNumero }: { moduloId: string; moduloNu
           </div>
         );
       })}
+    </div>
+  );
+};
+
+// -------- Chapters editor (timestamps JSONB) --------
+const parseChaptersText = (txt: string): { t: number; titulo: string }[] => {
+  const lines = txt.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
+  const out: { t: number; titulo: string }[] = [];
+  for (const line of lines) {
+    const m = /^(\d{1,2}):(\d{2})(?::(\d{2}))?\s+(.+)$/.exec(line);
+    if (!m) continue;
+    const a = Number(m[1]);
+    const b = Number(m[2]);
+    const c = m[3] ? Number(m[3]) : null;
+    const t = c !== null ? a * 3600 + b * 60 + c : a * 60 + b;
+    out.push({ t, titulo: m[4].trim() });
+  }
+  return out.sort((x, y) => x.t - y.t);
+};
+
+const fmtT = (s: number) => {
+  const h = Math.floor(s / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  const sec = Math.floor(s % 60);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return h > 0 ? `${h}:${pad(m)}:${pad(sec)}` : `${m}:${pad(sec)}`;
+};
+
+const ChaptersEditor = ({ recurso, onSaved }: { recurso: Recurso; onSaved: () => void }) => {
+  const initial = Array.isArray((recurso as any).timestamps)
+    ? ((recurso as any).timestamps as { t: number; titulo: string }[])
+        .map((c) => `${fmtT(c.t)} ${c.titulo}`)
+        .join("\n")
+    : "";
+  const [text, setText] = useState(initial);
+  const [saving, setSaving] = useState(false);
+
+  const save = async () => {
+    setSaving(true);
+    const chapters = parseChaptersText(text);
+    const { error } = await supabase
+      .from("escola_modulo_recursos")
+      .update({ timestamps: chapters as any })
+      .eq("id", recurso.id);
+    setSaving(false);
+    if (error) toast({ title: "Erro", description: error.message });
+    else {
+      toast({ title: `${chapters.length} capítulo(s) salvos` });
+      onSaved();
+    }
+  };
+
+  return (
+    <div className="space-y-1 pt-1">
+      <label className="text-[11px] uppercase tracking-wide text-muted-foreground">
+        Capítulos (MM:SS ou HH:MM:SS + título, um por linha)
+      </label>
+      <Textarea
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+        rows={3}
+        placeholder={"0:00 Abertura\n2:15 Introdução\n12:40 Prática"}
+        className="font-mono text-xs"
+      />
+      <div className="flex justify-end">
+        <Button size="sm" variant="outline" onClick={save} disabled={saving}>
+          {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
+          salvar capítulos
+        </Button>
+      </div>
     </div>
   );
 };
