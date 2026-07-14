@@ -4946,10 +4946,12 @@ export type Database = {
       }
       user_profiles: {
         Row: {
+          avatar_url: string | null
           cpf: string | null
           created_at: string
           cupom_id: string | null
           email: string
+          endereco: Json | null
           id: string
           is_cortesia: boolean | null
           is_premium: boolean | null
@@ -4971,10 +4973,12 @@ export type Database = {
           visitor_id: string | null
         }
         Insert: {
+          avatar_url?: string | null
           cpf?: string | null
           created_at?: string
           cupom_id?: string | null
           email: string
+          endereco?: Json | null
           id: string
           is_cortesia?: boolean | null
           is_premium?: boolean | null
@@ -4996,10 +5000,12 @@ export type Database = {
           visitor_id?: string | null
         }
         Update: {
+          avatar_url?: string | null
           cpf?: string | null
           created_at?: string
           cupom_id?: string | null
           email?: string
+          endereco?: Json | null
           id?: string
           is_cortesia?: boolean | null
           is_premium?: boolean | null
@@ -5503,6 +5509,15 @@ export type Database = {
         }
       }
       atualizar_estatisticas_globais: { Args: never; Returns: undefined }
+      atualizar_meus_dados: {
+        Args: {
+          p_cpf?: string
+          p_endereco?: Json
+          p_nome_completo?: string
+          p_telefone?: string
+        }
+        Returns: Json
+      }
       busca_global: {
         Args: { p_limite_por_tipo?: number; p_termo: string }
         Returns: {
@@ -5632,6 +5647,7 @@ export type Database = {
         Args: { k: number; p: number; v: number }
         Returns: string
       }
+      get_meu_perfil_stats: { Args: never; Returns: Json }
       get_minha_evolucao: { Args: never; Returns: Json }
       get_minha_jornada: { Args: never; Returns: Json }
       has_role: {
