@@ -77,6 +77,7 @@ const AdminCursos = lazy(() => import("./pages/AdminCursos"));
 const EscolaAluno = lazy(() => import("./pages/escola/EscolaAluno"));
 const EscolaAlunoModulos = lazy(() => import("./pages/escola/EscolaAlunoModulos"));
 const EscolaAlunoModulo = lazy(() => import("./pages/escola/EscolaAlunoModulo"));
+const EscolaAlunoAula = lazy(() => import("./pages/escola/EscolaAlunoAula"));
 
 const AulaDispatcher = lazy(() => import("./pages/AulaDispatcher"));
 const WebinarConfirmado = lazy(() => import("./pages/WebinarConfirmado"));
@@ -244,6 +245,7 @@ const RoutedApp = () => {
               <Route path="/escola/aluno" element={<EscolaAluno />} />
               <Route path="/escola/aluno/modulos" element={<EscolaAlunoModulos />} />
               <Route path="/escola/aluno/modulo/:slug" element={<EscolaAlunoModulo />} />
+              <Route path="/escola/aluno/aula/:id" element={<EscolaAlunoAula />} />
 
               <Route path="/admin/banners" element={<AdminRoute><AdminBanners /></AdminRoute>} />
               <Route path="/admin/rpg" element={<AdminRoute><AdminRpg /></AdminRoute>} />

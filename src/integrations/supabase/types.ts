@@ -2154,6 +2154,39 @@ export type Database = {
           },
         ]
       }
+      escola_modulo_materiais_alunos: {
+        Row: {
+          aluno_nome: string
+          created_at: string
+          id: string
+          modulo_id: string
+          storage_path: string
+          tamanho_bytes: number | null
+          titulo: string
+          user_id: string
+        }
+        Insert: {
+          aluno_nome: string
+          created_at?: string
+          id?: string
+          modulo_id: string
+          storage_path: string
+          tamanho_bytes?: number | null
+          titulo: string
+          user_id: string
+        }
+        Update: {
+          aluno_nome?: string
+          created_at?: string
+          id?: string
+          modulo_id?: string
+          storage_path?: string
+          tamanho_bytes?: number | null
+          titulo?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       escola_modulo_recursos: {
         Row: {
           created_at: string | null
@@ -2161,6 +2194,7 @@ export type Database = {
           id: string
           modulo_id: string
           ordem: number | null
+          timestamps: Json
           tipo: string
           titulo: string
           url: string | null
@@ -2171,6 +2205,7 @@ export type Database = {
           id?: string
           modulo_id: string
           ordem?: number | null
+          timestamps?: Json
           tipo: string
           titulo: string
           url?: string | null
@@ -2181,6 +2216,7 @@ export type Database = {
           id?: string
           modulo_id?: string
           ordem?: number | null
+          timestamps?: Json
           tipo?: string
           titulo?: string
           url?: string | null
@@ -5817,6 +5853,7 @@ export type Database = {
       rpg_admin_select: { Args: { _table: string }; Returns: Json }
       rpg_play: { Args: { _args?: Json; _fn: string }; Returns: Json }
       rpg_rpc: { Args: { _args?: Json; _fn: string }; Returns: Json }
+      sou_aluno_escola: { Args: never; Returns: boolean }
       tem_acesso_curso: { Args: { p_curso_id: string }; Returns: boolean }
       termos_aplicar: { Args: { p_html: string }; Returns: string }
       text_to_bytea: { Args: { data: string }; Returns: string }
