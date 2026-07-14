@@ -4878,6 +4878,53 @@ export type Database = {
         }
         Relationships: []
       }
+      tags_alias: {
+        Row: {
+          alias: string
+          tag_slug: string
+        }
+        Insert: {
+          alias: string
+          tag_slug: string
+        }
+        Update: {
+          alias?: string
+          tag_slug?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tags_alias_tag_slug_fkey"
+            columns: ["tag_slug"]
+            isOneToOne: false
+            referencedRelation: "tags_canonicas"
+            referencedColumns: ["slug"]
+          },
+        ]
+      }
+      tags_canonicas: {
+        Row: {
+          dosha: string | null
+          emoji: string
+          nome: string
+          ordem: number
+          slug: string
+        }
+        Insert: {
+          dosha?: string | null
+          emoji?: string
+          nome: string
+          ordem?: number
+          slug: string
+        }
+        Update: {
+          dosha?: string | null
+          emoji?: string
+          nome?: string
+          ordem?: number
+          slug?: string
+        }
+        Relationships: []
+      }
       testededosha: {
         Row: {
           created_at: string | null
@@ -5227,6 +5274,18 @@ export type Database = {
           schema_nome: string | null
           status_saude: string | null
           tabela: string | null
+        }
+        Relationships: []
+      }
+      conteudo_tagged: {
+        Row: {
+          id: string | null
+          imagem: string | null
+          publicado_em: string | null
+          rota: string | null
+          tags: string[] | null
+          tipo: string | null
+          titulo: string | null
         }
         Relationships: []
       }
@@ -5791,6 +5850,22 @@ export type Database = {
           xp_total: number
         }[]
       }
+      match_conteudo: {
+        Args: {
+          p_dosha?: string
+          p_limite_por_tipo?: number
+          p_tags?: string[]
+        }
+        Returns: {
+          id: string
+          imagem: string
+          pontos: number
+          rota: string
+          tags: string[]
+          tipo: string
+          titulo: string
+        }[]
+      }
       match_documents: {
         Args: {
           filter?: Json
@@ -5870,6 +5945,7 @@ export type Database = {
       rpg_play: { Args: { _args?: Json; _fn: string }; Returns: Json }
       rpg_rpc: { Args: { _args?: Json; _fn: string }; Returns: Json }
       sou_aluno_escola: { Args: never; Returns: boolean }
+      tag_normalizar: { Args: { p: string }; Returns: string }
       tem_acesso_curso: { Args: { p_curso_id: string }; Returns: boolean }
       termos_aplicar: { Args: { p_html: string }; Returns: string }
       text_to_bytea: { Args: { data: string }; Returns: string }
