@@ -167,6 +167,32 @@ const SamkhyaProduto = () => {
             {/* Abas de conteúdo clínico — largura total, abaixo da foto/compra */}
             <div className="mt-12 md:mt-16 max-w-4xl mx-auto">
               <TabsConteudo descricaoProduto={produto.descricao_produto} />
+              {(() => {
+                const GENERICOS = new Set([
+                  "anti", "kit", "pack", "para", "com", "sem", "the", "and", "que",
+                  "geleia", "óleo", "oleo", "tonico", "tônico", "cha", "chá",
+                  "infusao", "infusão", "extrato", "cápsula", "capsula", "capsulas",
+                  "cápsulas", "pó", "po", "creme", "elixir", "samkhya",
+                ]);
+                const words = (produto.nome_display || "")
+                  .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+                  .toLowerCase()
+                  .replace(/[^a-z0-9\s]/g, " ")
+                  .split(/\s+/)
+                  .filter(Boolean);
+                const chosen = words.find((w) => w.length >= 4 && !GENERICOS.has(w)) || words[0] || "";
+                if (!chosen) return null;
+                return (
+                  <div className="mt-6 text-center">
+                    <Link
+                      to={`/pesquisa?q=${encodeURIComponent(chosen)}`}
+                      className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-primary transition-colors underline-offset-4 hover:underline"
+                    >
+                      Aulas, receitas e artigos sobre este tema →
+                    </Link>
+                  </div>
+                );
+              })()}
             </div>
 
             {relacionados.length > 0 && (

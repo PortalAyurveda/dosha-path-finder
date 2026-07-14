@@ -1,9 +1,10 @@
 import { ReactNode } from "react";
 import { Helmet } from "react-helmet-async";
 import { Link, useLocation } from "react-router-dom";
-import { BarChart3, MessageCircle, LineChart } from "lucide-react";
+import { BarChart3, MessageCircle, LineChart, ArrowRight } from "lucide-react";
 import { C, SERIF, SANS, LEAF, fmtDate } from "./theme";
 import { useLatestDate } from "./useMetricasData";
+import { useUser } from "@/contexts/UserContext";
 
 interface MetricasShellProps {
   children: ReactNode;
@@ -21,6 +22,9 @@ const TABS = [
 const MetricasShell = ({ children, title, description, canonicalPath }: MetricasShellProps) => {
   const { pathname } = useLocation();
   const { data: date } = useLatestDate();
+  const { user } = useUser();
+  const ctaText = user ? "Ver meu mapa completo" : "Descubra o seu: fazer o teste de dosha";
+  const ctaHref = user ? "/meu-dosha" : "/teste-de-dosha";
 
   return (
     <div style={{ background: C.bg, minHeight: "100vh" }}>
@@ -78,6 +82,23 @@ const MetricasShell = ({ children, title, description, canonicalPath }: Metricas
 
         {/* Conteúdo da rota */}
         {children}
+
+        {/* CTA */}
+        <div className="pt-4">
+          <Link
+            to={ctaHref}
+            className="mx-auto flex items-center justify-center gap-2 px-6 py-4 text-sm md:text-base font-semibold transition-all hover:-translate-y-0.5 max-w-md"
+            style={{
+              fontFamily: SANS,
+              borderRadius: LEAF,
+              background: C.primary,
+              color: "#fff",
+              boxShadow: `0 10px 30px -12px ${C.primary}80`,
+            }}
+          >
+            {ctaText} <ArrowRight className="w-4 h-4" />
+          </Link>
+        </div>
 
         {/* Rodapé */}
         <footer className="text-center pt-4 border-t" style={{ borderColor: C.border }}>
