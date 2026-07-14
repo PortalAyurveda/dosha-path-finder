@@ -670,6 +670,7 @@ const MinhaRotina = () => {
                   feito={acertoRotinaSlots.has(s.slot)}
                   agniFracoOuIrregular={agniFracoOuIrregular}
                   onToggleFeito={() => row && toggleFeito(row)}
+                  focus={!!nugget && nugget.id === focusNuggetId}
                 />
               );
             })}
