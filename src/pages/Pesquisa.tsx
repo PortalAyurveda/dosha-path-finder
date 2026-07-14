@@ -148,6 +148,8 @@ const Pesquisa = () => {
               <Sparkles className="h-5 w-5" />
               Perguntar à Akasha: <span className="italic">"{debounced}"</span>
             </button>
+
+            <BannerSlot slot="pesquisa_pos" className="[&:empty]:hidden" />
           </div>
         )}
       </div>
