@@ -22,6 +22,9 @@ const TABS = [
 const MetricasShell = ({ children, title, description, canonicalPath }: MetricasShellProps) => {
   const { pathname } = useLocation();
   const { data: date } = useLatestDate();
+  const { user } = useUser();
+  const ctaText = user ? "Ver meu mapa completo" : "Descubra o seu: fazer o teste de dosha";
+  const ctaHref = user ? "/meu-dosha" : "/teste-de-dosha";
 
   return (
     <div style={{ background: C.bg, minHeight: "100vh" }}>
