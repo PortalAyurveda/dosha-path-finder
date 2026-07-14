@@ -13,6 +13,7 @@ import CarouselSection from "@/components/samkhya/CarouselSection";
 import MinimalProductCard from "@/components/samkhya/MinimalProductCard";
 import KitCard from "@/components/samkhya/KitCard";
 import { samkhyaTokens } from "@/components/samkhya/tokens";
+import BannerSlot from "@/components/banners/BannerSlot";
 
 const DESTAQUES_SLUGS = ["tonico-forca", "panaceia-desidratada", "madhu-vata"];
 
