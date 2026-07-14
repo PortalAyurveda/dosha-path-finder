@@ -262,7 +262,7 @@ const LoggedHero = () => {
       const ids = Array.from(new Set(doDia.map((r) => r.nugget_id!).filter(Boolean)));
       const { data: nugs } = await supabase
         .from("rotina_nuggets")
-        .select("id, titulo, icone_lucide, imagem_url, vata, pitta, kapha, periodo")
+        .select("id, titulo, icone_lucide, imagem_url, vata, pitta, kapha, periodo, nugget_json")
         .in("id", ids);
       const byId = new Map<string, any>();
       (nugs ?? []).forEach((n: any) => byId.set(n.id, n));
