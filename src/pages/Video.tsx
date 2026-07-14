@@ -42,7 +42,7 @@ const Video = () => {
   const navigate = useNavigate();
   const searchParams = new URLSearchParams(location.search);
   const initialTime = searchParams.get("t");
-  const isReceitaDoDia = searchParams.get("receita_do_dia") === "1";
+  const receitaDoDiaParam = searchParams.get("receita_do_dia") === "1";
   const [startSeconds, setStartSeconds] = useState<number | null>(initialTime ? parseInt(initialTime, 10) : null);
   const { user } = useUser();
   const [receitaMarcada, setReceitaMarcada] = useState(false);
@@ -62,34 +62,45 @@ const Video = () => {
             .eq("video_id", stateVideoId)
             .maybeSingle();
           if (error) continue;
-          if (data) return data;
+          if (data) return data as any;
         }
         return null;
       }
 
-      // Direct URL access (deslogado / link compartilhado): resolve via server-side RPC
-      // que casa por slug em todas as tabelas, independente do número de registros.
+      // 1) Preferido: RPC canônica (resolve slug bonito ou video_id antigo)
+      try {
+        const { data: canon, error: canonErr } = await (supabase.rpc as any)("find_video_canonico", { _slug: slug! });
+        if (!canonErr) {
+          const row = Array.isArray(canon) ? canon[0] : canon;
+          if (row) return row as any;
+        }
+      } catch (e) {
+        console.warn("find_video_canonico indisponível, usando fallback:", e);
+      }
+
+      // 2) Fallback legado
       const { data, error } = await supabase.rpc("find_video_by_slug", { _slug: slug! });
       if (error) {
         console.error("find_video_by_slug error:", error);
         return null;
       }
-      if (Array.isArray(data) && data.length > 0) return data[0];
+      if (Array.isArray(data) && data.length > 0) return data[0] as any;
       return null;
     },
     enabled: !!slug,
   });
 
   const videoId = video?.video_id;
+  const isReceita = (video as any)?.is_receita === true || receitaDoDiaParam;
 
-  // Marca essa receita como feita no dia (quando abrimos com ?receita_do_dia=1)
+  // Marca essa receita como feita no dia
   const { data: evolucao } = useQuery({
     queryKey: ["minha-evolucao", user?.id],
     queryFn: async () => {
       const { data } = await (supabase.rpc as any)("get_minha_evolucao");
       return data ?? {};
     },
-    enabled: !!user && isReceitaDoDia,
+    enabled: !!user && isReceita,
     staleTime: 60 * 1000,
   });
   const receitaFeitaHoje = (evolucao as any)?.receita_feita_hoje === true || receitaMarcada;
