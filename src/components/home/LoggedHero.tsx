@@ -217,51 +217,57 @@ const LoggedHero = () => {
           {/* ESQUERDA: Slot A + Slot B */}
           <div className="lg:col-span-3 flex flex-col gap-4 order-2 lg:order-1">
             {/* SLOT A */}
-            <BannerSlot
-              slot="loggedhero"
-              fallback={
-                <div className="bg-card rounded-2xl p-5 md:p-6 border border-border shadow-md">
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-                    Próximo passo da sua jornada
-                  </p>
-                  {temAcessoRotina ? (
-                    <>
-                      <h3 className="font-serif font-bold text-lg md:text-xl mt-1" style={{ color: C.primary }}>
-                        Sua rotina de hoje
-                      </h3>
-                      <p className="text-sm text-muted-foreground mt-1">
-                        Os cuidados personalizados desenhados para o seu momento.
-                      </p>
-                      <Link
-                        to="/minha-rotina"
-                        className="inline-flex items-center gap-1.5 mt-3 text-sm font-semibold"
-                        style={{ color: C.primary }}
-                      >
-                        Sua rotina de hoje <ArrowRight className="h-4 w-4" />
-                      </Link>
-                    </>
-                  ) : (
-                    <>
-                      <h3 className="font-serif font-bold text-lg md:text-xl mt-1" style={{ color: C.primary }}>
-                        Monte sua rotina personalizada
-                      </h3>
-                      <p className="text-sm text-muted-foreground mt-1">
-                        Alimentação, sono e cuidados diários baseados no seu dosha.
-                      </p>
-                      <Button asChild size="lg" variant="secondary" className="mt-3">
-                        <Link to="/minha-rotina">Começar agora</Link>
-                      </Button>
-                    </>
-                  )}
-                </div>
-              }
-            />
+            <div className="flex-1 flex">
+              <BannerSlot
+                slot="loggedhero"
+                className="w-full flex"
+                fallback={
+                  <div className="bg-card rounded-2xl p-5 md:p-6 border border-border shadow-md w-full h-full flex flex-col justify-center">
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                      Próximo passo da sua jornada
+                    </p>
+                    {temAcessoRotina ? (
+                      <>
+                        <h3 className="font-serif font-bold text-lg md:text-xl mt-1" style={{ color: C.primary }}>
+                          Sua rotina de hoje
+                        </h3>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          Os cuidados personalizados desenhados para o seu momento.
+                        </p>
+                        <Link
+                          to="/minha-rotina"
+                          className="inline-flex items-center gap-1.5 mt-3 text-sm font-semibold"
+                          style={{ color: C.primary }}
+                        >
+                          Sua rotina de hoje <ArrowRight className="h-4 w-4" />
+                        </Link>
+                      </>
+                    ) : (
+                      <>
+                        <h3 className="font-serif font-bold text-lg md:text-xl mt-1" style={{ color: C.primary }}>
+                          Monte sua rotina personalizada
+                        </h3>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          Alimentação, sono e cuidados diários baseados no seu dosha.
+                        </p>
+                        <Button asChild size="lg" variant="secondary" className="mt-3 w-fit">
+                          <Link to="/minha-rotina">Começar agora</Link>
+                        </Button>
+                      </>
+                    )}
+                  </div>
+                }
+              />
+            </div>
 
-            {/* SLOT B */}
+            {/* SLOT B — receita do dia, card inteiro clicável */}
             <BannerSlot
               slot="loggedhero_b"
               fallback={
-                <div className="bg-card rounded-2xl p-4 md:p-5 border border-border shadow-sm flex gap-4 items-center">
+                <Link
+                  to={receitaSlugPath}
+                  className="group bg-card rounded-2xl p-4 md:p-5 border border-border shadow-sm flex gap-4 items-center transition-all hover:-translate-y-0.5 hover:shadow-md"
+                >
                   <div
                     className="shrink-0 w-14 h-14 rounded-xl flex items-center justify-center"
                     style={{ background: `${C.pitta}22` }}
@@ -279,25 +285,17 @@ const LoggedHero = () => {
                       <p className="text-xs text-muted-foreground line-clamp-1 mt-0.5">{receitaResumo}</p>
                     )}
                   </div>
-                  <Button
-                    size="sm"
-                    variant={receitaFeitaHoje ? "outline" : "secondary"}
-                    disabled={receitaFeitaHoje || !user}
-                    onClick={marcarReceita}
-                    className="shrink-0"
+                  <span
+                    className="shrink-0 inline-flex items-center gap-1 text-xs font-semibold"
+                    style={{ color: C.primary }}
                   >
-                    {receitaFeitaHoje ? (
-                      <>
-                        <Check className="h-4 w-4 mr-1" /> Feita hoje
-                      </>
-                    ) : (
-                      "Fiz (+2 pts)"
-                    )}
-                  </Button>
-                </div>
+                    ver receita <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-0.5 transition-transform" />
+                  </span>
+                </Link>
               }
             />
           </div>
+
 
           {/* DIREITA: SEU HOJE — forma de folha */}
           <div className="lg:col-span-2 order-1 lg:order-2">
