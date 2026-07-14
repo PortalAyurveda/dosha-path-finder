@@ -79,6 +79,8 @@ const HeaderDoshaPie = ({ vata, pitta, kapha, size = 22 }: { vata: number; pitta
 
 const Header = () => {
   const [open, setOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+
   const location = useLocation();
   const navigate = useNavigate();
   const { user, doshaResult, profile, signOut } = useUser();
