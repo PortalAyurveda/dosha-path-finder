@@ -1428,16 +1428,14 @@ const SuplementosSection = ({ vata, pitta, kapha }: SuplementosSectionProps) => 
                   {resumo}
                 </p>
               )}
-              {link && (
-                <a
-                  href={link}
-                  target="_blank"
-                  rel="noopener noreferrer"
+              {slug && (
+                <Link
+                  to={`/samkhya/produto/${slug}`}
                   className="inline-flex items-center gap-1.5 self-start text-sm font-medium text-primary hover:underline"
                 >
                   ver na loja
-                  <LucideIcons.ExternalLink className="h-3.5 w-3.5" />
-                </a>
+                  <LucideIcons.ArrowRight className="h-3.5 w-3.5" />
+                </Link>
               )}
             </Card>
           );
