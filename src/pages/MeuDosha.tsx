@@ -966,6 +966,9 @@ const MeuDosha = () => {
           return vitrineCard;
         })()}
 
+        <BannerSlot slot="meu_dosha_meio" className="[&:empty]:hidden" />
+
+
 
 
         {/* ===== TABS ===== */}
