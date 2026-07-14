@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import MetricasMiniBanner from "./MetricasMiniBanner";
+import MundoQueSeAbre from "./MundoQueSeAbre";
 
 const DoshaPreview = () => (
   <div className="relative select-none pointer-events-none">
@@ -162,7 +162,7 @@ const Hero = () => {
             <div className="bg-card/80 backdrop-blur-sm rounded-3xl px-8 py-10 xl:px-10 xl:py-12 border border-border shadow-lg w-full max-w-xl mx-auto">
               <DoshaPreview />
             </div>
-            <MetricasMiniBanner />
+            <MundoQueSeAbre />
 
           </div>
 
@@ -251,7 +251,7 @@ const Hero = () => {
         </div>
 
         <div className="lg:hidden mt-6">
-          <MetricasMiniBanner />
+          <MundoQueSeAbre />
         </div>
       </div>
 
