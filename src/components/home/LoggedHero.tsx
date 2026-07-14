@@ -377,17 +377,17 @@ const LoggedHero = () => {
                 </div>
                 <p className="text-[10px] text-muted-foreground mt-1">
                   {proximaClasse
-                    ? `faltam ${pontosParaProxima} pts para ${proximaClasse}`
+                    ? `${pluralPts(pontosParaProxima)} para ${proximaClasse}`
                     : "classe máxima"}
                 </p>
               </div>
 
-              {/* Streak */}
+              {/* Constância */}
               <div className="mt-3 flex items-center justify-between">
                 <div className="flex items-center gap-1.5">
                   <Flame className="h-4 w-4" style={{ color: C.pitta }} />
                   <span className="text-sm font-semibold" style={{ color: C.primary }}>
-                    {streak > 0 ? `${streak} dias seguidos` : "Comece seu streak hoje"}
+                    {streak > 0 ? `Constância: ${streak} ${streak === 1 ? "dia" : "dias"}` : "Sua constância começa hoje"}
                   </span>
                 </div>
                 {streakRecorde > 0 && (
@@ -395,23 +395,39 @@ const LoggedHero = () => {
                 )}
               </div>
 
-              {/* Gesto de hoje */}
+              {/* Seu cuidado de hoje */}
               <div className="mt-3 pt-3 border-t border-border">
                 {retornoFeitoHoje ? (
-                  <div className="flex items-center gap-1.5 text-xs font-semibold" style={{ color: C.kapha.replace("hsl(var(--kapha))", "hsl(var(--kapha))") }}>
-                    <Check className="h-4 w-4" /> Ponto de hoje garantido
+                  <div
+                    className="flex items-center gap-1.5 text-xs font-semibold"
+                    style={{ color: "hsl(var(--kapha))" }}
+                  >
+                    <Check className="h-4 w-4" /> Você já se cuidou hoje
                   </div>
+                ) : artigo?.link_do_artigo ? (
+                  <Link
+                    to={`/blog/${artigo.link_do_artigo}`}
+                    className="flex items-start justify-between gap-2 text-xs font-semibold group"
+                    style={{ color: C.primary }}
+                  >
+                    <span className="line-clamp-2">
+                      <span className="text-muted-foreground font-normal">Seu cuidado de hoje: </span>
+                      {artigo.title}
+                    </span>
+                    <ArrowRight className="h-4 w-4 shrink-0 mt-0.5 group-hover:translate-x-0.5 transition-transform" />
+                  </Link>
                 ) : (
                   <Link
-                    to="/biblioteca"
+                    to="/blog"
                     className="flex items-center justify-between gap-2 text-xs font-semibold group"
                     style={{ color: C.primary }}
                   >
-                    <span>Ganhe seu ponto de hoje: curta um conteúdo</span>
+                    <span>Seu cuidado de hoje</span>
                     <ArrowRight className="h-4 w-4 shrink-0 group-hover:translate-x-0.5 transition-transform" />
                   </Link>
                 )}
               </div>
+
             </div>
           </div>
         </div>
