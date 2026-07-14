@@ -656,7 +656,7 @@ const MinhaRotina = () => {
           <h2 className="text-xs uppercase tracking-wider text-muted-foreground font-semibold mb-2">
             Sua rotina
           </h2>
-          <div className="space-y-3">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
             {MEAL_SLOTS.map((s) => {
               const row = rowBySlot.get(s.slot);
               const nugget = row?.nugget_id ? nuggetsById.get(row.nugget_id) : undefined;
@@ -670,6 +670,7 @@ const MinhaRotina = () => {
                   agniFracoOuIrregular={agniFracoOuIrregular}
                   onToggleFeito={() => row && toggleFeito(row)}
                   focus={!!nugget && nugget.id === focusNuggetId}
+                  compact
                 />
               );
             })}
@@ -1002,6 +1003,7 @@ interface SlotCardProps {
   agniFracoOuIrregular: boolean;
   onToggleFeito: () => void;
   focus?: boolean;
+  compact?: boolean;
 }
 
 const RotinaSlotCard = ({
@@ -1012,6 +1014,7 @@ const RotinaSlotCard = ({
   agniFracoOuIrregular,
   onToggleFeito,
   focus = false,
+  compact = false,
 }: SlotCardProps) => {
   const [open, setOpen] = useState(false);
   const [porqueOpen, setPorqueOpen] = useState(false);
@@ -1052,46 +1055,100 @@ const RotinaSlotCard = ({
       )}
     >
       <Collapsible open={open} onOpenChange={setOpen}>
-        <div className="flex items-center gap-3 p-4">
-          <div className="h-10 w-10 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0">
-            <IconCmp className="h-5 w-5" />
-          </div>
-
-          <CollapsibleTrigger asChild>
-            <button className="flex-1 text-left min-w-0">
-              <div className="text-[11px] uppercase tracking-wider text-muted-foreground">
-                {slotLabel}
-              </div>
-              <div className="flex items-center gap-1.5 min-w-0">
-                <span className="font-medium text-foreground truncate">
-                  {nugget?.titulo ?? "—"}
-                </span>
-                {mostrarChama && (
-                  <Flame
-                    className="h-4 w-4 text-secondary shrink-0"
-                    aria-label="bom para o seu agni"
-                  />
+        {compact ? (
+          <div className="relative">
+            <button
+              onClick={onToggleFeito}
+              disabled={!row}
+              className="absolute top-2 right-2 z-10 p-1.5 rounded-full bg-background/80 backdrop-blur hover:bg-muted disabled:opacity-40"
+              aria-label="marcar como praticado"
+            >
+              <Star
+                className={cn(
+                  "h-5 w-5",
+                  feito ? "fill-secondary text-secondary" : "text-muted-foreground"
                 )}
-              </div>
+              />
             </button>
-          </CollapsibleTrigger>
+            <CollapsibleTrigger asChild>
+              <button className="w-full text-left">
+                <div className="aspect-[4/3] w-full bg-muted overflow-hidden">
+                  {nugget?.imagem_url ? (
+                    <img
+                      src={nugget.imagem_url}
+                      alt={nugget.titulo}
+                      loading="lazy"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-primary/5">
+                      <IconCmp className="h-10 w-10 text-primary/60" />
+                    </div>
+                  )}
+                </div>
+                <div className="p-3">
+                  <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
+                    {slotLabel}
+                  </div>
+                  <div className="flex items-start gap-1.5 mt-0.5">
+                    <span className="font-medium text-foreground text-sm leading-snug line-clamp-2">
+                      {nugget?.titulo ?? "—"}
+                    </span>
+                    {mostrarChama && (
+                      <Flame className="h-3.5 w-3.5 text-secondary shrink-0 mt-0.5" aria-label="bom para o seu agni" />
+                    )}
+                  </div>
+                  {nugget?.nugget_json?.resumo && (
+                    <p className="mt-1.5 text-xs text-muted-foreground line-clamp-2 leading-snug">
+                      {nugget.nugget_json.resumo}
+                    </p>
+                  )}
+                </div>
+              </button>
+            </CollapsibleTrigger>
+          </div>
+        ) : (
+          <div className="flex items-center gap-3 p-4">
+            <div className="h-10 w-10 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0">
+              <IconCmp className="h-5 w-5" />
+            </div>
 
-          <button
-            onClick={onToggleFeito}
-            disabled={!row}
-            className="p-2 rounded-full hover:bg-muted disabled:opacity-40"
-            aria-label="marcar como praticado"
-          >
-            <Star
-              className={cn(
-                "h-7 w-7",
-                feito
-                  ? "fill-secondary text-secondary"
-                  : "text-muted-foreground"
-              )}
-            />
-          </button>
-        </div>
+            <CollapsibleTrigger asChild>
+              <button className="flex-1 text-left min-w-0">
+                <div className="text-[11px] uppercase tracking-wider text-muted-foreground">
+                  {slotLabel}
+                </div>
+                <div className="flex items-center gap-1.5 min-w-0">
+                  <span className="font-medium text-foreground truncate">
+                    {nugget?.titulo ?? "—"}
+                  </span>
+                  {mostrarChama && (
+                    <Flame
+                      className="h-4 w-4 text-secondary shrink-0"
+                      aria-label="bom para o seu agni"
+                    />
+                  )}
+                </div>
+              </button>
+            </CollapsibleTrigger>
+
+            <button
+              onClick={onToggleFeito}
+              disabled={!row}
+              className="p-2 rounded-full hover:bg-muted disabled:opacity-40"
+              aria-label="marcar como praticado"
+            >
+              <Star
+                className={cn(
+                  "h-7 w-7",
+                  feito
+                    ? "fill-secondary text-secondary"
+                    : "text-muted-foreground"
+                )}
+              />
+            </button>
+          </div>
+        )}
 
         <CollapsibleContent>
           {nugget && (
