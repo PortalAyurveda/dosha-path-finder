@@ -225,18 +225,11 @@ const Video = () => {
                 </div>
               )}
 
-              {/* Heart destaque na linha do título */}
-              <div className="flex items-start justify-between gap-3">
-                <h1 className="font-serif text-2xl md:text-3xl font-bold text-primary flex-1">{title}</h1>
-                {videoId && <HeartButton contentType="video" contentId={videoId} variant="destaque" className="mt-1 shrink-0" />}
-              </div>
-
-
-              {/* Title & Tags & Heart */}
+              {/* Title & Tags & Heart destaque */}
               <div className="space-y-3">
                 <div className="flex items-start justify-between gap-3">
-                  <h1 className="font-serif text-2xl md:text-3xl font-bold text-primary">{title}</h1>
-                  {videoId && <HeartButton contentType="video" contentId={videoId} className="mt-1 shrink-0" />}
+                  <h1 className="font-serif text-2xl md:text-3xl font-bold text-primary flex-1">{title}</h1>
+                  {videoId && <HeartButton contentType="video" contentId={videoId} variant="destaque" className="mt-1 shrink-0" />}
                 </div>
                 {tagList.length > 0 && (
                   <div className="flex flex-wrap gap-2">
@@ -248,6 +241,7 @@ const Video = () => {
                   </div>
                 )}
               </div>
+
 
               {/* Timestamps */}
               {timestamps.length > 0 && (
