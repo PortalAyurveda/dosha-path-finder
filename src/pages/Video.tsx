@@ -42,7 +42,10 @@ const Video = () => {
   const navigate = useNavigate();
   const searchParams = new URLSearchParams(location.search);
   const initialTime = searchParams.get("t");
+  const isReceitaDoDia = searchParams.get("receita_do_dia") === "1";
   const [startSeconds, setStartSeconds] = useState<number | null>(initialTime ? parseInt(initialTime, 10) : null);
+  const { user } = useUser();
+  const [receitaMarcada, setReceitaMarcada] = useState(false);
 
   // videoId can come from router state (internal nav) or we resolve from slug
   const stateVideoId = (location.state as { videoId?: string })?.videoId;
