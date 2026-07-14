@@ -112,7 +112,9 @@ type Assinatura = {
   proxima_cobranca: string | null;
   cancela_no_fim: boolean | null;
   valor: number | null;
+  cortesia?: boolean | null;
 } | null;
+
 
 type Matricula = {
   id: string;
@@ -689,6 +691,18 @@ const AssinaturaCard = ({
             conhecer os planos
           </Link>
         </div>
+      ) : assinatura.cortesia ? (
+        <div className="space-y-3">
+          <div className="text-lg font-semibold text-foreground">
+            Acesso cortesia — um presente da casa 🌿
+          </div>
+          <div className="text-sm text-muted-foreground">{planoLabel}</div>
+          <div className="text-sm">
+            <Link to="/assinar" className="text-primary hover:underline font-medium">
+              conhecer os planos
+            </Link>
+          </div>
+        </div>
       ) : (
         <div className="space-y-4">
           <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
@@ -748,6 +762,7 @@ const AssinaturaCard = ({
           )}
         </div>
       )}
+
     </Card>
   );
 };
