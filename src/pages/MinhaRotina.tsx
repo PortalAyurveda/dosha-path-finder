@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Navigate, Link } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import * as LucideIcons from "lucide-react";
@@ -129,6 +129,13 @@ const MinhaRotina = () => {
   const queryClient = useQueryClient();
   const [diaSelecionado, setDiaSelecionado] = useState<number>(1);
 
+  // ?item= : deep-link para abrir um nugget específico já expandido
+  const [focusNuggetId, setFocusNuggetId] = useState<string | null>(() => {
+    if (typeof window === "undefined") return null;
+    return new URLSearchParams(window.location.search).get("item");
+  });
+  const [focusHandled, setFocusHandled] = useState<boolean>(false);
+
   // Retorno do Stripe: /minha-rotina?assinatura=ok — polling do perfil até 30s
   const [confirmandoPagamento, setConfirmandoPagamento] = useState<boolean>(() => {
     if (typeof window === "undefined") return false;
@@ -236,6 +243,21 @@ const MinhaRotina = () => {
       return (data ?? []) as Nugget[];
     },
   });
+
+  // Deep-link ?item= : ao carregar rotinaRows, pular pro dia do nugget-alvo
+  useEffect(() => {
+    if (!focusNuggetId || focusHandled || !rotinaRows) return;
+    const match = rotinaRows.find((r) => r.nugget_id === focusNuggetId);
+    if (!match) return;
+    if (match.dia !== diaSelecionado) setDiaSelecionado(match.dia);
+    setFocusHandled(true);
+    // limpa da URL (mantém os outros params)
+    const url = new URL(window.location.href);
+    url.searchParams.delete("item");
+    window.history.replaceState({}, "", url.pathname + (url.search ? url.search : ""));
+  }, [focusNuggetId, focusHandled, rotinaRows, diaSelecionado]);
+
+
 
 
   const nuggetsById = useMemo(() => {
@@ -648,6 +670,7 @@ const MinhaRotina = () => {
                   feito={acertoRotinaSlots.has(s.slot)}
                   agniFracoOuIrregular={agniFracoOuIrregular}
                   onToggleFeito={() => row && toggleFeito(row)}
+                  focus={!!nugget && nugget.id === focusNuggetId}
                 />
               );
             })}
@@ -672,6 +695,7 @@ const MinhaRotina = () => {
                   feito={acertoRotinaSlots.has(s.slot)}
                   agniFracoOuIrregular={agniFracoOuIrregular}
                   onToggleFeito={() => row && toggleFeito(row)}
+                  focus={!!nugget && nugget.id === focusNuggetId}
                 />
               );
             })}
@@ -978,6 +1002,7 @@ interface SlotCardProps {
   feito: boolean;
   agniFracoOuIrregular: boolean;
   onToggleFeito: () => void;
+  focus?: boolean;
 }
 
 const RotinaSlotCard = ({
@@ -987,10 +1012,24 @@ const RotinaSlotCard = ({
   feito,
   agniFracoOuIrregular,
   onToggleFeito,
+  focus = false,
 }: SlotCardProps) => {
   const [open, setOpen] = useState(false);
   const [porqueOpen, setPorqueOpen] = useState(false);
   const [videoOpen, setVideoOpen] = useState(false);
+  const cardRef = useRef<HTMLDivElement | null>(null);
+  const [ringOn, setRingOn] = useState(false);
+
+  useEffect(() => {
+    if (!focus) return;
+    setOpen(true);
+    setRingOn(true);
+    const t1 = setTimeout(() => {
+      cardRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 60);
+    const t2 = setTimeout(() => setRingOn(false), 2200);
+    return () => { clearTimeout(t1); clearTimeout(t2); };
+  }, [focus]);
 
   const iconName = nugget?.icone_lucide || "Circle";
   const IconCmp =
@@ -1006,7 +1045,13 @@ const RotinaSlotCard = ({
   const tsSec = parseTimestamp(nugget?.video_timestamp ?? null);
 
   return (
-    <Card className="overflow-hidden">
+    <Card
+      ref={cardRef}
+      className={cn(
+        "overflow-hidden transition-shadow duration-500",
+        ringOn && "ring-2 ring-primary ring-offset-2 ring-offset-background"
+      )}
+    >
       <Collapsible open={open} onOpenChange={setOpen}>
         <div className="flex items-center gap-3 p-4">
           <div className="h-10 w-10 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0">
