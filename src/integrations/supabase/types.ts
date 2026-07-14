@@ -5941,6 +5941,17 @@ export type Database = {
         Args: { p_contexto: string; p_email: string }
         Returns: undefined
       }
+      produtos_relacionados: {
+        Args: { p_limite?: number; p_slug: string }
+        Returns: {
+          imagem: string
+          nome: string
+          pontos: number
+          preco: number
+          resumo: string
+          slug: string
+        }[]
+      }
       receita_do_dia: {
         Args: never
         Returns: {
