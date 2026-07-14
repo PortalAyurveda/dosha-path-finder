@@ -77,6 +77,8 @@ const AdminCobranca = lazy(() => import("./pages/AdminCobranca"));
 const AdminAlunos = lazy(() => import("./pages/AdminAlunos"));
 const AdminEscola = lazy(() => import("./pages/AdminEscola"));
 const AdminCursos = lazy(() => import("./pages/AdminCursos"));
+const EscolaHub = lazy(() => import("./pages/escola/EscolaHub"));
+const EscolaCurso = lazy(() => import("./pages/escola/EscolaCurso"));
 const EscolaAluno = lazy(() => import("./pages/escola/EscolaAluno"));
 const EscolaAlunoModulos = lazy(() => import("./pages/escola/EscolaAlunoModulos"));
 const EscolaAlunoModulo = lazy(() => import("./pages/escola/EscolaAlunoModulo"));
@@ -246,7 +248,8 @@ const RoutedApp = () => {
               <Route path="/admin/cursos" element={<AdminRoute><AdminCursos /></AdminRoute>} />
 
               {/* Área do Aluno da Formação (rota escondida) */}
-              <Route path="/escola" element={<Navigate to="/escola/aluno" replace />} />
+              <Route path="/escola" element={<EscolaHub />} />
+              <Route path="/escola/curso/:slug" element={<EscolaCurso />} />
               <Route path="/escola/aluno" element={<EscolaAluno />} />
               <Route path="/escola/aluno/modulos" element={<EscolaAlunoModulos />} />
               <Route path="/escola/aluno/modulo/:slug" element={<EscolaAlunoModulo />} />
