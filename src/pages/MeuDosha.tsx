@@ -759,9 +759,11 @@ const MeuDosha = () => {
     }
   }, [result, queryClient]);
 
+  const visitorGuess = !!id && !user;
+
   if (registroLoading) {
     return (
-      <PageContainer title="Meu Dosha" description="Carregando resultado...">
+      <PageContainer title="Meu Dosha" description="Carregando resultado..." noindex={visitorGuess}>
         <div className="flex items-center justify-center min-h-[60vh]">
           <Loader2 className="w-8 h-8 animate-spin text-primary" />
         </div>
@@ -771,7 +773,7 @@ const MeuDosha = () => {
 
   if (!id || !result) {
     return (
-      <PageContainer title="Meu Dosha" description="Resultado não encontrado.">
+      <PageContainer title="Meu Dosha" description="Resultado não encontrado." noindex={visitorGuess}>
         <div className="flex flex-col items-center justify-center min-h-[50vh] text-center gap-4">
           <p className="text-xl font-serif text-foreground">Resultado não encontrado</p>
           <p className="text-muted-foreground">Faça o teste para descobrir seu dosha.</p>
@@ -823,7 +825,7 @@ const MeuDosha = () => {
   // ===== Gate de login: deslogado vê só prévia (retrato clínico) =====
   if (authLoading) {
     return (
-      <PageContainer title="Meu Dosha" description="Carregando...">
+      <PageContainer title="Meu Dosha" description="Carregando..." noindex={visitorGuess}>
         <div className="flex items-center justify-center min-h-[60vh]">
           <Loader2 className="w-8 h-8 animate-spin text-primary" />
         </div>
@@ -837,12 +839,12 @@ const MeuDosha = () => {
 
 
   return (
-    <PageContainer title={`Meu Dosha — ${formattedNome}`} description={`Resultado do teste de dosha de ${formattedNome}: ${result.doshaprincipal}`}>
-      {isVisitor && (
-        <Helmet>
-          <meta name="robots" content="noindex, nofollow" />
-        </Helmet>
-      )}
+    <PageContainer
+      title={`Meu Dosha — ${formattedNome}`}
+      description={`Resultado do teste de dosha de ${formattedNome}: ${result.doshaprincipal}`}
+      noindex={isVisitor}
+    >
+
       <div className="max-w-3xl mx-auto space-y-6">
         <h1 className="sr-only">
           {formattedNome ? `Resultado do teste de dosha de ${formattedNome}` : "Resultado do teste de dosha"}

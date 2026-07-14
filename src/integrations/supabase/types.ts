@@ -5207,6 +5207,51 @@ export type Database = {
         }
         Relationships: []
       }
+      videos_canonicos: {
+        Row: {
+          criado_em: string | null
+          is_live: boolean | null
+          is_oficial: boolean | null
+          is_receita: boolean | null
+          mini_resumo: string | null
+          nova_descricao: string | null
+          novo_titulo: string | null
+          slug: string | null
+          tags: string | null
+          titulo_original: string | null
+          url: string | null
+          video_id: string | null
+        }
+        Insert: {
+          criado_em?: string | null
+          is_live?: never
+          is_oficial?: never
+          is_receita?: never
+          mini_resumo?: string | null
+          nova_descricao?: string | null
+          novo_titulo?: string | null
+          slug?: string | null
+          tags?: string | null
+          titulo_original?: string | null
+          url?: string | null
+          video_id?: string | null
+        }
+        Update: {
+          criado_em?: string | null
+          is_live?: never
+          is_oficial?: never
+          is_receita?: never
+          mini_resumo?: string | null
+          nova_descricao?: string | null
+          novo_titulo?: string | null
+          slug?: string | null
+          tags?: string | null
+          titulo_original?: string | null
+          url?: string | null
+          video_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       admin_akasha_conversas: {
@@ -5302,6 +5347,18 @@ export type Database = {
         }
       }
       atualizar_estatisticas_globais: { Args: never; Returns: undefined }
+      busca_global: {
+        Args: { p_limite_por_tipo?: number; p_termo: string }
+        Returns: {
+          id: string
+          imagem: string
+          pontuacao: number
+          rota: string
+          subtitulo: string
+          tipo: string
+          titulo: string
+        }[]
+      }
       buscar_ajuda: {
         Args: { p_termo?: string }
         Returns: {
@@ -5391,6 +5448,22 @@ export type Database = {
           novo_titulo: string
           tags: string
           texto_para_embedding: string
+          video_id: string
+        }[]
+      }
+      find_video_canonico: {
+        Args: { _slug: string }
+        Returns: {
+          criado_em: string
+          is_live: boolean
+          is_oficial: boolean
+          is_receita: boolean
+          mini_resumo: string
+          nova_descricao: string
+          novo_titulo: string
+          slug: string
+          tags: string
+          url: string
           video_id: string
         }[]
       }
