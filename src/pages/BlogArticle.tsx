@@ -86,10 +86,10 @@ const BlogArticle = () => {
         </Link>
 
         <div className="flex items-start justify-between gap-3">
-          <h1 className="font-serif text-3xl md:text-4xl font-bold text-foreground mb-4">
+          <h1 className="font-serif text-3xl md:text-4xl font-bold text-foreground mb-4 flex-1">
             {article.title}
           </h1>
-          <HeartButton contentType="artigo" contentId={article.id} className="mt-2 shrink-0" />
+          <HeartButton contentType="artigo" contentId={article.id} variant="destaque" className="mt-2 shrink-0" />
         </div>
 
         {article.meta_description && (
@@ -140,7 +140,7 @@ const BlogArticle = () => {
 
         {/* Bottom heart for readers who finish the article */}
         <div className="flex items-center justify-center gap-2 py-8 border-t border-border mt-8">
-          <span className="text-sm text-muted-foreground">Gostou do artigo?</span>
+          <span className="text-sm text-muted-foreground">Isso te fez bem?</span>
           <HeartButton contentType="artigo" contentId={article.id} />
         </div>
       </article>

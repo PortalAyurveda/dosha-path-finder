@@ -2,13 +2,15 @@ import { useState, useMemo, useEffect } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { Helmet } from "react-helmet-async";
+import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { useUser } from "@/contexts/UserContext";
 import { slugify } from "@/lib/slugify";
 import PageContainer from "@/components/PageContainer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ArrowLeft, Clock, Play } from "lucide-react";
+import { ArrowLeft, Clock, Play, Check } from "lucide-react";
 import HeartButton from "@/components/HeartButton";
 import Comments from "@/components/Comments";
 import BannerSlot from "@/components/banners/BannerSlot";
@@ -40,7 +42,10 @@ const Video = () => {
   const navigate = useNavigate();
   const searchParams = new URLSearchParams(location.search);
   const initialTime = searchParams.get("t");
+  const isReceitaDoDia = searchParams.get("receita_do_dia") === "1";
   const [startSeconds, setStartSeconds] = useState<number | null>(initialTime ? parseInt(initialTime, 10) : null);
+  const { user } = useUser();
+  const [receitaMarcada, setReceitaMarcada] = useState(false);
 
   // videoId can come from router state (internal nav) or we resolve from slug
   const stateVideoId = (location.state as { videoId?: string })?.videoId;
@@ -76,6 +81,34 @@ const Video = () => {
   });
 
   const videoId = video?.video_id;
+
+  // Marca essa receita como feita no dia (quando abrimos com ?receita_do_dia=1)
+  const { data: evolucao } = useQuery({
+    queryKey: ["minha-evolucao", user?.id],
+    queryFn: async () => {
+      const { data } = await (supabase.rpc as any)("get_minha_evolucao");
+      return data ?? {};
+    },
+    enabled: !!user && isReceitaDoDia,
+    staleTime: 60 * 1000,
+  });
+  const receitaFeitaHoje = (evolucao as any)?.receita_feita_hoje === true || receitaMarcada;
+
+  const marcarReceita = async () => {
+    if (!user || !videoId || receitaFeitaHoje) return;
+    try {
+      const { data } = await (supabase.rpc as any)("evolucao_registrar", {
+        p_tipo: "receita_feita",
+        p_ref: String(videoId),
+      });
+      setReceitaMarcada(true);
+      if (data?.ok && (data?.pontos_ganhos ?? 0) > 0) {
+        toast.success("✓ Registrado no seu dia");
+      }
+    } catch {
+      /* silencioso */
+    }
+  };
 
   const timestamps = useMemo(() => {
     const source = video?.texto_para_embedding || video?.nova_descricao || video?.mini_resumo || "";
@@ -174,11 +207,29 @@ const Video = () => {
                 </div>
               )}
 
-              {/* Title & Tags & Heart */}
+              {/* Marcar receita do dia como feita */}
+              {isReceitaDoDia && user && videoId && (
+                <div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={receitaFeitaHoje}
+                    onClick={marcarReceita}
+                  >
+                    {receitaFeitaHoje ? (
+                      <><Check className="h-4 w-4 mr-1.5" /> Feita hoje</>
+                    ) : (
+                      "Marquei que fiz esta receita"
+                    )}
+                  </Button>
+                </div>
+              )}
+
+              {/* Title & Tags & Heart destaque */}
               <div className="space-y-3">
                 <div className="flex items-start justify-between gap-3">
-                  <h1 className="font-serif text-2xl md:text-3xl font-bold text-primary">{title}</h1>
-                  {videoId && <HeartButton contentType="video" contentId={videoId} className="mt-1 shrink-0" />}
+                  <h1 className="font-serif text-2xl md:text-3xl font-bold text-primary flex-1">{title}</h1>
+                  {videoId && <HeartButton contentType="video" contentId={videoId} variant="destaque" className="mt-1 shrink-0" />}
                 </div>
                 {tagList.length > 0 && (
                   <div className="flex flex-wrap gap-2">
@@ -190,6 +241,7 @@ const Video = () => {
                   </div>
                 )}
               </div>
+
 
               {/* Timestamps */}
               {timestamps.length > 0 && (

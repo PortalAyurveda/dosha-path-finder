@@ -1,8 +1,8 @@
 import { Link } from "react-router-dom";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { TrendingUp, FileText, Play, AlertTriangle, Flame, Award, ChefHat, ArrowRight, Check } from "lucide-react";
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
-import { toast } from "sonner";
+
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/contexts/UserContext";
 import BannerSlot from "@/components/banners/BannerSlot";
@@ -73,7 +73,7 @@ interface EvolucaoData {
 
 const LoggedHero = () => {
   const { doshaResult, profile, user } = useUser();
-  const queryClient = useQueryClient();
+  
   const id = doshaResult?.idPublico;
   const meuDoshaBase = id ? `/meu-dosha?id=${id}` : "/meu-dosha";
 
@@ -173,7 +173,7 @@ const LoggedHero = () => {
   const streak = evolucao?.streak ?? 0;
   const streakRecorde = evolucao?.streak_recorde ?? 0;
   const retornoFeitoHoje = evolucao?.retorno_feito_hoje === true;
-  const receitaFeitaHoje = evolucao?.receita_feita_hoje === true;
+  
   const seloTerapeuta = evolucao?.selo_terapeuta === true;
 
   const progressoPct =
@@ -181,24 +181,17 @@ const LoggedHero = () => {
       ? Math.max(0, Math.min(100, (pontos / (pontos + pontosParaProxima)) * 100))
       : 100;
 
-  const receitaSlug = (receita as any)?.video_id ?? (receita as any)?.url ?? "receita";
-  const marcarReceita = async () => {
-    if (receitaFeitaHoje) return;
-    const { data, error } = await (supabase.rpc as any)("evolucao_registrar", {
-      p_tipo: "receita_feita",
-      p_ref: String(receitaSlug),
-    });
-    if (error) return;
-    if (data?.ok) {
-      toast.success(`+${data.pontos_ganhos ?? 2} pts! 🔥 streak de ${data.streak ?? streak} dias`);
-      queryClient.invalidateQueries({ queryKey: ["minha-evolucao", user?.id] });
-    } else if (data?.erro) {
-      toast(data.erro);
-    }
-  };
+  const receitaVideoId = (receita as any)?.video_id ?? null;
+  const receitaSlugPath = receitaVideoId
+    ? `/video/${encodeURIComponent(String(receitaVideoId))}?receita_do_dia=1`
+    : "/biblioteca";
 
   const receitaTitulo = (receita as any)?.novo_titulo ?? (receita as any)?.titulo_original ?? "Receita do dia";
   const receitaResumo = (receita as any)?.mini_resumo ?? (receita as any)?.legenda ?? "";
+
+  const pluralPts = (n: number | null | undefined) =>
+    n === 1 ? "falta 1 pt" : `faltam ${n ?? 0} pts`;
+
 
   return (
     <section
@@ -224,51 +217,57 @@ const LoggedHero = () => {
           {/* ESQUERDA: Slot A + Slot B */}
           <div className="lg:col-span-3 flex flex-col gap-4 order-2 lg:order-1">
             {/* SLOT A */}
-            <BannerSlot
-              slot="loggedhero"
-              fallback={
-                <div className="bg-card rounded-2xl p-5 md:p-6 border border-border shadow-md">
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-                    Próximo passo da sua jornada
-                  </p>
-                  {temAcessoRotina ? (
-                    <>
-                      <h3 className="font-serif font-bold text-lg md:text-xl mt-1" style={{ color: C.primary }}>
-                        Sua rotina de hoje
-                      </h3>
-                      <p className="text-sm text-muted-foreground mt-1">
-                        Os cuidados personalizados desenhados para o seu momento.
-                      </p>
-                      <Link
-                        to="/minha-rotina"
-                        className="inline-flex items-center gap-1.5 mt-3 text-sm font-semibold"
-                        style={{ color: C.primary }}
-                      >
-                        Sua rotina de hoje <ArrowRight className="h-4 w-4" />
-                      </Link>
-                    </>
-                  ) : (
-                    <>
-                      <h3 className="font-serif font-bold text-lg md:text-xl mt-1" style={{ color: C.primary }}>
-                        Monte sua rotina personalizada
-                      </h3>
-                      <p className="text-sm text-muted-foreground mt-1">
-                        Alimentação, sono e cuidados diários baseados no seu dosha.
-                      </p>
-                      <Button asChild size="lg" variant="secondary" className="mt-3">
-                        <Link to="/minha-rotina">Começar agora</Link>
-                      </Button>
-                    </>
-                  )}
-                </div>
-              }
-            />
+            <div className="flex-1 flex">
+              <BannerSlot
+                slot="loggedhero"
+                className="w-full flex"
+                fallback={
+                  <div className="bg-card rounded-2xl p-5 md:p-6 border border-border shadow-md w-full h-full flex flex-col justify-center">
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                      Próximo passo da sua jornada
+                    </p>
+                    {temAcessoRotina ? (
+                      <>
+                        <h3 className="font-serif font-bold text-lg md:text-xl mt-1" style={{ color: C.primary }}>
+                          Sua rotina de hoje
+                        </h3>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          Os cuidados personalizados desenhados para o seu momento.
+                        </p>
+                        <Link
+                          to="/minha-rotina"
+                          className="inline-flex items-center gap-1.5 mt-3 text-sm font-semibold"
+                          style={{ color: C.primary }}
+                        >
+                          Sua rotina de hoje <ArrowRight className="h-4 w-4" />
+                        </Link>
+                      </>
+                    ) : (
+                      <>
+                        <h3 className="font-serif font-bold text-lg md:text-xl mt-1" style={{ color: C.primary }}>
+                          Monte sua rotina personalizada
+                        </h3>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          Alimentação, sono e cuidados diários baseados no seu dosha.
+                        </p>
+                        <Button asChild size="lg" variant="secondary" className="mt-3 w-fit">
+                          <Link to="/minha-rotina">Começar agora</Link>
+                        </Button>
+                      </>
+                    )}
+                  </div>
+                }
+              />
+            </div>
 
-            {/* SLOT B */}
+            {/* SLOT B — receita do dia, card inteiro clicável */}
             <BannerSlot
               slot="loggedhero_b"
               fallback={
-                <div className="bg-card rounded-2xl p-4 md:p-5 border border-border shadow-sm flex gap-4 items-center">
+                <Link
+                  to={receitaSlugPath}
+                  className="group bg-card rounded-2xl p-4 md:p-5 border border-border shadow-sm flex gap-4 items-center transition-all hover:-translate-y-0.5 hover:shadow-md"
+                >
                   <div
                     className="shrink-0 w-14 h-14 rounded-xl flex items-center justify-center"
                     style={{ background: `${C.pitta}22` }}
@@ -286,25 +285,17 @@ const LoggedHero = () => {
                       <p className="text-xs text-muted-foreground line-clamp-1 mt-0.5">{receitaResumo}</p>
                     )}
                   </div>
-                  <Button
-                    size="sm"
-                    variant={receitaFeitaHoje ? "outline" : "secondary"}
-                    disabled={receitaFeitaHoje || !user}
-                    onClick={marcarReceita}
-                    className="shrink-0"
+                  <span
+                    className="shrink-0 inline-flex items-center gap-1 text-xs font-semibold"
+                    style={{ color: C.primary }}
                   >
-                    {receitaFeitaHoje ? (
-                      <>
-                        <Check className="h-4 w-4 mr-1" /> Feita hoje
-                      </>
-                    ) : (
-                      "Fiz (+2 pts)"
-                    )}
-                  </Button>
-                </div>
+                    ver receita <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-0.5 transition-transform" />
+                  </span>
+                </Link>
               }
             />
           </div>
+
 
           {/* DIREITA: SEU HOJE — forma de folha */}
           <div className="lg:col-span-2 order-1 lg:order-2">
@@ -386,17 +377,17 @@ const LoggedHero = () => {
                 </div>
                 <p className="text-[10px] text-muted-foreground mt-1">
                   {proximaClasse
-                    ? `faltam ${pontosParaProxima} pts para ${proximaClasse}`
+                    ? `${pluralPts(pontosParaProxima)} para ${proximaClasse}`
                     : "classe máxima"}
                 </p>
               </div>
 
-              {/* Streak */}
+              {/* Constância */}
               <div className="mt-3 flex items-center justify-between">
                 <div className="flex items-center gap-1.5">
                   <Flame className="h-4 w-4" style={{ color: C.pitta }} />
                   <span className="text-sm font-semibold" style={{ color: C.primary }}>
-                    {streak > 0 ? `${streak} dias seguidos` : "Comece seu streak hoje"}
+                    {streak > 0 ? `Constância: ${streak} ${streak === 1 ? "dia" : "dias"}` : "Sua constância começa hoje"}
                   </span>
                 </div>
                 {streakRecorde > 0 && (
@@ -404,23 +395,39 @@ const LoggedHero = () => {
                 )}
               </div>
 
-              {/* Gesto de hoje */}
+              {/* Seu cuidado de hoje */}
               <div className="mt-3 pt-3 border-t border-border">
                 {retornoFeitoHoje ? (
-                  <div className="flex items-center gap-1.5 text-xs font-semibold" style={{ color: C.kapha.replace("hsl(var(--kapha))", "hsl(var(--kapha))") }}>
-                    <Check className="h-4 w-4" /> Ponto de hoje garantido
+                  <div
+                    className="flex items-center gap-1.5 text-xs font-semibold"
+                    style={{ color: "hsl(var(--kapha))" }}
+                  >
+                    <Check className="h-4 w-4" /> Você já se cuidou hoje
                   </div>
+                ) : artigo?.link_do_artigo ? (
+                  <Link
+                    to={`/blog/${artigo.link_do_artigo}`}
+                    className="flex items-start justify-between gap-2 text-xs font-semibold group"
+                    style={{ color: C.primary }}
+                  >
+                    <span className="line-clamp-2">
+                      <span className="text-muted-foreground font-normal">Seu cuidado de hoje: </span>
+                      {artigo.title}
+                    </span>
+                    <ArrowRight className="h-4 w-4 shrink-0 mt-0.5 group-hover:translate-x-0.5 transition-transform" />
+                  </Link>
                 ) : (
                   <Link
-                    to="/biblioteca"
+                    to="/blog"
                     className="flex items-center justify-between gap-2 text-xs font-semibold group"
                     style={{ color: C.primary }}
                   >
-                    <span>Ganhe seu ponto de hoje: curta um conteúdo</span>
+                    <span>Seu cuidado de hoje</span>
                     <ArrowRight className="h-4 w-4 shrink-0 group-hover:translate-x-0.5 transition-transform" />
                   </Link>
                 )}
               </div>
+
             </div>
           </div>
         </div>
