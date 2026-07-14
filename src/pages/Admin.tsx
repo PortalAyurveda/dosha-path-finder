@@ -88,7 +88,7 @@ const Admin = () => {
     }
 
     const items: StorageFile[] = (data || [])
-      .filter((f) => f.name !== ".emptyFolderPlaceholder")
+      .filter((f: any) => f.name !== ".emptyFolderPlaceholder" && f.id != null && f.metadata)
       .map((f) => {
         const { data: urlData } = supabase.storage.from(bucketName).getPublicUrl(f.name);
         return { name: f.name, publicUrl: urlData.publicUrl };
