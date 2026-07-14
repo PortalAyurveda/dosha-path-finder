@@ -19,6 +19,7 @@ import VideosTab from "@/components/meudosha/VideosTab";
 import AkashaTab from "@/components/meudosha/AkashaTab";
 import RetesteCard from "@/components/meudosha/RetesteCard";
 import MinhaCaminhadaSection from "@/components/meudosha/MinhaCaminhadaSection";
+import PraVoceRail from "@/components/meudosha/PraVoceRail";
 import ClaimLock from "@/components/meudosha/ClaimLock";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 import { useUser } from "@/contexts/UserContext";
