@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Navigate, Link } from "react-router-dom";
+import { Navigate, Link, useNavigate } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import * as LucideIcons from "lucide-react";
 import {
@@ -338,13 +338,10 @@ const MinhaRotina = () => {
       </div>
     );
   }
-  if (!user) {
-    return <Navigate to="/entrar?redirect=/minha-rotina" replace />;
-  }
-
-  // Gate de assinatura
+  // Visitante (deslogado) vê a página de venda completa — no clique é levado ao login
+  // Gate de assinatura (para logados sem plano) usa o mesmo paywall
   const temAcessoRotina = (() => {
-    if (!profile) return false;
+    if (!user || !profile) return false;
     if (profile.is_premium === true) return true;
     const planosValidos = ["rotina", "mensal", "anual"];
     const ativo = profile.subscription_status === "active";
@@ -353,12 +350,12 @@ const MinhaRotina = () => {
     return ativo && planoOk && dataOk;
   })();
 
-  if (!temAcessoRotina) {
+  if (!user || !temAcessoRotina) {
     return (
       <PageContainer title="Minha rotina" description="Sua rotina ayurvédica personalizada.">
         <PaywallRotina
-          email={user.email ?? ""}
-          userId={user.id}
+          email={user?.email ?? null}
+          userId={user?.id ?? null}
           doshaPrincipal={doshaResult?.doshaprincipal ?? null}
         />
       </PageContainer>
@@ -1494,15 +1491,21 @@ export default MinhaRotina;
 
 // ===== Paywall (gate de assinatura) =====
 interface PaywallRotinaProps {
-  email: string;
-  userId: string;
+  email: string | null;
+  userId: string | null;
   doshaPrincipal: string | null;
 }
 
 const PaywallRotina = ({ email, userId, doshaPrincipal }: PaywallRotinaProps) => {
   const [carregando, setCarregando] = useState(false);
+  const navigate = useNavigate();
 
   const desbloquear = async () => {
+    // Deslogado: manda pra tela de login e volta pra cá pra fechar o checkout
+    if (!userId || !email) {
+      navigate("/entrar?redirect=/minha-rotina");
+      return;
+    }
     setCarregando(true);
     try {
       const { data, error } = await supabase.functions.invoke("create-subscription-checkout", {
