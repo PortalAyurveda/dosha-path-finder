@@ -126,16 +126,9 @@ const MundoQueSeAbre = () => {
   return (
     <div
       ref={ref}
-      className="w-full max-w-xl mx-auto bg-card/80 backdrop-blur-sm border shadow-lg p-5 md:p-6 flex flex-col gap-4"
+      className="w-full max-w-xl mx-auto bg-card/80 backdrop-blur-sm border shadow-lg px-5 md:px-6 py-3 md:py-4 flex flex-col gap-3"
       style={{ borderRadius: LEAF, borderColor: C.border, fontFamily: SANS }}
     >
-      <p
-        className="text-center text-[11px] font-bold uppercase tracking-[0.18em]"
-        style={{ color: C.muted }}
-      >
-        O mundo que se abre
-      </p>
-
       {isLoading || !data ? (
         <div className="grid grid-cols-3 gap-3">
           {[0, 1, 2].map((i) => (
@@ -154,7 +147,7 @@ const MundoQueSeAbre = () => {
       )}
 
       <div
-        className="flex items-start gap-2 px-3 py-2.5 border-t"
+        className="flex items-start gap-2 px-3 pt-2 border-t"
         style={{ borderColor: C.border }}
       >
         <Sparkles className="h-4 w-4 shrink-0 mt-0.5" style={{ color: C.primary }} />
@@ -165,14 +158,9 @@ const MundoQueSeAbre = () => {
           E a Akasha — a inteligência que estudou tudo isso — pronta para te responder depois do teste.
         </p>
       </div>
-
-      {data?.testes != null && (
-        <p className="text-center text-[11px]" style={{ color: C.muted }}>
-          {fmt(data.testes)} pessoas já fizeram o teste.
-        </p>
-      )}
     </div>
   );
 };
+
 
 export default MundoQueSeAbre;
