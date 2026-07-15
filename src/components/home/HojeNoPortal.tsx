@@ -192,8 +192,8 @@ export const HojeNoPortal = () => {
 
   return (
     <section className="w-full max-w-6xl mx-auto px-4 py-6">
-      <div className="mb-3 flex items-baseline justify-between">
-        <h2 className="font-serif text-lg md:text-xl" style={{ color: NAVY }}>
+      <div className="mb-3 flex items-baseline justify-center">
+        <h2 className="font-serif text-lg md:text-xl text-center" style={{ color: NAVY }}>
           Hoje no portal
         </h2>
       </div>
