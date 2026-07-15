@@ -1892,6 +1892,42 @@ const PaywallLanding = ({ doshaPrincipal, onDesbloquear, carregando, top3, vitri
         </p>
       </section>
 
+      {/* O Portal te conhece — top3 agravamentos */}
+      {top3.length > 0 && (
+        <section className="space-y-4">
+          <p className="text-xs uppercase tracking-widest text-muted-foreground font-medium">O Portal te conhece</p>
+          <h3 className="font-serif text-2xl text-primary">
+            Alimentação e rotina ayurvédica para as suas principais enfermidades.
+          </h3>
+          <p className="text-foreground/85 leading-relaxed">
+            No teste você marcou o que sente hoje. A gente não esqueceu — a sua rotina é montada em cima disto:
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {top3.map((a, i) => (
+              <div
+                key={i}
+                className="border border-border bg-card rounded-lg px-3 py-2"
+                style={{ borderLeft: "3px solid #FF7676" }}
+              >
+                <p className="text-[10px] uppercase tracking-wider font-medium" style={{ color: "#FF7676" }}>
+                  {a.dosha}
+                </p>
+                <p className="text-foreground font-medium text-sm">{a.sintoma}</p>
+              </div>
+            ))}
+          </div>
+          <p className="text-foreground/85 leading-relaxed">
+            Para cada um desses, o Ayurveda tem leitura, alimento e prática. É exatamente isso que entra na sua rotina — todo dia, no seu prato.
+          </p>
+          <p className="text-foreground/85 leading-relaxed">
+            O primeiro passo você já deu: se interessou por Ayurveda e aprendeu sobre você. Agora é a hora de pôr em prática — com as receitas do seu biotipo e a revisão de todo mês.
+          </p>
+          <p className="font-serif text-lg text-primary">
+            Permita que o Ayurveda chegue na sua vida de forma prática. São muitas rotinas — você escolhe por qual começar.
+          </p>
+        </section>
+      )}
+
       {/* O que você recebe */}
       <section className="space-y-5">
         <h3 className="font-serif text-2xl text-primary">O que você recebe</h3>
