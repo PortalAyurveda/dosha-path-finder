@@ -1921,13 +1921,19 @@ const PaywallLanding = ({ doshaPrincipal, onDesbloquear, carregando, top3, vitri
 
       {/* Revisão mensal */}
       <section className="space-y-3">
-        <h3 className="font-serif text-2xl text-primary">Uma revisão por mês — inclusa</h3>
+        <h3 className="font-serif text-2xl text-primary">Uma rotina viva</h3>
         <p className="text-foreground/85 leading-relaxed">
           Todo mês, seu plano é revisado. Seu dosha muda com as estações, o estresse, a fase da vida.
           A revisão ajusta o plano pra onde você está agora — não pra onde estava há três meses.
           É um acompanhamento mensal do seu equilíbrio. Por R$30.
         </p>
+        <p className="text-foreground/85 leading-relaxed">
+          E ela cresce: o caderno de receitas e práticas do Portal aumenta o tempo todo. Toda vez que
+          entra coisa nova, ela passa a valer pra sua rotina — sem você fazer nada, sem pagar de novo.
+          O que você assina hoje é maior no mês que vem.
+        </p>
       </section>
+
 
       {/* Para quem é / não é */}
       <section className="space-y-4">
