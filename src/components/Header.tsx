@@ -535,12 +535,18 @@ const Header = () => {
         </div>
       </div>
 
-      {/* Mobile: full-width search row below header */}
+      {/* Mobile: full-screen search overlay (fixed, above header) */}
       {searchOpen && (
-        <div className="lg:hidden px-4 pb-3 pt-1">
-          <GlobalSearch open layout="inline" onOpenChange={setSearchOpen} />
+        <div className="lg:hidden fixed inset-0 z-[100] bg-black/40" onClick={() => setSearchOpen(false)}>
+          <div
+            className="absolute top-0 left-0 right-0 bg-primary px-3 pt-3 pb-3 shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <GlobalSearch open layout="inline" onOpenChange={setSearchOpen} />
+          </div>
         </div>
       )}
+
     </header>
   );
 };
