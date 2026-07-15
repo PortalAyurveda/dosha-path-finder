@@ -536,7 +536,7 @@ const LoggedHero = () => {
                       {temAcessoRotina ? (
                         <>
                           {nug ? (
-                            <div className="flex-1 min-w-0 pr-0 lg:pr-[170px]">
+                            <div className="flex-1 min-w-0 pr-0 lg:pr-[210px]">
                               <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
                                 Sua rotina agora
                               </p>
