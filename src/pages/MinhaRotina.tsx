@@ -1919,6 +1919,76 @@ const PaywallLanding = ({ doshaPrincipal, onDesbloquear, carregando, top3, vitri
         </div>
       </section>
 
+      {/* Comida de verdade — vitrine */}
+      <section className="space-y-4">
+        <h3 className="font-serif text-2xl text-primary">Não é uma lista de dicas. É comida de verdade.</h3>
+        <p className="text-foreground/85 leading-relaxed">
+          Cada item do seu dia vem com ingredientes, modo de preparo, vídeo do professor e o porquê de funcionar pro seu desequilíbrio.
+        </p>
+        {vitrine.length > 0 && (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {vitrine.map((r) => {
+              const tags: string[] = [];
+              if (r.vata < 0) tags.push("Vata");
+              if (r.pitta < 0) tags.push("Pitta");
+              if (r.kapha < 0) tags.push("Kapha");
+              return (
+                <div key={r.titulo} className="rounded-xl overflow-hidden border border-border bg-card">
+                  <img
+                    src={r.imagem_url}
+                    alt={r.titulo}
+                    className="w-full aspect-square object-cover"
+                    loading="lazy"
+                  />
+                  <div className="px-3 py-2 space-y-1">
+                    <p className="text-xs text-foreground leading-tight">{r.titulo}</p>
+                    {tags.length > 0 && (
+                      <p className="text-[10px] uppercase tracking-wider" style={{ color: "#FF7676" }}>
+                        pacifica {tags.join("/")}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+        <p className="text-sm text-muted-foreground text-center pt-1">
+          56 itens personalizados por semana. Estes são só oito.
+        </p>
+        <div className="flex justify-center">
+          <Button
+            onClick={onDesbloquear}
+            disabled={carregando}
+            size="lg"
+            className="rounded-full px-8 h-12 text-base text-white hover:opacity-90"
+            style={{ backgroundColor: "#FF7676" }}
+          >
+            {carregando ? "Abrindo checkout…" : "Ver a minha semana · R$30/mês"}
+          </Button>
+        </div>
+      </section>
+
+      {/* Depoimentos */}
+      <section className="space-y-4">
+        <p className="text-xs uppercase tracking-widest text-muted-foreground font-medium">Quem já está seguindo</p>
+        <h3 className="font-serif text-2xl text-primary">O que chega pra gente</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {[
+            "Nossa, achei tudo que eu queria pra ir pra cozinha 🙏",
+            "Eu vim por causa de uma constipação crônica. O Ayurveda resolveu e ainda curou meu melasma. Não largo mais esse suco, Edson! Obrigada 💛",
+            "Tava sentindo falta de coisa prática. Agora nunca mais.",
+            "Achei que era pouca coisa. Tô surpresa com a riqueza de cada receita.",
+            "Gente, mas é tudo muito gostoso! Achei que Ayurveda não era assim 😄",
+            "E eu que achei que só ia tomar chá e comer salada… tô com o intestino bom e comendo bem.",
+          ].map((t, i) => (
+            <div key={i} className="bg-card border border-border rounded-2xl rounded-bl-sm px-4 py-3">
+              <p className="text-sm text-foreground leading-relaxed">{t}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
       {/* Revisão mensal */}
       <section className="space-y-3">
         <h3 className="font-serif text-2xl text-primary">Uma rotina viva</h3>
