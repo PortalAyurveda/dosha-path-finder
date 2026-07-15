@@ -527,74 +527,71 @@ const LoggedHero = () => {
                   const IconEl = nug?.icone_lucide
                     ? (LucideIcons as any)[nug.icone_lucide]
                     : null;
+                  const ingredientes: { qtd?: string; item?: string }[] =
+                    Array.isArray(nug?.nugget_json?.ingredientes) ? nug.nugget_json.ingredientes : [];
+                  const ingredPreview = ingredientes
+                    .slice(0, 3)
+                    .map((i) => [i.qtd, i.item].filter(Boolean).join(" ").trim())
+                    .filter(Boolean)
+                    .join(" • ");
                   return (
-                    <div className="bg-card rounded-2xl p-5 md:p-6 border border-border shadow-md w-full h-full flex flex-col gap-4">
+                    <div className="relative bg-card rounded-2xl p-5 md:p-6 border border-border shadow-md w-full h-full flex flex-col gap-4">
                       {objetivos.length > 0 && <ObjetivosRow objetivos={objetivos} />}
 
                       {temAcessoRotina ? (
                         <>
                           {nug ? (
-                            <Link
-                              to={`/minha-rotina?item=${encodeURIComponent(nug.id)}`}
-                              className="flex gap-3 items-start hover:opacity-95 transition-opacity"
-                            >
-                              <div
-                                className="shrink-0 w-12 h-12 flex items-center justify-center overflow-hidden"
-                                style={{
-                                  ...LEAF_RADIUS_SM,
-                                  background: `${C.primary}14`,
-                                }}
+                            <div className="flex-1 min-w-0 pr-0 lg:pr-[170px]">
+                              <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                                Sua rotina agora
+                              </p>
+                              <Link
+                                to={`/minha-rotina?item=${encodeURIComponent(nug.id)}`}
+                                className="block hover:opacity-95 transition-opacity"
                               >
-                                {nug.imagem_url ? (
-                                  <img
-                                    src={nug.imagem_url}
-                                    alt={nug.titulo}
-                                    width={48}
-                                    height={48}
-                                    className="w-full h-full object-cover"
-                                    loading="lazy"
-                                  />
-                                ) : IconEl ? (
-                                  <IconEl className="h-6 w-6" style={{ color: C.primary }} />
-                                ) : (
-                                  <Leaf className="h-6 w-6" style={{ color: C.primary }} />
-                                )}
-                              </div>
-                              <div className="min-w-0 flex-1">
-                                <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-                                  Sua rotina agora
-                                </p>
                                 <p
                                   className="font-serif font-bold text-base leading-tight mt-0.5 line-clamp-2"
                                   style={{ color: C.primary }}
                                 >
                                   {nug.titulo}
                                 </p>
-                                <div className="flex flex-wrap gap-1 mt-1.5">
-                                  {(["Vata", "Pitta", "Kapha"] as const).map((d) => {
-                                    const key = d.toLowerCase() as "vata" | "pitta" | "kapha";
-                                    const s = Number(nug[key] ?? 0);
-                                    if (!s) return null;
-                                    return <ScoreMiniChip key={d} dosha={d} score={s} />;
-                                  })}
-                                </div>
+                              </Link>
+                              {ingredPreview && (
+                                <p className="text-[11px] text-muted-foreground line-clamp-2 mt-1 leading-snug">
+                                  {ingredPreview}
+                                </p>
+                              )}
+                              <div className="flex flex-wrap gap-1 mt-1.5">
+                                {(["Vata", "Pitta", "Kapha"] as const).map((d) => {
+                                  const key = d.toLowerCase() as "vata" | "pitta" | "kapha";
+                                  const s = Number(nug[key] ?? 0);
+                                  if (!s) return null;
+                                  return <ScoreMiniChip key={d} dosha={d} score={s} />;
+                                })}
                               </div>
-
-                              {/* Baralho decorativo — só desktop */}
-                              <RecipeDeck front={nug} back={backNugs} IconEl={IconEl} />
-                            </Link>
+                            </div>
                           ) : (
                             <p className="text-sm text-muted-foreground">
                               Os cuidados personalizados desenhados para o seu momento.
                             </p>
                           )}
-                          <Link
-                            to={nug ? `/minha-rotina?item=${encodeURIComponent(nug.id)}` : "/minha-rotina"}
-                            className="inline-flex items-center gap-1.5 text-sm font-semibold w-fit"
-                            style={{ color: C.primary }}
-                          >
-                            abrir minha rotina <ArrowRight className="h-4 w-4" />
-                          </Link>
+
+                          {/* Selo — mockup no canto superior direito */}
+                          {nug && (
+                            <div className="absolute top-3 right-3 hidden lg:block">
+                              <RecipeDeck front={nug} back={backNugs} IconEl={IconEl} />
+                            </div>
+                          )}
+
+                          <div className="mt-auto flex justify-end">
+                            <Link
+                              to={nug ? `/minha-rotina?item=${encodeURIComponent(nug.id)}` : "/minha-rotina"}
+                              className="inline-flex items-center gap-1.5 text-sm font-semibold"
+                              style={{ color: C.primary }}
+                            >
+                              abrir minha rotina <ArrowRight className="h-4 w-4" />
+                            </Link>
+                          </div>
                         </>
                       ) : (
                         <>
