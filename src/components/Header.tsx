@@ -183,8 +183,19 @@ const Header = () => {
       style={headerBg}
     >
       <div className="max-w-6xl mx-auto grid h-16 grid-cols-[1fr_auto_1fr] items-center gap-3 px-4 sm:px-6">
-        {/* LEFT — Hamburger (mobile) + Desktop nav */}
+        {/* LEFT — Hamburger (mobile) + Mobile search trigger + Desktop nav */}
         <div className="flex items-center gap-1.5 justify-self-start min-w-0">
+          {/* Mobile: search trigger (icon) on the LEFT — opens fixed overlay */}
+          <button
+            type="button"
+            onClick={() => setSearchOpen(true)}
+            aria-label="Pesquisar"
+            aria-expanded={searchOpen}
+            className="lg:hidden flex items-center justify-center w-9 h-9 rounded-full bg-white hover:bg-white/90 transition-colors shadow-sm"
+          >
+            <Search className="h-[18px] w-[18px] text-primary" strokeWidth={2.2} />
+          </button>
+
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
               <Button
@@ -196,6 +207,7 @@ const Header = () => {
                 <span className="text-sm font-medium">Menu</span>
               </Button>
             </SheetTrigger>
+
             <SheetContent
               side="left"
               className={`w-72 pt-12 text-primary-foreground border-primary overflow-y-auto ${isSamkhya ? "" : "bg-primary"}`}
@@ -410,7 +422,7 @@ const Header = () => {
         </div>
 
         {/* RIGHT — Search + cart + agenda + profile */}
-        <div className="flex items-center gap-1.5 justify-self-end w-full">
+        <div className="flex items-center gap-1.5 justify-self-end justify-end w-full">
           {/* Desktop: inline expanded search takes cart/agenda space */}
           {searchOpen && (
             <div className="hidden lg:flex flex-1 min-w-0 justify-end">
@@ -427,16 +439,6 @@ const Header = () => {
             </div>
           )}
 
-          {/* Mobile: search trigger (icon) — opens row below header */}
-          <button
-            type="button"
-            onClick={() => setSearchOpen((v) => !v)}
-            aria-label="Pesquisar"
-            aria-expanded={searchOpen}
-            className="lg:hidden ml-auto flex items-center justify-center w-9 h-9 rounded-full bg-white hover:bg-white/90 transition-colors shadow-sm"
-          >
-            <Search className="h-[18px] w-[18px] text-primary" strokeWidth={2.2} />
-          </button>
 
           <button
             type="button"
@@ -533,12 +535,18 @@ const Header = () => {
         </div>
       </div>
 
-      {/* Mobile: full-width search row below header */}
+      {/* Mobile: full-screen search overlay (fixed, above header) */}
       {searchOpen && (
-        <div className="lg:hidden px-4 pb-3 pt-1">
-          <GlobalSearch open layout="inline" onOpenChange={setSearchOpen} />
+        <div className="lg:hidden fixed inset-0 z-[100] bg-black/40" onClick={() => setSearchOpen(false)}>
+          <div
+            className="absolute top-0 left-0 right-0 bg-primary px-3 pt-3 pb-3 shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <GlobalSearch open layout="inline" onOpenChange={setSearchOpen} />
+          </div>
         </div>
       )}
+
     </header>
   );
 };
