@@ -183,8 +183,19 @@ const Header = () => {
       style={headerBg}
     >
       <div className="max-w-6xl mx-auto grid h-16 grid-cols-[1fr_auto_1fr] items-center gap-3 px-4 sm:px-6">
-        {/* LEFT — Hamburger (mobile) + Desktop nav */}
+        {/* LEFT — Hamburger (mobile) + Mobile search trigger + Desktop nav */}
         <div className="flex items-center gap-1.5 justify-self-start min-w-0">
+          {/* Mobile: search trigger (icon) on the LEFT — opens fixed overlay */}
+          <button
+            type="button"
+            onClick={() => setSearchOpen(true)}
+            aria-label="Pesquisar"
+            aria-expanded={searchOpen}
+            className="lg:hidden flex items-center justify-center w-9 h-9 rounded-full bg-white hover:bg-white/90 transition-colors shadow-sm"
+          >
+            <Search className="h-[18px] w-[18px] text-primary" strokeWidth={2.2} />
+          </button>
+
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
               <Button
@@ -196,6 +207,7 @@ const Header = () => {
                 <span className="text-sm font-medium">Menu</span>
               </Button>
             </SheetTrigger>
+
             <SheetContent
               side="left"
               className={`w-72 pt-12 text-primary-foreground border-primary overflow-y-auto ${isSamkhya ? "" : "bg-primary"}`}
