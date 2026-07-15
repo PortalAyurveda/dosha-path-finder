@@ -1957,6 +1957,28 @@ const PaywallLanding = ({ doshaPrincipal, onDesbloquear, carregando, top3, vitri
         </div>
       </section>
 
+      {/* Perguntas comuns */}
+      <section className="space-y-4">
+        <div className="border-t border-border pt-4">
+          <p className="font-medium text-foreground">«Já fiz o teste de graça. Por que pagar?»</p>
+          <p className="text-foreground/85 leading-relaxed mt-2">
+            O teste mostra onde você está. A rotina é o que te tira de lá. Saber o diagnóstico sem o tratamento é ter o raio-x e não ter o remédio.
+          </p>
+        </div>
+        <div className="border-t border-border pt-4">
+          <p className="font-medium text-foreground">«Por que pagar todo mês e não uma vez só?»</p>
+          <p className="text-foreground/85 leading-relaxed mt-2">
+            Porque seu corpo não é o mesmo todo mês. O estresse muda, a estação muda, o sono muda. Uma rotina fixa envelhece — a sua é revisada pra continuar certa.
+          </p>
+        </div>
+        <div className="border-t border-border pt-4">
+          <p className="font-medium text-foreground">«E se não for pra mim?»</p>
+          <p className="text-foreground/85 leading-relaxed mt-2">
+            Cancele quando quiser, na hora. Sem multa, sem ligação, sem perguntas. Você arrisca R$30 de um mês.
+          </p>
+        </div>
+      </section>
+
       {/* Como funciona */}
       <section className="space-y-4">
         <h3 className="font-serif text-2xl text-primary">Como funciona</h3>
