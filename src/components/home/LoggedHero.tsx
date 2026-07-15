@@ -679,15 +679,15 @@ const LoggedHero = () => {
 
               {/* Pie + link */}
               <div className="flex items-center gap-3">
-                <div className="shrink-0" style={{ width: 96, height: 96 }}>
+                <div className="shrink-0" style={{ width: 84, height: 84 }}>
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
                       <Pie
                         data={pieData}
                         cx="50%"
                         cy="50%"
-                        outerRadius={44}
-                        innerRadius={26}
+                        outerRadius={38}
+                        innerRadius={22}
                         dataKey="value"
                         startAngle={90}
                         endAngle={-270}
@@ -701,6 +701,7 @@ const LoggedHero = () => {
                     </PieChart>
                   </ResponsiveContainer>
                 </div>
+
                 <div className="min-w-0 flex-1">
                   <p className="font-serif font-bold text-sm leading-tight" style={{ color: C.primary }}>
                     {primaryDosha} — {topInfo.label}
