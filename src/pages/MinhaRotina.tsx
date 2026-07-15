@@ -1634,6 +1634,34 @@ const PaywallRotina = ({ email, userId, doshaPrincipal, itemId }: PaywallRotinaP
     staleTime: 5 * 60 * 1000,
   });
 
+  const { data: agravamentos } = useQuery({
+    queryKey: ["meus-agravamentos", userId],
+    enabled: !!userId,
+    queryFn: async () => {
+      const { data } = await (supabase as any).rpc("meus_agravamentos");
+      return (data ?? []) as { sintoma: string; dosha: string; prioridade: number }[];
+    },
+  });
+  const top3 = (agravamentos ?? []).slice(0, 3);
+
+  const { data: vitrine } = useQuery({
+    queryKey: ["vitrine-receitas", doshaPrincipal],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("v_receitas" as any)
+        .select("titulo, imagem_url, vata, pitta, kapha")
+        .not("imagem_url", "is", null)
+        .limit(24);
+      const rows = (data ?? []) as any[];
+      const d = (doshaPrincipal ?? "").toLowerCase();
+      const pacifica = (r: any) =>
+        (d.includes("vata") && r.vata < 0) ||
+        (d.includes("pitta") && r.pitta < 0) ||
+        (d.includes("kapha") && r.kapha < 0);
+      return [...rows].sort((a, b) => Number(pacifica(b)) - Number(pacifica(a))).slice(0, 8);
+    },
+  });
+
   const desbloquear = async () => {
     // Deslogado: manda pra tela de login e volta pra cá pra fechar o checkout
     if (!userId || !email) {
