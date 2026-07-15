@@ -1873,6 +1873,7 @@ const PaywallLanding = ({ doshaPrincipal, onDesbloquear, carregando, top3, vitri
   ];
 
   const paraQuemNao = [
+    "Quem acha que Ayurveda é só mais uma moda do momento.",
     "Prefere tomar um remédio pro sintoma e seguir em frente.",
     "Acredita que adoecer é inevitável.",
     "Não está disposto a mudar nada da rotina.",
