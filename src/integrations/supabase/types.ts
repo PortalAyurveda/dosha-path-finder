@@ -5662,6 +5662,17 @@ export type Database = {
         Args: { dosha: string; score: number }
         Returns: string
       }
+      cards_da_resposta: {
+        Args: { p_texto: string }
+        Returns: {
+          hits: number
+          imagem: string
+          link: string
+          preco: number
+          tipo: string
+          titulo: string
+        }[]
+      }
       claim_dosha_test: { Args: { p_id_publico?: string }; Returns: Json }
       escola_aluno_atual: { Args: never; Returns: string }
       escola_cardapio_do_modulo: {
