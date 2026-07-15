@@ -1831,7 +1831,13 @@ const PaywallRotina = ({ email, userId, doshaPrincipal, itemId }: PaywallRotinaP
       </Card>
 
       {/* ===== Landing — conteúdo de apoio ===== */}
-      <PaywallLanding doshaPrincipal={doshaPrincipal} onDesbloquear={desbloquear} carregando={carregando} />
+      <PaywallLanding
+        doshaPrincipal={doshaPrincipal}
+        onDesbloquear={desbloquear}
+        carregando={carregando}
+        top3={top3}
+        vitrine={vitrine ?? []}
+      />
     </div>
   );
 };
@@ -1841,9 +1847,11 @@ interface PaywallLandingProps {
   doshaPrincipal: string | null;
   onDesbloquear: () => void;
   carregando: boolean;
+  top3: { sintoma: string; dosha: string; prioridade: number }[];
+  vitrine: { titulo: string; imagem_url: string; vata: number; pitta: number; kapha: number }[];
 }
 
-const PaywallLanding = ({ doshaPrincipal, onDesbloquear, carregando }: PaywallLandingProps) => {
+const PaywallLanding = ({ doshaPrincipal, onDesbloquear, carregando, top3, vitrine }: PaywallLandingProps) => {
   const dosha = doshaPrincipal ?? "seu dosha";
 
   const recebe = [
