@@ -439,16 +439,6 @@ const Header = () => {
             </div>
           )}
 
-          {/* Mobile: search trigger (icon) — opens row below header */}
-          <button
-            type="button"
-            onClick={() => setSearchOpen((v) => !v)}
-            aria-label="Pesquisar"
-            aria-expanded={searchOpen}
-            className="lg:hidden ml-auto flex items-center justify-center w-9 h-9 rounded-full bg-white hover:bg-white/90 transition-colors shadow-sm"
-          >
-            <Search className="h-[18px] w-[18px] text-primary" strokeWidth={2.2} />
-          </button>
 
           <button
             type="button"
