@@ -489,7 +489,7 @@ const LoggedHero = () => {
 
   return (
     <section
-      className="relative overflow-hidden min-h-[560px]"
+      className="relative overflow-hidden min-h-[500px]"
       style={{
         background: "linear-gradient(100deg, hsl(228 70% 96%) 0%, hsl(0 70% 97%) 50%, hsl(48 80% 95%) 100%)",
       }}
