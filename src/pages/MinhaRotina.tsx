@@ -1634,6 +1634,34 @@ const PaywallRotina = ({ email, userId, doshaPrincipal, itemId }: PaywallRotinaP
     staleTime: 5 * 60 * 1000,
   });
 
+  const { data: agravamentos } = useQuery({
+    queryKey: ["meus-agravamentos", userId],
+    enabled: !!userId,
+    queryFn: async () => {
+      const { data } = await (supabase as any).rpc("meus_agravamentos");
+      return (data ?? []) as { sintoma: string; dosha: string; prioridade: number }[];
+    },
+  });
+  const top3 = (agravamentos ?? []).slice(0, 3);
+
+  const { data: vitrine } = useQuery({
+    queryKey: ["vitrine-receitas", doshaPrincipal],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("v_receitas" as any)
+        .select("titulo, imagem_url, vata, pitta, kapha")
+        .not("imagem_url", "is", null)
+        .limit(24);
+      const rows = (data ?? []) as any[];
+      const d = (doshaPrincipal ?? "").toLowerCase();
+      const pacifica = (r: any) =>
+        (d.includes("vata") && r.vata < 0) ||
+        (d.includes("pitta") && r.pitta < 0) ||
+        (d.includes("kapha") && r.kapha < 0);
+      return [...rows].sort((a, b) => Number(pacifica(b)) - Number(pacifica(a))).slice(0, 8);
+    },
+  });
+
   const desbloquear = async () => {
     // Deslogado: manda pra tela de login e volta pra cá pra fechar o checkout
     if (!userId || !email) {
@@ -1803,7 +1831,13 @@ const PaywallRotina = ({ email, userId, doshaPrincipal, itemId }: PaywallRotinaP
       </Card>
 
       {/* ===== Landing — conteúdo de apoio ===== */}
-      <PaywallLanding doshaPrincipal={doshaPrincipal} onDesbloquear={desbloquear} carregando={carregando} />
+      <PaywallLanding
+        doshaPrincipal={doshaPrincipal}
+        onDesbloquear={desbloquear}
+        carregando={carregando}
+        top3={top3}
+        vitrine={vitrine ?? []}
+      />
     </div>
   );
 };
@@ -1813,9 +1847,11 @@ interface PaywallLandingProps {
   doshaPrincipal: string | null;
   onDesbloquear: () => void;
   carregando: boolean;
+  top3: { sintoma: string; dosha: string; prioridade: number }[];
+  vitrine: { titulo: string; imagem_url: string; vata: number; pitta: number; kapha: number }[];
 }
 
-const PaywallLanding = ({ doshaPrincipal, onDesbloquear, carregando }: PaywallLandingProps) => {
+const PaywallLanding = ({ doshaPrincipal, onDesbloquear, carregando, top3, vitrine }: PaywallLandingProps) => {
   const dosha = doshaPrincipal ?? "seu dosha";
 
   const recebe = [
@@ -1837,6 +1873,7 @@ const PaywallLanding = ({ doshaPrincipal, onDesbloquear, carregando }: PaywallLa
   ];
 
   const paraQuemNao = [
+    "Quem acha que Ayurveda é só mais uma moda do momento.",
     "Prefere tomar um remédio pro sintoma e seguir em frente.",
     "Acredita que adoecer é inevitável.",
     "Não está disposto a mudar nada da rotina.",
@@ -1854,6 +1891,42 @@ const PaywallLanding = ({ doshaPrincipal, onDesbloquear, carregando }: PaywallLa
           O que faço antes de dormir? Ayurveda sem rotina é teoria. E teoria não muda nada.
         </p>
       </section>
+
+      {/* O Portal te conhece — top3 agravamentos */}
+      {top3.length > 0 && (
+        <section className="space-y-4">
+          <p className="text-xs uppercase tracking-widest text-muted-foreground font-medium">O Portal te conhece</p>
+          <h3 className="font-serif text-2xl text-primary">
+            Alimentação e rotina ayurvédica para as suas principais enfermidades.
+          </h3>
+          <p className="text-foreground/85 leading-relaxed">
+            No teste você marcou o que sente hoje. A gente não esqueceu — a sua rotina é montada em cima disto:
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {top3.map((a, i) => (
+              <div
+                key={i}
+                className="border border-border bg-card rounded-lg px-3 py-2"
+                style={{ borderLeft: "3px solid #FF7676" }}
+              >
+                <p className="text-[10px] uppercase tracking-wider font-medium" style={{ color: "#FF7676" }}>
+                  {a.dosha}
+                </p>
+                <p className="text-foreground font-medium text-sm">{a.sintoma}</p>
+              </div>
+            ))}
+          </div>
+          <p className="text-foreground/85 leading-relaxed">
+            Para cada um desses, o Ayurveda tem leitura, alimento e prática. É exatamente isso que entra na sua rotina — todo dia, no seu prato.
+          </p>
+          <p className="text-foreground/85 leading-relaxed">
+            O primeiro passo você já deu: se interessou por Ayurveda e aprendeu sobre você. Agora é a hora de pôr em prática — com as receitas do seu biotipo e a revisão de todo mês.
+          </p>
+          <p className="font-serif text-lg text-primary">
+            Permita que o Ayurveda chegue na sua vida de forma prática. São muitas rotinas — você escolhe por qual começar.
+          </p>
+        </section>
+      )}
 
       {/* O que você recebe */}
       <section className="space-y-5">
@@ -1882,15 +1955,91 @@ const PaywallLanding = ({ doshaPrincipal, onDesbloquear, carregando }: PaywallLa
         </div>
       </section>
 
+      {/* Comida de verdade — vitrine */}
+      <section className="space-y-4">
+        <h3 className="font-serif text-2xl text-primary">Não é uma lista de dicas. É comida de verdade.</h3>
+        <p className="text-foreground/85 leading-relaxed">
+          Cada item do seu dia vem com ingredientes, modo de preparo, vídeo do professor e o porquê de funcionar pro seu desequilíbrio.
+        </p>
+        {vitrine.length > 0 && (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {vitrine.map((r) => {
+              const tags: string[] = [];
+              if (r.vata < 0) tags.push("Vata");
+              if (r.pitta < 0) tags.push("Pitta");
+              if (r.kapha < 0) tags.push("Kapha");
+              return (
+                <div key={r.titulo} className="rounded-xl overflow-hidden border border-border bg-card">
+                  <img
+                    src={r.imagem_url}
+                    alt={r.titulo}
+                    className="w-full aspect-square object-cover"
+                    loading="lazy"
+                  />
+                  <div className="px-3 py-2 space-y-1">
+                    <p className="text-xs text-foreground leading-tight">{r.titulo}</p>
+                    {tags.length > 0 && (
+                      <p className="text-[10px] uppercase tracking-wider" style={{ color: "#FF7676" }}>
+                        pacifica {tags.join("/")}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+        <p className="text-sm text-muted-foreground text-center pt-1">
+          56 itens personalizados por semana. Estes são só oito.
+        </p>
+        <div className="flex justify-center">
+          <Button
+            onClick={onDesbloquear}
+            disabled={carregando}
+            size="lg"
+            className="rounded-full px-8 h-12 text-base text-white hover:opacity-90"
+            style={{ backgroundColor: "#FF7676" }}
+          >
+            {carregando ? "Abrindo checkout…" : "Ver a minha semana · R$30/mês"}
+          </Button>
+        </div>
+      </section>
+
+      {/* Depoimentos */}
+      <section className="space-y-4">
+        <p className="text-xs uppercase tracking-widest text-muted-foreground font-medium">Quem já está seguindo</p>
+        <h3 className="font-serif text-2xl text-primary">O que chega pra gente</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {[
+            "Nossa, achei tudo que eu queria pra ir pra cozinha 🙏",
+            "Eu vim por causa de uma constipação crônica. O Ayurveda resolveu e ainda curou meu melasma. Não largo mais esse suco, Edson! Obrigada 💛",
+            "Tava sentindo falta de coisa prática. Agora nunca mais.",
+            "Achei que era pouca coisa. Tô surpresa com a riqueza de cada receita.",
+            "Gente, mas é tudo muito gostoso! Achei que Ayurveda não era assim 😄",
+            "E eu que achei que só ia tomar chá e comer salada… tô com o intestino bom e comendo bem.",
+          ].map((t, i) => (
+            <div key={i} className="bg-card border border-border rounded-2xl rounded-bl-sm px-4 py-3">
+              <p className="text-sm text-foreground leading-relaxed">{t}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
       {/* Revisão mensal */}
       <section className="space-y-3">
-        <h3 className="font-serif text-2xl text-primary">Uma revisão por mês — inclusa</h3>
+        <h3 className="font-serif text-2xl text-primary">Uma rotina viva</h3>
         <p className="text-foreground/85 leading-relaxed">
           Todo mês, seu plano é revisado. Seu dosha muda com as estações, o estresse, a fase da vida.
           A revisão ajusta o plano pra onde você está agora — não pra onde estava há três meses.
           É um acompanhamento mensal do seu equilíbrio. Por R$30.
         </p>
+        <p className="text-foreground/85 leading-relaxed">
+          E ela cresce: o caderno de receitas e práticas do Portal aumenta o tempo todo. Toda vez que
+          entra coisa nova, ela passa a valer pra sua rotina — sem você fazer nada, sem pagar de novo.
+          O que você assina hoje é maior no mês que vem.
+        </p>
       </section>
+
 
       {/* Para quem é / não é */}
       <section className="space-y-4">
@@ -1918,6 +2067,28 @@ const PaywallLanding = ({ doshaPrincipal, onDesbloquear, carregando }: PaywallLa
               ))}
             </ul>
           </div>
+        </div>
+      </section>
+
+      {/* Perguntas comuns */}
+      <section className="space-y-4">
+        <div className="border-t border-border pt-4">
+          <p className="font-medium text-foreground">«Já fiz o teste de graça. Por que pagar?»</p>
+          <p className="text-foreground/85 leading-relaxed mt-2">
+            O teste mostra onde você está. A rotina é o que te tira de lá. Saber o diagnóstico sem o tratamento é ter o raio-x e não ter o remédio.
+          </p>
+        </div>
+        <div className="border-t border-border pt-4">
+          <p className="font-medium text-foreground">«Por que pagar todo mês e não uma vez só?»</p>
+          <p className="text-foreground/85 leading-relaxed mt-2">
+            Porque seu corpo não é o mesmo todo mês. O estresse muda, a estação muda, o sono muda. Uma rotina fixa envelhece — a sua é revisada pra continuar certa.
+          </p>
+        </div>
+        <div className="border-t border-border pt-4">
+          <p className="font-medium text-foreground">«E se não for pra mim?»</p>
+          <p className="text-foreground/85 leading-relaxed mt-2">
+            Cancele quando quiser, na hora. Sem multa, sem ligação, sem perguntas. Você arrisca R$30 de um mês.
+          </p>
         </div>
       </section>
 

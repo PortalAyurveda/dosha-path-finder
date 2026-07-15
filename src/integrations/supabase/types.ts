@@ -5947,6 +5947,14 @@ export type Database = {
           tag: string
         }[]
       }
+      meus_agravamentos: {
+        Args: never
+        Returns: {
+          dosha: string
+          prioridade: number
+          sintoma: string
+        }[]
+      }
       owns_rotina: { Args: { p_test_id: string }; Returns: boolean }
       preparar_login_contexto: {
         Args: { p_contexto: string; p_email: string }
