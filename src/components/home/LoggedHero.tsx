@@ -115,20 +115,19 @@ const RecipeCard = ({
   const isBack = variant === "back";
   const ingredientes: { qtd?: string; item?: string }[] =
     Array.isArray(nug?.nugget_json?.ingredientes) ? nug.nugget_json.ingredientes : [];
-  const primeiros = ingredientes.slice(0, 3);
 
   return (
     <div
       className="relative overflow-hidden select-none"
       style={{
-        width: 130,
-        height: 150,
+        width: 148,
+        height: 172,
         background: "#FDFBF5",
         border: "1px solid rgba(53,47,84,0.08)",
         ...LEAF_RADIUS_SM,
       }}
     >
-      {nug?.imagem_url && !isBack ? (
+      {nug?.imagem_url ? (
         <div className="h-full w-full flex flex-col">
           <div className="w-full overflow-hidden" style={{ aspectRatio: "4 / 3" }}>
             <img
@@ -138,14 +137,26 @@ const RecipeCard = ({
               loading="lazy"
             />
           </div>
-          <div className="px-2 py-1.5 flex-1 flex items-center">
-            <p
-              className="font-serif font-bold leading-tight line-clamp-2"
-              style={{ color: C.primary, fontSize: 10 }}
-            >
-              {nug?.titulo || "Receita"}
-            </p>
-          </div>
+          {!isBack && (
+            <div className="px-2 py-1.5 flex-1 flex flex-col">
+              <p
+                className="font-bold uppercase tracking-wider text-muted-foreground"
+                style={{ fontSize: 7, letterSpacing: "0.06em" }}
+              >
+                Ingredientes
+              </p>
+              <ul
+                className="mt-0.5 space-y-0.5 flex-1"
+                style={{ color: "rgba(53,47,84,0.78)", fontSize: 8, lineHeight: 1.3 }}
+              >
+                {(ingredientes.length ? ingredientes.slice(0, 4) : [{ item: "—" }]).map((i, idx) => (
+                  <li key={idx} className="line-clamp-1">
+                    • {i.qtd ? `${i.qtd} ` : ""}{i.item || ""}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
       ) : (
         <div className="p-2.5 h-full flex flex-col">
@@ -155,47 +166,30 @@ const RecipeCard = ({
             ) : (
               <Leaf className="h-3 w-3" style={{ color: C.primary }} />
             )}
-            <div
-              className="h-px flex-1"
-              style={{ background: "rgba(53,47,84,0.15)" }}
-            />
+            <div className="h-px flex-1" style={{ background: "rgba(53,47,84,0.15)" }} />
           </div>
-          <p
-            className="font-serif font-bold leading-tight line-clamp-2"
-            style={{
-              color: C.primary,
-              fontSize: 10,
-              minHeight: 26,
-            }}
-          >
-            {nug?.titulo || "Receita"}
-          </p>
           {!isBack && (
-            <ul
-              className="mt-1.5 space-y-0.5 flex-1"
-              style={{ color: "rgba(53,47,84,0.75)", fontSize: 8, lineHeight: 1.35 }}
-            >
-              {primeiros.length > 0 ? (
-                primeiros.slice(0, 2).map((i, idx) => (
+            <>
+              <p
+                className="font-bold uppercase tracking-wider text-muted-foreground"
+                style={{ fontSize: 7, letterSpacing: "0.06em" }}
+              >
+                Ingredientes
+              </p>
+              <ul
+                className="mt-0.5 space-y-0.5 flex-1"
+                style={{ color: "rgba(53,47,84,0.78)", fontSize: 8, lineHeight: 1.3 }}
+              >
+                {(ingredientes.length ? ingredientes.slice(0, 4) : [
+                  { item: "ingrediente 1" },
+                  { item: "ingrediente 2" },
+                ]).map((i, idx) => (
                   <li key={idx} className="line-clamp-1">
                     • {i.qtd ? `${i.qtd} ` : ""}{i.item || ""}
                   </li>
-                ))
-              ) : (
-                <>
-                  <li className="line-clamp-1">• ingrediente 1</li>
-                  <li className="line-clamp-1">• ingrediente 2</li>
-                </>
-              )}
-            </ul>
-          )}
-          {!isBack && (
-            <div
-              className="absolute left-0 right-0 bottom-0 h-10 pointer-events-none"
-              style={{
-                background: "linear-gradient(to bottom, rgba(253,251,245,0) 0%, #FDFBF5 90%)",
-              }}
-            />
+                ))}
+              </ul>
+            </>
           )}
         </div>
       )}
@@ -203,7 +197,7 @@ const RecipeCard = ({
   );
 };
 
-// Baralho decorativo — frente + até 2 cartas atrás. Só desktop (lg+).
+// Baralho decorativo — carta da frente + leque de cartas atrás, foscas e opacas
 const RecipeDeck = ({
   front,
   back,
@@ -214,16 +208,16 @@ const RecipeDeck = ({
   IconEl: React.ComponentType<{ className?: string; style?: React.CSSProperties }> | null;
 }) => {
   const backCards = back.slice(0, 2);
-  const rotations = [-6, 5];
-  const offsetsX = [-10, 12];
-  const offsetsY = [6, 10];
+  const rotations = [-10, 9];
+  const offsetsX = [-18, 20];
+  const offsetsY = [4, 8];
 
   return (
     <div
       className="hidden lg:block shrink-0 self-center relative"
       style={{
-        width: 156,
-        height: 172,
+        width: 200,
+        height: 200,
         filter:
           "drop-shadow(0 4px 8px rgba(53,47,84,0.18)) drop-shadow(0 18px 30px rgba(53,47,84,0.12))",
       }}
@@ -236,8 +230,9 @@ const RecipeDeck = ({
           style={{
             top: "50%",
             left: "50%",
-            transform: `translate(-50%, -50%) translate(${offsetsX[i]}px, ${offsetsY[i]}px) rotate(${rotations[i]}deg) scale(0.92)`,
-            opacity: 0.85,
+            transform: `translate(-50%, -50%) translate(${offsetsX[i]}px, ${offsetsY[i]}px) rotate(${rotations[i]}deg) scale(0.88)`,
+            opacity: 0.55,
+            filter: "blur(0.6px) saturate(0.75)",
             zIndex: i + 1,
           }}
         >
