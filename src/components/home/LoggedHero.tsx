@@ -7,7 +7,7 @@ import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/contexts/UserContext";
 import BannerSlot from "@/components/banners/BannerSlot";
-import { Button } from "@/components/ui/button";
+
 
 
 const C = {
