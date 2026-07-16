@@ -655,7 +655,16 @@ const LoggedHero = () => {
           {/* DIREITA: SEU HOJE — forma de folha */}
           <div className="lg:col-span-2 order-1 lg:order-2">
             <div
-              className="bg-card border border-border shadow-md p-4 md:p-5 h-full"
+              role="link"
+              tabIndex={0}
+              onClick={() => navigate(meuDoshaBase)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  navigate(meuDoshaBase);
+                }
+              }}
+              className="bg-card border border-border shadow-md p-4 md:p-5 h-full cursor-pointer transition-all hover:-translate-y-0.5 hover:shadow-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
               style={{
                 borderTopLeftRadius: "1.5rem",
                 borderBottomRightRadius: "1.5rem",
@@ -663,6 +672,7 @@ const LoggedHero = () => {
                 borderBottomLeftRadius: "0.125rem",
               }}
             >
+
               <div className="flex items-center justify-between mb-2">
                 <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Seu Hoje</p>
                 {seloTerapeuta && (
