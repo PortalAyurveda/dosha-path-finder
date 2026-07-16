@@ -317,9 +317,11 @@ interface EvolucaoData {
 
 const LoggedHero = () => {
   const { doshaResult, profile, user } = useUser();
-  
+  const navigate = useNavigate();
+
   const id = doshaResult?.idPublico;
   const meuDoshaBase = id ? `/meu-dosha?id=${id}` : "/meu-dosha";
+
 
   const vata = doshaResult?.vatascore ?? 0;
   const pitta = doshaResult?.pittascore ?? 0;
