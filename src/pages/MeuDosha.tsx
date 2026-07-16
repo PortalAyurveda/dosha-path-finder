@@ -16,7 +16,7 @@ import type { InsightAyurvedico } from "@/components/meudosha/MetricasTab";
 import ArtigosTab from "@/components/meudosha/ArtigosTab";
 import DiagnosticoCompleto from "@/components/meudosha/DiagnosticoCompleto";
 import VideosTab from "@/components/meudosha/VideosTab";
-import AkashaTab from "@/components/meudosha/AkashaTab";
+
 import RetesteCard from "@/components/meudosha/RetesteCard";
 import PraVoceRail from "@/components/meudosha/PraVoceRail";
 import BannerSlot from "@/components/banners/BannerSlot";
@@ -620,7 +620,7 @@ const MeuDosha = () => {
   const id = searchParams.get('id');
   const tabParam = searchParams.get('tab');
   const modeParam = searchParams.get('mode');
-  const initialTab = ['perfil', 'metricas', 'artigos', 'videos', 'akasha'].includes(tabParam || '')
+  const initialTab = ['perfil', 'metricas', 'artigos', 'videos'].includes(tabParam || '')
     ? (tabParam as string)
     : 'perfil';
   const initialMode = modeParam === 'personalizado' ? 'personalizado' : 'gerais';
@@ -982,7 +982,7 @@ const MeuDosha = () => {
           className="w-full"
         >
           <div className="sticky top-16 z-40 py-2 flex justify-center">
-          <TabsList className="grid grid-cols-5 h-auto max-w-6xl w-full mx-4 rounded-full bg-muted/95 backdrop-blur-sm shadow-sm gap-0.5 sm:gap-0 p-1">
+          <TabsList className="grid grid-cols-4 h-auto max-w-6xl w-full mx-4 rounded-full bg-muted/95 backdrop-blur-sm shadow-sm gap-0.5 sm:gap-0 p-1">
             <TabsTrigger value="perfil" className="text-xs sm:text-sm py-1 flex items-center gap-1 bg-[#E8EEFF] sm:bg-transparent text-[#352F54] rounded-full">
               <span className="hidden sm:inline-flex">
                 <DoshaMiniPie vata={result.vatascore ?? 0} pitta={result.pittascore ?? 0} kapha={result.kaphascore ?? 0} />
@@ -1000,10 +1000,6 @@ const MeuDosha = () => {
             <TabsTrigger value="videos" className="text-xs sm:text-sm py-1 flex items-center gap-1 bg-[#FFF3D6] sm:bg-transparent text-[#352F54] rounded-full">
               <span aria-hidden="true" className="hidden sm:inline">▶️</span>
               Vídeos
-            </TabsTrigger>
-            <TabsTrigger value="akasha" className="text-xs sm:text-sm py-1 flex items-center gap-1 bg-[#F0E6F5] sm:bg-transparent text-[#352F54] rounded-full">
-              Akasha
-              <img src="https://static.wixstatic.com/media/b8f47f_105371e1ade24ccd9bd3406b83bd925e~mv2.png" alt="" className="w-4 h-4 object-contain hidden sm:inline-block" />
             </TabsTrigger>
           </TabsList>
           </div>
@@ -1175,22 +1171,6 @@ const MeuDosha = () => {
             )}
           </TabsContent>
 
-          {/* ===== TAB: AKASHA ===== */}
-          <TabsContent forceMount value="akasha" className="data-[state=inactive]:hidden" tabIndex={-1}>
-            <AkashaTab
-              idPublico={id}
-              nome={result.nome}
-              doshaprincipal={result.doshaprincipal}
-              imc={result.imc}
-              idade={result.idade}
-              vatascore={result.vatascore}
-              pittascore={result.pittascore}
-              kaphascore={result.kaphascore}
-              agniPrincipal={result.agniPrincipal}
-              conhecimentoAyurveda={result.conhecimentoAyurveda}
-              initialPergunta={searchParams.get('pergunta') || ''}
-            />
-          </TabsContent>
         </Tabs>
 
         {!isVisitor && <PraVoceRail doshaPrincipal={result?.doshaprincipal} />}

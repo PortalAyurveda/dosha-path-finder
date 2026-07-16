@@ -13,13 +13,7 @@ import { CartProvider } from "./contexts/CartContext";
 import CartDrawer from "./components/loja/CartDrawer";
 
 const AkashaRedirect = () => {
-  const loc = useLocation();
-  const params = new URLSearchParams(loc.search);
-  const pergunta = params.get("pergunta") || "";
-  const target = pergunta
-    ? `/meu-dosha?tab=akasha&pergunta=${encodeURIComponent(pergunta)}`
-    : "/meu-dosha?tab=akasha";
-  return <Navigate to={target} replace />;
+  return <Navigate to="/meu-dosha" replace />;
 };
 
 import Index from "./pages/Index";
