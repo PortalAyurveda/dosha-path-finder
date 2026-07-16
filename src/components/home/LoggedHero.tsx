@@ -393,7 +393,7 @@ const LoggedHero = () => {
   // Preview da rotina de hoje (só quando o usuário tem acesso)
   const { data: testeId } = useQuery({
     queryKey: ["logged-hero-teste-id", doshaResult?.idPublico],
-    enabled: !!doshaResult?.idPublico && !!temAcessoRotina,
+    enabled: !!doshaResult?.idPublico,
     queryFn: async () => {
       const { data } = await supabase
         .from("doshas_registros")
@@ -403,6 +403,7 @@ const LoggedHero = () => {
       return (data?.id as string | undefined) ?? null;
     },
   });
+
 
   const { data: rotinaPreview } = useQuery({
     queryKey: ["logged-hero-rotina-preview", testeId],
