@@ -533,93 +533,87 @@ const LoggedHero = () => {
                     .map((i) => [i.qtd, i.item].filter(Boolean).join(" ").trim())
                     .filter(Boolean)
                     .join(" • ");
+                  const rotinaHref = nug
+                    ? `/minha-rotina?item=${encodeURIComponent(nug.id)}`
+                    : "/minha-rotina";
                   return (
-                    <div className="relative bg-card rounded-2xl p-5 md:p-6 border border-border shadow-md w-full h-full flex flex-col gap-4">
+                    <div
+                      role="link"
+                      tabIndex={0}
+                      onClick={() => navigate(rotinaHref)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          navigate(rotinaHref);
+                        }
+                      }}
+                      className="relative bg-card rounded-2xl p-5 md:p-6 border border-border shadow-md w-full h-full flex flex-col gap-4 cursor-pointer transition-all hover:-translate-y-0.5 hover:shadow-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                    >
                       {objetivos.length > 0 && <ObjetivosRow objetivos={objetivos} />}
 
-                      {temAcessoRotina ? (
-                        <>
-                          {nug ? (
-                            <div className="flex-1 min-w-0 pr-0 lg:pr-[210px]">
-                              <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-                                Sua rotina agora
-                              </p>
-                              <Link
-                                to={`/minha-rotina?item=${encodeURIComponent(nug.id)}`}
-                                className="block hover:opacity-95 transition-opacity"
-                              >
-                                <p
-                                  className="font-serif font-bold text-base leading-tight mt-0.5 line-clamp-2"
-                                  style={{ color: C.primary }}
-                                >
-                                  {nug.titulo}
-                                </p>
-                              </Link>
-                              {ingredPreview && (
-                                <p className="text-[11px] text-muted-foreground line-clamp-2 mt-1 leading-snug">
-                                  {ingredPreview}
-                                </p>
-                              )}
-                              <div className="flex flex-wrap gap-1 mt-1.5">
-                                {(["Vata", "Pitta", "Kapha"] as const).map((d) => {
-                                  const key = d.toLowerCase() as "vata" | "pitta" | "kapha";
-                                  const s = Number(nug[key] ?? 0);
-                                  if (!s) return null;
-                                  return <ScoreMiniChip key={d} dosha={d} score={s} />;
-                                })}
-                              </div>
-                            </div>
-                          ) : (
-                            <p className="text-sm text-muted-foreground">
-                              Os cuidados personalizados desenhados para o seu momento.
+                      {nug ? (
+                        <div className="flex-1 min-w-0 pr-0 lg:pr-[210px]">
+                          <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                            Sua rotina agora
+                          </p>
+                          <p
+                            className="font-serif font-bold text-base leading-tight mt-0.5 line-clamp-2"
+                            style={{ color: C.primary }}
+                          >
+                            {nug.titulo}
+                          </p>
+                          {ingredPreview && (
+                            <p className="text-[11px] text-muted-foreground line-clamp-2 mt-1 leading-snug">
+                              {ingredPreview}
                             </p>
                           )}
-
-                          {/* Selo — mockup no canto superior direito */}
-                          {nug && (
-                            <div className="absolute top-3 right-3 hidden lg:block">
-                              <RecipeDeck front={nug} back={backNugs} IconEl={IconEl} />
-                            </div>
-                          )}
-
-                          <div className="mt-auto flex justify-end">
-                            <Link
-                              to={nug ? `/minha-rotina?item=${encodeURIComponent(nug.id)}` : "/minha-rotina"}
-                              className="inline-flex items-center gap-1.5 text-sm font-semibold"
-                              style={{ color: C.primary }}
-                            >
-                              abrir minha rotina <ArrowRight className="h-4 w-4" />
-                            </Link>
+                          <div className="flex flex-wrap gap-1 mt-1.5">
+                            {(["Vata", "Pitta", "Kapha"] as const).map((d) => {
+                              const key = d.toLowerCase() as "vata" | "pitta" | "kapha";
+                              const s = Number(nug[key] ?? 0);
+                              if (!s) return null;
+                              return <ScoreMiniChip key={d} dosha={d} score={s} />;
+                            })}
                           </div>
-                        </>
+                        </div>
                       ) : (
-                        <>
-                          {objetivos.length > 0 && (
-                            <p className="text-sm text-muted-foreground -mt-1">
-                              Sua rotina seria desenhada exatamente para isso.
-                            </p>
-                          )}
-                          <div>
-                            <h3
-                              className="font-serif font-bold text-lg md:text-xl"
-                              style={{ color: C.primary }}
-                            >
-                              Monte sua rotina personalizada
-                            </h3>
-                            <p className="text-sm text-muted-foreground mt-1">
-                              Alimentação, sono e cuidados diários baseados no seu dosha.
-                            </p>
-                          </div>
-                          <Button asChild size="lg" variant="secondary" className="w-fit">
-                            <Link to="/minha-rotina">Começar agora</Link>
-                          </Button>
-                        </>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                            Sua rotina agora
+                          </p>
+                          <p
+                            className="font-serif font-bold text-base leading-tight mt-0.5"
+                            style={{ color: C.primary }}
+                          >
+                            Monte sua rotina personalizada
+                          </p>
+                          <p className="text-[11px] text-muted-foreground mt-1 leading-snug">
+                            Alimentação, sono e cuidados diários baseados no seu dosha.
+                          </p>
+                        </div>
                       )}
+
+                      {/* Selo — mockup no canto superior direito */}
+                      {nug && (
+                        <div className="absolute top-3 right-3 hidden lg:block pointer-events-none">
+                          <RecipeDeck front={nug} back={backNugs} IconEl={IconEl} />
+                        </div>
+                      )}
+
+                      <div className="mt-auto flex justify-end">
+                        <span
+                          className="inline-flex items-center gap-1.5 text-sm font-semibold"
+                          style={{ color: C.primary }}
+                        >
+                          abrir minha rotina <ArrowRight className="h-4 w-4" />
+                        </span>
+                      </div>
                     </div>
                   );
                 })()}
               />
             </div>
+
 
             {/* SLOT B — receita do dia, card inteiro clicável */}
             <BannerSlot
