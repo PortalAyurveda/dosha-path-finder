@@ -773,6 +773,7 @@ const LoggedHero = () => {
                 ) : artigo?.link_do_artigo ? (
                   <Link
                     to={`/blog/${artigo.link_do_artigo}`}
+                    onClick={(e) => e.stopPropagation()}
                     className="flex items-start justify-between gap-2 text-xs font-semibold group"
                     style={{ color: C.primary }}
                   >
@@ -785,6 +786,7 @@ const LoggedHero = () => {
                 ) : (
                   <Link
                     to="/blog"
+                    onClick={(e) => e.stopPropagation()}
                     className="flex items-center justify-between gap-2 text-xs font-semibold group"
                     style={{ color: C.primary }}
                   >
@@ -792,6 +794,7 @@ const LoggedHero = () => {
                     <ArrowRight className="h-4 w-4 shrink-0 group-hover:translate-x-0.5 transition-transform" />
                   </Link>
                 )}
+
               </div>
 
             </div>
