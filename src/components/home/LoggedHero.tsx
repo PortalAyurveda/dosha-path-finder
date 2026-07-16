@@ -339,11 +339,8 @@ const LoggedHero = () => {
   const primaryScore = doshaScores.find((d) => d.name === primaryDosha)?.score ?? 0;
   const topInfo = getLevelInfo(primaryDosha, primaryScore);
 
-  const temAcessoRotina =
-    profile?.is_premium === true ||
-    (profile?.subscription_status === "active" &&
-      ["rotina", "mensal", "anual"].includes(profile?.plano ?? "") &&
-      (!profile?.premium_until || new Date(profile.premium_until) > new Date()));
+
+
 
   // Evolução
   const { data: evolucao } = useQuery({
