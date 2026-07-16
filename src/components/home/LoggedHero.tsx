@@ -717,13 +717,13 @@ const LoggedHero = () => {
                   <p className="text-[11px] text-muted-foreground">
                     {primaryScore} pts{total > 0 ? ` (${Math.round((primaryScore / total) * 100)}%)` : ""}
                   </p>
-                  <Link
-                    to={meuDoshaBase}
+                  <span
                     className="inline-flex items-center gap-1 text-[11px] font-semibold mt-1"
                     style={{ color: C.primary }}
                   >
                     ver mapa completo <ArrowRight className="h-3 w-3" />
-                  </Link>
+                  </span>
+
                 </div>
               </div>
 
