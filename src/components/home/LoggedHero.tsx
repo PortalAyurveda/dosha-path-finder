@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import * as LucideIcons from "lucide-react";
 import { Flame, Award, ChefHat, ArrowRight, Check, Leaf } from "lucide-react";
@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/contexts/UserContext";
 import BannerSlot from "@/components/banners/BannerSlot";
 import { Button } from "@/components/ui/button";
+
 
 const C = {
   primary: "#352F54",
