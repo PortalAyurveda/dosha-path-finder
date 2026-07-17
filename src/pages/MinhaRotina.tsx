@@ -1945,7 +1945,7 @@ const PaywallLanding = ({ doshaPrincipal, onDesbloquear, carregando, top3, vitri
           Baseado no seu dosha — e só no seu — um plano completo pros próximos 7 dias.
           Não é genérico, não é "dicas pra {dosha}". É o seu plano, calculado com seus scores reais.
         </p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {recebe.map((r) => (
             <div key={r.titulo} className="rounded-xl border border-border bg-card p-4 flex gap-3">
               <div className="h-10 w-10 rounded-full bg-secondary/15 text-secondary flex items-center justify-center shrink-0">
