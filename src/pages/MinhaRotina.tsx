@@ -17,6 +17,7 @@ import {
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 
 import PageContainer from "@/components/PageContainer";
+import PrateleiraSamkhya from "@/components/samkhya/PrateleiraSamkhya";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
