@@ -664,7 +664,7 @@ const Index = () => {
       <FundamentosAyurveda />
       <BibliotecaSection />
       <SommelierArtigos />
-      <SamkhyaBanner />
+      <PrateleiraSamkhya doshaPrincipal={doshaResult?.doshaprincipal ?? null} />
     </>
   );
 };
