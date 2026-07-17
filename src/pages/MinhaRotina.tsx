@@ -17,6 +17,7 @@ import {
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 
 import PageContainer from "@/components/PageContainer";
+import PrateleiraSamkhya from "@/components/samkhya/PrateleiraSamkhya";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -753,6 +754,12 @@ const MinhaRotina = () => {
           vata={(doshaInfo?.vatascore as number | null) ?? null}
           pitta={(doshaInfo?.pittascore as number | null) ?? null}
           kapha={(doshaInfo?.kaphascore as number | null) ?? null}
+        />
+      </div>
+      <div className="mt-8">
+        <PrateleiraSamkhya
+          doshaPrincipal={doshaResult?.doshaprincipal ?? null}
+          titulo="✦ Os ingredientes do seu ritual ✦"
         />
       </div>
     </PageContainer>

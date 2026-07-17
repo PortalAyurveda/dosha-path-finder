@@ -15,6 +15,7 @@ import MetricasTab from "@/components/meudosha/MetricasTab";
 import type { InsightAyurvedico } from "@/components/meudosha/MetricasTab";
 import ArtigosTab from "@/components/meudosha/ArtigosTab";
 import DiagnosticoCompleto from "@/components/meudosha/DiagnosticoCompleto";
+import PrateleiraSamkhya from "@/components/samkhya/PrateleiraSamkhya";
 import VideosTab from "@/components/meudosha/VideosTab";
 
 import RetesteCard from "@/components/meudosha/RetesteCard";
@@ -1112,6 +1113,10 @@ const MeuDosha = () => {
               refazerTeste={handleRefazerTeste}
               isPremium={isPremium}
             />
+
+            <div className="mt-8 -mx-4 sm:-mx-6">
+              <PrateleiraSamkhya doshaPrincipal={result.doshaprincipal || primaryDosha} />
+            </div>
           </TabsContent>
 
           {/* ===== TAB: MÉTRICAS ===== */}
