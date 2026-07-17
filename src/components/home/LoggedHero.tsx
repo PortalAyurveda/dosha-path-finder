@@ -549,28 +549,48 @@ const LoggedHero = () => {
                       {objetivos.length > 0 && <ObjetivosRow objetivos={objetivos} />}
 
                       {nug ? (
-                        <div className="flex-1 min-w-0 pr-0 lg:pr-[210px]">
-                          <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-                            Sua rotina agora
-                          </p>
-                          <p
-                            className="font-serif font-bold text-base leading-tight mt-0.5 line-clamp-2"
-                            style={{ color: C.primary }}
-                          >
-                            {nug.titulo}
-                          </p>
-                          {ingredPreview && (
-                            <p className="text-[11px] text-muted-foreground line-clamp-2 mt-1 leading-snug">
-                              {ingredPreview}
-                            </p>
+                        <div className="flex gap-4 pr-0 lg:pr-[210px]">
+                          {nug.imagem_url && (
+                            <div
+                              className="shrink-0 overflow-hidden hidden sm:block"
+                              style={{
+                                width: 120,
+                                height: 120,
+                                ...LEAF_RADIUS_SM,
+                                boxShadow: "0 6px 18px rgba(53,47,84,0.14)",
+                              }}
+                            >
+                              <img
+                                src={nug.imagem_url}
+                                alt={nug.titulo}
+                                className="w-full h-full object-cover"
+                                loading="lazy"
+                              />
+                            </div>
                           )}
-                          <div className="flex flex-wrap gap-1 mt-1.5">
-                            {(["Vata", "Pitta", "Kapha"] as const).map((d) => {
-                              const key = d.toLowerCase() as "vata" | "pitta" | "kapha";
-                              const s = Number(nug[key] ?? 0);
-                              if (!s) return null;
-                              return <ScoreMiniChip key={d} dosha={d} score={s} />;
-                            })}
+                          <div className="flex-1 min-w-0">
+                            <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                              Sua rotina agora
+                            </p>
+                            <p
+                              className="font-serif font-bold text-base leading-tight mt-0.5 line-clamp-2"
+                              style={{ color: C.primary }}
+                            >
+                              {nug.titulo}
+                            </p>
+                            {ingredPreview && (
+                              <p className="text-[11px] text-muted-foreground line-clamp-2 mt-1 leading-snug">
+                                {ingredPreview}
+                              </p>
+                            )}
+                            <div className="flex flex-wrap gap-1 mt-1.5">
+                              {(["Vata", "Pitta", "Kapha"] as const).map((d) => {
+                                const key = d.toLowerCase() as "vata" | "pitta" | "kapha";
+                                const s = Number(nug[key] ?? 0);
+                                if (!s) return null;
+                                return <ScoreMiniChip key={d} dosha={d} score={s} />;
+                              })}
+                            </div>
                           </div>
                         </div>
                       ) : (
