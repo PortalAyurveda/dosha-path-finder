@@ -447,16 +447,6 @@ const Conteudo = ({
         )}
       </div>
 
-      <div className="pt-2 flex justify-center">
-        <Button
-          variant="outline"
-          onClick={() => navigate("/meu-dosha")}
-          className="rounded-full"
-        >
-          Ver minha caminhada
-          <ChevronRight className="h-4 w-4 ml-1" />
-        </Button>
-      </div>
     </div>
   );
 };
