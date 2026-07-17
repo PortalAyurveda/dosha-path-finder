@@ -6239,6 +6239,8 @@ export type Database = {
               error: true
             } & "Could not choose the best candidate function between: public.urlencode(string => bytea), public.urlencode(string => varchar). Try renaming the parameters or the function itself in the database so function overloading can be resolved"
           }
+      videos_seo2_sincronizar: { Args: never; Returns: number }
+      videos_slugify: { Args: { p_titulo: string }; Returns: string }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
