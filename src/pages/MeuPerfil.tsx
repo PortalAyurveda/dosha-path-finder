@@ -382,7 +382,7 @@ const Conteudo = ({
 
       <HistoriaCard stats={stats} />
 
-      <CaminhadaCard />
+      
 
       <div className="space-y-3 md:space-y-4">
         <AccordionCard
