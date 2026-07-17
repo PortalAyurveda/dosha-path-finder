@@ -103,103 +103,84 @@ const ObjetivosRow = ({ objetivos }: { objetivos: Objetivo[] }) => (
   </div>
 );
 
-// Uma carta "ficha de receita" — usada na frente e nas cartas de trás do baralho
-const RecipeCard = ({
-  nug,
-  IconEl,
-  variant = "front",
-}: {
-  nug: any;
-  IconEl: React.ComponentType<{ className?: string; style?: React.CSSProperties }> | null;
-  variant?: "front" | "back";
-}) => {
-  const isBack = variant === "back";
-  const ingredientes: { qtd?: string; item?: string }[] =
-    Array.isArray(nug?.nugget_json?.ingredientes) ? nug.nugget_json.ingredientes : [];
+const DECK_W = 156;
+const DECK_H = 196;
 
-  // Frente: caderninho de anotações (sem foto)
-  if (!isBack) {
-    return (
-      <div
-        className="relative overflow-hidden select-none"
-        style={{
-          width: 148,
-          height: 172,
-          background:
-            "repeating-linear-gradient(180deg, #FFFDF6 0px, #FFFDF6 18px, rgba(53,47,84,0.08) 19px)",
-          border: "1px solid rgba(53,47,84,0.12)",
-          ...LEAF_RADIUS_SM,
-        }}
-      >
-        {/* fita/linha vermelha da margem esquerda */}
-        <div
-          aria-hidden
-          className="absolute top-0 bottom-0"
-          style={{ left: 14, width: 1, background: "rgba(220,80,80,0.35)" }}
+// Página de caderninho pautado (usada na frente com os ingredientes,
+// e nas cartas do leque atrás, em branco — como outras receitas do bloco)
+const NotebookPage = ({
+  ingredientes,
+  showTitle = true,
+  width = DECK_W,
+  height = DECK_H,
+}: {
+  ingredientes?: { qtd?: string; item?: string }[];
+  showTitle?: boolean;
+  width?: number;
+  height?: number;
+}) => (
+  <div
+    className="relative overflow-hidden select-none"
+    style={{
+      width,
+      height,
+      background:
+        "repeating-linear-gradient(180deg, #FFFDF6 0px, #FFFDF6 17px, rgba(53,47,84,0.10) 18px)",
+      border: "1px solid rgba(53,47,84,0.14)",
+      ...LEAF_RADIUS_SM,
+    }}
+  >
+    {/* margem vermelha */}
+    <div
+      aria-hidden
+      className="absolute top-0 bottom-0"
+      style={{ left: 14, width: 1, background: "rgba(220,80,80,0.4)" }}
+    />
+    {/* furos de fichário */}
+    <div
+      aria-hidden
+      className="absolute left-1 top-0 bottom-0 flex flex-col justify-around py-3"
+    >
+      {[0, 1, 2, 3].map((i) => (
+        <span
+          key={i}
+          className="block rounded-full"
+          style={{ width: 5, height: 5, background: "rgba(53,47,84,0.14)" }}
         />
-        <div className="relative h-full flex flex-col px-3 pt-2.5 pb-2 pl-5">
+      ))}
+    </div>
+    {ingredientes && (
+      <div className="relative h-full flex flex-col pt-2.5 pb-2 pr-3 pl-6">
+        {showTitle && (
           <p
             className="font-bold uppercase tracking-wider text-muted-foreground"
             style={{ fontSize: 7, letterSpacing: "0.08em" }}
           >
             Ingredientes
           </p>
-          <ul
-            className="mt-1 flex-1"
-            style={{
-              color: "rgba(53,47,84,0.85)",
-              fontSize: 9,
-              lineHeight: "18px",
-              fontFamily: "'Caveat', 'Kalam', 'Segoe Script', cursive",
-            }}
-          >
-            {(ingredientes.length
-              ? ingredientes.slice(0, 5)
-              : [{ item: "ingrediente 1" }, { item: "ingrediente 2" }]
-            ).map((i, idx) => (
-              <li key={idx} className="line-clamp-1">
-                • {i.qtd ? `${i.qtd} ` : ""}{i.item || ""}
-              </li>
-            ))}
-          </ul>
-        </div>
+        )}
+        <ul
+          className="mt-1 flex-1"
+          style={{
+            color: "rgba(53,47,84,0.88)",
+            fontSize: 10,
+            lineHeight: "17px",
+            fontFamily: "'Caveat', 'Kalam', 'Segoe Script', cursive",
+          }}
+        >
+          {ingredientes.map((i, idx) => (
+            <li key={idx} className="line-clamp-1">
+              • {i.qtd ? `${i.qtd} ` : ""}{i.item || ""}
+            </li>
+          ))}
+        </ul>
       </div>
-    );
-  }
+    )}
+  </div>
+);
 
-  // Verso (leque): mostra foto se houver
-  return (
-    <div
-      className="relative overflow-hidden select-none"
-      style={{
-        width: 148,
-        height: 172,
-        background: "#FDFBF5",
-        border: "1px solid rgba(53,47,84,0.08)",
-        ...LEAF_RADIUS_SM,
-      }}
-    >
-      {nug?.imagem_url ? (
-        <img
-          src={nug.imagem_url}
-          alt=""
-          className="w-full h-full object-cover"
-          loading="lazy"
-        />
-      ) : (
-        <div className="p-2.5 h-full flex items-center justify-center">
-          {IconEl ? (
-            <IconEl className="h-6 w-6" style={{ color: C.primary }} />
-          ) : (
-            <Leaf className="h-6 w-6" style={{ color: C.primary }} />
-          )}
-        </div>
-      )}
-    </div>
-  );
-};
-
-// Baralho decorativo — carta da frente + leque de cartas atrás, foscas e opacas
+// Baralho decorativo — página da frente com a receita + leque simétrico de
+// páginas de caderno atrás (10-15% aparecendo de cada lado)
 const RecipeDeck = ({
   front,
   back,
@@ -209,36 +190,42 @@ const RecipeDeck = ({
   back: any[];
   IconEl: React.ComponentType<{ className?: string; style?: React.CSSProperties }> | null;
 }) => {
-  const backCards = back.slice(0, 2);
-  const rotations = [-10, 9];
-  const offsetsX = [-18, 20];
-  const offsetsY = [4, 8];
+  const ingredientes: { qtd?: string; item?: string }[] =
+    Array.isArray(front?.nugget_json?.ingredientes) ? front.nugget_json.ingredientes : [];
+  const maxLines = Math.max(0, Math.floor((DECK_H - 40) / 17));
+  const shown = ingredientes.slice(0, maxLines);
+
+  // 3 páginas atrás, simétricas
+  const backConfigs = [
+    { dx: -30, dy: 10, rot: -14, z: 1 },
+    { dx: 30, dy: 10, rot: 14, z: 2 },
+    { dx: 0, dy: -8, rot: 3, z: 3 },
+  ];
 
   return (
     <div
       className="hidden lg:block shrink-0 self-center relative"
       style={{
-        width: 200,
-        height: 200,
+        width: DECK_W + 60,
+        height: DECK_H + 30,
         filter:
           "drop-shadow(0 4px 8px rgba(53,47,84,0.18)) drop-shadow(0 18px 30px rgba(53,47,84,0.12))",
       }}
     >
-      {backCards.map((nug, i) => (
+      {backConfigs.map((cfg, i) => (
         <div
-          key={nug?.id ?? i}
+          key={i}
           aria-hidden
           className="absolute pointer-events-none"
           style={{
             top: "50%",
             left: "50%",
-            transform: `translate(-50%, -50%) translate(${offsetsX[i]}px, ${offsetsY[i]}px) rotate(${rotations[i]}deg) scale(0.88)`,
-            opacity: 0.55,
-            filter: "blur(0.6px) saturate(0.75)",
-            zIndex: i + 1,
+            transform: `translate(-50%, -50%) translate(${cfg.dx}px, ${cfg.dy}px) rotate(${cfg.rot}deg)`,
+            zIndex: cfg.z,
+            opacity: 0.92,
           }}
         >
-          <RecipeCard nug={nug} IconEl={IconEl} variant="back" />
+          <NotebookPage />
         </div>
       ))}
       <div
@@ -250,7 +237,7 @@ const RecipeDeck = ({
           zIndex: 10,
         }}
       >
-        <RecipeCard nug={front} IconEl={IconEl} variant="front" />
+        <NotebookPage ingredientes={shown} />
       </div>
     </div>
   );
