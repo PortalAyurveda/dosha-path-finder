@@ -495,6 +495,9 @@ const Header = () => {
                   </DropdownMenuItem>
                 )}
                 <DropdownMenuItem asChild>
+                  <Link to="/minha-rotina">Minha rotina</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
                   <Link to="/meu-perfil">Minha conta</Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={handleSignOut}>
