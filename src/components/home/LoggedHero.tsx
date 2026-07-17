@@ -117,6 +117,57 @@ const RecipeCard = ({
   const ingredientes: { qtd?: string; item?: string }[] =
     Array.isArray(nug?.nugget_json?.ingredientes) ? nug.nugget_json.ingredientes : [];
 
+  // Frente: caderninho de anotações (sem foto)
+  if (!isBack) {
+    return (
+      <div
+        className="relative overflow-hidden select-none"
+        style={{
+          width: 148,
+          height: 172,
+          background:
+            "repeating-linear-gradient(180deg, #FFFDF6 0px, #FFFDF6 18px, rgba(53,47,84,0.08) 19px)",
+          border: "1px solid rgba(53,47,84,0.12)",
+          ...LEAF_RADIUS_SM,
+        }}
+      >
+        {/* fita/linha vermelha da margem esquerda */}
+        <div
+          aria-hidden
+          className="absolute top-0 bottom-0"
+          style={{ left: 14, width: 1, background: "rgba(220,80,80,0.35)" }}
+        />
+        <div className="relative h-full flex flex-col px-3 pt-2.5 pb-2 pl-5">
+          <p
+            className="font-bold uppercase tracking-wider text-muted-foreground"
+            style={{ fontSize: 7, letterSpacing: "0.08em" }}
+          >
+            Ingredientes
+          </p>
+          <ul
+            className="mt-1 flex-1"
+            style={{
+              color: "rgba(53,47,84,0.85)",
+              fontSize: 9,
+              lineHeight: "18px",
+              fontFamily: "'Caveat', 'Kalam', 'Segoe Script', cursive",
+            }}
+          >
+            {(ingredientes.length
+              ? ingredientes.slice(0, 5)
+              : [{ item: "ingrediente 1" }, { item: "ingrediente 2" }]
+            ).map((i, idx) => (
+              <li key={idx} className="line-clamp-1">
+                • {i.qtd ? `${i.qtd} ` : ""}{i.item || ""}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    );
+  }
+
+  // Verso (leque): mostra foto se houver
   return (
     <div
       className="relative overflow-hidden select-none"
@@ -129,68 +180,18 @@ const RecipeCard = ({
       }}
     >
       {nug?.imagem_url ? (
-        <div className="h-full w-full flex flex-col">
-          <div className="w-full overflow-hidden" style={{ aspectRatio: "4 / 3" }}>
-            <img
-              src={nug.imagem_url}
-              alt={nug?.titulo || ""}
-              className="w-full h-full object-cover"
-              loading="lazy"
-            />
-          </div>
-          {!isBack && (
-            <div className="px-2 py-1.5 flex-1 flex flex-col">
-              <p
-                className="font-bold uppercase tracking-wider text-muted-foreground"
-                style={{ fontSize: 7, letterSpacing: "0.06em" }}
-              >
-                Ingredientes
-              </p>
-              <ul
-                className="mt-0.5 space-y-0.5 flex-1"
-                style={{ color: "rgba(53,47,84,0.78)", fontSize: 8, lineHeight: 1.3 }}
-              >
-                {(ingredientes.length ? ingredientes.slice(0, 4) : [{ item: "—" }]).map((i, idx) => (
-                  <li key={idx} className="line-clamp-1">
-                    • {i.qtd ? `${i.qtd} ` : ""}{i.item || ""}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </div>
+        <img
+          src={nug.imagem_url}
+          alt=""
+          className="w-full h-full object-cover"
+          loading="lazy"
+        />
       ) : (
-        <div className="p-2.5 h-full flex flex-col">
-          <div className="flex items-center gap-1.5 mb-1">
-            {IconEl ? (
-              <IconEl className="h-3 w-3" style={{ color: C.primary }} />
-            ) : (
-              <Leaf className="h-3 w-3" style={{ color: C.primary }} />
-            )}
-            <div className="h-px flex-1" style={{ background: "rgba(53,47,84,0.15)" }} />
-          </div>
-          {!isBack && (
-            <>
-              <p
-                className="font-bold uppercase tracking-wider text-muted-foreground"
-                style={{ fontSize: 7, letterSpacing: "0.06em" }}
-              >
-                Ingredientes
-              </p>
-              <ul
-                className="mt-0.5 space-y-0.5 flex-1"
-                style={{ color: "rgba(53,47,84,0.78)", fontSize: 8, lineHeight: 1.3 }}
-              >
-                {(ingredientes.length ? ingredientes.slice(0, 4) : [
-                  { item: "ingrediente 1" },
-                  { item: "ingrediente 2" },
-                ]).map((i, idx) => (
-                  <li key={idx} className="line-clamp-1">
-                    • {i.qtd ? `${i.qtd} ` : ""}{i.item || ""}
-                  </li>
-                ))}
-              </ul>
-            </>
+        <div className="p-2.5 h-full flex items-center justify-center">
+          {IconEl ? (
+            <IconEl className="h-6 w-6" style={{ color: C.primary }} />
+          ) : (
+            <Leaf className="h-6 w-6" style={{ color: C.primary }} />
           )}
         </div>
       )}
