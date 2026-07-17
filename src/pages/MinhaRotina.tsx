@@ -1972,7 +1972,7 @@ const PaywallLanding = ({ doshaPrincipal, onDesbloquear, carregando, top3, vitri
           Cada item do seu dia vem com ingredientes, modo de preparo, vídeo do professor e o porquê de funcionar pro seu desequilíbrio.
         </p>
         {vitrine.length > 0 && (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {vitrine.map((r) => {
               const tags: string[] = [];
               if (r.vata < 0) tags.push("Vata");
