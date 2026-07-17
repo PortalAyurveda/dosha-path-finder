@@ -755,6 +755,12 @@ const MinhaRotina = () => {
           kapha={(doshaInfo?.kaphascore as number | null) ?? null}
         />
       </div>
+      <div className="mt-8">
+        <PrateleiraSamkhya
+          doshaPrincipal={doshaResult?.doshaprincipal ?? null}
+          titulo="✦ Os ingredientes do seu ritual ✦"
+        />
+      </div>
     </PageContainer>
   );
 };
