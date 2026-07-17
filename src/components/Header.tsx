@@ -351,41 +351,22 @@ const Header = () => {
               );
             })}
 
-            {/* xl+ : Loja e Escola inline */}
+            {/* Loja sempre visível */}
             <Link
               to="/samkhya"
-              className={`hidden xl:inline-flex px-2 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${isActive("/samkhya") ? "bg-white/20 text-white" : "text-white/85 hover:text-white hover:bg-white/10"}`}
+              className={`px-2 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${isActive("/samkhya") ? "bg-white/20 text-white" : "text-white/85 hover:text-white hover:bg-white/10"}`}
             >
               Loja
             </Link>
             {escolaAluno && (
               <Link
                 to="/escola/aluno"
-                className={`hidden xl:inline-flex px-2 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${isActive("/escola/aluno") ? "bg-white/20 text-white" : "text-white/85 hover:text-white hover:bg-white/10"}`}
+                className={`px-2 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${isActive("/escola/aluno") ? "bg-white/20 text-white" : "text-white/85 hover:text-white hover:bg-white/10"}`}
               >
                 Escola
               </Link>
             )}
 
-            {/* lg até xl : agrupa Loja + Escola em "Mais ▾" */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button className="xl:hidden px-2 py-2 rounded-lg text-sm font-medium text-white/85 hover:text-white hover:bg-white/10 transition-colors inline-flex items-center gap-1 whitespace-nowrap">
-                  Mais
-                  <ChevronDown className="h-3.5 w-3.5" />
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="bg-white">
-                <DropdownMenuItem asChild>
-                  <Link to="/samkhya">Loja</Link>
-                </DropdownMenuItem>
-                {escolaAluno && (
-                  <DropdownMenuItem asChild>
-                    <Link to="/escola/aluno">Escola</Link>
-                  </DropdownMenuItem>
-                )}
-              </DropdownMenuContent>
-            </DropdownMenu>
           </nav>
         </div>
 
