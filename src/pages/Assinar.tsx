@@ -242,9 +242,9 @@ const Assinar = () => {
             className="text-lg md:text-xl max-w-2xl mx-auto mb-4 leading-relaxed"
             style={{ color: PRIMARY, opacity: 0.9, fontFamily: "'DM Sans', sans-serif" }}
           >
-            O teste te mostrou o problema. A rotina resolve: um plano diário desenhado pro
-            seu desequilíbrio — e a <strong>Akasha</strong>, a inteligência que estudou tudo
-            isso, te guiando durante toda a jornada.
+            O teste te mostrou o problema. O <strong>Premium</strong> te entrega o portal
+            inteiro pra resolver: sua rotina diária inclusa, a <strong>Akasha</strong> sem
+            limite a qualquer hora, e as mais de 900 aulas do professor.
           </p>
           {!doshaPrimeiro && (
             <p
