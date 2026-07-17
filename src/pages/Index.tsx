@@ -27,6 +27,7 @@ import FundamentosAyurveda from "@/components/index/FundamentosAyurveda";
 import Hero from "@/components/home/Hero";
 import LoggedHero from "@/components/home/LoggedHero";
 import SamkhyaBanner from "@/components/home/SamkhyaBanner";
+import PrateleiraSamkhya from "@/components/samkhya/PrateleiraSamkhya";
 import HojeNoPortal from "@/components/home/HojeNoPortal";
 
 
