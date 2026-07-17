@@ -1112,6 +1112,10 @@ const MeuDosha = () => {
               refazerTeste={handleRefazerTeste}
               isPremium={isPremium}
             />
+
+            <div className="mt-8 -mx-4 sm:-mx-6">
+              <PrateleiraSamkhya doshaPrincipal={result.doshaprincipal || primaryDosha} />
+            </div>
           </TabsContent>
 
           {/* ===== TAB: MÉTRICAS ===== */}
