@@ -2019,7 +2019,7 @@ const PaywallLanding = ({ doshaPrincipal, onDesbloquear, carregando, top3, vitri
       <section className="space-y-4">
         <p className="text-xs uppercase tracking-widest text-muted-foreground font-medium">Quem já está seguindo</p>
         <h3 className="font-serif text-2xl text-primary">O que chega pra gente</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {[
             "Nossa, achei tudo que eu queria pra ir pra cozinha 🙏",
             "Eu vim por causa de uma constipação crônica. O Ayurveda resolveu e ainda curou meu melasma. Não largo mais esse suco, Edson! Obrigada 💛",
