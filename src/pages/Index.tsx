@@ -661,8 +661,6 @@ const Index = () => {
       <HojeNoPortal />
       <FeedSocial />
       <FundamentosAyurveda />
-      <BibliotecaSection />
-      <SommelierArtigos />
       <PrateleiraSamkhya doshaPrincipal={doshaResult?.doshaprincipal ?? null} />
     </>
   );
