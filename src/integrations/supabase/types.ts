@@ -14,6 +14,57 @@ export type Database = {
   }
   public: {
     Tables: {
+      agenda_comunicacoes: {
+        Row: {
+          assunto: string
+          ativo: boolean
+          corpo_html: string
+          created_at: string
+          cta_texto: string | null
+          cta_url: string | null
+          h1: string
+          h1sub: string
+          id: string
+          label: string
+          nome: string
+          regras: Json
+          tipo: string
+          updated_at: string
+        }
+        Insert: {
+          assunto: string
+          ativo?: boolean
+          corpo_html: string
+          created_at?: string
+          cta_texto?: string | null
+          cta_url?: string | null
+          h1: string
+          h1sub: string
+          id: string
+          label: string
+          nome: string
+          regras?: Json
+          tipo: string
+          updated_at?: string
+        }
+        Update: {
+          assunto?: string
+          ativo?: boolean
+          corpo_html?: string
+          created_at?: string
+          cta_texto?: string | null
+          cta_url?: string | null
+          h1?: string
+          h1sub?: string
+          id?: string
+          label?: string
+          nome?: string
+          regras?: Json
+          tipo?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       agenda_semana: {
         Row: {
           artigos: Json | null
@@ -427,6 +478,54 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
+      }
+      banner_eventos: {
+        Row: {
+          banner_id: string | null
+          criado_em: string
+          dosha_tag: string | null
+          evento: string
+          id: number
+          pagina: string | null
+          slot: string
+          user_id: string | null
+        }
+        Insert: {
+          banner_id?: string | null
+          criado_em?: string
+          dosha_tag?: string | null
+          evento: string
+          id?: number
+          pagina?: string | null
+          slot: string
+          user_id?: string | null
+        }
+        Update: {
+          banner_id?: string | null
+          criado_em?: string
+          dosha_tag?: string | null
+          evento?: string
+          id?: number
+          pagina?: string | null
+          slot?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "banner_eventos_banner_id_fkey"
+            columns: ["banner_id"]
+            isOneToOne: false
+            referencedRelation: "banner_placar"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "banner_eventos_banner_id_fkey"
+            columns: ["banner_id"]
+            isOneToOne: false
+            referencedRelation: "banners"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       banners: {
         Row: {
@@ -962,6 +1061,59 @@ export type Database = {
           valor?: number
         }
         Relationships: []
+      }
+      comunicacao_config: {
+        Row: {
+          chave: string
+          valor: string
+        }
+        Insert: {
+          chave: string
+          valor: string
+        }
+        Update: {
+          chave?: string
+          valor?: string
+        }
+        Relationships: []
+      }
+      comunicacao_log: {
+        Row: {
+          comunicacao_id: string
+          detalhe: string | null
+          edicao: string
+          email: string
+          enviado_em: string
+          id: number
+          status: string
+        }
+        Insert: {
+          comunicacao_id: string
+          detalhe?: string | null
+          edicao?: string
+          email: string
+          enviado_em?: string
+          id?: number
+          status?: string
+        }
+        Update: {
+          comunicacao_id?: string
+          detalhe?: string | null
+          edicao?: string
+          email?: string
+          enviado_em?: string
+          id?: number
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comunicacao_log_comunicacao_id_fkey"
+            columns: ["comunicacao_id"]
+            isOneToOne: false
+            referencedRelation: "agenda_comunicacoes"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       config_live: {
         Row: {
@@ -1786,6 +1938,27 @@ export type Database = {
           vatascore?: number | null
           visitorIdBrowser?: string | null
           whatsapp?: string | null
+        }
+        Relationships: []
+      }
+      email_supressao: {
+        Row: {
+          created_at: string
+          email: string
+          motivo: string
+          origem: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          motivo?: string
+          origem?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          motivo?: string
+          origem?: string | null
         }
         Relationships: []
       }
@@ -5295,6 +5468,26 @@ export type Database = {
         }
         Relationships: []
       }
+      banner_placar: {
+        Row: {
+          ativo: boolean | null
+          cliques: number | null
+          ctr_pct: number | null
+          id: string | null
+          impressoes: number | null
+          slot: string | null
+          titulo_admin: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "banners_slot_fkey"
+            columns: ["slot"]
+            isOneToOne: false
+            referencedRelation: "banners_molde"
+            referencedColumns: ["slot"]
+          },
+        ]
+      }
       conteudo_tagged: {
         Row: {
           id: string | null
@@ -5530,6 +5723,13 @@ export type Database = {
           id: string
         }[]
       }
+      agenda_destinatarios: {
+        Args: { p_comunicacao_id: string }
+        Returns: {
+          email: string
+          payload: Json
+        }[]
+      }
       akasha_distribuicao_horas: {
         Args: never
         Returns: {
@@ -5674,6 +5874,11 @@ export type Database = {
         }[]
       }
       claim_dosha_test: { Args: { p_id_publico?: string }; Returns: Json }
+      descadastro_confirmar: {
+        Args: { p_email: string; p_token: string }
+        Returns: boolean
+      }
+      descadastro_token: { Args: { p_email: string }; Returns: string }
       escola_aluno_atual: { Args: never; Returns: string }
       escola_cardapio_do_modulo: {
         Args: { p_slug: string }
@@ -5956,6 +6161,17 @@ export type Database = {
         }[]
       }
       owns_rotina: { Args: { p_test_id: string }; Returns: boolean }
+      prateleira_samkhya: {
+        Args: { p_dosha?: string }
+        Returns: {
+          imagem: string
+          nome: string
+          preco: number
+          resumo: string
+          rota: string
+          slug: string
+        }[]
+      }
       preparar_login_contexto: {
         Args: { p_contexto: string; p_email: string }
         Returns: undefined

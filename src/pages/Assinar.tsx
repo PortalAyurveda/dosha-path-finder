@@ -315,8 +315,8 @@ const Assinar = () => {
 
       {/* Akasha te acompanha */}
       <section style={{ background: SURFACE }}>
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 py-16 md:py-20">
-          <div className="text-center mb-10">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 md:py-10">
+          <div className="text-center mb-8">
             <img
               src={AKASHA_LOGO}
               alt=""
@@ -329,71 +329,197 @@ const Assinar = () => {
             >
               A Akasha te acompanha
             </h2>
+            <p
+              className="mt-3 text-base md:text-lg max-w-2xl mx-auto leading-relaxed"
+              style={{ color: PRIMARY, opacity: 0.75, fontFamily: "'DM Sans', sans-serif" }}
+            >
+              Conversas reais de alunas do portal, desta semana — só tiramos os nomes.
+            </p>
           </div>
 
-          <div className="space-y-4">
-            {/* pessoa */}
-            <div className="flex justify-end">
-              <div
-                className="max-w-[80%] rounded-2xl rounded-br-sm px-5 py-3 text-base leading-relaxed shadow-sm"
-                style={{
-                  background: PRIMARY,
-                  color: "#fff",
-                  fontFamily: "'DM Sans', sans-serif",
-                }}
-              >
-                Akasha, tô com azia depois do almoço. O que eu faço?
-              </div>
-            </div>
-
-            {/* Akasha */}
-            <div className="flex justify-start">
-              <div
-                className="max-w-[85%] rounded-2xl rounded-bl-sm px-5 py-4 shadow-sm bg-white"
-                style={{ color: PRIMARY, fontFamily: "'DM Sans', sans-serif" }}
-              >
-                <p className="text-base leading-relaxed mb-4">
-                  Isso é o calor de Pitta pedindo medida. Evite o café logo após a refeição
-                  e experimente o <strong>Buttermilk</strong> — refrescante, digestivo, do
-                  seu caderno de receitas:
-                </p>
-                {/* mini card de receita */}
-                <div
-                  className="rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm overflow-hidden border flex items-center gap-3 p-2"
-                  style={{ background: PAPER, borderColor: "rgba(53,47,84,0.08)" }}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {(() => {
+              const AKASHA_COLOR = "hsl(var(--akasha))";
+              const AKASHA_BG = "hsl(var(--akasha) / 0.10)";
+              const Label = ({ children }: { children: React.ReactNode }) => (
+                <p
+                  className="text-[10px] uppercase tracking-wider font-bold mb-3"
+                  style={{ color: AKASHA_COLOR, fontFamily: "'DM Sans', sans-serif" }}
                 >
-                  <img
-                    src={RECEITAS[2].url}
-                    alt=""
-                    aria-hidden
-                    loading="lazy"
-                    className="w-16 h-16 object-cover rounded-tl-xl rounded-br-xl shrink-0"
-                  />
-                  <div className="min-w-0">
-                    <p
-                      className="text-[10px] uppercase tracking-wider font-bold"
-                      style={{ color: SALMAO_HOT, opacity: 0.9 }}
-                    >
-                      Receita
-                    </p>
-                    <p
-                      className="font-serif font-bold text-sm leading-tight"
-                      style={{ color: PRIMARY }}
-                    >
-                      Buttermilk com limão
-                    </p>
+                  {children}
+                </p>
+              );
+              const Person = ({ children }: { children: React.ReactNode }) => (
+                <div className="flex justify-end mb-2">
+                  <div
+                    className="max-w-[88%] rounded-2xl rounded-br-sm px-4 py-2.5 text-[14px] md:text-[15px] leading-relaxed shadow-sm"
+                    style={{
+                      background: PRIMARY,
+                      color: "#fff",
+                      fontFamily: "'DM Sans', sans-serif",
+                    }}
+                  >
+                    {children}
                   </div>
                 </div>
-              </div>
-            </div>
+              );
+              const Akasha = ({ children }: { children: React.ReactNode }) => (
+                <div className="flex justify-start mb-2">
+                  <div
+                    className="max-w-[92%] rounded-2xl rounded-bl-sm px-4 py-2.5 text-[14px] md:text-[15px] leading-relaxed shadow-sm"
+                    style={{
+                      background: AKASHA_BG,
+                      color: PRIMARY,
+                      fontFamily: "'DM Sans', sans-serif",
+                    }}
+                  >
+                    {children}
+                  </div>
+                </div>
+              );
+              const Note = ({ children }: { children: React.ReactNode }) => (
+                <p
+                  className="text-xs italic text-center mt-2 mb-1"
+                  style={{ color: PRIMARY, opacity: 0.6, fontFamily: "'DM Sans', sans-serif" }}
+                >
+                  {children}
+                </p>
+              );
+              const Card = ({
+                label,
+                children,
+              }: {
+                label: string;
+                children: React.ReactNode;
+              }) => (
+                <div
+                  className="rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm border p-4 md:p-5"
+                  style={{ background: PAPER, borderColor: "rgba(53,47,84,0.08)" }}
+                >
+                  <Label>{label}</Label>
+                  {children}
+                </div>
+              );
+
+              return (
+                <>
+                  <Card label="Ela acode na hora">
+                    <Person>
+                      Está acontecendo agora, não é um episódio frequente. Acho que comi algo muito seco. Jantei uma sopa de cuscuz com carne desfiada. E depois comi pão de fermentação lenta que estava meio emborrachado.
+                    </Person>
+                    <Akasha>
+                      Faz sentido, sim. Isso tem bem a cara de um Vata agredido pela secura e pela textura mais difícil de descer. Agora, o mais simples costuma funcionar melhor: pare de comer, sente-se ereta sem ficar dura e tome pequenos goles de água morna, devagar. Não gelada. Não deite agora e não tente "empurrar" com mais comida.
+                    </Akasha>
+                  </Card>
+
+                  <Card label="Ela lembra de você">
+                    <Person>
+                      Estou fazendo sopinha de flocos de milho. Isso é ruim para o meu dosha?
+                    </Person>
+                    <Akasha>
+                      O floco de milho tende a ser mais seco e leve, e isso pode não dar sustentação suficiente para você. E como você teve peso depois do caldo de abóbora com carne, o ponto não é sair de um extremo para outro. O seu corpo parece pedir o meio do caminho: comida morna, úmida, simples e estável.
+                    </Akasha>
+                    <Note>O caldo de abóbora? Ela tinha contado dias antes. A Akasha lembrou.</Note>
+                  </Card>
+
+                  <Card label="Ela lê o corpo por trás do sintoma">
+                    <Person>
+                      Estou no 8º dia "doente" e o que está atrasando a recuperação é a tosse seca que me dá após as 2:00 da madrugada e vai até as 5:00. E o muco que ainda está saindo, espesso e amarelo.
+                    </Person>
+                    <Akasha>
+                      O quadro está na fase de limpeza final, mas ainda com dois sinais misturados: Vata seco fazendo a tosse da madrugada e Pitta-Kapha mantendo esse muco amarelo mais espesso. O horário entre duas e cinco da manhã costuma deixar Vata mais evidente. E me diz uma coisa: esse muco está saindo mais do nariz, da garganta, ou dos dois?
+                    </Akasha>
+                  </Card>
+
+                  <Card label="Ela caminha junto com o seu médico">
+                    <Person>
+                      Se o médico me mandou tomar magnésio em cápsulas, na visão do ayurveda, qual seria o melhor anupana e horário para tomar esse suplemento?
+                    </Person>
+                    <Akasha>
+                      Para alguém com Vata e Pitta altos eu tenderia a preferir tomar junto de algo morno e mais nutritivo, como depois do jantar ou perto da noite, porque o magnésio costuma acalmar o sistema nervoso. Como você está com secura e sensibilidade, eu evitaria tomar de estômago vazio.
+                    </Akasha>
+                  </Card>
+
+                  <Card label="Ela desce ao caso sério">
+                    <Person>
+                      Além de ter o agravamento em Pitta, também sofro com miomas uterinos. Teria uma dieta ou restrição diferenciada nesse caso?
+                    </Person>
+                    <Akasha>
+                      Sim, tem um cuidado diferenciado. A dieta precisa fazer duas coisas ao mesmo tempo: refrescar sem esfriar demais, e desinflamar sem ressecar. Na prática, seu prato tende a funcionar melhor assim: base de arroz branco ou basmati, um legume cozido mais úmido, uma proteína vegetal leve e bem cozida, um pouco de ghee, especiarias suaves e folhas amargas no final.
+                    </Akasha>
+                  </Card>
+
+                  <Card label="Ela fala a verdade com carinho">
+                    <Person>
+                      Estou com a pele do rosto cheia de manchas, melasmas. Usei óleos durante o dia, como gergelim, coco e às vezes rícino. Seria alimentar os melasmas?
+                    </Person>
+                    <Akasha>
+                      Sim, pode estar alimentando, principalmente se a pele já está quente e sensível, porque o gergelim é mais pesado e aquecedor. O rícino eu deixaria bem de lado no rosto. Eu reduziria óleos no rosto de dia e observaria o intestino, porque a pele costuma mostrar o que está transbordando por dentro.
+                    </Akasha>
+                  </Card>
+
+                  <div className="md:col-span-2">
+                    <Card label="Ela entrega a receita — e o cartão chega junto">
+                      <Person>Quais ingredientes e quantidades para massala doce para vata?</Person>
+                      <Akasha>
+                        Para a massala doce que acalma Vata, eu gosto de uma mistura simples e perfumada: 2 partes de canela, 1 parte de cardamomo e meia parte de cravo moído, tudo bem fininho. Se o Vata estiver muito ansioso, dá para deixar o cravo ainda mais discreto.
+                      </Akasha>
+                      <div className="flex justify-start mb-2">
+                        <div
+                          className="max-w-[92%] rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm overflow-hidden border flex items-center gap-3 p-2"
+                          style={{ background: PAPER, borderColor: "rgba(53,47,84,0.12)" }}
+                        >
+                          <img
+                            src="https://api.portalayurveda.com/storage/v1/object/public/portal_images/receita-arroz-doce-com-massala-doce-canela-cravo-e-cardamomo.webp"
+                            alt=""
+                            aria-hidden
+                            loading="lazy"
+                            className="w-14 h-14 object-cover rounded-tl-xl rounded-br-xl shrink-0"
+                          />
+                          <div className="min-w-0 pr-2">
+                            <p
+                              className="text-[10px] uppercase tracking-wider font-bold"
+                              style={{ color: SALMAO_HOT, opacity: 0.9 }}
+                            >
+                              Receita
+                            </p>
+                            <p
+                              className="font-serif font-bold text-sm leading-tight"
+                              style={{ color: PRIMARY }}
+                            >
+                              Arroz doce com massala doce
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                      <Person>Na receita do vídeo fala sobre pimenta rosa e branca. Vai?</Person>
+                      <Akasha>
+                        Essa receita específica de pimenta rosa não está no caderno, então eu não vou inventar uma orientação como se fosse parte da rotina. Eu ficaria com canela, cardamomo e cravo em dose suave, sem colocar pimentas.
+                      </Akasha>
+                      <Note>Quando não está nas aulas do professor, ela diz. A Akasha não inventa.</Note>
+                    </Card>
+                  </div>
+
+                  <div className="md:col-span-2">
+                    <Card label="Ela é honesta até para vender">
+                      <Person>
+                        Quero perder peso e a barriguinha, posso tomar somente a panacéia e quantas vezes ao dia?
+                      </Person>
+                      <Akasha>
+                        Pode tomar? Pode, como apoio. Somente ela, para "resolver", eu não trataria assim. Se a sua panaceia for desidratada, coloque um pedacinho na água à noite e, de manhã, aqueça essa água. E o mais importante é ver se você está com fome real e como está o intestino — é corrigir a causa do ganho de peso.
+                      </Akasha>
+                    </Card>
+                  </div>
+                </>
+              );
+            })()}
           </div>
 
           <p
-            className="text-center text-sm md:text-base mt-8 max-w-xl mx-auto leading-relaxed"
+            className="text-center text-sm md:text-base mt-8 max-w-2xl mx-auto leading-relaxed"
             style={{ color: PRIMARY, opacity: 0.75, fontFamily: "'DM Sans', sans-serif" }}
           >
-            A Akasha estudou as mais de 900 aulas do portal e acompanha sua jornada
-            inteira. No plano gratuito, 25 conversas por mês; no Premium, sem limite.
+            A Akasha estudou as mais de 900 aulas do professor e recebe o seu teste a cada conversa — seu dosha, seu agni, sua idade. No plano gratuito, 25 conversas por mês; no Premium, sem limite.
           </p>
         </div>
       </section>
