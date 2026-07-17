@@ -900,7 +900,7 @@ const MeuDosha = () => {
             <RetesteCard />
           </div>
         )}
-        {!isVisitor && <MiniCaminhadaCard />}
+        
 
 
 
