@@ -754,6 +754,7 @@ const Assinar = () => {
               Ela mora em Minha Rotina.
             </button>
           </p>
+        </div>
       </section>
 
       {/* Garantia */}
