@@ -607,10 +607,11 @@ const LoggedHero = () => {
 
                       <div className="mt-auto flex justify-end">
                         <span
-                          className="inline-flex items-center gap-1.5 text-sm font-semibold"
-                          style={{ color: C.primary }}
+                          className="inline-flex items-center justify-center rounded-full h-9 w-9 transition-transform hover:translate-x-0.5"
+                          style={{ background: `${C.primary}12`, color: C.primary }}
+                          aria-label="abrir minha rotina"
                         >
-                          abrir minha rotina <ArrowRight className="h-4 w-4" />
+                          <ArrowRight className="h-5 w-5" />
                         </span>
                       </div>
                     </div>
