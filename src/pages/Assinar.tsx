@@ -848,7 +848,7 @@ const Assinar = () => {
             className="text-sm md:text-base text-white/70 mt-5"
             style={{ fontFamily: "'DM Sans', sans-serif" }}
           >
-            menos que R$1 por dia na Rotina · 7 dias de garantia
+            R$ 49,75 por mês no plano anual · 7 dias de garantia
           </p>
         </div>
       </section>
