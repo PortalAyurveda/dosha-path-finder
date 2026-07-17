@@ -242,9 +242,9 @@ const Assinar = () => {
             className="text-lg md:text-xl max-w-2xl mx-auto mb-4 leading-relaxed"
             style={{ color: PRIMARY, opacity: 0.9, fontFamily: "'DM Sans', sans-serif" }}
           >
-            O teste te mostrou o problema. A rotina resolve: um plano diário desenhado pro
-            seu desequilíbrio — e a <strong>Akasha</strong>, a inteligência que estudou tudo
-            isso, te guiando durante toda a jornada.
+            O teste te mostrou o problema. O <strong>Premium</strong> te entrega o portal
+            inteiro pra resolver: sua rotina diária inclusa, a <strong>Akasha</strong> sem
+            limite a qualquer hora, e as mais de 900 aulas do professor.
           </p>
           {!doshaPrimeiro && (
             <p
@@ -602,33 +602,34 @@ const Assinar = () => {
             className="text-center text-sm md:text-base mb-10 max-w-2xl mx-auto"
             style={{ color: PRIMARY, opacity: 0.75, fontFamily: "'DM Sans', sans-serif" }}
           >
-            Quem assina Premium <strong>já tem a Rotina inclusa</strong> — não precisa comprar as duas.
+            O portal inteiro, incluindo a <strong>Rotina Personalizada</strong> e a{" "}
+            <strong>Akasha</strong> sem limite.
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
-            {/* COLUNA 1 — Rotina Personalizada */}
+            {/* COLUNA 1 — Premium Mensal */}
             <div className="bg-white rounded-2xl border border-border p-7 flex flex-col">
               <p
                 className="text-xs uppercase tracking-wider font-bold mb-2"
                 style={{ color: PRIMARY, opacity: 0.7 }}
               >
-                Primeiro degrau
+                Premium Mensal
               </p>
               <h3 className="font-serif font-bold text-2xl mb-1" style={{ color: PRIMARY }}>
-                Rotina Personalizada
+                Mês a mês
               </h3>
               <p className="font-serif font-bold text-3xl mb-1" style={{ color: PRIMARY }}>
-                R$ 30<span className="text-base font-normal opacity-70">/mês</span>
+                R$ 79,90<span className="text-base font-normal opacity-70">/mês</span>
               </p>
               <p
                 className="text-sm mb-6"
                 style={{ color: PRIMARY, opacity: 0.75, fontFamily: "'DM Sans', sans-serif" }}
               >
-                menos que R$1 por dia · cancele quando quiser
+                cancele quando quiser · sem fidelidade
               </p>
 
               <ul className="space-y-3 mb-8">
-                {rotinaIncluye.map(({ Icon, texto }) => (
+                {premiumInclue.map(({ Icon, texto }) => (
                   <li key={texto} className="flex items-start gap-3">
                     <div
                       className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
@@ -647,7 +648,7 @@ const Assinar = () => {
               </ul>
 
               <button
-                onClick={() => handleAssinar("rotina")}
+                onClick={() => handleAssinar("mensal")}
                 disabled={loadingPlan !== null}
                 className="mt-auto w-full py-3 rounded-full font-semibold text-sm transition-colors disabled:opacity-60 border-2"
                 style={{ color: PRIMARY, borderColor: PRIMARY, background: "transparent" }}
@@ -662,11 +663,11 @@ const Assinar = () => {
                   e.currentTarget.style.color = PRIMARY;
                 }}
               >
-                {loadingPlan === "rotina" ? "Redirecionando..." : "Assinar Rotina"}
+                {loadingPlan === "mensal" ? "Redirecionando..." : "Assinar mensal · R$ 79,90/mês"}
               </button>
             </div>
 
-            {/* COLUNA 2 — Premium */}
+            {/* COLUNA 2 — Premium Anual */}
             <div
               className="bg-white rounded-2xl p-7 flex flex-col relative shadow-lg"
               style={{ border: `2px solid ${SALMAO}` }}
@@ -675,34 +676,33 @@ const Assinar = () => {
                 className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider text-white whitespace-nowrap"
                 style={{ backgroundColor: SALMAO }}
               >
-                Mais completo · inclui a rotina
+                Mais escolhido · 2 meses grátis
               </span>
               <p
                 className="text-xs uppercase tracking-wider font-bold mb-2 mt-1"
                 style={{ color: PRIMARY, opacity: 0.7 }}
               >
-                Portal completo
+                Premium Anual
               </p>
               <h3 className="font-serif font-bold text-2xl mb-1" style={{ color: PRIMARY }}>
-                Premium
+                Um ano de portal
               </h3>
               <div className="mb-1">
                 <p className="font-serif font-bold text-3xl" style={{ color: PRIMARY }}>
-                  R$ 79,90<span className="text-base font-normal opacity-70">/mês</span>
+                  R$ 597<span className="text-base font-normal opacity-70">/ano</span>
                 </p>
                 <p
                   className="text-sm mt-1"
                   style={{ color: PRIMARY, opacity: 0.8, fontFamily: "'DM Sans', sans-serif" }}
                 >
-                  ou <strong>R$ 597/ano</strong>{" "}
-                  <span className="opacity-70">(sai a R$ 49,75/mês)</span>
+                  sai a <strong>R$ 49,75/mês</strong>
                 </p>
               </div>
               <p
                 className="text-sm font-semibold mb-5 mt-2 inline-flex items-center gap-1"
                 style={{ color: SALMAO }}
               >
-                <Check className="w-4 h-4" /> Anual: 2 meses grátis
+                <Check className="w-4 h-4" /> 2 meses grátis no ano
               </p>
 
               <ul className="space-y-3 mb-6">
@@ -724,34 +724,36 @@ const Assinar = () => {
                 ))}
               </ul>
 
-              <div className="mt-auto space-y-2">
-                <button
-                  onClick={() => handleAssinar("anual")}
-                  disabled={loadingPlan !== null}
-                  className="w-full py-3 rounded-full text-white font-semibold text-sm transition-colors disabled:opacity-60"
-                  style={{ backgroundColor: SALMAO }}
-                  onMouseEnter={(e) =>
-                    !loadingPlan && (e.currentTarget.style.backgroundColor = SALMAO_HOVER)
-                  }
-                  onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = SALMAO)}
-                >
-                  {loadingPlan === "anual"
-                    ? "Redirecionando..."
-                    : "Assinar Anual · R$ 597/ano"}
-                </button>
-                <button
-                  onClick={() => handleAssinar("mensal")}
-                  disabled={loadingPlan !== null}
-                  className="w-full py-2.5 rounded-full font-medium text-sm transition-colors disabled:opacity-60"
-                  style={{ color: PRIMARY, background: "transparent" }}
-                >
-                  {loadingPlan === "mensal"
-                    ? "Redirecionando..."
-                    : "Ou assinar mensal · R$ 79,90/mês"}
-                </button>
-              </div>
+              <button
+                onClick={() => handleAssinar("anual")}
+                disabled={loadingPlan !== null}
+                className="mt-auto w-full py-3 rounded-full text-white font-semibold text-sm transition-colors disabled:opacity-60"
+                style={{ backgroundColor: SALMAO }}
+                onMouseEnter={(e) =>
+                  !loadingPlan && (e.currentTarget.style.backgroundColor = SALMAO_HOVER)
+                }
+                onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = SALMAO)}
+              >
+                {loadingPlan === "anual"
+                  ? "Redirecionando..."
+                  : "Assinar anual · R$ 597/ano"}
+              </button>
             </div>
           </div>
+
+          <p
+            className="text-center text-sm mt-8 max-w-2xl mx-auto"
+            style={{ color: PRIMARY, opacity: 0.65, fontFamily: "'DM Sans', sans-serif" }}
+          >
+            Procurando só a rotina diária de R$30?{" "}
+            <button
+              onClick={() => navigate("/minha-rotina")}
+              className="underline font-medium"
+              style={{ color: PRIMARY, opacity: 0.85 }}
+            >
+              Ela mora em Minha Rotina.
+            </button>
+          </p>
         </div>
       </section>
 
@@ -846,7 +848,7 @@ const Assinar = () => {
             className="text-sm md:text-base text-white/70 mt-5"
             style={{ fontFamily: "'DM Sans', sans-serif" }}
           >
-            menos que R$1 por dia na Rotina · 7 dias de garantia
+            R$ 49,75 por mês no plano anual · 7 dias de garantia
           </p>
         </div>
       </section>

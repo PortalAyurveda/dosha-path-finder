@@ -1702,133 +1702,143 @@ const PaywallRotina = ({ email, userId, doshaPrincipal, itemId }: PaywallRotinaP
   const ingredientesAmostra = (teaser?.ingredientes_amostra ?? []).slice(0, 2);
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-6">
-      <Card className="relative overflow-hidden rounded-2xl">
-        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-secondary to-primary" />
-        <div className="p-6 md:p-8 space-y-6">
-          <div className="space-y-2">
+    <div className="max-w-6xl mx-auto px-4 py-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5 items-stretch">
+        {/* Coluna esquerda — teaser da receita */}
+        <Card className="relative overflow-hidden rounded-2xl">
+          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-secondary to-primary" />
+          <div className="p-6 md:p-8 space-y-4 h-full flex flex-col">
             <p className="text-xs uppercase tracking-widest text-muted-foreground font-medium">
-              Portal Ayurveda · Seu plano
+              Uma prévia da sua rotina
             </p>
-            <h2 className="font-serif text-2xl md:text-3xl text-foreground leading-tight">
-              Sua rotina personalizada está pronta
-            </h2>
-            <p className="text-sm text-muted-foreground">{subtitulo}</p>
+            {temTeaser ? (
+              <div className="rounded-xl border border-border bg-card overflow-hidden flex-1 flex flex-col">
+                {teaser?.imagem && (
+                  <div className="w-full aspect-[16/9] bg-muted overflow-hidden">
+                    <img
+                      src={teaser.imagem}
+                      alt={teaser.titulo ?? "Receita da rotina"}
+                      className="w-full h-full object-cover"
+                      loading="lazy"
+                    />
+                  </div>
+                )}
+                <div className="p-4 md:p-5 space-y-3 flex-1 flex flex-col">
+                  <h3 className="font-serif text-lg md:text-xl text-foreground leading-tight">
+                    {teaser?.titulo ?? "Receita da rotina"}
+                  </h3>
+                  {teaser?.resumo && (
+                    <p className="text-sm text-muted-foreground leading-relaxed">{teaser.resumo}</p>
+                  )}
+                  {ingredientesAmostra.length > 0 && (
+                    <div>
+                      <p className="text-xs uppercase tracking-wider text-muted-foreground font-medium mb-1.5">
+                        Ingredientes
+                      </p>
+                      <ul className="space-y-1 text-sm text-foreground">
+                        {ingredientesAmostra.map((ing, i) => (
+                          <li key={i}>
+                            • {ing.qtd ? `${ing.qtd} ` : ""}{ing.item ?? ""}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  <div className="relative rounded-lg border border-border bg-muted/30 overflow-hidden mt-auto">
+                    <div className="p-4 space-y-2 blur-sm select-none pointer-events-none" aria-hidden="true">
+                      <div className="h-2.5 w-2/3 rounded bg-muted-foreground/30" />
+                      <div className="h-2 w-4/5 rounded bg-muted-foreground/20" />
+                      <div className="h-2 w-3/5 rounded bg-muted-foreground/20" />
+                      <div className="h-2 w-1/2 rounded bg-muted-foreground/20" />
+                      <div className="h-2 w-3/4 rounded bg-muted-foreground/20" />
+                    </div>
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="h-10 w-10 rounded-full bg-primary flex items-center justify-center shadow-md">
+                        <Lock className="h-4 w-4 text-primary-foreground" />
+                      </div>
+                    </div>
+                  </div>
+                  <p className="text-sm text-foreground font-medium">
+                    Essa receita faz parte da rotina desenhada pro seu dosha.
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <div className="relative rounded-xl border border-border bg-muted/30 p-4 overflow-hidden flex-1 min-h-[240px]">
+                <div className="space-y-3 blur-sm select-none pointer-events-none" aria-hidden="true">
+                  {[0, 1, 2, 3].map((i) => (
+                    <div key={i} className="flex items-center gap-3">
+                      <div className="h-8 w-8 rounded-full bg-muted-foreground/20" />
+                      <div className="flex-1 space-y-1.5">
+                        <div className="h-2.5 w-1/3 rounded bg-muted-foreground/20" />
+                        <div className="h-2 w-3/4 rounded bg-muted-foreground/15" />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
+                  <div className="h-12 w-12 rounded-full bg-primary flex items-center justify-center shadow-md">
+                    <Lock className="h-5 w-5 text-primary-foreground" />
+                  </div>
+                  <p className="text-sm text-foreground font-medium text-center px-4">
+                    7 dias · 8 momentos do dia · personalizada pra você
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
+        </Card>
 
-          {temTeaser ? (
-            <div className="rounded-xl border border-border bg-card overflow-hidden">
-              {teaser?.imagem && (
-                <div className="w-full aspect-[16/9] bg-muted overflow-hidden">
-                  <img
-                    src={teaser.imagem}
-                    alt={teaser.titulo ?? "Receita da rotina"}
-                    className="w-full h-full object-cover"
-                    loading="lazy"
-                  />
-                </div>
-              )}
-              <div className="p-4 md:p-5 space-y-3">
-                <h3 className="font-serif text-lg md:text-xl text-foreground leading-tight">
-                  {teaser?.titulo ?? "Receita da rotina"}
-                </h3>
-                {teaser?.resumo && (
-                  <p className="text-sm text-muted-foreground leading-relaxed">{teaser.resumo}</p>
-                )}
-                {ingredientesAmostra.length > 0 && (
-                  <div>
-                    <p className="text-xs uppercase tracking-wider text-muted-foreground font-medium mb-1.5">
-                      Ingredientes
-                    </p>
-                    <ul className="space-y-1 text-sm text-foreground">
-                      {ingredientesAmostra.map((ing, i) => (
-                        <li key={i}>
-                          • {ing.qtd ? `${ing.qtd} ` : ""}{ing.item ?? ""}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-                <div className="relative rounded-lg border border-border bg-muted/30 overflow-hidden">
-                  <div className="p-4 space-y-2 blur-sm select-none pointer-events-none" aria-hidden="true">
-                    <div className="h-2.5 w-2/3 rounded bg-muted-foreground/30" />
-                    <div className="h-2 w-4/5 rounded bg-muted-foreground/20" />
-                    <div className="h-2 w-3/5 rounded bg-muted-foreground/20" />
-                    <div className="h-2 w-1/2 rounded bg-muted-foreground/20" />
-                    <div className="h-2 w-3/4 rounded bg-muted-foreground/20" />
-                  </div>
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="h-10 w-10 rounded-full bg-primary flex items-center justify-center shadow-md">
-                      <Lock className="h-4 w-4 text-primary-foreground" />
-                    </div>
-                  </div>
-                </div>
-                <p className="text-sm text-foreground font-medium">
-                  Essa receita faz parte da rotina desenhada pro seu dosha.
-                </p>
-              </div>
-            </div>
-          ) : (
-            /* Preview borrado padrão (sem ?item=) */
-            <div className="relative rounded-xl border border-border bg-muted/30 p-4 overflow-hidden">
-              <div className="space-y-3 blur-sm select-none pointer-events-none" aria-hidden="true">
-                {[0, 1, 2, 3].map((i) => (
-                  <div key={i} className="flex items-center gap-3">
-                    <div className="h-8 w-8 rounded-full bg-muted-foreground/20" />
-                    <div className="flex-1 space-y-1.5">
-                      <div className="h-2.5 w-1/3 rounded bg-muted-foreground/20" />
-                      <div className="h-2 w-3/4 rounded bg-muted-foreground/15" />
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
-                <div className="h-12 w-12 rounded-full bg-primary flex items-center justify-center shadow-md">
-                  <Lock className="h-5 w-5 text-primary-foreground" />
-                </div>
-                <p className="text-sm text-foreground font-medium text-center px-4">
-                  7 dias · 8 momentos do dia · personalizada pra você
-                </p>
-              </div>
-            </div>
-          )}
-
-          {/* Benefícios */}
-          <ul className="space-y-2.5">
-            {beneficios.map((b) => (
-              <li key={b} className="flex items-start gap-2.5 text-sm text-foreground">
-                <Check className="h-4 w-4 text-secondary mt-0.5 shrink-0" />
-                <span>{b}</span>
-              </li>
-            ))}
-          </ul>
-
-          <div className="border-t border-border pt-5 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
-            <div>
-              <div className="flex items-baseline gap-2">
-                <span className="text-3xl font-semibold text-foreground">R$30</span>
-                <span className="text-sm text-muted-foreground">· sua rotina mensal</span>
-              </div>
-              <p className="text-xs text-muted-foreground mt-1">
-                1 revisão inclusa
+        {/* Coluna direita — a oferta */}
+        <Card className="relative overflow-hidden rounded-2xl">
+          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-secondary to-primary" />
+          <div className="p-6 md:p-8 space-y-6 h-full flex flex-col">
+            <div className="space-y-2">
+              <p className="text-xs uppercase tracking-widest text-muted-foreground font-medium">
+                Portal Ayurveda · Seu plano
               </p>
+              <h2 className="font-serif text-2xl md:text-3xl text-foreground leading-tight">
+                Sua rotina personalizada está pronta
+              </h2>
+              <p className="text-sm text-muted-foreground">{subtitulo}</p>
             </div>
-            <div className="flex flex-col items-start sm:items-end gap-1.5">
-              <Button
-                onClick={desbloquear}
-                disabled={carregando}
-                size="lg"
-                className="bg-secondary text-secondary-foreground hover:bg-secondary/90 rounded-full px-6"
-              >
-                {carregando ? "Abrindo checkout…" : (
-                  <>Desbloquear minha rotina <ArrowRight className="h-4 w-4" /></>
-                )}
-              </Button>
-              <p className="text-[11px] text-muted-foreground">cancele quando quiser · sem burocracia</p>
+
+            <ul className="space-y-2.5">
+              {beneficios.map((b) => (
+                <li key={b} className="flex items-start gap-2.5 text-sm text-foreground">
+                  <Check className="h-4 w-4 text-secondary mt-0.5 shrink-0" />
+                  <span>{b}</span>
+                </li>
+              ))}
+            </ul>
+
+            <div className="border-t border-border pt-5 mt-auto flex flex-col gap-4">
+              <div>
+                <div className="flex items-baseline gap-2">
+                  <span className="text-3xl font-semibold text-foreground">R$30</span>
+                  <span className="text-sm text-muted-foreground">· sua rotina mensal</span>
+                </div>
+                <p className="text-xs text-muted-foreground mt-1">
+                  1 revisão inclusa
+                </p>
+              </div>
+              <div className="flex flex-col items-start gap-1.5">
+                <Button
+                  onClick={desbloquear}
+                  disabled={carregando}
+                  size="lg"
+                  className="bg-secondary text-secondary-foreground hover:bg-secondary/90 rounded-full px-6 w-full sm:w-auto"
+                >
+                  {carregando ? "Abrindo checkout…" : (
+                    <>Desbloquear minha rotina <ArrowRight className="h-4 w-4" /></>
+                  )}
+                </Button>
+                <p className="text-[11px] text-muted-foreground">cancele quando quiser · sem burocracia</p>
+              </div>
             </div>
           </div>
-        </div>
-      </Card>
+        </Card>
+      </div>
 
       {/* ===== Landing — conteúdo de apoio ===== */}
       <PaywallLanding
@@ -1935,7 +1945,7 @@ const PaywallLanding = ({ doshaPrincipal, onDesbloquear, carregando, top3, vitri
           Baseado no seu dosha — e só no seu — um plano completo pros próximos 7 dias.
           Não é genérico, não é "dicas pra {dosha}". É o seu plano, calculado com seus scores reais.
         </p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {recebe.map((r) => (
             <div key={r.titulo} className="rounded-xl border border-border bg-card p-4 flex gap-3">
               <div className="h-10 w-10 rounded-full bg-secondary/15 text-secondary flex items-center justify-center shrink-0">
@@ -1962,7 +1972,7 @@ const PaywallLanding = ({ doshaPrincipal, onDesbloquear, carregando, top3, vitri
           Cada item do seu dia vem com ingredientes, modo de preparo, vídeo do professor e o porquê de funcionar pro seu desequilíbrio.
         </p>
         {vitrine.length > 0 && (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {vitrine.map((r) => {
               const tags: string[] = [];
               if (r.vata < 0) tags.push("Vata");
@@ -2009,7 +2019,7 @@ const PaywallLanding = ({ doshaPrincipal, onDesbloquear, carregando, top3, vitri
       <section className="space-y-4">
         <p className="text-xs uppercase tracking-widest text-muted-foreground font-medium">Quem já está seguindo</p>
         <h3 className="font-serif text-2xl text-primary">O que chega pra gente</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {[
             "Nossa, achei tudo que eu queria pra ir pra cozinha 🙏",
             "Eu vim por causa de uma constipação crônica. O Ayurveda resolveu e ainda curou meu melasma. Não largo mais esse suco, Edson! Obrigada 💛",
