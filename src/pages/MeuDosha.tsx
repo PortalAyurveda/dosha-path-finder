@@ -15,6 +15,7 @@ import MetricasTab from "@/components/meudosha/MetricasTab";
 import type { InsightAyurvedico } from "@/components/meudosha/MetricasTab";
 import ArtigosTab from "@/components/meudosha/ArtigosTab";
 import DiagnosticoCompleto from "@/components/meudosha/DiagnosticoCompleto";
+import PrateleiraSamkhya from "@/components/samkhya/PrateleiraSamkhya";
 import VideosTab from "@/components/meudosha/VideosTab";
 
 import RetesteCard from "@/components/meudosha/RetesteCard";
