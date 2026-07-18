@@ -696,26 +696,14 @@ const LoggedHero = () => {
               {/* Pie + link */}
               <div className="flex items-center gap-3">
                 <div className="shrink-0" style={{ width: 84, height: 84 }}>
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
-                      <Pie
-                        data={pieData}
-                        cx="50%"
-                        cy="50%"
-                        outerRadius={38}
-                        innerRadius={22}
-                        dataKey="value"
-                        startAngle={90}
-                        endAngle={-270}
-                        stroke="hsl(var(--card))"
-                        strokeWidth={2}
-                      >
-                        {pieData.map((entry) => (
-                          <Cell key={entry.name} fill={PIE_COLORS[entry.name]} />
-                        ))}
-                      </Pie>
-                    </PieChart>
-                  </ResponsiveContainer>
+                  <Suspense fallback={<div style={{ width: 84, height: 84 }} className="rounded-full bg-muted/30 animate-pulse" />}>
+                    <DoshaPieChart
+                      vata={doshaScores.find((d) => d.name === "Vata")?.score ?? 0}
+                      pitta={doshaScores.find((d) => d.name === "Pitta")?.score ?? 0}
+                      kapha={doshaScores.find((d) => d.name === "Kapha")?.score ?? 0}
+                      variant="compact"
+                    />
+                  </Suspense>
                 </div>
 
                 <div className="min-w-0 flex-1">
