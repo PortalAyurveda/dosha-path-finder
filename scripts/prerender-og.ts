@@ -328,10 +328,117 @@ async function main() {
 
   await writeSitemap(distDir);
 
+  await bakeHome(distDir);
+
   console.log(
     `[prerender] ${written} rotas escritas (${staticRoutes.length - 1} estáticas + ${dynamic.length} dinâmicas)`
   );
 }
+
+const HOME_SOURCE = "https://home-fixo-teste.portalayurveda.workers.dev/";
+
+async function bakeHome(distDir: string): Promise<void> {
+  const outPath = resolve(distDir, "index.html");
+  if (!existsSync(outPath)) {
+    console.warn("[bake-home] dist/index.html não existe. Pulando.");
+    return;
+  }
+
+  let html: string;
+  try {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 20_000);
+    const res = await fetch(HOME_SOURCE, { signal: controller.signal });
+    clearTimeout(timer);
+    if (!res.ok) {
+      console.warn(`[bake-home] status ${res.status}, pulando.`);
+      return;
+    }
+    html = await res.text();
+  } catch (err) {
+    console.warn("[bake-home] falha ao baixar home fixa:", err);
+    return;
+  }
+
+  if (
+    html.length < 30_000 ||
+    !html.includes("Seu guia completo") ||
+    !html.includes("window.__PORTAL_ESTADO_RQ__")
+  ) {
+    console.warn(
+      `[bake-home] conteúdo baixado não passou nas verificações (len=${html.length}). Pulando.`
+    );
+    return;
+  }
+
+  // (a) inner da <div id="root">
+  const rootOpen = html.match(/<div\s+id=["']root["'][^>]*>/i);
+  if (!rootOpen || rootOpen.index === undefined) {
+    console.warn("[bake-home] não achei <div id=\"root\">. Pulando.");
+    return;
+  }
+  const afterOpen = rootOpen.index + rootOpen[0].length;
+  const bodyClose = html.lastIndexOf("</body>");
+  if (bodyClose < 0) {
+    console.warn("[bake-home] não achei </body>. Pulando.");
+    return;
+  }
+  const beforeBody = html.slice(0, bodyClose);
+  const lastDivClose = beforeBody.lastIndexOf("</div>");
+  if (lastDivClose < afterOpen) {
+    console.warn("[bake-home] não achei </div> de fechamento do root. Pulando.");
+    return;
+  }
+  const rootInner = html.slice(afterOpen, lastDivClose);
+
+  // (b) script inline com __PORTAL_ESTADO_RQ__
+  const estadoMatch = html.match(
+    /<script\b(?![^>]*\bsrc=)[^>]*>[\s\S]*?window\.__PORTAL_ESTADO_RQ__[\s\S]*?<\/script>/i
+  );
+  if (!estadoMatch) {
+    console.warn("[bake-home] não achei script inline do __PORTAL_ESTADO_RQ__. Pulando.");
+    return;
+  }
+  const estadoScript = estadoMatch[0];
+
+  // (c) preload/preconnect do head baixado
+  const headMatch = html.match(/<head[^>]*>([\s\S]*?)<\/head>/i);
+  const headSrc = headMatch ? headMatch[1] : "";
+  const linkTags = (
+    headSrc.match(
+      /<link\b[^>]*\brel=["'](?:preload|preconnect)["'][^>]*\/?>/gi
+    ) || []
+  ).join("\n    ");
+
+  // Injetar no dist/index.html
+  let dist = readFileSync(outPath, "utf8");
+  const beforeSize = dist.length;
+
+  if (linkTags) {
+    dist = dist.replace(/<head(\s[^>]*)?>/i, (m) => `${m}\n    ${linkTags}`);
+  }
+
+  const firstModuleScript = dist.search(/<script\b[^>]*type=["']module["'][^>]*>/i);
+  if (firstModuleScript >= 0) {
+    dist =
+      dist.slice(0, firstModuleScript) +
+      `${estadoScript}\n    ` +
+      dist.slice(firstModuleScript);
+  } else {
+    dist = dist.replace(/<\/body>/i, `  ${estadoScript}\n  </body>`);
+  }
+
+  dist = dist.replace(
+    /(<div\s+id=["']root["'][^>]*>)[\s\S]*?(<\/div>)(?=\s*<script|\s*<\/body>)/i,
+    (_m, open, close) => `${open}${rootInner}${close}`
+  );
+
+  writeFileSync(outPath, dist);
+  console.log(
+    `[bake-home] home assada: ${(beforeSize / 1024).toFixed(1)}KB → ${(dist.length / 1024).toFixed(1)}KB`
+  );
+}
+
 
 main().catch((err) => {
   console.error("[prerender] falhou", err);
