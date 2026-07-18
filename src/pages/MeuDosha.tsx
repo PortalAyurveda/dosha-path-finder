@@ -815,16 +815,74 @@ const MeuDosha = () => {
   }
 
   if (!id || !result) {
+    const exemploScores = [
+      { name: 'Vata', score: 42 },
+      { name: 'Pitta', score: 28 },
+      { name: 'Kapha', score: 16 },
+    ];
+    const beneficios = [
+      { Icon: Brain, texto: "Seu dosha agravado e seu Quadro Clínico completo — do nível Pouco ao Fixado" },
+      { Icon: LineChart, texto: "Seu Agni, o fogo digestivo, e o que ele diz sobre você" },
+      { Icon: BookOpen, texto: "Suas causas, seus caminhos de equilíbrio e o que evitar" },
+      { Icon: VideoIcon, texto: "Artigos e vídeos escolhidos para o seu caso" },
+      { Icon: CalendarDays, texto: "Sua rotina diária personalizada, revisada todo mês" },
+    ];
     return (
-      <PageContainer title="Meu Dosha" description="Resultado não encontrado." noindex={visitorGuess}>
-        <div className="flex flex-col items-center justify-center min-h-[50vh] text-center gap-4">
-          <p className="text-xl font-serif text-foreground">Resultado não encontrado</p>
-          <p className="text-muted-foreground">Faça o teste para descobrir seu dosha.</p>
-          <Button asChild><Link to="/teste-de-dosha">Fazer o Teste</Link></Button>
+      <PageContainer title="Meu Dosha" description="Descubra seu retrato clínico ayurvédico completo." noindex={visitorGuess}>
+        <div className="max-w-3xl mx-auto flex flex-col gap-10 py-4">
+          <header className="text-center flex flex-col gap-3">
+            <span className="text-xs font-semibold tracking-[0.2em] text-primary uppercase">
+              O que o seu teste revela
+            </span>
+            <h1 className="font-serif text-3xl md:text-4xl leading-tight text-foreground">
+              Um retrato clínico completo do seu corpo
+            </h1>
+            <p className="text-muted-foreground text-base md:text-lg max-w-2xl mx-auto">
+              Não é só "você é Vata". É o seu quadro inteiro — seus scores, seu fogo digestivo, suas causas e seus caminhos — cruzado com milhares de diagnósticos reais da nossa base.
+            </p>
+          </header>
+
+          <div className="relative rounded-2xl border border-border bg-card p-4 md:p-6 opacity-90 pointer-events-none">
+            <span className="absolute top-3 right-3 text-[10px] font-semibold tracking-widest uppercase bg-muted text-muted-foreground px-2 py-1 rounded">
+              Exemplo
+            </span>
+            <ClinicalThermometer doshaScores={exemploScores} />
+          </div>
+
+          <section className="rounded-2xl border border-border bg-card p-6 md:p-8">
+            <h2 className="font-serif text-xl md:text-2xl text-foreground mb-5">
+              O que você recebe quando faz o teste
+            </h2>
+            <ul className="flex flex-col gap-4">
+              {beneficios.map(({ Icon, texto }, i) => (
+                <li key={i} className="flex items-start gap-3">
+                  <span className="shrink-0 w-9 h-9 rounded-full bg-primary/10 text-primary flex items-center justify-center">
+                    <Icon className="w-5 h-5" />
+                  </span>
+                  <span className="text-foreground/90 leading-snug pt-1.5">{texto}</span>
+                </li>
+              ))}
+            </ul>
+          </section>
+
+          <Link
+            to="/metricas"
+            className="text-center text-sm md:text-base text-muted-foreground hover:text-primary transition-colors underline underline-offset-4 decoration-primary/40"
+          >
+            Tudo isso nasce de uma base real. Veja os padrões que os dados revelam →
+          </Link>
+
+          <div className="flex flex-col items-center gap-2 pb-4">
+            <Button asChild size="lg" className="text-base px-8 py-6 rounded-full">
+              <Link to="/teste-de-dosha">Fazer meu teste gratuito</Link>
+            </Button>
+            <p className="text-xs text-muted-foreground">Leva 5 minutos · é grátis</p>
+          </div>
         </div>
       </PageContainer>
     );
   }
+
 
   const doshaScores = [
     { name: 'Vata', score: result.vatascore || 0 },
