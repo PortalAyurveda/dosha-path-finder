@@ -2,7 +2,9 @@ import { Link, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import * as LucideIcons from "lucide-react";
 import { Flame, Award, ChefHat, ArrowRight, Check, Leaf } from "lucide-react";
-import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
+import { lazy, Suspense } from "react";
+
+const DoshaPieChart = lazy(() => import("@/components/charts/DoshaPieChart"));
 
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/contexts/UserContext";
