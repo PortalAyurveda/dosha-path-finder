@@ -1822,7 +1822,7 @@ const PaywallRotina = ({ email, userId, doshaPrincipal, itemId }: PaywallRotinaP
             <div className="border-t border-border pt-5 mt-auto flex flex-col gap-4">
               <div>
                 <div className="flex items-baseline gap-2">
-                  <span className="text-3xl font-semibold text-foreground">R$30</span>
+                  <span className="text-3xl font-semibold text-foreground">R$30<span className="text-base font-normal text-muted-foreground">/mês</span></span>
                   <span className="text-sm text-muted-foreground">· sua rotina mensal</span>
                 </div>
                 <p className="text-xs text-muted-foreground mt-1">
