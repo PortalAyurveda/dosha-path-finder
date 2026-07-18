@@ -1073,19 +1073,14 @@ const MeuDosha = () => {
                     Seu Dosha agravado é: <span style={{ color: PIE_COLORS[primaryDosha] }}>{result.doshaprincipal}</span>
                   </h2>
                   <div className="w-full" style={{ height: 240 }}>
-                    <ResponsiveContainer width="100%" height="100%">
-                      <PieChart margin={{ top: 20, right: 60, bottom: 20, left: 60 }}>
-                        <Pie data={pieData} cx="50%" cy="50%" outerRadius={70} innerRadius={32} dataKey="value" startAngle={90} endAngle={-270} label={CustomPieLabel} labelLine={false} strokeWidth={2} stroke="hsl(var(--card))">
-                          {pieData.map((entry) => (
-                            <Cell key={entry.name} fill={PIE_COLORS[entry.name]} />
-                          ))}
-                        </Pie>
-                        <Tooltip
-                          formatter={(value: number, name: string) => [`${value} pts (${totalScore > 0 ? Math.round((value / totalScore) * 100) : 0}%)`, name]}
-                          contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '8px', fontSize: '12px' }}
-                        />
-                      </PieChart>
-                    </ResponsiveContainer>
+                    <Suspense fallback={<div style={{ height: 240 }} className="w-full rounded-lg bg-muted/20 animate-pulse" />}>
+                      <DoshaPieChart
+                        vata={result.vatascore || 0}
+                        pitta={result.pittascore || 0}
+                        kapha={result.kaphascore || 0}
+                        variant="full"
+                      />
+                    </Suspense>
                   </div>
                   {result.agniPrincipal && (
                     <div className="w-full bg-surface-sun rounded-lg border border-border p-3 mt-3">
