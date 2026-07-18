@@ -22,7 +22,7 @@ import RetesteCard from "@/components/meudosha/RetesteCard";
 import PraVoceRail from "@/components/meudosha/PraVoceRail";
 import BannerSlot from "@/components/banners/BannerSlot";
 import ClaimLock from "@/components/meudosha/ClaimLock";
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
+const DoshaPieChart = lazy(() => import("@/components/charts/DoshaPieChart"));
 import { useUser } from "@/contexts/UserContext";
 import { useEscolaAluno } from "@/hooks/useEscolaAluno";
 import { getPaletteBranding } from "@/data/landingPalettes";
