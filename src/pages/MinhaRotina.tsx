@@ -1822,7 +1822,7 @@ const PaywallRotina = ({ email, userId, doshaPrincipal, itemId }: PaywallRotinaP
             <div className="border-t border-border pt-5 mt-auto flex flex-col gap-4">
               <div>
                 <div className="flex items-baseline gap-2">
-                  <span className="text-3xl font-semibold text-foreground">R$30</span>
+                  <span className="text-3xl font-semibold text-foreground">R$30<span className="text-base font-normal text-muted-foreground">/mês</span></span>
                   <span className="text-sm text-muted-foreground">· sua rotina mensal</span>
                 </div>
                 <p className="text-xs text-muted-foreground mt-1">
@@ -1874,7 +1874,7 @@ const PaywallLanding = ({ doshaPrincipal, onDesbloquear, carregando, top3, vitri
   const recebe = [
     { Icon: LucideIcons.Sunrise, titulo: "Café da manhã", desc: "Receita completa: ingredientes, modo de preparo, vídeo do professor e por que funciona pro seu dosha." },
     { Icon: LucideIcons.Coffee, titulo: "Lanche da manhã", desc: "Um lanche leve, certo pro seu agni nesse momento do dia." },
-    { Icon: LucideIcons.Soup, titulo: "Almoço", desc: `Prato completo (cereal, proteína, legume, acompanhamento) pra equilibrar seu ${dosha}.` },
+    { Icon: LucideIcons.Soup, titulo: "Almoço", desc: `Prato completo (cereal, proteína, legume, acompanhamento) pra equilibrar ${dosha === "seu dosha" ? "seu dosha" : `seu ${dosha}`}.` },
     { Icon: LucideIcons.Leaf, titulo: "Lanche da tarde", desc: "Um chá funcional pro seu estado atual." },
     { Icon: LucideIcons.Soup, titulo: "Jantar", desc: "Sopa ou caldo, sempre quente, no horário certo." },
     { Icon: LucideIcons.Moon, titulo: "Tônico da noite", desc: "30 min antes de dormir: o elixir certo pro seu dosha. Mingau, leite vegetal ou chá calmante, varia a cada dia." },
