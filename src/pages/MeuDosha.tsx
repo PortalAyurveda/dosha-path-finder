@@ -981,7 +981,7 @@ const MeuDosha = () => {
               </p>
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <p className="text-sm text-muted-foreground">
-                  <span className="text-foreground font-semibold">R$30</span> · sua rotina mensal
+                  <span className="text-foreground font-semibold">R$30<span className="text-xs font-normal text-muted-foreground">/mês</span></span> · sua rotina mensal
                 </p>
                 <Button
                   variant="secondary"
