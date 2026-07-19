@@ -16,7 +16,6 @@ import {
   Sun,
   Video as VideoIcon,
   Library,
-  RefreshCw,
   Flame,
 } from "lucide-react";
 import {
@@ -100,11 +99,6 @@ const RECEITAS = [
   },
 ];
 
-const PILULAS = [
-  { Icon: VideoIcon, titulo: "900+ aulas do professor", texto: "Acervo completo organizado por tema e por dosha." },
-  { Icon: Library, titulo: "Artigos por dosha", texto: "Guias práticos aplicados ao seu quadro." },
-  { Icon: RefreshCw, titulo: "Revisão do seu quadro todo mês", texto: "Sua rotina acompanha o seu corpo." },
-];
 
 const NUMEROS = [
   "2.700+ testes",
@@ -113,12 +107,19 @@ const NUMEROS = [
   "Revisão mensal",
 ];
 
-const JORNADA = [
-  { Icon: BookOpen, titulo: "Antes — sem Ayurveda", texto: "Você não sabia nem seu biotipo." },
-  { Icon: Compass, titulo: "Você se conhece", texto: "O teste revela seu dosha e seu quadro atual.", destaque: true },
-  { Icon: Leaf, titulo: "Você se cuida certo", texto: "Rotina, comida e hábitos específicos para você." },
-  { Icon: HeartPulse, titulo: "Você restaura sua vitalidade", texto: "Digestão, sono e energia voltam ao eixo — doshas em equilíbrio." },
-  { Icon: Sun, titulo: "Você aproveita a vida", texto: "Leveza e clareza — vitalidade e longevidade." },
+type JornadaItem = {
+  Icon: typeof BookOpen;
+  numero: number | null;
+  titulo: string;
+  texto: string;
+  destaque?: boolean;
+};
+const JORNADA: JornadaItem[] = [
+  { Icon: BookOpen, numero: null, titulo: "Antes — sem Ayurveda", texto: "Você não sabia nem seu biotipo." },
+  { Icon: Compass, numero: 1, titulo: "Você se conhece", texto: "O teste revela seu dosha e seu quadro atual.", destaque: true },
+  { Icon: Leaf, numero: 2, titulo: "Você se cuida certo", texto: "Rotina, comida e hábitos específicos para você." },
+  { Icon: HeartPulse, numero: 3, titulo: "Você restaura sua vitalidade", texto: "Digestão, sono e energia voltam ao eixo — doshas em equilíbrio." },
+  { Icon: Sun, numero: 4, titulo: "Você aproveita a vida", texto: "Leveza e clareza — vitalidade e longevidade." },
 ];
 
 const OBJETIVOS = ["Digestão", "Sono", "Ansiedade", "Energia"];
@@ -487,30 +488,39 @@ const Assinar = () => {
                 className="hidden md:block absolute top-6 left-[10%] right-[10%] h-px"
                 style={{ background: `${SALMAO}44` }}
               />
-              {JORNADA.map(({ Icon, titulo, texto, destaque }, i) => (
+              {JORNADA.map(({ Icon, numero, titulo, texto, destaque }, i) => (
                 <li key={i} className="relative flex flex-col items-center text-center">
-                  <div
-                    className="relative z-10 w-12 h-12 rounded-full flex items-center justify-center mb-3 border-2"
-                    style={{
-                      background: destaque ? SALMAO : "#fff",
-                      borderColor: destaque ? SALMAO : `${SALMAO}55`,
-                      boxShadow: destaque ? `0 6px 18px -6px ${SALMAO}88` : "none",
-                    }}
-                  >
-                    <Icon
-                      className="w-5 h-5"
-                      style={{ color: destaque ? "#fff" : SALMAO }}
-                      strokeWidth={1.8}
-                    />
-                  </div>
                   {destaque && (
                     <p
-                      className="text-[10px] uppercase tracking-wider font-bold mb-1"
+                      className="text-[10px] uppercase tracking-wider font-bold mb-2"
                       style={{ color: SALMAO, fontFamily: "'DM Sans', sans-serif" }}
                     >
                       Onde o Portal começa
                     </p>
                   )}
+                  <div
+                    className="relative z-10 w-12 h-12 rounded-full flex items-center justify-center mb-3 border-2"
+                    style={{
+                      background: destaque ? SALMAO : "#fff",
+                      borderColor: numero == null ? "rgba(53,47,84,0.20)" : (destaque ? SALMAO : `${SALMAO}55`),
+                      boxShadow: destaque ? `0 6px 18px -6px ${SALMAO}88` : "none",
+                    }}
+                  >
+                    {numero != null ? (
+                      <span
+                        className="font-serif italic font-bold text-lg leading-none"
+                        style={{ color: destaque ? "#fff" : SALMAO }}
+                      >
+                        {numero}
+                      </span>
+                    ) : (
+                      <Icon
+                        className="w-5 h-5"
+                        style={{ color: "rgba(53,47,84,0.45)" }}
+                        strokeWidth={1.8}
+                      />
+                    )}
+                  </div>
                   <p
                     className="font-serif font-bold text-sm md:text-[15px] leading-snug mb-1"
                     style={{ color: PRIMARY }}
@@ -529,7 +539,8 @@ const Assinar = () => {
           </div>
         </section>
 
-        {/* 3) TUDO COMEÇA PELO SEU RETRATO — painel único */}
+
+        {/* 3) TUDO COMEÇA PELO SEU RETRATO — painel único compacto */}
         <section style={{ background: SURFACE }}>
           <div className="max-w-[1040px] mx-auto px-4 sm:px-6 py-10 md:py-12">
             <h2
@@ -546,7 +557,7 @@ const Assinar = () => {
             </p>
 
             <div
-              className="relative rounded-2xl border bg-card shadow-sm overflow-hidden"
+              className="relative rounded-2xl border bg-card shadow-sm overflow-hidden max-w-[820px] mx-auto"
               style={{ borderColor: "rgba(53,47,84,0.14)" }}
             >
               <span
@@ -556,7 +567,7 @@ const Assinar = () => {
                 Exemplo
               </span>
 
-              {/* Topo do painel */}
+              {/* Topo */}
               <div
                 className="px-4 md:px-6 py-3 border-b"
                 style={{ borderColor: "rgba(53,47,84,0.10)", background: PAPER }}
@@ -575,161 +586,46 @@ const Assinar = () => {
                 </h3>
               </div>
 
-              {/* Linha 1: donut + agni | quadro clínico */}
-              <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x" style={{ borderColor: "rgba(53,47,84,0.10)" }}>
-                <div className="p-4 md:p-5">
-                  <div className="h-[180px]">
-                    <DoshaPieChart vata={42} pitta={28} kapha={16} variant="full" />
-                  </div>
-                  <div
-                    className="mt-3 rounded-lg border p-3 flex items-start gap-2.5"
-                    style={{ background: "hsl(var(--surface-sun))", borderColor: "rgba(53,47,84,0.10)" }}
-                  >
-                    <div
-                      className="w-8 h-8 rounded-full flex items-center justify-center shrink-0"
-                      style={{ background: "hsl(252 35% 45%)", color: "#fff" }}
-                    >
-                      <Flame className="w-4 h-4" />
-                    </div>
-                    <div className="min-w-0">
-                      <p className="font-serif font-bold text-[13px] leading-tight" style={{ color: PRIMARY }}>
-                        Fogo Digestivo (Agni): irregular
-                      </p>
-                      <p
-                        className="text-[11px] leading-snug mt-0.5"
-                        style={{ color: PRIMARY, opacity: 0.7, fontFamily: "'DM Sans', sans-serif" }}
-                      >
-                        Digestão instável — alterna entre gases e queimação. Meta: nível bom.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="p-4 md:p-5">
-                  <p className="text-[10px] uppercase tracking-wider font-bold mb-2" style={{ color: PRIMARY, opacity: 0.55, fontFamily: "'DM Sans', sans-serif" }}>
-                    Quadro clínico
-                  </p>
-                  <ClinicalThermometer doshaScores={exemploScores} />
-                </div>
-              </div>
-
-              {/* Linha 2: evolução mês a mês */}
+              {/* Corpo: donut+agni | quadro clínico */}
               <div
-                className="border-t px-4 md:px-6 py-4"
-                style={{ borderColor: "rgba(53,47,84,0.10)", background: PAPER }}
-              >
-                <div className="flex items-baseline justify-between mb-1 gap-3 flex-wrap">
-                  <p className="font-serif font-bold text-[15px]" style={{ color: PRIMARY }}>
-                    Sua evolução mês a mês
-                  </p>
-                  <p className="text-[11px]" style={{ color: PRIMARY, opacity: 0.6, fontFamily: "'DM Sans', sans-serif" }}>
-                    Vata: 42 → 33 → 22
-                  </p>
-                </div>
-                <div className="h-[150px] w-full">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <LineChart
-                      data={[
-                        { mes: "Mês 1", vata: 42, status: "Adoecido" },
-                        { mes: "Mês 2", vata: 33, status: "Acúmulo" },
-                        { mes: "Mês 3", vata: 22, status: "Normal" },
-                      ]}
-                      margin={{ top: 24, right: 24, left: 0, bottom: 4 }}
-                    >
-                      <ReferenceLine y={35} stroke="#FCA5A5" strokeDasharray="3 3" strokeOpacity={0.5} />
-                      <ReferenceLine y={22} stroke="#86EFAC" strokeDasharray="3 3" strokeOpacity={0.7} />
-                      <XAxis
-                        dataKey="mes"
-                        tick={{ fill: PRIMARY, fontSize: 11, fontWeight: 600 }}
-                        stroke="rgba(53,47,84,0.2)"
-                      />
-                      <YAxis
-                        domain={[10, 50]}
-                        tick={{ fill: PRIMARY, fontSize: 10, opacity: 0.6 }}
-                        stroke="rgba(53,47,84,0.15)"
-                        width={28}
-                      />
-                      <RTooltip
-                        contentStyle={{
-                          background: "#fff",
-                          border: "1px solid rgba(53,47,84,0.15)",
-                          borderRadius: 8,
-                          fontSize: 12,
-                        }}
-                        formatter={(value: number, _: string, item: { payload?: { status?: string } }) => [
-                          `${value} pts · ${item?.payload?.status ?? ""}`,
-                          "Vata",
-                        ]}
-                      />
-                      <Line
-                        type="monotone"
-                        dataKey="vata"
-                        stroke="#6B8AFF"
-                        strokeWidth={3}
-                        dot={{ r: 5, fill: "#6B8AFF", stroke: "#fff", strokeWidth: 2 }}
-                        activeDot={{ r: 7 }}
-                        isAnimationActive={false}
-                        label={({ x, y, value, index }: { x?: number; y?: number; value?: number; index?: number }) => {
-                          const status = ["Adoecido", "Acúmulo", "Normal"][index ?? 0];
-                          if (x == null || y == null) return <g />;
-                          return (
-                            <g>
-                              <text
-                                x={x}
-                                y={y - 12}
-                                textAnchor="middle"
-                                fontSize={10}
-                                fontWeight={700}
-                                fill={PRIMARY}
-                              >
-                                {status}
-                              </text>
-                            </g>
-                          );
-                        }}
-                      />
-                    </LineChart>
-                  </ResponsiveContainer>
-                </div>
-                <p
-                  className="text-[12px] leading-snug mt-1"
-                  style={{ color: PRIMARY, opacity: 0.75, fontFamily: "'DM Sans', sans-serif" }}
-                >
-                  Com a revisão mensal, seu quadro melhora — o Portal acompanha e ajusta.
-                </p>
-              </div>
-
-              {/* Linha 3: objetivos */}
-              <div
-                className="border-t px-4 md:px-6 py-4 flex flex-col md:flex-row md:items-center gap-3 md:gap-5"
+                className="grid grid-cols-1 md:grid-cols-[220px_1fr] divide-y md:divide-y-0 md:divide-x"
                 style={{ borderColor: "rgba(53,47,84,0.10)" }}
               >
-                <div className="md:w-[220px] shrink-0">
-                  <p className="font-serif font-bold text-[13px]" style={{ color: PRIMARY }}>
-                    Seus objetivos
-                  </p>
-                  <p
-                    className="text-[11px] leading-snug"
-                    style={{ color: PRIMARY, opacity: 0.7, fontFamily: "'DM Sans', sans-serif" }}
+                <div className="p-4 md:p-4 flex flex-col items-center">
+                  <div className="w-[132px] h-[132px]">
+                    <DoshaPieChart vata={42} pitta={28} kapha={16} variant="compact" />
+                  </div>
+                  <div
+                    className="mt-2 flex items-center gap-2 text-[11px] font-semibold"
+                    style={{ color: PRIMARY, fontFamily: "'DM Sans', sans-serif" }}
                   >
-                    O Portal cruza seu quadro com o que você quer melhorar.
-                  </p>
+                    <span style={{ color: "#6B8AFF" }}>V 42</span>
+                    <span style={{ opacity: 0.35 }}>·</span>
+                    <span style={{ color: "#FF7676" }}>P 28</span>
+                    <span style={{ opacity: 0.35 }}>·</span>
+                    <span style={{ color: "#4B9E4B" }}>K 16</span>
+                  </div>
+                  <div
+                    className="mt-3 w-full rounded-lg border p-2.5 flex items-start gap-2"
+                    style={{ background: "hsl(var(--surface-sun))", borderColor: "rgba(53,47,84,0.10)" }}
+                  >
+                    <Flame className="w-3.5 h-3.5 shrink-0 mt-0.5" style={{ color: "#C87E3B" }} />
+                    <p className="text-[11px] leading-snug" style={{ color: PRIMARY, fontFamily: "'DM Sans', sans-serif" }}>
+                      <strong className="font-bold">Fogo digestivo (Agni):</strong> irregular
+                    </p>
+                  </div>
                 </div>
-                <div className="flex flex-wrap gap-1.5 flex-1">
-                  {OBJETIVOS.map((o) => (
-                    <span
-                      key={o}
-                      className="px-2.5 py-1 rounded-full text-[12px] font-semibold border"
-                      style={{
-                        background: `${SALMAO}15`,
-                        color: PRIMARY,
-                        borderColor: `${SALMAO}55`,
-                        fontFamily: "'DM Sans', sans-serif",
-                      }}
-                    >
-                      {o}
-                    </span>
-                  ))}
+
+                <div className="p-4 md:p-4">
+                  <p
+                    className="text-[10px] uppercase tracking-wider font-bold mb-2"
+                    style={{ color: PRIMARY, opacity: 0.55, fontFamily: "'DM Sans', sans-serif" }}
+                  >
+                    Quadro clínico
+                  </p>
+                  <div className="text-[11px]" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                    <ClinicalThermometer doshaScores={exemploScores} />
+                  </div>
                 </div>
               </div>
 
@@ -742,12 +638,196 @@ const Assinar = () => {
                   className="text-[11px]"
                   style={{ color: PRIMARY, opacity: 0.6, fontFamily: "'DM Sans', sans-serif" }}
                 >
-                  Exemplo — o seu vem do teste gratuito, em 5 minutos.
+                  Exemplo — o seu vem do teste gratuito.
                 </p>
               </div>
             </div>
           </div>
         </section>
+
+        {/* 3b) SUA REVISÃO MENSAL */}
+        <section className="bg-background">
+          <div className="max-w-[1040px] mx-auto px-4 sm:px-6 py-10 md:py-14">
+            <p
+              className="text-[11px] uppercase tracking-wider font-bold text-center mb-2"
+              style={{ color: SALMAO, fontFamily: "'DM Sans', sans-serif" }}
+            >
+              Sua revisão mensal
+            </p>
+            <h2
+              className="font-serif italic font-bold text-2xl md:text-[28px] text-center mb-2"
+              style={{ color: PRIMARY }}
+            >
+              Você vê seu corpo melhorar, mês a mês
+            </h2>
+            <p
+              className="text-center text-sm md:text-base mb-8 max-w-2xl mx-auto"
+              style={{ color: PRIMARY, opacity: 0.78, fontFamily: "'DM Sans', sans-serif" }}
+            >
+              Todo mês a Akasha refaz sua leitura, compara com o mês anterior e ajusta sua rotina — porque seu corpo muda.
+            </p>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
+              {/* Esquerda: gráfico de linha V/P/K */}
+              <div
+                className="relative rounded-2xl border p-4 md:p-5 bg-card shadow-sm"
+                style={{ borderColor: "rgba(53,47,84,0.14)" }}
+              >
+                <span
+                  className="absolute top-3 right-3 z-10 text-[9px] font-bold tracking-widest uppercase px-2 py-0.5 rounded"
+                  style={{ background: PRIMARY, color: "#fff", fontFamily: "'DM Sans', sans-serif" }}
+                >
+                  Exemplo
+                </span>
+                <p
+                  className="text-[10px] uppercase tracking-wider font-bold mb-1"
+                  style={{ color: PRIMARY, opacity: 0.55, fontFamily: "'DM Sans', sans-serif" }}
+                >
+                  Evolução dos doshas
+                </p>
+                <p className="font-serif font-bold text-[15px] mb-3" style={{ color: PRIMARY }}>
+                  Vata: 48 → 33 em 4 meses
+                </p>
+                <div className="h-[180px] w-full">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart
+                      data={[
+                        { mes: "Mês 1", vata: 48, pitta: 24, kapha: 18 },
+                        { mes: "Mês 2", vata: 42, pitta: 22, kapha: 19 },
+                        { mes: "Mês 3", vata: 37, pitta: 21, kapha: 18 },
+                        { mes: "Mês 4", vata: 33, pitta: 20, kapha: 17 },
+                      ]}
+                      margin={{ top: 12, right: 16, left: 0, bottom: 4 }}
+                    >
+                      <ReferenceLine y={35} stroke="#FCA5A5" strokeDasharray="3 3" strokeOpacity={0.4} />
+                      <XAxis
+                        dataKey="mes"
+                        tick={{ fill: PRIMARY, fontSize: 11, fontWeight: 600 }}
+                        stroke="rgba(53,47,84,0.2)"
+                      />
+                      <YAxis
+                        domain={[10, 55]}
+                        tick={{ fill: PRIMARY, fontSize: 10, opacity: 0.6 }}
+                        stroke="rgba(53,47,84,0.15)"
+                        width={28}
+                      />
+                      <RTooltip
+                        contentStyle={{
+                          background: "#fff",
+                          border: "1px solid rgba(53,47,84,0.15)",
+                          borderRadius: 8,
+                          fontSize: 12,
+                        }}
+                      />
+                      <Line
+                        type="monotone" dataKey="vata" name="Vata"
+                        stroke="#6B8FE8" strokeWidth={3.5}
+                        dot={{ r: 4, fill: "#6B8FE8", stroke: "#fff", strokeWidth: 2 }}
+                        activeDot={{ r: 6 }}
+                        isAnimationActive={false}
+                      />
+                      <Line
+                        type="monotone" dataKey="pitta" name="Pitta"
+                        stroke="#F0857F" strokeWidth={2}
+                        dot={{ r: 3, fill: "#F0857F", stroke: "#fff", strokeWidth: 1.5 }}
+                        isAnimationActive={false}
+                      />
+                      <Line
+                        type="monotone" dataKey="kapha" name="Kapha"
+                        stroke="#57BE86" strokeWidth={2}
+                        dot={{ r: 3, fill: "#57BE86", stroke: "#fff", strokeWidth: 1.5 }}
+                        isAnimationActive={false}
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+                <div
+                  className="mt-2 flex items-center justify-center gap-3 text-[11px] font-semibold"
+                  style={{ fontFamily: "'DM Sans', sans-serif" }}
+                >
+                  <span className="inline-flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full" style={{ background: "#6B8FE8" }} /><span style={{ color: PRIMARY }}>V</span></span>
+                  <span className="inline-flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full" style={{ background: "#F0857F" }} /><span style={{ color: PRIMARY }}>P</span></span>
+                  <span className="inline-flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full" style={{ background: "#57BE86" }} /><span style={{ color: PRIMARY }}>K</span></span>
+                </div>
+              </div>
+
+              {/* Direita: perguntas + card verde */}
+              <div
+                className="rounded-2xl border p-4 md:p-5 bg-card shadow-sm flex flex-col"
+                style={{ borderColor: "rgba(53,47,84,0.14)" }}
+              >
+                <p
+                  className="text-[10px] uppercase tracking-wider font-bold mb-1"
+                  style={{ color: PRIMARY, opacity: 0.55, fontFamily: "'DM Sans', sans-serif" }}
+                >
+                  O que a revisão te pergunta
+                </p>
+                <div className="space-y-2 mb-3">
+                  {[
+                    "Como andou seu sono neste mês? Ainda acorda de madrugada?",
+                    "Sua digestão está mais regular do que no mês passado?",
+                    "Os gases e o ressecamento que você marcou melhoraram?",
+                  ].map((q) => (
+                    <div
+                      key={q}
+                      className="rounded-lg border px-3 py-2 text-[12px] leading-snug"
+                      style={{
+                        background: PAPER,
+                        borderColor: "rgba(53,47,84,0.10)",
+                        color: PRIMARY,
+                        fontFamily: "'DM Sans', sans-serif",
+                      }}
+                    >
+                      {q}
+                    </div>
+                  ))}
+                </div>
+                <div
+                  className="mt-auto rounded-lg border p-3 text-[12px] leading-snug"
+                  style={{ background: VERDE_BG, borderColor: `${VERDE}55`, color: PRIMARY, fontFamily: "'DM Sans', sans-serif" }}
+                >
+                  <p className="font-serif font-bold text-[13px] mb-0.5" style={{ color: VERDE }}>
+                    ↓ Seu Vata caiu de 48 para 33
+                  </p>
+                  <p>De <strong>Adoecido</strong> a <strong>Normal</strong>. Você está no caminho — sua rotina já foi ajustada.</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Chips objetivos */}
+            <div className="mt-6 flex flex-col md:flex-row md:items-center gap-3 md:gap-4 justify-center">
+              <p
+                className="font-serif font-bold text-[13px] text-center md:text-left"
+                style={{ color: PRIMARY }}
+              >
+                Seus objetivos:
+              </p>
+              <div className="flex flex-wrap justify-center gap-1.5">
+                {OBJETIVOS.map((o) => (
+                  <span
+                    key={o}
+                    className="px-2.5 py-1 rounded-full text-[12px] font-semibold border"
+                    style={{
+                      background: `${SALMAO}15`,
+                      color: PRIMARY,
+                      borderColor: `${SALMAO}55`,
+                      fontFamily: "'DM Sans', sans-serif",
+                    }}
+                  >
+                    {o}
+                  </span>
+                ))}
+              </div>
+              <p
+                className="text-[12px] text-center md:text-left"
+                style={{ color: PRIMARY, opacity: 0.7, fontFamily: "'DM Sans', sans-serif" }}
+              >
+                — e o gráfico mostra você chegando lá.
+              </p>
+            </div>
+          </div>
+        </section>
+
 
         {/* 4) A AKASHA TE ACOMPANHA */}
         <section className="bg-background">
@@ -805,30 +885,30 @@ const Assinar = () => {
 
               return (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <Card label="Ela lê o corpo">
+                  <Card label="Ela ensina o cuidado">
                     <Person>
-                      Estou no 8º dia doente e o que atrasa a recuperação é a tosse seca após as 2h da madrugada, e o muco espesso e amarelo.
+                      Peguei uma gripe com muco e catarro, como devo me tratar?
                     </Person>
                     <Akasha>
-                      Está na fase de limpeza final, mas com dois sinais misturados: Vata seco fazendo a tosse da madrugada e Pitta-Kapha mantendo o muco. Entre 2h e 5h, Vata fica mais evidente — o muco está saindo mais do nariz, da garganta, ou dos dois?
+                      Água quente ao acordar e ao longo do dia, e chá de gengibre, cominho, louro, erva-doce e canela em dose suave. Se o muco está preso, aquecer e fluidificar. A tosse está seca ou com catarro?
                     </Akasha>
                   </Card>
 
-                  <Card label="Ela ensina no prato">
+                  <Card label="Ela pergunta pra acertar">
                     <Person>
-                      Acrescentar inhame para fazer o creme de milho já ajuda?
+                      Indique um chá pra dificuldade de manter o sono. Durmo cedo, mas desperto às 3h.
                     </Person>
                     <Akasha>
-                      Sim, ajuda bastante. O inhame traz corpo e maciez, e isso conversa melhor com Vata do que um creme só de milho, mais seco. Melhora ainda mais com ghee e especiarias suaves.
+                      Às 3h costuma ajudar leite morno com especiarias — metade leite, metade água, um pouco de ghee e um toque de mascavo. Aterra o Vata e favorece sono profundo. Evite chá preto à noite.
                     </Akasha>
                   </Card>
 
-                  <Card label="Ela cuida do sono">
+                  <Card label="Ela não inventa">
                     <Person>
-                      Indique um chá para dificuldade de manter o sono. Durmo cedo, mas desperto às 3h.
+                      Na receita do vídeo fala de pimenta rosa e branca. Vai?
                     </Person>
                     <Akasha>
-                      Para acordar às 3h, costuma ajudar leite morno com especiarias — metade leite, metade água, um pouco de ghee e um toque de mascavo. Aterra o Vata e favorece sono mais profundo; evite chá preto à noite.
+                      Essa receita de pimenta rosa não está no caderno, então não vou inventar. Mas pro seu Vata e no frio, eu teria cuidado com pimentas — elas secam e aquecem demais, e a branca é a mais pungente.
                     </Akasha>
                   </Card>
                 </div>
@@ -839,7 +919,7 @@ const Assinar = () => {
               className="mt-6 text-center text-sm md:text-base max-w-2xl mx-auto"
               style={{ color: PRIMARY, opacity: 0.8, fontFamily: "'DM Sans', sans-serif" }}
             >
-              A inteligência do Portal, treinada no acervo do professor Edson. Conhece seu dosha, lembra de você, responde a qualquer hora.
+              A inteligência do Portal, treinada no acervo completo do professor Edson. Conhece seu dosha, lembra das suas conversas e responde a qualquer hora.
             </p>
           </div>
         </section>
@@ -888,35 +968,142 @@ const Assinar = () => {
               ))}
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {PILULAS.map(({ Icon, titulo, texto }) => (
+          </div>
+        </section>
+
+        {/* 6) TUDO NUM SÓ LUGAR — biblioteca + Relógio dos Doshas + curso */}
+        <section className="bg-background">
+          <div className="max-w-[1040px] mx-auto px-4 sm:px-6 py-10 md:py-14">
+            <p
+              className="text-[11px] uppercase tracking-wider font-bold text-center mb-2"
+              style={{ color: SALMAO, fontFamily: "'DM Sans', sans-serif" }}
+            >
+              Tudo num só lugar
+            </p>
+            <h2
+              className="font-serif italic font-bold text-2xl md:text-[28px] text-center mb-8"
+              style={{ color: PRIMARY }}
+            >
+              O acervo inteiro, organizado pra você
+            </h2>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
+              {/* Esquerda: Relógio dos Doshas */}
+              <a
+                href="/biblioteca/horarios"
+                className="rounded-2xl border p-5 bg-card shadow-sm flex flex-col items-center text-center transition-shadow hover:shadow-md"
+                style={{ borderColor: "rgba(53,47,84,0.14)" }}
+              >
+                <div className="w-[190px] h-[190px] relative flex items-center justify-center">
+                  <div
+                    className="absolute inset-0 rounded-full"
+                    style={{
+                      background:
+                        "conic-gradient(from 270deg, #57BE86 0deg 60deg, #F0857F 60deg 180deg, #6B8FE8 180deg 240deg, #57BE86 240deg 300deg, #F0857F 300deg 360deg)",
+                    }}
+                  />
+                  <div
+                    className="absolute rounded-full bg-card border shadow-inner flex flex-col items-center justify-center text-center px-3"
+                    style={{ inset: 22, borderColor: "rgba(53,47,84,0.10)" }}
+                  >
+                    <span className="font-serif italic font-bold text-lg" style={{ color: PRIMARY }}>
+                      6h → 22h
+                    </span>
+                    <span
+                      className="text-[10px] uppercase tracking-wider mt-1 font-bold"
+                      style={{ color: PRIMARY, opacity: 0.65, fontFamily: "'DM Sans', sans-serif" }}
+                    >
+                      seu dia em doshas
+                    </span>
+                  </div>
+                </div>
+                <div className="mt-3 flex items-center gap-3 text-[11px] font-semibold" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                  <span className="inline-flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full" style={{ background: "#57BE86" }} /><span style={{ color: PRIMARY }}>K</span></span>
+                  <span className="inline-flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full" style={{ background: "#F0857F" }} /><span style={{ color: PRIMARY }}>P</span></span>
+                  <span className="inline-flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full" style={{ background: "#6B8FE8" }} /><span style={{ color: PRIMARY }}>V</span></span>
+                </div>
+                <p className="font-serif font-bold text-[15px] mt-4" style={{ color: PRIMARY }}>
+                  O Relógio dos Doshas
+                </p>
+                <p
+                  className="text-[12px] leading-snug mt-1 max-w-xs"
+                  style={{ color: PRIMARY, opacity: 0.75, fontFamily: "'DM Sans', sans-serif" }}
+                >
+                  Os horários do seu corpo: quando comer, mover e descansar.
+                </p>
+              </a>
+
+              {/* Direita: 3 blocos */}
+              <div className="flex flex-col gap-3">
                 <div
-                  key={titulo}
-                  className="rounded-xl border p-4 flex items-start gap-3"
+                  className="rounded-xl border p-3.5 flex items-start gap-3"
                   style={{ background: "#fff", borderColor: "rgba(53,47,84,0.10)" }}
                 >
-                  <div
-                    className="w-9 h-9 rounded-full flex items-center justify-center shrink-0"
-                    style={{ background: `${SALMAO}22` }}
-                  >
-                    <Icon className="w-4 h-4" style={{ color: SALMAO }} strokeWidth={1.9} />
+                  <div className="w-9 h-9 rounded-full flex items-center justify-center shrink-0" style={{ background: `${SALMAO}22` }}>
+                    <VideoIcon className="w-4 h-4" style={{ color: SALMAO }} strokeWidth={1.9} />
                   </div>
                   <div>
                     <p className="font-serif font-bold text-sm leading-tight mb-0.5" style={{ color: PRIMARY }}>
-                      {titulo}
+                      900+ aulas do professor
                     </p>
-                    <p
-                      className="text-xs leading-snug"
-                      style={{ color: PRIMARY, opacity: 0.75, fontFamily: "'DM Sans', sans-serif" }}
-                    >
-                      {texto}
+                    <p className="text-xs leading-snug" style={{ color: PRIMARY, opacity: 0.75, fontFamily: "'DM Sans', sans-serif" }}>
+                      Acervo completo organizado por tema e por dosha.
                     </p>
                   </div>
                 </div>
-              ))}
+
+                <div
+                  className="rounded-xl border p-3.5 flex items-start gap-3"
+                  style={{ background: "#fff", borderColor: "rgba(53,47,84,0.10)" }}
+                >
+                  <div className="w-9 h-9 rounded-full flex items-center justify-center shrink-0" style={{ background: `${SALMAO}22` }}>
+                    <Library className="w-4 h-4" style={{ color: SALMAO }} strokeWidth={1.9} />
+                  </div>
+                  <div>
+                    <p className="font-serif font-bold text-sm leading-tight mb-0.5" style={{ color: PRIMARY }}>
+                      Artigos por dosha
+                    </p>
+                    <p className="text-xs leading-snug" style={{ color: PRIMARY, opacity: 0.75, fontFamily: "'DM Sans', sans-serif" }}>
+                      Guias práticos aplicados ao seu quadro.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Bloco destacado do curso */}
+                <div
+                  className="rounded-xl border-2 p-3.5 flex items-start gap-3 relative"
+                  style={{ background: DOURADO_BG, borderColor: DOURADO }}
+                >
+                  {cursoRotinas?.capa_url ? (
+                    <img
+                      src={cursoRotinas.capa_url}
+                      alt=""
+                      aria-hidden
+                      loading="lazy"
+                      className="w-16 h-16 object-cover rounded-lg shrink-0"
+                    />
+                  ) : (
+                    <div className="w-16 h-16 rounded-lg shrink-0 flex items-center justify-center" style={{ background: "#fff" }}>
+                      <Gift className="w-6 h-6" style={{ color: DOURADO }} />
+                    </div>
+                  )}
+                  <div className="min-w-0">
+                    <p className="text-[9px] uppercase tracking-wider font-bold mb-0.5" style={{ color: DOURADO_DARK, fontFamily: "'DM Sans', sans-serif" }}>
+                      Curso incluso no plano anual
+                    </p>
+                    <p className="font-serif font-bold text-sm leading-tight mb-1" style={{ color: PRIMARY }}>
+                      {cursoRotinas?.titulo ?? "Rotinas Diárias do Ayurveda"}
+                    </p>
+                    <p className="text-xs leading-snug" style={{ color: PRIMARY, opacity: 0.8, fontFamily: "'DM Sans', sans-serif" }}>
+                      As videoaulas do professor sobre os hábitos que sustentam sua saúde · 11 aulas.
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </section>
+
 
         {/* 7) NÚMEROS */}
         <section style={{ background: PRIMARY }}>
