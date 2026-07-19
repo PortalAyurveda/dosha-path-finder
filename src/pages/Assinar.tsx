@@ -670,25 +670,26 @@ const Assinar = () => {
 
         {/* 3b) SUA REVISÃO MENSAL */}
         <section className="bg-background">
-          <div className="max-w-[1040px] mx-auto px-4 sm:px-6 py-10 md:py-14">
+          <div className="max-w-[1040px] mx-auto px-4 sm:px-6 py-6 md:py-8">
             <p
-              className="text-[11px] uppercase tracking-wider font-bold text-center mb-2"
+              className="text-[10px] uppercase tracking-wider font-bold text-center mb-1.5"
               style={{ color: SALMAO, fontFamily: "'DM Sans', sans-serif" }}
             >
               Sua revisão mensal
             </p>
             <h2
-              className="font-serif italic font-bold text-2xl md:text-[28px] text-center mb-2"
+              className="font-serif italic font-bold text-xl md:text-[24px] text-center mb-1.5"
               style={{ color: PRIMARY }}
             >
               Você vê seu corpo melhorar, mês a mês
             </h2>
             <p
-              className="text-center text-sm md:text-base mb-8 max-w-2xl mx-auto"
+              className="text-center text-[13px] md:text-sm mb-5 max-w-2xl mx-auto"
               style={{ color: PRIMARY, opacity: 0.78, fontFamily: "'DM Sans', sans-serif" }}
             >
               Todo mês a Akasha refaz sua leitura, compara com o mês anterior e ajusta sua rotina — porque seu corpo muda.
             </p>
+
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
               {/* Esquerda: gráfico de linha V/P/K */}
