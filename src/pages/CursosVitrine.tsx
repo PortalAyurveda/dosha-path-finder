@@ -27,7 +27,6 @@ const CursosVitrine = () => {
       const { data } = await supabase
         .from("cursos")
         .select("id,slug,titulo,descricao,capa_url,ordem,preco")
-        .eq("ativo", true)
         .order("ordem", { ascending: true });
       setCursos((data as Curso[]) ?? []);
       if (user) {
