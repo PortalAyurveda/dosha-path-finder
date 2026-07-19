@@ -16,7 +16,6 @@ import {
   Sun,
   Video as VideoIcon,
   Library,
-  RefreshCw,
   Flame,
 } from "lucide-react";
 import {
