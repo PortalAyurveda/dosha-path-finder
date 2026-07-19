@@ -390,7 +390,7 @@ const MiniCaminhadaCard = () => {
   );
 };
 
-export const ClinicalThermometer = ({ doshaScores }: { doshaScores: { name: string; score: number }[] }) => {
+export const ClinicalThermometer = ({ doshaScores, variant = "default" }: { doshaScores: { name: string; score: number }[]; variant?: "default" | "compact" }) => {
   const doshaData = doshaScores.map(d => {
     const levels = DOSHA_LEVELS[d.name] || VATA_LEVELS;
     const currentLevel = getLevelIndex(d.score, levels);
@@ -398,30 +398,40 @@ export const ClinicalThermometer = ({ doshaScores }: { doshaScores: { name: stri
     return { ...d, currentLevel, colors, levels };
   });
 
+  const compact = variant === "compact";
+  const rowH = compact ? "h-5" : "h-14";
+  const yLabelH = compact ? "h-5" : "h-14";
+  const rowText = compact ? "text-[9px]" : "text-[11px]";
+  const yLabelText = compact ? "text-[10px]" : "text-xs";
+
   return (
     <div>
-      <h2 className="font-serif font-bold text-foreground text-base mb-3 text-center">Quadro Clínico</h2>
-      {/* Score summary */}
-      <div className="flex justify-center gap-6 mb-4">
-        {doshaData.map(d => (
-          <div key={d.name} className="text-center">
-            <p className="text-sm font-bold text-foreground">{d.name}</p>
-            <p className="text-2xl font-bold" style={{ color: PIE_COLORS[d.name] }}>{d.score}</p>
-            <p className="text-xs text-muted-foreground">{getLevel(d.score, d.levels)}</p>
+      {!compact && (
+        <>
+          <h2 className="font-serif font-bold text-foreground text-base mb-3 text-center">Quadro Clínico</h2>
+          {/* Score summary */}
+          <div className="flex justify-center gap-6 mb-4">
+            {doshaData.map(d => (
+              <div key={d.name} className="text-center">
+                <p className="text-sm font-bold text-foreground">{d.name}</p>
+                <p className="text-2xl font-bold" style={{ color: PIE_COLORS[d.name] }}>{d.score}</p>
+                <p className="text-xs text-muted-foreground">{getLevel(d.score, d.levels)}</p>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
+        </>
+      )}
 
       {/* Thermometer grid: [Y-axis] [Vata] [Pitta] [Kapha] */}
-      <div className="grid grid-cols-[auto_1fr_1fr_1fr] gap-x-1.5 gap-y-[3px]">
+      <div className={cn("grid grid-cols-[auto_1fr_1fr_1fr] gap-x-1.5", compact ? "gap-y-[2px]" : "gap-y-[3px]")}>
         {LEVEL_LABELS.map((label, rowIdx) => {
           const levelNum = 5 - rowIdx; // 5=Fixado, 1=Pouco
 
           return (
             <div key={label} className="contents">
               {/* Y-axis label */}
-              <div className="flex flex-col justify-center items-end pr-2 h-14">
-                <span className="text-xs font-semibold text-muted-foreground leading-none">{label}</span>
+              <div className={cn("flex flex-col justify-center items-end pr-2", yLabelH)}>
+                <span className={cn("font-semibold text-muted-foreground leading-none", yLabelText)}>{label}</span>
               </div>
 
               {/* 3 dosha columns — each with its own range inside */}
@@ -435,14 +445,16 @@ export const ClinicalThermometer = ({ doshaScores }: { doshaScores: { name: stri
                   <div
                     key={d.name}
                     className={cn(
-                      "h-14 rounded-sm transition-all flex items-center justify-center",
+                      "rounded-sm transition-all flex items-center justify-center",
+                      rowH,
                       isFilled ? "shadow-sm" : "bg-muted/20",
                       isActiveLevel && "ring-2 ring-offset-1 ring-foreground/20"
                     )}
                     style={isFilled ? { backgroundColor: bgColor } : undefined}
                   >
                     <span className={cn(
-                      "text-[11px] font-semibold",
+                      "font-semibold",
+                      rowText,
                       isFilled ? "text-foreground/80" : "text-muted-foreground/40"
                     )}>
                       {doshaLevelData.range}
@@ -456,10 +468,10 @@ export const ClinicalThermometer = ({ doshaScores }: { doshaScores: { name: stri
       </div>
 
       {/* Column headers below */}
-      <div className="grid grid-cols-[auto_1fr_1fr_1fr] gap-x-1.5 mt-1.5">
+      <div className={cn("grid grid-cols-[auto_1fr_1fr_1fr] gap-x-1.5", compact ? "mt-1" : "mt-1.5")}>
         <div />
         {doshaData.map(d => (
-          <p key={d.name} className="text-xs font-bold text-center" style={{ color: PIE_COLORS[d.name] }}>
+          <p key={d.name} className={cn("font-bold text-center", compact ? "text-[10px]" : "text-xs")} style={{ color: PIE_COLORS[d.name] }}>
             {d.name}
           </p>
         ))}
@@ -467,6 +479,7 @@ export const ClinicalThermometer = ({ doshaScores }: { doshaScores: { name: stri
     </div>
   );
 };
+
 
 // Level interpretation bullets below thermometer
 const DoshaLevelBullets = ({ doshaScores }: { doshaScores: { name: string; score: number }[] }) => {
