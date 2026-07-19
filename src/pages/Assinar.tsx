@@ -93,8 +93,8 @@ const RECEITAS = [
 const NUMEROS = [
   "2.700+ testes de dosha realizados",
   "900+ aulas no acervo",
-  "148 receitas fotografadas",
-  "Revisão do seu quadro todo mês",
+  "4.500+ alunas formadas pelo professor",
+  "15 anos de clínica Ayurveda",
 ];
 
 const FAQ = [
