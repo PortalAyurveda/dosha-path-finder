@@ -938,7 +938,7 @@ const Assinar = () => {
             >
               Perguntas comuns
             </h2>
-            <div className="space-y-2">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-x-4 md:gap-y-2 items-start">
               {FAQ.map((item, i) => {
                 const isOpen = openFaq === i;
                 return (
