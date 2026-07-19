@@ -461,6 +461,12 @@ const Assinar = () => {
           </span>
         </span>
       </span>
+      <span
+        className="block mt-2 text-xs leading-relaxed"
+        style={{ color: PRIMARY, opacity: 0.8, fontFamily: "'DM Sans', sans-serif" }}
+      >
+        Rotinas Diárias do Ayurveda: o curso do professor sobre dinacharya — 3 módulos e 11 aulas sobre os horários e hábitos que sustentam sua saúde, para assistir dentro do portal, no seu ritmo.
+      </span>
     </span>
   );
 
