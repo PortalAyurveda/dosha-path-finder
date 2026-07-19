@@ -702,10 +702,44 @@ const Assinar = () => {
                       Para alguém com Vata e Pitta altos eu tenderia a preferir tomar junto de algo morno e mais nutritivo, como depois do jantar ou perto da noite, porque o magnésio costuma acalmar o sistema nervoso. Como você está com secura e sensibilidade, eu evitaria tomar de estômago vazio.
                     </Akasha>
                   </Card>
+
+                  <Card label="Ela ensina no seu prato">
+                    <Person>
+                      Acrescentar inhame para fazer o creme de milho já ajuda?
+                    </Person>
+                    <Akasha>
+                      Sim, ajuda bastante. O inhame traz mais corpo, maciez e densidade, e isso conversa melhor com Vata do que um creme só de milho, mais seco. Se ele estiver bem cozido e virar um creme liso, já melhora muito a qualidade do prato, principalmente se entrar com ghee e especiarias suaves.
+                    </Akasha>
+                  </Card>
+
+                  <Card label="Ela conhece as especiarias">
+                    <Person>
+                      Quais as especiarias induzem sono reparador?
+                    </Person>
+                    <Akasha>
+                      Para sono reparador, as mais citadas são noz-moscada, cardamomo, cravo, canela, erva-doce e um toque de gengibre. Em geral, elas entram melhor em leite morno ou numa bebida quente e suave, porque ajudam a aterrar o Vata sem estimular demais. Só cuidado com a canela e o gengibre em excesso, porque podem aquecer demais.
+                    </Akasha>
+                  </Card>
+
+                  <Card label="Ela cuida do seu sono">
+                    <Person>
+                      Indique um chá para dificuldade de manter o sono. Eu durmo cedo, mas desperto às 3h.
+                    </Person>
+                    <Akasha>
+                      Para acordar às 3h, o que costuma ajudar é um leite morno com especiarias, metade leite e metade água, com um pouco de ghee e um toque de açúcar mascavo. Na linguagem ayurvédica, isso aterra o Vata e favorece sono mais profundo; evite chá preto e qualquer estimulante à noite.
+                    </Akasha>
+                  </Card>
                 </>
               );
             })()}
           </div>
+
+          <p
+            className="mt-10 text-center text-base md:text-lg max-w-3xl mx-auto leading-relaxed"
+            style={{ color: PRIMARY, opacity: 0.85, fontFamily: "'DM Sans', sans-serif" }}
+          >
+            Essa é a Akasha — a inteligência do portal, treinada no acervo completo do professor Edson. Ela conhece o seu dosha, lembra das suas conversas e está disponível a qualquer hora, inclusive de madrugada. Ela orienta seu dia a dia e caminha junto com o seu médico — nunca no lugar dele.
+          </p>
         </div>
       </section>
 
