@@ -918,41 +918,6 @@ const Assinar = () => {
           </div>
         </section>
 
-        {/* 6) QUEM TE GUIA */}
-        <section className="bg-background">
-          <div className="max-w-[1040px] mx-auto px-4 sm:px-6 py-10 md:py-14">
-            <div className="grid grid-cols-1 md:grid-cols-[180px_1fr] gap-6 md:gap-10 items-center">
-              <div className="mx-auto md:mx-0">
-                <div
-                  className="w-36 h-36 md:w-44 md:h-44 rounded-full overflow-hidden shadow-md border-4"
-                  style={{ borderColor: `${SALMAO}33` }}
-                >
-                  <img
-                    src={PROFESSOR_PHOTO}
-                    alt="Professor Edson Osorio"
-                    loading="lazy"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              </div>
-              <div className="text-center md:text-left">
-                <p className="text-[11px] uppercase tracking-wider font-bold mb-1.5" style={{ color: SALMAO }}>
-                  Quem te guia
-                </p>
-                <h2 className="font-serif italic font-bold text-xl md:text-2xl mb-2" style={{ color: PRIMARY }}>
-                  Edson Osorio
-                </h2>
-                <p
-                  className="text-sm md:text-base leading-relaxed"
-                  style={{ color: PRIMARY, opacity: 0.85, fontFamily: "'DM Sans', sans-serif" }}
-                >
-                  Terapeuta Ayurveda, fundador do Portal. 15 anos de clínica, 13 de sala de aula, mais de 4.500 alunos formados. Tudo no Portal nasce do que funciona na clínica dele, adaptado ao Brasil.
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
         {/* 7) NÚMEROS */}
         <section style={{ background: PRIMARY }}>
           <div className="max-w-[1040px] mx-auto px-4 sm:px-6 py-6 md:py-7">
