@@ -515,11 +515,29 @@ const Assinar = () => {
         </div>
       </section>
 
-      {/* 2) O QUE VOCÊ RECEBE */}
-      <section className="bg-background">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-16 md:py-20">
+      {/* 2) O QUE É O PORTAL AYURVEDA */}
+      <section className="bg-background border-b border-border/40">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 py-12 md:py-16 text-center">
           <h2
-            className="font-serif italic font-bold text-3xl md:text-4xl text-center mb-12"
+            className="font-serif italic font-bold text-2xl md:text-3xl mb-5"
+            style={{ color: PRIMARY }}
+          >
+            O que é o Portal Ayurveda
+          </h2>
+          <p
+            className="text-base md:text-lg leading-relaxed"
+            style={{ color: PRIMARY, opacity: 0.88, fontFamily: "'DM Sans', sans-serif" }}
+          >
+            O Portal Ayurveda nasceu da clínica do professor Edson Osorío para um propósito simples: transformar o Ayurveda em cuidado diário, prático e brasileiro. Aqui, tudo começa pelo seu teste de dosha gratuito — a partir dele, o portal inteiro se molda a você: sua rotina de alimentação e hábitos, os conteúdos que aparecem, as receitas, a Akasha. Mais de 2.700 pessoas já fizeram o teste, e mais de 4.500 alunas já se formaram nos cursos do professor.
+          </p>
+        </div>
+      </section>
+
+      {/* 3) O QUE VOCÊ RECEBE */}
+      <section className="bg-background">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10 md:py-12">
+          <h2
+            className="font-serif italic font-bold text-2xl md:text-3xl text-center mb-8"
             style={{ color: PRIMARY }}
           >
             O que você recebe
