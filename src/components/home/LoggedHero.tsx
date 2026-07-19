@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import * as LucideIcons from "lucide-react";
 import { Flame, Award, ChefHat, ArrowRight, Check, Leaf } from "lucide-react";
+import { getIconeLucide } from "@/lib/iconesLucide";
 import { lazy, Suspense } from "react";
 
 const DoshaPieChart = lazy(() => import("@/components/charts/DoshaPieChart"));
