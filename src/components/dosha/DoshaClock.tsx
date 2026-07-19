@@ -2,7 +2,11 @@ interface DoshaClockProps {
   variant?: "neutral" | "vata" | "pitta" | "kapha";
   centerLabel?: string;
   centerValue?: string;
+  hideCenter?: boolean;
+  hiddenMarkers?: string[];
+  compact?: boolean;
 }
+
 
 const gradients = {
   neutral: `conic-gradient(
