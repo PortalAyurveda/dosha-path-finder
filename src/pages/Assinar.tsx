@@ -712,7 +712,7 @@ const Assinar = () => {
                 <p className="font-serif font-bold text-[15px] mb-3" style={{ color: PRIMARY }}>
                   Vata: 48 → 33 em 4 meses
                 </p>
-                <div className="h-[180px] w-full">
+                <div className="h-[140px] w-full">
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart
                       data={[
