@@ -2,7 +2,11 @@ interface DoshaClockProps {
   variant?: "neutral" | "vata" | "pitta" | "kapha";
   centerLabel?: string;
   centerValue?: string;
+  hideCenter?: boolean;
+  hiddenMarkers?: string[];
+  compact?: boolean;
 }
+
 
 const gradients = {
   neutral: `conic-gradient(
@@ -85,19 +89,33 @@ const markerHighlightBorder: Record<string, string> = {
   kapha: "border-[1.5px] border-kapha",
 };
 
-const DoshaClock = ({ variant = "neutral", centerLabel = "Ciclo", centerValue = "24h" }: DoshaClockProps) => {
+const DoshaClock = ({
+  variant = "neutral",
+  centerLabel = "Ciclo",
+  centerValue = "24h",
+  hideCenter = false,
+  hiddenMarkers = [],
+  compact = false,
+}: DoshaClockProps) => {
   const highlighted = highlightedMarkers[variant];
   const highlightedDoshas = highlightedLabels[variant];
+
+  const markerTxt = compact ? "text-[9px] px-1.5 py-0" : "text-xs px-2 py-0.5";
+  const doshaHighlightTxt = compact ? "text-white text-[11px] drop-shadow-md" : "text-white text-base drop-shadow-md";
+  const doshaDimTxt = compact ? "text-white/60 text-[9px]" : "text-white/60 text-xs";
+  const centerLabelTxt = compact ? "text-[8px] mb-0.5" : "text-[10px] mb-1";
+  const centerValueTxt = compact ? "text-xl" : "text-4xl";
 
   return (
     <div className="relative w-full max-w-[440px] aspect-square mx-auto">
       {/* Hour markers */}
       {markers.map((m) => {
+        if (hiddenMarkers.includes(m.label)) return null;
         const isHighlighted = variant === "neutral" || highlighted.includes(m.label);
         return (
           <div
             key={m.label}
-            className={`absolute font-sans font-bold text-primary bg-white px-2 py-0.5 rounded-md text-xs z-20 shadow-sm ${m.className} ${
+            className={`absolute font-sans font-bold text-primary bg-white rounded-md z-20 shadow-sm ${markerTxt} ${m.className} ${
               isHighlighted
                 ? (variant !== "neutral" ? markerHighlightBorder[variant] : "")
                 : "opacity-40 grayscale"
@@ -129,9 +147,7 @@ const DoshaClock = ({ variant = "neutral", centerLabel = "Ciclo", centerValue = 
             <div
               key={i}
               className={`absolute font-sans font-extrabold uppercase tracking-wide z-[15] ${dl.className} ${
-                isHighlighted
-                  ? "text-white text-base drop-shadow-md"
-                  : "text-white/60 text-xs"
+                isHighlighted ? doshaHighlightTxt : doshaDimTxt
               }`}
             >
               {dl.label}
@@ -140,17 +156,20 @@ const DoshaClock = ({ variant = "neutral", centerLabel = "Ciclo", centerValue = 
         })}
 
         {/* Center */}
-        <div className="w-[46%] h-[46%] bg-surface-sun rounded-full flex flex-col items-center justify-center text-center z-10 border-2 border-white shadow-inner">
-          <span className="font-sans text-muted-foreground text-[10px] font-bold uppercase tracking-[0.2em] mb-1">
-            {centerLabel}
-          </span>
-          <span className="font-serif italic font-bold text-primary text-4xl tracking-tighter">
-            {centerValue}
-          </span>
-        </div>
+        {!hideCenter && (
+          <div className="w-[46%] h-[46%] bg-surface-sun rounded-full flex flex-col items-center justify-center text-center z-10 border-2 border-white shadow-inner">
+            <span className={`font-sans text-muted-foreground font-bold uppercase tracking-[0.2em] ${centerLabelTxt}`}>
+              {centerLabel}
+            </span>
+            <span className={`font-serif italic font-bold text-primary tracking-tighter ${centerValueTxt}`}>
+              {centerValue}
+            </span>
+          </div>
+        )}
       </div>
     </div>
   );
 };
 
 export default DoshaClock;
+

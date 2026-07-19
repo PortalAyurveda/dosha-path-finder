@@ -1016,9 +1016,10 @@ const Assinar = () => {
                 className="rounded-2xl border p-5 bg-card shadow-sm flex flex-col items-center text-center transition-shadow hover:shadow-md"
                 style={{ borderColor: "rgba(53,47,84,0.14)" }}
               >
-                <div className="w-[210px] px-6 py-2">
-                  <DoshaClock variant="neutral" centerLabel="Ciclo" centerValue="24h" />
+                <div className="w-[190px] px-5 py-2">
+                  <DoshaClock variant="neutral" compact hideCenter hiddenMarkers={["00h", "12h"]} />
                 </div>
+
 
                 <p className="font-serif font-bold text-[15px] mt-4" style={{ color: PRIMARY }}>
                   O Relógio dos Doshas
