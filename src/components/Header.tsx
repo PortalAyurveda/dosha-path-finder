@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { ArrowLeft, Menu, LogIn, LogOut, ShoppingBag, ShoppingCart, Home, CalendarHeart, ChevronDown, Search } from "lucide-react";
+import { ArrowLeft, Menu, LogIn, LogOut, ShoppingBag, ShoppingCart, Home, CalendarHeart, ChevronDown, Search, BookOpen } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import {
@@ -80,6 +81,8 @@ const HeaderDoshaPie = ({ vata, pitta, kapha, size = 22 }: { vata: number; pitta
 const Header = () => {
   const [open, setOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [temCursos, setTemCursos] = useState(false);
+
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -88,6 +91,26 @@ const Header = () => {
   const { immersive } = useImmersive();
   const { aluno: escolaAluno } = useEscolaAluno();
 
+
+  useEffect(() => {
+    let cancelled = false;
+    if (!user) {
+      setTemCursos(false);
+      return;
+    }
+    (async () => {
+      const { data } = await supabase
+        .from("curso_matriculas")
+        .select("id")
+        .eq("user_id", user.id)
+        .eq("status", "ativa")
+        .limit(1);
+      if (!cancelled) setTemCursos((data ?? []).length > 0);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [user]);
 
   const isSamkhya = location.pathname.startsWith("/samkhya");
 
@@ -497,6 +520,13 @@ const Header = () => {
                 <DropdownMenuItem asChild>
                   <Link to="/minha-rotina">Minha rotina</Link>
                 </DropdownMenuItem>
+                {temCursos && (
+                  <DropdownMenuItem asChild>
+                    <Link to="/meu-perfil?section=cursos">
+                      <BookOpen className="h-4 w-4 mr-2" /> Meus cursos
+                    </Link>
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuItem asChild>
                   <Link to="/meu-perfil">Minha conta</Link>
                 </DropdownMenuItem>

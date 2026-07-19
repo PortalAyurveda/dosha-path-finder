@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, Navigate, useNavigate, useParams } from "react-router-dom";
+
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/contexts/UserContext";
@@ -135,6 +136,12 @@ const CursoLanding = () => {
       setComprando(false);
     }
   };
+
+  // A landing de marketing do Rotinas Diárias ainda não foi construída — enquanto
+  // isso, quem cai aqui vai direto para o player (que trata acesso/gate).
+  if (slug === "rotinas-diarias") {
+    return <Navigate to="/cursos/rotinas-diarias/estudar" replace />;
+  }
 
   if (loading) {
     return (

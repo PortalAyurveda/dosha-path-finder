@@ -65,6 +65,7 @@ const CursosVitrine = () => {
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {cursos.map((c) => {
               const isRotinas = c.slug === "rotinas-diarias";
+              const jaTem = matriculadas.has(c.id);
               return (
                 <article
                   key={c.id}
@@ -80,14 +81,20 @@ const CursosVitrine = () => {
                         loading="lazy"
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                       />
-                      {isRotinas && (
+                      {jaTem ? (
+                        <span
+                          className="absolute top-3 left-3 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full text-white shadow-md bg-primary"
+                        >
+                          Seu curso ✓
+                        </span>
+                      ) : isRotinas ? (
                         <span
                           className="absolute top-3 left-3 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full text-white shadow-md"
                           style={{ backgroundColor: "#B8892E" }}
                         >
                           Incluso no Premium Anual
                         </span>
-                      )}
+                      ) : null}
                     </div>
                   ) : (
                     <div className="aspect-[4/3] w-full bg-gradient-to-br from-primary/20 to-secondary/20" />
@@ -99,7 +106,11 @@ const CursosVitrine = () => {
                         {c.descricao}
                       </p>
                     )}
-                    {isRotinas ? (
+                    {jaTem ? (
+                      <Button asChild className="w-full">
+                        <Link to={`/cursos/${c.slug}/estudar`}>Acessar curso</Link>
+                      </Button>
+                    ) : isRotinas ? (
                       <Button asChild className="w-full" style={{ backgroundColor: "#B8892E" }}>
                         <Link to="/assinar">Ver planos</Link>
                       </Button>
