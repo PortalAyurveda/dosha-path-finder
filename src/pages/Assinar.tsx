@@ -494,30 +494,39 @@ const Assinar = () => {
                 className="hidden md:block absolute top-6 left-[10%] right-[10%] h-px"
                 style={{ background: `${SALMAO}44` }}
               />
-              {JORNADA.map(({ Icon, titulo, texto, destaque }, i) => (
+              {JORNADA.map(({ Icon, numero, titulo, texto, destaque }, i) => (
                 <li key={i} className="relative flex flex-col items-center text-center">
-                  <div
-                    className="relative z-10 w-12 h-12 rounded-full flex items-center justify-center mb-3 border-2"
-                    style={{
-                      background: destaque ? SALMAO : "#fff",
-                      borderColor: destaque ? SALMAO : `${SALMAO}55`,
-                      boxShadow: destaque ? `0 6px 18px -6px ${SALMAO}88` : "none",
-                    }}
-                  >
-                    <Icon
-                      className="w-5 h-5"
-                      style={{ color: destaque ? "#fff" : SALMAO }}
-                      strokeWidth={1.8}
-                    />
-                  </div>
                   {destaque && (
                     <p
-                      className="text-[10px] uppercase tracking-wider font-bold mb-1"
+                      className="text-[10px] uppercase tracking-wider font-bold mb-2"
                       style={{ color: SALMAO, fontFamily: "'DM Sans', sans-serif" }}
                     >
                       Onde o Portal começa
                     </p>
                   )}
+                  <div
+                    className="relative z-10 w-12 h-12 rounded-full flex items-center justify-center mb-3 border-2"
+                    style={{
+                      background: destaque ? SALMAO : "#fff",
+                      borderColor: numero == null ? "rgba(53,47,84,0.20)" : (destaque ? SALMAO : `${SALMAO}55`),
+                      boxShadow: destaque ? `0 6px 18px -6px ${SALMAO}88` : "none",
+                    }}
+                  >
+                    {numero != null ? (
+                      <span
+                        className="font-serif italic font-bold text-lg leading-none"
+                        style={{ color: destaque ? "#fff" : SALMAO }}
+                      >
+                        {numero}
+                      </span>
+                    ) : (
+                      <Icon
+                        className="w-5 h-5"
+                        style={{ color: "rgba(53,47,84,0.45)" }}
+                        strokeWidth={1.8}
+                      />
+                    )}
+                  </div>
                   <p
                     className="font-serif font-bold text-sm md:text-[15px] leading-snug mb-1"
                     style={{ color: PRIMARY }}
@@ -535,6 +544,7 @@ const Assinar = () => {
             </ol>
           </div>
         </section>
+
 
         {/* 3) TUDO COMEÇA PELO SEU RETRATO — painel único */}
         <section style={{ background: SURFACE }}>
