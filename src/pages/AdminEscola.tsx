@@ -1383,47 +1383,11 @@ const EditarModulo = ({
         </CardContent>
       </Card>
 
-      {/* 3. Autoavaliação */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg font-heading italic flex items-center gap-2">
-            <FileText className="w-4 h-4" /> Autoavaliação (perguntas)
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <p className="text-xs text-muted-foreground">
-            Estas são perguntas de reflexão. As respostas dos alunos são privadas — você não as vê. Aqui você só define as perguntas.
-          </p>
-          {loading ? (
-            <Skeleton className="h-24 w-full" />
-          ) : perguntas.length === 0 ? (
-            <p className="text-sm text-muted-foreground">Nenhuma pergunta cadastrada.</p>
-          ) : (
-            <div className="space-y-2">
-              {perguntas.map((p, idx) => (
-                <div key={p.id} className="rounded-lg border border-border p-3 bg-card flex items-start gap-2">
-                  <span className="text-sm text-muted-foreground mt-2 w-6 text-right tabular-nums">{idx + 1}.</span>
-                  <Textarea
-                    value={p.pergunta}
-                    onChange={(e) => updatePergunta(p.id, { pergunta: e.target.value })}
-                    onBlur={() => persistPergunta(p)}
-                    rows={2}
-                    className="flex-1"
-                  />
-                  <Button variant="ghost" size="sm" onClick={() => removePergunta(p.id)}>
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
-                </div>
-              ))}
-            </div>
-          )}
-          <div>
-            <Button size="sm" variant="outline" onClick={addPergunta}>
-              <Plus className="w-4 h-4" /> adicionar pergunta
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+      {/* 3. Autoavaliação (quiz) */}
+      <QuizEditor moduloId={modulo.id} onChange={onChange} />
+
+      {/* 4. Respostas da turma */}
+      <RespostasTurma moduloId={modulo.id} turmaId={modulo.turma_id} />
     </div>
   );
 };
