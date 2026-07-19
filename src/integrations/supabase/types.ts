@@ -4879,138 +4879,6 @@ export type Database = {
         }
         Relationships: []
       }
-      rotina_nuggets_backup_20260617: {
-        Row: {
-          categoria: string | null
-          chunk_index: number | null
-          created_at: string | null
-          icone_lucide: string | null
-          id: string | null
-          kapha: number | null
-          nugget_json: Json | null
-          periodo: string | null
-          pitta: number | null
-          revisado: boolean | null
-          score: number | null
-          subcategoria: string | null
-          tags: string[] | null
-          tipo: string | null
-          titulo: string | null
-          uso_externo: boolean | null
-          vata: number | null
-          video_id: string | null
-          video_timestamp: string | null
-        }
-        Insert: {
-          categoria?: string | null
-          chunk_index?: number | null
-          created_at?: string | null
-          icone_lucide?: string | null
-          id?: string | null
-          kapha?: number | null
-          nugget_json?: Json | null
-          periodo?: string | null
-          pitta?: number | null
-          revisado?: boolean | null
-          score?: number | null
-          subcategoria?: string | null
-          tags?: string[] | null
-          tipo?: string | null
-          titulo?: string | null
-          uso_externo?: boolean | null
-          vata?: number | null
-          video_id?: string | null
-          video_timestamp?: string | null
-        }
-        Update: {
-          categoria?: string | null
-          chunk_index?: number | null
-          created_at?: string | null
-          icone_lucide?: string | null
-          id?: string | null
-          kapha?: number | null
-          nugget_json?: Json | null
-          periodo?: string | null
-          pitta?: number | null
-          revisado?: boolean | null
-          score?: number | null
-          subcategoria?: string | null
-          tags?: string[] | null
-          tipo?: string | null
-          titulo?: string | null
-          uso_externo?: boolean | null
-          vata?: number | null
-          video_id?: string | null
-          video_timestamp?: string | null
-        }
-        Relationships: []
-      }
-      rotina_nuggets_backup_jun17: {
-        Row: {
-          categoria: string | null
-          chunk_index: number | null
-          created_at: string | null
-          icone_lucide: string | null
-          id: string | null
-          kapha: number | null
-          nugget_json: Json | null
-          periodo: string | null
-          pitta: number | null
-          revisado: boolean | null
-          score: number | null
-          subcategoria: string | null
-          tags: string[] | null
-          tipo: string | null
-          titulo: string | null
-          uso_externo: boolean | null
-          vata: number | null
-          video_id: string | null
-          video_timestamp: string | null
-        }
-        Insert: {
-          categoria?: string | null
-          chunk_index?: number | null
-          created_at?: string | null
-          icone_lucide?: string | null
-          id?: string | null
-          kapha?: number | null
-          nugget_json?: Json | null
-          periodo?: string | null
-          pitta?: number | null
-          revisado?: boolean | null
-          score?: number | null
-          subcategoria?: string | null
-          tags?: string[] | null
-          tipo?: string | null
-          titulo?: string | null
-          uso_externo?: boolean | null
-          vata?: number | null
-          video_id?: string | null
-          video_timestamp?: string | null
-        }
-        Update: {
-          categoria?: string | null
-          chunk_index?: number | null
-          created_at?: string | null
-          icone_lucide?: string | null
-          id?: string | null
-          kapha?: number | null
-          nugget_json?: Json | null
-          periodo?: string | null
-          pitta?: number | null
-          revisado?: boolean | null
-          score?: number | null
-          subcategoria?: string | null
-          tags?: string[] | null
-          tipo?: string | null
-          titulo?: string | null
-          uso_externo?: boolean | null
-          vata?: number | null
-          video_id?: string | null
-          video_timestamp?: string | null
-        }
-        Relationships: []
-      }
       rotina_pontos: {
         Row: {
           created_at: string
@@ -6295,6 +6163,16 @@ export type Database = {
           sintoma: string
         }[]
       }
+      minha_rotina_por_teste: {
+        Args: { p_teste_id: string }
+        Returns: {
+          dia: number
+          id: string
+          nugget_id: string
+          praticado: boolean
+          slot: string
+        }[]
+      }
       owns_rotina: { Args: { p_test_id: string }; Returns: boolean }
       prateleira_samkhya: {
         Args: { p_dosha?: string }
@@ -6350,6 +6228,31 @@ export type Database = {
       restore_dosha_test_version: {
         Args: { _version_number: number }
         Returns: undefined
+      }
+      resultado_teste: {
+        Args: { p_idpublico: string }
+        Returns: {
+          agniPrincipal: string
+          agravKaphaTags: string
+          agravPittaTags: string
+          agravVataTags: string
+          altura: string
+          cidade: string
+          conhecimentoAyurveda: string
+          created_at: string
+          doshaprincipal: string
+          email: string
+          estado: string
+          id: string
+          idade: number
+          imc: number
+          kaphascore: number
+          nome: string
+          pais: string
+          peso: string
+          pittascore: number
+          vatascore: number
+        }[]
       }
       rpg_admin_select: { Args: { _table: string }; Returns: Json }
       rpg_play: { Args: { _args?: Json; _fn: string }; Returns: Json }
