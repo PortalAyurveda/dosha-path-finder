@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useSearchParams } from "react-router-dom";
 import { getIconeLucide } from "@/lib/iconesLucide";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -193,27 +193,9 @@ const ApostilaExtraLink = ({
   );
 };
 
-const MaterialBlock = ({ modulo, theme }: { modulo: Modulo; theme: Theme }) => {
-  const [apostilaUrl, setApostilaUrl] = useState<string | null>(null);
+const AulasBlock = ({ modulo, theme }: { modulo: Modulo; theme: Theme }) => {
   const [extras, setExtras] = useState<MaterialExtra[]>([]);
   const videoId = modulo.video_url ? extractYoutubeId(modulo.video_url) : null;
-
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      if (!modulo.apostila_url) {
-        setApostilaUrl(null);
-        return;
-      }
-      const { data } = await supabase.storage
-        .from(BUCKET)
-        .createSignedUrl(modulo.apostila_url, 60 * 60);
-      if (!cancelled) setApostilaUrl(data?.signedUrl ?? null);
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [modulo.apostila_url]);
 
   useEffect(() => {
     let cancelled = false;
@@ -222,7 +204,7 @@ const MaterialBlock = ({ modulo, theme }: { modulo: Modulo; theme: Theme }) => {
         .from("escola_modulo_recursos")
         .select("id,tipo,titulo,url")
         .eq("modulo_id", modulo.id)
-        .in("tipo", ["material_video", "material_zoom", "material_apostila"])
+        .in("tipo", ["material_video", "material_zoom"])
         .order("ordem", { ascending: true });
       if (!cancelled) setExtras((data ?? []) as MaterialExtra[]);
     })();
@@ -233,15 +215,10 @@ const MaterialBlock = ({ modulo, theme }: { modulo: Modulo; theme: Theme }) => {
 
   const videosExtra = extras.filter((e) => e.tipo === "material_video");
   const zoomsExtra = extras.filter((e) => e.tipo === "material_zoom");
-  const apostilasExtra = extras.filter((e) => e.tipo === "material_apostila");
 
-  const hasAny =
-    modulo.video_url ||
-    modulo.apostila_url ||
-    modulo.slides_url ||
-    extras.length > 0;
+  const hasAny = modulo.video_url || videosExtra.length > 0 || zoomsExtra.length > 0;
   if (!hasAny) {
-    return <p className="text-sm text-muted-foreground italic">Ainda não há material aqui.</p>;
+    return <p className="text-sm text-muted-foreground italic">Ainda não há aulas publicadas.</p>;
   }
 
   return (
@@ -326,50 +303,118 @@ const MaterialBlock = ({ modulo, theme }: { modulo: Modulo; theme: Theme }) => {
         </div>
       )}
 
-      <div className="flex flex-wrap gap-3">
-        {modulo.apostila_url && (
-          <a
-            href={apostilaUrl ?? "#"}
-            target="_blank"
-            rel="noreferrer"
-            className={`inline-flex items-center gap-2 text-sm px-4 h-11 rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm border bg-white ${
-              apostilaUrl ? "" : "opacity-50 pointer-events-none"
-            }`}
-            style={{ borderColor: `${theme.primaryColor}55`, color: theme.darkColor }}
-          >
-            <FileText className="w-4 h-4" style={{ color: theme.primaryColor }} />
-            Apostila <Download className="w-3.5 h-3.5" />
-          </a>
-        )}
-        {apostilasExtra.map((a) =>
-          a.url ? <ApostilaExtraLink key={a.id} item={a} theme={theme} /> : null
-        )}
-        {modulo.slides_url && (
-          <a
-            href={modulo.slides_url}
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex items-center gap-2 text-sm px-4 h-11 rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm border bg-white"
-            style={{ borderColor: `${theme.primaryColor}55`, color: theme.darkColor }}
-          >
-            <Link2 className="w-4 h-4" style={{ color: theme.primaryColor }} /> Slides
-          </a>
-        )}
-        {zoomsExtra.map((z) =>
-          z.url ? (
+      {zoomsExtra.length > 0 && (
+        <div className="flex flex-wrap gap-3">
+          {zoomsExtra.map((z) =>
+            z.url ? (
+              <a
+                key={z.id}
+                href={z.url}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-2 text-sm px-4 h-11 rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm border bg-white"
+                style={{ borderColor: `${theme.primaryColor}55`, color: theme.darkColor }}
+              >
+                <Link2 className="w-4 h-4" style={{ color: theme.primaryColor }} /> {z.titulo}
+              </a>
+            ) : null
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
+
+const MaterialPrevioBlock = ({ modulo, theme }: { modulo: Modulo; theme: Theme }) => {
+  const [apostilaUrl, setApostilaUrl] = useState<string | null>(null);
+  const [extras, setExtras] = useState<MaterialExtra[]>([]);
+  const [videos, setVideos] = useState<Recurso[]>([]);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      if (!modulo.apostila_url) {
+        setApostilaUrl(null);
+        return;
+      }
+      const { data } = await supabase.storage
+        .from(BUCKET)
+        .createSignedUrl(modulo.apostila_url, 60 * 60);
+      if (!cancelled) setApostilaUrl(data?.signedUrl ?? null);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [modulo.apostila_url]);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const [{ data: extrasData }, { data: videosData }] = await Promise.all([
+        supabase
+          .from("escola_modulo_recursos")
+          .select("id,tipo,titulo,url")
+          .eq("modulo_id", modulo.id)
+          .eq("tipo", "material_apostila")
+          .order("ordem", { ascending: true }),
+        supabase
+          .from("escola_modulo_recursos")
+          .select("*")
+          .eq("modulo_id", modulo.id)
+          .eq("tipo", "video_recomendado")
+          .order("ordem", { ascending: true }),
+      ]);
+      if (cancelled) return;
+      setExtras((extrasData ?? []) as MaterialExtra[]);
+      setVideos((videosData ?? []) as Recurso[]);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [modulo.id]);
+
+  const hasLinks = !!modulo.apostila_url || !!modulo.slides_url || extras.length > 0;
+  const hasAny = hasLinks || videos.length > 0;
+
+  if (!hasAny) {
+    return <p className="text-sm text-muted-foreground italic">Ainda não há material prévio.</p>;
+  }
+
+  return (
+    <div className="space-y-6">
+      {hasLinks && (
+        <div className="flex flex-wrap gap-3">
+          {modulo.apostila_url && (
             <a
-              key={z.id}
-              href={z.url}
+              href={apostilaUrl ?? "#"}
+              target="_blank"
+              rel="noreferrer"
+              className={`inline-flex items-center gap-2 text-sm px-4 h-11 rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm border bg-white ${
+                apostilaUrl ? "" : "opacity-50 pointer-events-none"
+              }`}
+              style={{ borderColor: `${theme.primaryColor}55`, color: theme.darkColor }}
+            >
+              <FileText className="w-4 h-4" style={{ color: theme.primaryColor }} />
+              Apostila <Download className="w-3.5 h-3.5" />
+            </a>
+          )}
+          {extras.map((a) =>
+            a.url ? <ApostilaExtraLink key={a.id} item={a} theme={theme} /> : null
+          )}
+          {modulo.slides_url && (
+            <a
+              href={modulo.slides_url}
               target="_blank"
               rel="noreferrer"
               className="inline-flex items-center gap-2 text-sm px-4 h-11 rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm border bg-white"
               style={{ borderColor: `${theme.primaryColor}55`, color: theme.darkColor }}
             >
-              <Link2 className="w-4 h-4" style={{ color: theme.primaryColor }} /> {z.titulo}
+              <Link2 className="w-4 h-4" style={{ color: theme.primaryColor }} /> Slides
             </a>
-          ) : null
-        )}
-      </div>
+          )}
+        </div>
+      )}
+      <VideosRecomendadosBlock recursos={videos} theme={theme} />
     </div>
   );
 };
@@ -431,7 +476,7 @@ const VideosRecomendadosBlock = ({ recursos, theme }: { recursos: Recurso[]; the
   );
 };
 
-const RecursosBlock = ({ moduloId, theme }: { moduloId: string; theme: Theme }) => {
+const RotinaExtrasBlock = ({ moduloId, theme }: { moduloId: string; theme: Theme }) => {
   const [recursos, setRecursos] = useState<Recurso[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -442,19 +487,19 @@ const RecursosBlock = ({ moduloId, theme }: { moduloId: string; theme: Theme }) 
         .from("escola_modulo_recursos")
         .select("*")
         .eq("modulo_id", moduloId)
+        .in("tipo", RECURSO_GROUPS.map((g) => g.tipo))
         .order("ordem", { ascending: true });
       setRecursos((data ?? []) as Recurso[]);
       setLoading(false);
     })();
   }, [moduloId]);
 
-  if (loading) return <Skeleton className="h-32 w-full" />;
-
-  const videos = recursos.filter((r) => r.tipo === "video_recomendado");
+  if (loading) return <Skeleton className="h-24 w-full" />;
+  const hasAny = RECURSO_GROUPS.some((g) => recursos.some((r) => r.tipo === g.tipo));
+  if (!hasAny) return null;
 
   return (
     <div className="space-y-8">
-      <VideosRecomendadosBlock recursos={videos} theme={theme} />
       {RECURSO_GROUPS.map((g) => {
         const itens = recursos.filter((r) => r.tipo === g.tipo);
         if (itens.length === 0) return null;
@@ -500,128 +545,6 @@ const RecursosBlock = ({ moduloId, theme }: { moduloId: string; theme: Theme }) 
   );
 };
 
-const AutoavaliacaoBlock = ({
-  moduloId,
-  alunoId,
-  theme,
-}: {
-  moduloId: string;
-  alunoId: string;
-  theme: Theme;
-}) => {
-  const [perguntas, setPerguntas] = useState<Pergunta[]>([]);
-  const [respostas, setRespostas] = useState<Record<string, Resposta | null>>({});
-  const [drafts, setDrafts] = useState<Record<string, string>>({});
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState<Record<string, boolean>>({});
-
-  const load = useCallback(async () => {
-    setLoading(true);
-    const { data: pData } = await supabase
-      .from("escola_avaliacao_perguntas")
-      .select("id,pergunta,ordem")
-      .eq("modulo_id", moduloId)
-      .order("ordem", { ascending: true });
-    const perg = (pData ?? []) as Pergunta[];
-    setPerguntas(perg);
-
-    if (perg.length > 0) {
-      const ids = perg.map((p) => p.id);
-      const { data: rData } = await supabase
-        .from("escola_avaliacao_respostas")
-        .select("id,pergunta_id,resposta")
-        .eq("aluno_id", alunoId)
-        .in("pergunta_id", ids);
-      const map: Record<string, Resposta | null> = {};
-      const dmap: Record<string, string> = {};
-      perg.forEach((p) => {
-        const r = (rData ?? []).find((x: any) => x.pergunta_id === p.id) as Resposta | undefined;
-        map[p.id] = r ?? null;
-        dmap[p.id] = r?.resposta ?? "";
-      });
-      setRespostas(map);
-      setDrafts(dmap);
-    }
-    setLoading(false);
-  }, [moduloId, alunoId]);
-
-  useEffect(() => {
-    load();
-  }, [load]);
-
-  const salvar = async (perguntaId: string) => {
-    setSaving((s) => ({ ...s, [perguntaId]: true }));
-    const texto = drafts[perguntaId] ?? "";
-    const existente = respostas[perguntaId];
-    let error: any = null;
-    if (existente) {
-      const r = await supabase
-        .from("escola_avaliacao_respostas")
-        .update({ resposta: texto })
-        .eq("id", existente.id);
-      error = r.error;
-    } else {
-      const r = await supabase
-        .from("escola_avaliacao_respostas")
-        .insert({ aluno_id: alunoId, pergunta_id: perguntaId, resposta: texto })
-        .select("id,pergunta_id,resposta")
-        .maybeSingle();
-      error = r.error;
-      if (!error && r.data) {
-        setRespostas((m) => ({ ...m, [perguntaId]: r.data as Resposta }));
-      }
-    }
-    setSaving((s) => ({ ...s, [perguntaId]: false }));
-    if (error) toast({ title: "Erro ao salvar", description: error.message });
-    else toast({ title: "Resposta salva" });
-  };
-
-  if (loading) return <Skeleton className="h-32 w-full" />;
-  if (perguntas.length === 0) {
-    return (
-      <p className="text-sm text-muted-foreground italic">
-        Ainda não há perguntas de autoavaliação para este módulo.
-      </p>
-    );
-  }
-
-  return (
-    <div className="space-y-4">
-      <p className="text-xs text-muted-foreground italic">
-        Suas respostas são privadas e servem só para sua reflexão. Não há nota nem correção.
-      </p>
-      {perguntas.map((p, idx) => (
-        <div
-          key={p.id}
-          className="bg-white rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm border p-4 space-y-2"
-          style={{ borderColor: `${theme.primaryColor}22` }}
-        >
-          <p className="font-serif font-bold text-sm" style={{ color: theme.darkColor }}>
-            {idx + 1}. {p.pergunta}
-          </p>
-          <Textarea
-            value={drafts[p.id] ?? ""}
-            onChange={(e) => setDrafts((d) => ({ ...d, [p.id]: e.target.value }))}
-            rows={3}
-            placeholder="Sua reflexão…"
-          />
-          <div className="flex justify-end">
-            <Button
-              size="sm"
-              onClick={() => salvar(p.id)}
-              disabled={saving[p.id]}
-              className="rounded-tl-xl rounded-br-xl rounded-tr-sm rounded-bl-sm"
-              style={{ background: theme.primaryColor, color: "#fff" }}
-            >
-              {saving[p.id] ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-              Salvar
-            </Button>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-};
 
 const DiarioBlock = ({
   moduloId,
@@ -1226,41 +1149,127 @@ const Conteudo = ({ aluno }: { aluno: AlunoRow }) => {
           </p>
         </div>
       ) : (
-        <>
-          {/* Material */}
-          <section className="space-y-4">
-            <SectionTitle icon={VideoIcon} theme={theme}>Material</SectionTitle>
-            <MaterialBlock modulo={modulo} theme={theme} />
-          </section>
+        <ModuloTabs
+          modulo={modulo}
+          slug={currentSlug}
+          aluno={aluno}
+          theme={theme}
+        />
+      )}
+    </div>
+  );
+};
 
-          {/* Recursos */}
-          <RecursosBlock moduloId={modulo.id} theme={theme} />
+const MODULO_TABS = [
+  { id: "aulas", label: "Aulas", icon: VideoIcon },
+  { id: "material", label: "Material prévio", icon: FileText },
+  { id: "rotina", label: "Rotina", icon: Utensils },
+  { id: "avaliacao", label: "Avaliação", icon: FileText },
+  { id: "trocas", label: "Trocas", icon: Sparkles },
+] as const;
+type ModuloTabId = (typeof MODULO_TABS)[number]["id"];
 
-          {/* Cardápio */}
-          <section className="space-y-4">
-            <SectionTitle icon={Utensils} theme={theme}>Cardápio do fim de semana</SectionTitle>
-            <CardapioBlock slug={currentSlug} theme={theme} />
-          </section>
+const ModuloTabs = ({
+  modulo,
+  slug,
+  aluno,
+  theme,
+}: {
+  modulo: Modulo;
+  slug: string;
+  aluno: AlunoRow;
+  theme: Theme;
+}) => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const rawTab = searchParams.get("tab");
+  const active: ModuloTabId =
+    (MODULO_TABS.find((t) => t.id === rawTab)?.id as ModuloTabId) ?? "aulas";
 
-          {/* Autoavaliação */}
-          <section className="space-y-4">
-            <SectionTitle icon={FileText} theme={theme}>Autoavaliação</SectionTitle>
-            <QuizAutoavaliacao moduloId={modulo.id} alunoId={aluno.id} theme={theme} />
-          </section>
+  const setTab = (id: ModuloTabId) => {
+    const next = new URLSearchParams(searchParams);
+    next.set("tab", id);
+    setSearchParams(next, { replace: true });
+  };
 
-          {/* Diário */}
-          <section className="space-y-4">
-            <SectionTitle icon={Sparkles} theme={theme}>Diário de evolução clínica</SectionTitle>
-            <DiarioBlock moduloId={modulo.id} alunoId={aluno.id} theme={theme} />
-          </section>
+  return (
+    <div className="space-y-6">
+      <div className="overflow-x-auto scrollbar-hide -mx-4 px-4">
+        <div className="flex gap-2 w-max">
+          {MODULO_TABS.map((t) => {
+            const Icon = t.icon;
+            const isActive = t.id === active;
+            return (
+              <button
+                key={t.id}
+                type="button"
+                onClick={() => setTab(t.id)}
+                className="flex items-center gap-1.5 px-4 py-2 rounded-full border font-semibold text-sm transition-all whitespace-nowrap shrink-0"
+                style={
+                  isActive
+                    ? {
+                        background: theme.primaryColor,
+                        borderColor: theme.primaryColor,
+                        color: "#fff",
+                        boxShadow: `0 4px 12px ${theme.primaryColor}40`,
+                      }
+                    : {
+                        background: `${theme.primaryColor}10`,
+                        borderColor: `${theme.primaryColor}44`,
+                        color: theme.primaryColor,
+                      }
+                }
+              >
+                <Icon className="h-4 w-4" />
+                {t.label}
+              </button>
+            );
+          })}
+        </div>
+      </div>
 
-          {/* Materiais da turma */}
+      <div className="space-y-8">
+        {active === "aulas" && <AulasBlock modulo={modulo} theme={theme} />}
+
+        {active === "material" && <MaterialPrevioBlock modulo={modulo} theme={theme} />}
+
+        {active === "rotina" && (
+          <div className="space-y-8">
+            <section className="space-y-4">
+              <SectionTitle icon={Utensils} theme={theme}>
+                Cardápio do fim de semana
+              </SectionTitle>
+              <CardapioBlock slug={slug} theme={theme} />
+            </section>
+            <RotinaExtrasBlock moduloId={modulo.id} theme={theme} />
+          </div>
+        )}
+
+        {active === "avaliacao" && (
+          <div className="space-y-8">
+            <section className="space-y-4">
+              <SectionTitle icon={FileText} theme={theme}>
+                Autoavaliação
+              </SectionTitle>
+              <QuizAutoavaliacao moduloId={modulo.id} alunoId={aluno.id} theme={theme} />
+            </section>
+            <section className="space-y-4">
+              <SectionTitle icon={Sparkles} theme={theme}>
+                Diário de evolução clínica
+              </SectionTitle>
+              <DiarioBlock moduloId={modulo.id} alunoId={aluno.id} theme={theme} />
+            </section>
+          </div>
+        )}
+
+        {active === "trocas" && (
           <section className="space-y-4">
-            <SectionTitle icon={FileText} theme={theme}>Materiais da turma</SectionTitle>
+            <SectionTitle icon={FileText} theme={theme}>
+              Materiais da turma
+            </SectionTitle>
             <MateriaisTurmaBlock moduloId={modulo.id} aluno={aluno} theme={theme} />
           </section>
-        </>
-      )}
+        )}
+      </div>
     </div>
   );
 };
