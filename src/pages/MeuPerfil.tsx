@@ -1092,7 +1092,70 @@ const AssinaturaCard = ({
 };
 
 // ---------- 5. Cursos ----------
+type CursoDetalhe = {
+  matriculaId: string;
+  slug: string;
+  titulo: string;
+  capa_url: string | null;
+  total: number;
+  concluidas: number;
+};
+
 const CursosCard = ({ matriculas }: { matriculas: Matricula[] }) => {
+  const { user } = useUser();
+  const [detalhes, setDetalhes] = useState<CursoDetalhe[]>([]);
+  const [carregando, setCarregando] = useState(true);
+
+  useEffect(() => {
+    if (!user || matriculas.length === 0) {
+      setDetalhes([]);
+      setCarregando(false);
+      return;
+    }
+    (async () => {
+      setCarregando(true);
+      const cursoIds = matriculas.map((m) => m.curso_id);
+      const [{ data: cursos }, { data: mods }, { data: prog }] = await Promise.all([
+        supabase.from("cursos").select("id,slug,titulo,capa_url").in("id", cursoIds),
+        supabase.from("curso_modulos").select("id,curso_id").in("curso_id", cursoIds),
+        supabase.from("curso_aula_progresso").select("aula_id").eq("user_id", user.id),
+      ]);
+      const modIds = (mods ?? []).map((m: any) => m.id);
+      const { data: aulas } = modIds.length
+        ? await supabase
+            .from("curso_aulas_indice" as any)
+            .select("id,modulo_id")
+            .in("modulo_id", modIds)
+        : { data: [] as any[] };
+      const concluidasSet = new Set((prog ?? []).map((p: any) => p.aula_id));
+      const modToCurso = new Map<string, string>((mods ?? []).map((m: any) => [m.id, m.curso_id]));
+      const totalPorCurso = new Map<string, number>();
+      const feitasPorCurso = new Map<string, number>();
+      for (const a of (aulas ?? []) as any[]) {
+        const cid = modToCurso.get(a.modulo_id);
+        if (!cid) continue;
+        totalPorCurso.set(cid, (totalPorCurso.get(cid) ?? 0) + 1);
+        if (concluidasSet.has(a.id))
+          feitasPorCurso.set(cid, (feitasPorCurso.get(cid) ?? 0) + 1);
+      }
+      const cursosMap = new Map((cursos ?? []).map((c: any) => [c.id, c]));
+      setDetalhes(
+        matriculas.map((m) => {
+          const c: any = cursosMap.get(m.curso_id) ?? {};
+          return {
+            matriculaId: m.id,
+            slug: c.slug ?? m.slug ?? "",
+            titulo: c.titulo ?? m.titulo ?? "Curso",
+            capa_url: c.capa_url ?? null,
+            total: totalPorCurso.get(m.curso_id) ?? 0,
+            concluidas: feitasPorCurso.get(m.curso_id) ?? 0,
+          };
+        }),
+      );
+      setCarregando(false);
+    })();
+  }, [user, matriculas]);
+
   if (!matriculas.length) {
     return (
       <p className="text-sm text-muted-foreground">
@@ -1103,24 +1166,57 @@ const CursosCard = ({ matriculas }: { matriculas: Matricula[] }) => {
       </p>
     );
   }
+  if (carregando) {
+    return (
+      <div className="space-y-3">
+        {matriculas.map((m) => (
+          <div key={m.id} className="h-24 rounded-xl bg-muted/40 animate-pulse" />
+        ))}
+      </div>
+    );
+  }
   return (
-    <ul className="divide-y divide-border/60">
-      {matriculas.map((m) => (
-        <li key={m.id} className="flex items-center justify-between gap-3 py-3">
-          <div className="min-w-0">
-            <div className="font-medium text-foreground truncate">
-              {m.titulo || "Curso"}
-            </div>
-            <div className="text-xs text-muted-foreground">acesso permanente</div>
-          </div>
-          <Link
-            to={m.slug ? `/escola/curso/${m.slug}` : "/escola"}
-            className="text-sm text-primary hover:underline whitespace-nowrap inline-flex items-center gap-1"
+    <ul className="space-y-3">
+      {detalhes.map((d) => {
+        const pct = d.total ? Math.round((d.concluidas / d.total) * 100) : 0;
+        return (
+          <li
+            key={d.matriculaId}
+            className="flex items-center gap-3 p-3 rounded-xl border border-border/60 bg-card"
           >
-            abrir <ChevronRight className="h-3.5 w-3.5" />
-          </Link>
-        </li>
-      ))}
+            {d.capa_url ? (
+              <img
+                src={d.capa_url}
+                alt=""
+                aria-hidden
+                loading="lazy"
+                className="w-16 h-16 object-cover rounded-lg shrink-0"
+              />
+            ) : (
+              <div className="w-16 h-16 rounded-lg bg-gradient-to-br from-primary/20 to-secondary/20 shrink-0" />
+            )}
+            <div className="flex-1 min-w-0">
+              <div className="font-medium text-foreground truncate">{d.titulo}</div>
+              <div className="text-xs text-muted-foreground mb-1.5">
+                {d.total ? `${d.concluidas} de ${d.total} aulas` : "acesso liberado"}
+              </div>
+              {d.total > 0 && (
+                <div className="h-1.5 rounded-full overflow-hidden bg-muted">
+                  <div
+                    className="h-full bg-primary transition-all"
+                    style={{ width: `${pct}%` }}
+                  />
+                </div>
+              )}
+            </div>
+            <Button asChild size="sm" variant="secondary" className="shrink-0 whitespace-nowrap">
+              <Link to={d.slug ? `/cursos/${d.slug}/estudar` : "/cursos"}>
+                Continuar
+              </Link>
+            </Button>
+          </li>
+        );
+      })}
     </ul>
   );
 };
