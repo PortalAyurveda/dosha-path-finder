@@ -116,7 +116,7 @@ type JornadaItem = {
 };
 const JORNADA: JornadaItem[] = [
   { Icon: BookOpen, numero: null, titulo: "Antes — sem Ayurveda", texto: "Você não sabia nem seu biotipo." },
-  { Icon: Compass, numero: 1, titulo: "Você se conhece", texto: "O teste revela seu dosha e seu quadro atual.", destaque: true },
+  { Icon: MapPin, numero: 1, titulo: "Você se conhece", texto: "O teste revela seu dosha e seu quadro atual.", destaque: true },
   { Icon: Leaf, numero: 2, titulo: "Você se cuida certo", texto: "Rotina, comida e hábitos específicos para você." },
   { Icon: HeartPulse, numero: 3, titulo: "Você restaura sua vitalidade", texto: "Digestão, sono e energia voltam ao eixo — doshas em equilíbrio." },
   { Icon: Sun, numero: 4, titulo: "Você aproveita a vida", texto: "Leveza e clareza — vitalidade e longevidade." },
