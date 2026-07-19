@@ -1166,6 +1166,27 @@ export type Database = {
         }
         Relationships: []
       }
+      crm_dominios: {
+        Row: {
+          aceita_email: boolean
+          checado_em: string
+          dominio: string
+          tem_mx: boolean
+        }
+        Insert: {
+          aceita_email: boolean
+          checado_em?: string
+          dominio: string
+          tem_mx: boolean
+        }
+        Update: {
+          aceita_email?: boolean
+          checado_em?: string
+          dominio?: string
+          tem_mx?: boolean
+        }
+        Relationships: []
+      }
       curso_aula_progresso: {
         Row: {
           aula_id: string
@@ -5742,6 +5763,30 @@ export type Database = {
           titulo_original?: string | null
           url?: string | null
           video_id?: string | null
+        }
+        Relationships: []
+      }
+      vw_crm_base: {
+        Row: {
+          dominio_ok: boolean | null
+          dosha: string | null
+          email: string | null
+          fez_teste: boolean | null
+          formacao: boolean | null
+          na_lista: boolean | null
+          nome: string | null
+          pedidos_pagos: number | null
+          plano: string | null
+          pre_validado: boolean | null
+          sabor_domingo: string | null
+          segmento: string | null
+          sintaxe_ok: boolean | null
+          subscription_status: string | null
+          supresso: boolean | null
+          tem_conta: boolean | null
+          ultimo_pedido: string | null
+          ultimo_teste: string | null
+          whatsapp: string | null
         }
         Relationships: []
       }
