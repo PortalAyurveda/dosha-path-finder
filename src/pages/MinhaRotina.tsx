@@ -268,14 +268,24 @@ const MinhaRotina = () => {
   useEffect(() => {
     if (!focusNuggetId || focusHandled || !rotinaRows) return;
     const match = rotinaRows.find((r) => r.nugget_id === focusNuggetId);
-    if (!match) return;
+    if (!match) {
+      toast({
+        title: "Essa receita não está na sua rotina atual",
+        variant: "destructive",
+      });
+      setFocusHandled(true);
+      const next = new URLSearchParams(searchParams);
+      next.delete("item");
+      setSearchParams(next, { replace: true });
+      return;
+    }
     if (match.dia !== diaSelecionado) setDiaSelecionado(match.dia);
     setFocusHandled(true);
     // limpa da URL (mantém os outros params)
-    const url = new URL(window.location.href);
-    url.searchParams.delete("item");
-    window.history.replaceState({}, "", url.pathname + (url.search ? url.search : ""));
-  }, [focusNuggetId, focusHandled, rotinaRows, diaSelecionado]);
+    const next = new URLSearchParams(searchParams);
+    next.delete("item");
+    setSearchParams(next, { replace: true });
+  }, [focusNuggetId, focusHandled, rotinaRows, diaSelecionado, searchParams, setSearchParams]);
 
 
 
