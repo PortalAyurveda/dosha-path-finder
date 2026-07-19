@@ -510,9 +510,7 @@ const LoggedHero = () => {
                   const objetivos = total > 0 ? calcObjetivos(vata, pitta, kapha) : [];
                   const nug = (rotinaPreviewTop as any)?.nug;
                   const backNugs = rotinaPreviewBack.map((r: any) => r.nug).filter(Boolean);
-                  const IconEl = nug?.icone_lucide
-                    ? (LucideIcons as any)[nug.icone_lucide]
-                    : null;
+                  const IconEl = nug?.icone_lucide ? getIconeLucide(nug.icone_lucide) : null;
                   const ingredientes: { qtd?: string; item?: string }[] =
                     Array.isArray(nug?.nugget_json?.ingredientes) ? nug.nugget_json.ingredientes : [];
                   const ingredPreview = ingredientes
