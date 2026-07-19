@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, Navigate, useNavigate, useParams } from "react-router-dom";
+
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/contexts/UserContext";
