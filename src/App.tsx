@@ -132,19 +132,25 @@ const LayoutOrBare = ({ children }: { children: React.ReactNode }) => {
 };
 
 const RouteFallback = () => (
-  <div className="min-h-screen w-full bg-background" aria-busy="true" aria-label="Carregando">
-    <div className="mx-auto max-w-6xl px-4 sm:px-6 py-8 md:py-12 space-y-6">
-      <div className="h-10 w-2/3 rounded bg-muted/60 animate-pulse" />
-      <div className="h-4 w-1/2 rounded bg-muted/40 animate-pulse" />
-      <div className="h-64 w-full rounded-lg bg-muted/40 animate-pulse" />
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        <div className="h-40 rounded-lg bg-muted/40 animate-pulse" />
-        <div className="h-40 rounded-lg bg-muted/40 animate-pulse" />
-        <div className="h-40 rounded-lg bg-muted/40 animate-pulse" />
-      </div>
-    </div>
+  <div
+    className="min-h-screen w-full bg-background flex items-center justify-center"
+    aria-busy="true"
+    aria-label="Carregando"
+  >
+    <div className="h-6 w-6 rounded-full border-2 border-muted-foreground/30 border-t-muted-foreground animate-spin" />
   </div>
 );
+
+if (typeof window !== "undefined") {
+  const idle: (cb: () => void) => void =
+    (window as any).requestIdleCallback ?? ((cb: () => void) => setTimeout(cb, 1500));
+  idle(() => {
+    import("./pages/Samkhya");
+    import("./pages/Biblioteca");
+    import("./pages/MeuDosha");
+    import("./pages/MinhaRotina");
+  });
+}
 
 const RoutedApp = () => {
   useCanonical();
