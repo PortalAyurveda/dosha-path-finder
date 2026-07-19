@@ -227,15 +227,12 @@ const MinhaRotina = () => {
     queryKey: ["rotina-teste-id", doshaResult?.idPublico],
     enabled: !!doshaResult?.idPublico,
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("doshas_registros")
-        .select("id")
-        .eq("idPublico", doshaResult!.idPublico)
-        .maybeSingle();
+      const { data, error } = await supabase.rpc("resultado_teste" as any, { p_idpublico: doshaResult!.idPublico });
       if (error) throw error;
-      return (data?.id as string | undefined) ?? null;
+      return Array.isArray(data) && data[0]?.id ? (data[0].id as string) : null;
     },
   });
+
 
   const { data: rotinaRows } = useQuery({
     queryKey: ["rotina-user", testeId],
