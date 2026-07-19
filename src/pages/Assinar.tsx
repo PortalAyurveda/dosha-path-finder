@@ -642,8 +642,9 @@ const Assinar = () => {
                     Quadro clínico
                   </p>
                   <div style={{ fontFamily: "'DM Sans', sans-serif" }}>
-                    <ClinicalThermometer doshaScores={exemploScores} />
+                    <ClinicalThermometer doshaScores={exemploScores} variant="compact" />
                   </div>
+
                 </div>
               </div>
 
