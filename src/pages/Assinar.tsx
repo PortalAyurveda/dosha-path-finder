@@ -565,26 +565,26 @@ const Assinar = () => {
 
         {/* 3) TUDO COMEÇA PELO SEU RETRATO — painel único compacto */}
         <section style={{ background: SURFACE }}>
-          <div className="max-w-[1040px] mx-auto px-4 sm:px-6 py-10 md:py-12">
+          <div className="max-w-[1040px] mx-auto px-4 sm:px-6 py-6 md:py-8">
             <h2
-              className="font-serif italic font-bold text-2xl md:text-[28px] text-center mb-2"
+              className="font-serif italic font-bold text-xl md:text-[24px] text-center mb-1.5"
               style={{ color: PRIMARY }}
             >
               Tudo começa pelo seu retrato
             </h2>
             <p
-              className="text-center text-sm md:text-base mb-6 max-w-xl mx-auto"
+              className="text-center text-[13px] md:text-sm mb-4 max-w-xl mx-auto"
               style={{ color: PRIMARY, opacity: 0.75, fontFamily: "'DM Sans', sans-serif" }}
             >
               O teste gratuito desenha seu quadro — e o Portal trabalha em cima dele.
             </p>
 
             <div
-              className="relative rounded-2xl border bg-card shadow-sm overflow-hidden max-w-[820px] mx-auto"
+              className="relative rounded-2xl border bg-card shadow-sm overflow-hidden max-w-[680px] mx-auto"
               style={{ borderColor: "rgba(53,47,84,0.14)" }}
             >
               <span
-                className="absolute top-3 right-3 z-10 text-[9px] font-bold tracking-widest uppercase px-2 py-0.5 rounded"
+                className="absolute top-2 right-2 z-10 text-[9px] font-bold tracking-widest uppercase px-2 py-0.5 rounded"
                 style={{ background: PRIMARY, color: "#fff", fontFamily: "'DM Sans', sans-serif" }}
               >
                 Exemplo
@@ -592,16 +592,16 @@ const Assinar = () => {
 
               {/* Topo */}
               <div
-                className="px-4 md:px-6 py-3 border-b"
+                className="px-3 md:px-4 py-2 border-b"
                 style={{ borderColor: "rgba(53,47,84,0.10)", background: PAPER }}
               >
                 <p
-                  className="text-[10px] uppercase tracking-wider font-bold mb-0.5"
+                  className="text-[9px] uppercase tracking-wider font-bold mb-0.5"
                   style={{ color: PRIMARY, opacity: 0.55, fontFamily: "'DM Sans', sans-serif" }}
                 >
                   Seu perfil clínico
                 </p>
-                <h3 className="font-serif font-bold text-base md:text-lg" style={{ color: PRIMARY }}>
+                <h3 className="font-serif font-bold text-sm md:text-[15px]" style={{ color: PRIMARY }}>
                   Seu dosha agravado:{" "}
                   <span style={{ color: "#6B8AFF" }}>Vata</span>
                   <span style={{ color: PRIMARY, opacity: 0.4 }}>-</span>
@@ -611,15 +611,15 @@ const Assinar = () => {
 
               {/* Corpo: donut+agni | quadro clínico */}
               <div
-                className="grid grid-cols-1 md:grid-cols-[220px_1fr] divide-y md:divide-y-0 md:divide-x"
+                className="grid grid-cols-1 md:grid-cols-[180px_1fr] divide-y md:divide-y-0 md:divide-x"
                 style={{ borderColor: "rgba(53,47,84,0.10)" }}
               >
-                <div className="p-4 md:p-4 flex flex-col items-center">
-                  <div className="w-[132px] h-[132px]">
+                <div className="p-3 flex flex-col items-center">
+                  <div className="w-[108px] h-[108px]">
                     <DoshaPieChart vata={42} pitta={28} kapha={16} variant="compact" />
                   </div>
                   <div
-                    className="mt-2 flex items-center gap-2 text-[11px] font-semibold"
+                    className="mt-1.5 flex items-center gap-1.5 text-[10px] font-semibold"
                     style={{ color: PRIMARY, fontFamily: "'DM Sans', sans-serif" }}
                   >
                     <span style={{ color: "#6B8AFF" }}>V 42</span>
@@ -629,24 +629,24 @@ const Assinar = () => {
                     <span style={{ color: "#4B9E4B" }}>K 16</span>
                   </div>
                   <div
-                    className="mt-3 w-full rounded-lg border p-2.5 flex items-start gap-2"
+                    className="mt-2 w-full rounded-md border p-2 flex items-start gap-1.5"
                     style={{ background: "hsl(var(--surface-sun))", borderColor: "rgba(53,47,84,0.10)" }}
                   >
-                    <Flame className="w-3.5 h-3.5 shrink-0 mt-0.5" style={{ color: "#C87E3B" }} />
-                    <p className="text-[11px] leading-snug" style={{ color: PRIMARY, fontFamily: "'DM Sans', sans-serif" }}>
-                      <strong className="font-bold">Fogo digestivo (Agni):</strong> irregular
+                    <Flame className="w-3 h-3 shrink-0 mt-0.5" style={{ color: "#C87E3B" }} />
+                    <p className="text-[10px] leading-snug" style={{ color: PRIMARY, fontFamily: "'DM Sans', sans-serif" }}>
+                      <strong className="font-bold">Agni:</strong> irregular
                     </p>
                   </div>
                 </div>
 
-                <div className="p-4 md:p-4">
+                <div className="p-3">
                   <p
-                    className="text-[10px] uppercase tracking-wider font-bold mb-2"
+                    className="text-[9px] uppercase tracking-wider font-bold mb-1.5"
                     style={{ color: PRIMARY, opacity: 0.55, fontFamily: "'DM Sans', sans-serif" }}
                   >
                     Quadro clínico
                   </p>
-                  <div className="text-[11px]" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                  <div style={{ fontFamily: "'DM Sans', sans-serif" }}>
                     <ClinicalThermometer doshaScores={exemploScores} />
                   </div>
                 </div>
@@ -654,11 +654,11 @@ const Assinar = () => {
 
               {/* Rodapé */}
               <div
-                className="border-t px-4 md:px-6 py-2.5 text-center"
+                className="border-t px-3 md:px-4 py-1.5 text-center"
                 style={{ borderColor: "rgba(53,47,84,0.10)", background: PAPER }}
               >
                 <p
-                  className="text-[11px]"
+                  className="text-[10px]"
                   style={{ color: PRIMARY, opacity: 0.6, fontFamily: "'DM Sans', sans-serif" }}
                 >
                   Exemplo — o seu vem do teste gratuito.
@@ -670,25 +670,26 @@ const Assinar = () => {
 
         {/* 3b) SUA REVISÃO MENSAL */}
         <section className="bg-background">
-          <div className="max-w-[1040px] mx-auto px-4 sm:px-6 py-10 md:py-14">
+          <div className="max-w-[1040px] mx-auto px-4 sm:px-6 py-6 md:py-8">
             <p
-              className="text-[11px] uppercase tracking-wider font-bold text-center mb-2"
+              className="text-[10px] uppercase tracking-wider font-bold text-center mb-1.5"
               style={{ color: SALMAO, fontFamily: "'DM Sans', sans-serif" }}
             >
               Sua revisão mensal
             </p>
             <h2
-              className="font-serif italic font-bold text-2xl md:text-[28px] text-center mb-2"
+              className="font-serif italic font-bold text-xl md:text-[24px] text-center mb-1.5"
               style={{ color: PRIMARY }}
             >
               Você vê seu corpo melhorar, mês a mês
             </h2>
             <p
-              className="text-center text-sm md:text-base mb-8 max-w-2xl mx-auto"
+              className="text-center text-[13px] md:text-sm mb-5 max-w-2xl mx-auto"
               style={{ color: PRIMARY, opacity: 0.78, fontFamily: "'DM Sans', sans-serif" }}
             >
               Todo mês a Akasha refaz sua leitura, compara com o mês anterior e ajusta sua rotina — porque seu corpo muda.
             </p>
+
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
               {/* Esquerda: gráfico de linha V/P/K */}
@@ -711,7 +712,7 @@ const Assinar = () => {
                 <p className="font-serif font-bold text-[15px] mb-3" style={{ color: PRIMARY }}>
                   Vata: 48 → 33 em 4 meses
                 </p>
-                <div className="h-[180px] w-full">
+                <div className="h-[140px] w-full">
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart
                       data={[
