@@ -47,6 +47,9 @@ const DOURADO = "#B8892E";
 const DOURADO_BG = "#FBF3DE";
 const DOURADO_DARK = "#8C641C";
 
+const PROFESSOR_PHOTO =
+  "https://api.portalayurveda.com/storage/v1/object/public/portal_images/b8f47f-5f003e6165b44645b7163ec3dd646d32mv2-1.jpg";
+
 type Plano = "rotina" | "mensal" | "anual";
 
 const RANK: Record<Plano, number> = { rotina: 1, mensal: 2, anual: 3 };
