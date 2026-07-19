@@ -264,7 +264,18 @@ const Conteudo = ({
   const [pedidos, setPedidos] = useState<PedidoLoja[]>([]);
   const [escola, setEscola] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [openKey, setOpenKey] = useState<AccordionKey | null>(null);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const sectionParam = searchParams.get("section") as AccordionKey | null;
+  const validKeys: AccordionKey[] = ["dados", "assinatura", "cursos", "pedidos", "escola"];
+  const initialOpen = sectionParam && validKeys.includes(sectionParam) ? sectionParam : null;
+  const [openKey, setOpenKey] = useState<AccordionKey | null>(initialOpen);
+
+  useEffect(() => {
+    if (sectionParam && validKeys.includes(sectionParam)) {
+      setOpenKey(sectionParam);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sectionParam]);
 
   const toggle = (k: AccordionKey) =>
     setOpenKey((prev) => (prev === k ? null : k));
