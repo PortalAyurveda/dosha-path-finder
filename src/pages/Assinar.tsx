@@ -1016,34 +1016,10 @@ const Assinar = () => {
                 className="rounded-2xl border p-5 bg-card shadow-sm flex flex-col items-center text-center transition-shadow hover:shadow-md"
                 style={{ borderColor: "rgba(53,47,84,0.14)" }}
               >
-                <div className="w-[190px] h-[190px] relative flex items-center justify-center">
-                  <div
-                    className="absolute inset-0 rounded-full"
-                    style={{
-                      background:
-                        "conic-gradient(from 270deg, #57BE86 0deg 60deg, #F0857F 60deg 180deg, #6B8FE8 180deg 240deg, #57BE86 240deg 300deg, #F0857F 300deg 360deg)",
-                    }}
-                  />
-                  <div
-                    className="absolute rounded-full bg-card border shadow-inner flex flex-col items-center justify-center text-center px-3"
-                    style={{ inset: 22, borderColor: "rgba(53,47,84,0.10)" }}
-                  >
-                    <span className="font-serif italic font-bold text-lg" style={{ color: PRIMARY }}>
-                      6h → 22h
-                    </span>
-                    <span
-                      className="text-[10px] uppercase tracking-wider mt-1 font-bold"
-                      style={{ color: PRIMARY, opacity: 0.65, fontFamily: "'DM Sans', sans-serif" }}
-                    >
-                      seu dia em doshas
-                    </span>
-                  </div>
+                <div className="w-[210px] px-6 py-2">
+                  <DoshaClock variant="neutral" centerLabel="Ciclo" centerValue="24h" />
                 </div>
-                <div className="mt-3 flex items-center gap-3 text-[11px] font-semibold" style={{ fontFamily: "'DM Sans', sans-serif" }}>
-                  <span className="inline-flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full" style={{ background: "#57BE86" }} /><span style={{ color: PRIMARY }}>K</span></span>
-                  <span className="inline-flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full" style={{ background: "#F0857F" }} /><span style={{ color: PRIMARY }}>P</span></span>
-                  <span className="inline-flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full" style={{ background: "#6B8FE8" }} /><span style={{ color: PRIMARY }}>V</span></span>
-                </div>
+
                 <p className="font-serif font-bold text-[15px] mt-4" style={{ color: PRIMARY }}>
                   O Relógio dos Doshas
                 </p>
