@@ -1,11 +1,12 @@
-import { ReactNode } from "react";
+import { ReactNode, Suspense, lazy } from "react";
 import Header from "./Header";
 import Footer from "./Footer";
 import ScrollToTop from "./ScrollToTop";
-import FloatingAkasha from "./akasha/FloatingAkasha";
 import { HeaderCtaProvider } from "@/contexts/HeaderCtaContext";
 import { ImmersiveProvider, useImmersive } from "@/contexts/ImmersiveContext";
 import { useUser } from "@/contexts/UserContext";
+
+const FloatingAkasha = lazy(() => import("./akasha/FloatingAkasha"));
 
 const LayoutInner = ({ children }: { children: ReactNode }) => {
   const { immersive } = useImmersive();
@@ -16,7 +17,11 @@ const LayoutInner = ({ children }: { children: ReactNode }) => {
       <Header />
       <div className="flex-1 min-h-screen">{children}</div>
       {!immersive && <Footer />}
-      {!immersive && user && <FloatingAkasha />}
+      {!immersive && user && (
+        <Suspense fallback={null}>
+          <FloatingAkasha />
+        </Suspense>
+      )}
     </div>
   );
 };
