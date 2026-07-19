@@ -484,7 +484,7 @@ const Assinar = () => {
             </p>
 
             <div className="relative">
-              <ol className="relative grid grid-cols-1 md:grid-cols-5 gap-10 md:gap-3 md:pt-8">
+              <ol className="relative grid grid-cols-1 gap-6 md:grid-cols-5 md:gap-3 md:pt-8">
                 {/* Trilha pontilhada ondulada — desktop, cruzando o centro dos círculos */}
                 <svg
                   aria-hidden
@@ -504,21 +504,21 @@ const Assinar = () => {
                   />
                 </svg>
 
-                {/* Trilha pontilhada ondulada — mobile, vertical cruzando o centro dos círculos */}
+                {/* Trilha pontilhada ondulada — mobile, ampla e circular, cruzando os checkpoints */}
                 <svg
                   aria-hidden
-                  className="md:hidden absolute left-1/2 -translate-x-1/2 pointer-events-none"
-                  style={{ top: "24px", bottom: "24px", width: "80px" }}
-                  viewBox="0 0 80 1000"
+                  className="md:hidden absolute inset-x-0 top-0 pointer-events-none"
+                  style={{ height: "736px" }}
+                  viewBox="0 0 390 736"
                   preserveAspectRatio="none"
                 >
                   <path
-                    d="M 40 0 C 10 100, 70 200, 40 300 S 10 500, 40 600 S 70 800, 40 1000"
+                    d="M 195 24 C 96 52, 54 92, 62 142 C 67 174, 124 188, 195 196 C 282 207, 333 252, 322 310 C 313 352, 252 360, 195 368 C 108 380, 42 428, 52 486 C 60 530, 129 536, 195 540 C 286 546, 330 604, 296 658 C 274 692, 228 708, 195 712"
                     fill="none"
                     stroke={SALMAO}
-                    strokeOpacity="0.6"
-                    strokeWidth="2"
-                    strokeDasharray="2 8"
+                    strokeOpacity="0.85"
+                    strokeWidth="3"
+                    strokeDasharray="2 10"
                     strokeLinecap="round"
                   />
                 </svg>
@@ -526,7 +526,7 @@ const Assinar = () => {
                 {JORNADA.map(({ Icon, titulo, texto, destaque }, i) => (
                   <li
                     key={i}
-                    className="relative flex flex-col items-center text-center"
+                    className="relative flex h-[148px] flex-col items-center text-center md:h-auto"
                   >
                     {destaque && (
                       <span
