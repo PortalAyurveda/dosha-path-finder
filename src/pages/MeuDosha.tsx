@@ -662,13 +662,10 @@ const MeuDosha = () => {
   const { data: registroRaw, isLoading: registroLoading } = useQuery({
     queryKey: ['meudosha-registro', id],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('doshas_registros')
-        .select('id, nome, doshaprincipal, vatascore, pittascore, kaphascore, agniPrincipal, agravVataTags, agravPittaTags, agravKaphaTags, imc, idade, conhecimentoAyurveda, email, altura, peso, estado, cidade, pais, created_at')
-        .eq('idPublico', id!)
-        .maybeSingle();
+      const { data, error } = await supabase.rpc('resultado_teste' as any, { p_idpublico: id! });
       if (error || !data) return null;
-      return data;
+      const row = Array.isArray(data) ? data[0] : data;
+      return row ?? null;
     },
     enabled: !!id,
     staleTime: CACHE_STALE,
