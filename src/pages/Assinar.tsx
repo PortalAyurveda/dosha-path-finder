@@ -504,7 +504,7 @@ const Assinar = () => {
                   />
                 </svg>
 
-                {/* Trilha pontilhada ondulada — mobile, ampla e circular, cruzando os checkpoints */}
+                {/* Trilha pontilhada ondulada — mobile, ampla/circular e passando pelo centro dos 5 checkpoints */}
                 <svg
                   aria-hidden
                   className="md:hidden absolute inset-x-0 top-0 pointer-events-none"
@@ -513,7 +513,7 @@ const Assinar = () => {
                   preserveAspectRatio="none"
                 >
                   <path
-                    d="M 195 24 C 96 52, 54 92, 62 142 C 67 174, 124 188, 195 196 C 282 207, 333 252, 322 310 C 313 352, 252 360, 195 368 C 108 380, 42 428, 52 486 C 60 530, 129 536, 195 540 C 286 546, 330 604, 296 658 C 274 692, 228 708, 195 712"
+                    d="M 195 24 C 70 36, 26 98, 54 142 C 76 176, 128 186, 195 196 C 312 214, 368 272, 332 322 C 304 362, 244 360, 195 368 C 76 388, 20 456, 62 506 C 92 542, 148 532, 195 540 C 316 562, 360 626, 314 676 C 286 706, 232 710, 195 712"
                     fill="none"
                     stroke={SALMAO}
                     strokeOpacity="0.85"
