@@ -3240,6 +3240,42 @@ export type Database = {
         }
         Relationships: []
       }
+      licoes_semana: {
+        Row: {
+          abertura: string
+          atualizado_em: string | null
+          dosha_alvo: string
+          fecho: string
+          licao: string
+          ponte_artigo: string
+          ponte_receitas: string
+          ponte_video: string
+          tema: string
+        }
+        Insert: {
+          abertura: string
+          atualizado_em?: string | null
+          dosha_alvo: string
+          fecho: string
+          licao: string
+          ponte_artigo: string
+          ponte_receitas: string
+          ponte_video: string
+          tema: string
+        }
+        Update: {
+          abertura?: string
+          atualizado_em?: string | null
+          dosha_alvo?: string
+          fecho?: string
+          licao?: string
+          ponte_artigo?: string
+          ponte_receitas?: string
+          ponte_video?: string
+          tema?: string
+        }
+        Relationships: []
+      }
       lista_email: {
         Row: {
           email: string | null
