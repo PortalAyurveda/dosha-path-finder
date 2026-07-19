@@ -1244,7 +1244,7 @@ const Conteudo = ({ aluno }: { aluno: AlunoRow }) => {
           {/* Autoavaliação */}
           <section className="space-y-4">
             <SectionTitle icon={FileText} theme={theme}>Autoavaliação</SectionTitle>
-            <AutoavaliacaoBlock moduloId={modulo.id} alunoId={aluno.id} theme={theme} />
+            <QuizAutoavaliacao moduloId={modulo.id} alunoId={aluno.id} theme={theme} />
           </section>
 
           {/* Diário */}
