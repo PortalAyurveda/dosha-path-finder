@@ -482,24 +482,6 @@ const Assinar = () => {
             </p>
 
             <div className="relative">
-              {/* Trilha pontilhada ondulada — desktop */}
-              <svg
-                aria-hidden
-                className="hidden md:block absolute inset-x-0 top-[70px] h-16 w-full pointer-events-none"
-                viewBox="0 0 1000 60"
-                preserveAspectRatio="none"
-              >
-                <path
-                  d="M 40 30 Q 160 4, 300 30 T 560 30 T 820 30 T 960 30"
-                  fill="none"
-                  stroke={SALMAO}
-                  strokeOpacity="0.55"
-                  strokeWidth="2"
-                  strokeDasharray="2 8"
-                  strokeLinecap="round"
-                />
-              </svg>
-
               {/* Trilha pontilhada vertical — mobile */}
               <span
                 aria-hidden
@@ -508,6 +490,25 @@ const Assinar = () => {
               />
 
               <ol className="relative grid grid-cols-1 md:grid-cols-5 gap-10 md:gap-3 md:pt-8">
+                {/* Trilha pontilhada ondulada — desktop, cruzando o centro dos círculos */}
+                <svg
+                  aria-hidden
+                  className="hidden md:block absolute left-0 right-0 pointer-events-none"
+                  style={{ top: "32px", height: "48px" }}
+                  viewBox="0 0 1000 48"
+                  preserveAspectRatio="none"
+                >
+                  <path
+                    d="M 100 24 C 150 2, 250 2, 300 24 S 450 46, 500 24 S 650 2, 700 24 S 850 46, 900 24"
+                    fill="none"
+                    stroke={SALMAO}
+                    strokeOpacity="0.6"
+                    strokeWidth="2"
+                    strokeDasharray="2 8"
+                    strokeLinecap="round"
+                  />
+                </svg>
+
                 {JORNADA.map(({ Icon, titulo, texto, destaque }, i) => (
                   <li
                     key={i}
@@ -552,6 +553,7 @@ const Assinar = () => {
                 ))}
               </ol>
             </div>
+
           </div>
         </section>
 
