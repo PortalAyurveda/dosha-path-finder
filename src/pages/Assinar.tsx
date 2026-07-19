@@ -507,27 +507,19 @@ const Assinar = () => {
                 style={{ borderColor: `${SALMAO}88` }}
               />
 
-              <ol className="relative grid grid-cols-1 md:grid-cols-5 gap-10 md:gap-3">
+              <ol className="relative grid grid-cols-1 md:grid-cols-5 gap-10 md:gap-3 md:pt-8">
                 {JORNADA.map(({ Icon, titulo, texto, destaque }, i) => (
                   <li
                     key={i}
                     className="relative flex flex-col items-center text-center"
                   >
                     {destaque && (
-                      <div className="flex flex-col items-center mb-2 gap-1">
-                        <span
-                          className="inline-flex items-center gap-1 text-[10px] uppercase tracking-wider font-bold px-2 py-1 rounded-full text-white"
-                          style={{ background: SALMAO, fontFamily: "'DM Sans', sans-serif" }}
-                        >
-                          📍 Você está aqui
-                        </span>
-                        <span
-                          className="text-[9px] uppercase tracking-wider font-bold"
-                          style={{ color: SALMAO, opacity: 0.85, fontFamily: "'DM Sans', sans-serif" }}
-                        >
-                          Onde o Portal começa
-                        </span>
-                      </div>
+                      <span
+                        className="absolute -top-7 left-1/2 -translate-x-1/2 whitespace-nowrap text-[10px] uppercase tracking-wider font-bold px-2 py-1 rounded-full text-white"
+                        style={{ background: SALMAO, fontFamily: "'DM Sans', sans-serif" }}
+                      >
+                        Você está aqui
+                      </span>
                     )}
                     <div
                       className="relative z-10 w-12 h-12 rounded-full flex items-center justify-center mb-3 border-2"
@@ -538,9 +530,10 @@ const Assinar = () => {
                       }}
                     >
                       <Icon
-                        className="w-5 h-5"
+                        className={destaque ? "w-6 h-6" : "w-5 h-5"}
                         style={{ color: destaque ? "#fff" : SALMAO }}
-                        strokeWidth={1.8}
+                        strokeWidth={destaque ? 2.2 : 1.8}
+                        {...(destaque ? { fill: "#fff", fillOpacity: 0.15 } : {})}
                       />
                     </div>
                     <p
