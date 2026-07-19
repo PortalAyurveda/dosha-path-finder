@@ -92,6 +92,26 @@ const Header = () => {
   const { aluno: escolaAluno } = useEscolaAluno();
 
 
+  useEffect(() => {
+    let cancelled = false;
+    if (!user) {
+      setTemCursos(false);
+      return;
+    }
+    (async () => {
+      const { data } = await supabase
+        .from("curso_matriculas")
+        .select("id")
+        .eq("user_id", user.id)
+        .eq("status", "ativa")
+        .limit(1);
+      if (!cancelled) setTemCursos((data ?? []).length > 0);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [user]);
+
   const isSamkhya = location.pathname.startsWith("/samkhya");
 
   const handleSignOut = async () => {
