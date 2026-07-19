@@ -390,7 +390,7 @@ const MiniCaminhadaCard = () => {
   );
 };
 
-const ClinicalThermometer = ({ doshaScores }: { doshaScores: { name: string; score: number }[] }) => {
+export const ClinicalThermometer = ({ doshaScores }: { doshaScores: { name: string; score: number }[] }) => {
   const doshaData = doshaScores.map(d => {
     const levels = DOSHA_LEVELS[d.name] || VATA_LEVELS;
     const currentLevel = getLevelIndex(d.score, levels);
