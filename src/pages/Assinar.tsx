@@ -484,13 +484,6 @@ const Assinar = () => {
             </p>
 
             <div className="relative">
-              {/* Trilha pontilhada vertical — mobile */}
-              <span
-                aria-hidden
-                className="md:hidden absolute top-10 bottom-10 left-1/2 -translate-x-1/2 border-l-2 border-dotted"
-                style={{ borderColor: `${SALMAO}88` }}
-              />
-
               <ol className="relative grid grid-cols-1 md:grid-cols-5 gap-10 md:gap-3 md:pt-8">
                 {/* Trilha pontilhada ondulada — desktop, cruzando o centro dos círculos */}
                 <svg
@@ -502,6 +495,25 @@ const Assinar = () => {
                 >
                   <path
                     d="M 100 24 C 150 2, 250 2, 300 24 S 450 46, 500 24 S 650 2, 700 24 S 850 46, 900 24"
+                    fill="none"
+                    stroke={SALMAO}
+                    strokeOpacity="0.6"
+                    strokeWidth="2"
+                    strokeDasharray="2 8"
+                    strokeLinecap="round"
+                  />
+                </svg>
+
+                {/* Trilha pontilhada ondulada — mobile, vertical cruzando o centro dos círculos */}
+                <svg
+                  aria-hidden
+                  className="md:hidden absolute left-1/2 -translate-x-1/2 pointer-events-none"
+                  style={{ top: "24px", bottom: "24px", width: "80px" }}
+                  viewBox="0 0 80 1000"
+                  preserveAspectRatio="none"
+                >
+                  <path
+                    d="M 40 0 C 10 100, 70 200, 40 300 S 10 500, 40 600 S 70 800, 40 1000"
                     fill="none"
                     stroke={SALMAO}
                     strokeOpacity="0.6"
