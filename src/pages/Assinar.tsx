@@ -566,17 +566,17 @@ const Assinar = () => {
         </div>
       </section>
 
-      {/* 3) RETRATO CLÍNICO */}
+      {/* 4) RETRATO CLÍNICO */}
       <section style={{ background: SURFACE }}>
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 py-16 md:py-20">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 py-10 md:py-14">
           <h2
-            className="font-serif italic font-bold text-3xl md:text-4xl text-center mb-4"
+            className="font-serif italic font-bold text-2xl md:text-3xl text-center mb-3"
             style={{ color: PRIMARY }}
           >
             Tudo começa pelo seu retrato
           </h2>
           <p
-            className="text-center text-base md:text-lg mb-10 max-w-2xl mx-auto leading-relaxed"
+            className="text-center text-base md:text-lg mb-8 max-w-2xl mx-auto leading-relaxed"
             style={{ color: PRIMARY, opacity: 0.85, fontFamily: "'DM Sans', sans-serif" }}
           >
             O teste gratuito desenha seu quadro — e os planos trabalham em cima dele.
