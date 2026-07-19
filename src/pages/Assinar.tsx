@@ -1,138 +1,106 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import { trackPixel } from "@/lib/metaPixel";
 import {
-  Brain,
-  BookOpen,
-  Video,
-  RefreshCw,
   CalendarDays,
   MessageCircle,
-  ShieldCheck,
+  Video as VideoIcon,
   Check,
-  Sparkles,
-  ShoppingBag,
-  LineChart,
-  Utensils,
-  ClipboardCheck,
-  MessagesSquare,
   ChevronDown,
+  Gift,
+  Sparkles,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/contexts/UserContext";
 import { toast } from "@/hooks/use-toast";
-
-const AKASHA_LOGO =
-  "https://api.portalayurveda.com/storage/v1/object/public/portal_images/logo-akasha.png";
+import { ClinicalThermometer } from "./MeuDosha";
 
 const PRIMARY = "#352F54";
 const SALMAO = "#E8806A";
 const SALMAO_HOVER = "#D26B55";
-const SALMAO_HOT = "#FF7676";
 const SURFACE = "#FFF8EE";
 const PAPER = "#FDFBF5";
+
+// Verde-jardim para o card Rotina
+const VERDE = "#4B7A5A";
+const VERDE_BG = "#EAF3EC";
+
+// Dourado para card Anual
+const DOURADO = "#B8892E";
+const DOURADO_BG = "#FBF3DE";
+const DOURADO_DARK = "#8C641C";
 
 type Plano = "rotina" | "mensal" | "anual";
 
 const RECEITAS = [
   {
     titulo: "Kitchari com salsa",
+    resumo: "Prato-remédio que acalma Vata e limpa o intestino sem esforço.",
     url: "https://api.portalayurveda.com/storage/v1/object/public/portal_images/receita-kitchari-com-salsa-e-oleo-vegetal.webp",
   },
   {
     titulo: "Abobrinha recheada com panir",
+    resumo: "Jantar leve e nutritivo — refresca Pitta sem pesar no estômago.",
     url: "https://api.portalayurveda.com/storage/v1/object/public/portal_images/receita-abobrinha-recheada-com-panir-assada-no-forno.webp",
   },
   {
     titulo: "Suco Matinal Ayurveda",
+    resumo: "Desperta o agni pela manhã e prepara o corpo para o dia.",
     url: "https://api.portalayurveda.com/storage/v1/object/public/portal_images/receita-suco-matinal-ayurveda-opcao-5.webp",
   },
 ];
 
 const NUMEROS = [
-  { valor: 925, sufixo: "", label: "aulas" },
-  { valor: 148, sufixo: "", label: "receitas com preparo" },
-  { valor: 30000, sufixo: "", label: "conversas com a Akasha" },
-  { valor: 17, sufixo: "", label: "anos de ensino no Brasil" },
+  "2.700+ testes de dosha realizados",
+  "900+ aulas no acervo",
+  "148 receitas fotografadas",
+  "Revisão do seu quadro todo mês",
 ];
 
 const FAQ = [
   {
-    q: "Já fiz o teste de graça — por que pagar?",
-    a: "O teste mostra onde você está. A rotina é o que te tira de lá. Saber o diagnóstico sem o tratamento é como ter o raio-x e não ter o remédio.",
+    q: "Posso cancelar quando quiser?",
+    a: "Sim, direto no portal, na sua conta — sem ligação e sem burocracia. O acesso vai até o fim do período já pago.",
   },
   {
-    q: "Por que pagar todo mês, e não uma vez só?",
-    a: "Porque seu corpo não é o mesmo todo mês. O estresse muda, a estação muda, o sono muda. Uma rotina fixa envelhece — a sua é revisada mensalmente pra continuar certa.",
+    q: "O que é a revisão mensal?",
+    a: "Todo mês seu quadro é refeito e a rotina se ajusta ao momento do seu corpo. Uma rotina que não se ajusta envelhece — a sua acompanha você.",
   },
   {
-    q: "E se não for pra mim?",
-    a: "7 dias de garantia com devolução completa. E depois, cancele quando quiser, na sua conta, sem ligação e sem perguntas.",
+    q: "A Akasha funciona de madrugada?",
+    a: "Sim, a qualquer hora. Ela está disponível dia e noite, e conhece o seu dosha e o histórico das suas conversas.",
   },
   {
-    q: "Preciso entender de tecnologia?",
-    a: "Não. Funciona no celular, tudo em português simples — se você chegou até aqui, já sabe o suficiente.",
-  },
-  {
-    q: "Já assino a Rotina — vou pagar as duas?",
-    a: "Não: ao virar Premium, a Rotina avulsa se encerra sozinha no fim do período já pago.",
+    q: "Já assino a Rotina, como faço para subir de plano?",
+    a: "Assine o Premium e cancele a Rotina — em breve o upgrade será automático.",
   },
 ];
 
-function useCountUp(target: number, active: boolean, duration = 1600) {
-  const [value, setValue] = useState(0);
-  useEffect(() => {
-    if (!active) return;
-    const start = performance.now();
-    let raf = 0;
-    const tick = (now: number) => {
-      const p = Math.min(1, (now - start) / duration);
-      const eased = 1 - Math.pow(1 - p, 3);
-      setValue(Math.round(target * eased));
-      if (p < 1) raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, [target, active, duration]);
-  return value;
-}
-
-const Counter = ({ target, label }: { target: number; label: string }) => {
-  const ref = useRef<HTMLDivElement>(null);
-  const [visible, setVisible] = useState(false);
-  useEffect(() => {
-    if (!ref.current) return;
-    const obs = new IntersectionObserver(
-      ([e]) => e.isIntersecting && setVisible(true),
-      { threshold: 0.3 },
-    );
-    obs.observe(ref.current);
-    return () => obs.disconnect();
-  }, []);
-  const v = useCountUp(target, visible);
-  const formatted =
-    target >= 1000 ? v.toLocaleString("pt-BR") : v.toString();
-  return (
-    <div ref={ref} className="text-center">
-      <div
-        className="font-serif italic font-bold text-3xl md:text-5xl leading-none"
-        style={{ color: PRIMARY }}
-      >
-        {formatted}
-      </div>
-      <div
-        className="mt-2 text-xs md:text-sm uppercase tracking-wider"
-        style={{ color: PRIMARY, opacity: 0.7, fontFamily: "'DM Sans', sans-serif" }}
-      >
-        {label}
-      </div>
-    </div>
-  );
-};
+const O_QUE_RECEBE = [
+  {
+    Icon: CalendarDays,
+    titulo: "Sua rotina completa",
+    texto:
+      "Café da manhã, almoço e jantar, mais lanches e tônicos — a semana inteira montada para o seu dosha, com o preparo e o porquê de cada item. Revisada todo mês, porque seu corpo muda.",
+  },
+  {
+    Icon: MessageCircle,
+    titulo: "A Akasha ao seu lado",
+    texto:
+      "Tire dúvidas a qualquer hora com a inteligência que estudou todo o acervo do professor — ela conhece seu dosha e lembra das suas conversas.",
+  },
+  {
+    Icon: VideoIcon,
+    titulo: "As aulas do professor",
+    texto:
+      "Mais de 900 aulas organizadas por tema e por dosha.",
+  },
+];
 
 const Assinar = () => {
-  const { user, profile, doshaResult } = useUser();
+  const { user, profile } = useUser();
   const navigate = useNavigate();
   const [loadingPlan, setLoadingPlan] = useState<Plano | null>(null);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
@@ -140,6 +108,19 @@ const Assinar = () => {
   useEffect(() => {
     trackPixel("ViewContent", { content_name: "Pagina Assinar" });
   }, []);
+
+  const { data: cursoRotinas } = useQuery({
+    queryKey: ["curso-rotinas-diarias"],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("cursos")
+        .select("titulo,capa_url")
+        .eq("slug", "rotinas-diarias")
+        .maybeSingle();
+      return data;
+    },
+    staleTime: 60 * 60 * 1000,
+  });
 
   const handleAssinar = async (plano: Plano) => {
     if (!user) {
@@ -169,171 +150,127 @@ const Assinar = () => {
     document.getElementById("planos")?.scrollIntoView({ behavior: "smooth" });
   };
 
-  const doshaPrimeiro =
-    doshaResult?.doshaprincipal?.split("-")[0]?.trim() ?? null;
-
-  const heroTitle = doshaPrimeiro
-    ? `${doshaPrimeiro}, você descobriu seu dosha. E agora?`
-    : "Você descobriu seu dosha. E agora?";
-
-  const rotinaIncluye = [
-    { Icon: CalendarDays, texto: "Rotina de 30 dias desenhada pro seu dosha" },
-    { Icon: Utensils, texto: "Receitas do dia — café, almoço, jantar, chás e tônicos" },
-    { Icon: ShoppingBag, texto: "Lista de compras semanal pronta" },
-    { Icon: RefreshCw, texto: "Revisão mensal do plano" },
-  ];
-
-  const premiumInclue = [
-    { Icon: Sparkles, texto: "Tudo da Rotina Personalizada, incluso" },
-    {
-      Icon: Brain,
-      texto:
-        "Akasha sem limite — a conselheira que acompanha sua jornada, treinada nas mais de 900 aulas do portal",
-    },
-    { Icon: BookOpen, texto: "Artigos personalizados pelo seu dosha" },
-    { Icon: Video, texto: "Biblioteca de vídeos com busca avançada" },
-    { Icon: LineChart, texto: "Gráficos de evolução e reteste mensal do dosha" },
-    { Icon: ShoppingBag, texto: "Cupons exclusivos na loja Samkhya" },
-  ];
-
-  const passos = [
-    { Icon: ClipboardCheck, texto: "Você faz o teste — o portal te conhece" },
-    {
-      Icon: CalendarDays,
-      texto:
-        "Sua rotina chega montada: 8 momentos por dia, do chá de acordar ao tônico da noite — 56 itens na sua semana, cada um com preparo e o porquê",
-    },
-    {
-      Icon: MessagesSquare,
-      texto:
-        "E a Akasha caminha junto: da primeira dúvida ao ajuste do mês, de manhã ou de madrugada",
-    },
+  const exemploScores = [
+    { name: "Vata", score: 42 },
+    { name: "Pitta", score: 28 },
+    { name: "Kapha", score: 16 },
   ];
 
   return (
     <>
       <Helmet>
-        <title>Assine o Portal Ayurveda — Rotina ou Premium</title>
+        <title>Planos — Portal Ayurveda</title>
         <meta
           name="description"
-          content="A rotina que resolve o que o teste mostrou: plano diário pro seu dosha e a Akasha te guiando durante toda a jornada."
+          content="Três formas de caminhar com a gente: Minha Rotina, Premium mensal e Premium anual — escolha a sua."
         />
       </Helmet>
 
-      {/* Hero */}
+      {/* 1) HERO */}
       <section
         className="w-full"
         style={{ background: `linear-gradient(160deg, ${SURFACE} 0%, #F5F0FF 100%)` }}
       >
         <div className="max-w-4xl mx-auto px-4 sm:px-6 py-14 md:py-20 text-center">
-          <img
-            src={AKASHA_LOGO}
-            alt="Akasha — Portal Ayurveda"
-            className="h-14 md:h-16 w-auto mx-auto mb-6"
-            loading="eager"
-          />
           <h1
-            className="font-serif italic font-bold text-3xl md:text-5xl leading-tight mb-6"
+            className="font-serif italic font-bold text-3xl md:text-5xl leading-tight mb-5"
             style={{ color: PRIMARY }}
           >
-            {heroTitle}
+            Seu Ayurveda, do seu jeito
           </h1>
           <p
-            className="text-lg md:text-xl max-w-2xl mx-auto mb-4 leading-relaxed"
+            className="text-lg md:text-xl max-w-2xl mx-auto mb-8 leading-relaxed"
             style={{ color: PRIMARY, opacity: 0.9, fontFamily: "'DM Sans', sans-serif" }}
           >
-            O teste te mostrou o problema. O <strong>Premium</strong> te entrega o portal
-            inteiro pra resolver: sua rotina diária inclusa, a <strong>Akasha</strong> sem
-            limite a qualquer hora, e as mais de 900 aulas do professor.
+            Três formas de caminhar com a gente — escolha a sua.
           </p>
-          {!doshaPrimeiro && (
-            <p
-              className="text-sm md:text-base mb-8"
-              style={{ color: PRIMARY, opacity: 0.7, fontFamily: "'DM Sans', sans-serif" }}
-            >
-              Ainda não fez o teste?{" "}
-              <button
-                onClick={() => navigate("/teste-de-dosha")}
-                className="underline font-semibold"
-                style={{ color: SALMAO }}
-              >
-                comece por ele, é grátis →
-              </button>
-            </p>
-          )}
           <button
             onClick={scrollToPlanos}
-            className="inline-flex items-center justify-center px-10 py-5 rounded-full text-white font-semibold text-base md:text-lg shadow-lg transition-colors mt-4"
+            className="inline-flex items-center justify-center px-10 py-5 rounded-full text-white font-semibold text-base md:text-lg shadow-lg transition-colors"
             style={{ backgroundColor: SALMAO }}
             onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = SALMAO_HOVER)}
             onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = SALMAO)}
           >
-            Ver planos
+            Ver os planos
           </button>
         </div>
       </section>
 
-      {/* Como funciona */}
+      {/* 2) O QUE VOCÊ RECEBE */}
       <section className="bg-background">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-16 md:py-20">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-16 md:py-20">
           <h2
             className="font-serif italic font-bold text-3xl md:text-4xl text-center mb-12"
             style={{ color: PRIMARY }}
           >
-            Como funciona
+            O que você recebe
           </h2>
-          <ol className="space-y-8 md:space-y-6">
-            {passos.map(({ Icon, texto }, i) => (
-              <li key={i} className="flex items-start gap-5 md:gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {O_QUE_RECEBE.map(({ Icon, titulo, texto }) => (
+              <div key={titulo} className="text-center md:text-left">
                 <div
-                  className="w-14 h-14 md:w-16 md:h-16 rounded-full flex items-center justify-center shrink-0 relative"
-                  style={{ background: `${SALMAO_HOT}1F` }}
+                  className="w-14 h-14 rounded-full flex items-center justify-center mx-auto md:mx-0 mb-4"
+                  style={{ background: `${SALMAO}22` }}
                 >
-                  <Icon
-                    className="w-6 h-6 md:w-7 md:h-7"
-                    style={{ color: SALMAO_HOT }}
-                    strokeWidth={1.7}
-                  />
-                  <span
-                    className="absolute -top-1 -right-1 w-6 h-6 rounded-full text-white text-xs font-bold flex items-center justify-center"
-                    style={{ background: SALMAO_HOT }}
-                  >
-                    {i + 1}
-                  </span>
+                  <Icon className="w-6 h-6" style={{ color: SALMAO }} strokeWidth={1.7} />
                 </div>
+                <h3
+                  className="font-serif font-bold text-xl mb-2"
+                  style={{ color: PRIMARY }}
+                >
+                  {titulo}
+                </h3>
                 <p
-                  className="text-base md:text-lg leading-relaxed pt-3"
-                  style={{ color: PRIMARY, fontFamily: "'DM Sans', sans-serif" }}
+                  className="text-base leading-relaxed"
+                  style={{ color: PRIMARY, opacity: 0.85, fontFamily: "'DM Sans', sans-serif" }}
                 >
                   {texto}
                 </p>
-              </li>
+              </div>
             ))}
-          </ol>
+          </div>
         </div>
       </section>
 
-      {/* Akasha te acompanha */}
+      {/* 3) RETRATO CLÍNICO */}
       <section style={{ background: SURFACE }}>
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 md:py-10">
-          <div className="text-center mb-8">
-            <img
-              src={AKASHA_LOGO}
-              alt=""
-              aria-hidden
-              className="h-10 md:h-12 w-auto mx-auto mb-4 opacity-90"
-            />
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 py-16 md:py-20">
+          <h2
+            className="font-serif italic font-bold text-3xl md:text-4xl text-center mb-4"
+            style={{ color: PRIMARY }}
+          >
+            Tudo começa pelo seu retrato
+          </h2>
+          <p
+            className="text-center text-base md:text-lg mb-10 max-w-2xl mx-auto leading-relaxed"
+            style={{ color: PRIMARY, opacity: 0.85, fontFamily: "'DM Sans', sans-serif" }}
+          >
+            O teste gratuito desenha seu quadro — e os planos trabalham em cima dele.
+          </p>
+          <div className="relative rounded-2xl border border-border bg-card p-4 md:p-6">
+            <span className="absolute top-3 right-3 text-[10px] font-semibold tracking-widest uppercase bg-muted text-muted-foreground px-2 py-1 rounded">
+              Exemplo
+            </span>
+            <ClinicalThermometer doshaScores={exemploScores} />
+          </div>
+        </div>
+      </section>
+
+      {/* 4) CONVERSAS REAIS */}
+      <section className="bg-background">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-16 md:py-20">
+          <div className="text-center mb-10">
             <h2
               className="font-serif italic font-bold text-3xl md:text-4xl"
               style={{ color: PRIMARY }}
             >
-              A Akasha te acompanha
+              Conversas reais com a Akasha
             </h2>
             <p
               className="mt-3 text-base md:text-lg max-w-2xl mx-auto leading-relaxed"
               style={{ color: PRIMARY, opacity: 0.75, fontFamily: "'DM Sans', sans-serif" }}
             >
-              Conversas reais de alunas do portal, desta semana — só tiramos os nomes.
+              Alunas do portal, desta semana — só tiramos os nomes.
             </p>
           </div>
 
@@ -439,100 +376,27 @@ const Assinar = () => {
                       Para alguém com Vata e Pitta altos eu tenderia a preferir tomar junto de algo morno e mais nutritivo, como depois do jantar ou perto da noite, porque o magnésio costuma acalmar o sistema nervoso. Como você está com secura e sensibilidade, eu evitaria tomar de estômago vazio.
                     </Akasha>
                   </Card>
-
-                  <Card label="Ela desce ao caso sério">
-                    <Person>
-                      Além de ter o agravamento em Pitta, também sofro com miomas uterinos. Teria uma dieta ou restrição diferenciada nesse caso?
-                    </Person>
-                    <Akasha>
-                      Sim, tem um cuidado diferenciado. A dieta precisa fazer duas coisas ao mesmo tempo: refrescar sem esfriar demais, e desinflamar sem ressecar. Na prática, seu prato tende a funcionar melhor assim: base de arroz branco ou basmati, um legume cozido mais úmido, uma proteína vegetal leve e bem cozida, um pouco de ghee, especiarias suaves e folhas amargas no final.
-                    </Akasha>
-                  </Card>
-
-                  <Card label="Ela fala a verdade com carinho">
-                    <Person>
-                      Estou com a pele do rosto cheia de manchas, melasmas. Usei óleos durante o dia, como gergelim, coco e às vezes rícino. Seria alimentar os melasmas?
-                    </Person>
-                    <Akasha>
-                      Sim, pode estar alimentando, principalmente se a pele já está quente e sensível, porque o gergelim é mais pesado e aquecedor. O rícino eu deixaria bem de lado no rosto. Eu reduziria óleos no rosto de dia e observaria o intestino, porque a pele costuma mostrar o que está transbordando por dentro.
-                    </Akasha>
-                  </Card>
-
-                  <div className="md:col-span-2">
-                    <Card label="Ela entrega a receita — e o cartão chega junto">
-                      <Person>Quais ingredientes e quantidades para massala doce para vata?</Person>
-                      <Akasha>
-                        Para a massala doce que acalma Vata, eu gosto de uma mistura simples e perfumada: 2 partes de canela, 1 parte de cardamomo e meia parte de cravo moído, tudo bem fininho. Se o Vata estiver muito ansioso, dá para deixar o cravo ainda mais discreto.
-                      </Akasha>
-                      <div className="flex justify-start mb-2">
-                        <div
-                          className="max-w-[92%] rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm overflow-hidden border flex items-center gap-3 p-2"
-                          style={{ background: PAPER, borderColor: "rgba(53,47,84,0.12)" }}
-                        >
-                          <img
-                            src="https://api.portalayurveda.com/storage/v1/object/public/portal_images/receita-arroz-doce-com-massala-doce-canela-cravo-e-cardamomo.webp"
-                            alt=""
-                            aria-hidden
-                            loading="lazy"
-                            className="w-14 h-14 object-cover rounded-tl-xl rounded-br-xl shrink-0"
-                          />
-                          <div className="min-w-0 pr-2">
-                            <p
-                              className="text-[10px] uppercase tracking-wider font-bold"
-                              style={{ color: SALMAO_HOT, opacity: 0.9 }}
-                            >
-                              Receita
-                            </p>
-                            <p
-                              className="font-serif font-bold text-sm leading-tight"
-                              style={{ color: PRIMARY }}
-                            >
-                              Arroz doce com massala doce
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                      <Person>Na receita do vídeo fala sobre pimenta rosa e branca. Vai?</Person>
-                      <Akasha>
-                        Essa receita específica de pimenta rosa não está no caderno, então eu não vou inventar uma orientação como se fosse parte da rotina. Eu ficaria com canela, cardamomo e cravo em dose suave, sem colocar pimentas.
-                      </Akasha>
-                      <Note>Quando não está nas aulas do professor, ela diz. A Akasha não inventa.</Note>
-                    </Card>
-                  </div>
-
-                  <div className="md:col-span-2">
-                    <Card label="Ela é honesta até para vender">
-                      <Person>
-                        Quero perder peso e a barriguinha, posso tomar somente a panacéia e quantas vezes ao dia?
-                      </Person>
-                      <Akasha>
-                        Pode tomar? Pode, como apoio. Somente ela, para "resolver", eu não trataria assim. Se a sua panaceia for desidratada, coloque um pedacinho na água à noite e, de manhã, aqueça essa água. E o mais importante é ver se você está com fome real e como está o intestino — é corrigir a causa do ganho de peso.
-                      </Akasha>
-                    </Card>
-                  </div>
                 </>
               );
             })()}
           </div>
-
-          <p
-            className="text-center text-sm md:text-base mt-8 max-w-2xl mx-auto leading-relaxed"
-            style={{ color: PRIMARY, opacity: 0.75, fontFamily: "'DM Sans', sans-serif" }}
-          >
-            A Akasha estudou as mais de 900 aulas do professor e recebe o seu teste a cada conversa — seu dosha, seu agni, sua idade. No plano gratuito, 25 conversas por mês; no Premium, sem limite.
-          </p>
         </div>
       </section>
 
-      {/* A rotina de verdade */}
-      <section className="bg-background">
+      {/* 5) RECEITAS DE VERDADE */}
+      <section style={{ background: SURFACE }}>
         <div className="max-w-5xl mx-auto px-4 sm:px-6 py-16 md:py-20">
+          <h2
+            className="font-serif italic font-bold text-3xl md:text-4xl text-center mb-4"
+            style={{ color: PRIMARY }}
+          >
+            Comida de verdade, feita para você
+          </h2>
           <p
             className="text-center text-base md:text-lg max-w-2xl mx-auto mb-10 leading-relaxed"
-            style={{ color: PRIMARY, fontFamily: "'DM Sans', sans-serif" }}
+            style={{ color: PRIMARY, opacity: 0.85, fontFamily: "'DM Sans', sans-serif" }}
           >
-            Isso é o que chega na sua rotina, todo dia — com quantidade, preparo e o
-            porquê.
+            Receitas com ingredientes do mercado do seu bairro — cada uma explicando o que faz pelo seu corpo.
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
@@ -550,48 +414,52 @@ const Assinar = () => {
                     className="w-full h-full object-cover"
                   />
                 </div>
-                <div className="p-4 text-center">
+                <div className="p-4">
                   <p
                     className="text-[10px] uppercase tracking-wider font-bold mb-1"
-                    style={{ color: SALMAO_HOT }}
+                    style={{ color: "#C93F3F" }}
                   >
                     Receita
                   </p>
                   <h3
-                    className="font-serif font-bold text-base leading-tight"
+                    className="font-serif font-bold text-base leading-tight mb-1.5"
                     style={{ color: PRIMARY }}
                   >
                     {r.titulo}
                   </h3>
+                  <p
+                    className="text-sm leading-snug"
+                    style={{ color: PRIMARY, opacity: 0.75, fontFamily: "'DM Sans', sans-serif" }}
+                  >
+                    {r.resumo}
+                  </p>
                 </div>
               </div>
             ))}
           </div>
-
-          <p
-            className="text-center text-base md:text-lg max-w-2xl mx-auto mt-10 leading-relaxed"
-            style={{ color: PRIMARY, opacity: 0.85, fontFamily: "'DM Sans', sans-serif" }}
-          >
-            E porque seu corpo muda, a rotina é revisada todo mês. Uma rotina que não se
-            ajusta é só um papel na geladeira — a sua acompanha você.
-          </p>
         </div>
       </section>
 
-      {/* Números vivos */}
-      <section style={{ background: SURFACE }}>
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-14 md:py-16">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+      {/* 6) NÚMEROS DO PORTAL */}
+      <section style={{ background: PRIMARY }}>
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10 md:py-12">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
             {NUMEROS.map((n) => (
-              <Counter key={n.label} target={n.valor} label={n.label} />
+              <p
+                key={n}
+                className="text-white text-sm md:text-base leading-snug"
+                style={{ fontFamily: "'DM Sans', sans-serif" }}
+              >
+                {n}
+              </p>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Planos — a escada */}
+      {/* 7) AS 3 OFERTAS */}
       <section id="planos" style={{ background: SURFACE }}>
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-16 md:py-20">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-16 md:py-20">
           <h2
             className="font-serif italic font-bold text-3xl md:text-4xl text-center mb-3"
             style={{ color: PRIMARY }}
@@ -599,49 +467,104 @@ const Assinar = () => {
             Escolha seu plano
           </h2>
           <p
-            className="text-center text-sm md:text-base mb-10 max-w-2xl mx-auto"
-            style={{ color: PRIMARY, opacity: 0.75, fontFamily: "'DM Sans', sans-serif" }}
+            className="text-center text-base md:text-lg mb-12 max-w-2xl mx-auto"
+            style={{ color: PRIMARY, opacity: 0.8, fontFamily: "'DM Sans', sans-serif" }}
           >
-            O portal inteiro, incluindo a <strong>Rotina Personalizada</strong> e a{" "}
-            <strong>Akasha</strong> sem limite.
+            Comece pela rotina ou vá direto no portal inteiro — a escolha é sua.
           </p>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
-            {/* COLUNA 1 — Premium Mensal */}
-            <div className="bg-white rounded-2xl border border-border p-7 flex flex-col">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:items-center">
+            {/* CARD 1 — MINHA ROTINA */}
+            <div
+              className="rounded-2xl p-7 flex flex-col border md:my-4"
+              style={{ background: VERDE_BG, borderColor: `${VERDE}33` }}
+            >
               <p
                 className="text-xs uppercase tracking-wider font-bold mb-2"
-                style={{ color: PRIMARY, opacity: 0.7 }}
+                style={{ color: VERDE }}
               >
-                Premium Mensal
+                Minha Rotina
               </p>
               <h3 className="font-serif font-bold text-2xl mb-1" style={{ color: PRIMARY }}>
-                Mês a mês
+                Sua semana pronta
+              </h3>
+              <p className="font-serif font-bold text-3xl mb-1" style={{ color: PRIMARY }}>
+                R$ 30<span className="text-base font-normal opacity-70">/mês</span>
+              </p>
+              <p
+                className="text-sm mb-6"
+                style={{ color: VERDE, fontFamily: "'DM Sans', sans-serif" }}
+              >
+                Menos de R$1 por dia.
+              </p>
+
+              <ul className="space-y-3 mb-8 flex-1">
+                {[
+                  "Rotina completa da semana: café, almoço, jantar, lanches e tônicos",
+                  "Montada para o SEU dosha, com preparo e porquê de cada item",
+                  "Revisão mensal do seu quadro",
+                  "Cancele quando quiser",
+                ].map((t) => (
+                  <li key={t} className="flex items-start gap-2.5">
+                    <Check className="w-5 h-5 shrink-0 mt-0.5" style={{ color: VERDE }} strokeWidth={2.4} />
+                    <span
+                      className="text-sm leading-relaxed"
+                      style={{ color: PRIMARY, fontFamily: "'DM Sans', sans-serif" }}
+                    >
+                      {t}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+
+              <button
+                onClick={() => handleAssinar("rotina")}
+                disabled={loadingPlan !== null}
+                className="mt-auto w-full py-3 rounded-full font-semibold text-sm text-white transition-colors disabled:opacity-60"
+                style={{ backgroundColor: VERDE }}
+              >
+                {loadingPlan === "rotina" ? "Redirecionando…" : "Começar minha rotina"}
+              </button>
+            </div>
+
+            {/* CARD 2 — PREMIUM MENSAL */}
+            <div
+              className="rounded-2xl p-7 flex flex-col border md:my-4"
+              style={{ background: `${SALMAO}12`, borderColor: `${SALMAO}55` }}
+            >
+              <p
+                className="text-xs uppercase tracking-wider font-bold mb-2 inline-flex items-center gap-1.5"
+                style={{ color: SALMAO }}
+              >
+                <Sparkles className="w-3.5 h-3.5" /> Premium
+              </p>
+              <h3 className="font-serif font-bold text-2xl mb-1" style={{ color: PRIMARY }}>
+                Tudo do portal
               </h3>
               <p className="font-serif font-bold text-3xl mb-1" style={{ color: PRIMARY }}>
                 R$ 79,90<span className="text-base font-normal opacity-70">/mês</span>
               </p>
               <p
                 className="text-sm mb-6"
-                style={{ color: PRIMARY, opacity: 0.75, fontFamily: "'DM Sans', sans-serif" }}
+                style={{ color: SALMAO, fontFamily: "'DM Sans', sans-serif" }}
               >
-                cancele quando quiser · sem fidelidade
+                Tudo da Rotina, mais a companhia.
               </p>
 
-              <ul className="space-y-3 mb-8">
-                {premiumInclue.map(({ Icon, texto }) => (
-                  <li key={texto} className="flex items-start gap-3">
-                    <div
-                      className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
-                      style={{ background: `${PRIMARY}14` }}
-                    >
-                      <Icon className="w-4 h-4" style={{ color: PRIMARY }} strokeWidth={1.7} />
-                    </div>
+              <ul className="space-y-3 mb-8 flex-1">
+                {[
+                  "Tudo do plano Minha Rotina",
+                  "Akasha ilimitada: converse de dia ou de madrugada",
+                  "Acervo completo: 900+ aulas do professor",
+                  "Cancele quando quiser",
+                ].map((t) => (
+                  <li key={t} className="flex items-start gap-2.5">
+                    <Check className="w-5 h-5 shrink-0 mt-0.5" style={{ color: SALMAO }} strokeWidth={2.4} />
                     <span
                       className="text-sm leading-relaxed"
                       style={{ color: PRIMARY, fontFamily: "'DM Sans', sans-serif" }}
                     >
-                      {texto}
+                      {t}
                     </span>
                   </li>
                 ))}
@@ -650,133 +573,126 @@ const Assinar = () => {
               <button
                 onClick={() => handleAssinar("mensal")}
                 disabled={loadingPlan !== null}
-                className="mt-auto w-full py-3 rounded-full font-semibold text-sm transition-colors disabled:opacity-60 border-2"
-                style={{ color: PRIMARY, borderColor: PRIMARY, background: "transparent" }}
-                onMouseEnter={(e) => {
-                  if (!loadingPlan) {
-                    e.currentTarget.style.background = PRIMARY;
-                    e.currentTarget.style.color = "#fff";
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = "transparent";
-                  e.currentTarget.style.color = PRIMARY;
-                }}
-              >
-                {loadingPlan === "mensal" ? "Redirecionando..." : "Assinar mensal · R$ 79,90/mês"}
-              </button>
-            </div>
-
-            {/* COLUNA 2 — Premium Anual */}
-            <div
-              className="bg-white rounded-2xl p-7 flex flex-col relative shadow-lg"
-              style={{ border: `2px solid ${SALMAO}` }}
-            >
-              <span
-                className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider text-white whitespace-nowrap"
-                style={{ backgroundColor: SALMAO }}
-              >
-                Mais escolhido · 2 meses grátis
-              </span>
-              <p
-                className="text-xs uppercase tracking-wider font-bold mb-2 mt-1"
-                style={{ color: PRIMARY, opacity: 0.7 }}
-              >
-                Premium Anual
-              </p>
-              <h3 className="font-serif font-bold text-2xl mb-1" style={{ color: PRIMARY }}>
-                Um ano de portal
-              </h3>
-              <div className="mb-1">
-                <p className="font-serif font-bold text-3xl" style={{ color: PRIMARY }}>
-                  R$ 597<span className="text-base font-normal opacity-70">/ano</span>
-                </p>
-                <p
-                  className="text-sm mt-1"
-                  style={{ color: PRIMARY, opacity: 0.8, fontFamily: "'DM Sans', sans-serif" }}
-                >
-                  sai a <strong>R$ 49,75/mês</strong>
-                </p>
-              </div>
-              <p
-                className="text-sm font-semibold mb-5 mt-2 inline-flex items-center gap-1"
-                style={{ color: SALMAO }}
-              >
-                <Check className="w-4 h-4" /> 2 meses grátis no ano
-              </p>
-
-              <ul className="space-y-3 mb-6">
-                {premiumInclue.map(({ Icon, texto }) => (
-                  <li key={texto} className="flex items-start gap-3">
-                    <div
-                      className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
-                      style={{ background: `${SALMAO}20` }}
-                    >
-                      <Icon className="w-4 h-4" style={{ color: SALMAO }} strokeWidth={1.7} />
-                    </div>
-                    <span
-                      className="text-sm leading-relaxed"
-                      style={{ color: PRIMARY, fontFamily: "'DM Sans', sans-serif" }}
-                    >
-                      {texto}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-
-              <button
-                onClick={() => handleAssinar("anual")}
-                disabled={loadingPlan !== null}
-                className="mt-auto w-full py-3 rounded-full text-white font-semibold text-sm transition-colors disabled:opacity-60"
+                className="mt-auto w-full py-3 rounded-full font-semibold text-sm text-white transition-colors disabled:opacity-60"
                 style={{ backgroundColor: SALMAO }}
                 onMouseEnter={(e) =>
                   !loadingPlan && (e.currentTarget.style.backgroundColor = SALMAO_HOVER)
                 }
                 onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = SALMAO)}
               >
-                {loadingPlan === "anual"
-                  ? "Redirecionando..."
-                  : "Assinar anual · R$ 597/ano"}
+                {loadingPlan === "mensal" ? "Redirecionando…" : "Assinar Premium"}
+              </button>
+            </div>
+
+            {/* CARD 3 — PREMIUM ANUAL — destaque */}
+            <div
+              className="rounded-2xl p-7 flex flex-col border-2 relative shadow-xl md:scale-[1.05]"
+              style={{ background: DOURADO_BG, borderColor: DOURADO }}
+            >
+              <span
+                className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider text-white whitespace-nowrap"
+                style={{ backgroundColor: DOURADO }}
+              >
+                Mais vantajoso
+              </span>
+              <p
+                className="text-xs uppercase tracking-wider font-bold mb-2 mt-1"
+                style={{ color: DOURADO_DARK }}
+              >
+                Premium Anual
+              </p>
+              <h3 className="font-serif font-bold text-2xl mb-1" style={{ color: PRIMARY }}>
+                Um ano inteiro
+              </h3>
+              <p className="font-serif font-bold text-3xl mb-1" style={{ color: PRIMARY }}>
+                R$ 597<span className="text-base font-normal opacity-70">/ano</span>
+              </p>
+              <p
+                className="text-sm font-bold mb-5"
+                style={{ color: DOURADO_DARK, fontFamily: "'DM Sans', sans-serif" }}
+              >
+                38% DE DESCONTO
+              </p>
+
+              <ul className="space-y-3 mb-5 flex-1">
+                {[
+                  "Tudo do Premium, o ano inteiro",
+                  "Equivale a R$ 49,75/mês",
+                ].map((t) => (
+                  <li key={t} className="flex items-start gap-2.5">
+                    <Check
+                      className="w-5 h-5 shrink-0 mt-0.5"
+                      style={{ color: DOURADO_DARK }}
+                      strokeWidth={2.4}
+                    />
+                    <span
+                      className="text-sm leading-relaxed"
+                      style={{ color: PRIMARY, fontFamily: "'DM Sans', sans-serif" }}
+                    >
+                      {t}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+
+              {/* Mini-card do curso incluso */}
+              <div
+                className="rounded-xl border p-3 mb-6 flex items-center gap-3"
+                style={{ background: "#fff", borderColor: `${DOURADO}55` }}
+              >
+                {cursoRotinas?.capa_url ? (
+                  <img
+                    src={cursoRotinas.capa_url}
+                    alt=""
+                    aria-hidden
+                    loading="lazy"
+                    className="w-14 h-14 object-cover rounded-lg shrink-0"
+                  />
+                ) : (
+                  <div
+                    className="w-14 h-14 rounded-lg shrink-0 flex items-center justify-center"
+                    style={{ background: DOURADO_BG }}
+                  >
+                    <Gift className="w-6 h-6" style={{ color: DOURADO }} />
+                  </div>
+                )}
+                <div className="min-w-0">
+                  <p
+                    className="text-[10px] uppercase tracking-wider font-bold mb-0.5 inline-flex items-center gap-1"
+                    style={{ color: DOURADO_DARK }}
+                  >
+                    <Gift className="w-3 h-3" /> Curso incluso
+                  </p>
+                  <p
+                    className="font-serif font-bold text-sm leading-tight"
+                    style={{ color: PRIMARY }}
+                  >
+                    {cursoRotinas?.titulo ?? "Rotinas Diárias do Ayurveda"}
+                  </p>
+                  <p
+                    className="text-xs mt-0.5"
+                    style={{ color: PRIMARY, opacity: 0.7, fontFamily: "'DM Sans', sans-serif" }}
+                  >
+                    valor R$ 99
+                  </p>
+                </div>
+              </div>
+
+              <button
+                onClick={() => handleAssinar("anual")}
+                disabled={loadingPlan !== null}
+                className="mt-auto w-full py-3.5 rounded-full font-bold text-sm text-white transition-opacity disabled:opacity-60"
+                style={{ backgroundColor: DOURADO }}
+              >
+                {loadingPlan === "anual" ? "Redirecionando…" : "Assinar Anual"}
               </button>
             </div>
           </div>
-
-          <p
-            className="text-center text-sm mt-8 max-w-2xl mx-auto"
-            style={{ color: PRIMARY, opacity: 0.65, fontFamily: "'DM Sans', sans-serif" }}
-          >
-            Procurando só a rotina diária de R$30?{" "}
-            <button
-              onClick={() => navigate("/minha-rotina")}
-              className="underline font-medium"
-              style={{ color: PRIMARY, opacity: 0.85 }}
-            >
-              Ela mora em Minha Rotina.
-            </button>
-          </p>
         </div>
       </section>
 
-      {/* Garantia */}
+      {/* 8) FAQ */}
       <section className="bg-background">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 py-12 md:py-16 text-center">
-          <ShieldCheck
-            className="w-12 h-12 mx-auto mb-4"
-            style={{ color: PRIMARY }}
-            strokeWidth={1.5}
-          />
-          <p
-            className="text-base md:text-lg leading-relaxed"
-            style={{ color: PRIMARY, fontFamily: "'DM Sans', sans-serif" }}
-          >
-            <strong>7 dias de garantia.</strong> Se não for o que você esperava, devolvemos 100% do
-            valor. Sem perguntas.
-          </p>
-        </div>
-      </section>
-
-      {/* FAQ */}
-      <section style={{ background: SURFACE }}>
         <div className="max-w-3xl mx-auto px-4 sm:px-6 py-16 md:py-20">
           <h2
             className="font-serif italic font-bold text-3xl md:text-4xl text-center mb-10"
@@ -790,7 +706,7 @@ const Assinar = () => {
               return (
                 <div
                   key={i}
-                  className="bg-white border border-border rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm overflow-hidden"
+                  className="bg-card border border-border rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm overflow-hidden"
                 >
                   <button
                     onClick={() => setOpenFaq(isOpen ? null : i)}
@@ -824,32 +740,6 @@ const Assinar = () => {
               );
             })}
           </div>
-        </div>
-      </section>
-
-      {/* CTA Final */}
-      <section
-        style={{ background: `linear-gradient(160deg, ${PRIMARY} 0%, #1f1a3a 100%)` }}
-      >
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 py-16 md:py-20 text-center">
-          <h2 className="font-serif italic font-bold text-3xl md:text-4xl text-white mb-8 leading-tight">
-            Amanhã de manhã, seu dia já pode chegar pronto.
-          </h2>
-          <button
-            onClick={scrollToPlanos}
-            className="inline-flex items-center justify-center px-10 py-5 rounded-full text-white font-bold text-lg shadow-xl transition-colors"
-            style={{ backgroundColor: SALMAO }}
-            onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = SALMAO_HOVER)}
-            onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = SALMAO)}
-          >
-            Escolher meu plano
-          </button>
-          <p
-            className="text-sm md:text-base text-white/70 mt-5"
-            style={{ fontFamily: "'DM Sans', sans-serif" }}
-          >
-            R$ 49,75 por mês no plano anual · 7 dias de garantia
-          </p>
         </div>
       </section>
     </>
