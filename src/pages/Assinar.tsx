@@ -10,7 +10,7 @@ import {
   Sparkles,
   BadgePercent,
   BookOpen,
-  Compass,
+  MapPin,
   Leaf,
   HeartPulse,
   Sun,
