@@ -32,6 +32,8 @@ import { useUser } from "@/contexts/UserContext";
 import { toast } from "@/hooks/use-toast";
 import { ClinicalThermometer } from "./MeuDosha";
 import DoshaPieChart from "@/components/charts/DoshaPieChart";
+import DoshaClock from "@/components/dosha/DoshaClock";
+
 import {
   AlertDialog,
   AlertDialogAction,
