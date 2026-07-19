@@ -140,9 +140,10 @@ const extractInternalCards = (
 interface AkashaMessageContentProps {
   content: string;
   proseClassName?: string;
+  onNavigate?: () => void;
 }
 
-const AkashaMessageContent = ({ content, proseClassName }: AkashaMessageContentProps) => {
+const AkashaMessageContent = ({ content, proseClassName, onNavigate }: AkashaMessageContentProps) => {
   const { cleanText, cards } = useMemo(() => extractInternalCards(content), [content]);
 
   return (
@@ -158,6 +159,7 @@ const AkashaMessageContent = ({ content, proseClassName }: AkashaMessageContentP
               <Link
                 key={card.path}
                 to={card.path}
+                onClick={() => onNavigate?.()}
                 className="group relative flex items-center gap-2.5 rounded-[14px] rounded-tl-sm rounded-br-sm border border-border bg-card px-3 py-2 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
               >
                 <span className="absolute left-0 top-2 bottom-2 w-[3px] rounded-full bg-akasha/70" aria-hidden />
