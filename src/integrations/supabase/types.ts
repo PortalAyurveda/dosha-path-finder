@@ -2150,27 +2150,71 @@ export type Database = {
           },
         ]
       }
+      escola_avaliacao_alternativas: {
+        Row: {
+          correta: boolean
+          created_at: string | null
+          explicacao: string | null
+          id: string
+          ordem: number | null
+          pergunta_id: string
+          texto: string
+        }
+        Insert: {
+          correta?: boolean
+          created_at?: string | null
+          explicacao?: string | null
+          id?: string
+          ordem?: number | null
+          pergunta_id: string
+          texto: string
+        }
+        Update: {
+          correta?: boolean
+          created_at?: string | null
+          explicacao?: string | null
+          id?: string
+          ordem?: number | null
+          pergunta_id?: string
+          texto?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "escola_avaliacao_alternativas_pergunta_id_fkey"
+            columns: ["pergunta_id"]
+            isOneToOne: false
+            referencedRelation: "escola_avaliacao_perguntas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       escola_avaliacao_perguntas: {
         Row: {
           created_at: string | null
+          explicacao_geral: string | null
           id: string
           modulo_id: string
           ordem: number | null
           pergunta: string
+          tipo: string
         }
         Insert: {
           created_at?: string | null
+          explicacao_geral?: string | null
           id?: string
           modulo_id: string
           ordem?: number | null
           pergunta: string
+          tipo?: string
         }
         Update: {
           created_at?: string | null
+          explicacao_geral?: string | null
           id?: string
           modulo_id?: string
           ordem?: number | null
           pergunta?: string
+          tipo?: string
         }
         Relationships: [
           {
@@ -2184,6 +2228,7 @@ export type Database = {
       }
       escola_avaliacao_respostas: {
         Row: {
+          alternativa_id: string | null
           aluno_id: string
           created_at: string | null
           id: string
@@ -2192,6 +2237,7 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
+          alternativa_id?: string | null
           aluno_id: string
           created_at?: string | null
           id?: string
@@ -2200,6 +2246,7 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
+          alternativa_id?: string | null
           aluno_id?: string
           created_at?: string | null
           id?: string
@@ -2208,6 +2255,13 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "escola_avaliacao_respostas_alternativa_id_fkey"
+            columns: ["alternativa_id"]
+            isOneToOne: false
+            referencedRelation: "escola_avaliacao_alternativas"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "escola_avaliacao_respostas_aluno_id_fkey"
             columns: ["aluno_id"]
