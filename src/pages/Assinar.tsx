@@ -481,61 +481,98 @@ const Assinar = () => {
               Do desconhecido ao equilíbrio, passo a passo.
             </p>
 
-            <ol className="relative grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-6 md:gap-3">
-              {/* linha conectora desktop */}
-              <span
-                aria-hidden
-                className="hidden md:block absolute top-6 left-[10%] right-[10%] h-px"
-                style={{ background: `${SALMAO}44` }}
-              />
-              {JORNADA.map(({ Icon, numero, titulo, texto, destaque }, i) => (
-                <li key={i} className="relative flex flex-col items-center text-center">
-                  {destaque && (
-                    <p
-                      className="text-[10px] uppercase tracking-wider font-bold mb-2"
-                      style={{ color: SALMAO, fontFamily: "'DM Sans', sans-serif" }}
-                    >
-                      Onde o Portal começa
-                    </p>
-                  )}
-                  <div
-                    className="relative z-10 w-12 h-12 rounded-full flex items-center justify-center mb-3 border-2"
-                    style={{
-                      background: destaque ? SALMAO : "#fff",
-                      borderColor: numero == null ? "rgba(53,47,84,0.20)" : (destaque ? SALMAO : `${SALMAO}55`),
-                      boxShadow: destaque ? `0 6px 18px -6px ${SALMAO}88` : "none",
-                    }}
+            {(() => {
+              // Escalonamento vertical dos pontos no desktop (px)
+              const offsets = [14, -14, 18, -10, 12];
+              return (
+                <div className="relative">
+                  {/* Trilha pontilhada ondulada — desktop */}
+                  <svg
+                    aria-hidden
+                    className="hidden md:block absolute inset-x-0 top-10 h-24 w-full pointer-events-none"
+                    viewBox="0 0 1000 100"
+                    preserveAspectRatio="none"
                   >
-                    {numero != null ? (
-                      <span
-                        className="font-serif italic font-bold text-lg leading-none"
-                        style={{ color: destaque ? "#fff" : SALMAO }}
+                    <path
+                      d="M 40 60 Q 160 20, 300 60 T 560 60 T 820 60 T 960 55"
+                      fill="none"
+                      stroke={SALMAO}
+                      strokeOpacity="0.55"
+                      strokeWidth="2"
+                      strokeDasharray="2 8"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+
+                  {/* Trilha pontilhada vertical — mobile */}
+                  <span
+                    aria-hidden
+                    className="md:hidden absolute top-10 bottom-10 left-1/2 -translate-x-1/2 border-l-2 border-dotted"
+                    style={{ borderColor: `${SALMAO}88` }}
+                  />
+
+                  <ol className="relative grid grid-cols-1 md:grid-cols-5 gap-10 md:gap-3">
+                    {JORNADA.map(({ Icon, titulo, texto, destaque }, i) => (
+                      <li
+                        key={i}
+                        className="relative flex flex-col items-center text-center"
+                        style={{
+                          // aplica escalonamento vertical só no desktop via media query inline
+                          ["--jy" as string]: `${offsets[i] ?? 0}px`,
+                        }}
                       >
-                        {numero}
-                      </span>
-                    ) : (
-                      <Icon
-                        className="w-5 h-5"
-                        style={{ color: "rgba(53,47,84,0.45)" }}
-                        strokeWidth={1.8}
-                      />
-                    )}
-                  </div>
-                  <p
-                    className="font-serif font-bold text-sm md:text-[15px] leading-snug mb-1"
-                    style={{ color: PRIMARY }}
-                  >
-                    {titulo}
-                  </p>
-                  <p
-                    className="text-[12px] md:text-[13px] leading-snug"
-                    style={{ color: PRIMARY, opacity: 0.75, fontFamily: "'DM Sans', sans-serif" }}
-                  >
-                    {texto}
-                  </p>
-                </li>
-              ))}
-            </ol>
+                        <div
+                          className="flex flex-col items-center md:[transform:translateY(var(--jy))]"
+                        >
+                          {destaque && (
+                            <div className="flex flex-col items-center mb-2 gap-1">
+                              <span
+                                className="inline-flex items-center gap-1 text-[10px] uppercase tracking-wider font-bold px-2 py-1 rounded-full text-white"
+                                style={{ background: SALMAO, fontFamily: "'DM Sans', sans-serif" }}
+                              >
+                                📍 Você está aqui
+                              </span>
+                              <span
+                                className="text-[9px] uppercase tracking-wider font-bold"
+                                style={{ color: SALMAO, opacity: 0.85, fontFamily: "'DM Sans', sans-serif" }}
+                              >
+                                Onde o Portal começa
+                              </span>
+                            </div>
+                          )}
+                          <div
+                            className="relative z-10 w-12 h-12 rounded-full flex items-center justify-center mb-3 border-2"
+                            style={{
+                              background: destaque ? SALMAO : "#fff",
+                              borderColor: destaque ? SALMAO : `${SALMAO}66`,
+                              boxShadow: destaque ? `0 6px 18px -6px ${SALMAO}88` : "0 2px 6px -3px rgba(53,47,84,0.25)",
+                            }}
+                          >
+                            <Icon
+                              className="w-5 h-5"
+                              style={{ color: destaque ? "#fff" : SALMAO }}
+                              strokeWidth={1.8}
+                            />
+                          </div>
+                          <p
+                            className="font-serif font-bold text-sm md:text-[15px] leading-snug mb-1 max-w-[180px]"
+                            style={{ color: PRIMARY }}
+                          >
+                            {titulo}
+                          </p>
+                          <p
+                            className="text-[12px] md:text-[13px] leading-snug max-w-[200px]"
+                            style={{ color: PRIMARY, opacity: 0.75, fontFamily: "'DM Sans', sans-serif" }}
+                          >
+                            {texto}
+                          </p>
+                        </div>
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+              );
+            })()}
           </div>
         </section>
 
