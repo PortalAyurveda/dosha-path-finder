@@ -891,30 +891,30 @@ const Assinar = () => {
 
               return (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <Card label="Ela lê o corpo">
+                  <Card label="Ela ensina o cuidado">
                     <Person>
-                      Estou no 8º dia doente e o que atrasa a recuperação é a tosse seca após as 2h da madrugada, e o muco espesso e amarelo.
+                      Peguei uma gripe com muco e catarro, como devo me tratar?
                     </Person>
                     <Akasha>
-                      Está na fase de limpeza final, mas com dois sinais misturados: Vata seco fazendo a tosse da madrugada e Pitta-Kapha mantendo o muco. Entre 2h e 5h, Vata fica mais evidente — o muco está saindo mais do nariz, da garganta, ou dos dois?
+                      Água quente ao acordar e ao longo do dia, e chá de gengibre, cominho, louro, erva-doce e canela em dose suave. Se o muco está preso, aquecer e fluidificar. A tosse está seca ou com catarro?
                     </Akasha>
                   </Card>
 
-                  <Card label="Ela ensina no prato">
+                  <Card label="Ela pergunta pra acertar">
                     <Person>
-                      Acrescentar inhame para fazer o creme de milho já ajuda?
+                      Indique um chá pra dificuldade de manter o sono. Durmo cedo, mas desperto às 3h.
                     </Person>
                     <Akasha>
-                      Sim, ajuda bastante. O inhame traz corpo e maciez, e isso conversa melhor com Vata do que um creme só de milho, mais seco. Melhora ainda mais com ghee e especiarias suaves.
+                      Às 3h costuma ajudar leite morno com especiarias — metade leite, metade água, um pouco de ghee e um toque de mascavo. Aterra o Vata e favorece sono profundo. Evite chá preto à noite.
                     </Akasha>
                   </Card>
 
-                  <Card label="Ela cuida do sono">
+                  <Card label="Ela não inventa">
                     <Person>
-                      Indique um chá para dificuldade de manter o sono. Durmo cedo, mas desperto às 3h.
+                      Na receita do vídeo fala de pimenta rosa e branca. Vai?
                     </Person>
                     <Akasha>
-                      Para acordar às 3h, costuma ajudar leite morno com especiarias — metade leite, metade água, um pouco de ghee e um toque de mascavo. Aterra o Vata e favorece sono mais profundo; evite chá preto à noite.
+                      Essa receita de pimenta rosa não está no caderno, então não vou inventar. Mas pro seu Vata e no frio, eu teria cuidado com pimentas — elas secam e aquecem demais, e a branca é a mais pungente.
                     </Akasha>
                   </Card>
                 </div>
@@ -925,7 +925,7 @@ const Assinar = () => {
               className="mt-6 text-center text-sm md:text-base max-w-2xl mx-auto"
               style={{ color: PRIMARY, opacity: 0.8, fontFamily: "'DM Sans', sans-serif" }}
             >
-              A inteligência do Portal, treinada no acervo do professor Edson. Conhece seu dosha, lembra de você, responde a qualquer hora.
+              A inteligência do Portal, treinada no acervo completo do professor Edson. Conhece seu dosha, lembra das suas conversas e responde a qualquer hora.
             </p>
           </div>
         </section>
