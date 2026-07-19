@@ -485,7 +485,7 @@ const Assinar = () => {
               {/* Trilha pontilhada ondulada — desktop */}
               <svg
                 aria-hidden
-                className="hidden md:block absolute inset-x-0 top-[38px] h-16 w-full pointer-events-none"
+                className="hidden md:block absolute inset-x-0 top-[70px] h-16 w-full pointer-events-none"
                 viewBox="0 0 1000 60"
                 preserveAspectRatio="none"
               >
