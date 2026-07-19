@@ -1063,11 +1063,7 @@ const RotinaSlotCard = ({
     return () => { clearTimeout(t1); clearTimeout(t2); };
   }, [focus]);
 
-  const iconName = nugget?.icone_lucide || "Circle";
-  const IconCmp =
-    ((LucideIcons as unknown) as Record<string, React.ComponentType<{ className?: string }>>)[
-      iconName
-    ] ?? Circle;
+  const IconCmp = getIconeLucide(nugget?.icone_lucide);
 
   const mostrarChama =
     !!nugget?.nugget_json?.bom_para_agni && agniFracoOuIrregular;
