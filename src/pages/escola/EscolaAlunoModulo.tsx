@@ -880,11 +880,7 @@ const NuggetCard = ({ nugget, theme }: { nugget: CardapioNugget; theme: Theme })
   const [open, setOpen] = useState(false);
   const [porqueOpen, setPorqueOpen] = useState(false);
 
-  const iconName = nugget.icone_lucide || "Circle";
-  const IconCmp =
-    ((LucideIcons as unknown) as Record<string, React.ComponentType<{ className?: string }>>)[
-      iconName
-    ] ?? Circle;
+  const IconCmp = getIconeLucide(nugget.icone_lucide);
 
   const nj = nugget.nugget_json ?? {};
   const dg = (nj.dravya_guna ?? {}) as any;
