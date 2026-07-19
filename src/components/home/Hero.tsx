@@ -219,6 +219,7 @@ const Hero = () => {
                   <div>
                     <Label className="text-xs">Nível de Ayurveda</Label>
                     <select
+                      aria-label="Nível de Ayurveda"
                       value={nivel}
                       onChange={(e) => setNivel(e.target.value)}
                       className={cn(

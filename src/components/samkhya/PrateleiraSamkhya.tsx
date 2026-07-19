@@ -139,7 +139,7 @@ const PrateleiraSamkhya = ({ doshaPrincipal, titulo }: PrateleiraSamkhyaProps) =
                 {item.preco != null && (
                   <div
                     className="text-base md:text-lg font-semibold"
-                    style={{ color: samkhyaTokens.ouro }}
+                    style={{ color: samkhyaTokens.ouroText }}
                   >
                     {formatPreco(item.preco)}
                   </div>
