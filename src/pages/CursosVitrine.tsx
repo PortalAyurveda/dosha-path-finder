@@ -65,14 +65,14 @@ const CursosVitrine = () => {
         ) : (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {cursos.map((c) => {
-              const isMatriculada = matriculadas.has(c.id);
+              const isRotinas = c.slug === "rotinas-diarias";
               return (
                 <article
                   key={c.id}
                   className="group bg-card border border-border rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all flex flex-col"
                 >
                   {c.capa_url ? (
-                    <div className="aspect-[4/3] w-full overflow-hidden bg-muted">
+                    <div className="aspect-[4/3] w-full overflow-hidden bg-muted relative">
                       <img
                         src={getTransformedImageUrl(c.capa_url, 800)}
                         alt={c.titulo}
@@ -81,6 +81,14 @@ const CursosVitrine = () => {
                         loading="lazy"
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                       />
+                      {isRotinas && (
+                        <span
+                          className="absolute top-3 left-3 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full text-white shadow-md"
+                          style={{ backgroundColor: "#B8892E" }}
+                        >
+                          Incluso no Premium Anual
+                        </span>
+                      )}
                     </div>
                   ) : (
                     <div className="aspect-[4/3] w-full bg-gradient-to-br from-primary/20 to-secondary/20" />
@@ -92,13 +100,9 @@ const CursosVitrine = () => {
                         {c.descricao}
                       </p>
                     )}
-                    {isMatriculada ? (
-                      <Button asChild className="w-full">
-                        <Link to="/escola">Acessar o curso</Link>
-                      </Button>
-                    ) : c.preco && c.preco > 0 ? (
-                      <Button asChild variant="secondary" className="w-full">
-                        <Link to={`/cursos/${c.slug}`}>Conhecer o curso</Link>
+                    {isRotinas ? (
+                      <Button asChild className="w-full" style={{ backgroundColor: "#B8892E" }}>
+                        <Link to="/assinar">Ver planos</Link>
                       </Button>
                     ) : (
                       <Button disabled variant="outline" className="w-full">
