@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -11,11 +11,22 @@ import {
   ChevronDown,
   Gift,
   Sparkles,
+  BadgePercent,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/contexts/UserContext";
 import { toast } from "@/hooks/use-toast";
 import { ClinicalThermometer } from "./MeuDosha";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 const PRIMARY = "#352F54";
 const SALMAO = "#E8806A";
@@ -33,6 +44,26 @@ const DOURADO_BG = "#FBF3DE";
 const DOURADO_DARK = "#8C641C";
 
 type Plano = "rotina" | "mensal" | "anual";
+
+const RANK: Record<Plano, number> = { rotina: 1, mensal: 2, anual: 3 };
+
+const BENEFICIOS: string[] = [
+  "Rotina completa da semana: café, almoço, jantar, lanches e tônicos",
+  "Montada para o SEU dosha, com preparo e porquê de cada item",
+  "Revisão mensal do seu quadro",
+  "Akasha ilimitada: converse de dia ou de madrugada",
+  "Acervo completo: 900+ aulas do professor",
+  'Curso "Rotinas Diárias do Ayurveda" incluso (valor R$ 99)',
+  "Economia de 38% no ano (equivale a R$ 49,75/mês)",
+  "Cancele quando quiser",
+];
+
+// Índices 1-based inclusos por plano
+const INCLUSOS: Record<Plano, Set<number>> = {
+  rotina: new Set([1, 2, 3, 8]),
+  mensal: new Set([1, 2, 3, 4, 5, 8]),
+  anual:  new Set([1, 2, 3, 4, 5, 6, 7, 8]),
+};
 
 const RECEITAS = [
   {
@@ -74,7 +105,7 @@ const FAQ = [
   },
   {
     q: "Já assino a Rotina, como faço para subir de plano?",
-    a: "Assine o Premium e cancele a Rotina — em breve o upgrade será automático.",
+    a: "Clique em Fazer upgrade no card do plano desejado. Você paga só a diferença proporcional pelo tempo que resta do ciclo atual — nenhuma cobrança em dobro.",
   },
 ];
 
@@ -94,16 +125,26 @@ const O_QUE_RECEBE = [
   {
     Icon: VideoIcon,
     titulo: "As aulas do professor",
-    texto:
-      "Mais de 900 aulas organizadas por tema e por dosha.",
+    texto: "Mais de 900 aulas organizadas por tema e por dosha.",
   },
 ];
 
 const Assinar = () => {
-  const { user, profile } = useUser();
+  const { user, profile, refreshProfile } = useUser();
   const navigate = useNavigate();
   const [loadingPlan, setLoadingPlan] = useState<Plano | null>(null);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
+
+  const [upgradeDialog, setUpgradeDialog] = useState<null | {
+    plano_atual: Plano;
+    plano_novo: Plano;
+    mensagem: string;
+  }>(null);
+  const [confirmandoUpgrade, setConfirmandoUpgrade] = useState(false);
+
+  const isAssinante = profile?.subscription_status === "active";
+  const planoAtual = (isAssinante ? (profile?.plano as Plano | null) : null) ?? null;
+  const rankAtual = planoAtual ? RANK[planoAtual] : 0;
 
   useEffect(() => {
     trackPixel("ViewContent", { content_name: "Pagina Assinar" });
@@ -122,7 +163,24 @@ const Assinar = () => {
     staleTime: 60 * 60 * 1000,
   });
 
-  const handleAssinar = async (plano: Plano) => {
+  const nomesPlano: Record<Plano, string> = {
+    rotina: "Minha Rotina",
+    mensal: "Premium",
+    anual: "Premium Anual",
+  };
+
+  const invokeCheckout = async (plano: Plano, confirmar_upgrade = false) => {
+    return await supabase.functions.invoke("create-subscription-checkout", {
+      body: {
+        plano,
+        user_id: user?.id,
+        email: profile?.email ?? user?.email,
+        ...(confirmar_upgrade ? { confirmar_upgrade: true } : {}),
+      },
+    });
+  };
+
+  const handleClickPlano = async (plano: Plano) => {
     if (!user) {
       navigate(`/entrar?redirect=/assinar`);
       return;
@@ -130,19 +188,58 @@ const Assinar = () => {
     trackPixel("InitiateCheckout", { content_type: "subscription", plano });
     setLoadingPlan(plano);
     try {
-      const { data, error } = await supabase.functions.invoke("create-subscription-checkout", {
-        body: { plano, user_id: user.id, email: profile?.email ?? user.email },
-      });
+      const { data, error } = await invokeCheckout(plano);
       if (error) throw error;
-      if (!data?.url) throw new Error("URL de checkout não retornada");
-      window.location.href = data.url;
+
+      if (data?.upgrade_disponivel) {
+        setUpgradeDialog({
+          plano_atual: data.plano_atual,
+          plano_novo: data.plano_novo,
+          mensagem: data.mensagem,
+        });
+        return;
+      }
+      if (data?.url) {
+        window.location.href = data.url;
+        return;
+      }
+      if (data?.error) throw new Error(data.error);
+      throw new Error("Resposta inesperada do servidor");
     } catch (e) {
-      toast({
-        title: "Erro ao iniciar assinatura",
-        description: (e as Error).message,
-        variant: "destructive",
-      });
+      const msg = (e as { message?: string; error?: string })?.message
+        ?? (e as { error?: string })?.error
+        ?? "Não conseguimos processar agora. Tente de novo em instantes.";
+      toast({ title: "Ops", description: String(msg), variant: "destructive" });
+    } finally {
       setLoadingPlan(null);
+    }
+  };
+
+  const confirmarUpgrade = async () => {
+    if (!upgradeDialog) return;
+    setConfirmandoUpgrade(true);
+    try {
+      const { data, error } = await invokeCheckout(upgradeDialog.plano_novo, true);
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      if (data?.upgrade_ok) {
+        const novo = nomesPlano[upgradeDialog.plano_novo];
+        toast({
+          title: `Bem-vinda ao ${novo} 🌿`,
+          description: "Seu plano já está ativo. Aproveite tudo o que ele traz.",
+        });
+        setUpgradeDialog(null);
+        await refreshProfile();
+        setTimeout(() => window.location.reload(), 800);
+        return;
+      }
+      throw new Error("Não recebemos a confirmação do upgrade.");
+    } catch (e) {
+      const msg = (e as { message?: string })?.message
+        ?? "Não conseguimos concluir o upgrade agora.";
+      toast({ title: "Ops", description: String(msg), variant: "destructive" });
+    } finally {
+      setConfirmandoUpgrade(false);
     }
   };
 
@@ -155,6 +252,197 @@ const Assinar = () => {
     { name: "Pitta", score: 28 },
     { name: "Kapha", score: 16 },
   ];
+
+  // Renderiza a lista compartilhada de 8 benefícios para um plano.
+  const BeneficiosList = ({
+    plano,
+    checkColor,
+    dimmedColor,
+    renderItem6Extra,
+    renderItem7Extra,
+  }: {
+    plano: Plano;
+    checkColor: string;
+    dimmedColor?: string;
+    renderItem6Extra?: React.ReactNode;
+    renderItem7Extra?: React.ReactNode;
+  }) => {
+    const inclusos = INCLUSOS[plano];
+    return (
+      <ul className="space-y-2.5 mb-6 flex-1">
+        {BENEFICIOS.map((texto, idx) => {
+          const n = idx + 1;
+          const on = inclusos.has(n);
+          const color = on ? PRIMARY : dimmedColor ?? "rgba(53,47,84,0.35)";
+          return (
+            <li key={n} className="flex items-start gap-2.5">
+              {on ? (
+                <Check
+                  className="w-5 h-5 shrink-0 mt-0.5"
+                  style={{ color: checkColor }}
+                  strokeWidth={2.4}
+                />
+              ) : (
+                <span
+                  className="w-5 h-5 shrink-0 mt-0.5 flex items-center justify-center"
+                  aria-hidden
+                >
+                  <span
+                    className="block w-2 h-2 rounded-full"
+                    style={{ background: "rgba(53,47,84,0.18)" }}
+                  />
+                </span>
+              )}
+              <span
+                className="text-sm leading-relaxed"
+                style={{
+                  color,
+                  fontFamily: "'DM Sans', sans-serif",
+                  opacity: on ? 1 : 0.75,
+                }}
+              >
+                {texto}
+                {n === 6 && on && renderItem6Extra}
+                {n === 7 && on && renderItem7Extra}
+              </span>
+            </li>
+          );
+        })}
+      </ul>
+    );
+  };
+
+  // Renderiza o botão de ação de cada card, respeitando o estado do usuário.
+  const CardAction = ({
+    plano,
+    color,
+    hoverColor,
+    label,
+  }: {
+    plano: Plano;
+    color: string;
+    hoverColor?: string;
+    label: string; // fallback (não-assinante)
+  }) => {
+    if (!isAssinante) {
+      return (
+        <button
+          onClick={() => handleClickPlano(plano)}
+          disabled={loadingPlan !== null}
+          className="mt-auto w-full py-3 rounded-full font-semibold text-sm text-white transition-colors disabled:opacity-60"
+          style={{ backgroundColor: color }}
+          onMouseEnter={(e) =>
+            !loadingPlan && hoverColor && (e.currentTarget.style.backgroundColor = hoverColor)
+          }
+          onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = color)}
+        >
+          {loadingPlan === plano ? "Redirecionando…" : label}
+        </button>
+      );
+    }
+
+    const rankPlano = RANK[plano];
+
+    if (rankPlano === rankAtual) {
+      return (
+        <button
+          onClick={() => handleClickPlano(plano)}
+          disabled={loadingPlan !== null}
+          className="mt-auto w-full py-3 rounded-full font-semibold text-sm text-white transition-colors disabled:opacity-60"
+          style={{ backgroundColor: color }}
+        >
+          {loadingPlan === plano ? "Abrindo…" : "Gerenciar assinatura"}
+        </button>
+      );
+    }
+
+    if (rankPlano > rankAtual) {
+      return (
+        <button
+          onClick={() => handleClickPlano(plano)}
+          disabled={loadingPlan !== null}
+          className="mt-auto w-full py-3 rounded-full font-semibold text-sm text-white transition-colors disabled:opacity-60"
+          style={{ backgroundColor: color }}
+        >
+          {loadingPlan === plano ? "Aguarde…" : "Fazer upgrade — pague só a diferença"}
+        </button>
+      );
+    }
+
+    return (
+      <div
+        className="mt-auto w-full py-3 rounded-full text-sm text-center font-semibold"
+        style={{
+          background: "rgba(53,47,84,0.06)",
+          color: PRIMARY,
+          fontFamily: "'DM Sans', sans-serif",
+        }}
+      >
+        Já incluído no seu plano
+      </div>
+    );
+  };
+
+  const SeuPlanoBadge = () => (
+    <span
+      className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider text-white whitespace-nowrap shadow-md"
+      style={{ backgroundColor: PRIMARY }}
+    >
+      Seu plano
+    </span>
+  );
+
+  // Mini-card do curso incluso (item 6)
+  const cursoIncluso = (
+    <span className="block mt-2">
+      <span
+        className="inline-flex items-center gap-3 rounded-xl border p-2.5 pr-3"
+        style={{ background: "#fff", borderColor: `${DOURADO}55` }}
+      >
+        {cursoRotinas?.capa_url ? (
+          <img
+            src={cursoRotinas.capa_url}
+            alt=""
+            aria-hidden
+            loading="lazy"
+            className="w-12 h-12 object-cover rounded-lg shrink-0"
+          />
+        ) : (
+          <span
+            className="w-12 h-12 rounded-lg shrink-0 flex items-center justify-center"
+            style={{ background: DOURADO_BG }}
+          >
+            <Gift className="w-5 h-5" style={{ color: DOURADO }} />
+          </span>
+        )}
+        <span className="min-w-0 text-left">
+          <span
+            className="block text-[10px] uppercase tracking-wider font-bold"
+            style={{ color: DOURADO_DARK }}
+          >
+            Curso incluso
+          </span>
+          <span
+            className="block font-serif font-bold text-sm leading-tight"
+            style={{ color: PRIMARY }}
+          >
+            {cursoRotinas?.titulo ?? "Rotinas Diárias do Ayurveda"}
+          </span>
+        </span>
+      </span>
+    </span>
+  );
+
+  const seloDesconto = (
+    <span
+      className="ml-2 inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider align-middle"
+      style={{ background: DOURADO, color: "#fff" }}
+    >
+      <BadgePercent className="w-3 h-3" /> 38% de desconto
+    </span>
+  );
+
+  const cardBase = "rounded-2xl p-7 flex flex-col border relative";
 
   return (
     <>
@@ -214,10 +502,7 @@ const Assinar = () => {
                 >
                   <Icon className="w-6 h-6" style={{ color: SALMAO }} strokeWidth={1.7} />
                 </div>
-                <h3
-                  className="font-serif font-bold text-xl mb-2"
-                  style={{ color: PRIMARY }}
-                >
+                <h3 className="font-serif font-bold text-xl mb-2" style={{ color: PRIMARY }}>
                   {titulo}
                 </h3>
                 <p
@@ -290,11 +575,7 @@ const Assinar = () => {
                 <div className="flex justify-end mb-2">
                   <div
                     className="max-w-[88%] rounded-2xl rounded-br-sm px-4 py-2.5 text-[14px] md:text-[15px] leading-relaxed shadow-sm"
-                    style={{
-                      background: PRIMARY,
-                      color: "#fff",
-                      fontFamily: "'DM Sans', sans-serif",
-                    }}
+                    style={{ background: PRIMARY, color: "#fff", fontFamily: "'DM Sans', sans-serif" }}
                   >
                     {children}
                   </div>
@@ -304,11 +585,7 @@ const Assinar = () => {
                 <div className="flex justify-start mb-2">
                   <div
                     className="max-w-[92%] rounded-2xl rounded-bl-sm px-4 py-2.5 text-[14px] md:text-[15px] leading-relaxed shadow-sm"
-                    style={{
-                      background: AKASHA_BG,
-                      color: PRIMARY,
-                      fontFamily: "'DM Sans', sans-serif",
-                    }}
+                    style={{ background: AKASHA_BG, color: PRIMARY, fontFamily: "'DM Sans', sans-serif" }}
                   >
                     {children}
                   </div>
@@ -473,16 +750,14 @@ const Assinar = () => {
             Comece pela rotina ou vá direto no portal inteiro — a escolha é sua.
           </p>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:items-center">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
             {/* CARD 1 — MINHA ROTINA */}
             <div
-              className="rounded-2xl p-7 flex flex-col border md:my-4"
+              className={cardBase}
               style={{ background: VERDE_BG, borderColor: `${VERDE}33` }}
             >
-              <p
-                className="text-xs uppercase tracking-wider font-bold mb-2"
-                style={{ color: VERDE }}
-              >
+              {planoAtual === "rotina" && <SeuPlanoBadge />}
+              <p className="text-xs uppercase tracking-wider font-bold mb-2" style={{ color: VERDE }}>
                 Minha Rotina
               </p>
               <h3 className="font-serif font-bold text-2xl mb-1" style={{ color: PRIMARY }}>
@@ -498,40 +773,17 @@ const Assinar = () => {
                 Menos de R$1 por dia.
               </p>
 
-              <ul className="space-y-3 mb-8 flex-1">
-                {[
-                  "Rotina completa da semana: café, almoço, jantar, lanches e tônicos",
-                  "Montada para o SEU dosha, com preparo e porquê de cada item",
-                  "Revisão mensal do seu quadro",
-                  "Cancele quando quiser",
-                ].map((t) => (
-                  <li key={t} className="flex items-start gap-2.5">
-                    <Check className="w-5 h-5 shrink-0 mt-0.5" style={{ color: VERDE }} strokeWidth={2.4} />
-                    <span
-                      className="text-sm leading-relaxed"
-                      style={{ color: PRIMARY, fontFamily: "'DM Sans', sans-serif" }}
-                    >
-                      {t}
-                    </span>
-                  </li>
-                ))}
-              </ul>
+              <BeneficiosList plano="rotina" checkColor={VERDE} />
 
-              <button
-                onClick={() => handleAssinar("rotina")}
-                disabled={loadingPlan !== null}
-                className="mt-auto w-full py-3 rounded-full font-semibold text-sm text-white transition-colors disabled:opacity-60"
-                style={{ backgroundColor: VERDE }}
-              >
-                {loadingPlan === "rotina" ? "Redirecionando…" : "Começar minha rotina"}
-              </button>
+              <CardAction plano="rotina" color={VERDE} label="Começar minha rotina" />
             </div>
 
             {/* CARD 2 — PREMIUM MENSAL */}
             <div
-              className="rounded-2xl p-7 flex flex-col border md:my-4"
+              className={cardBase}
               style={{ background: `${SALMAO}12`, borderColor: `${SALMAO}55` }}
             >
+              {planoAtual === "mensal" && <SeuPlanoBadge />}
               <p
                 className="text-xs uppercase tracking-wider font-bold mb-2 inline-flex items-center gap-1.5"
                 style={{ color: SALMAO }}
@@ -551,50 +803,31 @@ const Assinar = () => {
                 Tudo da Rotina, mais a companhia.
               </p>
 
-              <ul className="space-y-3 mb-8 flex-1">
-                {[
-                  "Tudo do plano Minha Rotina",
-                  "Akasha ilimitada: converse de dia ou de madrugada",
-                  "Acervo completo: 900+ aulas do professor",
-                  "Cancele quando quiser",
-                ].map((t) => (
-                  <li key={t} className="flex items-start gap-2.5">
-                    <Check className="w-5 h-5 shrink-0 mt-0.5" style={{ color: SALMAO }} strokeWidth={2.4} />
-                    <span
-                      className="text-sm leading-relaxed"
-                      style={{ color: PRIMARY, fontFamily: "'DM Sans', sans-serif" }}
-                    >
-                      {t}
-                    </span>
-                  </li>
-                ))}
-              </ul>
+              <BeneficiosList plano="mensal" checkColor={SALMAO} />
 
-              <button
-                onClick={() => handleAssinar("mensal")}
-                disabled={loadingPlan !== null}
-                className="mt-auto w-full py-3 rounded-full font-semibold text-sm text-white transition-colors disabled:opacity-60"
-                style={{ backgroundColor: SALMAO }}
-                onMouseEnter={(e) =>
-                  !loadingPlan && (e.currentTarget.style.backgroundColor = SALMAO_HOVER)
-                }
-                onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = SALMAO)}
-              >
-                {loadingPlan === "mensal" ? "Redirecionando…" : "Assinar Premium"}
-              </button>
+              <CardAction
+                plano="mensal"
+                color={SALMAO}
+                hoverColor={SALMAO_HOVER}
+                label="Assinar Premium"
+              />
             </div>
 
-            {/* CARD 3 — PREMIUM ANUAL — destaque */}
+            {/* CARD 3 — PREMIUM ANUAL */}
             <div
-              className="rounded-2xl p-7 flex flex-col border-2 relative shadow-xl md:scale-[1.05]"
+              className={cardBase + " border-2 shadow-xl"}
               style={{ background: DOURADO_BG, borderColor: DOURADO }}
             >
-              <span
-                className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider text-white whitespace-nowrap"
-                style={{ backgroundColor: DOURADO }}
-              >
-                Mais vantajoso
-              </span>
+              {planoAtual === "anual" ? (
+                <SeuPlanoBadge />
+              ) : (
+                <span
+                  className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider text-white whitespace-nowrap"
+                  style={{ backgroundColor: DOURADO }}
+                >
+                  Mais vantajoso
+                </span>
+              )}
               <p
                 className="text-xs uppercase tracking-wider font-bold mb-2 mt-1"
                 style={{ color: DOURADO_DARK }}
@@ -614,78 +847,14 @@ const Assinar = () => {
                 38% DE DESCONTO
               </p>
 
-              <ul className="space-y-3 mb-5 flex-1">
-                {[
-                  "Tudo do Premium, o ano inteiro",
-                  "Equivale a R$ 49,75/mês",
-                ].map((t) => (
-                  <li key={t} className="flex items-start gap-2.5">
-                    <Check
-                      className="w-5 h-5 shrink-0 mt-0.5"
-                      style={{ color: DOURADO_DARK }}
-                      strokeWidth={2.4}
-                    />
-                    <span
-                      className="text-sm leading-relaxed"
-                      style={{ color: PRIMARY, fontFamily: "'DM Sans', sans-serif" }}
-                    >
-                      {t}
-                    </span>
-                  </li>
-                ))}
-              </ul>
+              <BeneficiosList
+                plano="anual"
+                checkColor={DOURADO_DARK}
+                renderItem6Extra={cursoIncluso}
+                renderItem7Extra={seloDesconto}
+              />
 
-              {/* Mini-card do curso incluso */}
-              <div
-                className="rounded-xl border p-3 mb-6 flex items-center gap-3"
-                style={{ background: "#fff", borderColor: `${DOURADO}55` }}
-              >
-                {cursoRotinas?.capa_url ? (
-                  <img
-                    src={cursoRotinas.capa_url}
-                    alt=""
-                    aria-hidden
-                    loading="lazy"
-                    className="w-14 h-14 object-cover rounded-lg shrink-0"
-                  />
-                ) : (
-                  <div
-                    className="w-14 h-14 rounded-lg shrink-0 flex items-center justify-center"
-                    style={{ background: DOURADO_BG }}
-                  >
-                    <Gift className="w-6 h-6" style={{ color: DOURADO }} />
-                  </div>
-                )}
-                <div className="min-w-0">
-                  <p
-                    className="text-[10px] uppercase tracking-wider font-bold mb-0.5 inline-flex items-center gap-1"
-                    style={{ color: DOURADO_DARK }}
-                  >
-                    <Gift className="w-3 h-3" /> Curso incluso
-                  </p>
-                  <p
-                    className="font-serif font-bold text-sm leading-tight"
-                    style={{ color: PRIMARY }}
-                  >
-                    {cursoRotinas?.titulo ?? "Rotinas Diárias do Ayurveda"}
-                  </p>
-                  <p
-                    className="text-xs mt-0.5"
-                    style={{ color: PRIMARY, opacity: 0.7, fontFamily: "'DM Sans', sans-serif" }}
-                  >
-                    valor R$ 99
-                  </p>
-                </div>
-              </div>
-
-              <button
-                onClick={() => handleAssinar("anual")}
-                disabled={loadingPlan !== null}
-                className="mt-auto w-full py-3.5 rounded-full font-bold text-sm text-white transition-opacity disabled:opacity-60"
-                style={{ backgroundColor: DOURADO }}
-              >
-                {loadingPlan === "anual" ? "Redirecionando…" : "Assinar Anual"}
-              </button>
+              <CardAction plano="anual" color={DOURADO} label="Assinar Anual" />
             </div>
           </div>
         </div>
@@ -742,6 +911,36 @@ const Assinar = () => {
           </div>
         </div>
       </section>
+
+      {/* Diálogo de confirmação de upgrade */}
+      <AlertDialog
+        open={upgradeDialog !== null}
+        onOpenChange={(o) => !o && !confirmandoUpgrade && setUpgradeDialog(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle style={{ color: PRIMARY }}>
+              Fazer upgrade para {upgradeDialog ? nomesPlano[upgradeDialog.plano_novo] : ""}
+            </AlertDialogTitle>
+            <AlertDialogDescription className="leading-relaxed">
+              {upgradeDialog?.mensagem}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={confirmandoUpgrade}>Agora não</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => {
+                e.preventDefault();
+                confirmarUpgrade();
+              }}
+              disabled={confirmandoUpgrade}
+              style={{ backgroundColor: SALMAO, color: "#fff" }}
+            >
+              {confirmandoUpgrade ? "Confirmando…" : "Confirmar upgrade"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 };
