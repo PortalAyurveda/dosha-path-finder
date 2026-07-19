@@ -48,6 +48,12 @@ const CursoLanding = () => {
   const navigate = useNavigate();
   const { user } = useUser();
 
+  // A landing de marketing do Rotinas Diárias ainda não foi construída — enquanto
+  // isso, quem cai aqui vai direto para o player (que trata acesso/gate).
+  if (slug === "rotinas-diarias") {
+    return <Navigate to="/cursos/rotinas-diarias/estudar" replace />;
+  }
+
   const [curso, setCurso] = useState<Curso | null>(null);
   const [modulos, setModulos] = useState<Modulo[]>([]);
   const [aulas, setAulas] = useState<AulaIndice[]>([]);
