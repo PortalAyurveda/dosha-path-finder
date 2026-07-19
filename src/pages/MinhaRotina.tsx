@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import * as LucideIcons from "lucide-react";
 import {
   Star,
   Circle,
@@ -13,7 +12,16 @@ import {
   Leaf,
   Lock,
   Check,
+  Package,
+  Sunrise,
+  Coffee,
+  Soup,
+  Moon,
+  Sun,
+  Sparkles,
+  X,
 } from "lucide-react";
+import { getIconeLucide } from "@/lib/iconesLucide";
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 
 import PageContainer from "@/components/PageContainer";
