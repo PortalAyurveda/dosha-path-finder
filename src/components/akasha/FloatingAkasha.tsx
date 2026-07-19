@@ -338,7 +338,9 @@ const FloatingAkasha = () => {
                   <AkashaMessageContent
                     content={msg.content}
                     proseClassName="prose prose-sm max-w-none [&_p]:text-sm [&_p]:leading-relaxed [&_p]:text-foreground [&_p]:my-1 [&_li]:text-sm [&_strong]:text-foreground"
+                    onNavigate={() => setOpen(false)}
                   />
+
 
                 )}
                 {msg.time && (
