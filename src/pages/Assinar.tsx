@@ -100,11 +100,6 @@ const RECEITAS = [
   },
 ];
 
-const PILULAS = [
-  { Icon: VideoIcon, titulo: "900+ aulas do professor", texto: "Acervo completo organizado por tema e por dosha." },
-  { Icon: Library, titulo: "Artigos por dosha", texto: "Guias práticos aplicados ao seu quadro." },
-  { Icon: RefreshCw, titulo: "Revisão do seu quadro todo mês", texto: "Sua rotina acompanha o seu corpo." },
-];
 
 const NUMEROS = [
   "2.700+ testes",
