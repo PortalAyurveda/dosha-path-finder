@@ -46,7 +46,7 @@ const toPascal = (s?: string | null) =>
 
 const getLucide = (name?: string | null): LucideIcon | null => {
   if (!name) return null;
-  return ((LucideIcons as any)[toPascal(name)] as LucideIcon) || null;
+  return (iconesLucide[toPascal(name)] as LucideIcon) || null;
 };
 
 const CardShell = ({ to, children }: { to: string; children: React.ReactNode }) => (
