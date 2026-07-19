@@ -146,12 +146,15 @@ const MinhaRotina = () => {
   const queryClient = useQueryClient();
   const [diaSelecionado, setDiaSelecionado] = useState<number>(1);
 
-  // ?item= : deep-link para abrir um nugget específico já expandido
-  const [focusNuggetId, setFocusNuggetId] = useState<string | null>(() => {
-    if (typeof window === "undefined") return null;
-    return new URLSearchParams(window.location.search).get("item");
-  });
+  // ?item= : deep-link para abrir um nugget específico já expandido (reativo à URL)
+  const [searchParams, setSearchParams] = useSearchParams();
+  const itemParam = searchParams.get("item");
+  const [focusNuggetId, setFocusNuggetId] = useState<string | null>(itemParam);
   const [focusHandled, setFocusHandled] = useState<boolean>(false);
+  useEffect(() => {
+    setFocusNuggetId(itemParam);
+    setFocusHandled(false);
+  }, [itemParam]);
 
   // Retorno do Stripe: /minha-rotina?assinatura=ok — polling do perfil até 30s
   const [confirmandoPagamento, setConfirmandoPagamento] = useState<boolean>(() => {
