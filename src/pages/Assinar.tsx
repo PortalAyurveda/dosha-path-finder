@@ -12,6 +12,10 @@ import {
   Gift,
   Sparkles,
   BadgePercent,
+  Mail,
+  Sun,
+  Sparkle,
+  Clock,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/contexts/UserContext";
