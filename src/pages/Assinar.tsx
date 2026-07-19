@@ -817,6 +817,103 @@ const Assinar = () => {
         </div>
       </section>
 
+      {/* QUEM TE GUIA */}
+      <section className="bg-background">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-14 md:py-20">
+          <div className="grid grid-cols-1 md:grid-cols-[minmax(0,240px)_1fr] gap-8 md:gap-12 items-center">
+            <div className="mx-auto md:mx-0">
+              <div
+                className="w-48 h-48 md:w-56 md:h-56 rounded-full overflow-hidden shadow-lg border-4"
+                style={{ borderColor: `${SALMAO}33` }}
+              >
+                <img
+                  src={PROFESSOR_PHOTO}
+                  alt="Professor Edson Osorío"
+                  loading="lazy"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            </div>
+            <div className="text-center md:text-left">
+              <p
+                className="text-xs uppercase tracking-wider font-bold mb-2"
+                style={{ color: SALMAO }}
+              >
+                Quem te guia
+              </p>
+              <h2
+                className="font-serif italic font-bold text-2xl md:text-3xl mb-4"
+                style={{ color: PRIMARY }}
+              >
+                Professor Edson Osorío
+              </h2>
+              <p
+                className="text-base md:text-lg leading-relaxed mb-3"
+                style={{ color: PRIMARY, opacity: 0.9, fontFamily: "'DM Sans', sans-serif" }}
+              >
+                Terapeuta Ayurveda, fundador do Portal. 15 anos de prática clínica ativa. 13 anos de sala de aula. Mais de 4.500 alunos formados em Nutrição, Dravya Guna, Diagnóstico e Rotinas. Centenas de aulas públicas.
+              </p>
+              <p
+                className="text-base md:text-lg leading-relaxed"
+                style={{ color: PRIMARY, opacity: 0.85, fontFamily: "'DM Sans', sans-serif" }}
+              >
+                Tudo que existe no portal — cada rotina, cada receita, cada resposta da Akasha — nasce do que funciona na clínica dele, adaptado à realidade brasileira: nossos alimentos, nosso clima, nossa vida real.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* COMO FUNCIONA SEU MÊS AQUI */}
+      <section style={{ background: SURFACE }}>
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-14 md:py-20">
+          <h2
+            className="font-serif italic font-bold text-2xl md:text-3xl text-center mb-12"
+            style={{ color: PRIMARY }}
+          >
+            Como funciona seu mês aqui
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 md:gap-8">
+            {[
+              { Icon: Sparkle, label: "Semana 1", texto: "Sua rotina chega montada: os 8 momentos do dia, do café ao tônico da noite, para o seu quadro." },
+              { Icon: Mail, label: "Todo domingo", texto: "'Sua Semana Ayurveda' no seu email: a lição da semana, receitas e conteúdos escolhidos para você." },
+              { Icon: Sun, label: "Todo dia", texto: "A Akasha ao seu lado para dúvidas, ajustes e cuidado." },
+              { Icon: Clock, label: "Todo mês", texto: "Revisão do seu quadro: você refaz o teste, o portal compara sua evolução e a rotina se ajusta — porque seu corpo muda." },
+            ].map(({ Icon, label, texto }, i, arr) => (
+              <div key={label} className="relative flex flex-col items-center text-center md:text-left md:items-start">
+                <div className="flex items-center gap-3 mb-3 md:mb-4">
+                  <div
+                    className="w-11 h-11 rounded-full flex items-center justify-center shrink-0"
+                    style={{ background: `${SALMAO}22` }}
+                  >
+                    <Icon className="w-5 h-5" style={{ color: SALMAO }} strokeWidth={1.8} />
+                  </div>
+                  <p
+                    className="text-xs uppercase tracking-wider font-bold"
+                    style={{ color: SALMAO, fontFamily: "'DM Sans', sans-serif" }}
+                  >
+                    {label}
+                  </p>
+                </div>
+                <p
+                  className="text-sm md:text-base leading-relaxed"
+                  style={{ color: PRIMARY, opacity: 0.88, fontFamily: "'DM Sans', sans-serif" }}
+                >
+                  {texto}
+                </p>
+                {i < arr.length - 1 && (
+                  <span
+                    aria-hidden
+                    className="hidden md:block absolute top-5 -right-4 w-8 h-px"
+                    style={{ background: `${SALMAO}55` }}
+                  />
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* 7) AS 3 OFERTAS */}
       <section id="planos" style={{ background: SURFACE }}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-16 md:py-20">
