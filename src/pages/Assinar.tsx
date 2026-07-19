@@ -115,7 +115,7 @@ const OBJETIVOS = ["Digestão", "Sono", "Ansiedade", "Energia"];
 
 const FAQ = [
   { q: "Preciso já entender de Ayurveda?", a: "Você só precisa fazer o teste de dosha gratuito — leva 5 minutos. O Portal traduz todo o resto em passos simples: o que comer, quando, por quê. O Ayurveda parece complicado porque você vê o resultado pronto; aqui você aprende passo a passo, no seu ritmo." },
-  { q: "A Akasha substitui médico ou nutricionista?", a: "Não — e ela mesma é a primeira a dizer isso. A Akasha orienta seu dia a dia pelo Ayurveda e caminha junto com o seu tratamento. Decisões sobre remédios e diagnósticos continuam com o seu médico." },
+  
   { q: "Como recebo o curso incluso no plano anual?", a: "A matrícula é automática: assinou o anual, o curso Rotinas Diárias aparece liberado na sua conta, para assistir quando quiser, quantas vezes quiser." },
   { q: "O que acontece logo depois que eu assino?", a: "Você entra e sua rotina já está lá, montada para o resultado do seu teste. No primeiro domingo, chega sua primeira 'Semana Ayurveda' por email. E a Akasha já te conhece pelo nome." },
   { q: "Funciona bem no celular?", a: "Sim — o Portal inteiro foi feito para o celular, das receitas às conversas com a Akasha." },
@@ -931,14 +931,14 @@ const Assinar = () => {
 
         {/* 9) PERGUNTAS COMUNS */}
         <section className="bg-background">
-          <div className="max-w-[720px] mx-auto px-4 sm:px-6 py-12 md:py-16">
+          <div className="max-w-[1040px] mx-auto px-4 sm:px-6 py-12 md:py-16">
             <h2
               className="font-serif italic font-bold text-2xl md:text-[28px] text-center mb-8"
               style={{ color: PRIMARY }}
             >
               Perguntas comuns
             </h2>
-            <div className="space-y-2">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-x-4 md:gap-y-2 items-start">
               {FAQ.map((item, i) => {
                 const isOpen = openFaq === i;
                 return (

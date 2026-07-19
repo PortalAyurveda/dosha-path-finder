@@ -5733,6 +5733,13 @@ export type Database = {
           payload: Json
         }[]
       }
+      agenda_dominical: {
+        Args: { p_limite?: number }
+        Returns: {
+          email: string
+          payload: Json
+        }[]
+      }
       akasha_distribuicao_horas: {
         Args: never
         Returns: {
