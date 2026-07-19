@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import * as LucideIcons from "lucide-react";
 import { Flame, Award, ChefHat, ArrowRight, Check, Leaf } from "lucide-react";
+import { getIconeLucide } from "@/lib/iconesLucide";
 import { lazy, Suspense } from "react";
 
 const DoshaPieChart = lazy(() => import("@/components/charts/DoshaPieChart"));
@@ -510,9 +510,7 @@ const LoggedHero = () => {
                   const objetivos = total > 0 ? calcObjetivos(vata, pitta, kapha) : [];
                   const nug = (rotinaPreviewTop as any)?.nug;
                   const backNugs = rotinaPreviewBack.map((r: any) => r.nug).filter(Boolean);
-                  const IconEl = nug?.icone_lucide
-                    ? (LucideIcons as any)[nug.icone_lucide]
-                    : null;
+                  const IconEl = nug?.icone_lucide ? getIconeLucide(nug.icone_lucide) : null;
                   const ingredientes: { qtd?: string; item?: string }[] =
                     Array.isArray(nug?.nugget_json?.ingredientes) ? nug.nugget_json.ingredientes : [];
                   const ingredPreview = ingredientes

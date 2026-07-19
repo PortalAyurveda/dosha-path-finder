@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import * as LucideIcons from "lucide-react";
 import {
   Star,
   Circle,
@@ -13,7 +12,16 @@ import {
   Leaf,
   Lock,
   Check,
+  Package,
+  Sunrise,
+  Coffee,
+  Soup,
+  Moon,
+  Sun,
+  Sparkles,
+  X,
 } from "lucide-react";
+import { getIconeLucide } from "@/lib/iconesLucide";
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 
 import PageContainer from "@/components/PageContainer";
@@ -1055,11 +1063,7 @@ const RotinaSlotCard = ({
     return () => { clearTimeout(t1); clearTimeout(t2); };
   }, [focus]);
 
-  const iconName = nugget?.icone_lucide || "Circle";
-  const IconCmp =
-    ((LucideIcons as unknown) as Record<string, React.ComponentType<{ className?: string }>>)[
-      iconName
-    ] ?? Circle;
+  const IconCmp = getIconeLucide(nugget?.icone_lucide);
 
   const mostrarChama =
     !!nugget?.nugget_json?.bom_para_agni && agniFracoOuIrregular;
@@ -1577,7 +1581,7 @@ const SuplementosSection = ({ vata, pitta, kapha }: SuplementosSectionProps) => 
                   />
                 ) : (
                   <div className="h-16 w-16 rounded-lg bg-secondary/10 text-secondary flex items-center justify-center shrink-0">
-                    <LucideIcons.Package className="h-6 w-6" />
+                    <Package className="h-6 w-6" />
                   </div>
                 )}
                 <div className="min-w-0 flex-1">
@@ -1597,7 +1601,7 @@ const SuplementosSection = ({ vata, pitta, kapha }: SuplementosSectionProps) => 
                   className="inline-flex items-center gap-1.5 self-start text-sm font-medium text-primary hover:underline"
                 >
                   ver na loja
-                  <LucideIcons.ArrowRight className="h-3.5 w-3.5" />
+                  <ArrowRight className="h-3.5 w-3.5" />
                 </Link>
               )}
             </Card>
@@ -1872,14 +1876,14 @@ const PaywallLanding = ({ doshaPrincipal, onDesbloquear, carregando, top3, vitri
   const dosha = doshaPrincipal ?? "seu dosha";
 
   const recebe = [
-    { Icon: LucideIcons.Sunrise, titulo: "Café da manhã", desc: "Receita completa: ingredientes, modo de preparo, vídeo do professor e por que funciona pro seu dosha." },
-    { Icon: LucideIcons.Coffee, titulo: "Lanche da manhã", desc: "Um lanche leve, certo pro seu agni nesse momento do dia." },
-    { Icon: LucideIcons.Soup, titulo: "Almoço", desc: `Prato completo (cereal, proteína, legume, acompanhamento) pra equilibrar ${dosha === "seu dosha" ? "seu dosha" : `seu ${dosha}`}.` },
-    { Icon: LucideIcons.Leaf, titulo: "Lanche da tarde", desc: "Um chá funcional pro seu estado atual." },
-    { Icon: LucideIcons.Soup, titulo: "Jantar", desc: "Sopa ou caldo, sempre quente, no horário certo." },
-    { Icon: LucideIcons.Moon, titulo: "Tônico da noite", desc: "30 min antes de dormir: o elixir certo pro seu dosha. Mingau, leite vegetal ou chá calmante, varia a cada dia." },
-    { Icon: LucideIcons.Sun, titulo: "Rotina da manhã", desc: "A prática do dia (abhyanga, pranayama, meditação) com instrução completa." },
-    { Icon: LucideIcons.Sparkles, titulo: "Prática do dia", desc: "Yoga, meditação ou respiração. Diferente a cada dia." },
+    { Icon: Sunrise, titulo: "Café da manhã", desc: "Receita completa: ingredientes, modo de preparo, vídeo do professor e por que funciona pro seu dosha." },
+    { Icon: Coffee, titulo: "Lanche da manhã", desc: "Um lanche leve, certo pro seu agni nesse momento do dia." },
+    { Icon: Soup, titulo: "Almoço", desc: `Prato completo (cereal, proteína, legume, acompanhamento) pra equilibrar ${dosha === "seu dosha" ? "seu dosha" : `seu ${dosha}`}.` },
+    { Icon: Leaf, titulo: "Lanche da tarde", desc: "Um chá funcional pro seu estado atual." },
+    { Icon: Soup, titulo: "Jantar", desc: "Sopa ou caldo, sempre quente, no horário certo." },
+    { Icon: Moon, titulo: "Tônico da noite", desc: "30 min antes de dormir: o elixir certo pro seu dosha. Mingau, leite vegetal ou chá calmante, varia a cada dia." },
+    { Icon: Sun, titulo: "Rotina da manhã", desc: "A prática do dia (abhyanga, pranayama, meditação) com instrução completa." },
+    { Icon: Sparkles, titulo: "Prática do dia", desc: "Yoga, meditação ou respiração. Diferente a cada dia." },
   ];
 
   const paraQuemE = [
@@ -2078,7 +2082,7 @@ const PaywallLanding = ({ doshaPrincipal, onDesbloquear, carregando, top3, vitri
             <ul className="space-y-2.5">
               {paraQuemNao.map((t) => (
                 <li key={t} className="flex items-start gap-2.5 text-sm text-muted-foreground">
-                  <LucideIcons.X className="h-4 w-4 mt-0.5 shrink-0" />
+                  <X className="h-4 w-4 mt-0.5 shrink-0" />
                   <span className="leading-relaxed">{t}</span>
                 </li>
               ))}

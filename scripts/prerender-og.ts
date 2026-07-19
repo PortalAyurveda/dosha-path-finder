@@ -404,15 +404,26 @@ async function bakeHome(distDir: string): Promise<void> {
   // (c) preload/preconnect do head baixado
   const headMatch = html.match(/<head[^>]*>([\s\S]*?)<\/head>/i);
   const headSrc = headMatch ? headMatch[1] : "";
-  const linkTags = (
+  const rawLinks =
     headSrc.match(
       /<link\b[^>]*\brel=["'](?:preload|preconnect)["'][^>]*\/?>/gi
-    ) || []
-  ).join("\n    ");
+    ) || [];
 
   // Injetar no dist/index.html
   let dist = readFileSync(outPath, "utf8");
   const beforeSize = dist.length;
+
+  const filteredLinks = rawLinks.filter((tag) => {
+    const hrefMatch = tag.match(/\bhref=["']([^"']+)["']/i);
+    const href = hrefMatch ? hrefMatch[1] : "";
+    if (!href) return false;
+    // descarta fontes do google que só bloqueiam o render
+    if (/fonts\.(googleapis|gstatic)\.com/i.test(href)) return false;
+    // dedupe: não injeta link cujo href já existe no dist
+    if (dist.includes(`href="${href}"`) || dist.includes(`href='${href}'`)) return false;
+    return true;
+  });
+  const linkTags = filteredLinks.join("\n    ");
 
   if (linkTags) {
     dist = dist.replace(/<head(\s[^>]*)?>/i, (m) => `${m}\n    ${linkTags}`);
