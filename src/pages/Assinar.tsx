@@ -115,7 +115,7 @@ const OBJETIVOS = ["Digestão", "Sono", "Ansiedade", "Energia"];
 
 const FAQ = [
   { q: "Preciso já entender de Ayurveda?", a: "Você só precisa fazer o teste de dosha gratuito — leva 5 minutos. O Portal traduz todo o resto em passos simples: o que comer, quando, por quê. O Ayurveda parece complicado porque você vê o resultado pronto; aqui você aprende passo a passo, no seu ritmo." },
-  { q: "A Akasha substitui médico ou nutricionista?", a: "Não — e ela mesma é a primeira a dizer isso. A Akasha orienta seu dia a dia pelo Ayurveda e caminha junto com o seu tratamento. Decisões sobre remédios e diagnósticos continuam com o seu médico." },
+  
   { q: "Como recebo o curso incluso no plano anual?", a: "A matrícula é automática: assinou o anual, o curso Rotinas Diárias aparece liberado na sua conta, para assistir quando quiser, quantas vezes quiser." },
   { q: "O que acontece logo depois que eu assino?", a: "Você entra e sua rotina já está lá, montada para o resultado do seu teste. No primeiro domingo, chega sua primeira 'Semana Ayurveda' por email. E a Akasha já te conhece pelo nome." },
   { q: "Funciona bem no celular?", a: "Sim — o Portal inteiro foi feito para o celular, das receitas às conversas com a Akasha." },
