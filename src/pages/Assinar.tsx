@@ -484,13 +484,6 @@ const Assinar = () => {
             </p>
 
             <div className="relative">
-              {/* Trilha pontilhada vertical — mobile */}
-              <span
-                aria-hidden
-                className="md:hidden absolute top-10 bottom-10 left-1/2 -translate-x-1/2 border-l-2 border-dotted"
-                style={{ borderColor: `${SALMAO}88` }}
-              />
-
               <ol className="relative grid grid-cols-1 md:grid-cols-5 gap-10 md:gap-3 md:pt-8">
                 {/* Trilha pontilhada ondulada — desktop, cruzando o centro dos círculos */}
                 <svg
@@ -502,6 +495,25 @@ const Assinar = () => {
                 >
                   <path
                     d="M 100 24 C 150 2, 250 2, 300 24 S 450 46, 500 24 S 650 2, 700 24 S 850 46, 900 24"
+                    fill="none"
+                    stroke={SALMAO}
+                    strokeOpacity="0.6"
+                    strokeWidth="2"
+                    strokeDasharray="2 8"
+                    strokeLinecap="round"
+                  />
+                </svg>
+
+                {/* Trilha pontilhada ondulada — mobile, vertical cruzando o centro dos círculos */}
+                <svg
+                  aria-hidden
+                  className="md:hidden absolute left-1/2 -translate-x-1/2 pointer-events-none"
+                  style={{ top: "24px", bottom: "24px", width: "80px" }}
+                  viewBox="0 0 80 1000"
+                  preserveAspectRatio="none"
+                >
+                  <path
+                    d="M 40 0 C 10 100, 70 200, 40 300 S 10 500, 40 600 S 70 800, 40 1000"
                     fill="none"
                     stroke={SALMAO}
                     strokeOpacity="0.6"
@@ -962,25 +974,25 @@ const Assinar = () => {
               Receitas com ingredientes do mercado do seu bairro — e um acervo inteiro por trás.
             </p>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 mb-6">
               {RECEITAS.map((r) => (
                 <div
                   key={r.titulo}
-                  className="rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm overflow-hidden border shadow-sm"
+                  className="rounded-tl-xl rounded-br-xl rounded-tr-sm rounded-bl-sm overflow-hidden border shadow-sm flex sm:block"
                   style={{ background: PAPER, borderColor: "rgba(53,47,84,0.08)" }}
                 >
-                  <div className="aspect-[4/3] overflow-hidden">
+                  <div className="w-24 shrink-0 sm:w-auto sm:aspect-[4/3] overflow-hidden">
                     <img src={r.url} alt={r.titulo} loading="lazy" className="w-full h-full object-cover" />
                   </div>
-                  <div className="p-3">
-                    <p className="text-[10px] uppercase tracking-wider font-bold mb-1" style={{ color: "#C93F3F" }}>
+                  <div className="p-2.5 sm:p-3 min-w-0 flex-1">
+                    <p className="text-[9px] sm:text-[10px] uppercase tracking-wider font-bold mb-0.5" style={{ color: "#C93F3F" }}>
                       Receita
                     </p>
-                    <h3 className="font-serif font-bold text-sm leading-tight mb-1" style={{ color: PRIMARY }}>
+                    <h3 className="font-serif font-bold text-[13px] sm:text-sm leading-tight mb-0.5" style={{ color: PRIMARY }}>
                       {r.titulo}
                     </h3>
                     <p
-                      className="text-xs leading-snug"
+                      className="text-[11px] sm:text-xs leading-snug line-clamp-2 sm:line-clamp-none"
                       style={{ color: PRIMARY, opacity: 0.75, fontFamily: "'DM Sans', sans-serif" }}
                     >
                       {r.resumo}
