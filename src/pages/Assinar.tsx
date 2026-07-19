@@ -974,25 +974,25 @@ const Assinar = () => {
               Receitas com ingredientes do mercado do seu bairro — e um acervo inteiro por trás.
             </p>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 mb-6">
               {RECEITAS.map((r) => (
                 <div
                   key={r.titulo}
-                  className="rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm overflow-hidden border shadow-sm"
+                  className="rounded-tl-xl rounded-br-xl rounded-tr-sm rounded-bl-sm overflow-hidden border shadow-sm flex sm:block"
                   style={{ background: PAPER, borderColor: "rgba(53,47,84,0.08)" }}
                 >
-                  <div className="aspect-[4/3] overflow-hidden">
+                  <div className="w-24 shrink-0 sm:w-auto sm:aspect-[4/3] overflow-hidden">
                     <img src={r.url} alt={r.titulo} loading="lazy" className="w-full h-full object-cover" />
                   </div>
-                  <div className="p-3">
-                    <p className="text-[10px] uppercase tracking-wider font-bold mb-1" style={{ color: "#C93F3F" }}>
+                  <div className="p-2.5 sm:p-3 min-w-0 flex-1">
+                    <p className="text-[9px] sm:text-[10px] uppercase tracking-wider font-bold mb-0.5" style={{ color: "#C93F3F" }}>
                       Receita
                     </p>
-                    <h3 className="font-serif font-bold text-sm leading-tight mb-1" style={{ color: PRIMARY }}>
+                    <h3 className="font-serif font-bold text-[13px] sm:text-sm leading-tight mb-0.5" style={{ color: PRIMARY }}>
                       {r.titulo}
                     </h3>
                     <p
-                      className="text-xs leading-snug"
+                      className="text-[11px] sm:text-xs leading-snug line-clamp-2 sm:line-clamp-none"
                       style={{ color: PRIMARY, opacity: 0.75, fontFamily: "'DM Sans', sans-serif" }}
                     >
                       {r.resumo}
