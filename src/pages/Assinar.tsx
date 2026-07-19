@@ -12,6 +12,10 @@ import {
   Gift,
   Sparkles,
   BadgePercent,
+  Mail,
+  Sun,
+  Sparkle,
+  Clock,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/contexts/UserContext";
@@ -42,6 +46,9 @@ const VERDE_BG = "#EAF3EC";
 const DOURADO = "#B8892E";
 const DOURADO_BG = "#FBF3DE";
 const DOURADO_DARK = "#8C641C";
+
+const PROFESSOR_PHOTO =
+  "https://api.portalayurveda.com/storage/v1/object/public/portal_images/b8f47f-5f003e6165b44645b7163ec3dd646d32mv2-1.jpg";
 
 type Plano = "rotina" | "mensal" | "anual";
 
@@ -86,11 +93,35 @@ const RECEITAS = [
 const NUMEROS = [
   "2.700+ testes de dosha realizados",
   "900+ aulas no acervo",
-  "148 receitas fotografadas",
-  "Revisão do seu quadro todo mês",
+  "4.500+ alunas formadas pelo professor",
+  "15 anos de clínica Ayurveda",
 ];
 
 const FAQ = [
+  {
+    q: "Preciso já entender de Ayurveda?",
+    a: "Você só precisa fazer o teste de dosha gratuito — leva 5 minutos. O portal traduz todo o resto em passos simples: o que comer, quando, por quê. O Ayurveda parece complicado porque você vê o resultado pronto; aqui você aprende passo a passo, no seu ritmo.",
+  },
+  {
+    q: "A Akasha substitui médico ou nutricionista?",
+    a: "Não — e ela mesma é a primeira a dizer isso. A Akasha orienta seu dia a dia pelo Ayurveda e caminha junto com o seu tratamento. Decisões sobre remédios e diagnósticos continuam com o seu médico.",
+  },
+  {
+    q: "Como recebo o curso incluso no plano anual?",
+    a: "A matrícula é automática: assinou o anual, o curso Rotinas Diárias aparece liberado na sua conta, para assistir quando quiser, quantas vezes quiser.",
+  },
+  {
+    q: "O que acontece logo depois que eu assino?",
+    a: "Você entra e sua rotina já está lá, montada para o resultado do seu teste. No primeiro domingo, chega sua primeira 'Semana Ayurveda' por email. E a Akasha já te conhece pelo nome.",
+  },
+  {
+    q: "Funciona bem no celular?",
+    a: "Sim — o portal inteiro foi feito para o celular, das receitas às conversas com a Akasha.",
+  },
+  {
+    q: "Posso mudar de plano depois?",
+    a: "Pode, a qualquer momento, direto nesta página — quem assina a Rotina sobe para o Premium pagando só a diferença proporcional.",
+  },
   {
     q: "Posso cancelar quando quiser?",
     a: "Sim, direto no portal, na sua conta — sem ligação e sem burocracia. O acesso vai até o fim do período já pago.",
@@ -430,6 +461,12 @@ const Assinar = () => {
           </span>
         </span>
       </span>
+      <span
+        className="block mt-2 text-xs leading-relaxed"
+        style={{ color: PRIMARY, opacity: 0.8, fontFamily: "'DM Sans', sans-serif" }}
+      >
+        Rotinas Diárias do Ayurveda: o curso do professor sobre dinacharya — 3 módulos e 11 aulas sobre os horários e hábitos que sustentam sua saúde, para assistir dentro do portal, no seu ritmo.
+      </span>
     </span>
   );
 
@@ -484,11 +521,29 @@ const Assinar = () => {
         </div>
       </section>
 
-      {/* 2) O QUE VOCÊ RECEBE */}
-      <section className="bg-background">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-16 md:py-20">
+      {/* 2) O QUE É O PORTAL AYURVEDA */}
+      <section className="bg-background border-b border-border/40">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 py-12 md:py-16 text-center">
           <h2
-            className="font-serif italic font-bold text-3xl md:text-4xl text-center mb-12"
+            className="font-serif italic font-bold text-2xl md:text-3xl mb-5"
+            style={{ color: PRIMARY }}
+          >
+            O que é o Portal Ayurveda
+          </h2>
+          <p
+            className="text-base md:text-lg leading-relaxed"
+            style={{ color: PRIMARY, opacity: 0.88, fontFamily: "'DM Sans', sans-serif" }}
+          >
+            O Portal Ayurveda nasceu da clínica do professor Edson Osorío para um propósito simples: transformar o Ayurveda em cuidado diário, prático e brasileiro. Aqui, tudo começa pelo seu teste de dosha gratuito — a partir dele, o portal inteiro se molda a você: sua rotina de alimentação e hábitos, os conteúdos que aparecem, as receitas, a Akasha. Mais de 2.700 pessoas já fizeram o teste, e mais de 4.500 alunas já se formaram nos cursos do professor.
+          </p>
+        </div>
+      </section>
+
+      {/* 3) O QUE VOCÊ RECEBE */}
+      <section className="bg-background">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10 md:py-12">
+          <h2
+            className="font-serif italic font-bold text-2xl md:text-3xl text-center mb-8"
             style={{ color: PRIMARY }}
           >
             O que você recebe
@@ -517,17 +572,17 @@ const Assinar = () => {
         </div>
       </section>
 
-      {/* 3) RETRATO CLÍNICO */}
+      {/* 4) RETRATO CLÍNICO */}
       <section style={{ background: SURFACE }}>
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 py-16 md:py-20">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 py-10 md:py-14">
           <h2
-            className="font-serif italic font-bold text-3xl md:text-4xl text-center mb-4"
+            className="font-serif italic font-bold text-2xl md:text-3xl text-center mb-3"
             style={{ color: PRIMARY }}
           >
             Tudo começa pelo seu retrato
           </h2>
           <p
-            className="text-center text-base md:text-lg mb-10 max-w-2xl mx-auto leading-relaxed"
+            className="text-center text-base md:text-lg mb-8 max-w-2xl mx-auto leading-relaxed"
             style={{ color: PRIMARY, opacity: 0.85, fontFamily: "'DM Sans', sans-serif" }}
           >
             O teste gratuito desenha seu quadro — e os planos trabalham em cima dele.
@@ -653,10 +708,44 @@ const Assinar = () => {
                       Para alguém com Vata e Pitta altos eu tenderia a preferir tomar junto de algo morno e mais nutritivo, como depois do jantar ou perto da noite, porque o magnésio costuma acalmar o sistema nervoso. Como você está com secura e sensibilidade, eu evitaria tomar de estômago vazio.
                     </Akasha>
                   </Card>
+
+                  <Card label="Ela ensina no seu prato">
+                    <Person>
+                      Acrescentar inhame para fazer o creme de milho já ajuda?
+                    </Person>
+                    <Akasha>
+                      Sim, ajuda bastante. O inhame traz mais corpo, maciez e densidade, e isso conversa melhor com Vata do que um creme só de milho, mais seco. Se ele estiver bem cozido e virar um creme liso, já melhora muito a qualidade do prato, principalmente se entrar com ghee e especiarias suaves.
+                    </Akasha>
+                  </Card>
+
+                  <Card label="Ela conhece as especiarias">
+                    <Person>
+                      Quais as especiarias induzem sono reparador?
+                    </Person>
+                    <Akasha>
+                      Para sono reparador, as mais citadas são noz-moscada, cardamomo, cravo, canela, erva-doce e um toque de gengibre. Em geral, elas entram melhor em leite morno ou numa bebida quente e suave, porque ajudam a aterrar o Vata sem estimular demais. Só cuidado com a canela e o gengibre em excesso, porque podem aquecer demais.
+                    </Akasha>
+                  </Card>
+
+                  <Card label="Ela cuida do seu sono">
+                    <Person>
+                      Indique um chá para dificuldade de manter o sono. Eu durmo cedo, mas desperto às 3h.
+                    </Person>
+                    <Akasha>
+                      Para acordar às 3h, o que costuma ajudar é um leite morno com especiarias, metade leite e metade água, com um pouco de ghee e um toque de açúcar mascavo. Na linguagem ayurvédica, isso aterra o Vata e favorece sono mais profundo; evite chá preto e qualquer estimulante à noite.
+                    </Akasha>
+                  </Card>
                 </>
               );
             })()}
           </div>
+
+          <p
+            className="mt-10 text-center text-base md:text-lg max-w-3xl mx-auto leading-relaxed"
+            style={{ color: PRIMARY, opacity: 0.85, fontFamily: "'DM Sans', sans-serif" }}
+          >
+            Essa é a Akasha — a inteligência do portal, treinada no acervo completo do professor Edson. Ela conhece o seu dosha, lembra das suas conversas e está disponível a qualquer hora, inclusive de madrugada. Ela orienta seu dia a dia e caminha junto com o seu médico — nunca no lugar dele.
+          </p>
         </div>
       </section>
 
@@ -729,6 +818,103 @@ const Assinar = () => {
               >
                 {n}
               </p>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* QUEM TE GUIA */}
+      <section className="bg-background">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-14 md:py-20">
+          <div className="grid grid-cols-1 md:grid-cols-[minmax(0,240px)_1fr] gap-8 md:gap-12 items-center">
+            <div className="mx-auto md:mx-0">
+              <div
+                className="w-48 h-48 md:w-56 md:h-56 rounded-full overflow-hidden shadow-lg border-4"
+                style={{ borderColor: `${SALMAO}33` }}
+              >
+                <img
+                  src={PROFESSOR_PHOTO}
+                  alt="Professor Edson Osorío"
+                  loading="lazy"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            </div>
+            <div className="text-center md:text-left">
+              <p
+                className="text-xs uppercase tracking-wider font-bold mb-2"
+                style={{ color: SALMAO }}
+              >
+                Quem te guia
+              </p>
+              <h2
+                className="font-serif italic font-bold text-2xl md:text-3xl mb-4"
+                style={{ color: PRIMARY }}
+              >
+                Professor Edson Osorío
+              </h2>
+              <p
+                className="text-base md:text-lg leading-relaxed mb-3"
+                style={{ color: PRIMARY, opacity: 0.9, fontFamily: "'DM Sans', sans-serif" }}
+              >
+                Terapeuta Ayurveda, fundador do Portal. 15 anos de prática clínica ativa. 13 anos de sala de aula. Mais de 4.500 alunos formados em Nutrição, Dravya Guna, Diagnóstico e Rotinas. Centenas de aulas públicas.
+              </p>
+              <p
+                className="text-base md:text-lg leading-relaxed"
+                style={{ color: PRIMARY, opacity: 0.85, fontFamily: "'DM Sans', sans-serif" }}
+              >
+                Tudo que existe no portal — cada rotina, cada receita, cada resposta da Akasha — nasce do que funciona na clínica dele, adaptado à realidade brasileira: nossos alimentos, nosso clima, nossa vida real.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* COMO FUNCIONA SEU MÊS AQUI */}
+      <section style={{ background: SURFACE }}>
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-14 md:py-20">
+          <h2
+            className="font-serif italic font-bold text-2xl md:text-3xl text-center mb-12"
+            style={{ color: PRIMARY }}
+          >
+            Como funciona seu mês aqui
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 md:gap-8">
+            {[
+              { Icon: Sparkle, label: "Semana 1", texto: "Sua rotina chega montada: os 8 momentos do dia, do café ao tônico da noite, para o seu quadro." },
+              { Icon: Mail, label: "Todo domingo", texto: "'Sua Semana Ayurveda' no seu email: a lição da semana, receitas e conteúdos escolhidos para você." },
+              { Icon: Sun, label: "Todo dia", texto: "A Akasha ao seu lado para dúvidas, ajustes e cuidado." },
+              { Icon: Clock, label: "Todo mês", texto: "Revisão do seu quadro: você refaz o teste, o portal compara sua evolução e a rotina se ajusta — porque seu corpo muda." },
+            ].map(({ Icon, label, texto }, i, arr) => (
+              <div key={label} className="relative flex flex-col items-center text-center md:text-left md:items-start">
+                <div className="flex items-center gap-3 mb-3 md:mb-4">
+                  <div
+                    className="w-11 h-11 rounded-full flex items-center justify-center shrink-0"
+                    style={{ background: `${SALMAO}22` }}
+                  >
+                    <Icon className="w-5 h-5" style={{ color: SALMAO }} strokeWidth={1.8} />
+                  </div>
+                  <p
+                    className="text-xs uppercase tracking-wider font-bold"
+                    style={{ color: SALMAO, fontFamily: "'DM Sans', sans-serif" }}
+                  >
+                    {label}
+                  </p>
+                </div>
+                <p
+                  className="text-sm md:text-base leading-relaxed"
+                  style={{ color: PRIMARY, opacity: 0.88, fontFamily: "'DM Sans', sans-serif" }}
+                >
+                  {texto}
+                </p>
+                {i < arr.length - 1 && (
+                  <span
+                    aria-hidden
+                    className="hidden md:block absolute top-5 -right-4 w-8 h-px"
+                    style={{ background: `${SALMAO}55` }}
+                  />
+                )}
+              </div>
             ))}
           </div>
         </div>
@@ -853,6 +1039,16 @@ const Assinar = () => {
                 renderItem6Extra={cursoIncluso}
                 renderItem7Extra={seloDesconto}
               />
+
+              <div
+                className="rounded-xl border p-4 mb-4 text-sm leading-relaxed"
+                style={{ background: "#fff", borderColor: `${DOURADO}55`, color: PRIMARY, fontFamily: "'DM Sans', sans-serif" }}
+              >
+                <p className="text-[10px] uppercase tracking-wider font-bold mb-1.5" style={{ color: DOURADO_DARK }}>
+                  Conta feita
+                </p>
+                12 meses de Premium (R$ 958,80) + curso Rotinas Diárias (R$ 99) = <strong>R$ 1.057,80</strong> em valor. Você paga <strong>R$ 597</strong>.
+              </div>
 
               <CardAction plano="anual" color={DOURADO} label="Assinar Anual" />
             </div>
