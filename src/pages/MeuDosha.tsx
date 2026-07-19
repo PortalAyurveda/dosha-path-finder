@@ -721,25 +721,8 @@ const MeuDosha = () => {
     refetchOnWindowFocus: false,
   });
 
-  // Realtime: update query cache on row changes
-  useEffect(() => {
-    if (!id) return;
-    const channel = supabase
-      .channel(`meu-dosha-${id}`)
-      .on('postgres_changes', {
-        event: 'UPDATE',
-        schema: 'public',
-        table: 'doshas_registros',
-        filter: `idPublico=eq.${id}`,
-      }, (payload) => {
-        queryClient.setQueryData(['meudosha-registro', id], (old: any) => ({
-          ...(old || {}),
-          ...payload.new,
-        }));
-      })
-      .subscribe();
-    return () => { supabase.removeChannel(channel); };
-  }, [id, queryClient]);
+  // Realtime removido: resultado é buscado sob demanda via RPC.
+
 
   // ── Prefetch tab data after registro loads (idle, low-priority) ──
   useEffect(() => {
