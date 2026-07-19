@@ -101,7 +101,8 @@ const extractInternalCards = (
     seen.add(path);
     const rValue = extractRParam(path);
     const kind: InternalCard["kind"] = rValue ? "receita" : classifyPath(path);
-    const finalTitle = rValue ? humanize(rValue) : title.trim();
+    const trimmedTitle = title.trim();
+    const finalTitle = trimmedTitle || (rValue ? humanize(rValue) : trimmedTitle);
     cards.push({ path, title: finalTitle, kind });
     return "";
   });
