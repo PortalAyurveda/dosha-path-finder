@@ -2,7 +2,8 @@ import { Link } from "react-router-dom";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Play, Leaf, Sparkles, icons as LucideIcons, type LucideIcon } from "lucide-react";
+import { Play, Leaf, Sparkles, type LucideIcon } from "lucide-react";
+import { iconesLucide } from "@/lib/iconesLucide";
 
 type ItemBase = {
   titulo?: string | null;
