@@ -974,35 +974,142 @@ const Assinar = () => {
               ))}
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {PILULAS.map(({ Icon, titulo, texto }) => (
+          </div>
+        </section>
+
+        {/* 6) TUDO NUM SÓ LUGAR — biblioteca + Relógio dos Doshas + curso */}
+        <section className="bg-background">
+          <div className="max-w-[1040px] mx-auto px-4 sm:px-6 py-10 md:py-14">
+            <p
+              className="text-[11px] uppercase tracking-wider font-bold text-center mb-2"
+              style={{ color: SALMAO, fontFamily: "'DM Sans', sans-serif" }}
+            >
+              Tudo num só lugar
+            </p>
+            <h2
+              className="font-serif italic font-bold text-2xl md:text-[28px] text-center mb-8"
+              style={{ color: PRIMARY }}
+            >
+              O acervo inteiro, organizado pra você
+            </h2>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
+              {/* Esquerda: Relógio dos Doshas */}
+              <a
+                href="/biblioteca/horarios"
+                className="rounded-2xl border p-5 bg-card shadow-sm flex flex-col items-center text-center transition-shadow hover:shadow-md"
+                style={{ borderColor: "rgba(53,47,84,0.14)" }}
+              >
+                <div className="w-[190px] h-[190px] relative flex items-center justify-center">
+                  <div
+                    className="absolute inset-0 rounded-full"
+                    style={{
+                      background:
+                        "conic-gradient(from 270deg, #57BE86 0deg 60deg, #F0857F 60deg 180deg, #6B8FE8 180deg 240deg, #57BE86 240deg 300deg, #F0857F 300deg 360deg)",
+                    }}
+                  />
+                  <div
+                    className="absolute rounded-full bg-card border shadow-inner flex flex-col items-center justify-center text-center px-3"
+                    style={{ inset: 22, borderColor: "rgba(53,47,84,0.10)" }}
+                  >
+                    <span className="font-serif italic font-bold text-lg" style={{ color: PRIMARY }}>
+                      6h → 22h
+                    </span>
+                    <span
+                      className="text-[10px] uppercase tracking-wider mt-1 font-bold"
+                      style={{ color: PRIMARY, opacity: 0.65, fontFamily: "'DM Sans', sans-serif" }}
+                    >
+                      seu dia em doshas
+                    </span>
+                  </div>
+                </div>
+                <div className="mt-3 flex items-center gap-3 text-[11px] font-semibold" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                  <span className="inline-flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full" style={{ background: "#57BE86" }} /><span style={{ color: PRIMARY }}>K</span></span>
+                  <span className="inline-flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full" style={{ background: "#F0857F" }} /><span style={{ color: PRIMARY }}>P</span></span>
+                  <span className="inline-flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full" style={{ background: "#6B8FE8" }} /><span style={{ color: PRIMARY }}>V</span></span>
+                </div>
+                <p className="font-serif font-bold text-[15px] mt-4" style={{ color: PRIMARY }}>
+                  O Relógio dos Doshas
+                </p>
+                <p
+                  className="text-[12px] leading-snug mt-1 max-w-xs"
+                  style={{ color: PRIMARY, opacity: 0.75, fontFamily: "'DM Sans', sans-serif" }}
+                >
+                  Os horários do seu corpo: quando comer, mover e descansar.
+                </p>
+              </a>
+
+              {/* Direita: 3 blocos */}
+              <div className="flex flex-col gap-3">
                 <div
-                  key={titulo}
-                  className="rounded-xl border p-4 flex items-start gap-3"
+                  className="rounded-xl border p-3.5 flex items-start gap-3"
                   style={{ background: "#fff", borderColor: "rgba(53,47,84,0.10)" }}
                 >
-                  <div
-                    className="w-9 h-9 rounded-full flex items-center justify-center shrink-0"
-                    style={{ background: `${SALMAO}22` }}
-                  >
-                    <Icon className="w-4 h-4" style={{ color: SALMAO }} strokeWidth={1.9} />
+                  <div className="w-9 h-9 rounded-full flex items-center justify-center shrink-0" style={{ background: `${SALMAO}22` }}>
+                    <VideoIcon className="w-4 h-4" style={{ color: SALMAO }} strokeWidth={1.9} />
                   </div>
                   <div>
                     <p className="font-serif font-bold text-sm leading-tight mb-0.5" style={{ color: PRIMARY }}>
-                      {titulo}
+                      900+ aulas do professor
                     </p>
-                    <p
-                      className="text-xs leading-snug"
-                      style={{ color: PRIMARY, opacity: 0.75, fontFamily: "'DM Sans', sans-serif" }}
-                    >
-                      {texto}
+                    <p className="text-xs leading-snug" style={{ color: PRIMARY, opacity: 0.75, fontFamily: "'DM Sans', sans-serif" }}>
+                      Acervo completo organizado por tema e por dosha.
                     </p>
                   </div>
                 </div>
-              ))}
+
+                <div
+                  className="rounded-xl border p-3.5 flex items-start gap-3"
+                  style={{ background: "#fff", borderColor: "rgba(53,47,84,0.10)" }}
+                >
+                  <div className="w-9 h-9 rounded-full flex items-center justify-center shrink-0" style={{ background: `${SALMAO}22` }}>
+                    <Library className="w-4 h-4" style={{ color: SALMAO }} strokeWidth={1.9} />
+                  </div>
+                  <div>
+                    <p className="font-serif font-bold text-sm leading-tight mb-0.5" style={{ color: PRIMARY }}>
+                      Artigos por dosha
+                    </p>
+                    <p className="text-xs leading-snug" style={{ color: PRIMARY, opacity: 0.75, fontFamily: "'DM Sans', sans-serif" }}>
+                      Guias práticos aplicados ao seu quadro.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Bloco destacado do curso */}
+                <div
+                  className="rounded-xl border-2 p-3.5 flex items-start gap-3 relative"
+                  style={{ background: DOURADO_BG, borderColor: DOURADO }}
+                >
+                  {cursoRotinas?.capa_url ? (
+                    <img
+                      src={cursoRotinas.capa_url}
+                      alt=""
+                      aria-hidden
+                      loading="lazy"
+                      className="w-16 h-16 object-cover rounded-lg shrink-0"
+                    />
+                  ) : (
+                    <div className="w-16 h-16 rounded-lg shrink-0 flex items-center justify-center" style={{ background: "#fff" }}>
+                      <Gift className="w-6 h-6" style={{ color: DOURADO }} />
+                    </div>
+                  )}
+                  <div className="min-w-0">
+                    <p className="text-[9px] uppercase tracking-wider font-bold mb-0.5" style={{ color: DOURADO_DARK, fontFamily: "'DM Sans', sans-serif" }}>
+                      Curso incluso no plano anual
+                    </p>
+                    <p className="font-serif font-bold text-sm leading-tight mb-1" style={{ color: PRIMARY }}>
+                      {cursoRotinas?.titulo ?? "Rotinas Diárias do Ayurveda"}
+                    </p>
+                    <p className="text-xs leading-snug" style={{ color: PRIMARY, opacity: 0.8, fontFamily: "'DM Sans', sans-serif" }}>
+                      As videoaulas do professor sobre os hábitos que sustentam sua saúde · 11 aulas.
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </section>
+
 
         {/* 7) NÚMEROS */}
         <section style={{ background: PRIMARY }}>
