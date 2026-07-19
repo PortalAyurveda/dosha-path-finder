@@ -17,7 +17,17 @@ import {
   Video as VideoIcon,
   Library,
   RefreshCw,
+  Flame,
 } from "lucide-react";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  ReferenceLine,
+  ResponsiveContainer,
+  Tooltip as RTooltip,
+} from "recharts";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/contexts/UserContext";
 import { toast } from "@/hooks/use-toast";
@@ -519,9 +529,9 @@ const Assinar = () => {
           </div>
         </section>
 
-        {/* 3) TUDO COMEÇA PELO SEU RETRATO */}
+        {/* 3) TUDO COMEÇA PELO SEU RETRATO — painel único */}
         <section style={{ background: SURFACE }}>
-          <div className="max-w-[1040px] mx-auto px-4 sm:px-6 py-10 md:py-14">
+          <div className="max-w-[1040px] mx-auto px-4 sm:px-6 py-10 md:py-12">
             <h2
               className="font-serif italic font-bold text-2xl md:text-[28px] text-center mb-2"
               style={{ color: PRIMARY }}
@@ -529,53 +539,187 @@ const Assinar = () => {
               Tudo começa pelo seu retrato
             </h2>
             <p
-              className="text-center text-sm md:text-base mb-8 max-w-xl mx-auto"
+              className="text-center text-sm md:text-base mb-6 max-w-xl mx-auto"
               style={{ color: PRIMARY, opacity: 0.75, fontFamily: "'DM Sans', sans-serif" }}
             >
               O teste gratuito desenha seu quadro — e o Portal trabalha em cima dele.
             </p>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {/* (a) Pizza */}
-              <div className="relative rounded-2xl border bg-card p-4" style={{ borderColor: "rgba(53,47,84,0.10)" }}>
-                <span className="absolute top-2 right-2 text-[9px] font-semibold tracking-widest uppercase bg-muted text-muted-foreground px-1.5 py-0.5 rounded">
-                  Exemplo
-                </span>
-                <p className="text-[11px] uppercase tracking-wider font-bold mb-2" style={{ color: PRIMARY, opacity: 0.7 }}>
-                  Seu dosha
+            <div
+              className="relative rounded-2xl border bg-card shadow-sm overflow-hidden"
+              style={{ borderColor: "rgba(53,47,84,0.14)" }}
+            >
+              <span
+                className="absolute top-3 right-3 z-10 text-[9px] font-bold tracking-widest uppercase px-2 py-0.5 rounded"
+                style={{ background: PRIMARY, color: "#fff", fontFamily: "'DM Sans', sans-serif" }}
+              >
+                Exemplo
+              </span>
+
+              {/* Topo do painel */}
+              <div
+                className="px-4 md:px-6 py-3 border-b"
+                style={{ borderColor: "rgba(53,47,84,0.10)", background: PAPER }}
+              >
+                <p
+                  className="text-[10px] uppercase tracking-wider font-bold mb-0.5"
+                  style={{ color: PRIMARY, opacity: 0.55, fontFamily: "'DM Sans', sans-serif" }}
+                >
+                  Seu perfil clínico
                 </p>
-                <div className="h-[200px]">
-                  <DoshaPieChart vata={42} pitta={28} kapha={16} variant="full" />
+                <h3 className="font-serif font-bold text-base md:text-lg" style={{ color: PRIMARY }}>
+                  Seu dosha agravado:{" "}
+                  <span style={{ color: "#6B8AFF" }}>Vata</span>
+                  <span style={{ color: PRIMARY, opacity: 0.4 }}>-</span>
+                  <span style={{ color: "#FF7676" }}>Pitta</span>
+                </h3>
+              </div>
+
+              {/* Linha 1: donut + agni | quadro clínico */}
+              <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x" style={{ borderColor: "rgba(53,47,84,0.10)" }}>
+                <div className="p-4 md:p-5">
+                  <div className="h-[180px]">
+                    <DoshaPieChart vata={42} pitta={28} kapha={16} variant="full" />
+                  </div>
+                  <div
+                    className="mt-3 rounded-lg border p-3 flex items-start gap-2.5"
+                    style={{ background: "hsl(var(--surface-sun))", borderColor: "rgba(53,47,84,0.10)" }}
+                  >
+                    <div
+                      className="w-8 h-8 rounded-full flex items-center justify-center shrink-0"
+                      style={{ background: "hsl(252 35% 45%)", color: "#fff" }}
+                    >
+                      <Flame className="w-4 h-4" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="font-serif font-bold text-[13px] leading-tight" style={{ color: PRIMARY }}>
+                        Fogo Digestivo (Agni): irregular
+                      </p>
+                      <p
+                        className="text-[11px] leading-snug mt-0.5"
+                        style={{ color: PRIMARY, opacity: 0.7, fontFamily: "'DM Sans', sans-serif" }}
+                      >
+                        Digestão instável — alterna entre gases e queimação. Meta: nível bom.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="p-4 md:p-5">
+                  <p className="text-[10px] uppercase tracking-wider font-bold mb-2" style={{ color: PRIMARY, opacity: 0.55, fontFamily: "'DM Sans', sans-serif" }}>
+                    Quadro clínico
+                  </p>
+                  <ClinicalThermometer doshaScores={exemploScores} />
                 </div>
               </div>
 
-              {/* (b) Quadro clínico */}
-              <div className="relative rounded-2xl border bg-card p-4" style={{ borderColor: "rgba(53,47,84,0.10)" }}>
-                <span className="absolute top-2 right-2 text-[9px] font-semibold tracking-widest uppercase bg-muted text-muted-foreground px-1.5 py-0.5 rounded z-10">
-                  Exemplo
-                </span>
-                <ClinicalThermometer doshaScores={exemploScores} />
+              {/* Linha 2: evolução mês a mês */}
+              <div
+                className="border-t px-4 md:px-6 py-4"
+                style={{ borderColor: "rgba(53,47,84,0.10)", background: PAPER }}
+              >
+                <div className="flex items-baseline justify-between mb-1 gap-3 flex-wrap">
+                  <p className="font-serif font-bold text-[15px]" style={{ color: PRIMARY }}>
+                    Sua evolução mês a mês
+                  </p>
+                  <p className="text-[11px]" style={{ color: PRIMARY, opacity: 0.6, fontFamily: "'DM Sans', sans-serif" }}>
+                    Vata: 42 → 33 → 22
+                  </p>
+                </div>
+                <div className="h-[150px] w-full">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart
+                      data={[
+                        { mes: "Mês 1", vata: 42, status: "Adoecido" },
+                        { mes: "Mês 2", vata: 33, status: "Acúmulo" },
+                        { mes: "Mês 3", vata: 22, status: "Normal" },
+                      ]}
+                      margin={{ top: 24, right: 24, left: 0, bottom: 4 }}
+                    >
+                      <ReferenceLine y={35} stroke="#FCA5A5" strokeDasharray="3 3" strokeOpacity={0.5} />
+                      <ReferenceLine y={22} stroke="#86EFAC" strokeDasharray="3 3" strokeOpacity={0.7} />
+                      <XAxis
+                        dataKey="mes"
+                        tick={{ fill: PRIMARY, fontSize: 11, fontWeight: 600 }}
+                        stroke="rgba(53,47,84,0.2)"
+                      />
+                      <YAxis
+                        domain={[10, 50]}
+                        tick={{ fill: PRIMARY, fontSize: 10, opacity: 0.6 }}
+                        stroke="rgba(53,47,84,0.15)"
+                        width={28}
+                      />
+                      <RTooltip
+                        contentStyle={{
+                          background: "#fff",
+                          border: "1px solid rgba(53,47,84,0.15)",
+                          borderRadius: 8,
+                          fontSize: 12,
+                        }}
+                        formatter={(value: number, _: string, item: { payload?: { status?: string } }) => [
+                          `${value} pts · ${item?.payload?.status ?? ""}`,
+                          "Vata",
+                        ]}
+                      />
+                      <Line
+                        type="monotone"
+                        dataKey="vata"
+                        stroke="#6B8AFF"
+                        strokeWidth={3}
+                        dot={{ r: 5, fill: "#6B8AFF", stroke: "#fff", strokeWidth: 2 }}
+                        activeDot={{ r: 7 }}
+                        isAnimationActive={false}
+                        label={({ x, y, value, index }: { x?: number; y?: number; value?: number; index?: number }) => {
+                          const status = ["Adoecido", "Acúmulo", "Normal"][index ?? 0];
+                          if (x == null || y == null) return <g />;
+                          return (
+                            <g>
+                              <text
+                                x={x}
+                                y={y - 12}
+                                textAnchor="middle"
+                                fontSize={10}
+                                fontWeight={700}
+                                fill={PRIMARY}
+                              >
+                                {status}
+                              </text>
+                            </g>
+                          );
+                        }}
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+                <p
+                  className="text-[12px] leading-snug mt-1"
+                  style={{ color: PRIMARY, opacity: 0.75, fontFamily: "'DM Sans', sans-serif" }}
+                >
+                  Com a revisão mensal, seu quadro melhora — o Portal acompanha e ajusta.
+                </p>
               </div>
 
-              {/* (c) Objetivos */}
-              <div className="relative rounded-2xl border bg-card p-4 flex flex-col" style={{ borderColor: "rgba(53,47,84,0.10)" }}>
-                <span className="absolute top-2 right-2 text-[9px] font-semibold tracking-widest uppercase bg-muted text-muted-foreground px-1.5 py-0.5 rounded">
-                  Exemplo
-                </span>
-                <p className="text-[11px] uppercase tracking-wider font-bold mb-2" style={{ color: PRIMARY, opacity: 0.7 }}>
-                  Seus objetivos
-                </p>
-                <p
-                  className="text-sm leading-snug mb-4"
-                  style={{ color: PRIMARY, opacity: 0.85, fontFamily: "'DM Sans', sans-serif" }}
-                >
-                  O Portal cruza seu quadro com o que você quer melhorar.
-                </p>
-                <div className="flex flex-wrap gap-2 mt-auto">
+              {/* Linha 3: objetivos */}
+              <div
+                className="border-t px-4 md:px-6 py-4 flex flex-col md:flex-row md:items-center gap-3 md:gap-5"
+                style={{ borderColor: "rgba(53,47,84,0.10)" }}
+              >
+                <div className="md:w-[220px] shrink-0">
+                  <p className="font-serif font-bold text-[13px]" style={{ color: PRIMARY }}>
+                    Seus objetivos
+                  </p>
+                  <p
+                    className="text-[11px] leading-snug"
+                    style={{ color: PRIMARY, opacity: 0.7, fontFamily: "'DM Sans', sans-serif" }}
+                  >
+                    O Portal cruza seu quadro com o que você quer melhorar.
+                  </p>
+                </div>
+                <div className="flex flex-wrap gap-1.5 flex-1">
                   {OBJETIVOS.map((o) => (
                     <span
                       key={o}
-                      className="px-3 py-1.5 rounded-full text-xs font-semibold border"
+                      className="px-2.5 py-1 rounded-full text-[12px] font-semibold border"
                       style={{
                         background: `${SALMAO}15`,
                         color: PRIMARY,
@@ -588,14 +732,20 @@ const Assinar = () => {
                   ))}
                 </div>
               </div>
-            </div>
 
-            <p
-              className="mt-4 text-center text-xs"
-              style={{ color: PRIMARY, opacity: 0.6, fontFamily: "'DM Sans', sans-serif" }}
-            >
-              Exemplo — o seu vem do teste gratuito.
-            </p>
+              {/* Rodapé */}
+              <div
+                className="border-t px-4 md:px-6 py-2.5 text-center"
+                style={{ borderColor: "rgba(53,47,84,0.10)", background: PAPER }}
+              >
+                <p
+                  className="text-[11px]"
+                  style={{ color: PRIMARY, opacity: 0.6, fontFamily: "'DM Sans', sans-serif" }}
+                >
+                  Exemplo — o seu vem do teste gratuito, em 5 minutos.
+                </p>
+              </div>
+            </div>
           </div>
         </section>
 
@@ -768,41 +918,6 @@ const Assinar = () => {
           </div>
         </section>
 
-        {/* 6) QUEM TE GUIA */}
-        <section className="bg-background">
-          <div className="max-w-[1040px] mx-auto px-4 sm:px-6 py-10 md:py-14">
-            <div className="grid grid-cols-1 md:grid-cols-[180px_1fr] gap-6 md:gap-10 items-center">
-              <div className="mx-auto md:mx-0">
-                <div
-                  className="w-36 h-36 md:w-44 md:h-44 rounded-full overflow-hidden shadow-md border-4"
-                  style={{ borderColor: `${SALMAO}33` }}
-                >
-                  <img
-                    src={PROFESSOR_PHOTO}
-                    alt="Professor Edson Osorio"
-                    loading="lazy"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              </div>
-              <div className="text-center md:text-left">
-                <p className="text-[11px] uppercase tracking-wider font-bold mb-1.5" style={{ color: SALMAO }}>
-                  Quem te guia
-                </p>
-                <h2 className="font-serif italic font-bold text-xl md:text-2xl mb-2" style={{ color: PRIMARY }}>
-                  Edson Osorio
-                </h2>
-                <p
-                  className="text-sm md:text-base leading-relaxed"
-                  style={{ color: PRIMARY, opacity: 0.85, fontFamily: "'DM Sans', sans-serif" }}
-                >
-                  Terapeuta Ayurveda, fundador do Portal. 15 anos de clínica, 13 de sala de aula, mais de 4.500 alunos formados. Tudo no Portal nasce do que funciona na clínica dele, adaptado ao Brasil.
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
         {/* 7) NÚMEROS */}
         <section style={{ background: PRIMARY }}>
           <div className="max-w-[1040px] mx-auto px-4 sm:px-6 py-6 md:py-7">
@@ -924,6 +1039,41 @@ const Assinar = () => {
                   12 meses de Premium (R$ 958,80) + curso Rotinas Diárias (R$ 99) = <strong>R$ 1.057,80</strong> em valor. Você paga <strong>R$ 597</strong>.
                 </div>
                 <CardAction plano="anual" color={DOURADO} label="Assinar Anual" />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* QUEM TE GUIA — depois do preço, antes do FAQ */}
+        <section className="bg-background">
+          <div className="max-w-[1040px] mx-auto px-4 sm:px-6 py-10 md:py-14">
+            <div className="grid grid-cols-1 md:grid-cols-[180px_1fr] gap-6 md:gap-10 items-center">
+              <div className="mx-auto md:mx-0">
+                <div
+                  className="w-36 h-36 md:w-44 md:h-44 rounded-full overflow-hidden shadow-md border-4"
+                  style={{ borderColor: `${SALMAO}33` }}
+                >
+                  <img
+                    src={PROFESSOR_PHOTO}
+                    alt="Professor Edson Osorio"
+                    loading="lazy"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              </div>
+              <div className="text-center md:text-left">
+                <p className="text-[11px] uppercase tracking-wider font-bold mb-1.5" style={{ color: SALMAO }}>
+                  Quem te guia
+                </p>
+                <h2 className="font-serif italic font-bold text-xl md:text-2xl mb-2" style={{ color: PRIMARY }}>
+                  Edson Osorio
+                </h2>
+                <p
+                  className="text-sm md:text-base leading-relaxed"
+                  style={{ color: PRIMARY, opacity: 0.85, fontFamily: "'DM Sans', sans-serif" }}
+                >
+                  Terapeuta Ayurveda, fundador do Portal. 15 anos de clínica, 13 de sala de aula, mais de 4.500 alunos formados. Tudo no Portal nasce do que funciona na clínica dele, adaptado ao Brasil.
+                </p>
               </div>
             </div>
           </div>
