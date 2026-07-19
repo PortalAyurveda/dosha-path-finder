@@ -931,7 +931,7 @@ const Assinar = () => {
 
         {/* 9) PERGUNTAS COMUNS */}
         <section className="bg-background">
-          <div className="max-w-[720px] mx-auto px-4 sm:px-6 py-12 md:py-16">
+          <div className="max-w-[1040px] mx-auto px-4 sm:px-6 py-12 md:py-16">
             <h2
               className="font-serif italic font-bold text-2xl md:text-[28px] text-center mb-8"
               style={{ color: PRIMARY }}
