@@ -1687,29 +1687,9 @@ const PaywallRotina = ({ email, userId, doshaPrincipal, itemId }: PaywallRotinaP
   });
 
   const desbloquear = async () => {
-    // Deslogado: manda pra tela de login e volta pra cá pra fechar o checkout
-    if (!userId || !email) {
-      navigate("/entrar?redirect=/minha-rotina");
-      return;
-    }
-    setCarregando(true);
-    try {
-      const { data, error } = await supabase.functions.invoke("create-subscription-checkout", {
-        body: { plano: "rotina", email, user_id: userId },
-      });
-      if (error) throw error;
-      const url = (data as { url?: string })?.url;
-      if (!url) throw new Error("sem url");
-      window.location.href = url;
-    } catch (e) {
-      setCarregando(false);
-      toast({
-        title: "Não consegui abrir o checkout",
-        description: "Tente de novo em instantes.",
-        variant: "destructive",
-      });
-    }
+    navigate("/assinar");
   };
+
 
   const subtitulo = doshaPrincipal
     ? `${doshaPrincipal} · foco da semana: aquecer, untar e estabilizar`
