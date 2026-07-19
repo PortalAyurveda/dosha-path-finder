@@ -17,7 +17,17 @@ import {
   Video as VideoIcon,
   Library,
   RefreshCw,
+  Flame,
 } from "lucide-react";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  ReferenceLine,
+  ResponsiveContainer,
+  Tooltip as RTooltip,
+} from "recharts";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/contexts/UserContext";
 import { toast } from "@/hooks/use-toast";
