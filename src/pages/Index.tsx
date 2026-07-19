@@ -127,7 +127,7 @@ const FeedSocial = () => {
         borderBottom: `1px solid ${C.primary}1A`,
         ['--marquee-hover' as any]: `${C.primary}1F`,
       }}
-      aria-label="Ver todas as métricas do Portal Ayurveda"
+      
     >
       <div className="marquee-track flex gap-8 whitespace-nowrap">
         {loop.map((it: any, i) => {
@@ -648,20 +648,21 @@ const Index = () => {
         <script type="application/ld+json">{JSON.stringify(orgSchema)}</script>
       </Helmet>
 
-      
-      {shouldWait ? (
-        <div className="min-h-[420px] flex items-center justify-center">
-          <div className="h-8 w-8 rounded-full border-2 border-primary/20 border-t-primary animate-spin" />
-        </div>
-      ) : isLoggedWithDosha ? (
-        <LoggedHero />
-      ) : (
-        <Hero />
-      )}
-      <HojeNoPortal />
-      <FeedSocial />
-      <FundamentosAyurveda />
-      <PrateleiraSamkhya doshaPrincipal={doshaResult?.doshaprincipal ?? null} />
+      <main>
+        {shouldWait ? (
+          <div className="min-h-[420px] flex items-center justify-center">
+            <div className="h-8 w-8 rounded-full border-2 border-primary/20 border-t-primary animate-spin" />
+          </div>
+        ) : isLoggedWithDosha ? (
+          <LoggedHero />
+        ) : (
+          <Hero />
+        )}
+        <HojeNoPortal />
+        <FeedSocial />
+        <FundamentosAyurveda />
+        <PrateleiraSamkhya doshaPrincipal={doshaResult?.doshaprincipal ?? null} />
+      </main>
     </>
   );
 };

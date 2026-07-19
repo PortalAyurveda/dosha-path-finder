@@ -6,6 +6,8 @@ export const samkhyaTokens = {
   roxoLight: "#f3eaf0",
   ouro: "#C8922A",
   ouroDark: "#A67420",
+  // Variante escurecida do dourado para uso em TEXTO — passa AA (>=4.5:1) sobre branco.
+  ouroText: "#8C641C",
   fundo: "#FAF8F5",
   cardBg: "#FFFFFF",
   cardBorder: "#EDE4D3",

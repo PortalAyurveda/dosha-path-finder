@@ -29,7 +29,8 @@ type HojePayload = {
   rotina_do_dia?: RotinaItem | null;
 };
 
-const SALMAO = "#FF7676";
+// Tom coral-salmão, escurecido para passar contraste AA em texto (>=4.5:1 sobre branco/PAPEL).
+const SALMAO = "#C93F3F";
 const AZULEJO = "#FFF8EE";
 const PAPEL = "#FDFBF5";
 const NAVY = "#352F54";
