@@ -37,6 +37,8 @@ import {
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { formatModuloFimDeSemana, formatModuloHorarios } from "@/lib/escolaModuloDatas";
+import QuizEditor from "@/components/admin/escola/QuizEditor";
+import RespostasTurma from "@/components/admin/escola/RespostasTurma";
 
 const BUCKET = "escola";
 
