@@ -99,16 +99,33 @@ const staticRoutes: Route[] = [
   { path: "/samkhya/todos", title: "Todos os produtos — Samkhya", description: "Catálogo completo de produtos ayurvédicos da loja Samkhya." },
   { path: "/politica-de-privacidade", title: "Política de Privacidade — Portal Ayurveda", description: "Como o Portal Ayurveda coleta, usa e protege seus dados pessoais." },
   { path: "/termos-de-uso", title: "Termos de Uso — Portal Ayurveda", description: "Termos e condições de uso do Portal Ayurveda." },
+  {
+    path: "/cursos",
+    title: "Cursos de Ayurveda — Portal Ayurveda",
+    description:
+      "Todos os cursos do Portal Ayurveda: formação, alimentação, rotinas e trilhas curtas para você aprofundar sua prática.",
+  },
+  {
+    path: "/samkhya/produto",
+    title: "Produtos Samkhya — Portal Ayurveda",
+    description: "Produtos ayurvédicos selecionados: óleos, ervas e ferramentas para sua prática diária.",
+  },
+  {
+    path: "/samkhya/categoria",
+    title: "Categorias Samkhya — Portal Ayurveda",
+    description: "Explore categorias de produtos ayurvédicos na loja Samkhya do Portal Ayurveda.",
+  },
 ];
 
-async function fetchRest<T = any>(query: string): Promise<T[]> {
+
+async function fetchRest<T = any>(query: string, schema?: string): Promise<T[]> {
   try {
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/${query}`, {
-      headers: {
-        apikey: SUPABASE_ANON,
-        Authorization: `Bearer ${SUPABASE_ANON}`,
-      },
-    });
+    const headers: Record<string, string> = {
+      apikey: SUPABASE_ANON,
+      Authorization: `Bearer ${SUPABASE_ANON}`,
+    };
+    if (schema) headers["Accept-Profile"] = schema;
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/${query}`, { headers });
     if (!res.ok) {
       console.warn(`[prerender] fetch ${query} → ${res.status}`);
       return [];
@@ -119,6 +136,7 @@ async function fetchRest<T = any>(query: string): Promise<T[]> {
     return [];
   }
 }
+
 
 function clean(text: unknown, max = 200): string {
   if (!text || typeof text !== "string") return "";
@@ -179,17 +197,113 @@ async function dynamicRoutes(): Promise<Route[]> {
     const desc =
       resumo ||
       `${nome}${especialidade ? " — " + especialidade : ""}${local ? " em " + local : ""}. Encontre terapeutas ayurvédicos no Portal Ayurveda.`;
-    routes.push({
+    const tRoute: Route = {
       path: `/terapeutas-do-brasil/${slug}`,
       title: `${nome}${local ? " (" + local + ")" : ""} — Terapeuta Ayurveda`,
       description: desc.slice(0, 200),
       image: t.imagem || t["imagem.1"] || DEFAULT_OG,
       type: "profile",
+    };
+    routes.push(tRoute);
+    // Alias curto /terapeutas/{slug} (rota também existe no App)
+    routes.push({ ...tRoute, path: `/terapeutas/${slug}` });
+  }
+
+  // Vídeos canônicos (schema public)
+  const videos = await fetchRest<{
+    video_id: string;
+    slug: string;
+    novo_titulo: string;
+    mini_resumo: string;
+    nova_descricao: string;
+  }>(
+    "videos_canonicos?select=video_id,slug,novo_titulo,mini_resumo,nova_descricao&slug=not.is.null&limit=1000"
+  );
+  for (const v of videos) {
+    if (!v.slug || !v.novo_titulo) continue;
+    const desc = clean(v.mini_resumo || v.nova_descricao, 200) ||
+      `Assista "${clean(v.novo_titulo, 80)}" no Portal Ayurveda.`;
+    routes.push({
+      path: `/video/${v.slug}`,
+      title: `${clean(v.novo_titulo, 90)} — Portal Ayurveda`,
+      description: desc,
+      image: v.video_id
+        ? `https://img.youtube.com/vi/${v.video_id}/maxresdefault.jpg`
+        : DEFAULT_OG,
+      type: "article",
+    });
+  }
+
+  // Loja Samkhya — produtos (schema loja)
+  const produtos = await fetchRest<{
+    slug: string;
+    nome_display: string;
+    resumo_curto: string | null;
+    imagem_url: string | null;
+  }>(
+    "produtos?select=slug,nome_display,resumo_curto,imagem_url&ativo=eq.true&limit=500",
+    "loja"
+  );
+  for (const p of produtos) {
+    if (!p.slug || !p.nome_display) continue;
+    const desc =
+      clean(p.resumo_curto, 200) ||
+      `${clean(p.nome_display, 90)} — produto ayurvédico da loja Samkhya do Portal Ayurveda.`;
+    routes.push({
+      path: `/samkhya/produto/${p.slug}`,
+      title: `${clean(p.nome_display, 90)} — Samkhya | Portal Ayurveda`,
+      description: desc,
+      image: p.imagem_url || DEFAULT_OG,
+      type: "product",
+    });
+  }
+
+  // Loja Samkhya — kits (schema loja)
+  const kits = await fetchRest<{
+    slug: string;
+    nome: string;
+    descricao_curta: string | null;
+    imagem_url: string | null;
+  }>(
+    "kits?select=slug,nome,descricao_curta,imagem_url&ativo=eq.true&limit=200",
+    "loja"
+  );
+  for (const k of kits) {
+    if (!k.slug || !k.nome) continue;
+    const desc =
+      clean(k.descricao_curta, 200) ||
+      `${clean(k.nome, 90)} — kit ayurvédico da loja Samkhya do Portal Ayurveda.`;
+    routes.push({
+      path: `/samkhya/kits/${k.slug}`,
+      title: `${clean(k.nome, 90)} — Samkhya | Portal Ayurveda`,
+      description: desc,
+      image: k.imagem_url || DEFAULT_OG,
+      type: "product",
+    });
+  }
+
+  // Loja Samkhya — categorias (schema loja)
+  const categorias = await fetchRest<{
+    slug: string;
+    nome: string;
+    descricao: string | null;
+  }>("categorias?select=slug,nome,descricao&limit=100", "loja");
+  for (const c of categorias) {
+    if (!c.slug || !c.nome) continue;
+    const desc =
+      clean(c.descricao, 200) ||
+      `${clean(c.nome, 90)} — categoria de produtos ayurvédicos na loja Samkhya do Portal Ayurveda.`;
+    routes.push({
+      path: `/samkhya/categoria/${c.slug}`,
+      title: `${clean(c.nome, 90)} — Samkhya | Portal Ayurveda`,
+      description: desc,
+      image: DEFAULT_OG,
     });
   }
 
   return routes;
 }
+
 
 async function writeSitemap(distDir: string): Promise<void> {
   try {
@@ -223,14 +337,15 @@ function renderHtml(template: string, route: Route): string {
 
   let html = template;
 
-  // <title>
-  html = html.replace(/<title>[^<]*<\/title>/, `<title>${title}</title>`);
+  // <title> (tolerante a atributos como data-rh="true")
+  html = html.replace(/<title\b[^>]*>[\s\S]*?<\/title>/i, `<title>${title}</title>`);
 
-  // meta name=description
+  // meta name=description (tolerante a atributos e ordem)
   html = html.replace(
-    /<meta\s+name="description"\s+content="[^"]*"\s*\/>/,
+    /<meta\b[^>]*\bname=["']description["'][^>]*\/?>/i,
     `<meta name="description" content="${description}" />`
   );
+
 
   // og:title
   html = html.replace(

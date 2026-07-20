@@ -29,6 +29,43 @@
 
     <!-- Canonical é definido por rota via react-helmet-async (src/components/Seo.tsx) e pelo prerender (scripts/prerender-og.ts) -->
 
+    <!--
+      Salvaguarda SEO: se o SPA fallback (dist/index.html) for servido para uma rota
+      não pré-renderizada, o canonical/og:url herdado da home aponta para "/" e
+      instrui o Google a descartar a página. Este script corrige, quando a URL atual
+      não é a home E o canonical/og:url ainda aponta para a home, para a URL corrente.
+    -->
+    <script>
+      (function () {
+        try {
+          var path = location.pathname || "/";
+          if (path === "/") return;
+          var self = "https://portalayurveda.com" + path;
+          function fix() {
+            var can = document.querySelector('link[rel="canonical"]');
+            if (!can) {
+              can = document.createElement("link");
+              can.setAttribute("rel", "canonical");
+              document.head.appendChild(can);
+              can.href = self;
+            } else if (/^https?:\/\/portalayurveda\.com\/?$/.test(can.href)) {
+              can.href = self;
+            }
+            var og = document.querySelector('meta[property="og:url"]');
+            if (og && /^https?:\/\/portalayurveda\.com\/?$/.test(og.getAttribute("content") || "")) {
+              og.setAttribute("content", self);
+            }
+          }
+          if (document.readyState === "loading") {
+            document.addEventListener("DOMContentLoaded", fix);
+          } else {
+            fix();
+          }
+        } catch (e) {}
+      })();
+    </script>
+
+
     <!-- Open Graph (sitewide fallback; rotas individuais sobrescrevem via prerender) -->
     <meta property="og:site_name" content="Portal Ayurveda" />
     <meta property="og:type" content="website" />
