@@ -9,7 +9,7 @@ interface Props {
   disabled?: boolean;
 }
 
-const BotaoAdicionarCarrinho = ({ item, size = "md", fullWidth = false }: Props) => {
+const BotaoAdicionarCarrinho = ({ item, size = "md", fullWidth = false, disabled = false }: Props) => {
   const { adicionarItem, abrirCarrinho } = useCart();
 
   const padding =
@@ -18,11 +18,12 @@ const BotaoAdicionarCarrinho = ({ item, size = "md", fullWidth = false }: Props)
   return (
     <button
       type="button"
+      disabled={disabled}
       onClick={() => {
         adicionarItem(item);
         abrirCarrinho();
       }}
-      className={`inline-flex items-center justify-center gap-2 rounded-md font-medium text-white transition-opacity hover:opacity-90 ${padding} ${fullWidth ? "w-full" : ""}`}
+      className={`inline-flex items-center justify-center gap-2 rounded-md font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed ${padding} ${fullWidth ? "w-full" : ""}`}
       style={{ background: samkhyaTokens.ouro }}
     >
       <ShoppingBag className="h-4 w-4" />
