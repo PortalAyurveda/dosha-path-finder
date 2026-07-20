@@ -269,6 +269,7 @@ const RoutedApp = () => {
               <Route path="/escola/aluno/aula/:id" element={<EscolaAlunoAula />} />
 
               <Route path="/admin/banners" element={<AdminRoute><AdminBanners /></AdminRoute>} />
+              <Route path="/admin/mockups" element={<AdminRoute><AdminMockups /></AdminRoute>} />
               <Route path="/admin/rpg" element={<AdminRoute><AdminRpg /></AdminRoute>} />
 
               {/* Aulas ao vivo + webinars (CMS) */}
