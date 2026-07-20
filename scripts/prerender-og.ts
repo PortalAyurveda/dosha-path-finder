@@ -531,14 +531,24 @@ function renderHtml(template: string, route: Route): string {
     `<meta name="twitter:image" content="${image}" />`
   );
 
-  // canonical: injetar no <head>
-  html = html.replace(
-    /<\/head>/,
-    `    <link rel="canonical" href="${url}" />\n  </head>`
-  );
+  // canonical + noindex + JSON-LD: injetar no <head>
+  const extras: string[] = [`    <link rel="canonical" href="${url}" />`];
+  if (route.noindex) {
+    extras.push(`    <meta name="robots" content="noindex, follow" />`);
+  }
+  if (route.jsonld) {
+    const blocks = Array.isArray(route.jsonld) ? route.jsonld : [route.jsonld];
+    for (const b of blocks) {
+      // JSON dentro de <script>: escapar </ para evitar fechar o script cedo
+      const safe = JSON.stringify(b).replace(/</g, "\\u003c");
+      extras.push(`    <script type="application/ld+json">${safe}</script>`);
+    }
+  }
+  html = html.replace(/<\/head>/, `${extras.join("\n")}\n  </head>`);
 
   return html;
 }
+
 
 async function main() {
   const distDir = resolve("dist");
