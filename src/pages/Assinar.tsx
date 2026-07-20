@@ -73,14 +73,13 @@ const BENEFICIOS: string[] = [
   "Akasha ilimitada: converse de dia ou de madrugada",
   "Acervo completo: 900+ aulas do professor",
   'Curso "Rotinas Diárias do Ayurveda" incluso (valor R$ 99)',
-  "Economia de 38% no ano (equivale a R$ 49,75/mês)",
   "Cancele quando quiser",
 ];
 
 const INCLUSOS: Record<Plano, Set<number>> = {
-  rotina: new Set([1, 2, 3, 8]),
-  mensal: new Set([1, 2, 3, 4, 5, 8]),
-  anual: new Set([1, 2, 3, 4, 5, 6, 7, 8]),
+  rotina: new Set([1, 2, 3, 7]),
+  mensal: new Set([1, 2, 3, 4, 5, 7]),
+  anual: new Set([1, 2, 3, 4, 5, 6, 7]),
 };
 
 const RECEITAS = [
@@ -1191,11 +1190,22 @@ const Assinar = () => {
                   Tudo da Rotina, mais a companhia.
                 </p>
                 <BeneficiosList plano="mensal" checkColor={SALMAO} />
+                <button
+                  type="button"
+                  onClick={() => {
+                    const el = document.getElementById("plano-anual");
+                    el?.scrollIntoView({ behavior: "smooth", block: "center" });
+                  }}
+                  className="text-xs mb-2 text-center underline underline-offset-2 hover:opacity-80 transition-opacity"
+                  style={{ color: DOURADO_DARK, fontFamily: "'DM Sans', sans-serif" }}
+                >
+                  ou R$ 49,75/mês assinando o ano →
+                </button>
                 <CardAction plano="mensal" color={SALMAO} hoverColor={SALMAO_HOVER} label="Assinar Premium" />
               </div>
 
               {/* CARD 3 — PREMIUM ANUAL */}
-              <div className={cardBase + " border-2 shadow-xl"} style={{ background: DOURADO_BG, borderColor: DOURADO }}>
+              <div id="plano-anual" className={cardBase + " border-2 shadow-xl scroll-mt-24"} style={{ background: DOURADO_BG, borderColor: DOURADO }}>
                 {planoAtual === "anual" ? (
                   <SeuPlanoBadge />
                 ) : (
@@ -1215,17 +1225,27 @@ const Assinar = () => {
                 <h3 className="font-serif font-bold text-xl mb-1" style={{ color: PRIMARY }}>
                   Um ano inteiro
                 </h3>
-                <p className="font-serif font-bold text-2xl mb-1" style={{ color: PRIMARY }}>
-                  R$ 597<span className="text-sm font-normal opacity-70">/ano</span>
+                <p className="text-sm mb-0.5 line-through" style={{ color: "rgba(53,47,84,0.5)", fontFamily: "'DM Sans', sans-serif" }}>
+                  R$ 79,90
                 </p>
-                <p className="text-xs font-bold mb-4" style={{ color: DOURADO_DARK, fontFamily: "'DM Sans', sans-serif" }}>
-                  38% DE DESCONTO
+                <div className="flex items-baseline gap-2 mb-1 flex-wrap">
+                  <p className="font-serif font-bold text-2xl" style={{ color: PRIMARY }}>
+                    R$ 49,75<span className="text-sm font-normal opacity-70">/mês</span>
+                  </p>
+                  <span
+                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider"
+                    style={{ background: DOURADO, color: "#fff" }}
+                  >
+                    <BadgePercent className="w-3 h-3" /> 38% off
+                  </span>
+                </div>
+                <p className="text-xs mb-4" style={{ color: DOURADO_DARK, fontFamily: "'DM Sans', sans-serif" }}>
+                  R$ 597 cobrados uma vez por ano · você economiza R$ 361,80
                 </p>
                 <BeneficiosList
                   plano="anual"
                   checkColor={DOURADO_DARK}
                   renderItem6Extra={cursoIncluso}
-                  renderItem7Extra={seloDesconto}
                 />
                 <div
                   className="rounded-xl border p-3 mb-3 text-xs leading-relaxed"
