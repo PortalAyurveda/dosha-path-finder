@@ -344,6 +344,7 @@ const CartDrawer = () => {
             preco_normal: Number(it.preco_normal),
             stripe_price_id: it.stripe_price_id,
             peso_gramas: it.peso_gramas,
+            ...(it.escolhas ? { escolhas: it.escolhas } : {}),
           })),
           frete: freteSelecionado.preco === 0
             ? { id: null, prazo_dias: null, preco: 0, nome: "Frete Grátis" }
