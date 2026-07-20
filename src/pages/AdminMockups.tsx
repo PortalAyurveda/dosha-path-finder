@@ -524,6 +524,8 @@ const AdminMockups = () => {
         )}
         {!loading &&
           !restrito &&
+          !erro &&
+          dados &&
           grupos.map((g) => (
             <Grupo key={g.titulo} titulo={g.titulo} formato={formato} itens={g.itens} />
           ))}
