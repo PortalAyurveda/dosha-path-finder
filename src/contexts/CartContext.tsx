@@ -11,6 +11,24 @@ export type CartItem = {
   peso_gramas: number;
   quantidade: number;
   tipo: "produto" | "kit";
+  /** Escolhas do cliente para kits com opções ({ grupo: produto_id }). */
+  escolhas?: Record<string, number>;
+  /** Descrição legível das escolhas (ex.: "Massala Chai"). */
+  escolhas_label?: string;
+};
+
+export const getCartKey = (
+  it: Pick<CartItem, "slug" | "tipo" | "escolhas">,
+): string => {
+  const esc = it.escolhas && Object.keys(it.escolhas).length > 0
+    ? JSON.stringify(
+        Object.keys(it.escolhas).sort().reduce<Record<string, number>>((acc, k) => {
+          acc[k] = it.escolhas![k];
+          return acc;
+        }, {}),
+      )
+    : "";
+  return `${it.tipo}::${it.slug}::${esc}`;
 };
 
 type CartContextType = {
@@ -19,8 +37,8 @@ type CartContextType = {
   abrirCarrinho: () => void;
   fecharCarrinho: () => void;
   adicionarItem: (item: Omit<CartItem, "quantidade"> & { quantidade?: number }) => void;
-  removerItem: (slug: string, tipo: CartItem["tipo"]) => void;
-  atualizarQuantidade: (slug: string, tipo: CartItem["tipo"], quantidade: number) => void;
+  removerItem: (key: string) => void;
+  atualizarQuantidade: (key: string, quantidade: number) => void;
   limparCarrinho: () => void;
   totalItens: number;
   subtotal: number;
@@ -58,8 +76,9 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
   const adicionarItem: CartContextType["adicionarItem"] = useCallback((item) => {
     const qty = item.quantidade ?? 1;
+    const key = getCartKey(item);
     setItens((prev) => {
-      const idx = prev.findIndex((p) => p.slug === item.slug && p.tipo === item.tipo);
+      const idx = prev.findIndex((p) => getCartKey(p) === key);
       if (idx >= 0) {
         const next = [...prev];
         next[idx] = { ...next[idx], quantidade: next[idx].quantidade + qty };
@@ -69,17 +88,17 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     });
   }, []);
 
-  const removerItem: CartContextType["removerItem"] = useCallback((slug, tipo) => {
-    setItens((prev) => prev.filter((p) => !(p.slug === slug && p.tipo === tipo)));
+  const removerItem: CartContextType["removerItem"] = useCallback((key) => {
+    setItens((prev) => prev.filter((p) => getCartKey(p) !== key));
   }, []);
 
-  const atualizarQuantidade: CartContextType["atualizarQuantidade"] = useCallback((slug, tipo, quantidade) => {
+  const atualizarQuantidade: CartContextType["atualizarQuantidade"] = useCallback((key, quantidade) => {
     if (quantidade <= 0) {
-      setItens((prev) => prev.filter((p) => !(p.slug === slug && p.tipo === tipo)));
+      setItens((prev) => prev.filter((p) => getCartKey(p) !== key));
       return;
     }
     setItens((prev) =>
-      prev.map((p) => (p.slug === slug && p.tipo === tipo ? { ...p, quantidade } : p)),
+      prev.map((p) => (getCartKey(p) === key ? { ...p, quantidade } : p)),
     );
   }, []);
 
