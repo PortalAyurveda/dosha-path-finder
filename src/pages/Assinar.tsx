@@ -73,14 +73,13 @@ const BENEFICIOS: string[] = [
   "Akasha ilimitada: converse de dia ou de madrugada",
   "Acervo completo: 900+ aulas do professor",
   'Curso "Rotinas Diárias do Ayurveda" incluso (valor R$ 99)',
-  "Economia de 38% no ano (equivale a R$ 49,75/mês)",
   "Cancele quando quiser",
 ];
 
 const INCLUSOS: Record<Plano, Set<number>> = {
-  rotina: new Set([1, 2, 3, 8]),
-  mensal: new Set([1, 2, 3, 4, 5, 8]),
-  anual: new Set([1, 2, 3, 4, 5, 6, 7, 8]),
+  rotina: new Set([1, 2, 3, 7]),
+  mensal: new Set([1, 2, 3, 4, 5, 7]),
+  anual: new Set([1, 2, 3, 4, 5, 6, 7]),
 };
 
 const RECEITAS = [
