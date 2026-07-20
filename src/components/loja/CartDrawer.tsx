@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { toast } from "sonner";
-import { useCart } from "@/contexts/CartContext";
+import { useCart, getCartKey } from "@/contexts/CartContext";
 import { useUser } from "@/contexts/UserContext";
 import { samkhyaTokens } from "@/components/samkhya/tokens";
 import { supabase } from "@/integrations/supabase/client";
@@ -235,9 +235,11 @@ const CartDrawer = () => {
           frete_gratis_cupom: cupomAplicado?.tipo_desconto === "frete_gratis",
           itens: itens.map((it) => ({
             slug: it.slug,
+            tipo: it.tipo,
             quantidade: it.quantidade,
             peso_gramas: it.peso_gramas,
             preco_unitario: Number(it.preco_pix),
+            ...(it.escolhas ? { escolhas: it.escolhas } : {}),
           })),
         },
       });
@@ -342,6 +344,7 @@ const CartDrawer = () => {
             preco_normal: Number(it.preco_normal),
             stripe_price_id: it.stripe_price_id,
             peso_gramas: it.peso_gramas,
+            ...(it.escolhas ? { escolhas: it.escolhas } : {}),
           })),
           frete: freteSelecionado.preco === 0
             ? { id: null, prazo_dias: null, preco: 0, nome: "Frete Grátis" }
@@ -377,7 +380,18 @@ const CartDrawer = () => {
             : null,
         },
       });
-      if (error) throw error;
+      if (error) {
+        // Tenta extrair a mensagem retornada pela edge function (ex.: erro de kit inválido)
+        let msg = error.message || "Erro ao iniciar checkout";
+        try {
+          const resp = (error as unknown as { context?: { response?: Response } })?.context?.response;
+          if (resp) {
+            const body = await resp.clone().json();
+            if (body?.error) msg = String(body.error);
+          }
+        } catch { /* ignore */ }
+        throw new Error(msg);
+      }
       const url = data?.url || data?.checkout_url;
       if (!url) throw new Error("URL de checkout não recebida");
       window.location.href = url;
@@ -457,9 +471,11 @@ const CartDrawer = () => {
                 );
               })()}
               <ul className="space-y-3">
-                {itens.map((it) => (
+              {itens.map((it) => {
+                  const cartKey = getCartKey(it);
+                  return (
                   <li
-                    key={`${it.tipo}-${it.slug}`}
+                    key={cartKey}
                     className="flex gap-3 p-3 rounded-md"
                     style={{ background: samkhyaTokens.cardBg, border: `1px solid ${samkhyaTokens.cardBorder}` }}
                   >
@@ -470,11 +486,18 @@ const CartDrawer = () => {
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex justify-between gap-2">
-                        <p className="text-sm font-medium leading-tight" style={{ color: samkhyaTokens.texto }}>
-                          {it.nome}
-                        </p>
+                        <div className="min-w-0">
+                          <p className="text-sm font-medium leading-tight" style={{ color: samkhyaTokens.texto }}>
+                            {it.nome}
+                          </p>
+                          {it.escolhas_label && (
+                            <p className="text-xs mt-0.5" style={{ color: samkhyaTokens.textoSec }}>
+                              {it.escolhas_label}
+                            </p>
+                          )}
+                        </div>
                         <button
-                          onClick={() => removerItem(it.slug, it.tipo)}
+                          onClick={() => removerItem(cartKey)}
                           aria-label="Remover"
                           className="text-muted-foreground hover:text-destructive shrink-0"
                         >
@@ -484,7 +507,7 @@ const CartDrawer = () => {
                       <div className="flex items-center justify-between mt-2">
                         <div className="flex items-center gap-1 border rounded" style={{ borderColor: samkhyaTokens.cardBorder }}>
                           <button
-                            onClick={() => atualizarQuantidade(it.slug, it.tipo, it.quantidade - 1)}
+                            onClick={() => atualizarQuantidade(cartKey, it.quantidade - 1)}
                             className="px-2 py-1 hover:bg-black/5"
                             aria-label="Diminuir"
                           >
@@ -492,7 +515,7 @@ const CartDrawer = () => {
                           </button>
                           <span className="px-2 text-sm min-w-[1.5rem] text-center">{it.quantidade}</span>
                           <button
-                            onClick={() => atualizarQuantidade(it.slug, it.tipo, it.quantidade + 1)}
+                            onClick={() => atualizarQuantidade(cartKey, it.quantidade + 1)}
                             className="px-2 py-1 hover:bg-black/5"
                             aria-label="Aumentar"
                           >
@@ -505,7 +528,8 @@ const CartDrawer = () => {
                       </div>
                     </div>
                   </li>
-                ))}
+                  );
+                })}
               </ul>
 
               <div className="pt-4 border-t" style={{ borderColor: samkhyaTokens.cardBorder }}>
