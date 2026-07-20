@@ -380,7 +380,18 @@ const CartDrawer = () => {
             : null,
         },
       });
-      if (error) throw error;
+      if (error) {
+        // Tenta extrair a mensagem retornada pela edge function (ex.: erro de kit inválido)
+        let msg = error.message || "Erro ao iniciar checkout";
+        try {
+          const resp = (error as unknown as { context?: { response?: Response } })?.context?.response;
+          if (resp) {
+            const body = await resp.clone().json();
+            if (body?.error) msg = String(body.error);
+          }
+        } catch { /* ignore */ }
+        throw new Error(msg);
+      }
       const url = data?.url || data?.checkout_url;
       if (!url) throw new Error("URL de checkout não recebida");
       window.location.href = url;
