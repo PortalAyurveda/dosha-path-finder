@@ -99,7 +99,24 @@ const staticRoutes: Route[] = [
   { path: "/samkhya/todos", title: "Todos os produtos — Samkhya", description: "Catálogo completo de produtos ayurvédicos da loja Samkhya." },
   { path: "/politica-de-privacidade", title: "Política de Privacidade — Portal Ayurveda", description: "Como o Portal Ayurveda coleta, usa e protege seus dados pessoais." },
   { path: "/termos-de-uso", title: "Termos de Uso — Portal Ayurveda", description: "Termos e condições de uso do Portal Ayurveda." },
+  {
+    path: "/cursos",
+    title: "Cursos de Ayurveda — Portal Ayurveda",
+    description:
+      "Todos os cursos do Portal Ayurveda: formação, alimentação, rotinas e trilhas curtas para você aprofundar sua prática.",
+  },
+  {
+    path: "/samkhya/produto",
+    title: "Produtos Samkhya — Portal Ayurveda",
+    description: "Produtos ayurvédicos selecionados: óleos, ervas e ferramentas para sua prática diária.",
+  },
+  {
+    path: "/samkhya/categoria",
+    title: "Categorias Samkhya — Portal Ayurveda",
+    description: "Explore categorias de produtos ayurvédicos na loja Samkhya do Portal Ayurveda.",
+  },
 ];
+
 
 async function fetchRest<T = any>(query: string): Promise<T[]> {
   try {
