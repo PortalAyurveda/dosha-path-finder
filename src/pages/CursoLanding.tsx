@@ -140,7 +140,7 @@ const CursoLanding = () => {
   // A landing de marketing do Rotinas Diárias ainda não foi construída — enquanto
   // isso, quem cai aqui vai direto para o player (que trata acesso/gate).
   if (slug === "rotinas-diarias") {
-    return <Navigate to="/cursos/rotinas-diarias/estudar" replace />;
+    return <Navigate to="/cursos/rotinas" replace />;
   }
 
   if (loading) {
