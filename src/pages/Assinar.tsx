@@ -1190,6 +1190,17 @@ const Assinar = () => {
                   Tudo da Rotina, mais a companhia.
                 </p>
                 <BeneficiosList plano="mensal" checkColor={SALMAO} />
+                <button
+                  type="button"
+                  onClick={() => {
+                    const el = document.getElementById("plano-anual");
+                    el?.scrollIntoView({ behavior: "smooth", block: "center" });
+                  }}
+                  className="text-xs mb-2 text-center underline underline-offset-2 hover:opacity-80 transition-opacity"
+                  style={{ color: DOURADO_DARK, fontFamily: "'DM Sans', sans-serif" }}
+                >
+                  ou R$ 49,75/mês assinando o ano →
+                </button>
                 <CardAction plano="mensal" color={SALMAO} hoverColor={SALMAO_HOVER} label="Assinar Premium" />
               </div>
 
