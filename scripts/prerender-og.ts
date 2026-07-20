@@ -218,19 +218,38 @@ async function dynamicRoutes(): Promise<Route[]> {
     meta_description: string;
     image_url: string;
     link_do_artigo: string;
+    created_at: string | null;
+    autor?: string | null;
   }>(
-    "portal_conteudo?select=title,summary,meta_description,image_url,link_do_artigo&link_do_artigo=not.is.null&limit=500"
+    "portal_conteudo?select=title,summary,meta_description,image_url,link_do_artigo,created_at,autor&link_do_artigo=not.is.null&limit=500"
   );
   for (const p of posts) {
     if (!p.link_do_artigo) continue;
     const desc = clean(p.meta_description || p.summary, 160);
     if (!p.title || !desc) continue;
+    const url = `${BASE_URL}/blog/${p.link_do_artigo}`;
+    const image = p.image_url || DEFAULT_OG;
     routes.push({
       path: `/blog/${p.link_do_artigo}`,
       title: `${clean(p.title, 80)} — Portal Ayurveda`,
       description: desc,
-      image: p.image_url || DEFAULT_OG,
+      image,
       type: "article",
+      jsonld: {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        headline: clean(p.title, 110),
+        description: desc,
+        image,
+        datePublished: p.created_at || undefined,
+        mainEntityOfPage: url,
+        author: { "@type": "Person", name: clean(p.autor, 80) || "Edson Osorio" },
+        publisher: {
+          "@type": "Organization",
+          name: "Portal Ayurveda",
+          logo: { "@type": "ImageObject", url: `${BASE_URL}/og-image.jpg` },
+        },
+      },
     });
   }
 
@@ -269,21 +288,32 @@ async function dynamicRoutes(): Promise<Route[]> {
     novo_titulo: string;
     mini_resumo: string;
     nova_descricao: string;
+    criado_em: string | null;
   }>(
-    "videos_canonicos?select=video_id,slug,novo_titulo,mini_resumo,nova_descricao&slug=not.is.null&limit=1000"
+    "videos_canonicos?select=video_id,slug,novo_titulo,mini_resumo,nova_descricao,criado_em&slug=not.is.null&limit=1000"
   );
   for (const v of videos) {
     if (!v.slug || !v.novo_titulo) continue;
     const desc = clean(v.mini_resumo || v.nova_descricao, 200) ||
       `Assista "${clean(v.novo_titulo, 80)}" no Portal Ayurveda.`;
+    const thumb = v.video_id
+      ? `https://img.youtube.com/vi/${v.video_id}/maxresdefault.jpg`
+      : DEFAULT_OG;
     routes.push({
       path: `/video/${v.slug}`,
       title: `${clean(v.novo_titulo, 90)} — Portal Ayurveda`,
       description: desc,
-      image: v.video_id
-        ? `https://img.youtube.com/vi/${v.video_id}/maxresdefault.jpg`
-        : DEFAULT_OG,
-      type: "article",
+      image: thumb,
+      type: "video.other",
+      jsonld: {
+        "@context": "https://schema.org",
+        "@type": "VideoObject",
+        name: clean(v.novo_titulo, 110),
+        description: desc,
+        thumbnailUrl: thumb,
+        uploadDate: v.criado_em || undefined,
+        embedUrl: v.video_id ? `https://www.youtube.com/embed/${v.video_id}` : undefined,
+      },
     });
   }
 
@@ -293,8 +323,10 @@ async function dynamicRoutes(): Promise<Route[]> {
     nome_display: string;
     resumo_curto: string | null;
     imagem_url: string | null;
+    preco_pix: number | null;
+    preco_normal: number | null;
   }>(
-    "produtos?select=slug,nome_display,resumo_curto,imagem_url&ativo=eq.true&limit=500",
+    "produtos?select=slug,nome_display,resumo_curto,imagem_url,preco_pix,preco_normal&ativo=eq.true&limit=500",
     "loja"
   );
   for (const p of produtos) {
@@ -302,12 +334,36 @@ async function dynamicRoutes(): Promise<Route[]> {
     const desc =
       clean(p.resumo_curto, 200) ||
       `${clean(p.nome_display, 90)} — produto ayurvédico da loja Samkhya do Portal Ayurveda.`;
+    const url = `${BASE_URL}/samkhya/produto/${p.slug}`;
+    const image = p.imagem_url || DEFAULT_OG;
+    const preco = p.preco_pix ?? p.preco_normal;
     routes.push({
       path: `/samkhya/produto/${p.slug}`,
       title: `${clean(p.nome_display, 90)} — Samkhya | Portal Ayurveda`,
       description: desc,
-      image: p.imagem_url || DEFAULT_OG,
+      image,
       type: "product",
+      jsonld: {
+        "@context": "https://schema.org",
+        "@type": "Product",
+        name: clean(p.nome_display, 110),
+        description: desc,
+        image,
+        brand: { "@type": "Brand", name: "Samkhya" },
+        url,
+        ...(preco != null
+          ? {
+              offers: {
+                "@type": "Offer",
+                url,
+                priceCurrency: "BRL",
+                price: Number(preco).toFixed(2),
+                availability: "https://schema.org/InStock",
+                seller: { "@type": "Organization", name: "Portal Ayurveda" },
+              },
+            }
+          : {}),
+      },
     });
   }
 
@@ -317,8 +373,10 @@ async function dynamicRoutes(): Promise<Route[]> {
     nome: string;
     descricao_curta: string | null;
     imagem_url: string | null;
+    preco_pix: number | null;
+    preco_normal: number | null;
   }>(
-    "kits?select=slug,nome,descricao_curta,imagem_url&ativo=eq.true&limit=200",
+    "kits?select=slug,nome,descricao_curta,imagem_url,preco_pix,preco_normal&ativo=eq.true&limit=200",
     "loja"
   );
   for (const k of kits) {
@@ -326,12 +384,36 @@ async function dynamicRoutes(): Promise<Route[]> {
     const desc =
       clean(k.descricao_curta, 200) ||
       `${clean(k.nome, 90)} — kit ayurvédico da loja Samkhya do Portal Ayurveda.`;
+    const url = `${BASE_URL}/samkhya/kits/${k.slug}`;
+    const image = k.imagem_url || DEFAULT_OG;
+    const preco = k.preco_pix ?? k.preco_normal;
     routes.push({
       path: `/samkhya/kits/${k.slug}`,
       title: `${clean(k.nome, 90)} — Samkhya | Portal Ayurveda`,
       description: desc,
-      image: k.imagem_url || DEFAULT_OG,
+      image,
       type: "product",
+      jsonld: {
+        "@context": "https://schema.org",
+        "@type": "Product",
+        name: clean(k.nome, 110),
+        description: desc,
+        image,
+        brand: { "@type": "Brand", name: "Samkhya" },
+        url,
+        ...(preco != null
+          ? {
+              offers: {
+                "@type": "Offer",
+                url,
+                priceCurrency: "BRL",
+                price: Number(preco).toFixed(2),
+                availability: "https://schema.org/InStock",
+                seller: { "@type": "Organization", name: "Portal Ayurveda" },
+              },
+            }
+          : {}),
+      },
     });
   }
 
@@ -353,6 +435,7 @@ async function dynamicRoutes(): Promise<Route[]> {
       image: DEFAULT_OG,
     });
   }
+
 
   return routes;
 }
