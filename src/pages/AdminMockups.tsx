@@ -15,13 +15,13 @@ const FORMATOS: Record<Formato, { w: number; h: number; label: string }> = {
   feed: { w: 1080, h: 1350, label: "Feed 1080×1350" },
 };
 
-// Visual escalado — largura de ~360px na tela.
 const RENDER_W = 360;
 
 const CREME = "#FBF6EE";
 const TINTA = "#352F54";
 const CORAL = "#FF7676";
 const DOURADO = "#E0A020";
+const AZUL = "#6A88FB";
 
 const DOSHA_COLOR: Record<string, string> = {
   vata: "#6B8FE8",
@@ -29,20 +29,56 @@ const DOSHA_COLOR: Record<string, string> = {
   kapha: "#57BE86",
 };
 
-type Dados = {
-  metricas: any;
-  testes_total: number;
-  conversas: { pergunta: string; resposta: string }[];
-  videos: { titulo: string; resumo: string; thumb: string; slug: string }[];
-  artigos: { titulo: string; resumo: string; imagem: string; slug: string }[];
-  receitas: { titulo: string; imagem: string; resumo: string; efeito: string; ingredientes: string }[];
-  cursos: { titulo: string; capa: string; slug: string; aulas: number }[];
+// Área segura em px de tela (RENDER_W = 360). No story protege 13% verticais
+// (Instagram sobrepõe UI de ~250px em cima/baixo em 1920); no feed protege
+// ~11% verticais (grade 4:5 vira quadrado central).
+const SAFE: Record<Formato, { x: number; y: number }> = {
+  story: { x: 26, y: 88 },
+  feed: { x: 24, y: 50 },
 };
+
+// Tipografia em px de tela (RENDER_W = 360). Multiplicada por 3 na exportação.
+const T: Record<
+  Formato,
+  {
+    eyebrow: number;
+    titulo: number;
+    tituloG: number;
+    corpo: number;
+    rotulo: number;
+    numeroHero: number;
+    rodape: number;
+    selo: number;
+  }
+> = {
+  story: {
+    eyebrow: 11,
+    titulo: 26,
+    tituloG: 32,
+    corpo: 14,
+    rotulo: 12,
+    numeroHero: 64,
+    rodape: 11,
+    selo: 11,
+  },
+  feed: {
+    eyebrow: 10,
+    titulo: 22,
+    tituloG: 28,
+    corpo: 13,
+    rotulo: 11,
+    numeroHero: 56,
+    rodape: 10,
+    selo: 10,
+  },
+};
+
+const Serif: React.CSSProperties = { fontFamily: "'Roboto Serif', Georgia, serif" };
 
 // ---------- helpers ----------
 async function baixarCard(el: HTMLElement, filename: string, formato: Formato) {
   const target = FORMATOS[formato];
-  const pixelRatio = target.w / el.offsetWidth; // → saída 1080px de largura
+  const pixelRatio = target.w / el.offsetWidth;
   const dataUrl = await toPng(el, {
     pixelRatio,
     cacheBust: true,
@@ -54,6 +90,34 @@ async function baixarCard(el: HTMLElement, filename: string, formato: Formato) {
   a.href = dataUrl;
   a.download = filename;
   a.click();
+}
+
+function tituloSize(text: string, t: (typeof T)[Formato]) {
+  const len = (text || "").length;
+  if (len <= 30) return t.tituloG;
+  if (len <= 55) return t.titulo;
+  return Math.max(14, t.titulo - 4);
+}
+
+// Trunca no último espaço antes do limite, sem partir palavra.
+function truncar(text: string | undefined | null, max: number): string {
+  const s = (text || "").trim();
+  if (!s || s.length <= max) return s;
+  const cut = s.slice(0, max);
+  const sp = cut.lastIndexOf(" ");
+  return (sp > 8 ? cut.slice(0, sp) : cut).replace(/[.,;:!?-]+$/, "") + "…";
+}
+
+// Aproxima caracteres/linha considerando fontSize e largura útil.
+function limiteLinhas(fontSize: number, larguraUtil: number, linhas: number) {
+  const charW = fontSize * 0.52;
+  return Math.max(20, Math.floor((larguraUtil / charW) * linhas));
+}
+
+function normalizarSintomas(v: unknown): string[] {
+  if (!v) return [];
+  if (Array.isArray(v)) return v.filter(Boolean).slice(0, 3).map(String);
+  return [String(v)];
 }
 
 // ---------- shell do card ----------
@@ -82,254 +146,616 @@ function Card({
         fontFamily: "'DM Sans', system-ui, sans-serif",
       }}
     >
-      <div className="w-full h-full flex flex-col">{children}</div>
-      <div className="absolute bottom-2 right-3 flex items-center gap-1.5 opacity-70">
-        <img src={LOGO} alt="" width={14} height={14} style={{ filter: "brightness(0.3)" }} />
-        <span style={{ fontSize: 10, color: TINTA }}>portalayurveda.com</span>
-      </div>
+      {children}
     </div>
   );
 }
 
-const Serif: React.CSSProperties = { fontFamily: "'Roboto Serif', Georgia, serif" };
+// bloco de conteúdo dentro da área segura (para texto/selo/rodapé)
+function SafeArea({
+  formato,
+  children,
+  style,
+}: {
+  formato: Formato;
+  children: React.ReactNode;
+  style?: React.CSSProperties;
+}) {
+  const s = SAFE[formato];
+  return (
+    <div
+      className="w-full h-full flex flex-col"
+      style={{
+        paddingLeft: s.x,
+        paddingRight: s.x,
+        paddingTop: s.y,
+        paddingBottom: s.y,
+        ...style,
+      }}
+    >
+      {children}
+    </div>
+  );
+}
 
-const Selo = ({ children, color = DOURADO }: { children: React.ReactNode; color?: string }) => (
+const Selo = ({
+  children,
+  color = DOURADO,
+  formato,
+}: {
+  children: React.ReactNode;
+  color?: string;
+  formato: Formato;
+}) => (
   <span
     style={{
       background: color,
       color: "#fff",
-      padding: "3px 8px",
-      fontSize: 9,
+      padding: formato === "story" ? "5px 12px" : "4px 10px",
+      fontSize: T[formato].selo,
       letterSpacing: 1.5,
       fontWeight: 700,
       textTransform: "uppercase",
       display: "inline-block",
+      borderRadius: 999,
+      alignSelf: "flex-start",
     }}
   >
     {children}
   </span>
 );
 
+function Eyebrow({ children, formato }: { children: React.ReactNode; formato: Formato }) {
+  return (
+    <div
+      style={{
+        fontSize: T[formato].eyebrow,
+        letterSpacing: 2,
+        textTransform: "uppercase",
+        opacity: 0.65,
+        fontWeight: 600,
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+
+function Rodape({
+  formato,
+  cta,
+  ctaColor = TINTA,
+}: {
+  formato: Formato;
+  cta: string;
+  ctaColor?: string;
+}) {
+  const logoSize = formato === "story" ? 22 : 18;
+  const font = T[formato].rodape;
+  return (
+    <div
+      className="flex items-center justify-between w-full mt-auto"
+      style={{ paddingTop: formato === "story" ? 20 : 14, gap: 12 }}
+    >
+      <div className="flex items-center" style={{ gap: 8 }}>
+        <img
+          src={LOGO}
+          width={logoSize}
+          height={logoSize}
+          alt=""
+          style={{ filter: "brightness(0.28)" }}
+        />
+        <span style={{ fontSize: font, opacity: 0.75, color: TINTA }}>portalayurveda.com</span>
+      </div>
+      <span
+        style={{
+          fontSize: font,
+          fontWeight: 700,
+          color: ctaColor,
+          textTransform: "lowercase",
+          letterSpacing: 0.3,
+        }}
+      >
+        {cta} →
+      </span>
+    </div>
+  );
+}
+
+// ---------- tipos ----------
+type Dados = {
+  metricas: any;
+  testes_total: number;
+  conversas: { pergunta: string; resposta: string }[];
+  videos: { titulo: string; resumo: string; thumb: string; slug: string }[];
+  artigos: { titulo: string; resumo: string; imagem: string; slug: string }[];
+  receitas: { titulo: string; imagem: string; resumo: string; efeito: string; ingredientes: string }[];
+  cursos: { titulo: string; capa: string; slug: string; aulas: number }[];
+};
+
 // ---------- cards ----------
 function CardClima({ m, testesTotal, formato }: { m: any; testesTotal: number; formato: Formato }) {
   if (!m) return null;
   const agr = (m.dosha_agravando || "vata").toLowerCase();
   const color = DOSHA_COLOR[agr] || CORAL;
-  const sintoma = m[`sintoma_${agr}`];
+  const sintomas = normalizarSintomas(m[`sintoma_${agr}`]);
+  const larguraUtil = RENDER_W - SAFE[formato].x * 2;
+  const titulo = `${m.estacao}: o ${agr} da base subiu ${m.dosha_agravando_pct}%`;
+  const tSize = tituloSize(titulo, T[formato]);
+
   const pillar = (nome: string, v: number) => {
     const up = Number(v) >= 0;
     return (
       <div
         key={nome}
-        className="flex items-center gap-1 px-2.5 py-1 rounded-full"
-        style={{ background: DOSHA_COLOR[nome], color: "#fff", fontSize: 11, fontWeight: 600 }}
+        className="flex items-center rounded-full"
+        style={{
+          background: DOSHA_COLOR[nome],
+          color: "#fff",
+          fontSize: T[formato].rotulo,
+          fontWeight: 600,
+          padding: "5px 11px",
+          gap: 4,
+        }}
       >
-        {up ? <ArrowUp size={11} /> : <ArrowDown size={11} />}
+        {up ? <ArrowUp size={12} /> : <ArrowDown size={12} />}
         {nome} {Math.abs(Number(v) || 0)}%
       </div>
     );
   };
+
   return (
     <Card formato={formato} bg={`linear-gradient(160deg, ${color}22, ${CREME} 60%)`}>
-      <div className="p-6 flex-1 flex flex-col">
-        <div style={{ fontSize: 10, letterSpacing: 2, textTransform: "uppercase", opacity: 0.7 }}>
-          Clima × Doshas
+      <SafeArea formato={formato}>
+        <Eyebrow formato={formato}>Clima × Doshas</Eyebrow>
+        <div
+          style={{
+            ...Serif,
+            fontSize: tSize,
+            lineHeight: 1.12,
+            marginTop: 16,
+            fontWeight: 600,
+          }}
+        >
+          {truncar(titulo, 90)}
         </div>
-        <div style={{ ...Serif, fontSize: 28, lineHeight: 1.15, marginTop: 10, fontWeight: 600 }}>
-          {m.estacao}: o {agr} da base subiu {m.dosha_agravando_pct}%
-        </div>
-        {sintoma && (
-          <div style={{ fontSize: 13, marginTop: 12, opacity: 0.85 }}>
-            sintoma mais comum: <em>{sintoma}</em>
+
+        {sintomas.length > 0 && (
+          <div style={{ marginTop: 20 }}>
+            <Eyebrow formato={formato}>sintoma mais comum</Eyebrow>
+            {sintomas.length === 1 ? (
+              <div
+                style={{
+                  ...Serif,
+                  fontSize: T[formato].titulo - 4,
+                  lineHeight: 1.2,
+                  marginTop: 6,
+                  fontStyle: "italic",
+                  color: color,
+                }}
+              >
+                {truncar(sintomas[0], limiteLinhas(T[formato].titulo - 4, larguraUtil, 2))}
+              </div>
+            ) : (
+              <ul style={{ marginTop: 8, paddingLeft: 0, listStyle: "none" }}>
+                {sintomas.map((s, i) => (
+                  <li
+                    key={i}
+                    style={{
+                      fontSize: T[formato].corpo,
+                      lineHeight: 1.35,
+                      marginTop: 4,
+                      display: "flex",
+                      gap: 8,
+                    }}
+                  >
+                    <span style={{ color }}>•</span>
+                    <span>{truncar(s, limiteLinhas(T[formato].corpo, larguraUtil - 16, 1))}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
         )}
-        <div style={{ fontSize: 10, marginTop: 10, opacity: 0.6, lineHeight: 1.4 }}>
-          observado na comparação entre centenas de pessoas que refizeram o teste
-        </div>
-        <div className="flex flex-wrap gap-1.5 mt-4">
+
+        {formato === "feed" && (
+          <div
+            style={{
+              fontSize: T[formato].rodape,
+              marginTop: 14,
+              opacity: 0.6,
+              lineHeight: 1.4,
+            }}
+          >
+            observado na comparação entre centenas de pessoas que refizeram o teste
+          </div>
+        )}
+
+        <div className="flex flex-wrap" style={{ gap: 8, marginTop: 20 }}>
           {pillar("vata", m.var_vata)}
           {pillar("pitta", m.var_pitta)}
           {pillar("kapha", m.var_kapha)}
         </div>
-        <div className="mt-auto pt-4" style={{ fontSize: 11, opacity: 0.65 }}>
+
+        <div style={{ marginTop: 16, fontSize: T[formato].rodape, opacity: 0.7 }}>
           dados de {Number(testesTotal).toLocaleString("pt-BR")} testes de dosha
         </div>
-      </div>
+
+        <Rodape formato={formato} cta="faça seu teste" ctaColor={color} />
+      </SafeArea>
     </Card>
   );
 }
 
 function CardConversa({ p, r, formato }: { p: string; r: string; formato: Formato }) {
+  const larguraUtil = RENDER_W - SAFE[formato].x * 2;
+  const limP = limiteLinhas(T[formato].corpo, larguraUtil * 0.85, 4);
+  const limR = limiteLinhas(T[formato].corpo, larguraUtil * 0.9, formato === "story" ? 8 : 6);
   return (
     <Card formato={formato}>
-      <div className="p-5 flex-1 flex flex-col" style={{ justifyContent: formato === "story" ? "center" : "flex-start" }}>
-        <div style={{ fontSize: 9, letterSpacing: 2, textTransform: "uppercase", opacity: 0.6, marginBottom: 14 }}>
-          conversa real · anônima
-        </div>
+      <SafeArea formato={formato}>
+        <Eyebrow formato={formato}>conversa real · anônima</Eyebrow>
         <div
-          className="self-end max-w-[85%] px-3.5 py-2.5 rounded-2xl rounded-br-sm mb-3"
-          style={{ background: "#EEEEEE", fontSize: 13, lineHeight: 1.45 }}
+          className="flex-1 flex flex-col"
+          style={{ justifyContent: "center", marginTop: 16 }}
         >
-          {p}
+          <div
+            className="self-end px-3.5 py-2.5 rounded-2xl rounded-br-sm"
+            style={{
+              background: "#EEEEEE",
+              fontSize: T[formato].corpo,
+              lineHeight: 1.45,
+              maxWidth: "85%",
+              marginBottom: 12,
+            }}
+          >
+            {truncar(p, limP)}
+          </div>
+          <div
+            className="self-start px-3.5 py-2.5 rounded-2xl rounded-bl-sm"
+            style={{
+              background: "#EDE7FA",
+              fontSize: T[formato].corpo,
+              lineHeight: 1.45,
+              maxWidth: "90%",
+            }}
+          >
+            {truncar(r, limR)}
+          </div>
         </div>
-        <div
-          className="self-start max-w-[90%] px-3.5 py-2.5 rounded-2xl rounded-bl-sm"
-          style={{ background: "#EDE7FA", fontSize: 13, lineHeight: 1.45 }}
-        >
-          {r}
-        </div>
-      </div>
+        <Rodape formato={formato} cta="converse com a akasha" ctaColor={TINTA} />
+      </SafeArea>
     </Card>
   );
 }
 
 function CardReceita({ r, formato }: { r: Dados["receitas"][number]; formato: Formato }) {
-  const showEfeito = formato === "story";
+  const larguraUtil = RENDER_W - SAFE[formato].x * 2;
+  const t = T[formato];
+  const tSize = tituloSize(r.titulo, t);
+  const imgH = formato === "story" ? "42%" : "38%";
   return (
     <Card formato={formato}>
-      <div style={{ height: "45%", background: `url(${r.imagem}) center/cover no-repeat, #ddd` }} />
-      <div className="p-5 flex-1 flex flex-col gap-2.5 overflow-hidden">
-        <Selo>Receita do Portal</Selo>
-        <div style={{ ...Serif, fontSize: 20, lineHeight: 1.15, fontWeight: 600 }}>{r.titulo}</div>
-        {r.resumo && (
-          <div>
-            <div style={{ fontSize: 9, letterSpacing: 1.5, textTransform: "uppercase", opacity: 0.6 }}>o que é</div>
-            <div style={{ fontSize: 11.5, lineHeight: 1.4 }}>{r.resumo}</div>
+      <div
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          height: imgH,
+          background: `url(${r.imagem}) center/cover no-repeat, #ddd`,
+        }}
+      />
+      <SafeArea formato={formato} style={{ paddingTop: `calc(${imgH} + 20px)` }}>
+        <Selo formato={formato}>Receita do Portal</Selo>
+        <div
+          style={{
+            ...Serif,
+            fontSize: tSize,
+            lineHeight: 1.12,
+            fontWeight: 600,
+            marginTop: 12,
+          }}
+        >
+          {truncar(r.titulo, 80)}
+        </div>
+
+        {formato === "story" && r.efeito && (
+          <div style={{ marginTop: 16 }}>
+            <Eyebrow formato={formato}>pra que serve</Eyebrow>
+            <div style={{ fontSize: t.corpo, lineHeight: 1.4, marginTop: 6 }}>
+              {truncar(r.efeito, limiteLinhas(t.corpo, larguraUtil, 4))}
+            </div>
           </div>
         )}
-        {r.ingredientes && (
-          <div>
-            <div style={{ fontSize: 9, letterSpacing: 1.5, textTransform: "uppercase", opacity: 0.6 }}>ingredientes</div>
-            <div style={{ fontSize: 11, lineHeight: 1.4, opacity: 0.85 }}>{r.ingredientes}</div>
+
+        {formato === "feed" && r.resumo && (
+          <div style={{ marginTop: 12 }}>
+            <Eyebrow formato={formato}>o que é</Eyebrow>
+            <div style={{ fontSize: t.corpo, lineHeight: 1.4, marginTop: 4 }}>
+              {truncar(r.resumo, limiteLinhas(t.corpo, larguraUtil, 3))}
+            </div>
           </div>
         )}
-        {showEfeito && r.efeito && (
-          <div>
-            <div style={{ fontSize: 9, letterSpacing: 1.5, textTransform: "uppercase", opacity: 0.6 }}>pra que serve</div>
-            <div style={{ fontSize: 11.5, lineHeight: 1.4 }}>{r.efeito}</div>
+
+        {formato === "feed" && r.ingredientes && (
+          <div style={{ marginTop: 10 }}>
+            <Eyebrow formato={formato}>ingredientes</Eyebrow>
+            <div
+              style={{
+                fontSize: t.corpo - 1,
+                lineHeight: 1.4,
+                opacity: 0.85,
+                marginTop: 4,
+              }}
+            >
+              {truncar(r.ingredientes, limiteLinhas(t.corpo - 1, larguraUtil, 4))}
+            </div>
           </div>
         )}
-      </div>
+
+        <Rodape formato={formato} cta="receba a receita" ctaColor={DOURADO} />
+      </SafeArea>
     </Card>
   );
 }
 
 function CardVideo({ v, formato }: { v: Dados["videos"][number]; formato: Formato }) {
+  const t = T[formato];
+  const larguraUtil = RENDER_W - SAFE[formato].x * 2;
+  const tSize = tituloSize(v.titulo, t);
+  const imgH = formato === "story" ? "42%" : "40%";
   return (
     <Card formato={formato}>
-      <div className="relative" style={{ height: "45%", background: `url(${v.thumb}) center/cover no-repeat, #333` }}>
+      <div
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          height: imgH,
+          background: `url(${v.thumb}) center/cover no-repeat, #333`,
+        }}
+      >
         <div
           className="absolute inset-0 flex items-center justify-center"
           style={{ background: "linear-gradient(180deg, #0000, #0004)" }}
         >
           <div
             className="rounded-full flex items-center justify-center"
-            style={{ width: 54, height: 54, background: "#fffc", color: TINTA }}
+            style={{ width: 70, height: 70, background: "#fffc", color: TINTA }}
           >
-            <Play size={22} fill={TINTA} />
+            <Play size={28} fill={TINTA} />
           </div>
         </div>
       </div>
-      <div className="p-5 flex-1 flex flex-col gap-2.5">
-        <Selo color={CORAL}>Aula do Professor</Selo>
-        <div style={{ ...Serif, fontSize: 20, lineHeight: 1.2, fontWeight: 600 }}>{v.titulo}</div>
-        {v.resumo && <div style={{ fontSize: 12, lineHeight: 1.5, opacity: 0.85 }}>{v.resumo}</div>}
-      </div>
+      <SafeArea formato={formato} style={{ paddingTop: `calc(${imgH} + 20px)` }}>
+        <Selo color={CORAL} formato={formato}>
+          Aula do Professor
+        </Selo>
+        <div
+          style={{
+            ...Serif,
+            fontSize: tSize,
+            lineHeight: 1.15,
+            fontWeight: 600,
+            marginTop: 12,
+          }}
+        >
+          {truncar(v.titulo, 80)}
+        </div>
+        {formato === "feed" && v.resumo && (
+          <div
+            style={{
+              fontSize: t.corpo,
+              lineHeight: 1.5,
+              opacity: 0.85,
+              marginTop: 10,
+            }}
+          >
+            {truncar(v.resumo, limiteLinhas(t.corpo, larguraUtil, 4))}
+          </div>
+        )}
+        <Rodape formato={formato} cta="assista" ctaColor={CORAL} />
+      </SafeArea>
     </Card>
   );
 }
 
 function CardArtigo({ a, formato }: { a: Dados["artigos"][number]; formato: Formato }) {
+  const t = T[formato];
+  const larguraUtil = RENDER_W - SAFE[formato].x * 2;
+  const tSize = tituloSize(a.titulo, t);
+  const imgH = a.imagem ? (formato === "story" ? "38%" : "36%") : "0%";
   return (
     <Card formato={formato}>
-      {a.imagem && <div style={{ height: "40%", background: `url(${a.imagem}) center/cover no-repeat, #ccc` }} />}
-      <div className="p-5 flex-1 flex flex-col gap-3">
-        <Selo>Artigo</Selo>
-        <div style={{ ...Serif, fontSize: 22, lineHeight: 1.15, fontWeight: 600 }}>{a.titulo}</div>
-        {a.resumo && <div style={{ fontSize: 12.5, lineHeight: 1.55, opacity: 0.85 }}>{a.resumo}</div>}
-      </div>
+      {a.imagem && (
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            height: imgH,
+            background: `url(${a.imagem}) center/cover no-repeat, #ccc`,
+          }}
+        />
+      )}
+      <SafeArea
+        formato={formato}
+        style={{ paddingTop: a.imagem ? `calc(${imgH} + 20px)` : SAFE[formato].y }}
+      >
+        <Selo formato={formato}>Artigo</Selo>
+        <div
+          style={{
+            ...Serif,
+            fontSize: tSize,
+            lineHeight: 1.12,
+            fontWeight: 600,
+            marginTop: 12,
+          }}
+        >
+          {truncar(a.titulo, 90)}
+        </div>
+        {formato === "feed" && a.resumo && (
+          <div
+            style={{
+              fontSize: t.corpo,
+              lineHeight: 1.55,
+              opacity: 0.85,
+              marginTop: 12,
+            }}
+          >
+            {truncar(a.resumo, limiteLinhas(t.corpo, larguraUtil, 5))}
+          </div>
+        )}
+        <Rodape formato={formato} cta="leia" ctaColor={DOURADO} />
+      </SafeArea>
     </Card>
   );
 }
 
 function CardCurso({ c, formato }: { c: Dados["cursos"][number]; formato: Formato }) {
+  const t = T[formato];
+  const tSize = tituloSize(c.titulo, t);
+  // Dimensão de capa fixa (independente de título) para uniformidade entre cards.
+  const capaSize = formato === "story" ? 180 : 150;
   return (
     <Card formato={formato}>
-      <div className="flex-1 flex flex-col items-center justify-center p-6 gap-4 text-center">
-        <Selo color={CORAL}>Curso do Portal</Selo>
-        {c.capa && (
-          <img
-            src={c.capa}
-            alt=""
-            style={{ width: "70%", aspectRatio: "1", objectFit: "cover", borderRadius: 6 }}
-          />
-        )}
-        <div style={{ ...Serif, fontSize: 22, lineHeight: 1.2, fontWeight: 600 }}>{c.titulo}</div>
-        <div style={{ fontSize: 12, opacity: 0.8 }}>
+      <SafeArea formato={formato} style={{ alignItems: "center", textAlign: "center" }}>
+        <Selo color={AZUL} formato={formato}>
+          Curso do Portal
+        </Selo>
+        <div
+          style={{
+            width: capaSize,
+            height: capaSize,
+            marginTop: 24,
+            background: c.capa ? `url(${c.capa}) center/cover no-repeat, #eee` : "#eee",
+            borderRadius: 8,
+            flexShrink: 0,
+          }}
+        />
+        <div
+          style={{
+            ...Serif,
+            fontSize: tSize,
+            lineHeight: 1.15,
+            fontWeight: 600,
+            marginTop: 24,
+          }}
+        >
+          {truncar(c.titulo, 70)}
+        </div>
+        <div style={{ fontSize: t.corpo, opacity: 0.8, marginTop: 10 }}>
           {c.aulas} aulas com o professor Edson Osorio
         </div>
-      </div>
+        <Rodape formato={formato} cta="quero o curso" ctaColor={AZUL} />
+      </SafeArea>
     </Card>
   );
 }
 
 function CardNumeros({ d, formato }: { d: Dados; formato: Formato }) {
+  const t = T[formato];
   return (
     <Card formato={formato}>
-      <div className="flex-1 flex flex-col justify-center p-7 gap-6">
-        <div style={{ fontSize: 10, letterSpacing: 2, textTransform: "uppercase", opacity: 0.6 }}>
-          Números do Portal
-        </div>
-        <div>
-          <div style={{ ...Serif, fontSize: 64, lineHeight: 1, fontWeight: 700, color: TINTA }}>
-            {Number(d.testes_total).toLocaleString("pt-BR")}
+      <SafeArea formato={formato}>
+        <Eyebrow formato={formato}>Números do Portal</Eyebrow>
+        <div className="flex-1 flex flex-col justify-center" style={{ gap: 28 }}>
+          <div>
+            <div
+              style={{
+                ...Serif,
+                fontSize: t.numeroHero,
+                lineHeight: 1,
+                fontWeight: 700,
+                color: TINTA,
+              }}
+            >
+              {Number(d.testes_total).toLocaleString("pt-BR")}
+            </div>
+            <div style={{ fontSize: t.corpo, marginTop: 8 }}>testes de dosha realizados</div>
           </div>
-          <div style={{ fontSize: 13, marginTop: 6 }}>testes de dosha realizados</div>
-        </div>
-        <div>
-          <div style={{ ...Serif, fontSize: 30, fontWeight: 600, color: CORAL }}>
-            {d.metricas?.terapeutas ?? 0}
+          <div>
+            <div
+              style={{
+                ...Serif,
+                fontSize: t.numeroHero * 0.5,
+                fontWeight: 600,
+                color: CORAL,
+              }}
+            >
+              {d.metricas?.terapeutas ?? 0}
+            </div>
+            <div style={{ fontSize: t.corpo, marginTop: 4 }}>terapeutas pelo Brasil</div>
           </div>
-          <div style={{ fontSize: 12 }}>terapeutas pelo Brasil</div>
-        </div>
-        <div>
-          <div style={{ ...Serif, fontSize: 30, fontWeight: 600, color: DOURADO }}>
-            {d.metricas?.testes_7d ?? 0}
+          <div>
+            <div
+              style={{
+                ...Serif,
+                fontSize: t.numeroHero * 0.5,
+                fontWeight: 600,
+                color: DOURADO,
+              }}
+            >
+              {d.metricas?.testes_7d ?? 0}
+            </div>
+            <div style={{ fontSize: t.corpo, marginTop: 4 }}>
+              pessoas se conheceram esta semana
+            </div>
           </div>
-          <div style={{ fontSize: 12 }}>pessoas se conheceram esta semana</div>
         </div>
-      </div>
+        <Rodape formato={formato} cta="conheça o portal" ctaColor={CORAL} />
+      </SafeArea>
     </Card>
   );
 }
 
 function CardConviteTerapeutas({ formato }: { formato: Formato }) {
+  const t = T[formato];
+  const larguraUtil = RENDER_W - SAFE[formato].x * 2;
   return (
     <Card formato={formato}>
-      <div className="flex-1 flex flex-col justify-center p-7 gap-5">
-        <MapPin size={38} color={CORAL} />
-        <div style={{ fontSize: 10, letterSpacing: 2, textTransform: "uppercase", opacity: 0.6 }}>
-          Convite
-        </div>
-        <div style={{ ...Serif, fontSize: 28, lineHeight: 1.15, fontWeight: 600 }}>
-          Você é terapeuta de Ayurveda?
-        </div>
-        <div style={{ fontSize: 13, lineHeight: 1.5 }}>
-          Cadastre-se nos Terapeutas do Brasil e seja encontrada por quem procura cuidado na sua cidade.
+      <SafeArea formato={formato}>
+        <MapPin size={formato === "story" ? 40 : 32} color={CORAL} />
+        <div style={{ marginTop: 16 }}>
+          <Eyebrow formato={formato}>Convite</Eyebrow>
         </div>
         <div
-          className="mt-2 px-3 py-2 inline-block"
           style={{
+            ...Serif,
+            fontSize: t.tituloG,
+            lineHeight: 1.15,
+            fontWeight: 600,
+            marginTop: 12,
+          }}
+        >
+          Você é terapeuta de Ayurveda?
+        </div>
+        <div style={{ fontSize: t.corpo, lineHeight: 1.5, marginTop: 16 }}>
+          {truncar(
+            "Cadastre-se nos Terapeutas do Brasil e seja encontrada por quem procura cuidado na sua cidade.",
+            limiteLinhas(t.corpo, larguraUtil, 4),
+          )}
+        </div>
+        <div
+          style={{
+            marginTop: 20,
+            padding: "10px 12px",
             background: TINTA,
             color: CREME,
-            fontSize: 11,
+            fontSize: t.rodape,
             fontFamily: "monospace",
             wordBreak: "break-all",
+            alignSelf: "flex-start",
+            borderRadius: 4,
           }}
         >
           portalayurveda.com/terapeutas-do-brasil/cadastro
         </div>
-      </div>
+        <Rodape formato={formato} cta="cadastre-se" ctaColor={CORAL} />
+      </SafeArea>
     </Card>
   );
 }
@@ -505,9 +931,7 @@ const AdminMockups = () => {
 
       <main className="max-w-6xl mx-auto px-4 py-6">
         {!loading && erro && (
-          <div className="text-center text-destructive py-20">
-            Erro ao carregar: {erro}
-          </div>
+          <div className="text-center text-destructive py-20">Erro ao carregar: {erro}</div>
         )}
         {!loading && !erro && restrito && (
           <div className="text-center text-muted-foreground py-20">Página restrita.</div>
