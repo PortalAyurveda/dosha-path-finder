@@ -118,14 +118,14 @@ const staticRoutes: Route[] = [
 ];
 
 
-async function fetchRest<T = any>(query: string): Promise<T[]> {
+async function fetchRest<T = any>(query: string, schema?: string): Promise<T[]> {
   try {
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/${query}`, {
-      headers: {
-        apikey: SUPABASE_ANON,
-        Authorization: `Bearer ${SUPABASE_ANON}`,
-      },
-    });
+    const headers: Record<string, string> = {
+      apikey: SUPABASE_ANON,
+      Authorization: `Bearer ${SUPABASE_ANON}`,
+    };
+    if (schema) headers["Accept-Profile"] = schema;
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/${query}`, { headers });
     if (!res.ok) {
       console.warn(`[prerender] fetch ${query} → ${res.status}`);
       return [];
@@ -136,6 +136,7 @@ async function fetchRest<T = any>(query: string): Promise<T[]> {
     return [];
   }
 }
+
 
 function clean(text: unknown, max = 200): string {
   if (!text || typeof text !== "string") return "";
