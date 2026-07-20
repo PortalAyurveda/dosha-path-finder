@@ -22,8 +22,34 @@ interface Route {
   title: string;
   description: string;
   image?: string;
-  type?: "website" | "article" | "profile" | "product";
+  type?: "website" | "article" | "profile" | "product" | "video.other";
+  jsonld?: Record<string, any> | Record<string, any>[];
+  noindex?: boolean;
 }
+
+// FAQ da página /assinar — precisa ficar sincronizado com src/pages/Assinar.tsx
+const ASSINAR_FAQ: { q: string; a: string }[] = [
+  { q: "Preciso já entender de Ayurveda?", a: "Você só precisa fazer o teste de dosha gratuito — leva 5 minutos. O Portal traduz todo o resto em passos simples: o que comer, quando, por quê. O Ayurveda parece complicado porque você vê o resultado pronto; aqui você aprende passo a passo, no seu ritmo." },
+  { q: "Como recebo o curso incluso no plano anual?", a: "A matrícula é automática: assinou o anual, o curso Rotinas Diárias aparece liberado na sua conta, para assistir quando quiser, quantas vezes quiser." },
+  { q: "O que acontece logo depois que eu assino?", a: "Você entra e sua rotina já está lá, montada para o resultado do seu teste. No primeiro domingo, chega sua primeira 'Semana Ayurveda' por email. E a Akasha já te conhece pelo nome." },
+  { q: "Funciona bem no celular?", a: "Sim — o Portal inteiro foi feito para o celular, das receitas às conversas com a Akasha." },
+  { q: "Posso mudar de plano depois?", a: "Pode, a qualquer momento, direto nesta página — quem assina a Rotina sobe para o Premium pagando só a diferença proporcional." },
+  { q: "Posso cancelar quando quiser?", a: "Sim, direto no Portal, na sua conta — sem ligação e sem burocracia. O acesso vai até o fim do período já pago." },
+  { q: "O que é a revisão mensal?", a: "Todo mês seu quadro é refeito e a rotina se ajusta ao momento do seu corpo. Uma rotina que não se ajusta envelhece — a sua acompanha você." },
+  { q: "A Akasha funciona de madrugada?", a: "Sim, a qualquer hora. Ela está disponível dia e noite, e conhece o seu dosha e o histórico das suas conversas." },
+  { q: "Já assino a Rotina, como faço para subir de plano?", a: "Clique em Fazer upgrade no card do plano desejado. Você paga só a diferença proporcional pelo tempo que resta do ciclo atual — nenhuma cobrança em dobro." },
+];
+
+const ASSINAR_FAQ_JSONLD = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: ASSINAR_FAQ.map((f) => ({
+    "@type": "Question",
+    name: f.q,
+    acceptedAnswer: { "@type": "Answer", text: f.a },
+  })),
+};
+
 
 const staticRoutes: Route[] = [
   {
@@ -64,7 +90,9 @@ const staticRoutes: Route[] = [
     title: "Akasha Premium — Portal Ayurveda",
     description:
       "Assine o Akasha Premium e tenha acesso ilimitado à biblioteca, rotinas personalizadas e à inteligência Akasha do Portal Ayurveda.",
+    jsonld: ASSINAR_FAQ_JSONLD,
   },
+
   {
     path: "/curso/alimentacao",
     title: "Curso de Alimentação Ayurvédica — Portal Ayurveda",
@@ -115,7 +143,32 @@ const staticRoutes: Route[] = [
     title: "Categorias Samkhya — Portal Ayurveda",
     description: "Explore categorias de produtos ayurvédicos na loja Samkhya do Portal Ayurveda.",
   },
+  {
+    path: "/artigos",
+    title: "Artigos de Ayurveda — Portal Ayurveda",
+    description:
+      "Artigos práticos de Ayurveda por dosha: alimentação, rotina, digestão, sono e equilíbrio no dia a dia.",
+  },
 ];
+
+// Rotas privadas: entregam o SPA fallback, mas devem sinalizar noindex ao Google
+// e nunca ter canonical apontando para a home. A safeguard em index.html cuida
+// do canonical; aqui listamos os prefixos para o script client-side aplicar noindex.
+const PRIVATE_ROUTE_PREFIXES = [
+  "/minha-rotina",
+  "/meu-dosha",
+  "/entrar",
+  "/admin",
+  "/metricas",
+  "/registros",
+  "/samkhya/obrigado",
+  "/samkhya/pedido",
+  "/samkhya/compras",
+  "/samkhya/carrinho",
+  "/aovivo",
+  "/preview-loading",
+];
+
 
 
 async function fetchRest<T = any>(query: string, schema?: string): Promise<T[]> {
@@ -165,19 +218,38 @@ async function dynamicRoutes(): Promise<Route[]> {
     meta_description: string;
     image_url: string;
     link_do_artigo: string;
+    created_at: string | null;
+    autor?: string | null;
   }>(
-    "portal_conteudo?select=title,summary,meta_description,image_url,link_do_artigo&link_do_artigo=not.is.null&limit=500"
+    "portal_conteudo?select=title,summary,meta_description,image_url,link_do_artigo,created_at,autor&link_do_artigo=not.is.null&limit=500"
   );
   for (const p of posts) {
     if (!p.link_do_artigo) continue;
     const desc = clean(p.meta_description || p.summary, 160);
     if (!p.title || !desc) continue;
+    const url = `${BASE_URL}/blog/${p.link_do_artigo}`;
+    const image = p.image_url || DEFAULT_OG;
     routes.push({
       path: `/blog/${p.link_do_artigo}`,
       title: `${clean(p.title, 80)} — Portal Ayurveda`,
       description: desc,
-      image: p.image_url || DEFAULT_OG,
+      image,
       type: "article",
+      jsonld: {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        headline: clean(p.title, 110),
+        description: desc,
+        image,
+        datePublished: p.created_at || undefined,
+        mainEntityOfPage: url,
+        author: { "@type": "Person", name: clean(p.autor, 80) || "Edson Osorio" },
+        publisher: {
+          "@type": "Organization",
+          name: "Portal Ayurveda",
+          logo: { "@type": "ImageObject", url: `${BASE_URL}/og-image.jpg` },
+        },
+      },
     });
   }
 
@@ -216,21 +288,32 @@ async function dynamicRoutes(): Promise<Route[]> {
     novo_titulo: string;
     mini_resumo: string;
     nova_descricao: string;
+    criado_em: string | null;
   }>(
-    "videos_canonicos?select=video_id,slug,novo_titulo,mini_resumo,nova_descricao&slug=not.is.null&limit=1000"
+    "videos_canonicos?select=video_id,slug,novo_titulo,mini_resumo,nova_descricao,criado_em&slug=not.is.null&limit=1000"
   );
   for (const v of videos) {
     if (!v.slug || !v.novo_titulo) continue;
     const desc = clean(v.mini_resumo || v.nova_descricao, 200) ||
       `Assista "${clean(v.novo_titulo, 80)}" no Portal Ayurveda.`;
+    const thumb = v.video_id
+      ? `https://img.youtube.com/vi/${v.video_id}/maxresdefault.jpg`
+      : DEFAULT_OG;
     routes.push({
       path: `/video/${v.slug}`,
       title: `${clean(v.novo_titulo, 90)} — Portal Ayurveda`,
       description: desc,
-      image: v.video_id
-        ? `https://img.youtube.com/vi/${v.video_id}/maxresdefault.jpg`
-        : DEFAULT_OG,
-      type: "article",
+      image: thumb,
+      type: "video.other",
+      jsonld: {
+        "@context": "https://schema.org",
+        "@type": "VideoObject",
+        name: clean(v.novo_titulo, 110),
+        description: desc,
+        thumbnailUrl: thumb,
+        uploadDate: v.criado_em || undefined,
+        embedUrl: v.video_id ? `https://www.youtube.com/embed/${v.video_id}` : undefined,
+      },
     });
   }
 
@@ -240,8 +323,10 @@ async function dynamicRoutes(): Promise<Route[]> {
     nome_display: string;
     resumo_curto: string | null;
     imagem_url: string | null;
+    preco_pix: number | null;
+    preco_normal: number | null;
   }>(
-    "produtos?select=slug,nome_display,resumo_curto,imagem_url&ativo=eq.true&limit=500",
+    "produtos?select=slug,nome_display,resumo_curto,imagem_url,preco_pix,preco_normal&ativo=eq.true&limit=500",
     "loja"
   );
   for (const p of produtos) {
@@ -249,12 +334,36 @@ async function dynamicRoutes(): Promise<Route[]> {
     const desc =
       clean(p.resumo_curto, 200) ||
       `${clean(p.nome_display, 90)} — produto ayurvédico da loja Samkhya do Portal Ayurveda.`;
+    const url = `${BASE_URL}/samkhya/produto/${p.slug}`;
+    const image = p.imagem_url || DEFAULT_OG;
+    const preco = p.preco_pix ?? p.preco_normal;
     routes.push({
       path: `/samkhya/produto/${p.slug}`,
       title: `${clean(p.nome_display, 90)} — Samkhya | Portal Ayurveda`,
       description: desc,
-      image: p.imagem_url || DEFAULT_OG,
+      image,
       type: "product",
+      jsonld: {
+        "@context": "https://schema.org",
+        "@type": "Product",
+        name: clean(p.nome_display, 110),
+        description: desc,
+        image,
+        brand: { "@type": "Brand", name: "Samkhya" },
+        url,
+        ...(preco != null
+          ? {
+              offers: {
+                "@type": "Offer",
+                url,
+                priceCurrency: "BRL",
+                price: Number(preco).toFixed(2),
+                availability: "https://schema.org/InStock",
+                seller: { "@type": "Organization", name: "Portal Ayurveda" },
+              },
+            }
+          : {}),
+      },
     });
   }
 
@@ -264,8 +373,10 @@ async function dynamicRoutes(): Promise<Route[]> {
     nome: string;
     descricao_curta: string | null;
     imagem_url: string | null;
+    preco_pix: number | null;
+    preco_normal: number | null;
   }>(
-    "kits?select=slug,nome,descricao_curta,imagem_url&ativo=eq.true&limit=200",
+    "kits?select=slug,nome,descricao_curta,imagem_url,preco_pix,preco_normal&ativo=eq.true&limit=200",
     "loja"
   );
   for (const k of kits) {
@@ -273,12 +384,36 @@ async function dynamicRoutes(): Promise<Route[]> {
     const desc =
       clean(k.descricao_curta, 200) ||
       `${clean(k.nome, 90)} — kit ayurvédico da loja Samkhya do Portal Ayurveda.`;
+    const url = `${BASE_URL}/samkhya/kits/${k.slug}`;
+    const image = k.imagem_url || DEFAULT_OG;
+    const preco = k.preco_pix ?? k.preco_normal;
     routes.push({
       path: `/samkhya/kits/${k.slug}`,
       title: `${clean(k.nome, 90)} — Samkhya | Portal Ayurveda`,
       description: desc,
-      image: k.imagem_url || DEFAULT_OG,
+      image,
       type: "product",
+      jsonld: {
+        "@context": "https://schema.org",
+        "@type": "Product",
+        name: clean(k.nome, 110),
+        description: desc,
+        image,
+        brand: { "@type": "Brand", name: "Samkhya" },
+        url,
+        ...(preco != null
+          ? {
+              offers: {
+                "@type": "Offer",
+                url,
+                priceCurrency: "BRL",
+                price: Number(preco).toFixed(2),
+                availability: "https://schema.org/InStock",
+                seller: { "@type": "Organization", name: "Portal Ayurveda" },
+              },
+            }
+          : {}),
+      },
     });
   }
 
@@ -300,6 +435,7 @@ async function dynamicRoutes(): Promise<Route[]> {
       image: DEFAULT_OG,
     });
   }
+
 
   return routes;
 }
@@ -395,14 +531,24 @@ function renderHtml(template: string, route: Route): string {
     `<meta name="twitter:image" content="${image}" />`
   );
 
-  // canonical: injetar no <head>
-  html = html.replace(
-    /<\/head>/,
-    `    <link rel="canonical" href="${url}" />\n  </head>`
-  );
+  // canonical + noindex + JSON-LD: injetar no <head>
+  const extras: string[] = [`    <link rel="canonical" href="${url}" />`];
+  if (route.noindex) {
+    extras.push(`    <meta name="robots" content="noindex, follow" />`);
+  }
+  if (route.jsonld) {
+    const blocks = Array.isArray(route.jsonld) ? route.jsonld : [route.jsonld];
+    for (const b of blocks) {
+      // JSON dentro de <script>: escapar </ para evitar fechar o script cedo
+      const safe = JSON.stringify(b).replace(/</g, "\\u003c");
+      extras.push(`    <script type="application/ld+json">${safe}</script>`);
+    }
+  }
+  html = html.replace(/<\/head>/, `${extras.join("\n")}\n  </head>`);
 
   return html;
 }
+
 
 async function main() {
   const distDir = resolve("dist");

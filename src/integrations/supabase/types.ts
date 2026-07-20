@@ -6308,6 +6308,8 @@ export type Database = {
       rpg_admin_select: { Args: { _table: string }; Returns: Json }
       rpg_play: { Args: { _args?: Json; _fn: string }; Returns: Json }
       rpg_rpc: { Args: { _args?: Json; _fn: string }; Returns: Json }
+      seo_meta: { Args: { p_path: string }; Returns: Json }
+      seo_slug_video: { Args: { p_titulo: string }; Returns: string }
       sou_aluno_escola: { Args: never; Returns: boolean }
       tag_normalizar: { Args: { p: string }; Returns: string }
       tem_acesso_curso: { Args: { p_curso_id: string }; Returns: boolean }
