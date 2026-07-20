@@ -6,6 +6,7 @@ interface Props {
   item: Omit<CartItem, "quantidade">;
   size?: "sm" | "md" | "lg";
   fullWidth?: boolean;
+  disabled?: boolean;
 }
 
 const BotaoAdicionarCarrinho = ({ item, size = "md", fullWidth = false }: Props) => {
