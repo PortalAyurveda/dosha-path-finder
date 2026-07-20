@@ -105,6 +105,7 @@ const AdminBanners = lazy(() => import("./pages/AdminBanners"));
 const RpgAdmin = lazy(() => import("./pages/RpgAdmin"));
 const AdminRpg = lazy(() => import("./pages/AdminRpg"));
 const Rpg = lazy(() => import("./pages/Rpg"));
+const AdminMockups = lazy(() => import("./pages/AdminMockups"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
