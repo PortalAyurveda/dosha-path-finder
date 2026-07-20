@@ -22,6 +22,7 @@ const links = [
   { to: "/admin/imagens", label: "Imagens", icon: ImageIcon },
   { to: "/admin/loja", label: "Loja Samkhya", icon: Store },
   { to: "/admin/mensagens", label: "Mensagens", icon: Inbox },
+  { to: "/admin/mockups", label: "Mockups", icon: Sparkles },
   { to: "/admin/revisoes", label: "Revisões", icon: RefreshCw },
   { to: "/admin/rotinas", label: "Rotinas", icon: Soup },
   { to: "/admin/terapeutas", label: "Terapeutas", icon: Users },
