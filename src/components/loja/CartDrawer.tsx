@@ -235,9 +235,11 @@ const CartDrawer = () => {
           frete_gratis_cupom: cupomAplicado?.tipo_desconto === "frete_gratis",
           itens: itens.map((it) => ({
             slug: it.slug,
+            tipo: it.tipo,
             quantidade: it.quantidade,
             peso_gramas: it.peso_gramas,
             preco_unitario: Number(it.preco_pix),
+            ...(it.escolhas ? { escolhas: it.escolhas } : {}),
           })),
         },
       });
