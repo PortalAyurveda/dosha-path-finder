@@ -3240,6 +3240,39 @@ export type Database = {
         }
         Relationships: []
       }
+      kit_novato_curadoria: {
+        Row: {
+          artigo_imagem: string | null
+          artigo_rota: string | null
+          artigo_titulo: string | null
+          atualizado_em: string | null
+          dosha: string
+          video_imagem: string | null
+          video_rota: string | null
+          video_titulo: string | null
+        }
+        Insert: {
+          artigo_imagem?: string | null
+          artigo_rota?: string | null
+          artigo_titulo?: string | null
+          atualizado_em?: string | null
+          dosha: string
+          video_imagem?: string | null
+          video_rota?: string | null
+          video_titulo?: string | null
+        }
+        Update: {
+          artigo_imagem?: string | null
+          artigo_rota?: string | null
+          artigo_titulo?: string | null
+          atualizado_em?: string | null
+          dosha?: string
+          video_imagem?: string | null
+          video_rota?: string | null
+          video_titulo?: string | null
+        }
+        Relationships: []
+      }
       licoes_semana: {
         Row: {
           abertura: string
@@ -6103,6 +6136,11 @@ export type Database = {
           nivel_ordem: number
           xp_total: number
         }[]
+      }
+      kit_detalhe: { Args: { p_slug: string }; Returns: Json }
+      kit_expandir: {
+        Args: { p_escolhas?: Json; p_slug: string }
+        Returns: Json
       }
       match_conteudo: {
         Args: {
