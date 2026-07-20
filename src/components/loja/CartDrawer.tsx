@@ -514,7 +514,8 @@ const CartDrawer = () => {
                       </div>
                     </div>
                   </li>
-                ))}
+                  );
+                })}
               </ul>
 
               <div className="pt-4 border-t" style={{ borderColor: samkhyaTokens.cardBorder }}>
