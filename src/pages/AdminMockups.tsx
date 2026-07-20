@@ -376,18 +376,34 @@ const AdminMockups = () => {
   const [formato, setFormato] = useState<Formato>("story");
   const [dados, setDados] = useState<Dados | null>(null);
   const [restrito, setRestrito] = useState(false);
+  const [erro, setErro] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let cancelado = false;
     (async () => {
-      const { data, error } = await supabase.rpc("mockups_dados" as any);
-      if (error || data == null) {
-        setRestrito(true);
-      } else {
-        setDados(data as unknown as Dados);
+      try {
+        const { data, error } = await supabase.rpc("mockups_dados" as any);
+        if (cancelado) return;
+        if (error) {
+          console.error("[AdminMockups] erro em mockups_dados:", error);
+          setErro(error.message || "Erro ao carregar mockups.");
+        } else if (data === null) {
+          setRestrito(true);
+        } else {
+          setDados(data as unknown as Dados);
+        }
+      } catch (e: any) {
+        if (cancelado) return;
+        console.error("[AdminMockups] exceção em mockups_dados:", e);
+        setErro(e?.message || "Erro ao carregar mockups.");
+      } finally {
+        if (!cancelado) setLoading(false);
       }
-      setLoading(false);
     })();
+    return () => {
+      cancelado = true;
+    };
   }, []);
 
   const grupos = useMemo(() => {
@@ -488,10 +504,15 @@ const AdminMockups = () => {
       </div>
 
       <main className="max-w-6xl mx-auto px-4 py-6">
-        {restrito && (
+        {!loading && erro && (
+          <div className="text-center text-destructive py-20">
+            Erro ao carregar: {erro}
+          </div>
+        )}
+        {!loading && !erro && restrito && (
           <div className="text-center text-muted-foreground py-20">Página restrita.</div>
         )}
-        {loading && !restrito && (
+        {loading && (
           <div className="flex flex-wrap gap-6">
             {Array.from({ length: 6 }).map((_, i) => (
               <Skeleton
@@ -503,6 +524,8 @@ const AdminMockups = () => {
         )}
         {!loading &&
           !restrito &&
+          !erro &&
+          dados &&
           grupos.map((g) => (
             <Grupo key={g.titulo} titulo={g.titulo} formato={formato} itens={g.itens} />
           ))}
