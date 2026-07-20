@@ -504,10 +504,15 @@ const AdminMockups = () => {
       </div>
 
       <main className="max-w-6xl mx-auto px-4 py-6">
-        {restrito && (
+        {!loading && erro && (
+          <div className="text-center text-destructive py-20">
+            Erro ao carregar: {erro}
+          </div>
+        )}
+        {!loading && !erro && restrito && (
           <div className="text-center text-muted-foreground py-20">Página restrita.</div>
         )}
-        {loading && !restrito && (
+        {loading && (
           <div className="flex flex-wrap gap-6">
             {Array.from({ length: 6 }).map((_, i) => (
               <Skeleton
