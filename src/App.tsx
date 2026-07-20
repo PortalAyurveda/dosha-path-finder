@@ -105,6 +105,7 @@ const AdminBanners = lazy(() => import("./pages/AdminBanners"));
 const RpgAdmin = lazy(() => import("./pages/RpgAdmin"));
 const AdminRpg = lazy(() => import("./pages/AdminRpg"));
 const Rpg = lazy(() => import("./pages/Rpg"));
+const AdminMockups = lazy(() => import("./pages/AdminMockups"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -268,6 +269,7 @@ const RoutedApp = () => {
               <Route path="/escola/aluno/aula/:id" element={<EscolaAlunoAula />} />
 
               <Route path="/admin/banners" element={<AdminRoute><AdminBanners /></AdminRoute>} />
+              <Route path="/admin/mockups" element={<AdminRoute><AdminMockups /></AdminRoute>} />
               <Route path="/admin/rpg" element={<AdminRoute><AdminRpg /></AdminRoute>} />
 
               {/* Aulas ao vivo + webinars (CMS) */}
