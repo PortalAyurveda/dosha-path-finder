@@ -41,6 +41,18 @@
           var path = location.pathname || "/";
           if (path === "/") return;
           var self = "https://portalayurveda.com" + path;
+          var privatePrefixes = [
+            "/minha-rotina","/meu-dosha","/entrar","/admin",
+            "/metricas","/registros","/samkhya/obrigado",
+            "/samkhya/pedido","/samkhya/compras","/samkhya/carrinho",
+            "/aovivo","/preview-loading"
+          ];
+          var isPrivate = false;
+          for (var i = 0; i < privatePrefixes.length; i++) {
+            if (path === privatePrefixes[i] || path.indexOf(privatePrefixes[i] + "/") === 0) {
+              isPrivate = true; break;
+            }
+          }
           function fix() {
             var can = document.querySelector('link[rel="canonical"]');
             if (!can) {
@@ -55,6 +67,15 @@
             if (og && /^https?:\/\/portalayurveda\.com\/?$/.test(og.getAttribute("content") || "")) {
               og.setAttribute("content", self);
             }
+            if (isPrivate) {
+              var robots = document.querySelector('meta[name="robots"]');
+              if (!robots) {
+                robots = document.createElement("meta");
+                robots.setAttribute("name", "robots");
+                document.head.appendChild(robots);
+              }
+              robots.setAttribute("content", "noindex, follow");
+            }
           }
           if (document.readyState === "loading") {
             document.addEventListener("DOMContentLoaded", fix);
@@ -64,6 +85,7 @@
         } catch (e) {}
       })();
     </script>
+
 
 
     <!-- Open Graph (sitewide fallback; rotas individuais sobrescrevem via prerender) -->
