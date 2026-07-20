@@ -6180,6 +6180,7 @@ export type Database = {
           slot: string
         }[]
       }
+      mockups_dados: { Args: never; Returns: Json }
       owns_rotina: { Args: { p_test_id: string }; Returns: boolean }
       prateleira_samkhya: {
         Args: { p_dosha?: string }
@@ -6232,6 +6233,11 @@ export type Database = {
       }
       receita_teaser: { Args: { p_item: string }; Returns: Json }
       recompute_user_level: { Args: { p_user: string }; Returns: undefined }
+      relatorio_dossie: { Args: { p_horas?: number }; Returns: Json }
+      restaurar_creditos_pedido_desculpas: {
+        Args: { p_email: string }
+        Returns: number
+      }
       restore_dosha_test_version: {
         Args: { _version_number: number }
         Returns: undefined
