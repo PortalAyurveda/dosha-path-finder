@@ -143,7 +143,32 @@ const staticRoutes: Route[] = [
     title: "Categorias Samkhya — Portal Ayurveda",
     description: "Explore categorias de produtos ayurvédicos na loja Samkhya do Portal Ayurveda.",
   },
+  {
+    path: "/artigos",
+    title: "Artigos de Ayurveda — Portal Ayurveda",
+    description:
+      "Artigos práticos de Ayurveda por dosha: alimentação, rotina, digestão, sono e equilíbrio no dia a dia.",
+  },
 ];
+
+// Rotas privadas: entregam o SPA fallback, mas devem sinalizar noindex ao Google
+// e nunca ter canonical apontando para a home. A safeguard em index.html cuida
+// do canonical; aqui listamos os prefixos para o script client-side aplicar noindex.
+const PRIVATE_ROUTE_PREFIXES = [
+  "/minha-rotina",
+  "/meu-dosha",
+  "/entrar",
+  "/admin",
+  "/metricas",
+  "/registros",
+  "/samkhya/obrigado",
+  "/samkhya/pedido",
+  "/samkhya/compras",
+  "/samkhya/carrinho",
+  "/aovivo",
+  "/preview-loading",
+];
+
 
 
 async function fetchRest<T = any>(query: string, schema?: string): Promise<T[]> {
