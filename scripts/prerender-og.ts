@@ -90,7 +90,9 @@ const staticRoutes: Route[] = [
     title: "Akasha Premium — Portal Ayurveda",
     description:
       "Assine o Akasha Premium e tenha acesso ilimitado à biblioteca, rotinas personalizadas e à inteligência Akasha do Portal Ayurveda.",
+    jsonld: ASSINAR_FAQ_JSONLD,
   },
+
   {
     path: "/curso/alimentacao",
     title: "Curso de Alimentação Ayurvédica — Portal Ayurveda",
