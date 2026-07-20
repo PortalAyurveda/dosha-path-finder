@@ -337,14 +337,15 @@ function renderHtml(template: string, route: Route): string {
 
   let html = template;
 
-  // <title>
-  html = html.replace(/<title>[^<]*<\/title>/, `<title>${title}</title>`);
+  // <title> (tolerante a atributos como data-rh="true")
+  html = html.replace(/<title\b[^>]*>[\s\S]*?<\/title>/i, `<title>${title}</title>`);
 
-  // meta name=description
+  // meta name=description (tolerante a atributos e ordem)
   html = html.replace(
-    /<meta\s+name="description"\s+content="[^"]*"\s*\/>/,
+    /<meta\b[^>]*\bname=["']description["'][^>]*\/?>/i,
     `<meta name="description" content="${description}" />`
   );
+
 
   // og:title
   html = html.replace(
