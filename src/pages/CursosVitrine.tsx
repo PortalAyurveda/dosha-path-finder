@@ -16,6 +16,15 @@ interface Curso {
   preco: number | null;
 }
 
+const AZUL = "#6A88FB";
+
+const tituloClass = (titulo: string) => {
+  const len = titulo.length;
+  if (len <= 30) return "text-2xl";
+  if (len <= 55) return "text-xl";
+  return "text-lg";
+};
+
 const CursosVitrine = () => {
   const { user } = useUser();
   const [cursos, setCursos] = useState<Curso[]>([]);
@@ -40,6 +49,9 @@ const CursosVitrine = () => {
     })();
   }, [user]);
 
+  const destinoLanding = (slug: string) =>
+    slug === "rotinas-diarias" ? "/cursos/rotinas" : `/cursos/${slug}`;
+
   return (
     <PageContainer
       title="Cursos do Portal Ayurveda"
@@ -56,67 +68,81 @@ const CursosVitrine = () => {
         {loading ? (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {[0, 1, 2].map((i) => (
-              <div key={i} className="h-80 rounded-2xl bg-muted/40 animate-pulse" />
+              <div key={i} className="h-[420px] rounded-2xl bg-muted/40 animate-pulse" />
             ))}
           </div>
         ) : cursos.length === 0 ? (
           <p className="text-center text-muted-foreground">Nenhum curso disponível no momento.</p>
         ) : (
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 items-stretch">
             {cursos.map((c) => {
               const isRotinas = c.slug === "rotinas-diarias";
               const jaTem = matriculadas.has(c.id);
+              const landing = destinoLanding(c.slug);
+              const acessar = `/cursos/${c.slug}/estudar`;
+              const linkDestino = jaTem ? acessar : landing;
               return (
                 <article
                   key={c.id}
-                  className="group bg-card border border-border rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all flex flex-col"
+                  className="group bg-card border border-border rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all flex flex-col h-full"
                 >
-                  {c.capa_url ? (
-                    <div className="aspect-[4/3] w-full overflow-hidden bg-muted relative">
-                      <img
-                        src={getTransformedImageUrl(c.capa_url, 800)}
-                        alt={c.titulo}
-                        width={800}
-                        height={600}
-                        loading="lazy"
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                      />
-                      {jaTem ? (
-                        <span
-                          className="absolute top-3 left-3 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full text-white shadow-md bg-primary"
-                        >
-                          Seu curso ✓
-                        </span>
-                      ) : isRotinas ? (
-                        <span
-                          className="absolute top-3 left-3 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full text-white shadow-md"
-                          style={{ backgroundColor: "#B8892E" }}
-                        >
-                          Incluso no Premium Anual
-                        </span>
-                      ) : null}
-                    </div>
-                  ) : (
-                    <div className="aspect-[4/3] w-full bg-gradient-to-br from-primary/20 to-secondary/20" />
-                  )}
-                  <div className="p-6 flex flex-col flex-1">
-                    <h3 className="mb-2">{c.titulo}</h3>
-                    {c.descricao && (
-                      <p className="text-sm text-muted-foreground mb-5 line-clamp-3 flex-1">
-                        {c.descricao}
-                      </p>
+                  <Link to={linkDestino} className="flex flex-col flex-1">
+                    {c.capa_url ? (
+                      <div className="aspect-[4/3] w-full overflow-hidden bg-muted relative">
+                        <img
+                          src={getTransformedImageUrl(c.capa_url, 800)}
+                          alt={c.titulo}
+                          width={800}
+                          height={600}
+                          loading="lazy"
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                        />
+                        {jaTem ? (
+                          <span className="absolute top-3 left-3 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full text-white shadow-md bg-primary">
+                            Seu curso ✓
+                          </span>
+                        ) : isRotinas ? (
+                          <span
+                            className="absolute top-3 left-3 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full text-white shadow-md"
+                            style={{ backgroundColor: AZUL }}
+                          >
+                            Incluso no Premium Anual
+                          </span>
+                        ) : null}
+                      </div>
+                    ) : (
+                      <div className="aspect-[4/3] w-full bg-gradient-to-br from-primary/20 to-secondary/20" />
                     )}
+                    <div className="p-6 flex flex-col flex-1">
+                      <h3
+                        className={`mb-2 ${tituloClass(c.titulo)} line-clamp-2 leading-tight`}
+                        title={c.titulo}
+                      >
+                        {c.titulo}
+                      </h3>
+                      {c.descricao && (
+                        <p className="text-sm text-muted-foreground mb-5 line-clamp-3 flex-1">
+                          {c.descricao}
+                        </p>
+                      )}
+                    </div>
+                  </Link>
+                  <div className="px-6 pb-6 -mt-2">
                     {jaTem ? (
                       <Button asChild className="w-full">
-                        <Link to={`/cursos/${c.slug}/estudar`}>Acessar curso</Link>
+                        <Link to={acessar}>Acessar curso</Link>
                       </Button>
                     ) : isRotinas ? (
-                      <Button asChild className="w-full" style={{ backgroundColor: "#B8892E" }}>
-                        <Link to="/assinar">Ver planos</Link>
+                      <Button
+                        asChild
+                        className="w-full text-white hover:opacity-90"
+                        style={{ backgroundColor: AZUL }}
+                      >
+                        <Link to={landing}>Ver o curso</Link>
                       </Button>
                     ) : (
-                      <Button disabled variant="outline" className="w-full">
-                        Em breve
+                      <Button asChild className="w-full">
+                        <Link to={landing}>Ver o curso</Link>
                       </Button>
                     )}
                   </div>
