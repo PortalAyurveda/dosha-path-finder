@@ -193,10 +193,10 @@ const Assinar = () => {
       if (itemParam) {
         const { data } = await supabase
           .from("rotina_nuggets")
-          .select("id, titulo, imagem_url")
+          .select("id, titulo, imagem_url, nugget_json")
           .eq("id", itemParam)
           .maybeSingle();
-        if (data) return data as { id: string; titulo: string | null; imagem_url: string | null };
+        if (data) return data as { id: string; titulo: string | null; imagem_url: string | null; nugget_json: any };
       }
       if (!user || !idPublico) return null;
       const { data: reg } = await supabase
@@ -227,13 +227,19 @@ const Assinar = () => {
       if (!escolhido?.nugget_id) return null;
       const { data: nug } = await supabase
         .from("rotina_nuggets")
-        .select("id, titulo, imagem_url")
+        .select("id, titulo, imagem_url, nugget_json")
         .eq("id", escolhido.nugget_id)
         .maybeSingle();
       return (nug as any) ?? null;
     },
     staleTime: 5 * 60 * 1000,
   });
+
+  const [receitaModalOpen, setReceitaModalOpen] = useState(false);
+  useEffect(() => {
+    if (cardReceita) setReceitaModalOpen(true);
+  }, [cardReceita]);
+
 
 
   const nomesPlano: Record<Plano, string> = {
