@@ -702,12 +702,20 @@ async function main() {
   }
 }
 
-const HOME_SOURCE = "https://home-fixo-teste.portalayurveda.workers.dev/";
+// Fonte da home pré-renderizada. Pode ser sobrescrita por env (HOME_BAKE_URL).
+// Se a URL estiver 404/vazia, o build segue com o index.html padrão — mas
+// gritamos alto para não passar batido de novo.
+const HOME_SOURCE = process.env.HOME_BAKE_URL || "https://home-fixo-teste.portalayurveda.workers.dev/";
+const HOME_BAKE_DISABLED = process.env.HOME_BAKE_URL === "off";
 
 async function bakeHome(distDir: string): Promise<void> {
   const outPath = resolve(distDir, "index.html");
   if (!existsSync(outPath)) {
-    console.warn("[bake-home] dist/index.html não existe. Pulando.");
+    console.error("[bake-home] ✗ dist/index.html não existe. Pulando.");
+    return;
+  }
+  if (HOME_BAKE_DISABLED) {
+    console.log("[bake-home] desativado por HOME_BAKE_URL=off. Pulando.");
     return;
   }
 
@@ -718,12 +726,12 @@ async function bakeHome(distDir: string): Promise<void> {
     const res = await fetch(HOME_SOURCE, { signal: controller.signal });
     clearTimeout(timer);
     if (!res.ok) {
-      console.warn(`[bake-home] status ${res.status}, pulando.`);
+      console.error(`[bake-home] ✗ ${HOME_SOURCE} respondeu ${res.status}. Home NÃO foi assada. Ajuste HOME_BAKE_URL ou defina =off.`);
       return;
     }
     html = await res.text();
   } catch (err) {
-    console.warn("[bake-home] falha ao baixar home fixa:", err);
+    console.error(`[bake-home] ✗ falha ao baixar ${HOME_SOURCE}:`, err);
     return;
   }
 
