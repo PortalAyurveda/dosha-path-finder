@@ -577,7 +577,7 @@ const Revisao = () => {
                     Próxima revisão disponível a partir de: <span className="font-medium text-foreground">{proximaStr}</span>
                   </p>
                 )}
-                {podeNovaRevisao && (
+                {podeNovaRevisao && flow === "idle" && (
                   <div className="mt-3">
                     <Button
                       onClick={() => {
