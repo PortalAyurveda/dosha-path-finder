@@ -307,7 +307,7 @@ async function dynamicRoutes(): Promise<Route[]> {
         image,
         datePublished: p.created_at || undefined,
         mainEntityOfPage: url,
-        author: { "@type": "Person", name: clean(p.autor, 80) || "Edson Osorio" },
+        author: { "@type": "Person", name: "Edson Osorio" },
         publisher: {
           "@type": "Organization",
           name: "Portal Ayurveda",
