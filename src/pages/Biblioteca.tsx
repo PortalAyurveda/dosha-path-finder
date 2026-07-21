@@ -157,6 +157,21 @@ const Biblioteca = () => {
         ) : (
           <EmptyState hasSearch={false} />
         )}
+
+        <section className="mt-12 rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm border border-border bg-surface-sun p-8 md:p-12 text-center">
+          <h2 className="font-serif text-2xl md:text-3xl font-bold text-primary mb-3">
+            Terapeutas do Brasil
+          </h2>
+          <p className="font-sans text-base text-muted-foreground mb-6 max-w-2xl mx-auto">
+            Profissionais de Ayurveda cadastrados no Portal, de várias regiões do país.
+          </p>
+          <Link
+            to="/terapeutas-do-brasil"
+            className="inline-flex items-center justify-center bg-secondary hover:bg-secondary/90 text-secondary-foreground font-bold px-6 py-3 rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm shadow-md hover:shadow-lg transition-all"
+          >
+            Ver terapeutas
+          </Link>
+        </section>
       </PageContainer>
     </>
   );
