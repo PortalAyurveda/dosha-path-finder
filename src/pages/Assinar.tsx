@@ -151,7 +151,9 @@ const PortalMark = ({ size = 28 }: { size?: number }) => (
 );
 
 const Assinar = () => {
-  const { user, profile, refreshProfile } = useUser();
+  const { user, profile, refreshProfile, doshaResult } = useUser();
+  const [searchParams] = useSearchParams();
+  const itemParam = searchParams.get("item");
   const navigate = useNavigate();
   const [loadingPlan, setLoadingPlan] = useState<Plano | null>(null);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
