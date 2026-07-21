@@ -651,6 +651,8 @@ async function main() {
   const all = [...staticRoutes, ...dynamic];
 
   let written = 0;
+  const writtenBy: Record<string, number> = {};
+  const failed: { path: string; err: string }[] = [];
   for (const route of all) {
     if (route.path === "/") continue; // index.html já é o root
 
@@ -658,12 +660,13 @@ async function main() {
     const outFile = resolve(outDir, "index.html");
 
     try {
-      mkdirSync(dirname(outFile), { recursive: true });
       mkdirSync(outDir, { recursive: true });
       writeFileSync(outFile, renderHtml(template, route));
       written++;
+      const family = route.path.split("/").filter(Boolean)[0] || "root";
+      writtenBy[family] = (writtenBy[family] || 0) + 1;
     } catch (err) {
-      console.warn(`[prerender] falha em ${route.path}:`, err);
+      failed.push({ path: route.path, err: String(err) });
     }
   }
 
@@ -680,6 +683,23 @@ async function main() {
   console.log(
     `[prerender] ${written} rotas escritas (${staticRoutes.length - 1} estáticas + ${dynamic.length} dinâmicas)`
   );
+  console.log(
+    `[prerender] escritas por família: ${Object.entries(writtenBy).map(([k, v]) => `${k}=${v}`).join(" ")}`
+  );
+  if (failed.length) {
+    console.error(`[prerender] ✗ ${failed.length} rotas falharam ao escrever:`);
+    for (const f of failed.slice(0, 20)) console.error(`  ${f.path}: ${f.err}`);
+    if (failed.length > 20) console.error(`  ... e mais ${failed.length - 20}`);
+  }
+
+  // Verificação sanitária: confirma que /blog e /video têm arquivos no dist.
+  // Se algum ficou zero, grita bem alto — foi essa a regressão que passou
+  // silenciosa no build anterior e desindexou o site inteiro.
+  for (const fam of ["blog", "video"]) {
+    if ((writtenBy[fam] || 0) === 0) {
+      console.error(`\n[prerender] ⚠️  ATENÇÃO: 0 rotas /${fam}/{slug} escritas neste build. O SPA vai servir a home no lugar e o Google vai desindexar essas URLs.\n`);
+    }
+  }
 }
 
 const HOME_SOURCE = "https://home-fixo-teste.portalayurveda.workers.dev/";
