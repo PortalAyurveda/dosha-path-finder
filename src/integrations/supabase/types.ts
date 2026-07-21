@@ -5917,6 +5917,7 @@ export type Database = {
         }[]
       }
       claim_dosha_test: { Args: { p_id_publico?: string }; Returns: Json }
+      corrigir_grafia: { Args: { t: string }; Returns: string }
       descadastro_confirmar: {
         Args: { p_email: string; p_token: string }
         Returns: boolean

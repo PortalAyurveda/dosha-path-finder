@@ -180,13 +180,72 @@ async function fetchRest<T = any>(query: string, schema?: string): Promise<T[]> 
     if (schema) headers["Accept-Profile"] = schema;
     const res = await fetch(`${SUPABASE_URL}/rest/v1/${query}`, { headers });
     if (!res.ok) {
-      console.warn(`[prerender] fetch ${query} → ${res.status}`);
+      const body = await res.text().catch(() => "");
+      // Ruidoso de propósito: silêncio antes deixou o blog inteiro sem prerender.
+      console.error(
+        `\n[prerender] ✗ REST ${res.status} em ${query}${schema ? ` (schema ${schema})` : ""}\n         corpo: ${body.slice(0, 300)}\n`
+      );
       return [];
     }
-    return (await res.json()) as T[];
+    const data = (await res.json()) as T[];
+    console.log(`[prerender] ✓ REST ${query.split("?")[0]}${schema ? ` (${schema})` : ""} → ${Array.isArray(data) ? data.length : "?"} itens`);
+    return data;
   } catch (err) {
-    console.warn(`[prerender] fetch ${query} failed`, err);
+    console.error(`[prerender] ✗ REST ${query} exceção`, err);
     return [];
+  }
+}
+
+// Baixa o sitemap e extrai o conjunto de slugs presentes em cada família de URL.
+// Usado para limitar o volume de arquivos gerados (evita escrever 929 vídeos
+// quando o sitemap só lista 433) e para nunca gerar rota que já não é indexável.
+async function fetchSitemapSlugs(): Promise<{
+  video: Set<string>;
+  blog: Set<string>;
+  terapeuta: Set<string>;
+  produto: Set<string>;
+  kit: Set<string>;
+  categoria: Set<string>;
+  all: Set<string>;
+}> {
+  const empty = {
+    video: new Set<string>(),
+    blog: new Set<string>(),
+    terapeuta: new Set<string>(),
+    produto: new Set<string>(),
+    kit: new Set<string>(),
+    categoria: new Set<string>(),
+    all: new Set<string>(),
+  };
+  try {
+    const res = await fetch(SITEMAP_SOURCE, { headers: { Accept: "application/xml,*/*" } });
+    if (!res.ok) {
+      console.warn(`[prerender] sitemap fetch ${res.status}; sem filtro por slug`);
+      return empty;
+    }
+    const xml = await res.text();
+    const out = { ...empty };
+    const re = /<loc>\s*https?:\/\/[^/<]+(\/[^<\s]*)\s*<\/loc>/gi;
+    let m: RegExpExecArray | null;
+    while ((m = re.exec(xml)) !== null) {
+      const path = m[1].replace(/\/$/, "");
+      out.all.add(path);
+      const parts = path.split("/").filter(Boolean);
+      if (parts[0] === "video" && parts[1]) out.video.add(parts[1]);
+      else if (parts[0] === "blog" && parts[1]) out.blog.add(parts[1]);
+      else if (parts[0] === "terapeutas" && parts[1]) out.terapeuta.add(parts[1]);
+      else if (parts[0] === "terapeutas-do-brasil" && parts[1] && parts[1] !== "cadastro") out.terapeuta.add(parts[1]);
+      else if (parts[0] === "samkhya" && parts[1] === "produto" && parts[2]) out.produto.add(parts[2]);
+      else if (parts[0] === "samkhya" && parts[1] === "kits" && parts[2]) out.kit.add(parts[2]);
+      else if (parts[0] === "samkhya" && parts[1] === "categoria" && parts[2]) out.categoria.add(parts[2]);
+    }
+    console.log(
+      `[prerender] sitemap: ${out.all.size} URLs (video=${out.video.size} blog=${out.blog.size} terapeuta=${out.terapeuta.size} produto=${out.produto.size} kit=${out.kit.size} categoria=${out.categoria.size})`
+    );
+    return out;
+  } catch (err) {
+    console.warn("[prerender] sitemap fetch falhou:", err);
+    return empty;
   }
 }
 
@@ -210,8 +269,14 @@ function escapeHtml(s: string): string {
 
 async function dynamicRoutes(): Promise<Route[]> {
   const routes: Route[] = [];
+  const counts: Record<string, number> = {};
+  const bump = (k: string) => (counts[k] = (counts[k] || 0) + 1);
 
-  // Artigos publicados (portal_conteudo com link_do_artigo, tipo artigo)
+  const sitemap = await fetchSitemapSlugs();
+
+  // Artigos publicados (portal_conteudo com link_do_artigo, tipo artigo).
+  // ATENÇÃO: nunca adicione colunas aqui sem confirmar no schema. Um 400 na REST
+  // devolve [] via fetchRest e o site inteiro perde os HTMLs de /blog/{slug}.
   const posts = await fetchRest<{
     title: string;
     summary: string;
@@ -219,9 +284,8 @@ async function dynamicRoutes(): Promise<Route[]> {
     image_url: string;
     link_do_artigo: string;
     created_at: string | null;
-    autor?: string | null;
   }>(
-    "portal_conteudo?select=title,summary,meta_description,image_url,link_do_artigo,created_at,autor&link_do_artigo=not.is.null&limit=500"
+    "portal_conteudo?select=title,summary,meta_description,image_url,link_do_artigo,created_at&link_do_artigo=not.is.null&limit=500"
   );
   for (const p of posts) {
     if (!p.link_do_artigo) continue;
@@ -243,7 +307,7 @@ async function dynamicRoutes(): Promise<Route[]> {
         image,
         datePublished: p.created_at || undefined,
         mainEntityOfPage: url,
-        author: { "@type": "Person", name: clean(p.autor, 80) || "Edson Osorio" },
+        author: { "@type": "Person", name: "Edson Osorio" },
         publisher: {
           "@type": "Organization",
           name: "Portal Ayurveda",
@@ -251,6 +315,7 @@ async function dynamicRoutes(): Promise<Route[]> {
         },
       },
     });
+    bump("blog");
   }
 
   // Terapeutas aprovados
@@ -277,11 +342,16 @@ async function dynamicRoutes(): Promise<Route[]> {
       type: "profile",
     };
     routes.push(tRoute);
+    bump("terapeuta");
     // Alias curto /terapeutas/{slug} (rota também existe no App)
     routes.push({ ...tRoute, path: `/terapeutas/${slug}` });
+    bump("terapeuta");
   }
 
-  // Vídeos canônicos (schema public)
+  // Vídeos canônicos (schema public). Filtramos pelos slugs listados no sitemap
+  // — o banco tem ~929 vídeos com slug, mas o sitemap indexa ~433. Escrever os
+  // 929 estava esgotando algum limite do deploy e nenhum /video/{slug} chegava
+  // ao ar. Se o sitemap não vier, geramos todos (fallback seguro).
   const videos = await fetchRest<{
     video_id: string;
     slug: string;
@@ -292,8 +362,14 @@ async function dynamicRoutes(): Promise<Route[]> {
   }>(
     "videos_canonicos?select=video_id,slug,novo_titulo,mini_resumo,nova_descricao,criado_em&slug=not.is.null&limit=1000"
   );
+  const useVideoFilter = sitemap.video.size > 0;
+  let videosSkipped = 0;
   for (const v of videos) {
     if (!v.slug || !v.novo_titulo) continue;
+    if (useVideoFilter && !sitemap.video.has(v.slug)) {
+      videosSkipped++;
+      continue;
+    }
     const desc = clean(v.mini_resumo || v.nova_descricao, 200) ||
       `Assista "${clean(v.novo_titulo, 80)}" no Portal Ayurveda.`;
     const thumb = v.video_id
@@ -315,6 +391,10 @@ async function dynamicRoutes(): Promise<Route[]> {
         embedUrl: v.video_id ? `https://www.youtube.com/embed/${v.video_id}` : undefined,
       },
     });
+    bump("video");
+  }
+  if (useVideoFilter) {
+    console.log(`[prerender] video: ${counts.video || 0} gerados, ${videosSkipped} descartados (fora do sitemap)`);
   }
 
   // Loja Samkhya — produtos (schema loja)
@@ -365,6 +445,7 @@ async function dynamicRoutes(): Promise<Route[]> {
           : {}),
       },
     });
+    bump("produto");
   }
 
   // Loja Samkhya — kits (schema loja)
@@ -415,6 +496,7 @@ async function dynamicRoutes(): Promise<Route[]> {
           : {}),
       },
     });
+    bump("kit");
   }
 
   // Loja Samkhya — categorias (schema loja)
@@ -434,8 +516,12 @@ async function dynamicRoutes(): Promise<Route[]> {
       description: desc,
       image: DEFAULT_OG,
     });
+    bump("categoria");
   }
 
+  console.log(
+    `[prerender] dinâmicas por família: ${Object.entries(counts).map(([k, v]) => `${k}=${v}`).join(" ") || "(nenhuma)"}`
+  );
 
   return routes;
 }
@@ -565,6 +651,8 @@ async function main() {
   const all = [...staticRoutes, ...dynamic];
 
   let written = 0;
+  const writtenBy: Record<string, number> = {};
+  const failed: { path: string; err: string }[] = [];
   for (const route of all) {
     if (route.path === "/") continue; // index.html já é o root
 
@@ -572,12 +660,13 @@ async function main() {
     const outFile = resolve(outDir, "index.html");
 
     try {
-      mkdirSync(dirname(outFile), { recursive: true });
       mkdirSync(outDir, { recursive: true });
       writeFileSync(outFile, renderHtml(template, route));
       written++;
+      const family = route.path.split("/").filter(Boolean)[0] || "root";
+      writtenBy[family] = (writtenBy[family] || 0) + 1;
     } catch (err) {
-      console.warn(`[prerender] falha em ${route.path}:`, err);
+      failed.push({ path: route.path, err: String(err) });
     }
   }
 
@@ -594,14 +683,39 @@ async function main() {
   console.log(
     `[prerender] ${written} rotas escritas (${staticRoutes.length - 1} estáticas + ${dynamic.length} dinâmicas)`
   );
+  console.log(
+    `[prerender] escritas por família: ${Object.entries(writtenBy).map(([k, v]) => `${k}=${v}`).join(" ")}`
+  );
+  if (failed.length) {
+    console.error(`[prerender] ✗ ${failed.length} rotas falharam ao escrever:`);
+    for (const f of failed.slice(0, 20)) console.error(`  ${f.path}: ${f.err}`);
+    if (failed.length > 20) console.error(`  ... e mais ${failed.length - 20}`);
+  }
+
+  // Verificação sanitária: confirma que /blog e /video têm arquivos no dist.
+  // Se algum ficou zero, grita bem alto — foi essa a regressão que passou
+  // silenciosa no build anterior e desindexou o site inteiro.
+  for (const fam of ["blog", "video"]) {
+    if ((writtenBy[fam] || 0) === 0) {
+      console.error(`\n[prerender] ⚠️  ATENÇÃO: 0 rotas /${fam}/{slug} escritas neste build. O SPA vai servir a home no lugar e o Google vai desindexar essas URLs.\n`);
+    }
+  }
 }
 
-const HOME_SOURCE = "https://home-fixo-teste.portalayurveda.workers.dev/";
+// Fonte da home pré-renderizada. Pode ser sobrescrita por env (HOME_BAKE_URL).
+// Se a URL estiver 404/vazia, o build segue com o index.html padrão — mas
+// gritamos alto para não passar batido de novo.
+const HOME_SOURCE = process.env.HOME_BAKE_URL || "https://home-fixo-teste.portalayurveda.workers.dev/";
+const HOME_BAKE_DISABLED = process.env.HOME_BAKE_URL === "off";
 
 async function bakeHome(distDir: string): Promise<void> {
   const outPath = resolve(distDir, "index.html");
   if (!existsSync(outPath)) {
-    console.warn("[bake-home] dist/index.html não existe. Pulando.");
+    console.error("[bake-home] ✗ dist/index.html não existe. Pulando.");
+    return;
+  }
+  if (HOME_BAKE_DISABLED) {
+    console.log("[bake-home] desativado por HOME_BAKE_URL=off. Pulando.");
     return;
   }
 
@@ -612,12 +726,12 @@ async function bakeHome(distDir: string): Promise<void> {
     const res = await fetch(HOME_SOURCE, { signal: controller.signal });
     clearTimeout(timer);
     if (!res.ok) {
-      console.warn(`[bake-home] status ${res.status}, pulando.`);
+      console.error(`[bake-home] ✗ ${HOME_SOURCE} respondeu ${res.status}. Home NÃO foi assada. Ajuste HOME_BAKE_URL ou defina =off.`);
       return;
     }
     html = await res.text();
   } catch (err) {
-    console.warn("[bake-home] falha ao baixar home fixa:", err);
+    console.error(`[bake-home] ✗ falha ao baixar ${HOME_SOURCE}:`, err);
     return;
   }
 
