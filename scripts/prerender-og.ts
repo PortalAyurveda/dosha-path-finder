@@ -315,6 +315,7 @@ async function dynamicRoutes(): Promise<Route[]> {
         },
       },
     });
+    bump("blog");
   }
 
   // Terapeutas aprovados
