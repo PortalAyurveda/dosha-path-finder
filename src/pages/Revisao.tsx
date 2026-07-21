@@ -593,42 +593,45 @@ const Revisao = () => {
             );
           })()}
 
-          {/* Fluxo de nova revisão — apenas quando não há revisão concluída */}
-          {!ultimaRevisao?.sintese && (
+          {/* Card inicial — apenas quando não há revisão concluída e o fluxo ainda não começou */}
+          {!ultimaRevisao?.sintese && flow === "idle" && (
+            <div className="rounded-xl border border-border bg-card p-4 space-y-4">
+              <div className="flex flex-col items-start gap-2">
+                <p className="text-sm text-muted-foreground">
+                  Pronto para revisar como você está se sentindo nos últimos 30 dias?
+                </p>
+                {(() => {
+                  const testeDate = teste?.created_at ? new Date(teste.created_at) : null;
+                  const dias = testeDate
+                    ? Math.floor((Date.now() - testeDate.getTime()) / (1000 * 60 * 60 * 24))
+                    : null;
+                  const bloqueado = dias !== null && dias < 30;
+                  const dataLiberacao = testeDate
+                    ? new Date(testeDate.getTime() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString("pt-BR")
+                    : "";
+                  return (
+                    <>
+                      <Button onClick={handleFazerRevisao} disabled={bloqueado}>
+                        Fazer revisão
+                      </Button>
+                      {bloqueado && (
+                        <p className="text-xs text-muted-foreground">
+                          Sua revisão libera dia {dataLiberacao}
+                        </p>
+                      )}
+                    </>
+                  );
+                })()}
+              </div>
+            </div>
+          )}
+
+          {/* Estados ativos do fluxo — sempre renderizados, independente de haver revisão anterior */}
+          {flow !== "idle" && (
             <div className="rounded-xl border border-border bg-card p-4 space-y-4">
               {erro && (
                 <div className="rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm p-2">
                   {erro}
-                </div>
-              )}
-
-              {flow === "idle" && (
-                <div className="flex flex-col items-start gap-2">
-                  <p className="text-sm text-muted-foreground">
-                    Pronto para revisar como você está se sentindo nos últimos 30 dias?
-                  </p>
-                  {(() => {
-                    const testeDate = teste?.created_at ? new Date(teste.created_at) : null;
-                    const dias = testeDate
-                      ? Math.floor((Date.now() - testeDate.getTime()) / (1000 * 60 * 60 * 24))
-                      : null;
-                    const bloqueado = dias !== null && dias < 30;
-                    const dataLiberacao = testeDate
-                      ? new Date(testeDate.getTime() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString("pt-BR")
-                      : "";
-                    return (
-                      <>
-                        <Button onClick={handleFazerRevisao} disabled={bloqueado}>
-                          Fazer revisão
-                        </Button>
-                        {bloqueado && (
-                          <p className="text-xs text-muted-foreground">
-                            Sua revisão libera dia {dataLiberacao}
-                          </p>
-                        )}
-                      </>
-                    );
-                  })()}
                 </div>
               )}
 
