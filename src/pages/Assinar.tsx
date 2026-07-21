@@ -186,6 +186,56 @@ const Assinar = () => {
     staleTime: 60 * 60 * 1000,
   });
 
+  const idPublico = (doshaResult as any)?.idPublico ?? null;
+  const { data: cardReceita } = useQuery({
+    queryKey: ["assinar-card-receita", itemParam, user?.id, idPublico],
+    queryFn: async () => {
+      if (itemParam) {
+        const { data } = await supabase
+          .from("rotina_nuggets")
+          .select("id, titulo, imagem_url")
+          .eq("id", itemParam)
+          .maybeSingle();
+        if (data) return data as { id: string; titulo: string | null; imagem_url: string | null };
+      }
+      if (!user || !idPublico) return null;
+      const { data: reg } = await supabase
+        .from("doshas_registros")
+        .select("id")
+        .eq("idPublico", idPublico)
+        .maybeSingle();
+      const testeId = (reg as any)?.id;
+      if (!testeId) return null;
+      const { data: rows } = await (supabase.from("rotinas_usuario") as any)
+        .select("dia, slot, nugget_id")
+        .eq("user_id", testeId);
+      const list = (rows ?? []) as { dia: number; slot: string; nugget_id: string | null }[];
+      if (!list.length) return null;
+      const menorDia = Math.min(...list.map((r) => r.dia));
+      const doDia = list.filter((r) => r.dia === menorDia && !!r.nugget_id);
+      if (!doDia.length) return null;
+      const hora = new Date().getHours();
+      const periodoAtual = hora < 12 ? "manha" : hora < 18 ? "tarde" : "noite";
+      const bucketFor = (slot?: string | null): "manha" | "tarde" | "noite" | "outro" => {
+        const s = (slot || "").toLowerCase();
+        if (s === "cafe_manha" || s === "lanche_manha" || s === "rotina_manha") return "manha";
+        if (s === "almoco" || s === "lanche_tarde") return "tarde";
+        if (s === "jantar" || s === "tonico_noite") return "noite";
+        return "outro";
+      };
+      const escolhido = doDia.find((r) => bucketFor(r.slot) === periodoAtual) ?? doDia[0];
+      if (!escolhido?.nugget_id) return null;
+      const { data: nug } = await supabase
+        .from("rotina_nuggets")
+        .select("id, titulo, imagem_url")
+        .eq("id", escolhido.nugget_id)
+        .maybeSingle();
+      return (nug as any) ?? null;
+    },
+    staleTime: 5 * 60 * 1000,
+  });
+
+
   const nomesPlano: Record<Plano, string> = {
     rotina: "Minha Rotina",
     mensal: "Premium",
