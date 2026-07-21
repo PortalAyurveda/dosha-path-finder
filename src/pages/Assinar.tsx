@@ -485,6 +485,44 @@ const Assinar = () => {
       </Helmet>
 
       <main>
+        {cardReceita ? (
+          <section className="w-full" style={{ background: SURFACE }}>
+            <div className="max-w-[1040px] mx-auto px-4 sm:px-6 pt-6 md:pt-8">
+              <div
+                className="flex items-center gap-4 rounded-2xl border border-border/60 bg-background p-3 sm:p-4 shadow-sm"
+                style={{ borderColor: "rgba(53,47,84,0.12)" }}
+              >
+                {cardReceita.imagem_url ? (
+                  <img
+                    src={cardReceita.imagem_url}
+                    alt={cardReceita.titulo ?? "Receita"}
+                    loading="lazy"
+                    className="w-20 h-20 sm:w-24 sm:h-24 rounded-xl object-cover flex-shrink-0"
+                  />
+                ) : (
+                  <div
+                    className="w-20 h-20 sm:w-24 sm:h-24 rounded-xl flex-shrink-0"
+                    style={{ background: PAPER }}
+                  />
+                )}
+                <div className="min-w-0 flex-1">
+                  <h2
+                    className="font-serif font-bold text-base sm:text-lg leading-snug mb-1 truncate"
+                    style={{ color: PRIMARY }}
+                  >
+                    {cardReceita.titulo ?? "Sua receita"}
+                  </h2>
+                  <p
+                    className="text-sm sm:text-[15px] leading-snug"
+                    style={{ color: PRIMARY, opacity: 0.75, fontFamily: "'DM Sans', sans-serif" }}
+                  >
+                    Sua rotina dos 7 dias já está montada — escolha um plano para abrir
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
+        ) : null}
         {/* 1) HERO */}
         <section
           className="w-full"
