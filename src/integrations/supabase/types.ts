@@ -5784,6 +5784,10 @@ export type Database = {
           payload: Json
         }[]
       }
+      agenda_kit_refeicoes: {
+        Args: { p_alvo: string; p_registro_id: string }
+        Returns: Json
+      }
       akasha_distribuicao_horas: {
         Args: never
         Returns: {

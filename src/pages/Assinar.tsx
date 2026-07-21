@@ -193,10 +193,10 @@ const Assinar = () => {
       if (itemParam) {
         const { data } = await supabase
           .from("rotina_nuggets")
-          .select("id, titulo, imagem_url")
+          .select("id, titulo, imagem_url, nugget_json")
           .eq("id", itemParam)
           .maybeSingle();
-        if (data) return data as { id: string; titulo: string | null; imagem_url: string | null };
+        if (data) return data as { id: string; titulo: string | null; imagem_url: string | null; nugget_json: any };
       }
       if (!user || !idPublico) return null;
       const { data: reg } = await supabase
@@ -227,13 +227,19 @@ const Assinar = () => {
       if (!escolhido?.nugget_id) return null;
       const { data: nug } = await supabase
         .from("rotina_nuggets")
-        .select("id, titulo, imagem_url")
+        .select("id, titulo, imagem_url, nugget_json")
         .eq("id", escolhido.nugget_id)
         .maybeSingle();
       return (nug as any) ?? null;
     },
     staleTime: 5 * 60 * 1000,
   });
+
+  const [receitaModalOpen, setReceitaModalOpen] = useState(false);
+  useEffect(() => {
+    if (cardReceita) setReceitaModalOpen(true);
+  }, [cardReceita]);
+
 
 
   const nomesPlano: Record<Plano, string> = {
@@ -485,44 +491,70 @@ const Assinar = () => {
       </Helmet>
 
       <main>
-        {cardReceita ? (
-          <section className="w-full" style={{ background: SURFACE }}>
-            <div className="max-w-[1040px] mx-auto px-4 sm:px-6 pt-6 md:pt-8">
-              <div
-                className="flex items-center gap-4 rounded-2xl border border-border/60 bg-background p-3 sm:p-4 shadow-sm"
-                style={{ borderColor: "rgba(53,47,84,0.12)" }}
+        {cardReceita && receitaModalOpen ? (
+          <div
+            role="dialog"
+            aria-modal="true"
+            onClick={() => setReceitaModalOpen(false)}
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 animate-fade-in"
+          >
+            <div
+              onClick={(e) => e.stopPropagation()}
+              className="relative w-full max-w-[420px] rounded-2xl bg-background shadow-2xl overflow-hidden"
+            >
+              <button
+                type="button"
+                aria-label="Fechar"
+                onClick={() => setReceitaModalOpen(false)}
+                className="absolute top-2.5 right-2.5 z-10 w-8 h-8 rounded-full bg-black/40 hover:bg-black/60 text-white flex items-center justify-center transition-colors"
               >
-                {cardReceita.imagem_url ? (
-                  <img
-                    src={cardReceita.imagem_url}
-                    alt={cardReceita.titulo ?? "Receita"}
-                    loading="lazy"
-                    className="w-20 h-20 sm:w-24 sm:h-24 rounded-xl object-cover flex-shrink-0"
-                  />
-                ) : (
-                  <div
-                    className="w-20 h-20 sm:w-24 sm:h-24 rounded-xl flex-shrink-0"
-                    style={{ background: PAPER }}
-                  />
-                )}
-                <div className="min-w-0 flex-1">
-                  <h2
-                    className="font-serif font-bold text-base sm:text-lg leading-snug mb-1 truncate"
-                    style={{ color: PRIMARY }}
-                  >
-                    {cardReceita.titulo ?? "Sua receita"}
-                  </h2>
+                <span aria-hidden className="text-lg leading-none">×</span>
+              </button>
+              {cardReceita.imagem_url ? (
+                <img
+                  src={cardReceita.imagem_url}
+                  alt={cardReceita.titulo ?? "Receita"}
+                  className="w-full h-[220px] object-cover"
+                />
+              ) : (
+                <div className="w-full h-[220px]" style={{ background: PAPER }} />
+              )}
+              <div className="p-5">
+                <h2
+                  className="font-serif font-bold text-2xl leading-snug mb-2"
+                  style={{ color: PRIMARY }}
+                >
+                  {cardReceita.titulo ?? "Sua receita"}
+                </h2>
+                {(cardReceita as any)?.nugget_json?.resumo ? (
                   <p
-                    className="text-sm sm:text-[15px] leading-snug"
-                    style={{ color: PRIMARY, opacity: 0.75, fontFamily: "'DM Sans', sans-serif" }}
+                    className="text-sm leading-relaxed mb-3"
+                    style={{ color: PRIMARY, opacity: 0.8, fontFamily: "'DM Sans', sans-serif" }}
                   >
-                    Sua rotina dos 7 dias já está montada — escolha um plano para abrir
+                    {(cardReceita as any).nugget_json.resumo}
                   </p>
-                </div>
+                ) : null}
+                <p
+                  className="text-sm leading-relaxed mb-5"
+                  style={{ color: PRIMARY, opacity: 0.9, fontFamily: "'DM Sans', sans-serif" }}
+                >
+                  Sua rotina dos 7 dias já está montada — e essa é só uma das refeições.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setReceitaModalOpen(false)}
+                  className="w-full inline-flex items-center justify-center px-6 py-3 rounded-full text-white font-semibold text-base shadow-lg transition-colors"
+                  style={{ backgroundColor: SALMAO }}
+                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = SALMAO_HOVER)}
+                  onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = SALMAO)}
+                >
+                  Ver os planos
+                </button>
               </div>
             </div>
-          </section>
+          </div>
         ) : null}
+
         {/* 1) HERO */}
         <section
           className="w-full"
