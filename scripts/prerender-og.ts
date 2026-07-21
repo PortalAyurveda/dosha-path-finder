@@ -516,8 +516,12 @@ async function dynamicRoutes(): Promise<Route[]> {
       description: desc,
       image: DEFAULT_OG,
     });
+    bump("categoria");
   }
 
+  console.log(
+    `[prerender] dinâmicas por família: ${Object.entries(counts).map(([k, v]) => `${k}=${v}`).join(" ") || "(nenhuma)"}`
+  );
 
   return routes;
 }
