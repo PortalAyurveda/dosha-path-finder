@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { trackPixel } from "@/lib/metaPixel";
 import {
@@ -151,7 +151,9 @@ const PortalMark = ({ size = 28 }: { size?: number }) => (
 );
 
 const Assinar = () => {
-  const { user, profile, refreshProfile } = useUser();
+  const { user, profile, refreshProfile, doshaResult } = useUser();
+  const [searchParams] = useSearchParams();
+  const itemParam = searchParams.get("item");
   const navigate = useNavigate();
   const [loadingPlan, setLoadingPlan] = useState<Plano | null>(null);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
@@ -183,6 +185,56 @@ const Assinar = () => {
     },
     staleTime: 60 * 60 * 1000,
   });
+
+  const idPublico = (doshaResult as any)?.idPublico ?? null;
+  const { data: cardReceita } = useQuery({
+    queryKey: ["assinar-card-receita", itemParam, user?.id, idPublico],
+    queryFn: async () => {
+      if (itemParam) {
+        const { data } = await supabase
+          .from("rotina_nuggets")
+          .select("id, titulo, imagem_url")
+          .eq("id", itemParam)
+          .maybeSingle();
+        if (data) return data as { id: string; titulo: string | null; imagem_url: string | null };
+      }
+      if (!user || !idPublico) return null;
+      const { data: reg } = await supabase
+        .from("doshas_registros")
+        .select("id")
+        .eq("idPublico", idPublico)
+        .maybeSingle();
+      const testeId = (reg as any)?.id;
+      if (!testeId) return null;
+      const { data: rows } = await (supabase.from("rotinas_usuario") as any)
+        .select("dia, slot, nugget_id")
+        .eq("user_id", testeId);
+      const list = (rows ?? []) as { dia: number; slot: string; nugget_id: string | null }[];
+      if (!list.length) return null;
+      const menorDia = Math.min(...list.map((r) => r.dia));
+      const doDia = list.filter((r) => r.dia === menorDia && !!r.nugget_id);
+      if (!doDia.length) return null;
+      const hora = new Date().getHours();
+      const periodoAtual = hora < 12 ? "manha" : hora < 18 ? "tarde" : "noite";
+      const bucketFor = (slot?: string | null): "manha" | "tarde" | "noite" | "outro" => {
+        const s = (slot || "").toLowerCase();
+        if (s === "cafe_manha" || s === "lanche_manha" || s === "rotina_manha") return "manha";
+        if (s === "almoco" || s === "lanche_tarde") return "tarde";
+        if (s === "jantar" || s === "tonico_noite") return "noite";
+        return "outro";
+      };
+      const escolhido = doDia.find((r) => bucketFor(r.slot) === periodoAtual) ?? doDia[0];
+      if (!escolhido?.nugget_id) return null;
+      const { data: nug } = await supabase
+        .from("rotina_nuggets")
+        .select("id, titulo, imagem_url")
+        .eq("id", escolhido.nugget_id)
+        .maybeSingle();
+      return (nug as any) ?? null;
+    },
+    staleTime: 5 * 60 * 1000,
+  });
+
 
   const nomesPlano: Record<Plano, string> = {
     rotina: "Minha Rotina",
@@ -433,6 +485,44 @@ const Assinar = () => {
       </Helmet>
 
       <main>
+        {cardReceita ? (
+          <section className="w-full" style={{ background: SURFACE }}>
+            <div className="max-w-[1040px] mx-auto px-4 sm:px-6 pt-6 md:pt-8">
+              <div
+                className="flex items-center gap-4 rounded-2xl border border-border/60 bg-background p-3 sm:p-4 shadow-sm"
+                style={{ borderColor: "rgba(53,47,84,0.12)" }}
+              >
+                {cardReceita.imagem_url ? (
+                  <img
+                    src={cardReceita.imagem_url}
+                    alt={cardReceita.titulo ?? "Receita"}
+                    loading="lazy"
+                    className="w-20 h-20 sm:w-24 sm:h-24 rounded-xl object-cover flex-shrink-0"
+                  />
+                ) : (
+                  <div
+                    className="w-20 h-20 sm:w-24 sm:h-24 rounded-xl flex-shrink-0"
+                    style={{ background: PAPER }}
+                  />
+                )}
+                <div className="min-w-0 flex-1">
+                  <h2
+                    className="font-serif font-bold text-base sm:text-lg leading-snug mb-1 truncate"
+                    style={{ color: PRIMARY }}
+                  >
+                    {cardReceita.titulo ?? "Sua receita"}
+                  </h2>
+                  <p
+                    className="text-sm sm:text-[15px] leading-snug"
+                    style={{ color: PRIMARY, opacity: 0.75, fontFamily: "'DM Sans', sans-serif" }}
+                  >
+                    Sua rotina dos 7 dias já está montada — escolha um plano para abrir
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
+        ) : null}
         {/* 1) HERO */}
         <section
           className="w-full"
