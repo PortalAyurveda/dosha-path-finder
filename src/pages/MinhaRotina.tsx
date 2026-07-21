@@ -375,16 +375,13 @@ const MinhaRotina = () => {
   })();
 
   if (!user || !temAcessoRotina) {
-    return (
-      <PageContainer title="Minha rotina" description="Sua rotina ayurvédica personalizada.">
-        <PaywallRotina
-          email={user?.email ?? null}
-          userId={user?.id ?? null}
-          doshaPrincipal={doshaResult?.doshaprincipal ?? null}
-          itemId={focusNuggetId}
-        />
-      </PageContainer>
-    );
+    const params = new URLSearchParams({
+      utm_source: "site",
+      utm_medium: "minha_rotina",
+      utm_campaign: "paywall_rotina",
+    });
+    if (itemParam) params.set("item", itemParam);
+    return <Navigate to={`/assinar?${params.toString()}`} replace />;
   }
 
   // Se o polling do pagamento chegou aqui com acesso liberado, encerre-o e limpe a URL.
