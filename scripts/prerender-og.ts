@@ -180,13 +180,72 @@ async function fetchRest<T = any>(query: string, schema?: string): Promise<T[]> 
     if (schema) headers["Accept-Profile"] = schema;
     const res = await fetch(`${SUPABASE_URL}/rest/v1/${query}`, { headers });
     if (!res.ok) {
-      console.warn(`[prerender] fetch ${query} → ${res.status}`);
+      const body = await res.text().catch(() => "");
+      // Ruidoso de propósito: silêncio antes deixou o blog inteiro sem prerender.
+      console.error(
+        `\n[prerender] ✗ REST ${res.status} em ${query}${schema ? ` (schema ${schema})` : ""}\n         corpo: ${body.slice(0, 300)}\n`
+      );
       return [];
     }
-    return (await res.json()) as T[];
+    const data = (await res.json()) as T[];
+    console.log(`[prerender] ✓ REST ${query.split("?")[0]}${schema ? ` (${schema})` : ""} → ${Array.isArray(data) ? data.length : "?"} itens`);
+    return data;
   } catch (err) {
-    console.warn(`[prerender] fetch ${query} failed`, err);
+    console.error(`[prerender] ✗ REST ${query} exceção`, err);
     return [];
+  }
+}
+
+// Baixa o sitemap e extrai o conjunto de slugs presentes em cada família de URL.
+// Usado para limitar o volume de arquivos gerados (evita escrever 929 vídeos
+// quando o sitemap só lista 433) e para nunca gerar rota que já não é indexável.
+async function fetchSitemapSlugs(): Promise<{
+  video: Set<string>;
+  blog: Set<string>;
+  terapeuta: Set<string>;
+  produto: Set<string>;
+  kit: Set<string>;
+  categoria: Set<string>;
+  all: Set<string>;
+}> {
+  const empty = {
+    video: new Set<string>(),
+    blog: new Set<string>(),
+    terapeuta: new Set<string>(),
+    produto: new Set<string>(),
+    kit: new Set<string>(),
+    categoria: new Set<string>(),
+    all: new Set<string>(),
+  };
+  try {
+    const res = await fetch(SITEMAP_SOURCE, { headers: { Accept: "application/xml,*/*" } });
+    if (!res.ok) {
+      console.warn(`[prerender] sitemap fetch ${res.status}; sem filtro por slug`);
+      return empty;
+    }
+    const xml = await res.text();
+    const out = { ...empty };
+    const re = /<loc>\s*https?:\/\/[^/<]+(\/[^<\s]*)\s*<\/loc>/gi;
+    let m: RegExpExecArray | null;
+    while ((m = re.exec(xml)) !== null) {
+      const path = m[1].replace(/\/$/, "");
+      out.all.add(path);
+      const parts = path.split("/").filter(Boolean);
+      if (parts[0] === "video" && parts[1]) out.video.add(parts[1]);
+      else if (parts[0] === "blog" && parts[1]) out.blog.add(parts[1]);
+      else if (parts[0] === "terapeutas" && parts[1]) out.terapeuta.add(parts[1]);
+      else if (parts[0] === "terapeutas-do-brasil" && parts[1] && parts[1] !== "cadastro") out.terapeuta.add(parts[1]);
+      else if (parts[0] === "samkhya" && parts[1] === "produto" && parts[2]) out.produto.add(parts[2]);
+      else if (parts[0] === "samkhya" && parts[1] === "kits" && parts[2]) out.kit.add(parts[2]);
+      else if (parts[0] === "samkhya" && parts[1] === "categoria" && parts[2]) out.categoria.add(parts[2]);
+    }
+    console.log(
+      `[prerender] sitemap: ${out.all.size} URLs (video=${out.video.size} blog=${out.blog.size} terapeuta=${out.terapeuta.size} produto=${out.produto.size} kit=${out.kit.size} categoria=${out.categoria.size})`
+    );
+    return out;
+  } catch (err) {
+    console.warn("[prerender] sitemap fetch falhou:", err);
+    return empty;
   }
 }
 
