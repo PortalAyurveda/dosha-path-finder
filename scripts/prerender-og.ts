@@ -445,6 +445,7 @@ async function dynamicRoutes(): Promise<Route[]> {
           : {}),
       },
     });
+    bump("produto");
   }
 
   // Loja Samkhya — kits (schema loja)
