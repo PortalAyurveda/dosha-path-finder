@@ -342,8 +342,10 @@ async function dynamicRoutes(): Promise<Route[]> {
       type: "profile",
     };
     routes.push(tRoute);
+    bump("terapeuta");
     // Alias curto /terapeutas/{slug} (rota também existe no App)
     routes.push({ ...tRoute, path: `/terapeutas/${slug}` });
+    bump("terapeuta");
   }
 
   // Vídeos canônicos (schema public)
