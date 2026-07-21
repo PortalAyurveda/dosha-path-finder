@@ -491,69 +491,143 @@ const Assinar = () => {
       </Helmet>
 
       <main>
-        {cardReceita && receitaModalOpen ? (
-          <div
-            role="dialog"
-            aria-modal="true"
-            onClick={() => setReceitaModalOpen(false)}
-            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 animate-fade-in"
-          >
+        {cardReceita && receitaModalOpen ? (() => {
+          const nj: any = (cardReceita as any)?.nugget_json ?? {};
+          const ingredientes: Array<{ qtd?: string; item?: string; quantidade?: string; nome?: string }> = Array.isArray(nj.ingredientes) ? nj.ingredientes : [];
+          const modoPreparo: string[] = Array.isArray(nj.modo_preparo) ? nj.modo_preparo : [];
+          const dg = nj.dravya_guna ?? {};
+          const rasa: string[] = Array.isArray(dg.rasa) ? dg.rasa : (dg.rasa ? [String(dg.rasa)] : []);
+          const gunas: string[] = Array.isArray(dg.gunas) ? dg.gunas : (dg.gunas ? [String(dg.gunas)] : []);
+          const karma: string[] = Array.isArray(dg.karma) ? dg.karma : (dg.karma ? [String(dg.karma)] : []);
+          const virya: string | null = dg.virya ?? null;
+          const doshaChip = (label: string, valor: any, bg: string) => {
+            const n = Number(valor);
+            if (!Number.isFinite(n) || n === 0) return null;
+            const sinal = n > 0 ? `+${n}` : `${n}`;
+            return (
+              <span key={label} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold" style={{ background: `${bg}22`, color: PRIMARY }}>
+                <span className="w-2 h-2 rounded-full" style={{ background: bg }} />
+                {label} {sinal.replace("-", "−")}
+              </span>
+            );
+          };
+          const temPorQue = rasa.length || gunas.length || karma.length || virya || Number(nj.vata) || Number(nj.pitta) || Number(nj.kapha);
+          return (
             <div
-              onClick={(e) => e.stopPropagation()}
-              className="relative w-full max-w-[420px] rounded-2xl bg-background shadow-2xl overflow-hidden"
+              role="dialog"
+              aria-modal="true"
+              onClick={() => setReceitaModalOpen(false)}
+              className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 animate-fade-in"
             >
-              <button
-                type="button"
-                aria-label="Fechar"
-                onClick={() => setReceitaModalOpen(false)}
-                className="absolute top-2.5 right-2.5 z-10 w-8 h-8 rounded-full bg-black/40 hover:bg-black/60 text-white flex items-center justify-center transition-colors"
+              <div
+                onClick={(e) => e.stopPropagation()}
+                className="relative w-full max-w-[520px] max-h-[85vh] rounded-2xl bg-background shadow-2xl overflow-hidden flex flex-col"
               >
-                <span aria-hidden className="text-lg leading-none">×</span>
-              </button>
-              {cardReceita.imagem_url ? (
-                <img
-                  src={cardReceita.imagem_url}
-                  alt={cardReceita.titulo ?? "Receita"}
-                  className="w-full h-[220px] object-cover"
-                />
-              ) : (
-                <div className="w-full h-[220px]" style={{ background: PAPER }} />
-              )}
-              <div className="p-5">
-                <h2
-                  className="font-serif font-bold text-2xl leading-snug mb-2"
-                  style={{ color: PRIMARY }}
-                >
-                  {cardReceita.titulo ?? "Sua receita"}
-                </h2>
-                {(cardReceita as any)?.nugget_json?.resumo ? (
-                  <p
-                    className="text-sm leading-relaxed mb-3"
-                    style={{ color: PRIMARY, opacity: 0.8, fontFamily: "'DM Sans', sans-serif" }}
-                  >
-                    {(cardReceita as any).nugget_json.resumo}
-                  </p>
-                ) : null}
-                <p
-                  className="text-sm leading-relaxed mb-5"
-                  style={{ color: PRIMARY, opacity: 0.9, fontFamily: "'DM Sans', sans-serif" }}
-                >
-                  Sua rotina dos 7 dias já está montada — e essa é só uma das refeições.
-                </p>
                 <button
                   type="button"
+                  aria-label="Fechar"
                   onClick={() => setReceitaModalOpen(false)}
-                  className="w-full inline-flex items-center justify-center px-6 py-3 rounded-full text-white font-semibold text-base shadow-lg transition-colors"
-                  style={{ backgroundColor: SALMAO }}
-                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = SALMAO_HOVER)}
-                  onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = SALMAO)}
+                  className="absolute top-2.5 right-2.5 z-10 w-8 h-8 rounded-full bg-black/40 hover:bg-black/60 text-white flex items-center justify-center transition-colors"
                 >
-                  Ver os planos
+                  <span aria-hidden className="text-lg leading-none">×</span>
                 </button>
+                <div className="overflow-y-auto flex-1">
+                  {cardReceita.imagem_url ? (
+                    <img
+                      src={cardReceita.imagem_url}
+                      alt={cardReceita.titulo ?? "Receita"}
+                      className="w-full h-[220px] object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-[220px]" style={{ background: PAPER }} />
+                  )}
+                  <div className="p-5 md:p-6" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                    <h2 className="font-serif font-bold text-2xl md:text-3xl leading-snug mb-3" style={{ color: PRIMARY }}>
+                      {cardReceita.titulo ?? "Sua receita"}
+                    </h2>
+                    {nj.resumo ? (
+                      <p className="text-sm leading-relaxed mb-5" style={{ color: PRIMARY, opacity: 0.85 }}>
+                        {nj.resumo}
+                      </p>
+                    ) : null}
+
+                    {ingredientes.length ? (
+                      <section className="mb-5">
+                        <h3 className="font-serif text-lg font-bold mb-2" style={{ color: PRIMARY }}>Ingredientes</h3>
+                        <ul className="space-y-1.5 text-sm" style={{ color: PRIMARY, opacity: 0.9 }}>
+                          {ingredientes.map((ing, i) => {
+                            const q = ing.qtd ?? ing.quantidade ?? "";
+                            const nm = ing.item ?? ing.nome ?? "";
+                            return (
+                              <li key={i} className="flex gap-2">
+                                <span aria-hidden className="mt-1.5 w-1.5 h-1.5 rounded-full shrink-0" style={{ background: SALMAO }} />
+                                <span><span className="font-semibold">{q}</span>{q && nm ? " — " : ""}{nm}</span>
+                              </li>
+                            );
+                          })}
+                        </ul>
+                      </section>
+                    ) : null}
+
+                    {modoPreparo.length ? (
+                      <section className="mb-5">
+                        <h3 className="font-serif text-lg font-bold mb-2" style={{ color: PRIMARY }}>Modo de preparo</h3>
+                        <ol className="space-y-2 text-sm list-decimal pl-5" style={{ color: PRIMARY, opacity: 0.9 }}>
+                          {modoPreparo.map((p, i) => <li key={i} className="leading-relaxed">{p}</li>)}
+                        </ol>
+                      </section>
+                    ) : null}
+
+                    {nj.efeito_esperado ? (
+                      <section className="mb-5">
+                        <h3 className="font-serif text-lg font-bold mb-2" style={{ color: PRIMARY }}>O que ela faz por você</h3>
+                        <p className="text-sm leading-relaxed" style={{ color: PRIMARY, opacity: 0.9 }}>{nj.efeito_esperado}</p>
+                      </section>
+                    ) : null}
+
+                    {nj.dicas ? (
+                      <section className="mb-5 rounded-lg p-3.5 border" style={{ borderColor: `${SALMAO}44`, background: `${SALMAO}0F` }}>
+                        <h3 className="font-serif text-lg font-bold mb-1.5" style={{ color: PRIMARY }}>Dica</h3>
+                        <p className="text-sm leading-relaxed" style={{ color: PRIMARY, opacity: 0.9 }}>{nj.dicas}</p>
+                      </section>
+                    ) : null}
+
+                    {temPorQue ? (
+                      <section className="mb-5">
+                        <h3 className="font-serif text-lg font-bold mb-2" style={{ color: PRIMARY }}>Por que essa receita</h3>
+                        <dl className="text-sm space-y-1.5" style={{ color: PRIMARY, opacity: 0.9 }}>
+                          {rasa.length ? (<div><dt className="inline font-semibold">Sabor: </dt><dd className="inline">{rasa.join(", ")}</dd></div>) : null}
+                          {virya ? (<div><dt className="inline font-semibold">Potência: </dt><dd className="inline">{virya}</dd></div>) : null}
+                          {gunas.length ? (<div><dt className="inline font-semibold">Qualidades: </dt><dd className="inline">{gunas.join(", ")}</dd></div>) : null}
+                          {karma.length ? (<div><dt className="inline font-semibold">Ações: </dt><dd className="inline">{karma.join(", ")}</dd></div>) : null}
+                        </dl>
+                        <div className="mt-2.5 flex flex-wrap gap-1.5">
+                          {doshaChip("V", nj.vata, "#6B8FE8")}
+                          {doshaChip("P", nj.pitta, "#F0857F")}
+                          {doshaChip("K", nj.kapha, "#57BE86")}
+                        </div>
+                      </section>
+                    ) : null}
+
+                    <p className="text-sm leading-relaxed mb-3 mt-2" style={{ color: PRIMARY, opacity: 0.9 }}>
+                      Sua rotina dos 7 dias já está montada — e essa é só uma das refeições.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => setReceitaModalOpen(false)}
+                      className="w-full inline-flex items-center justify-center px-6 py-3 rounded-full text-white font-semibold text-base shadow-lg transition-colors"
+                      style={{ backgroundColor: SALMAO }}
+                      onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = SALMAO_HOVER)}
+                      onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = SALMAO)}
+                    >
+                      Ver os planos
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        ) : null}
+          );
+        })() : null}
 
         {/* 1) HERO */}
         <section
