@@ -196,12 +196,16 @@ const Video = () => {
       : `https://www.youtube.com/embed/${videoId}?autoplay=1`
     : "";
 
-  // Soft 404: when slug doesn't resolve, redirect to /biblioteca (replace) instead of rendering a 200 error page
+  // Legacy URL /video/{video_id} (11-char YouTube id) → redireciona para o slug canônico
+  const isYoutubeId = !!slug && /^[A-Za-z0-9_-]{11}$/.test(slug);
   useEffect(() => {
-    if (!isLoading && !video) {
-      navigate("/biblioteca", { replace: true });
+    if (!isLoading && video && isYoutubeId) {
+      const canonical = slugify((video as any).novo_titulo || "");
+      if (canonical && canonical !== slug) {
+        navigate(`/video/${canonical}`, { replace: true, state: { videoId: (video as any).video_id } });
+      }
     }
-  }, [isLoading, video, navigate]);
+  }, [isLoading, video, isYoutubeId, slug, navigate]);
 
   if (isLoading) {
     return (
@@ -216,8 +220,29 @@ const Video = () => {
     );
   }
 
+  // Soft-404 fix: vídeo não existe → renderiza página noindex na própria URL
   if (!video) {
-    return null;
+    return (
+      <>
+        <Helmet>
+          <title>Vídeo não encontrado — Portal Ayurveda</title>
+          <meta name="robots" content="noindex, follow" />
+        </Helmet>
+        <PageContainer title="Vídeo não encontrado" description="">
+          <div className="max-w-2xl mx-auto text-center py-16 space-y-4">
+            <h1 className="font-serif text-2xl md:text-3xl font-bold text-primary">
+              Vídeo não encontrado
+            </h1>
+            <p className="text-muted-foreground">
+              Este vídeo pode ter sido removido ou o endereço está incorreto.
+            </p>
+            <Button variant="outline" onClick={() => navigate("/biblioteca")}>
+              Ir para a biblioteca
+            </Button>
+          </div>
+        </PageContainer>
+      </>
+    );
   }
 
   const title = video.novo_titulo || "Sem título";
