@@ -269,8 +269,14 @@ function escapeHtml(s: string): string {
 
 async function dynamicRoutes(): Promise<Route[]> {
   const routes: Route[] = [];
+  const counts: Record<string, number> = {};
+  const bump = (k: string) => (counts[k] = (counts[k] || 0) + 1);
 
-  // Artigos publicados (portal_conteudo com link_do_artigo, tipo artigo)
+  const sitemap = await fetchSitemapSlugs();
+
+  // Artigos publicados (portal_conteudo com link_do_artigo, tipo artigo).
+  // ATENÇÃO: nunca adicione colunas aqui sem confirmar no schema. Um 400 na REST
+  // devolve [] via fetchRest e o site inteiro perde os HTMLs de /blog/{slug}.
   const posts = await fetchRest<{
     title: string;
     summary: string;
@@ -278,9 +284,8 @@ async function dynamicRoutes(): Promise<Route[]> {
     image_url: string;
     link_do_artigo: string;
     created_at: string | null;
-    autor?: string | null;
   }>(
-    "portal_conteudo?select=title,summary,meta_description,image_url,link_do_artigo,created_at,autor&link_do_artigo=not.is.null&limit=500"
+    "portal_conteudo?select=title,summary,meta_description,image_url,link_do_artigo,created_at&link_do_artigo=not.is.null&limit=500"
   );
   for (const p of posts) {
     if (!p.link_do_artigo) continue;
