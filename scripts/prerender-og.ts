@@ -348,10 +348,8 @@ async function dynamicRoutes(): Promise<Route[]> {
     bump("terapeuta");
   }
 
-  // Vídeos canônicos (schema public). Filtramos pelos slugs listados no sitemap
-  // — o banco tem ~929 vídeos com slug, mas o sitemap indexa ~433. Escrever os
-  // 929 estava esgotando algum limite do deploy e nenhum /video/{slug} chegava
-  // ao ar. Se o sitemap não vier, geramos todos (fallback seguro).
+  // Vídeos — lemos da view `videos_sitemap`, que já devolve exatamente as URLs
+  // que entram no sitemap.xml (~433 slugs). Não precisa mais filtrar pelo XML.
   const videos = await fetchRest<{
     video_id: string;
     slug: string;
@@ -360,16 +358,10 @@ async function dynamicRoutes(): Promise<Route[]> {
     nova_descricao: string;
     criado_em: string | null;
   }>(
-    "videos_canonicos?select=video_id,slug,novo_titulo,mini_resumo,nova_descricao,criado_em&slug=not.is.null&limit=1000"
+    "videos_sitemap?select=slug,video_id,novo_titulo,mini_resumo,nova_descricao,criado_em&limit=1000"
   );
-  const useVideoFilter = sitemap.video.size > 0;
-  let videosSkipped = 0;
   for (const v of videos) {
     if (!v.slug || !v.novo_titulo) continue;
-    if (useVideoFilter && !sitemap.video.has(v.slug)) {
-      videosSkipped++;
-      continue;
-    }
     const desc = clean(v.mini_resumo || v.nova_descricao, 200) ||
       `Assista "${clean(v.novo_titulo, 80)}" no Portal Ayurveda.`;
     const thumb = v.video_id
@@ -393,9 +385,8 @@ async function dynamicRoutes(): Promise<Route[]> {
     });
     bump("video");
   }
-  if (useVideoFilter) {
-    console.log(`[prerender] video: ${counts.video || 0} gerados, ${videosSkipped} descartados (fora do sitemap)`);
-  }
+  console.log(`[prerender] video: ${counts.video || 0} gerados a partir de videos_sitemap`);
+
 
   // Loja Samkhya — produtos (schema loja)
   const produtos = await fetchRest<{

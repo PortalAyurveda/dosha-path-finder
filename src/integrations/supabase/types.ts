@@ -5703,6 +5703,17 @@ export type Database = {
         }
         Relationships: []
       }
+      videos_sitemap: {
+        Row: {
+          criado_em: string | null
+          mini_resumo: string | null
+          nova_descricao: string | null
+          novo_titulo: string | null
+          slug: string | null
+          video_id: string | null
+        }
+        Relationships: []
+      }
       vw_crm_base: {
         Row: {
           dominio_ok: boolean | null
@@ -6331,6 +6342,7 @@ export type Database = {
               error: true
             } & "Could not choose the best candidate function between: public.urlencode(string => bytea), public.urlencode(string => varchar). Try renaming the parameters or the function itself in the database so function overloading can be resolved"
           }
+      video_slug_sitemap: { Args: { p_titulo: string }; Returns: string }
       videos_seo2_sincronizar: { Args: never; Returns: number }
       videos_slugify: { Args: { p_titulo: string }; Returns: string }
     }
