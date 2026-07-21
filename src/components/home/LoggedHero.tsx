@@ -418,17 +418,15 @@ const LoggedHero = () => {
 
       const hora = new Date().getHours();
       const periodoAtual = hora < 12 ? "manha" : hora < 18 ? "tarde" : "noite";
-      const norm = (s?: string | null) => (s || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-      const bucketFor = (p?: string | null): "manha" | "tarde" | "noite" | "outro" => {
-        const n = norm(p);
-        if (!n) return "outro";
-        if (n.startsWith("manh") || n === "amanhecer" || n === "cafe") return "manha";
-        if (n.startsWith("tarde") || n.includes("almoc") || n === "meio-dia" || n === "meio dia") return "tarde";
-        if (n.startsWith("noit") || n === "jantar") return "noite";
+      const bucketFor = (slot?: string | null): "manha" | "tarde" | "noite" | "outro" => {
+        const s = (slot || "").toLowerCase();
+        if (s === "cafe_manha" || s === "lanche_manha" || s === "rotina_manha") return "manha";
+        if (s === "almoco" || s === "lanche_tarde") return "tarde";
+        if (s === "jantar" || s === "tonico_noite") return "noite";
         return "outro";
       };
       const buckets: Record<string, any[]> = { manha: [], tarde: [], noite: [], outro: [] };
-      enriched.forEach((x) => buckets[bucketFor(x.nug.periodo)].push(x));
+      enriched.forEach((x) => buckets[bucketFor(x.row.slot)].push(x));
 
       const ordem =
         periodoAtual === "manha"
