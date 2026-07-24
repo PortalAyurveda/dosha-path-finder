@@ -71,7 +71,9 @@ const GlobalSearch = ({ open: openProp, onOpenChange, layout = "popover" }: Glob
 
   useEffect(() => {
     const onClick = (e: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+      if (!containerRef.current) return;
+      if (containerRef.current.offsetParent === null) return;
+      if (!containerRef.current.contains(e.target as Node)) {
         setOpen(false);
       }
     };
