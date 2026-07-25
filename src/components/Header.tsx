@@ -81,7 +81,6 @@ const HeaderDoshaPie = ({ vata, pitta, kapha, size = 22 }: { vata: number; pitta
 const Header = () => {
   const [open, setOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
-  const [temCursos, setTemCursos] = useState(false);
 
 
   const location = useLocation();
@@ -92,25 +91,6 @@ const Header = () => {
   const { aluno: escolaAluno } = useEscolaAluno();
 
 
-  useEffect(() => {
-    let cancelled = false;
-    if (!user) {
-      setTemCursos(false);
-      return;
-    }
-    (async () => {
-      const { data } = await supabase
-        .from("curso_matriculas")
-        .select("id")
-        .eq("user_id", user.id)
-        .eq("status", "ativa")
-        .limit(1);
-      if (!cancelled) setTemCursos((data ?? []).length > 0);
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [user]);
 
   const isSamkhya = location.pathname.startsWith("/samkhya");
 
