@@ -520,14 +520,8 @@ const Header = () => {
                 <DropdownMenuItem asChild>
                   <Link to="/minha-rotina">Minha rotina</Link>
                 </DropdownMenuItem>
-                {temCursos && (
-                  <DropdownMenuItem asChild>
-                    <Link to="/meu-perfil?section=cursos">
-                      <BookOpen className="h-4 w-4 mr-2" /> Meus cursos
-                    </Link>
-                  </DropdownMenuItem>
-                )}
                 <DropdownMenuItem asChild>
+
                   <Link to="/meu-perfil">Minha conta</Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={handleSignOut}>
