@@ -2,44 +2,12 @@ import { getTransformedImageUrl } from "@/lib/imageTransform";
 import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { Helmet } from "react-helmet-async";
-import { ArrowLeft, PlayCircle } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
 import HeartButton from "@/components/HeartButton";
-import { useState } from "react";
 import BannerSlot from "@/components/banners/BannerSlot";
 
-const extractYoutubeId = (url: string): string | null => {
-  try {
-    const u = new URL(url);
-    if (u.hostname === "youtu.be") return u.pathname.slice(1) || null;
-    if (u.hostname.includes("youtube.com")) {
-      const v = u.searchParams.get("v");
-      if (v) return v;
-      const parts = u.pathname.split("/").filter(Boolean);
-      const idx = parts.findIndex((p) => p === "embed" || p === "shorts" || p === "live");
-      if (idx >= 0 && parts[idx + 1]) return parts[idx + 1];
-    }
-  } catch {
-    return null;
-  }
-  return null;
-};
-
-const AulaEmbed = ({ videoUrl, title }: { videoUrl: string; title: string }) => {
-  const [play, setPlay] = useState(false);
-  const id = extractYoutubeId(videoUrl);
-  if (!id) return null;
-  return (
-    <aside className="my-8 rounded-2xl overflow-hidden border border-border bg-card shadow-sm not-prose">
-      <div className="px-4 pt-4 pb-2">
-        <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-          Assista à aula deste artigo
-        </p>
-      </div>
-      <div className="aspect-video relative bg-black">
-        {play ? (
-          <iframe
             src={`https://www.youtube.com/embed/${id}?autoplay=1&rel=0`}
             title={title}
             allow="accelerated-2d-canvas; autoplay; encrypted-media; picture-in-picture"
