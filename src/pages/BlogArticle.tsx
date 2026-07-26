@@ -8,36 +8,6 @@ import { Badge } from "@/components/ui/badge";
 import HeartButton from "@/components/HeartButton";
 import BannerSlot from "@/components/banners/BannerSlot";
 
-            src={`https://www.youtube.com/embed/${id}?autoplay=1&rel=0`}
-            title={title}
-            allow="accelerated-2d-canvas; autoplay; encrypted-media; picture-in-picture"
-            allowFullScreen
-            loading="lazy"
-            className="absolute inset-0 w-full h-full"
-          />
-        ) : (
-          <button
-            type="button"
-            onClick={() => setPlay(true)}
-            className="absolute inset-0 w-full h-full group"
-            aria-label="Reproduzir aula"
-          >
-            <img
-              src={`https://img.youtube.com/vi/${id}/hqdefault.jpg`}
-              alt={title}
-              loading="lazy"
-              className="w-full h-full object-cover"
-            />
-            <span className="absolute inset-0 flex items-center justify-center bg-black/25 group-hover:bg-black/15 transition-colors">
-              <PlayCircle className="h-16 w-16 text-white drop-shadow-lg" strokeWidth={1.5} />
-            </span>
-          </button>
-        )}
-      </div>
-    </aside>
-  );
-};
-
 const BlogArticle = () => {
   const { slug } = useParams<{ slug: string }>();
 
