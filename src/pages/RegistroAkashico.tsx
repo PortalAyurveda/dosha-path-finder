@@ -118,9 +118,7 @@ const RegistroAkashico = () => {
               "Registro de um pensamento da Akasha, nossa I.A. Ayurveda."
             }
           />
-          {canonicalPath && (
-            <link rel="canonical" href={`https://portalayurveda.com${canonicalPath}`} />
-          )}
+          {/* canonical é injetado pelo hook global useCanonical — não duplicar aqui */}
           <meta property="og:type" content="article" />
           {data?.titulo && <meta property="og:title" content={`${data.titulo} — Portal Ayurveda`} />}
           {canonicalPath && (
