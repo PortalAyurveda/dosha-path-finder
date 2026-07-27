@@ -9,6 +9,7 @@ const staticEntries: Entry[] = [
   { loc: `${BASE_URL}/samkhya`, changefreq: "weekly", priority: "1.0" },
   { loc: `${BASE_URL}/biblioteca`, changefreq: "weekly", priority: "1.0" },
   { loc: `${BASE_URL}/cursos`, changefreq: "weekly", priority: "1.0" },
+  { loc: `${BASE_URL}/registros-akashikos`, changefreq: "daily", priority: "0.8" },
 ];
 function escapeXml(s: string): string { return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&apos;"); }
 function isoDate(date: unknown): string | undefined { if (!date || typeof date !== "string") return undefined; const d = new Date(date); if (isNaN(d.getTime())) return undefined; return d.toISOString().slice(0,10); }
