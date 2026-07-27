@@ -644,22 +644,25 @@ const MeuDosha = () => {
   const navigate = useNavigate();
   const [evolucaoOpen, setEvolucaoOpen] = useState(false);
 
-  // Já existe revisão concluída? -> botão vira "Ver revisão"
-  const { data: hasRevisaoConcluida } = useQuery({
+  // Data da ÚLTIMA revisão concluída (não só a existência de uma linha antiga).
+  const { data: ultimaRevisaoEm } = useQuery({
     queryKey: ["meudosha-revisao-concluida", user?.email],
     enabled: !!user?.email,
     staleTime: 60_000,
     queryFn: async () => {
       const { data } = await supabase
         .from("reteste_sessao" as any)
-        .select("id")
+        .select("updated_at, created_at")
         .eq("user_email", user!.email!)
         .eq("status", "concluido")
+        .order("updated_at", { ascending: false })
         .limit(1)
         .maybeSingle();
-      return !!data;
+      const row = data as { updated_at?: string; created_at?: string } | null;
+      return row?.updated_at ?? row?.created_at ?? null;
     },
   });
+
 
   // Se o usuário logado caiu em /meu-dosha sem ?id, redireciona para o id do
   // seu teste personalizado, preservando outros parâmetros (tab, mode).
@@ -1105,14 +1108,21 @@ const MeuDosha = () => {
                       </button>
                       {(() => {
                         const createdAt = result.created_at ? new Date(result.created_at) : null;
-                        const liberaEm = createdAt ? new Date(createdAt.getTime() + 30 * 24 * 3600 * 1000) : null;
+                        const ultimaRevisao = ultimaRevisaoEm ? new Date(ultimaRevisaoEm) : null;
+                        // Base = data mais recente entre o teste e a última revisão concluída
+                        const base = ultimaRevisao && createdAt
+                          ? new Date(Math.max(createdAt.getTime(), ultimaRevisao.getTime()))
+                          : (ultimaRevisao ?? createdAt);
+                        const liberaEm = base ? new Date(base.getTime() + 30 * 24 * 3600 * 1000) : null;
                         const disponivel = liberaEm ? Date.now() >= liberaEm.getTime() : false;
                         const liberaStr = liberaEm
                           ? `${String(liberaEm.getDate()).padStart(2, '0')}/${String(liberaEm.getMonth() + 1).padStart(2, '0')}`
                           : '';
                         const baseClass = "inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full border transition-colors";
-                        if (disponivel || hasRevisaoConcluida) {
-                          const jaConcluiu = !!hasRevisaoConcluida;
+                        if (disponivel || ultimaRevisaoEm) {
+                          // Revisão concluída há menos de 30 dias → sem destaque, só "Ver revisão"
+                          const jaConcluiu = !!ultimaRevisaoEm && !disponivel;
+
                           return (
                             <button
                               type="button"

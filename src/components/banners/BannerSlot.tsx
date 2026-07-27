@@ -1,8 +1,10 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useLocation } from "react-router-dom";
 import DOMPurify from "dompurify";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/contexts/UserContext";
+
 
 interface BannerSlotProps {
   slot: string;
@@ -46,6 +48,8 @@ function agniTag(agni: string | null | undefined): string | null {
 
 const BannerSlot = ({ slot, className, fallback }: BannerSlotProps) => {
   const { user, profile, doshaResult } = useUser();
+  const location = useLocation();
+
 
   // Fetch agniPrincipal apart (não está no DoshaResult padrão)
   const { data: agniPrincipal } = useQuery({
@@ -125,11 +129,46 @@ const BannerSlot = ({ slot, className, fallback }: BannerSlotProps) => {
     });
   }, [escolhido]);
 
+  // Tag de dosha que motivou a escolha (se houver)
+  const doshaTagEscolhido = useMemo(() => {
+    const tags = (escolhido?.tags ?? []) as string[];
+    return tags.find((t) => /^(vata|pitta|kapha)(-(vata|pitta|kapha))*$/.test(t)) ?? null;
+  }, [escolhido]);
+
+  const registrarEvento = (evento: "impressao" | "clique") => {
+    if (!escolhido?.id) return;
+    // fire-and-forget: nunca bloqueia UI/navegação
+    void (supabase.from("banner_eventos" as any) as any)
+      .insert({
+        banner_id: escolhido.id,
+        slot,
+        evento,
+        user_id: user?.id ?? null,
+        dosha_tag: doshaTagEscolhido,
+        pagina: location.pathname,
+      })
+      .then(undefined, () => {});
+  };
+
+  const impressaoRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (!escolhido?.id) return;
+    if (impressaoRef.current === escolhido.id) return;
+    impressaoRef.current = escolhido.id;
+    registrarEvento("impressao");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [escolhido?.id]);
+
   if (!escolhido) return <>{fallback ?? null}</>;
 
   return (
-    <div className={className} dangerouslySetInnerHTML={{ __html: cleanHtml }} />
+    <div
+      className={className}
+      onClick={() => registrarEvento("clique")}
+      dangerouslySetInnerHTML={{ __html: cleanHtml }}
+    />
   );
 };
+
 
 export default BannerSlot;
