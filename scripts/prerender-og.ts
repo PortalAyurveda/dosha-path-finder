@@ -259,6 +259,21 @@ function clean(text: unknown, max = 200): string {
     .slice(0, max);
 }
 
+// Slug dos registros akáshicos — precisa bater com src/lib/akashaSlug.ts:
+// sem acento, só [a-z0-9-], pontuação vira hífen.
+function akashaSlugify(titulo: string | null | undefined): string {
+  if (!titulo) return "";
+  return titulo
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, " ")
+    .trim()
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
 function escapeHtml(s: string): string {
   return s
     .replace(/&/g, "&amp;")
