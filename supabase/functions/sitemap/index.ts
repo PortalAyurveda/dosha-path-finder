@@ -9,18 +9,21 @@ const staticEntries: Entry[] = [
   { loc: `${BASE_URL}/samkhya`, changefreq: "weekly", priority: "1.0" },
   { loc: `${BASE_URL}/biblioteca`, changefreq: "weekly", priority: "1.0" },
   { loc: `${BASE_URL}/cursos`, changefreq: "weekly", priority: "1.0" },
+  { loc: `${BASE_URL}/registros-akashikos`, changefreq: "daily", priority: "0.8" },
 ];
 function escapeXml(s: string): string { return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&apos;"); }
 function isoDate(date: unknown): string | undefined { if (!date || typeof date !== "string") return undefined; const d = new Date(date); if (isNaN(d.getTime())) return undefined; return d.toISOString().slice(0,10); }
 function slugifyNome(input: string): string { return input.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().trim().replace(/[^a-z0-9\s-]/g,"").replace(/\s+/g,"-").replace(/-+/g,"-").replace(/^-|-$/g,""); }
 function videoSlug(title: string): string { if (!title) return ""; const base = title.includes(":") ? title.split(":")[0] : title.split(/\s+/).slice(0,5).join(" "); return base.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9\s-]/g,"").trim().replace(/\s+/g,"-").replace(/-+/g,"-").replace(/^-|-$/g,""); }
 function renderUrl(e: Entry): string { return ["  <url>", `    <loc>${escapeXml(e.loc)}</loc>`, e.lastmod?`    <lastmod>${e.lastmod}</lastmod>`:null, e.changefreq?`    <changefreq>${e.changefreq}</changefreq>`:null, e.priority?`    <priority>${e.priority}</priority>`:null, "  </url>"].filter(Boolean).join("\n"); }
+function akashaSlug(titulo: string): string { return titulo.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9\s-]/g," ").trim().replace(/\s+/g,"-").replace(/-+/g,"-").replace(/^-|-$/g,""); }
 async function dynamicEntries(): Promise<Entry[]> {
   const supabase = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? Deno.env.get("SUPABASE_ANON_KEY")!);
   const VIDEO_TABLES = ["portal_oficial","portal_receitas","portal_lives","portal_vata","portal_pitta","portal_kapha"];
-  const [artigosRes, terapeutasRes, ...videosResults] = await Promise.all([
+  const [artigosRes, terapeutasRes, akashaRes, ...videosResults] = await Promise.all([
     supabase.from("portal_conteudo").select("link_do_artigo, created_at").eq("status","published").not("link_do_artigo","is",null).limit(10000),
     supabase.from("portal_terapeutas").select("nome, status").eq("status","aprovado").not("nome","is",null).limit(5000),
+    supabase.from("akasha_memory").select("titulo, data_postagem").not("titulo","is",null).order("data_postagem",{ ascending: false }).limit(5000),
     ...VIDEO_TABLES.map((t) => supabase.from(t).select("video_id, novo_titulo, criado_em").not("novo_titulo","is",null).limit(10000)),
   ]);
   const entries: Entry[] = [];
@@ -30,6 +33,8 @@ async function dynamicEntries(): Promise<Entry[]> {
   for (const [slug, lm] of bySlug) entries.push({ loc: `${BASE_URL}/video/${slug}`, lastmod: lm, changefreq: "monthly", priority: "0.7" });
   const seenSlugs = new Set<string>();
   for (const row of terapeutasRes.data ?? []) { const nome = (row as any).nome as string | null; if (!nome) continue; const slug = slugifyNome(nome); if (!slug || seenSlugs.has(slug)) continue; seenSlugs.add(slug); entries.push({ loc: `${BASE_URL}/terapeutas/${slug}`, changefreq: "monthly", priority: "0.6" }); }
+  const seenAkasha = new Set<string>();
+  for (const row of akashaRes.data ?? []) { const titulo = (row as any).titulo as string | null; if (!titulo) continue; const slug = akashaSlug(titulo); if (!slug || seenAkasha.has(slug)) continue; seenAkasha.add(slug); entries.push({ loc: `${BASE_URL}/registros-akashikos/${slug}`, lastmod: isoDate((row as any).data_postagem), changefreq: "monthly", priority: "0.5" }); }
   return entries;
 }
 Deno.serve(async (req) => {

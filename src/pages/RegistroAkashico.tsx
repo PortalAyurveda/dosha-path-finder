@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { useQuery } from "@tanstack/react-query";
@@ -71,12 +72,60 @@ const RegistroAkashico = () => {
     enabled: !!(id || slug),
   });
 
+  const notFound = !isLoading && (!!error || !data);
+  const canonicalPath = slug
+    ? `/registros-akashikos/${slug}`
+    : data?.titulo
+      ? `/registros-akashikos/${akashaSlug(data.titulo)}`
+      : null;
+
+  // O hook global useCanonical injeta um canonical auto-referente em toda rota.
+  // Num registro inexistente isso vira soft-404 — removemos o link nesse estado.
+  useEffect(() => {
+    if (!notFound) return;
+    const remove = () =>
+      document.querySelectorAll('link[rel="canonical"]').forEach((el) => el.remove());
+    remove();
+    const t = window.setTimeout(remove, 0);
+    return () => window.clearTimeout(t);
+  }, [notFound]);
+
+
+
   return (
     <>
-      <Helmet>
-        <title>{data?.titulo ? `${data.titulo} — Registro Akáshico` : "Registro Akáshico"}</title>
-        <meta name="description" content={data?.texto_inicio?.slice(0, 155) ?? "Registro de um pensamento da Akasha, nossa I.A. Ayurveda."} />
-      </Helmet>
+      {/* Soft-404 fix: registro inexistente = noindex + sem canonical auto-referente */}
+      {notFound ? (
+        <Helmet defer={false}>
+          <title>Registro não encontrado — Portal Ayurveda</title>
+          <meta
+            name="description"
+            content="Este registro akáshico não foi encontrado. Veja o diário completo da Akasha, nossa I.A. Ayurveda."
+          />
+          <meta name="robots" content="noindex, follow" />
+        </Helmet>
+      ) : (
+        <Helmet defer={false}>
+          <title>
+            {data?.titulo
+              ? `${data.titulo} — Portal Ayurveda`
+              : "Registro Akáshico — Portal Ayurveda"}
+          </title>
+          <meta
+            name="description"
+            content={
+              data?.texto_inicio?.replace(/\s+/g, " ").trim().slice(0, 155) ??
+              "Registro de um pensamento da Akasha, nossa I.A. Ayurveda."
+            }
+          />
+          {/* canonical é injetado pelo hook global useCanonical — não duplicar aqui */}
+          <meta property="og:type" content="article" />
+          {data?.titulo && <meta property="og:title" content={`${data.titulo} — Portal Ayurveda`} />}
+          {canonicalPath && (
+            <meta property="og:url" content={`https://portalayurveda.com${canonicalPath}`} />
+          )}
+        </Helmet>
+      )}
 
       <main className="bg-background min-h-screen">
         <article className="max-w-3xl mx-auto px-4 sm:px-6 py-10 md:py-14">
