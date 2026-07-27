@@ -79,6 +79,19 @@ const RegistroAkashico = () => {
       ? `/registros-akashikos/${akashaSlug(data.titulo)}`
       : null;
 
+  // O hook global useCanonical injeta um canonical auto-referente em toda rota.
+  // Num registro inexistente isso vira soft-404 — removemos o link nesse estado.
+  useEffect(() => {
+    if (!notFound) return;
+    const remove = () =>
+      document.querySelectorAll('link[rel="canonical"]').forEach((el) => el.remove());
+    remove();
+    const t = window.setTimeout(remove, 0);
+    return () => window.clearTimeout(t);
+  }, [notFound]);
+
+
+
   return (
     <>
       {/* Soft-404 fix: registro inexistente = noindex + sem canonical auto-referente */}
