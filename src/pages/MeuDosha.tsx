@@ -1108,14 +1108,21 @@ const MeuDosha = () => {
                       </button>
                       {(() => {
                         const createdAt = result.created_at ? new Date(result.created_at) : null;
-                        const liberaEm = createdAt ? new Date(createdAt.getTime() + 30 * 24 * 3600 * 1000) : null;
+                        const ultimaRevisao = ultimaRevisaoEm ? new Date(ultimaRevisaoEm) : null;
+                        // Base = data mais recente entre o teste e a última revisão concluída
+                        const base = ultimaRevisao && createdAt
+                          ? new Date(Math.max(createdAt.getTime(), ultimaRevisao.getTime()))
+                          : (ultimaRevisao ?? createdAt);
+                        const liberaEm = base ? new Date(base.getTime() + 30 * 24 * 3600 * 1000) : null;
                         const disponivel = liberaEm ? Date.now() >= liberaEm.getTime() : false;
                         const liberaStr = liberaEm
                           ? `${String(liberaEm.getDate()).padStart(2, '0')}/${String(liberaEm.getMonth() + 1).padStart(2, '0')}`
                           : '';
                         const baseClass = "inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full border transition-colors";
-                        if (disponivel || hasRevisaoConcluida) {
-                          const jaConcluiu = !!hasRevisaoConcluida;
+                        if (disponivel || ultimaRevisaoEm) {
+                          // Revisão concluída há menos de 30 dias → sem destaque, só "Ver revisão"
+                          const jaConcluiu = !!ultimaRevisaoEm && !disponivel;
+
                           return (
                             <button
                               type="button"
