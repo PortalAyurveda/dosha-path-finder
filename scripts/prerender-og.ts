@@ -387,6 +387,53 @@ async function dynamicRoutes(): Promise<Route[]> {
   }
   console.log(`[prerender] video: ${counts.video || 0} gerados a partir de videos_sitemap`);
 
+  // Registros Akáshicos — akasha_memory. Paginado (PostgREST limita a 1000/req).
+  // Cap de segurança para não estourar o limite de arquivos do publish.
+  const MAX_AKASHA_PAGES = 4000;
+  const akashaRows: { titulo: string; texto_inicio: string | null; data_postagem: string | null }[] = [];
+  for (let offset = 0; offset < MAX_AKASHA_PAGES; offset += 1000) {
+    const page = await fetchRest<{ titulo: string; texto_inicio: string | null; data_postagem: string | null }>(
+      `akasha_memory?select=titulo,texto_inicio,data_postagem&titulo=not.is.null&order=data_postagem.desc&limit=1000&offset=${offset}`
+    );
+    akashaRows.push(...page);
+    if (page.length < 1000) break;
+  }
+  const seenAkasha = new Set<string>();
+  for (const r of akashaRows) {
+    const titulo = clean(r.titulo, 110);
+    if (!titulo) continue;
+    const slug = akashaSlugify(r.titulo);
+    if (!slug || seenAkasha.has(slug)) continue;
+    seenAkasha.add(slug);
+    const desc =
+      clean(r.texto_inicio, 200) ||
+      `Registro akáshico da Akasha, a inteligência do Portal Ayurveda: ${titulo}.`;
+    routes.push({
+      path: `/registros-akashikos/${slug}`,
+      title: `${titulo} — Portal Ayurveda`,
+      description: desc,
+      type: "article",
+      jsonld: {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        headline: titulo,
+        description: desc,
+        datePublished: r.data_postagem || undefined,
+        mainEntityOfPage: `${BASE_URL}/registros-akashikos/${slug}`,
+        author: { "@type": "Organization", name: "Akasha — Portal Ayurveda" },
+        publisher: {
+          "@type": "Organization",
+          name: "Portal Ayurveda",
+          logo: { "@type": "ImageObject", url: `${BASE_URL}/og-image.jpg` },
+        },
+      },
+    });
+    bump("akasha");
+  }
+  console.log(`[prerender] registros-akashikos: ${counts.akasha || 0} gerados (de ${akashaRows.length} linhas)`);
+
+
+
 
   // Loja Samkhya — produtos (schema loja)
   const produtos = await fetchRest<{
