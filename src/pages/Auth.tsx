@@ -129,7 +129,7 @@ const Auth = () => {
       const idParaClaim = searchParams.get("claim") || localStorage.getItem("activeDoshaId");
       options.emailRedirectTo = idParaClaim
         ? `${window.location.origin}/entrar?claim=${idParaClaim}`
-        : `${window.location.origin}/entrar`;
+        : `${window.location.origin}/entrar?src=m`;
     }
     try {
       await supabase.functions.invoke("preparar-login", { body: { email, contexto } });

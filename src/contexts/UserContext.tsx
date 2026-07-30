@@ -94,26 +94,50 @@ export function UserProvider({ children }: { children: ReactNode }) {
     setRoleLoading(false);
   };
 
-  const fetchDoshaByEmail = async (email: string) => {
-    const { data, error } = await supabase
-      .from("doshas_registros")
-      .select("idPublico, nome, doshaprincipal, vatascore, pittascore, kaphascore")
-      .eq("email", email)
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .single();
+  const fetchDoshaByEmail = async (email: string | null, userId?: string) => {
+    const SELECT = "idPublico, nome, doshaprincipal, vatascore, pittascore, kaphascore";
 
-    if (!error && data && data.idPublico) {
-      const result: DoshaResult = {
+    const applyResult = (data: any) => {
+      setDoshaResult({
         idPublico: data.idPublico,
         nome: data.nome,
         doshaprincipal: data.doshaprincipal,
         vatascore: data.vatascore,
         pittascore: data.pittascore,
         kaphascore: data.kaphascore,
-      };
-      setDoshaResult(result);
+      });
       localStorage.setItem("activeDoshaId", data.idPublico);
+    };
+
+    // 1) Tenta pelo vínculo direto com a conta (user_id)
+    if (userId) {
+      const { data, error } = await supabase
+        .from("doshas_registros")
+        .select(SELECT)
+        .eq("user_id", userId)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (!error && data && data.idPublico) {
+        applyResult(data);
+        return;
+      }
+    }
+
+    // 2) Fallback: busca por email (comportamento anterior)
+    if (!email) return;
+
+    const { data, error } = await supabase
+      .from("doshas_registros")
+      .select(SELECT)
+      .eq("email", email)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (!error && data && data.idPublico) {
+      applyResult(data);
     }
   };
 
@@ -186,9 +210,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
     const hydrateAuthenticatedUser = (currentUser: User) => {
       void fetchProfile(currentUser.id);
       void fetchRole(currentUser.id);
-      if (currentUser.email) {
-        void fetchDoshaByEmail(currentUser.email);
-      }
+      void fetchDoshaByEmail(currentUser.email ?? null, currentUser.id);
     };
 
     // Fonte ÚNICA de verdade de sessão: onAuthStateChange.
@@ -206,7 +228,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
         if (event === "SIGNED_IN") {
           const pendingId = localStorage.getItem("pendingClaimIdPublico");
-          const urlId = new URLSearchParams(window.location.search).get("id");
+          const urlId = new URLSearchParams(window.location.search).get("claim");
           const activeId = localStorage.getItem("activeDoshaId");
           const idToClaim = pendingId || urlId || activeId || null;
           const visitorId = localStorage.getItem("visitorId");
