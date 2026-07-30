@@ -340,6 +340,7 @@ const [step, setStep] = useState(0);
 
       const dbPayload = {
         idPublico,
+        user_id: user?.id ?? null,
         email: info.email.toLowerCase(),
         nome: info.nome,
         idade: parseInt(info.idade),
