@@ -211,7 +211,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
       void fetchProfile(currentUser.id);
       void fetchRole(currentUser.id);
       if (currentUser.email) {
-        void fetchDoshaByEmail(currentUser.email);
+        void fetchDoshaByEmail(currentUser.email ?? null, currentUser.id);
       }
     };
 
@@ -230,7 +230,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
         if (event === "SIGNED_IN") {
           const pendingId = localStorage.getItem("pendingClaimIdPublico");
-          const urlId = new URLSearchParams(window.location.search).get("id");
+          const urlId = new URLSearchParams(window.location.search).get("claim");
           const activeId = localStorage.getItem("activeDoshaId");
           const idToClaim = pendingId || urlId || activeId || null;
           const visitorId = localStorage.getItem("visitorId");
