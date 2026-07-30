@@ -210,9 +210,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
     const hydrateAuthenticatedUser = (currentUser: User) => {
       void fetchProfile(currentUser.id);
       void fetchRole(currentUser.id);
-      if (currentUser.email) {
-        void fetchDoshaByEmail(currentUser.email ?? null, currentUser.id);
-      }
+      void fetchDoshaByEmail(currentUser.email ?? null, currentUser.id);
     };
 
     // Fonte ÚNICA de verdade de sessão: onAuthStateChange.
