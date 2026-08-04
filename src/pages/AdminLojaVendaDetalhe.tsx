@@ -461,9 +461,15 @@ const AdminLojaVendaDetalhe = () => {
         <Card>
           <CardContent className="pt-6 space-y-2 text-sm">
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Subtotal</span>
-              <span>{formatBRL(pedido.subtotal)}</span>
+              <span className="text-muted-foreground">Subtotal (itens)</span>
+              <span>{formatBRL(subtotalItens)}</span>
             </div>
+            {pedido.cupom_codigo && (
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Cupom {pedido.cupom_codigo}</span>
+                <span>-{formatBRL(descontoCupom)}</span>
+              </div>
+            )}
             <div className="flex justify-between">
               <span className="text-muted-foreground">Frete</span>
               <span>{formatBRL(pedido.frete_valor)}</span>
