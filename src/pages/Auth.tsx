@@ -46,14 +46,18 @@ const Auth = () => {
     }
   }, [user]);
 
+  // Guarda o destino pretendido como rede de segurança (caso a URL de volta o perca)
+  useEffect(() => {
+    const r = sanitizeRedirect(searchParams.get("redirect"));
+    if (r) localStorage.setItem(REDIRECT_STORAGE_KEY, r);
+  }, [searchParams]);
+
   useEffect(() => {
     if (!waitingForDosha) return;
-    const redirectParam = searchParams.get("redirect");
-    const safeRedirect =
-      redirectParam && redirectParam.startsWith("/") && !redirectParam.startsWith("//")
-        ? redirectParam
-        : null;
+    const stored = sanitizeRedirect(localStorage.getItem(REDIRECT_STORAGE_KEY));
+    const safeRedirect = sanitizeRedirect(searchParams.get("redirect")) || stored;
     if (safeRedirect) {
+      localStorage.removeItem(REDIRECT_STORAGE_KEY);
       navigate(safeRedirect, { replace: true });
       return;
     }
@@ -67,6 +71,7 @@ const Auth = () => {
     }, 3000);
     return () => clearTimeout(timer);
   }, [waitingForDosha, doshaResult, navigate]);
+
 
 
   useEffect(() => {
