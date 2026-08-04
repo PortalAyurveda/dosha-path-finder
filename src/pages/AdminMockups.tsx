@@ -957,6 +957,9 @@ function Grupo({
 // ---------- página ----------
 const AdminMockups = () => {
   const [formato, setFormato] = useState<Formato>("story");
+  const [temaKey, setTemaKey] = useState<string>(TEMAS[0].key);
+  const tema = TEMAS.find((t) => t.key === temaKey) ?? TEMAS[0];
+
   const [busca, setBusca] = useState("");
   const [dados, setDados] = useState<Dados | null>(null);
   const [restrito, setRestrito] = useState(false);
