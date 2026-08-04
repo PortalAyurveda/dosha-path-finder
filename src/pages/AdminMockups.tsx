@@ -151,7 +151,7 @@ async function baixarCard(el: HTMLElement, filename: string, formato: Formato) {
   const dataUrl = await toPng(el, {
     pixelRatio,
     cacheBust: true,
-    backgroundColor: CREME,
+    backgroundColor: undefined,
     width: el.offsetWidth,
     height: el.offsetHeight,
   });
