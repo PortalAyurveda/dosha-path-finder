@@ -870,11 +870,17 @@ function CardNumeros({ d, formato }: { d: Dados; formato: Formato }) {
 
 function CardConviteTerapeutas({ formato }: { formato: Formato }) {
   const t = T[formato];
+  const tema = useTema();
   const larguraUtil = RENDER_W - SAFE[formato].x * 2;
+  // Convite é chamada pra ação: ganha fundo com cor da marca (coral → dourado),
+  // exceto quando o tema escolhido já é escuro.
+  const bg = tema.escuro
+    ? undefined
+    : `linear-gradient(160deg, ${CORAL}3D 0%, ${DOURADO}33 45%, ${CREME} 100%)`;
   return (
-    <Card formato={formato}>
+    <Card formato={formato} bg={bg}>
       <SafeArea formato={formato}>
-        <MapPin size={formato === "story" ? 40 : 32} color={CORAL} />
+        <MapPin size={formato === "story" ? 40 : 32} color={acento(tema, CORAL)} />
         <div style={{ marginTop: 16 }}>
           <Eyebrow formato={formato}>Convite</Eyebrow>
         </div>
@@ -895,24 +901,10 @@ function CardConviteTerapeutas({ formato }: { formato: Formato }) {
             limiteLinhas(t.corpo, larguraUtil, 4),
           )}
         </div>
-        <div
-          style={{
-            marginTop: 20,
-            padding: "10px 12px",
-            background: TINTA,
-            color: CREME,
-            fontSize: t.rodape,
-            fontFamily: "monospace",
-            wordBreak: "break-all",
-            alignSelf: "flex-start",
-            borderRadius: 4,
-          }}
-        >
-          portalayurveda.com/terapeutas-do-brasil/cadastro
-        </div>
         <Rodape formato={formato} cta="cadastre-se" ctaColor={CORAL} />
       </SafeArea>
     </Card>
+
   );
 }
 
