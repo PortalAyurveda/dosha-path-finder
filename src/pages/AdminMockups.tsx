@@ -311,73 +311,12 @@ function Eyebrow({ children, formato }: { children: React.ReactNode; formato: Fo
   );
 }
 
-function Rodape({
-  formato,
-  cta,
-  ctaColor = TINTA,
-}: {
-  formato: Formato;
-  cta: string;
-  ctaColor?: string;
-}) {
-  const tema = useTema();
-  const logoSize = formato === "story" ? 22 : 18;
-  const font = T[formato].rodape;
-  const cor = acento(tema, ctaColor);
-
-  const marca = (
-    <div className="flex items-center" style={{ gap: 8 }}>
-      <img
-        src={LOGO}
-        width={logoSize}
-        height={logoSize}
-        alt=""
-        style={{ filter: tema.logoFilter ?? undefined }}
-      />
-      <span style={{ fontSize: font, opacity: 0.75, color: tema.texto }}>portalayurveda.com</span>
-    </div>
-  );
-
-  // No Story o CTA fica junto da marca (canto inferior esquerdo), menor e com
-  // seta diagonal — deixa a faixa de baixo livre pro sticker de link do Instagram.
-  if (formato === "story") {
-    return (
-      <div className="w-full mt-auto" style={{ paddingTop: 20 }}>
-        {marca}
-        <div
-          style={{
-            fontSize: font - 1,
-            fontWeight: 700,
-            color: cor,
-            textTransform: "lowercase",
-            letterSpacing: 0.3,
-            marginTop: 4,
-            marginLeft: logoSize + 8,
-          }}
-        >
-          {cta} ↘
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="flex items-center justify-between w-full mt-auto" style={{ paddingTop: 14, gap: 12 }}>
-      {marca}
-      <span
-        style={{
-          fontSize: font,
-          fontWeight: 700,
-          color: cor,
-          textTransform: "lowercase",
-          letterSpacing: 0.3,
-        }}
-      >
-        {cta} →
-      </span>
-    </div>
-  );
+// Rodapé removido: o rodapé (logo + portalayurveda.com + CTA) é inserido
+// manualmente no Instagram. Mantemos só o espaçador flexível.
+function Rodape(_props: { formato: Formato; cta?: string; ctaColor?: string }) {
+  return <div className="w-full mt-auto" />;
 }
+
 
 
 // ---------- tipos ----------
