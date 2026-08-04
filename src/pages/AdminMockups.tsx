@@ -397,7 +397,9 @@ type Dados = {
 
 // ---------- cards ----------
 function CardClima({ m, testesTotal, formato }: { m: any; testesTotal: number; formato: Formato }) {
+  const tema = useTema();
   if (!m) return null;
+
   const agr = (m.dosha_agravando || "vata").toLowerCase();
   const color = DOSHA_COLOR[agr] || CORAL;
   const sintomas = normalizarSintomas(m[`sintoma_${agr}`]);
