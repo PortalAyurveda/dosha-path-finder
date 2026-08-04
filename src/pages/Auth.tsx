@@ -9,7 +9,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Mail, Sparkles, ArrowLeft, Info } from "lucide-react";
+import { isInAppBrowser } from "@/lib/inAppBrowser";
+import { Loader2, Mail, Sparkles, ArrowLeft, Info, Copy, ExternalLink } from "lucide-react";
+
+const REDIRECT_STORAGE_KEY = "pendingLoginRedirect";
+
+const sanitizeRedirect = (value: string | null | undefined) =>
+  value && value.startsWith("/") && !value.startsWith("//") ? value : null;
 
 const Auth = () => {
   const [email, setEmail] = useState("");
@@ -19,21 +25,20 @@ const Auth = () => {
   const [googleLoading, setGoogleLoading] = useState(false);
   const [resending, setResending] = useState(false);
   const [waitingForDosha, setWaitingForDosha] = useState(false);
+  const [copiado, setCopiado] = useState(false);
 
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { user, doshaResult } = useUser();
   const { toast } = useToast();
 
-  const isInstagram = useMemo(
-    () => typeof navigator !== "undefined" && /Instagram/i.test(navigator.userAgent),
-    []
-  );
+  const isInstagram = useMemo(() => isInAppBrowser(), []);
 
   const getIsMicrosoftEmail = (mail: string) => {
     const dominio = mail.split("@")[1]?.toLowerCase() ?? "";
     return /(outlook|hotmail|live|msn)\./.test(dominio);
   };
+
 
   useEffect(() => {
     if (user && !waitingForDosha) {
