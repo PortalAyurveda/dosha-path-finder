@@ -4,7 +4,10 @@ import AdminNav from "@/components/admin/AdminNav";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toPng } from "html-to-image";
-import { Download, Play, ArrowUp, ArrowDown, MapPin } from "lucide-react";
+import { Download, Play, ArrowUp, ArrowDown, MapPin, Link2, Check } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
+
+const SITE = "https://portalayurveda.com";
 
 const LOGO = "https://api.portalayurveda.com/storage/v1/object/public/portal_images/simbolo-positivo.svg";
 
@@ -923,10 +926,26 @@ function Grupo({
 }: {
   titulo: string;
   formato: Formato;
-  itens: { key: string; filename: string; texto?: string; node: React.ReactNode }[];
+  itens: { key: string; filename: string; texto?: string; url?: string; node: React.ReactNode }[];
   busca?: string;
 }) {
   const refs = useRef<Record<string, HTMLDivElement | null>>({});
+  const [copiado, setCopiado] = useState<string | null>(null);
+  const copiarUrl = async (key: string, url: string) => {
+    try {
+      await navigator.clipboard.writeText(url);
+    } catch {
+      const ta = document.createElement("textarea");
+      ta.value = url;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      ta.remove();
+    }
+    setCopiado(key);
+    toast({ title: "Link copiado", description: url });
+    setTimeout(() => setCopiado((k) => (k === key ? null : k)), 2000);
+  };
   const q = (busca || "").trim().toLowerCase();
   const visiveis = q
     ? itens.filter(
@@ -952,6 +971,19 @@ function Grupo({
               }}
             >
               <Download className="w-3.5 h-3.5" /> Baixar PNG
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              className="gap-2"
+              onClick={() => copiarUrl(it.key, it.url || SITE)}
+            >
+              {copiado === it.key ? (
+                <Check className="w-3.5 h-3.5" />
+              ) : (
+                <Link2 className="w-3.5 h-3.5" />
+              )}
+              Copiar link
             </Button>
           </div>
         ))}
@@ -1008,6 +1040,7 @@ const AdminMockups = () => {
           {
             key: "clima",
             filename: `clima-${formato}.png`,
+            url: `${SITE}/metricas`,
             node: <CardClima m={dados.metricas} testesTotal={dados.testes_total} formato={formato} />,
           },
         ],
@@ -1018,6 +1051,7 @@ const AdminMockups = () => {
           {
             key: "numeros",
             filename: `numeros-${formato}.png`,
+            url: `${SITE}/metricas`,
             node: <CardNumeros d={dados} formato={formato} />,
           },
         ],
@@ -1028,6 +1062,7 @@ const AdminMockups = () => {
           {
             key: "convite-terapeutas",
             filename: `convite-terapeutas-${formato}.png`,
+            url: `${SITE}/terapeutas-do-brasil`,
             node: <CardConviteTerapeutas formato={formato} />,
           },
         ],
@@ -1038,6 +1073,7 @@ const AdminMockups = () => {
           key: `conv-${i}`,
           filename: `akasha-${i + 1}-${formato}.png`,
           texto: `${c.pergunta} ${c.resposta}`,
+          url: SITE,
           node: <CardConversa p={c.pergunta} r={c.resposta} formato={formato} />,
         })),
       },
@@ -1047,6 +1083,7 @@ const AdminMockups = () => {
           key: `rec-${i}`,
           filename: `receita-${i + 1}-${formato}.png`,
           texto: `${r.titulo} ${r.resumo || ""} ${(r.tags || []).join(" ")}`,
+          url: `${SITE}/minha-rotina`,
           node: <CardReceita r={r} formato={formato} />,
         })),
       },
@@ -1056,6 +1093,7 @@ const AdminMockups = () => {
           key: `vid-${i}`,
           filename: `video-${i + 1}-${formato}.png`,
           texto: `${v.titulo} ${v.resumo || ""} ${v.tags || ""}`,
+          url: `${SITE}/video/${v.slug}`,
           node: <CardVideo v={v} formato={formato} />,
         })),
       },
@@ -1065,6 +1103,7 @@ const AdminMockups = () => {
           key: `art-${i}`,
           filename: `artigo-${i + 1}-${formato}.png`,
           texto: `${a.titulo} ${a.resumo || ""} ${a.tags || ""}`,
+          url: `${SITE}/blog/${a.slug}`,
           node: <CardArtigo a={a} formato={formato} />,
         })),
       },
@@ -1073,6 +1112,7 @@ const AdminMockups = () => {
         itens: (dados.cursos || []).map((c, i) => ({
           key: `cur-${i}`,
           filename: `curso-${i + 1}-${formato}.png`,
+          url: `${SITE}/cursos/${c.slug}`,
           node: <CardCurso c={c} formato={formato} />,
         })),
       },
