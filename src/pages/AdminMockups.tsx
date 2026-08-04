@@ -1006,7 +1006,7 @@ const AdminMockups = () => {
           !erro &&
           dados &&
           grupos.map((g) => (
-            <Grupo key={g.titulo} titulo={g.titulo} formato={formato} itens={g.itens} />
+            <Grupo key={g.titulo} titulo={g.titulo} formato={formato} itens={g.itens} busca={busca} />
           ))}
       </main>
     </div>
