@@ -1074,59 +1074,81 @@ const AdminMockups = () => {
   }, [dados, formato]);
 
   return (
-    <div className="min-h-screen bg-background">
-      <AdminNav />
-      <div className="sticky top-[64px] z-[5] bg-card/80 backdrop-blur border-b border-border">
-        <div className="max-w-6xl mx-auto px-4 py-3 flex flex-wrap items-center gap-3">
-          <span className="text-sm font-medium">Formato:</span>
-          <div className="flex gap-2">
-            {(Object.keys(FORMATOS) as Formato[]).map((f) => (
-              <Button
-                key={f}
-                size="sm"
-                variant={formato === f ? "default" : "outline"}
-                onClick={() => setFormato(f)}
-              >
-                {FORMATOS[f].label}
-              </Button>
-            ))}
-          </div>
-          <input
-            value={busca}
-            onChange={(e) => setBusca(e.target.value)}
-            placeholder="Buscar por título, texto ou tag…"
-            className="ml-auto h-9 w-full sm:w-72 rounded-md border border-border bg-background px-3 text-sm"
-          />
-        </div>
-      </div>
+    <TemaCtx.Provider value={tema}>
+      <div className="min-h-screen bg-background">
+        <AdminNav />
+        <div className="sticky top-[64px] z-[5] bg-card/80 backdrop-blur border-b border-border">
+          <div className="max-w-6xl mx-auto px-4 py-3 flex flex-wrap items-center gap-3">
+            <span className="text-sm font-medium">Formato:</span>
+            <div className="flex gap-2">
+              {(Object.keys(FORMATOS) as Formato[]).map((f) => (
+                <Button
+                  key={f}
+                  size="sm"
+                  variant={formato === f ? "default" : "outline"}
+                  onClick={() => setFormato(f)}
+                >
+                  {FORMATOS[f].label}
+                </Button>
+              ))}
+            </div>
 
-      <main className="max-w-6xl mx-auto px-4 py-6">
-        {!loading && erro && (
-          <div className="text-center text-destructive py-20">Erro ao carregar: {erro}</div>
-        )}
-        {!loading && !erro && restrito && (
-          <div className="text-center text-muted-foreground py-20">Página restrita.</div>
-        )}
-        {loading && (
-          <div className="flex flex-wrap gap-6">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <Skeleton
-                key={i}
-                style={{ width: RENDER_W, height: RENDER_W * (FORMATOS[formato].h / FORMATOS[formato].w) }}
-              />
-            ))}
+            <span className="text-sm font-medium ml-2">Cor:</span>
+            <div className="flex gap-2">
+              {TEMAS.map((t) => (
+                <button
+                  key={t.key}
+                  type="button"
+                  onClick={() => setTemaKey(t.key)}
+                  title={t.label}
+                  aria-label={`Fundo ${t.label}`}
+                  aria-pressed={temaKey === t.key}
+                  className={`h-7 w-7 rounded-full border-2 transition ${
+                    temaKey === t.key ? "border-foreground scale-110" : "border-border"
+                  }`}
+                  style={{ background: t.swatch }}
+                />
+              ))}
+            </div>
+
+            <input
+              value={busca}
+              onChange={(e) => setBusca(e.target.value)}
+              placeholder="Buscar por título, texto ou tag…"
+              className="ml-auto h-9 w-full sm:w-72 rounded-md border border-border bg-background px-3 text-sm"
+            />
           </div>
-        )}
-        {!loading &&
-          !restrito &&
-          !erro &&
-          dados &&
-          grupos.map((g) => (
-            <Grupo key={g.titulo} titulo={g.titulo} formato={formato} itens={g.itens} busca={busca} />
-          ))}
-      </main>
-    </div>
+        </div>
+
+        <main className="max-w-6xl mx-auto px-4 py-6">
+          {!loading && erro && (
+            <div className="text-center text-destructive py-20">Erro ao carregar: {erro}</div>
+          )}
+          {!loading && !erro && restrito && (
+            <div className="text-center text-muted-foreground py-20">Página restrita.</div>
+          )}
+          {loading && (
+            <div className="flex flex-wrap gap-6">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <Skeleton
+                  key={i}
+                  style={{ width: RENDER_W, height: RENDER_W * (FORMATOS[formato].h / FORMATOS[formato].w) }}
+                />
+              ))}
+            </div>
+          )}
+          {!loading &&
+            !restrito &&
+            !erro &&
+            dados &&
+            grupos.map((g) => (
+              <Grupo key={g.titulo} titulo={g.titulo} formato={formato} itens={g.itens} busca={busca} />
+            ))}
+        </main>
+      </div>
+    </TemaCtx.Provider>
   );
+
 };
 
 export default AdminMockups;
