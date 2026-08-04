@@ -974,6 +974,12 @@ const AdminMockups = () => {
               </Button>
             ))}
           </div>
+          <input
+            value={busca}
+            onChange={(e) => setBusca(e.target.value)}
+            placeholder="Buscar por título, texto ou tag…"
+            className="ml-auto h-9 w-full sm:w-72 rounded-md border border-border bg-background px-3 text-sm"
+          />
         </div>
       </div>
 
