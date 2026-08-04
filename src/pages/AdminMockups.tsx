@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import AdminNav from "@/components/admin/AdminNav";
 import { Button } from "@/components/ui/button";
@@ -23,11 +23,80 @@ const CORAL = "#FF7676";
 const DOURADO = "#E0A020";
 const AZUL = "#6A88FB";
 
+// ---------- temas de fundo (variação de cor entre cards) ----------
+type Tema = {
+  key: string;
+  label: string;
+  swatch: string;
+  bg: string;
+  texto: string;
+  escuro: boolean;
+  /** filtro aplicado ao símbolo do Portal; null = cores originais */
+  logoFilter: string | null;
+};
+
+const TEMAS: Tema[] = [
+  {
+    key: "creme",
+    label: "Creme",
+    swatch: CREME,
+    bg: CREME,
+    texto: TINTA,
+    escuro: false,
+    logoFilter: "brightness(0.28)",
+  },
+  {
+    key: "roxo",
+    label: "Roxo",
+    swatch: TINTA,
+    bg: `linear-gradient(165deg, #453D70 0%, ${TINTA} 55%, #241F3E 100%)`,
+    texto: CREME,
+    escuro: true,
+    logoFilter: "brightness(0) invert(1)",
+  },
+  {
+    key: "coral",
+    label: "Coral",
+    swatch: CORAL,
+    bg: `linear-gradient(165deg, #FFDCD6 0%, #FFF1EC 45%, ${CREME} 100%)`,
+    texto: TINTA,
+    escuro: false,
+    logoFilter: null,
+  },
+  {
+    key: "dourado",
+    label: "Dourado",
+    swatch: DOURADO,
+    bg: `linear-gradient(165deg, #F8E4BE 0%, #FDF3DF 45%, ${CREME} 100%)`,
+    texto: TINTA,
+    escuro: false,
+    logoFilter: null,
+  },
+  {
+    key: "azul",
+    label: "Azul",
+    swatch: AZUL,
+    bg: `linear-gradient(165deg, #DDE3FF 0%, #EFF2FF 45%, ${CREME} 100%)`,
+    texto: TINTA,
+    escuro: false,
+    logoFilter: null,
+  },
+];
+
+const TemaCtx = createContext<Tema>(TEMAS[0]);
+const useTema = () => useContext(TemaCtx);
+
+/** Cor de acento legível sobre o fundo do tema atual. */
+function acento(tema: Tema, cor: string) {
+  return tema.escuro ? tema.texto : cor;
+}
+
 const DOSHA_COLOR: Record<string, string> = {
   vata: "#6B8FE8",
   pitta: "#F0857F",
   kapha: "#57BE86",
 };
+
 
 // Área segura em px de tela (RENDER_W = 360). No story protege 13% verticais
 // (Instagram sobrepõe UI de ~250px em cima/baixo em 1920); no feed protege
@@ -82,7 +151,7 @@ async function baixarCard(el: HTMLElement, filename: string, formato: Formato) {
   const dataUrl = await toPng(el, {
     pixelRatio,
     cacheBust: true,
-    backgroundColor: CREME,
+    backgroundColor: undefined,
     width: el.offsetWidth,
     height: el.offsetHeight,
   });
@@ -133,7 +202,9 @@ function Card({
   innerRef?: (el: HTMLDivElement | null) => void;
 }) {
   const f = FORMATOS[formato];
+  const tema = useTema();
   const ratio = f.h / f.w;
+  const marcaSize = formato === "story" ? 26 : 22;
   return (
     <div
       ref={innerRef}
@@ -141,15 +212,31 @@ function Card({
       style={{
         width: RENDER_W,
         height: RENDER_W * ratio,
-        background: bg ?? CREME,
-        color: TINTA,
+        background: bg ?? tema.bg,
+        color: tema.texto,
         fontFamily: "'DM Sans', system-ui, sans-serif",
       }}
     >
+      {/* símbolo no canto superior direito */}
+      <img
+        src={LOGO}
+        width={marcaSize}
+        height={marcaSize}
+        alt=""
+        style={{
+          position: "absolute",
+          top: SAFE[formato].y - (formato === "story" ? 44 : 26),
+          right: SAFE[formato].x,
+          opacity: 0.75,
+          filter: tema.logoFilter ?? undefined,
+          zIndex: 2,
+        }}
+      />
       {children}
     </div>
   );
 }
+
 
 // bloco de conteúdo dentro da área segura (para texto/selo/rodapé)
 function SafeArea({
@@ -230,28 +317,55 @@ function Rodape({
   cta: string;
   ctaColor?: string;
 }) {
+  const tema = useTema();
   const logoSize = formato === "story" ? 22 : 18;
   const font = T[formato].rodape;
-  return (
-    <div
-      className="flex items-center justify-between w-full mt-auto"
-      style={{ paddingTop: formato === "story" ? 20 : 14, gap: 12 }}
-    >
-      <div className="flex items-center" style={{ gap: 8 }}>
-        <img
-          src={LOGO}
-          width={logoSize}
-          height={logoSize}
-          alt=""
-          style={{ filter: "brightness(0.28)" }}
-        />
-        <span style={{ fontSize: font, opacity: 0.75, color: TINTA }}>portalayurveda.com</span>
+  const cor = acento(tema, ctaColor);
+
+  const marca = (
+    <div className="flex items-center" style={{ gap: 8 }}>
+      <img
+        src={LOGO}
+        width={logoSize}
+        height={logoSize}
+        alt=""
+        style={{ filter: tema.logoFilter ?? undefined }}
+      />
+      <span style={{ fontSize: font, opacity: 0.75, color: tema.texto }}>portalayurveda.com</span>
+    </div>
+  );
+
+  // No Story o CTA fica junto da marca (canto inferior esquerdo), menor e com
+  // seta diagonal — deixa a faixa de baixo livre pro sticker de link do Instagram.
+  if (formato === "story") {
+    return (
+      <div className="w-full mt-auto" style={{ paddingTop: 20 }}>
+        {marca}
+        <div
+          style={{
+            fontSize: font - 1,
+            fontWeight: 700,
+            color: cor,
+            textTransform: "lowercase",
+            letterSpacing: 0.3,
+            marginTop: 4,
+            marginLeft: logoSize + 8,
+          }}
+        >
+          {cta} ↘
+        </div>
       </div>
+    );
+  }
+
+  return (
+    <div className="flex items-center justify-between w-full mt-auto" style={{ paddingTop: 14, gap: 12 }}>
+      {marca}
       <span
         style={{
           fontSize: font,
           fontWeight: 700,
-          color: ctaColor,
+          color: cor,
           textTransform: "lowercase",
           letterSpacing: 0.3,
         }}
@@ -261,6 +375,7 @@ function Rodape({
     </div>
   );
 }
+
 
 // ---------- tipos ----------
 type Dados = {
@@ -282,7 +397,9 @@ type Dados = {
 
 // ---------- cards ----------
 function CardClima({ m, testesTotal, formato }: { m: any; testesTotal: number; formato: Formato }) {
+  const tema = useTema();
   if (!m) return null;
+
   const agr = (m.dosha_agravando || "vata").toLowerCase();
   const color = DOSHA_COLOR[agr] || CORAL;
   const sintomas = normalizarSintomas(m[`sintoma_${agr}`]);
@@ -312,7 +429,11 @@ function CardClima({ m, testesTotal, formato }: { m: any; testesTotal: number; f
   };
 
   return (
-    <Card formato={formato} bg={`linear-gradient(160deg, ${color}22, ${CREME} 60%)`}>
+    <Card
+      formato={formato}
+      bg={tema.key === "creme" ? `linear-gradient(160deg, ${color}22, ${CREME} 60%)` : undefined}
+    >
+
       <SafeArea formato={formato}>
         <Eyebrow formato={formato}>Clima × Doshas</Eyebrow>
         <div
@@ -453,7 +574,9 @@ function normalizarTags(v: unknown, max = 3): string[] {
 }
 
 function Chips({ tags, formato, color }: { tags: string[]; formato: Formato; color: string }) {
+  const tema = useTema();
   if (!tags.length) return null;
+  const c = acento(tema, color);
   return (
     <div className="flex flex-wrap" style={{ gap: 6, marginTop: 14 }}>
       {tags.map((tag, i) => (
@@ -462,9 +585,9 @@ function Chips({ tags, formato, color }: { tags: string[]; formato: Formato; col
           style={{
             fontSize: T[formato].rotulo - 1,
             fontWeight: 600,
-            color,
-            border: `1px solid ${color}55`,
-            background: `${color}14`,
+            color: c,
+            border: `1px solid ${c}55`,
+            background: `${c}14`,
             borderRadius: 999,
             padding: formato === "story" ? "4px 10px" : "3px 9px",
             lineHeight: 1.2,
@@ -504,10 +627,13 @@ function CardConteudo({
   fallbackBg?: string;
 }) {
   const t = T[formato];
+  const story = formato === "story";
   const larguraUtil = RENDER_W - SAFE[formato].x * 2;
-  const tSize = tituloSize(titulo, t);
-  const alturaFoto = formato === "story" ? "40%" : "34%";
-  const linhasDesc = formato === "story" ? 4 : 3;
+  // No story o texto ganha escala maior e a foto cresce ocupando o espaço que
+  // sobra — evita o vão vazio entre bloco de texto e imagem.
+  const tSize = tituloSize(titulo, t) + (story ? 5 : 0);
+  const corpoSize = story ? t.corpo + 2 : t.corpo;
+  const linhasDesc = story ? 7 : 3;
 
   return (
     <Card formato={formato}>
@@ -531,13 +657,13 @@ function CardConteudo({
         {descricao ? (
           <div
             style={{
-              fontSize: t.corpo,
+              fontSize: corpoSize,
               lineHeight: 1.5,
               opacity: 0.85,
               marginTop: 10,
             }}
           >
-            {truncar(descricao, limiteLinhas(t.corpo, larguraUtil, linhasDesc))}
+            {truncar(descricao, limiteLinhas(corpoSize, larguraUtil, linhasDesc))}
           </div>
         ) : null}
 
@@ -549,13 +675,13 @@ function CardConteudo({
           <div
             style={{
               position: "relative",
-              marginTop: "auto",
               width: "100%",
-              height: alturaFoto,
               borderRadius: 18,
               overflow: "hidden",
               background: `url(${imagem}) center/cover no-repeat, ${fallbackBg}`,
-              flexShrink: 0,
+              ...(story
+                ? { marginTop: 22, flexGrow: 1, flexShrink: 1, minHeight: "42%" }
+                : { marginTop: "auto", height: "34%", flexShrink: 0 }),
             }}
           >
             {play ? (
@@ -575,6 +701,7 @@ function CardConteudo({
         ) : (
           <div style={{ marginTop: "auto" }} />
         )}
+
 
         <Rodape formato={formato} cta={cta} ctaColor={cor} />
       </SafeArea>
@@ -749,11 +876,17 @@ function CardNumeros({ d, formato }: { d: Dados; formato: Formato }) {
 
 function CardConviteTerapeutas({ formato }: { formato: Formato }) {
   const t = T[formato];
+  const tema = useTema();
   const larguraUtil = RENDER_W - SAFE[formato].x * 2;
+  // Convite é chamada pra ação: ganha fundo com cor da marca (coral → dourado),
+  // exceto quando o tema escolhido já é escuro.
+  const bg = tema.escuro
+    ? undefined
+    : `linear-gradient(160deg, ${CORAL}3D 0%, ${DOURADO}33 45%, ${CREME} 100%)`;
   return (
-    <Card formato={formato}>
+    <Card formato={formato} bg={bg}>
       <SafeArea formato={formato}>
-        <MapPin size={formato === "story" ? 40 : 32} color={CORAL} />
+        <MapPin size={formato === "story" ? 40 : 32} color={acento(tema, CORAL)} />
         <div style={{ marginTop: 16 }}>
           <Eyebrow formato={formato}>Convite</Eyebrow>
         </div>
@@ -774,24 +907,10 @@ function CardConviteTerapeutas({ formato }: { formato: Formato }) {
             limiteLinhas(t.corpo, larguraUtil, 4),
           )}
         </div>
-        <div
-          style={{
-            marginTop: 20,
-            padding: "10px 12px",
-            background: TINTA,
-            color: CREME,
-            fontSize: t.rodape,
-            fontFamily: "monospace",
-            wordBreak: "break-all",
-            alignSelf: "flex-start",
-            borderRadius: 4,
-          }}
-        >
-          portalayurveda.com/terapeutas-do-brasil/cadastro
-        </div>
         <Rodape formato={formato} cta="cadastre-se" ctaColor={CORAL} />
       </SafeArea>
     </Card>
+
   );
 }
 
@@ -844,6 +963,9 @@ function Grupo({
 // ---------- página ----------
 const AdminMockups = () => {
   const [formato, setFormato] = useState<Formato>("story");
+  const [temaKey, setTemaKey] = useState<string>(TEMAS[0].key);
+  const tema = TEMAS.find((t) => t.key === temaKey) ?? TEMAS[0];
+
   const [busca, setBusca] = useState("");
   const [dados, setDados] = useState<Dados | null>(null);
   const [restrito, setRestrito] = useState(false);
@@ -958,59 +1080,81 @@ const AdminMockups = () => {
   }, [dados, formato]);
 
   return (
-    <div className="min-h-screen bg-background">
-      <AdminNav />
-      <div className="sticky top-[64px] z-[5] bg-card/80 backdrop-blur border-b border-border">
-        <div className="max-w-6xl mx-auto px-4 py-3 flex flex-wrap items-center gap-3">
-          <span className="text-sm font-medium">Formato:</span>
-          <div className="flex gap-2">
-            {(Object.keys(FORMATOS) as Formato[]).map((f) => (
-              <Button
-                key={f}
-                size="sm"
-                variant={formato === f ? "default" : "outline"}
-                onClick={() => setFormato(f)}
-              >
-                {FORMATOS[f].label}
-              </Button>
-            ))}
-          </div>
-          <input
-            value={busca}
-            onChange={(e) => setBusca(e.target.value)}
-            placeholder="Buscar por título, texto ou tag…"
-            className="ml-auto h-9 w-full sm:w-72 rounded-md border border-border bg-background px-3 text-sm"
-          />
-        </div>
-      </div>
+    <TemaCtx.Provider value={tema}>
+      <div className="min-h-screen bg-background">
+        <AdminNav />
+        <div className="sticky top-[64px] z-[5] bg-card/80 backdrop-blur border-b border-border">
+          <div className="max-w-6xl mx-auto px-4 py-3 flex flex-wrap items-center gap-3">
+            <span className="text-sm font-medium">Formato:</span>
+            <div className="flex gap-2">
+              {(Object.keys(FORMATOS) as Formato[]).map((f) => (
+                <Button
+                  key={f}
+                  size="sm"
+                  variant={formato === f ? "default" : "outline"}
+                  onClick={() => setFormato(f)}
+                >
+                  {FORMATOS[f].label}
+                </Button>
+              ))}
+            </div>
 
-      <main className="max-w-6xl mx-auto px-4 py-6">
-        {!loading && erro && (
-          <div className="text-center text-destructive py-20">Erro ao carregar: {erro}</div>
-        )}
-        {!loading && !erro && restrito && (
-          <div className="text-center text-muted-foreground py-20">Página restrita.</div>
-        )}
-        {loading && (
-          <div className="flex flex-wrap gap-6">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <Skeleton
-                key={i}
-                style={{ width: RENDER_W, height: RENDER_W * (FORMATOS[formato].h / FORMATOS[formato].w) }}
-              />
-            ))}
+            <span className="text-sm font-medium ml-2">Cor:</span>
+            <div className="flex gap-2">
+              {TEMAS.map((t) => (
+                <button
+                  key={t.key}
+                  type="button"
+                  onClick={() => setTemaKey(t.key)}
+                  title={t.label}
+                  aria-label={`Fundo ${t.label}`}
+                  aria-pressed={temaKey === t.key}
+                  className={`h-7 w-7 rounded-full border-2 transition ${
+                    temaKey === t.key ? "border-foreground scale-110" : "border-border"
+                  }`}
+                  style={{ background: t.swatch }}
+                />
+              ))}
+            </div>
+
+            <input
+              value={busca}
+              onChange={(e) => setBusca(e.target.value)}
+              placeholder="Buscar por título, texto ou tag…"
+              className="ml-auto h-9 w-full sm:w-72 rounded-md border border-border bg-background px-3 text-sm"
+            />
           </div>
-        )}
-        {!loading &&
-          !restrito &&
-          !erro &&
-          dados &&
-          grupos.map((g) => (
-            <Grupo key={g.titulo} titulo={g.titulo} formato={formato} itens={g.itens} busca={busca} />
-          ))}
-      </main>
-    </div>
+        </div>
+
+        <main className="max-w-6xl mx-auto px-4 py-6">
+          {!loading && erro && (
+            <div className="text-center text-destructive py-20">Erro ao carregar: {erro}</div>
+          )}
+          {!loading && !erro && restrito && (
+            <div className="text-center text-muted-foreground py-20">Página restrita.</div>
+          )}
+          {loading && (
+            <div className="flex flex-wrap gap-6">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <Skeleton
+                  key={i}
+                  style={{ width: RENDER_W, height: RENDER_W * (FORMATOS[formato].h / FORMATOS[formato].w) }}
+                />
+              ))}
+            </div>
+          )}
+          {!loading &&
+            !restrito &&
+            !erro &&
+            dados &&
+            grupos.map((g) => (
+              <Grupo key={g.titulo} titulo={g.titulo} formato={formato} itens={g.itens} busca={busca} />
+            ))}
+        </main>
+      </div>
+    </TemaCtx.Provider>
   );
+
 };
 
 export default AdminMockups;
