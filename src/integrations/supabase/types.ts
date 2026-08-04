@@ -280,6 +280,7 @@ export type Database = {
           canceled_at: string | null
           created_at: string
           email: string
+          email_falha_enviado_em: string | null
           id: string
           nome: string | null
           plano: string
@@ -295,6 +296,7 @@ export type Database = {
           canceled_at?: string | null
           created_at?: string
           email: string
+          email_falha_enviado_em?: string | null
           id?: string
           nome?: string | null
           plano: string
@@ -310,6 +312,7 @@ export type Database = {
           canceled_at?: string | null
           created_at?: string
           email?: string
+          email_falha_enviado_em?: string | null
           id?: string
           nome?: string | null
           plano?: string
@@ -3705,6 +3708,168 @@ export type Database = {
           workflow_ativo?: boolean
           workflow_id?: string
           workflow_name?: string
+        }
+        Relationships: []
+      }
+      newsletter_dosha_estacao: {
+        Row: {
+          dosha_alvo: string
+          estacao: string
+          id: string
+          mes_fim: number
+          mes_inicio: number
+          tag_correspondente: string
+        }
+        Insert: {
+          dosha_alvo: string
+          estacao: string
+          id?: string
+          mes_fim: number
+          mes_inicio: number
+          tag_correspondente: string
+        }
+        Update: {
+          dosha_alvo?: string
+          estacao?: string
+          id?: string
+          mes_fim?: number
+          mes_inicio?: number
+          tag_correspondente?: string
+        }
+        Relationships: []
+      }
+      newsletter_edicao_artigos: {
+        Row: {
+          edicao_id: string
+          estagio_id: string
+          id: string
+          link_do_artigo: string
+        }
+        Insert: {
+          edicao_id: string
+          estagio_id: string
+          id?: string
+          link_do_artigo: string
+        }
+        Update: {
+          edicao_id?: string
+          estagio_id?: string
+          id?: string
+          link_do_artigo?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "newsletter_edicao_artigos_edicao_id_fkey"
+            columns: ["edicao_id"]
+            isOneToOne: false
+            referencedRelation: "newsletter_edicoes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "newsletter_edicao_artigos_estagio_id_fkey"
+            columns: ["estagio_id"]
+            isOneToOne: false
+            referencedRelation: "newsletter_estagios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      newsletter_edicoes: {
+        Row: {
+          akasha_titulo: string | null
+          assunto: string | null
+          destinatario_email: string | null
+          dosha_foco: string | null
+          enviado_em: string
+          glossario_termo: string | null
+          id: string
+          numero_edicao: number | null
+          produto_destaque_slug: string | null
+          tipo: string
+        }
+        Insert: {
+          akasha_titulo?: string | null
+          assunto?: string | null
+          destinatario_email?: string | null
+          dosha_foco?: string | null
+          enviado_em?: string
+          glossario_termo?: string | null
+          id?: string
+          numero_edicao?: number | null
+          produto_destaque_slug?: string | null
+          tipo: string
+        }
+        Update: {
+          akasha_titulo?: string | null
+          assunto?: string | null
+          destinatario_email?: string | null
+          dosha_foco?: string | null
+          enviado_em?: string
+          glossario_termo?: string | null
+          id?: string
+          numero_edicao?: number | null
+          produto_destaque_slug?: string | null
+          tipo?: string
+        }
+        Relationships: []
+      }
+      newsletter_estagios: {
+        Row: {
+          ativo: boolean
+          created_at: string
+          descricao: string | null
+          id: string
+          nome: string
+          ordem: number
+          tags_alvo: string[]
+        }
+        Insert: {
+          ativo?: boolean
+          created_at?: string
+          descricao?: string | null
+          id?: string
+          nome: string
+          ordem: number
+          tags_alvo: string[]
+        }
+        Update: {
+          ativo?: boolean
+          created_at?: string
+          descricao?: string | null
+          id?: string
+          nome?: string
+          ordem?: number
+          tags_alvo?: string[]
+        }
+        Relationships: []
+      }
+      newsletter_produto_destaque: {
+        Row: {
+          ativo: boolean
+          ativo_desde: string
+          created_at: string
+          id: string
+          motivo: string
+          produto_slug: string
+          publico_alvo: string
+        }
+        Insert: {
+          ativo?: boolean
+          ativo_desde?: string
+          created_at?: string
+          id?: string
+          motivo: string
+          produto_slug: string
+          publico_alvo?: string
+        }
+        Update: {
+          ativo?: boolean
+          ativo_desde?: string
+          created_at?: string
+          id?: string
+          motivo?: string
+          produto_slug?: string
+          publico_alvo?: string
         }
         Relationships: []
       }
