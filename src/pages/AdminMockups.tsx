@@ -267,9 +267,16 @@ type Dados = {
   metricas: any;
   testes_total: number;
   conversas: { pergunta: string; resposta: string }[];
-  videos: { titulo: string; resumo: string; thumb: string; slug: string }[];
-  artigos: { titulo: string; resumo: string; imagem: string; slug: string }[];
-  receitas: { titulo: string; imagem: string; resumo: string; efeito: string; ingredientes: string }[];
+  videos: { titulo: string; resumo: string; thumb: string; slug: string; tags?: string | null }[];
+  artigos: { titulo: string; resumo: string; imagem: string; slug: string; tags?: string | null }[];
+  receitas: {
+    titulo: string;
+    imagem: string;
+    resumo: string;
+    efeito: string;
+    ingredientes: string;
+    tags?: string[] | null;
+  }[];
   cursos: { titulo: string; capa: string; slug: string; aulas: number }[];
 };
 
