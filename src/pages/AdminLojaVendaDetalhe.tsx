@@ -223,6 +223,14 @@ const AdminLojaVendaDetalhe = () => {
     (acc, it) => acc + (Number(it.peso_gramas) || 0) * Number(it.quantidade),
     0,
   );
+  const subtotalItens = pedido.itens.reduce(
+    (acc, it) =>
+      acc + Number(it.preco_unitario ?? it.preco_pix ?? 0) * Number(it.quantidade),
+    0,
+  );
+  const descontoCupom = pedido.cupom_codigo
+    ? Number(pedido.desconto_aplicado ?? subtotalItens - Number(pedido.subtotal ?? 0)) || 0
+    : 0;
 
   return (
     <>
