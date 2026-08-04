@@ -568,7 +568,9 @@ function normalizarTags(v: unknown, max = 3): string[] {
 }
 
 function Chips({ tags, formato, color }: { tags: string[]; formato: Formato; color: string }) {
+  const tema = useTema();
   if (!tags.length) return null;
+  const c = acento(tema, color);
   return (
     <div className="flex flex-wrap" style={{ gap: 6, marginTop: 14 }}>
       {tags.map((tag, i) => (
@@ -577,9 +579,9 @@ function Chips({ tags, formato, color }: { tags: string[]; formato: Formato; col
           style={{
             fontSize: T[formato].rotulo - 1,
             fontWeight: 600,
-            color,
-            border: `1px solid ${color}55`,
-            background: `${color}14`,
+            color: c,
+            border: `1px solid ${c}55`,
+            background: `${c}14`,
             borderRadius: 999,
             padding: formato === "story" ? "4px 10px" : "3px 9px",
             lineHeight: 1.2,
@@ -619,10 +621,13 @@ function CardConteudo({
   fallbackBg?: string;
 }) {
   const t = T[formato];
+  const story = formato === "story";
   const larguraUtil = RENDER_W - SAFE[formato].x * 2;
-  const tSize = tituloSize(titulo, t);
-  const alturaFoto = formato === "story" ? "40%" : "34%";
-  const linhasDesc = formato === "story" ? 4 : 3;
+  // No story o texto ganha escala maior e a foto cresce ocupando o espaço que
+  // sobra — evita o vão vazio entre bloco de texto e imagem.
+  const tSize = tituloSize(titulo, t) + (story ? 5 : 0);
+  const corpoSize = story ? t.corpo + 2 : t.corpo;
+  const linhasDesc = story ? 7 : 3;
 
   return (
     <Card formato={formato}>
@@ -646,13 +651,13 @@ function CardConteudo({
         {descricao ? (
           <div
             style={{
-              fontSize: t.corpo,
+              fontSize: corpoSize,
               lineHeight: 1.5,
               opacity: 0.85,
               marginTop: 10,
             }}
           >
-            {truncar(descricao, limiteLinhas(t.corpo, larguraUtil, linhasDesc))}
+            {truncar(descricao, limiteLinhas(corpoSize, larguraUtil, linhasDesc))}
           </div>
         ) : null}
 
@@ -664,13 +669,13 @@ function CardConteudo({
           <div
             style={{
               position: "relative",
-              marginTop: "auto",
               width: "100%",
-              height: alturaFoto,
               borderRadius: 18,
               overflow: "hidden",
               background: `url(${imagem}) center/cover no-repeat, ${fallbackBg}`,
-              flexShrink: 0,
+              ...(story
+                ? { marginTop: 22, flexGrow: 1, flexShrink: 1, minHeight: "42%" }
+                : { marginTop: "auto", height: "34%", flexShrink: 0 }),
             }}
           >
             {play ? (
@@ -690,6 +695,7 @@ function CardConteudo({
         ) : (
           <div style={{ marginTop: "auto" }} />
         )}
+
 
         <Rodape formato={formato} cta={cta} ctaColor={cor} />
       </SafeArea>
