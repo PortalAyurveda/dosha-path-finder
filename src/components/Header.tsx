@@ -450,6 +450,17 @@ const Header = () => {
               <CalendarHeart className="h-[18px] w-[18px] text-secondary" strokeWidth={2.2} />
             </Link>
           )}
+          {profile?.subscription_status !== "active" && (
+            <Link to="/assinar" className={`hidden lg:block ${searchOpen ? "lg:hidden" : ""}`}>
+              <Button
+                size="sm"
+                className="font-semibold text-white hover:brightness-95"
+                style={{ backgroundColor: "#E8806A" }}
+              >
+                Assinar
+              </Button>
+            </Link>
+          )}
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
