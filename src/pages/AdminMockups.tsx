@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import AdminNav from "@/components/admin/AdminNav";
 import { Button } from "@/components/ui/button";
@@ -23,11 +23,80 @@ const CORAL = "#FF7676";
 const DOURADO = "#E0A020";
 const AZUL = "#6A88FB";
 
+// ---------- temas de fundo (variação de cor entre cards) ----------
+type Tema = {
+  key: string;
+  label: string;
+  swatch: string;
+  bg: string;
+  texto: string;
+  escuro: boolean;
+  /** filtro aplicado ao símbolo do Portal; null = cores originais */
+  logoFilter: string | null;
+};
+
+const TEMAS: Tema[] = [
+  {
+    key: "creme",
+    label: "Creme",
+    swatch: CREME,
+    bg: CREME,
+    texto: TINTA,
+    escuro: false,
+    logoFilter: "brightness(0.28)",
+  },
+  {
+    key: "roxo",
+    label: "Roxo",
+    swatch: TINTA,
+    bg: `linear-gradient(165deg, #453D70 0%, ${TINTA} 55%, #241F3E 100%)`,
+    texto: CREME,
+    escuro: true,
+    logoFilter: "brightness(0) invert(1)",
+  },
+  {
+    key: "coral",
+    label: "Coral",
+    swatch: CORAL,
+    bg: `linear-gradient(165deg, #FFDCD6 0%, #FFF1EC 45%, ${CREME} 100%)`,
+    texto: TINTA,
+    escuro: false,
+    logoFilter: null,
+  },
+  {
+    key: "dourado",
+    label: "Dourado",
+    swatch: DOURADO,
+    bg: `linear-gradient(165deg, #F8E4BE 0%, #FDF3DF 45%, ${CREME} 100%)`,
+    texto: TINTA,
+    escuro: false,
+    logoFilter: null,
+  },
+  {
+    key: "azul",
+    label: "Azul",
+    swatch: AZUL,
+    bg: `linear-gradient(165deg, #DDE3FF 0%, #EFF2FF 45%, ${CREME} 100%)`,
+    texto: TINTA,
+    escuro: false,
+    logoFilter: null,
+  },
+];
+
+const TemaCtx = createContext<Tema>(TEMAS[0]);
+const useTema = () => useContext(TemaCtx);
+
+/** Cor de acento legível sobre o fundo do tema atual. */
+function acento(tema: Tema, cor: string) {
+  return tema.escuro ? tema.texto : cor;
+}
+
 const DOSHA_COLOR: Record<string, string> = {
   vata: "#6B8FE8",
   pitta: "#F0857F",
   kapha: "#57BE86",
 };
+
 
 // Área segura em px de tela (RENDER_W = 360). No story protege 13% verticais
 // (Instagram sobrepõe UI de ~250px em cima/baixo em 1920); no feed protege
