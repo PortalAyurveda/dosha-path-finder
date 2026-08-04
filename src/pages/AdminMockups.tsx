@@ -800,18 +800,27 @@ function Grupo({
   titulo,
   formato,
   itens,
+  busca,
 }: {
   titulo: string;
   formato: Formato;
-  itens: { key: string; filename: string; node: React.ReactNode }[];
+  itens: { key: string; filename: string; texto?: string; node: React.ReactNode }[];
+  busca?: string;
 }) {
   const refs = useRef<Record<string, HTMLDivElement | null>>({});
-  if (!itens.length) return null;
+  const q = (busca || "").trim().toLowerCase();
+  const visiveis = q
+    ? itens.filter(
+        (it) =>
+          (it.texto || "").toLowerCase().includes(q) || titulo.toLowerCase().includes(q),
+      )
+    : itens;
+  if (!visiveis.length) return null;
   return (
     <section className="mb-10">
       <h2 className="text-lg font-heading font-bold text-foreground mb-4">{titulo}</h2>
       <div className="flex flex-wrap gap-6">
-        {itens.map((it) => (
+        {visiveis.map((it) => (
           <div key={it.key} className="flex flex-col gap-2">
             <div ref={(el) => (refs.current[it.key] = el)}>{it.node}</div>
             <Button
