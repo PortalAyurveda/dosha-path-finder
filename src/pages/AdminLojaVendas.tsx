@@ -42,6 +42,8 @@ export interface Pedido {
   comprador_cpf: string | null;
   total: number;
   subtotal: number;
+  cupom_codigo?: string | null;
+  desconto_aplicado?: number | null;
   frete_valor: number;
   frete_servico: string | null;
   frete_servico_id: number | null;
