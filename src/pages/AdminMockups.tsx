@@ -914,6 +914,7 @@ const AdminMockups = () => {
         itens: (dados.conversas || []).map((c, i) => ({
           key: `conv-${i}`,
           filename: `akasha-${i + 1}-${formato}.png`,
+          texto: `${c.pergunta} ${c.resposta}`,
           node: <CardConversa p={c.pergunta} r={c.resposta} formato={formato} />,
         })),
       },
@@ -922,6 +923,7 @@ const AdminMockups = () => {
         itens: (dados.receitas || []).map((r, i) => ({
           key: `rec-${i}`,
           filename: `receita-${i + 1}-${formato}.png`,
+          texto: `${r.titulo} ${r.resumo || ""} ${(r.tags || []).join(" ")}`,
           node: <CardReceita r={r} formato={formato} />,
         })),
       },
@@ -930,6 +932,7 @@ const AdminMockups = () => {
         itens: (dados.videos || []).map((v, i) => ({
           key: `vid-${i}`,
           filename: `video-${i + 1}-${formato}.png`,
+          texto: `${v.titulo} ${v.resumo || ""} ${v.tags || ""}`,
           node: <CardVideo v={v} formato={formato} />,
         })),
       },
@@ -938,6 +941,7 @@ const AdminMockups = () => {
         itens: (dados.artigos || []).map((a, i) => ({
           key: `art-${i}`,
           filename: `artigo-${i + 1}-${formato}.png`,
+          texto: `${a.titulo} ${a.resumo || ""} ${a.tags || ""}`,
           node: <CardArtigo a={a} formato={formato} />,
         })),
       },
