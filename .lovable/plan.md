@@ -1,30 +1,50 @@
-## Varredura por auto-mensagem da Akasha
+# Mockups para Story: novo arranjo de card
 
-Rodei uma busca ampla em `src/` e `supabase/` pelos padrões pedidos: `"Acabei de chegar"`, `"vim conhecer você"`, `"Vamos conversar"`, `"Vi que seu dosha agravado"`, `sendInitialMessage`, `__INICIO` e qualquer `fetch` para `/webhook/chat-ayurveda`.
+Reformular a seção `/admin/mockups` para gerar cards de Instagram no arranjo pedido: **título → descrição → tags → foto embaixo**, com foto ocupando a base do card. Vale para Story (1080×1920) e Feed (1080×1350).
 
-### Ocorrências encontradas
+## O que muda visualmente
 
-**1. Fluxo do reteste (fora do escopo — mantém)**
-- `src/components/reteste/RetesteChat.tsx:63` — `const sendInitialMessage = useCallback(...)`
-- `src/components/reteste/RetesteChat.tsx:72` — payload `message: "__INICIO_RETESTE__"`
-- `src/components/reteste/RetesteChat.tsx:99` — `sendInitialMessage()` no mount
-- `src/components/reteste/RetesteChat.tsx:101` — dependências do effect
+Os cards de **Artigo**, **Vídeo** e **Receita** passam a ter uma estrutura única e consistente:
 
-Você pediu explicitamente para **não tocar no RetesteChat**. Ele usa outro webhook (`/webhook/reteste-dosha`), não `chat-ayurveda`. Fica como está.
+```text
+┌──────────────────────────┐
+│  (área segura do topo)   │
+│  SELO (Artigo/Vídeo/     │
+│        Receita)          │
+│                          │
+│  Título grande (serif)   │
+│  Descrição curta         │
+│                          │
+│  [tag] [tag] [tag]       │
+│                          │
+│  ┌────────────────────┐  │
+│  │                    │  │
+│  │       FOTO         │  │
+│  │  (cantos suaves)   │  │
+│  └────────────────────┘  │
+│  logo · portalayurveda   │
+│              cta →       │
+└──────────────────────────┘
+```
 
-**2. Chat Akasha (FloatingAkasha e AkashaTab)**
-- `src/components/akasha/FloatingAkasha.tsx:136` — `fetch(WEBHOOK_URL, ...)` dentro de `useQuery`
-- `src/components/meudosha/AkashaTab.tsx:112` — `fetch(WEBHOOK_URL, ...)` dentro de `useQuery`
+- A foto vira um bloco com cantos arredondados dentro da área segura, não mais uma faixa sangrada no topo.
+- No vídeo, o botão de play continua sobre a foto (agora na base).
+- Altura da foto: ~40% no Story, ~34% no Feed, com o texto acima ocupando o espaço restante — sem cortes nem sobras estranhas.
+- Tags: até 3 chips discretos, só quando o conteúdo tem tags. Artigos e vídeos guardam tags como texto separado por vírgula; receitas guardam como lista. Os emojis presentes nas tags são removidos para o chip ficar limpo.
+- Título e descrição continuam com truncagem automática por tamanho, para nunca estourar o card.
 
-Ambos os `fetch` disparam apenas com `body: { action: "get_history", session_id }` — é **leitura de histórico**, não envia mensagem de usuário nem cria turno novo no agente. Não há mais nenhum `sendInitialMessage`, nenhuma bolha automática, nenhum `__INICIO*` e nenhum texto tipo "Acabei de chegar" / "vim conhecer você" / "Vi que seu dosha agravado" em nenhum lugar do projeto.
+## Escolher o que exportar
 
-### Conclusão
+- Cada grupo (Artigos, Vídeos, Receitas, Conversas) passa a trazer **6 opções**.
+- Um campo de busca no topo filtra os cards por título/texto em todos os grupos ao mesmo tempo.
+- O restante da página (Clima, Números, Convite terapeutas, Cursos, botão Baixar PNG, seletor de formato) permanece igual.
 
-**Está limpo.** O auto-trigger da Akasha (chat-ayurveda) já foi removido em passes anteriores — não sobrou nada para apagar. A Akasha só fala depois que o usuário mandar a 1ª mensagem via `sendMessage`. O único disparo automático que ainda existe é o do RetesteChat, que você mandou preservar.
+## Detalhes técnicos
 
-### Ação proposta
-
-Nenhuma alteração de código. Se você quiser, posso ainda assim:
-- (opcional) Renomear/comentar os `useQuery` de `get_history` para deixar explícito no código que são "read-only, não geram turno".
-
-Confirma que não precisa mexer em nada?
+1. **Banco** — `mockups_dados()` (função SQL) passa a retornar também `tags` para artigos (`portal_conteudo.tags`), vídeos (`videos_canonicos.tags`) e receitas (`rotina_nuggets.tags`), e o limite de vídeos/artigos/receitas fica em 6 cada. Alteração via migração, sem mudança de schema de tabela.
+2. **`src/pages/AdminMockups.tsx`**
+   - Novo componente compartilhado `CardConteudo` (selo, título, descrição, chips de tags, foto na base, rodapé), usado por `CardArtigo`, `CardVideo` e `CardReceita`, cada um passando cor de selo/CTA e conteúdo próprio (receita mantém "pra que serve" quando cabe).
+   - Novo helper `normalizarTags` (aceita string separada por vírgula ou array, tira emojis/`#`, corta em 3).
+   - Novo componente `Chips` para renderizar as tags.
+   - Estado `busca` + input no header sticky; `Grupo` filtra itens por um campo `texto` de busca.
+   - Exportação PNG não muda (mesmo `pixelRatio`, mesmas dimensões finais).
