@@ -137,10 +137,17 @@ const Auth = () => {
     const options: any = { shouldCreateUser: true, data: { contexto } };
     if (contexto === "magiclink") {
       const idParaClaim = searchParams.get("claim") || localStorage.getItem("activeDoshaId");
+      const redirectParam =
+        sanitizeRedirect(searchParams.get("redirect")) ||
+        sanitizeRedirect(localStorage.getItem(REDIRECT_STORAGE_KEY));
+      const sufixoRedirect = redirectParam ? `redirect=${encodeURIComponent(redirectParam)}` : "";
       options.emailRedirectTo = idParaClaim
-        ? `${window.location.origin}/entrar?claim=${idParaClaim}`
-        : `${window.location.origin}/entrar?src=m`;
+        ? `${window.location.origin}/entrar?claim=${idParaClaim}${sufixoRedirect ? `&${sufixoRedirect}` : ""}`
+        : sufixoRedirect
+          ? `${window.location.origin}/entrar?${sufixoRedirect}`
+          : `${window.location.origin}/entrar?src=m`;
     }
+
     try {
       await supabase.functions.invoke("preparar-login", { body: { email, contexto } });
     } catch (_) { /* não bloquear o login */ }
