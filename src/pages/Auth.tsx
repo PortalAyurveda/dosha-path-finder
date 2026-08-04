@@ -9,7 +9,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Mail, Sparkles, ArrowLeft, Info } from "lucide-react";
+import { isInAppBrowser } from "@/lib/inAppBrowser";
+import { Loader2, Mail, Sparkles, ArrowLeft, Copy, ExternalLink } from "lucide-react";
+
+const REDIRECT_STORAGE_KEY = "pendingLoginRedirect";
+
+const sanitizeRedirect = (value: string | null | undefined) =>
+  value && value.startsWith("/") && !value.startsWith("//") ? value : null;
 
 const Auth = () => {
   const [email, setEmail] = useState("");
@@ -19,21 +25,20 @@ const Auth = () => {
   const [googleLoading, setGoogleLoading] = useState(false);
   const [resending, setResending] = useState(false);
   const [waitingForDosha, setWaitingForDosha] = useState(false);
+  const [copiado, setCopiado] = useState(false);
 
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { user, doshaResult } = useUser();
   const { toast } = useToast();
 
-  const isInstagram = useMemo(
-    () => typeof navigator !== "undefined" && /Instagram/i.test(navigator.userAgent),
-    []
-  );
+  const isInstagram = useMemo(() => isInAppBrowser(), []);
 
   const getIsMicrosoftEmail = (mail: string) => {
     const dominio = mail.split("@")[1]?.toLowerCase() ?? "";
     return /(outlook|hotmail|live|msn)\./.test(dominio);
   };
+
 
   useEffect(() => {
     if (user && !waitingForDosha) {
@@ -41,14 +46,18 @@ const Auth = () => {
     }
   }, [user]);
 
+  // Guarda o destino pretendido como rede de segurança (caso a URL de volta o perca)
+  useEffect(() => {
+    const r = sanitizeRedirect(searchParams.get("redirect"));
+    if (r) localStorage.setItem(REDIRECT_STORAGE_KEY, r);
+  }, [searchParams]);
+
   useEffect(() => {
     if (!waitingForDosha) return;
-    const redirectParam = searchParams.get("redirect");
-    const safeRedirect =
-      redirectParam && redirectParam.startsWith("/") && !redirectParam.startsWith("//")
-        ? redirectParam
-        : null;
+    const stored = sanitizeRedirect(localStorage.getItem(REDIRECT_STORAGE_KEY));
+    const safeRedirect = sanitizeRedirect(searchParams.get("redirect")) || stored;
     if (safeRedirect) {
+      localStorage.removeItem(REDIRECT_STORAGE_KEY);
       navigate(safeRedirect, { replace: true });
       return;
     }
@@ -62,6 +71,7 @@ const Auth = () => {
     }, 3000);
     return () => clearTimeout(timer);
   }, [waitingForDosha, doshaResult, navigate]);
+
 
 
   useEffect(() => {
@@ -127,10 +137,17 @@ const Auth = () => {
     const options: any = { shouldCreateUser: true, data: { contexto } };
     if (contexto === "magiclink") {
       const idParaClaim = searchParams.get("claim") || localStorage.getItem("activeDoshaId");
+      const redirectParam =
+        sanitizeRedirect(searchParams.get("redirect")) ||
+        sanitizeRedirect(localStorage.getItem(REDIRECT_STORAGE_KEY));
+      const sufixoRedirect = redirectParam ? `redirect=${encodeURIComponent(redirectParam)}` : "";
       options.emailRedirectTo = idParaClaim
-        ? `${window.location.origin}/entrar?claim=${idParaClaim}`
-        : `${window.location.origin}/entrar?src=m`;
+        ? `${window.location.origin}/entrar?claim=${idParaClaim}${sufixoRedirect ? `&${sufixoRedirect}` : ""}`
+        : sufixoRedirect
+          ? `${window.location.origin}/entrar?${sufixoRedirect}`
+          : `${window.location.origin}/entrar?src=m`;
     }
+
     try {
       await supabase.functions.invoke("preparar-login", { body: { email, contexto } });
     } catch (_) { /* não bloquear o login */ }
@@ -241,14 +258,41 @@ const Auth = () => {
             {step === "email" ? (
               <>
                 {isInstagram && (
-                  <div className="flex items-start gap-2 rounded-lg border border-border/60 bg-muted/40 p-3 text-xs text-muted-foreground">
-                    <Info className="w-4 h-4 mt-0.5 shrink-0" />
-                    <span>
-                      Dica: para entrar mais rápido, toque nos <strong>⋯</strong> (menu) e escolha
-                      <strong> "Abrir no navegador externo"</strong>.
-                    </span>
+                  <div className="rounded-lg border border-primary/40 bg-primary/10 p-4 space-y-3">
+                    <div className="flex items-start gap-2">
+                      <ExternalLink className="w-4 h-4 mt-0.5 shrink-0 text-primary" />
+                      <p className="text-sm text-foreground">
+                        Você está navegando pelo app do Instagram. Para fazer login, toque nos{" "}
+                        <strong>três pontinhos (⋮)</strong> no canto e escolha{" "}
+                        <strong>"Abrir no navegador"</strong> (Safari ou Chrome) — assim o login
+                        funciona certinho.
+                      </p>
+                    </div>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="w-full"
+                      onClick={async () => {
+                        try {
+                          await navigator.clipboard.writeText(window.location.href);
+                          setCopiado(true);
+                          setTimeout(() => setCopiado(false), 2500);
+                        } catch {
+                          toast({
+                            title: "Não foi possível copiar",
+                            description: "Copie o endereço da barra do navegador.",
+                            variant: "destructive",
+                          });
+                        }
+                      }}
+                    >
+                      <Copy className="w-4 h-4 mr-2" />
+                      {copiado ? "Link copiado!" : "Copiar link desta página"}
+                    </Button>
                   </div>
                 )}
+
 
                 {!isInstagram && (
                   <>
