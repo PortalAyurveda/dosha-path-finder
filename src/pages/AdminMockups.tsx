@@ -844,6 +844,7 @@ function Grupo({
 // ---------- página ----------
 const AdminMockups = () => {
   const [formato, setFormato] = useState<Formato>("story");
+  const [busca, setBusca] = useState("");
   const [dados, setDados] = useState<Dados | null>(null);
   const [restrito, setRestrito] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
