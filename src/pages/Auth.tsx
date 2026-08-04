@@ -258,14 +258,41 @@ const Auth = () => {
             {step === "email" ? (
               <>
                 {isInstagram && (
-                  <div className="flex items-start gap-2 rounded-lg border border-border/60 bg-muted/40 p-3 text-xs text-muted-foreground">
-                    <Info className="w-4 h-4 mt-0.5 shrink-0" />
-                    <span>
-                      Dica: para entrar mais rápido, toque nos <strong>⋯</strong> (menu) e escolha
-                      <strong> "Abrir no navegador externo"</strong>.
-                    </span>
+                  <div className="rounded-lg border border-primary/40 bg-primary/10 p-4 space-y-3">
+                    <div className="flex items-start gap-2">
+                      <ExternalLink className="w-4 h-4 mt-0.5 shrink-0 text-primary" />
+                      <p className="text-sm text-foreground">
+                        Você está navegando pelo app do Instagram. Para fazer login, toque nos{" "}
+                        <strong>três pontinhos (⋮)</strong> no canto e escolha{" "}
+                        <strong>"Abrir no navegador"</strong> (Safari ou Chrome) — assim o login
+                        funciona certinho.
+                      </p>
+                    </div>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="w-full"
+                      onClick={async () => {
+                        try {
+                          await navigator.clipboard.writeText(window.location.href);
+                          setCopiado(true);
+                          setTimeout(() => setCopiado(false), 2500);
+                        } catch {
+                          toast({
+                            title: "Não foi possível copiar",
+                            description: "Copie o endereço da barra do navegador.",
+                            variant: "destructive",
+                          });
+                        }
+                      }}
+                    >
+                      <Copy className="w-4 h-4 mr-2" />
+                      {copiado ? "Link copiado!" : "Copiar link desta página"}
+                    </Button>
                   </div>
                 )}
+
 
                 {!isInstagram && (
                   <>
