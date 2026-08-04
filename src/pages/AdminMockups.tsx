@@ -429,7 +429,11 @@ function CardClima({ m, testesTotal, formato }: { m: any; testesTotal: number; f
   };
 
   return (
-    <Card formato={formato} bg={`linear-gradient(160deg, ${color}22, ${CREME} 60%)`}>
+    <Card
+      formato={formato}
+      bg={tema.key === "creme" ? `linear-gradient(160deg, ${color}22, ${CREME} 60%)` : undefined}
+    >
+
       <SafeArea formato={formato}>
         <Eyebrow formato={formato}>Clima × Doshas</Eyebrow>
         <div
