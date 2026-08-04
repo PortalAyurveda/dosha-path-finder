@@ -202,7 +202,9 @@ function Card({
   innerRef?: (el: HTMLDivElement | null) => void;
 }) {
   const f = FORMATOS[formato];
+  const tema = useTema();
   const ratio = f.h / f.w;
+  const marcaSize = formato === "story" ? 26 : 22;
   return (
     <div
       ref={innerRef}
@@ -210,15 +212,31 @@ function Card({
       style={{
         width: RENDER_W,
         height: RENDER_W * ratio,
-        background: bg ?? CREME,
-        color: TINTA,
+        background: bg ?? tema.bg,
+        color: tema.texto,
         fontFamily: "'DM Sans', system-ui, sans-serif",
       }}
     >
+      {/* símbolo no canto superior direito */}
+      <img
+        src={LOGO}
+        width={marcaSize}
+        height={marcaSize}
+        alt=""
+        style={{
+          position: "absolute",
+          top: SAFE[formato].y - (formato === "story" ? 44 : 26),
+          right: SAFE[formato].x,
+          opacity: 0.75,
+          filter: tema.logoFilter ?? undefined,
+          zIndex: 2,
+        }}
+      />
       {children}
     </div>
   );
 }
+
 
 // bloco de conteúdo dentro da área segura (para texto/selo/rodapé)
 function SafeArea({
