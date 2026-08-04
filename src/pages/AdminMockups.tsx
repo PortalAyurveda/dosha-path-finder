@@ -429,122 +429,99 @@ function CardConversa({ p, r, formato }: { p: string; r: string; formato: Format
   );
 }
 
-function CardReceita({ r, formato }: { r: Dados["receitas"][number]; formato: Formato }) {
-  const larguraUtil = RENDER_W - SAFE[formato].x * 2;
+// Normaliza tags vindas como string ("a, b, c") ou array; remove emojis e "#".
+function normalizarTags(v: unknown, max = 3): string[] {
+  let bruto: string[] = [];
+  if (Array.isArray(v)) bruto = v.map((x) => String(x ?? ""));
+  else if (typeof v === "string") bruto = v.split(/[,;|]/);
+  return bruto
+    .map((s) =>
+      s
+        .replace(/[\p{Extended_Pictographic}\uFE0F\u200D]/gu, "")
+        .replace(/#/g, "")
+        .trim(),
+    )
+    .filter((s) => s.length > 1 && s.length <= 28)
+    .slice(0, max);
+}
+
+function Chips({ tags, formato, color }: { tags: string[]; formato: Formato; color: string }) {
+  if (!tags.length) return null;
+  return (
+    <div className="flex flex-wrap" style={{ gap: 6, marginTop: 14 }}>
+      {tags.map((tag, i) => (
+        <span
+          key={i}
+          style={{
+            fontSize: T[formato].rotulo - 1,
+            fontWeight: 600,
+            color,
+            border: `1px solid ${color}55`,
+            background: `${color}14`,
+            borderRadius: 999,
+            padding: formato === "story" ? "4px 10px" : "3px 9px",
+            lineHeight: 1.2,
+          }}
+        >
+          {tag}
+        </span>
+      ))}
+    </div>
+  );
+}
+
+// Card padrão de conteúdo: selo → título → descrição → tags → foto na base → rodapé.
+function CardConteudo({
+  formato,
+  selo,
+  cor,
+  titulo,
+  descricao,
+  extra,
+  tags,
+  imagem,
+  play,
+  cta,
+  fallbackBg = "#ddd",
+}: {
+  formato: Formato;
+  selo: string;
+  cor: string;
+  titulo: string;
+  descricao?: string | null;
+  extra?: React.ReactNode;
+  tags: string[];
+  imagem?: string | null;
+  play?: boolean;
+  cta: string;
+  fallbackBg?: string;
+}) {
   const t = T[formato];
-  const tSize = tituloSize(r.titulo, t);
-  const imgH = formato === "story" ? "42%" : "38%";
+  const larguraUtil = RENDER_W - SAFE[formato].x * 2;
+  const tSize = tituloSize(titulo, t);
+  const alturaFoto = formato === "story" ? "40%" : "34%";
+  const linhasDesc = formato === "story" ? 4 : 3;
+
   return (
     <Card formato={formato}>
-      <div
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          right: 0,
-          height: imgH,
-          background: `url(${r.imagem}) center/cover no-repeat, #ddd`,
-        }}
-      />
-      <SafeArea formato={formato} style={{ paddingTop: `calc(${imgH} + 20px)` }}>
-        <Selo formato={formato}>Receita do Portal</Selo>
+      <SafeArea formato={formato}>
+        <Selo formato={formato} color={cor}>
+          {selo}
+        </Selo>
+
         <div
           style={{
             ...Serif,
             fontSize: tSize,
             lineHeight: 1.12,
             fontWeight: 600,
-            marginTop: 12,
+            marginTop: 14,
           }}
         >
-          {truncar(r.titulo, 80)}
+          {truncar(titulo, 90)}
         </div>
 
-        {formato === "story" && r.efeito && (
-          <div style={{ marginTop: 16 }}>
-            <Eyebrow formato={formato}>pra que serve</Eyebrow>
-            <div style={{ fontSize: t.corpo, lineHeight: 1.4, marginTop: 6 }}>
-              {truncar(r.efeito, limiteLinhas(t.corpo, larguraUtil, 4))}
-            </div>
-          </div>
-        )}
-
-        {formato === "feed" && r.resumo && (
-          <div style={{ marginTop: 12 }}>
-            <Eyebrow formato={formato}>o que é</Eyebrow>
-            <div style={{ fontSize: t.corpo, lineHeight: 1.4, marginTop: 4 }}>
-              {truncar(r.resumo, limiteLinhas(t.corpo, larguraUtil, 3))}
-            </div>
-          </div>
-        )}
-
-        {formato === "feed" && r.ingredientes && (
-          <div style={{ marginTop: 10 }}>
-            <Eyebrow formato={formato}>ingredientes</Eyebrow>
-            <div
-              style={{
-                fontSize: t.corpo - 1,
-                lineHeight: 1.4,
-                opacity: 0.85,
-                marginTop: 4,
-              }}
-            >
-              {truncar(r.ingredientes, limiteLinhas(t.corpo - 1, larguraUtil, 4))}
-            </div>
-          </div>
-        )}
-
-        <Rodape formato={formato} cta="receba a receita" ctaColor={DOURADO} />
-      </SafeArea>
-    </Card>
-  );
-}
-
-function CardVideo({ v, formato }: { v: Dados["videos"][number]; formato: Formato }) {
-  const t = T[formato];
-  const larguraUtil = RENDER_W - SAFE[formato].x * 2;
-  const tSize = tituloSize(v.titulo, t);
-  const imgH = formato === "story" ? "42%" : "40%";
-  return (
-    <Card formato={formato}>
-      <div
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          right: 0,
-          height: imgH,
-          background: `url(${v.thumb}) center/cover no-repeat, #333`,
-        }}
-      >
-        <div
-          className="absolute inset-0 flex items-center justify-center"
-          style={{ background: "linear-gradient(180deg, #0000, #0004)" }}
-        >
-          <div
-            className="rounded-full flex items-center justify-center"
-            style={{ width: 70, height: 70, background: "#fffc", color: TINTA }}
-          >
-            <Play size={28} fill={TINTA} />
-          </div>
-        </div>
-      </div>
-      <SafeArea formato={formato} style={{ paddingTop: `calc(${imgH} + 20px)` }}>
-        <Selo color={CORAL} formato={formato}>
-          Aula do Professor
-        </Selo>
-        <div
-          style={{
-            ...Serif,
-            fontSize: tSize,
-            lineHeight: 1.15,
-            fontWeight: 600,
-            marginTop: 12,
-          }}
-        >
-          {truncar(v.titulo, 80)}
-        </div>
-        {formato === "feed" && v.resumo && (
+        {descricao ? (
           <div
             style={{
               fontSize: t.corpo,
@@ -553,67 +530,118 @@ function CardVideo({ v, formato }: { v: Dados["videos"][number]; formato: Format
               marginTop: 10,
             }}
           >
-            {truncar(v.resumo, limiteLinhas(t.corpo, larguraUtil, 4))}
+            {truncar(descricao, limiteLinhas(t.corpo, larguraUtil, linhasDesc))}
           </div>
+        ) : null}
+
+        {extra}
+
+        <Chips tags={tags} formato={formato} color={cor} />
+
+        {imagem ? (
+          <div
+            style={{
+              position: "relative",
+              marginTop: "auto",
+              width: "100%",
+              height: alturaFoto,
+              borderRadius: 18,
+              overflow: "hidden",
+              background: `url(${imagem}) center/cover no-repeat, ${fallbackBg}`,
+              flexShrink: 0,
+            }}
+          >
+            {play ? (
+              <div
+                className="absolute inset-0 flex items-center justify-center"
+                style={{ background: "linear-gradient(180deg, #0000, #0003)" }}
+              >
+                <div
+                  className="rounded-full flex items-center justify-center"
+                  style={{ width: 64, height: 64, background: "#fffc", color: TINTA }}
+                >
+                  <Play size={26} fill={TINTA} />
+                </div>
+              </div>
+            ) : null}
+          </div>
+        ) : (
+          <div style={{ marginTop: "auto" }} />
         )}
-        <Rodape formato={formato} cta="assista" ctaColor={CORAL} />
+
+        <Rodape formato={formato} cta={cta} ctaColor={cor} />
       </SafeArea>
     </Card>
   );
 }
 
-function CardArtigo({ a, formato }: { a: Dados["artigos"][number]; formato: Formato }) {
+function CardReceita({ r, formato }: { r: Dados["receitas"][number]; formato: Formato }) {
   const t = T[formato];
   const larguraUtil = RENDER_W - SAFE[formato].x * 2;
-  const tSize = tituloSize(a.titulo, t);
-  const imgH = a.imagem ? (formato === "story" ? "38%" : "36%") : "0%";
   return (
-    <Card formato={formato}>
-      {a.imagem && (
-        <div
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-            height: imgH,
-            background: `url(${a.imagem}) center/cover no-repeat, #ccc`,
-          }}
-        />
-      )}
-      <SafeArea
-        formato={formato}
-        style={{ paddingTop: a.imagem ? `calc(${imgH} + 20px)` : SAFE[formato].y }}
-      >
-        <Selo formato={formato}>Artigo</Selo>
-        <div
-          style={{
-            ...Serif,
-            fontSize: tSize,
-            lineHeight: 1.12,
-            fontWeight: 600,
-            marginTop: 12,
-          }}
-        >
-          {truncar(a.titulo, 90)}
-        </div>
-        {formato === "feed" && a.resumo && (
-          <div
-            style={{
-              fontSize: t.corpo,
-              lineHeight: 1.55,
-              opacity: 0.85,
-              marginTop: 12,
-            }}
-          >
-            {truncar(a.resumo, limiteLinhas(t.corpo, larguraUtil, 5))}
+    <CardConteudo
+      formato={formato}
+      selo="Receita do Portal"
+      cor={DOURADO}
+      titulo={r.titulo}
+      descricao={r.resumo || r.efeito}
+      tags={normalizarTags(r.tags)}
+      imagem={r.imagem}
+      cta="receba a receita"
+      extra={
+        formato === "feed" && r.ingredientes ? (
+          <div style={{ marginTop: 10 }}>
+            <Eyebrow formato={formato}>ingredientes</Eyebrow>
+            <div
+              style={{
+                fontSize: t.corpo - 1,
+                lineHeight: 1.4,
+                opacity: 0.8,
+                marginTop: 4,
+              }}
+            >
+              {truncar(r.ingredientes, limiteLinhas(t.corpo - 1, larguraUtil, 2))}
+            </div>
           </div>
-        )}
-        <Rodape formato={formato} cta="leia" ctaColor={DOURADO} />
-      </SafeArea>
-    </Card>
+        ) : null
+      }
+    />
   );
 }
+
+function CardVideo({ v, formato }: { v: Dados["videos"][number]; formato: Formato }) {
+  return (
+    <CardConteudo
+      formato={formato}
+      selo="Vídeo"
+      cor={CORAL}
+      titulo={v.titulo}
+      descricao={v.resumo}
+      tags={normalizarTags(v.tags)}
+      imagem={v.thumb}
+      play
+      fallbackBg="#333"
+      cta="assista no portal"
+    />
+  );
+}
+
+function CardArtigo({ a, formato }: { a: Dados["artigos"][number]; formato: Formato }) {
+  return (
+    <CardConteudo
+      formato={formato}
+      selo="Artigo"
+      cor={AZUL}
+      titulo={a.titulo}
+      descricao={a.resumo}
+      tags={normalizarTags(a.tags)}
+      imagem={a.imagem}
+      fallbackBg="#ccc"
+      cta="leia no portal"
+    />
+  );
+}
+
 
 function CardCurso({ c, formato }: { c: Dados["cursos"][number]; formato: Formato }) {
   const t = T[formato];
