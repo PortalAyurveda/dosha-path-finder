@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { useToast } from "@/hooks/use-toast";
 import { isInAppBrowser } from "@/lib/inAppBrowser";
-import { Loader2, Mail, Sparkles, ArrowLeft, Info, Copy, ExternalLink } from "lucide-react";
+import { Loader2, Mail, Sparkles, ArrowLeft, Copy, ExternalLink } from "lucide-react";
 
 const REDIRECT_STORAGE_KEY = "pendingLoginRedirect";
 
