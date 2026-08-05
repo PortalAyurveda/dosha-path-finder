@@ -858,6 +858,195 @@ function CardConviteTerapeutas({ formato }: { formato: Formato }) {
   );
 }
 
+// ---------- cards de oferta (levam para /assinar) ----------
+const VERDE = "#57BE86";
+
+const IMG_RECEITA =
+  "https://api.portalayurveda.com/storage/v1/object/public/portal_images/receita-kitchari-com-salsa-e-oleo-vegetal.webp";
+const IMG_AKASHA =
+  "https://api.portalayurveda.com/storage/v1/object/public/portal_images/akasha-versao-4-1.webp";
+const IMG_PROFESSOR =
+  "https://api.portalayurveda.com/storage/v1/object/public/portal_images/b8f47f-5f003e6165b44645b7163ec3dd646d32mv2-1.jpg";
+
+type Oferta = {
+  key: string;
+  selo: string;
+  cor: string;
+  titulo: string;
+  descricao: string;
+  precoRiscado?: string;
+  preco: string;
+  precoSufixo?: string;
+  nota: string;
+  bullets: string[];
+  prova: string;
+  imagem: string;
+};
+
+function ofertas(dados: Dados | null): Oferta[] {
+  const capaCurso =
+    (dados?.cursos || []).find((c) => (c.slug || "").includes("rotina"))?.capa || IMG_PROFESSOR;
+  return [
+    {
+      key: "oferta-rotina",
+      selo: "Minha Rotina",
+      cor: VERDE,
+      titulo: "Sua semana inteira, já montada.",
+      descricao:
+        "Café, almoço, jantar, lanches e tônicos — montados para o seu dosha, com o preparo e o porquê de cada item.",
+      preco: "R$ 30",
+      precoSufixo: "/mês",
+      nota: "menos de R$ 1 por dia",
+      bullets: [
+        "Rotina dos 7 dias, pronta",
+        "Feita para o seu dosha",
+        "Revisão mensal do seu quadro",
+      ],
+      prova: "2.700+ testes de dosha já feitos no Portal",
+      imagem: IMG_RECEITA,
+    },
+    {
+      key: "oferta-premium",
+      selo: "Portal Premium",
+      cor: CORAL,
+      titulo: "O Ayurveda inteiro, moldado a você.",
+      descricao:
+        "Sua rotina, a Akasha para conversar a qualquer hora e 900+ aulas do professor Edson Osorio.",
+      preco: "R$ 79,90",
+      precoSufixo: "/mês",
+      nota: "ou R$ 49,75/mês assinando o ano",
+      bullets: [
+        "Rotina completa da semana",
+        "Akasha ilimitada, dia e madrugada",
+        "Acervo com 900+ aulas",
+        "Cancele quando quiser",
+      ],
+      prova: "4.500+ alunas formadas pelo professor",
+      imagem: IMG_AKASHA,
+    },
+    {
+      key: "oferta-anual",
+      selo: "Premium Anual",
+      cor: DOURADO,
+      titulo: "Um ano inteiro de Ayurveda.",
+      descricao:
+        "R$ 597 cobrados uma vez por ano — com o curso Rotinas Diárias incluso (valor R$ 99).",
+      precoRiscado: "R$ 79,90",
+      preco: "R$ 49,75",
+      precoSufixo: "/mês",
+      nota: "R$ 597 cobrados uma vez por ano",
+      bullets: [
+        "Tudo do Premium",
+        'Curso "Rotinas Diárias" incluso',
+        "Revisão mensal do seu quadro",
+        "12 meses garantidos",
+      ],
+      prova: "O plano mais vantajoso do Portal",
+      imagem: capaCurso,
+    },
+  ];
+}
+
+function CardOferta({ o, formato }: { o: Oferta; formato: Formato }) {
+  const t = T[formato];
+  const tema = useTema();
+  const story = formato === "story";
+  const larguraUtil = RENDER_W - SAFE[formato].x * 2;
+  const cor = acento(tema, o.cor);
+  const tSize = tituloSize(o.titulo, t) + (story ? 4 : 0);
+  const corpoSize = story ? t.corpo + 1 : t.corpo;
+
+  return (
+    <Card formato={formato}>
+      <SafeArea formato={formato}>
+        <Selo formato={formato} color={o.cor}>
+          {o.selo}
+        </Selo>
+
+        <div
+          style={{
+            ...Serif,
+            fontSize: tSize,
+            lineHeight: 1.12,
+            fontWeight: 600,
+            marginTop: 14,
+          }}
+        >
+          {o.titulo}
+        </div>
+
+        <div style={{ fontSize: corpoSize, lineHeight: 1.5, opacity: 0.85, marginTop: 10 }}>
+          {truncar(o.descricao, limiteLinhas(corpoSize, larguraUtil, story ? 4 : 3))}
+        </div>
+
+        {/* preço */}
+        <div style={{ marginTop: story ? 18 : 14 }}>
+          {o.precoRiscado ? (
+            <div
+              style={{
+                fontSize: t.rotulo,
+                opacity: 0.55,
+                textDecoration: "line-through",
+                marginBottom: 2,
+              }}
+            >
+              {o.precoRiscado}
+            </div>
+          ) : null}
+          <div style={{ display: "flex", alignItems: "baseline", gap: 4 }}>
+            <span style={{ ...Serif, fontSize: story ? 40 : 34, fontWeight: 700, color: cor }}>
+              {o.preco}
+            </span>
+            {o.precoSufixo ? (
+              <span style={{ fontSize: t.corpo, opacity: 0.7 }}>{o.precoSufixo}</span>
+            ) : null}
+          </div>
+          <div style={{ fontSize: t.rotulo, marginTop: 3, color: cor, fontWeight: 600 }}>
+            {o.nota}
+          </div>
+        </div>
+
+        {/* bullets */}
+        <ul style={{ listStyle: "none", padding: 0, margin: 0, marginTop: story ? 16 : 12 }}>
+          {o.bullets.map((b, i) => (
+            <li
+              key={i}
+              style={{
+                display: "flex",
+                alignItems: "flex-start",
+                gap: 8,
+                fontSize: corpoSize,
+                lineHeight: 1.4,
+                marginTop: i === 0 ? 0 : 7,
+              }}
+            >
+              <Check size={14} color={cor} style={{ marginTop: 3, flexShrink: 0 }} />
+              <span>{b}</span>
+            </li>
+          ))}
+        </ul>
+
+        <div style={{ fontSize: t.rodape, opacity: 0.6, marginTop: 12 }}>{o.prova}</div>
+
+        <div
+          style={{
+            width: "100%",
+            borderRadius: 18,
+            overflow: "hidden",
+            background: `url(${o.imagem}) center/cover no-repeat, #e5e0d6`,
+            ...(story
+              ? { marginTop: 20, flexGrow: 1, flexShrink: 1, minHeight: "26%" }
+              : { marginTop: "auto", height: "24%", flexShrink: 0 }),
+          }}
+        />
+
+        <Rodape formato={formato} cta="assine no portal" ctaColor={o.cor} />
+      </SafeArea>
+    </Card>
+  );
+}
+
+
 // ---------- grupo ----------
 function Grupo({
   titulo,
