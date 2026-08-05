@@ -9,6 +9,7 @@
 
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from "fs";
 import { resolve, dirname } from "path";
+import { limparDescricaoVideo } from "../src/lib/videoDescricao";
 
 const BASE_URL = "https://portalayurveda.com";
 const DEFAULT_OG = `${BASE_URL}/og-image.jpg`;
