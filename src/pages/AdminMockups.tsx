@@ -230,7 +230,7 @@ function Card({
           position: "absolute",
           top: SAFE[formato].y - (formato === "story" ? 44 : 26),
           right: SAFE[formato].x,
-          opacity: 0.75,
+          opacity: 1,
           filter: tema.logoFilter ?? undefined,
           zIndex: 2,
         }}
