@@ -962,37 +962,7 @@ const MeuDosha = () => {
 
         {/* ===== Vitrine da Rotina ===== */}
         {(() => {
-          const doshaNome = result?.doshaprincipal || "seu dosha";
-          const vitrineCard = (
-            <div className="relative overflow-hidden rounded-2xl border border-border bg-secondary/10 p-5 md:p-6">
-              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-secondary to-primary" />
-              <p className="text-xs uppercase tracking-widest text-muted-foreground font-medium mb-2">
-                SUA ROTINA AYURVEDA
-              </p>
-              <h2 className="font-serif text-xl md:text-2xl text-primary leading-tight mb-2">
-                Você descobriu seu dosha. E agora?
-              </h2>
-              <p className="text-sm text-foreground/80 leading-relaxed mb-4">
-                Ayurveda sem rotina é teoria. Receba um plano diário pro seu {doshaNome} — café, almoço, chás, prática e tônico da noite, revisado todo mês.
-              </p>
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                <p className="text-sm text-muted-foreground">
-                  <span className="text-foreground font-semibold">R$30<span className="text-xs font-normal text-muted-foreground">/mês</span></span> · sua rotina mensal
-                </p>
-                <Button
-                  variant="secondary"
-                  onClick={() => navigate("/minha-rotina")}
-                  className="self-start sm:self-auto"
-                >
-                  Conhecer minha rotina →
-                </Button>
-              </div>
-            </div>
-          );
-
-          if (isVisitor) {
-            return <ClaimLock idPublico={id!}>{vitrineCard}</ClaimLock>;
-          }
+          if (isVisitor) return null;
 
           const temAcessoRotina =
             profile?.is_premium === true ||
@@ -1018,7 +988,7 @@ const MeuDosha = () => {
             );
           }
 
-          return vitrineCard;
+          return null;
         })()}
 
         <BannerSlot slot="meu_dosha_meio" className="[&:empty]:hidden" />
