@@ -377,7 +377,7 @@ async function dynamicRoutes(): Promise<Route[]> {
   );
   for (const v of videos) {
     if (!v.slug || !v.novo_titulo) continue;
-    const desc = clean(v.mini_resumo || v.nova_descricao, 200) ||
+    const desc = clean(limparDescricaoVideo(v.mini_resumo || v.nova_descricao), 200) ||
       `Assista "${clean(v.novo_titulo, 80)}" no Portal Ayurveda.`;
     const thumb = v.video_id
       ? `https://img.youtube.com/vi/${v.video_id}/maxresdefault.jpg`
