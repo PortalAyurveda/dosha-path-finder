@@ -46,7 +46,7 @@ const TEMAS: Tema[] = [
     bg: CREME,
     texto: TINTA,
     escuro: false,
-    logoFilter: "brightness(0.28)",
+    logoFilter: null,
   },
   {
     key: "roxo",
@@ -230,7 +230,7 @@ function Card({
           position: "absolute",
           top: SAFE[formato].y - (formato === "story" ? 44 : 26),
           right: SAFE[formato].x,
-          opacity: 0.75,
+          opacity: 1,
           filter: tema.logoFilter ?? undefined,
           zIndex: 2,
         }}
@@ -333,6 +333,8 @@ type Dados = {
     efeito: string;
     ingredientes: string;
     tags?: string[] | null;
+    slug?: string | null;
+    video_slug?: string | null;
   }[];
   cursos: { titulo: string; capa: string; slug: string; aulas: number }[];
 };
@@ -1022,7 +1024,11 @@ const AdminMockups = () => {
           key: `rec-${i}`,
           filename: `receita-${i + 1}-${formato}.png`,
           texto: `${r.titulo} ${r.resumo || ""} ${(r.tags || []).join(" ")}`,
-          url: `${SITE}/minha-rotina`,
+          url: r.video_slug
+            ? `${SITE}/video/${r.video_slug}`
+            : r.slug
+              ? `${SITE}/minha-rotina?item=${r.slug}`
+              : SITE,
           node: <CardReceita r={r} formato={formato} />,
         })),
       },
