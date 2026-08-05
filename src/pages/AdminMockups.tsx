@@ -333,6 +333,8 @@ type Dados = {
     efeito: string;
     ingredientes: string;
     tags?: string[] | null;
+    slug?: string | null;
+    video_slug?: string | null;
   }[];
   cursos: { titulo: string; capa: string; slug: string; aulas: number }[];
 };
