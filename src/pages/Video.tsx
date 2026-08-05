@@ -246,7 +246,7 @@ const Video = () => {
   }
 
   const title = video.novo_titulo || "Sem título";
-  const description = video.nova_descricao || video.mini_resumo || "";
+  const description = limparDescricaoVideo(video.nova_descricao || video.mini_resumo || "");
   const canonicalSlug = slugify(title);
 
   const jsonLd = {
