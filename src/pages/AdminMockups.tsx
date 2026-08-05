@@ -1024,7 +1024,11 @@ const AdminMockups = () => {
           key: `rec-${i}`,
           filename: `receita-${i + 1}-${formato}.png`,
           texto: `${r.titulo} ${r.resumo || ""} ${(r.tags || []).join(" ")}`,
-          url: `${SITE}/minha-rotina`,
+          url: r.video_slug
+            ? `${SITE}/video/${r.video_slug}`
+            : r.slug
+              ? `${SITE}/minha-rotina?item=${r.slug}`
+              : SITE,
           node: <CardReceita r={r} formato={formato} />,
         })),
       },
