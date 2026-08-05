@@ -19,7 +19,10 @@ function removerFraseConvite(texto: string): string {
     .map((linha) => {
       const match = PORTAL_URL.exec(linha);
       if (!match) return linha;
-      const antes = linha.slice(0, match.index);
+      // Recua até o início do "token" da URL (ex.: https://www.portalayurveda.com)
+      let inicioToken = match.index;
+      while (inicioToken > 0 && !/\s/.test(linha[inicioToken - 1])) inicioToken--;
+      const antes = linha.slice(0, inicioToken);
       const corte = Math.max(
         antes.lastIndexOf("."),
         antes.lastIndexOf("!"),
