@@ -1198,6 +1198,17 @@ const AdminMockups = () => {
         ],
       },
       {
+        titulo: "Ofertas",
+        itens: ofertas(dados).map((o) => ({
+          key: o.key,
+          filename: `${o.key}-${formato}.png`,
+          texto: `${o.selo} ${o.titulo} ${o.descricao} ${o.bullets.join(" ")}`,
+          url: `${SITE}/assinar`,
+          node: <CardOferta o={o} formato={formato} />,
+        })),
+      },
+
+      {
         titulo: "Conversas da Akasha",
         itens: (dados.conversas || []).map((c, i) => ({
           key: `conv-${i}`,
