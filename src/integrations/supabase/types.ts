@@ -275,6 +275,54 @@ export type Database = {
         }
         Relationships: []
       }
+      assinatura_cobrancas: {
+        Row: {
+          billing_reason: string | null
+          cobrado_em: string
+          created_at: string
+          email: string | null
+          id: string
+          nome: string | null
+          plano: string
+          stripe_customer_id: string | null
+          stripe_invoice_id: string | null
+          stripe_subscription_id: string | null
+          tipo: string
+          user_id: string | null
+          valor: number
+        }
+        Insert: {
+          billing_reason?: string | null
+          cobrado_em?: string
+          created_at?: string
+          email?: string | null
+          id?: string
+          nome?: string | null
+          plano: string
+          stripe_customer_id?: string | null
+          stripe_invoice_id?: string | null
+          stripe_subscription_id?: string | null
+          tipo?: string
+          user_id?: string | null
+          valor: number
+        }
+        Update: {
+          billing_reason?: string | null
+          cobrado_em?: string
+          created_at?: string
+          email?: string | null
+          id?: string
+          nome?: string | null
+          plano?: string
+          stripe_customer_id?: string | null
+          stripe_invoice_id?: string | null
+          stripe_subscription_id?: string | null
+          tipo?: string
+          user_id?: string | null
+          valor?: number
+        }
+        Relationships: []
+      }
       assinaturas: {
         Row: {
           canceled_at: string | null
