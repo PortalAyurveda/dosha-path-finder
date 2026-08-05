@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/contexts/UserContext";
 import { slugify } from "@/lib/slugify";
+import { limparDescricaoVideo } from "@/lib/videoDescricao";
 import PageContainer from "@/components/PageContainer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
