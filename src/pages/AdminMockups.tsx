@@ -46,7 +46,7 @@ const TEMAS: Tema[] = [
     bg: CREME,
     texto: TINTA,
     escuro: false,
-    logoFilter: "brightness(0.28)",
+    logoFilter: null,
   },
   {
     key: "roxo",
