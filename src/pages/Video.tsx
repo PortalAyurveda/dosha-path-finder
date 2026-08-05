@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/contexts/UserContext";
 import { slugify } from "@/lib/slugify";
+import { limparDescricaoVideo } from "@/lib/videoDescricao";
 import PageContainer from "@/components/PageContainer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -246,7 +247,7 @@ const Video = () => {
   }
 
   const title = video.novo_titulo || "Sem título";
-  const description = video.nova_descricao || video.mini_resumo || "";
+  const description = limparDescricaoVideo(video.nova_descricao || video.mini_resumo || "");
   const canonicalSlug = slugify(title);
 
   const jsonLd = {

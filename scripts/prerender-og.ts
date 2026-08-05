@@ -9,6 +9,7 @@
 
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from "fs";
 import { resolve, dirname } from "path";
+import { limparDescricaoVideo } from "../src/lib/videoDescricao";
 
 const BASE_URL = "https://portalayurveda.com";
 const DEFAULT_OG = `${BASE_URL}/og-image.jpg`;
@@ -377,7 +378,7 @@ async function dynamicRoutes(): Promise<Route[]> {
   );
   for (const v of videos) {
     if (!v.slug || !v.novo_titulo) continue;
-    const desc = clean(v.mini_resumo || v.nova_descricao, 200) ||
+    const desc = clean(limparDescricaoVideo(v.mini_resumo || v.nova_descricao), 200) ||
       `Assista "${clean(v.novo_titulo, 80)}" no Portal Ayurveda.`;
     const thumb = v.video_id
       ? `https://img.youtube.com/vi/${v.video_id}/maxresdefault.jpg`
