@@ -105,8 +105,8 @@ const DOSHA_COLOR: Record<string, string> = {
 // (Instagram sobrepõe UI de ~250px em cima/baixo em 1920); no feed protege
 // ~11% verticais (grade 4:5 vira quadrado central).
 const SAFE: Record<Formato, { x: number; y: number }> = {
-  story: { x: 26, y: 88 },
-  feed: { x: 24, y: 50 },
+  story: { x: 26, y: 44 },
+  feed: { x: 24, y: 36 },
 };
 
 // Tipografia em px de tela (RENDER_W = 360). Multiplicada por 3 na exportação.
