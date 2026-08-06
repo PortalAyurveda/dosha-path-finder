@@ -228,7 +228,7 @@ function Card({
         alt=""
         style={{
           position: "absolute",
-          top: SAFE[formato].y - (formato === "story" ? 44 : 26),
+          top: SAFE[formato].y - 2,
           right: SAFE[formato].x,
           opacity: 1,
           filter: tema.logoFilter ?? undefined,
