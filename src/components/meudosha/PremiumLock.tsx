@@ -26,11 +26,12 @@ const PremiumLock = ({ children, ctaLabel = "Assinar agora", message = "Conteúd
             <Lock className="h-6 w-6 text-primary" />
           </div>
           <p className="text-sm font-medium text-foreground">
-            Conteúdo exclusivo para membros Premium
+            {message}
           </p>
           <Button asChild className="w-full">
-            <Link to="/assinar">Assinar agora</Link>
+            <Link to="/assinar">{ctaLabel}</Link>
           </Button>
+
         </div>
       </div>
     </div>
