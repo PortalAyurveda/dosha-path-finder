@@ -71,50 +71,44 @@ const BENEFICIOS: string[] = [
   "Rotina completa da semana: café, almoço, jantar, lanches e tônicos",
   "Montada para o SEU dosha, com preparo e porquê de cada item",
   "Revisão mensal do seu quadro",
+  "Artigos e vídeos escolhidos pro seu quadro (aba Personalizado)",
+  "Akasha com memória de 7 dias (10 conversas por mês)",
   "Akasha ilimitada: converse de dia ou de madrugada",
+  "Modo Pesquisa: mergulhos profundos no acervo",
   "Acervo completo: 900+ aulas do professor",
-  'Curso "Rotinas Diárias do Ayurveda" incluso (valor R$ 99)',
   "Cancele quando quiser",
 ];
 
 const INCLUSOS: Record<Plano, Set<number>> = {
-  rotina: new Set([1, 2, 3, 7]),
-  mensal: new Set([1, 2, 3, 4, 5, 7]),
-  anual: new Set([1, 2, 3, 4, 5, 6, 7]),
+  rotina: new Set([1, 2, 3, 4, 5, 9]),
+  mensal: new Set([1, 2, 3, 4, 5, 6, 7, 8, 9]),
+  anual: new Set([1, 2, 3, 4, 5, 6, 7, 8, 9]),
 };
 
 const DEPOIMENTOS = [
   {
-    fala: "Já fiz consulta com o prof. Edson, era Vata e Pitta agravadíssimo, com alergias de 8 anos. Em 6 meses de tratamento disciplinado saí do quadro alérgico e emagreci uns 10 kg. Fiquei ótima. Vou dar continuidade com você",
-    credencial: "Conhecendo Akasha - nossa IA",
+    fala: "Fiz consultas com o Edson — era Vata e Pitta agravadíssimo, com alergias de 8 anos. Em 6 meses de tratamento disciplinado saí do quadro alérgico e emagreci uns 10 kg. Fiquei ótima.",
+    credencial: "Paciente da clínica · 33 conversas com a Akasha",
   },
   {
-    fala: "Sim, desde então tenho dormido melhor. E peguei meus exames laboratoriais, estão ótimos. Gratidão.",
-    credencial: "Vata retirando fruta crua e salada",
+    fala: "Estou dormindo profundamente — não fazia isso há mais de 6 anos. Sem as câimbras e quase sem os calores da menopausa. Fiz a dieta que o professor me indicou e melhorei muito.",
+    credencial: "19 conversas com a Akasha",
   },
   {
-    fala: "Meu intestino tem funcionado bem e não como salada crua desde que comecei com o Ayurveda, há 1 ano. Que bom que concordamos, vou fazer conforme indicou e entrar com essa dieta.",
-    credencial: "Resultados práticos",
+    fala: "A rinite melhorou. Nunca imaginei que o Ghee ia fazer isso por mim — achei que ia me pesar e piorar a alergia por ser do leite.",
+    credencial: "Assinante da Rotina",
   },
   {
-    fala: "A rinite melhorou. Eu melhorei bastante. Nunca imaginei que o Ghee ia fazer isso por mim, achei que ia me pesar e piorar a alergia por ser do leite.",
-    credencial: "Problemas respiratórios",
+    fala: "Aquela fome do diabetes eu não sinto mais. Fome zerada, comendo nos horários normais.",
+    credencial: "8 conversas com a Akasha",
   },
   {
-    fala: "Tomei a panacéia e a sensação de peso e letargia passou no dia seguinte. Vou tomar conforme indicou então.",
-    credencial: "Indicações certeiras",
+    fala: "Não acordo mais de madrugada para urinar. Até o ronco diminuiu — segundo o marido.",
+    credencial: "6 meses no Portal · 168 conversas com a Akasha",
   },
   {
-    fala: "Ta bem, vou adquirir um Madhu novo, realmente quando tomo o madhu anti vata,  ou algo como o chai, durmo melhor e acordo bem.",
-    credencial: "Produtos Ayurvédicos",
-  },
-  {
-    fala: "\n",
-    credencial: "Resultados práticos",
-  },
-  {
-    fala: "Os pés já incham menos desde que comecei a introduzir o Ayurveda. Estou seguindo a rotina de alimentação que comprei aqui no portal, vou experimentar esse haridra que comentou então e volto pra te contar",
-    credencial: "A Akasha te auxilia",
+    fala: "Dormi melhor. E peguei meus exames laboratoriais — estão ótimos. Gratidão.",
+    credencial: "6 meses com a Akasha · 363 conversas",
   },
 ];
 
@@ -338,43 +332,42 @@ const Assinar = () => {
     plano,
     checkColor,
     dimmedColor,
-    renderItem6Extra,
-    renderItem7Extra,
+    extra,
   }: {
     plano: Plano;
     checkColor: string;
     dimmedColor?: string;
-    renderItem6Extra?: React.ReactNode;
-    renderItem7Extra?: React.ReactNode;
+    extra?: React.ReactNode;
   }) => {
     const inclusos = INCLUSOS[plano];
     return (
-      <ul className="space-y-2 mb-5 flex-1">
-        {BENEFICIOS.map((texto, idx) => {
-          const n = idx + 1;
-          const on = inclusos.has(n);
-          const color = on ? PRIMARY : dimmedColor ?? "rgba(53,47,84,0.35)";
-          return (
-            <li key={n} className="flex items-start gap-2">
-              {on ? (
-                <Check className="w-4 h-4 shrink-0 mt-0.5" style={{ color: checkColor }} strokeWidth={2.6} />
-              ) : (
-                <span className="w-4 h-4 shrink-0 mt-0.5 flex items-center justify-center" aria-hidden>
-                  <span className="block w-1.5 h-1.5 rounded-full" style={{ background: "rgba(53,47,84,0.18)" }} />
+      <div className="flex-1 flex flex-col">
+        <ul className="space-y-2 mb-3">
+          {BENEFICIOS.map((texto, idx) => {
+            const n = idx + 1;
+            const on = inclusos.has(n);
+            const color = on ? PRIMARY : dimmedColor ?? "rgba(53,47,84,0.35)";
+            return (
+              <li key={n} className="flex items-start gap-2">
+                {on ? (
+                  <Check className="w-4 h-4 shrink-0 mt-0.5" style={{ color: checkColor }} strokeWidth={2.6} />
+                ) : (
+                  <span className="w-4 h-4 shrink-0 mt-0.5 flex items-center justify-center" aria-hidden>
+                    <span className="block w-1.5 h-1.5 rounded-full" style={{ background: "rgba(53,47,84,0.18)" }} />
+                  </span>
+                )}
+                <span
+                  className="text-[13px] leading-snug"
+                  style={{ color, fontFamily: "'DM Sans', sans-serif", opacity: on ? 1 : 0.7 }}
+                >
+                  {texto}
                 </span>
-              )}
-              <span
-                className="text-[13px] leading-snug"
-                style={{ color, fontFamily: "'DM Sans', sans-serif", opacity: on ? 1 : 0.7 }}
-              >
-                {texto}
-                {n === 6 && on && renderItem6Extra}
-                {n === 7 && on && renderItem7Extra}
-              </span>
-            </li>
-          );
-        })}
-      </ul>
+              </li>
+            );
+          })}
+        </ul>
+        {extra}
+      </div>
     );
   };
 
@@ -383,57 +376,84 @@ const Assinar = () => {
     color,
     hoverColor,
     label,
+    nota,
   }: {
     plano: Plano;
     color: string;
     hoverColor?: string;
     label: string;
+    nota?: string;
   }) => {
+    const Nota = () =>
+      nota ? (
+        <p
+          className="mt-2 text-[11px] leading-snug text-center"
+          style={{ color: PRIMARY, opacity: 0.6, fontFamily: "'DM Sans', sans-serif" }}
+        >
+          {nota}
+        </p>
+      ) : null;
+
     if (!isAssinante) {
       return (
-        <button
-          onClick={() => handleClickPlano(plano)}
-          disabled={loadingPlan !== null}
-          className="mt-auto w-full py-2.5 rounded-full font-semibold text-sm text-white transition-colors disabled:opacity-60"
-          style={{ backgroundColor: color }}
-          onMouseEnter={(e) => !loadingPlan && hoverColor && (e.currentTarget.style.backgroundColor = hoverColor)}
-          onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = color)}
-        >
-          {loadingPlan === plano ? "Redirecionando…" : label}
-        </button>
+        <div className="mt-auto w-full pt-2">
+          <button
+            onClick={() => handleClickPlano(plano)}
+            disabled={loadingPlan !== null}
+            className="w-full py-2.5 rounded-full font-semibold text-sm text-white transition-colors disabled:opacity-60"
+            style={{ backgroundColor: color }}
+            onMouseEnter={(e) => !loadingPlan && hoverColor && (e.currentTarget.style.backgroundColor = hoverColor)}
+            onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = color)}
+          >
+            {loadingPlan === plano ? "Redirecionando…" : label}
+          </button>
+          <Nota />
+        </div>
       );
     }
     const rankPlano = RANK[plano];
     if (rankPlano === rankAtual) {
       return (
-        <button
-          onClick={() => handleClickPlano(plano)}
-          disabled={loadingPlan !== null}
-          className="mt-auto w-full py-2.5 rounded-full font-semibold text-sm text-white transition-colors disabled:opacity-60"
-          style={{ backgroundColor: color }}
-        >
-          {loadingPlan === plano ? "Abrindo…" : "Gerenciar assinatura"}
-        </button>
+        <div className="mt-auto w-full pt-2">
+          <button
+            onClick={() => handleClickPlano(plano)}
+            disabled={loadingPlan !== null}
+            className="w-full py-2.5 rounded-full font-semibold text-sm text-white transition-colors disabled:opacity-60"
+            style={{ backgroundColor: color }}
+          >
+            {loadingPlan === plano ? "Abrindo…" : "Gerenciar assinatura"}
+          </button>
+        </div>
       );
     }
     if (rankPlano > rankAtual) {
       return (
-        <button
-          onClick={() => handleClickPlano(plano)}
-          disabled={loadingPlan !== null}
-          className="mt-auto w-full py-2.5 rounded-full font-semibold text-sm text-white transition-colors disabled:opacity-60"
-          style={{ backgroundColor: color }}
-        >
-          {loadingPlan === plano ? "Aguarde…" : "Fazer upgrade — pague só a diferença"}
-        </button>
+        <div className="mt-auto w-full pt-2">
+          <button
+            onClick={() => handleClickPlano(plano)}
+            disabled={loadingPlan !== null}
+            className="w-full py-2.5 rounded-full font-semibold text-sm text-white transition-colors disabled:opacity-60"
+            style={{ backgroundColor: color }}
+          >
+            {loadingPlan === plano ? "Aguarde…" : "Fazer upgrade"}
+          </button>
+          <p
+            className="mt-2 text-[11px] leading-snug text-center"
+            style={{ color: PRIMARY, opacity: 0.6, fontFamily: "'DM Sans', sans-serif" }}
+          >
+            Você paga só a diferença do que já pagou.
+          </p>
+        </div>
       );
     }
     return (
-      <div
-        className="mt-auto w-full py-2.5 rounded-full text-sm text-center font-semibold"
-        style={{ background: "rgba(53,47,84,0.06)", color: PRIMARY, fontFamily: "'DM Sans', sans-serif" }}
-      >
-        Já incluído no seu plano
+      <div className="mt-auto w-full pt-2">
+        <div
+          className="w-full py-2.5 rounded-full text-sm text-center font-semibold"
+          style={{ background: "rgba(53,47,84,0.06)", color: PRIMARY, fontFamily: "'DM Sans', sans-serif" }}
+        >
+          Já incluído no seu plano
+        </div>
       </div>
     );
   };
@@ -642,7 +662,7 @@ const Assinar = () => {
               <PortalMark size={44} />
             </div>
             <h1
-              className="font-serif italic font-bold text-3xl md:text-[42px] leading-tight mb-3"
+              className="font-serif italic font-bold text-[30px] md:text-[38px] leading-tight mb-3"
               style={{ color: PRIMARY }}
             >
               Seu Ayurveda, do seu jeito
@@ -774,7 +794,7 @@ const Assinar = () => {
         <section style={{ background: SURFACE }}>
           <div className="max-w-[1040px] mx-auto px-4 sm:px-6 py-6 md:py-8">
             <h2
-              className="font-serif italic font-bold text-xl md:text-[24px] text-center mb-1.5"
+              className="font-serif italic font-bold text-2xl md:text-[28px] text-center mb-1.5"
               style={{ color: PRIMARY }}
             >
               Tudo começa pelo seu retrato
@@ -904,7 +924,7 @@ const Assinar = () => {
               Sua revisão mensal
             </p>
             <h2
-              className="font-serif italic font-bold text-xl md:text-[24px] text-center mb-1.5"
+              className="font-serif italic font-bold text-2xl md:text-[28px] text-center mb-1.5"
               style={{ color: PRIMARY }}
             >
               Você vê seu corpo melhorar, mês a mês
@@ -1092,7 +1112,7 @@ const Assinar = () => {
               className="text-center text-sm md:text-base mb-8 max-w-xl mx-auto"
               style={{ color: PRIMARY, opacity: 0.75, fontFamily: "'DM Sans', sans-serif" }}
             >
-              Alunas do Portal, desta semana — só tiramos os nomes.
+              Trechos reais de conversas desta semana — só tiramos os nomes.
             </p>
 
             {(() => {
@@ -1187,23 +1207,16 @@ const Assinar = () => {
               className="text-center text-sm md:text-base mb-8 max-w-xl mx-auto"
               style={{ color: PRIMARY, opacity: 0.75, fontFamily: "'DM Sans', sans-serif" }}
             >
-              Relatos da nossa Database
+              Resultados contados por alunas — só tiramos os nomes.
             </p>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4 items-stretch">
               {DEPOIMENTOS.map((d) => (
                 <figure
                   key={d.fala}
-                  className="rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm border p-4 md:p-5 flex flex-col"
+                  className="h-full rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm border p-4 md:p-5 flex flex-col"
                   style={{ background: PAPER, borderColor: "rgba(53,47,84,0.08)" }}
                 >
-                  <span
-                    aria-hidden
-                    className="block leading-none mb-1"
-                    style={{ fontFamily: "Georgia, serif", fontStyle: "italic", fontSize: 40, color: SALMAO, opacity: 0.55 }}
-                  >
-                    “
-                  </span>
                   <blockquote
                     className="flex-1 text-[14px] leading-relaxed"
                     style={{ color: PRIMARY, fontFamily: "Georgia, serif", fontStyle: "italic" }}
@@ -1252,7 +1265,7 @@ const Assinar = () => {
                     <p className="text-[9px] sm:text-[10px] uppercase tracking-wider font-bold mb-0.5" style={{ color: "#C93F3F" }}>
                       Receita
                     </p>
-                    <h3 className="font-serif font-bold text-[13px] sm:text-sm leading-tight mb-0.5" style={{ color: PRIMARY }}>
+                    <h3 className="font-serif font-bold text-[15px] sm:text-base leading-tight mb-0.5" style={{ color: PRIMARY }}>
                       {r.titulo}
                     </h3>
                     <p
@@ -1401,7 +1414,7 @@ const Assinar = () => {
         <section id="planos" style={{ background: SURFACE }}>
           <div className="max-w-[1040px] mx-auto px-4 sm:px-6 py-12 md:py-16">
             <h2
-              className="font-serif italic font-bold text-2xl md:text-[32px] text-center mb-2"
+              className="font-serif italic font-bold text-2xl md:text-[28px] text-center mb-2"
               style={{ color: PRIMARY }}
             >
               Escolha seu plano
@@ -1564,18 +1577,10 @@ const Assinar = () => {
                 <BeneficiosList
                   plano="anual"
                   checkColor={DOURADO_DARK}
-                  renderItem6Extra={cursoIncluso}
+                  extra={cursoIncluso}
                 />
-                <div
-                  className="rounded-xl border p-3 mb-3 text-xs leading-relaxed"
-                  style={{ background: "#fff", borderColor: `${DOURADO}55`, color: PRIMARY, fontFamily: "'DM Sans', sans-serif" }}
-                >
-                  <p className="text-[9px] uppercase tracking-wider font-bold mb-1" style={{ color: DOURADO_DARK }}>
-                    Conta feita
-                  </p>
-                  12 meses de Premium (R$ 958,80) + curso Rotinas Diárias (R$ 99) = <strong>R$ 1.057,80</strong> em valor. Você paga <strong>R$ 597</strong>.
-                </div>
                 <CardAction plano="anual" color={DOURADO} label="Assinar Anual" />
+
               </div>
             </div>
           </div>
@@ -1602,7 +1607,7 @@ const Assinar = () => {
                 <p className="text-[11px] uppercase tracking-wider font-bold mb-1.5" style={{ color: SALMAO }}>
                   Quem te guia
                 </p>
-                <h2 className="font-serif italic font-bold text-xl md:text-2xl mb-2" style={{ color: PRIMARY }}>
+                <h2 className="font-serif italic font-bold text-2xl md:text-[28px] mb-2" style={{ color: PRIMARY }}>
                   Edson Osorio
                 </h2>
                 <p

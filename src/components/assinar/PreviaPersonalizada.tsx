@@ -117,9 +117,9 @@ const PreviaPersonalizada = ({ fallback }: Props) => {
             <Sparkles className="h-3.5 w-3.5 shrink-0 mt-0.5" style={{ color: "hsl(var(--akasha))" }} />
             <p className="text-[11px] leading-snug" style={{ color: PRIMARY, fontFamily: "'DM Sans', sans-serif" }}>
               Como você relatou{" "}
-              <strong style={{ color: doshaColor }}>{item.matchedSymptom}</strong> e possui
+              <strong style={{ color: doshaColor }}>{item.matchedSymptom}</strong> e tem
               agravamento em <strong style={{ color: doshaColor }}>{item.matchedDosha}</strong>,
-              selecionamos este vídeo:
+              este artigo é pra você:
             </p>
           </div>
         )}
