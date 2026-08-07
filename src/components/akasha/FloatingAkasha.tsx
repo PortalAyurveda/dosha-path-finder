@@ -240,7 +240,8 @@ const FloatingAkasha = () => {
       });
       const data = await response.json();
       const botReply = data?.resposta || data?.output || data?.text || "Desculpe, não consegui processar sua mensagem.";
-      const botMsg: ChatMessage = { role: "assistant", content: botReply, time: getNowBrazilTime() };
+      const botCards: AkashaRichCard[] = Array.isArray(data?.cards) ? data.cards : [];
+      const botMsg: ChatMessage = { role: "assistant", content: botReply, time: getNowBrazilTime(), cards: botCards };
       setMessages(prev => {
         const next = [...prev, botMsg];
         updateCache(next);
