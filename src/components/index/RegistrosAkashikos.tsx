@@ -43,7 +43,7 @@ const RegistrosAkashikos = () => {
     queryKey: ["index_registros_akashikos"],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("registros_akashikos_publicos" as any)
+        .from("registros_akashikos_publicos")
         .select("id, titulo, texto_inicio, tags, data_postagem")
         .not("titulo", "is", null)
         .order("data_postagem", { ascending: false })

@@ -56,7 +56,7 @@ const RegistroAkashico = () => {
       // Lookup by numeric id (legacy /registros/:id)
       if (id && !slug) {
         const { data, error } = await supabase
-          .from("registros_akashikos_publicos" as any)
+          .from("registros_akashikos_publicos")
           .select("id, titulo, texto_inicio, tags, data_postagem")
           .eq("id", Number(id))
           .maybeSingle();
