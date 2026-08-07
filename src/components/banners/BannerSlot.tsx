@@ -180,7 +180,12 @@ const BannerSlot = ({ slot, className, fallback, minHeight }: BannerSlotProps) =
 
   // Enquanto o banner não chega, o espaço já fica reservado (evita CLS).
   if (bannersLoading) {
-    return <div className={className} style={{ minHeight: alturaReservada }} aria-hidden="true" />;
+    return (
+      <div className={className} aria-hidden="true">
+        {/* filho vazio garante que o `[&:empty]:hidden` dos slots não esconda a reserva */}
+        <span className="block" style={{ minHeight: alturaReservada }} />
+      </div>
+    );
   }
 
   // Slot vazio no banco: colapsa de vez (sem flash de espaço vazio).
