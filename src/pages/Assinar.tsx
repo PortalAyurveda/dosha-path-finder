@@ -71,50 +71,44 @@ const BENEFICIOS: string[] = [
   "Rotina completa da semana: café, almoço, jantar, lanches e tônicos",
   "Montada para o SEU dosha, com preparo e porquê de cada item",
   "Revisão mensal do seu quadro",
+  "Artigos e vídeos escolhidos pro seu quadro (aba Personalizado)",
+  "Akasha com memória de 7 dias (10 conversas por mês)",
   "Akasha ilimitada: converse de dia ou de madrugada",
+  "Modo Pesquisa: mergulhos profundos no acervo",
   "Acervo completo: 900+ aulas do professor",
-  'Curso "Rotinas Diárias do Ayurveda" incluso (valor R$ 99)',
   "Cancele quando quiser",
 ];
 
 const INCLUSOS: Record<Plano, Set<number>> = {
-  rotina: new Set([1, 2, 3, 7]),
-  mensal: new Set([1, 2, 3, 4, 5, 7]),
-  anual: new Set([1, 2, 3, 4, 5, 6, 7]),
+  rotina: new Set([1, 2, 3, 4, 5, 9]),
+  mensal: new Set([1, 2, 3, 4, 5, 6, 7, 8, 9]),
+  anual: new Set([1, 2, 3, 4, 5, 6, 7, 8, 9]),
 };
 
 const DEPOIMENTOS = [
   {
-    fala: "Já fiz consulta com o prof. Edson, era Vata e Pitta agravadíssimo, com alergias de 8 anos. Em 6 meses de tratamento disciplinado saí do quadro alérgico e emagreci uns 10 kg. Fiquei ótima. Vou dar continuidade com você",
-    credencial: "Conhecendo Akasha - nossa IA",
+    fala: "Fiz consultas com o Edson — era Vata e Pitta agravadíssimo, com alergias de 8 anos. Em 6 meses de tratamento disciplinado saí do quadro alérgico e emagreci uns 10 kg. Fiquei ótima.",
+    credencial: "Paciente da clínica · 33 conversas com a Akasha",
   },
   {
-    fala: "Sim, desde então tenho dormido melhor. E peguei meus exames laboratoriais, estão ótimos. Gratidão.",
-    credencial: "Vata retirando fruta crua e salada",
+    fala: "Estou dormindo profundamente — não fazia isso há mais de 6 anos. Sem as câimbras e quase sem os calores da menopausa. Fiz a dieta que o professor me indicou e melhorei muito.",
+    credencial: "19 conversas com a Akasha",
   },
   {
-    fala: "Meu intestino tem funcionado bem e não como salada crua desde que comecei com o Ayurveda, há 1 ano. Que bom que concordamos, vou fazer conforme indicou e entrar com essa dieta.",
-    credencial: "Resultados práticos",
+    fala: "A rinite melhorou. Nunca imaginei que o Ghee ia fazer isso por mim — achei que ia me pesar e piorar a alergia por ser do leite.",
+    credencial: "Assinante da Rotina",
   },
   {
-    fala: "A rinite melhorou. Eu melhorei bastante. Nunca imaginei que o Ghee ia fazer isso por mim, achei que ia me pesar e piorar a alergia por ser do leite.",
-    credencial: "Problemas respiratórios",
+    fala: "Aquela fome do diabetes eu não sinto mais. Fome zerada, comendo nos horários normais.",
+    credencial: "8 conversas com a Akasha",
   },
   {
-    fala: "Tomei a panacéia e a sensação de peso e letargia passou no dia seguinte. Vou tomar conforme indicou então.",
-    credencial: "Indicações certeiras",
+    fala: "Não acordo mais de madrugada para urinar. Até o ronco diminuiu — segundo o marido.",
+    credencial: "6 meses no Portal · 168 conversas com a Akasha",
   },
   {
-    fala: "Ta bem, vou adquirir um Madhu novo, realmente quando tomo o madhu anti vata,  ou algo como o chai, durmo melhor e acordo bem.",
-    credencial: "Produtos Ayurvédicos",
-  },
-  {
-    fala: "\n",
-    credencial: "Resultados práticos",
-  },
-  {
-    fala: "Os pés já incham menos desde que comecei a introduzir o Ayurveda. Estou seguindo a rotina de alimentação que comprei aqui no portal, vou experimentar esse haridra que comentou então e volto pra te contar",
-    credencial: "A Akasha te auxilia",
+    fala: "Dormi melhor. E peguei meus exames laboratoriais — estão ótimos. Gratidão.",
+    credencial: "6 meses com a Akasha · 363 conversas",
   },
 ];
 
