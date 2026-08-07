@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
-import { ArrowRight, Play, FileText, Utensils, Leaf, Calendar, GraduationCap, Link as LinkIcon } from "lucide-react";
+import { ArrowRight, ChevronRight, Play, FileText, Utensils, Leaf, Calendar, GraduationCap, Link as LinkIcon } from "lucide-react";
 
 const INTERNAL_PREFIXES = [
   "/video/",
