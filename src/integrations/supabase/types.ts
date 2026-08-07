@@ -1002,6 +1002,27 @@ export type Database = {
         }
         Relationships: []
       }
+      chat_histories_lixo_backup_070826: {
+        Row: {
+          data_hora: string | null
+          id: number | null
+          message: Json | null
+          session_id: string | null
+        }
+        Insert: {
+          data_hora?: string | null
+          id?: number | null
+          message?: Json | null
+          session_id?: string | null
+        }
+        Update: {
+          data_hora?: string | null
+          id?: number | null
+          message?: Json | null
+          session_id?: string | null
+        }
+        Relationships: []
+      }
       clarity_auditoria: {
         Row: {
           coletado_em: string
@@ -6095,6 +6116,16 @@ export type Database = {
           resposta_curta: string
         }[]
       }
+      buscar_artigo: {
+        Args: { p_dosha?: string; p_termo?: string }
+        Returns: {
+          imagem_url: string
+          link: string
+          publicado_em: string
+          resumo: string
+          titulo: string
+        }[]
+      }
       buscar_minha_rotina: {
         Args: { p_chave: string; p_dia: number; p_email: string }
         Returns: {
@@ -6125,6 +6156,16 @@ export type Database = {
           link: string
           modo_preparo: Json
           resumo: string
+          titulo: string
+        }[]
+      }
+      buscar_video: {
+        Args: { p_dosha?: string; p_termo?: string }
+        Returns: {
+          imagem_url: string
+          link: string
+          resumo: string
+          tags: string
           titulo: string
         }[]
       }
