@@ -4,7 +4,8 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/contexts/UserContext";
 import { Send, Loader2, X } from "lucide-react";
-import AkashaMessageContent from "@/components/akasha/AkashaMessageContent";
+import AkashaMessageContent, { type AkashaRichCard } from "@/components/akasha/AkashaMessageContent";
+import MemoriaBadge from "@/components/akasha/MemoriaBadge";
 import { Link } from "react-router-dom";
 
 const AKASHA_LOGO = "https://static.wixstatic.com/media/b8f47f_105371e1ade24ccd9bd3406b83bd925e~mv2.png";
@@ -28,6 +29,7 @@ interface ChatMessage {
   role: "user" | "assistant";
   content: string;
   time?: string;
+  cards?: AkashaRichCard[] | null;
 }
 
 const formatBrazilTime = (value?: string | Date | null) => {
@@ -238,7 +240,8 @@ const FloatingAkasha = () => {
       });
       const data = await response.json();
       const botReply = data?.resposta || data?.output || data?.text || "Desculpe, não consegui processar sua mensagem.";
-      const botMsg: ChatMessage = { role: "assistant", content: botReply, time: getNowBrazilTime() };
+      const botCards: AkashaRichCard[] = Array.isArray(data?.cards) ? data.cards : [];
+      const botMsg: ChatMessage = { role: "assistant", content: botReply, time: getNowBrazilTime(), cards: botCards };
       setMessages(prev => {
         const next = [...prev, botMsg];
         updateCache(next);
@@ -291,6 +294,7 @@ const FloatingAkasha = () => {
                   ? (isPremium ? "Conversas ilimitadas ✨" : `${tokens} conversas restantes`)
                   : "Faça login para conversas personalizadas"}
               </p>
+              <MemoriaBadge className="mt-0.5 self-start" onNavigate={() => setOpen(false)} />
             </div>
           </div>
           <button
@@ -337,6 +341,7 @@ const FloatingAkasha = () => {
                 ) : (
                   <AkashaMessageContent
                     content={msg.content}
+                    cards={msg.cards}
                     proseClassName="prose prose-sm max-w-none [&_p]:text-sm [&_p]:leading-relaxed [&_p]:text-foreground [&_p]:my-1 [&_li]:text-sm [&_strong]:text-foreground"
                     onNavigate={() => setOpen(false)}
                   />

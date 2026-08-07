@@ -7,6 +7,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Search, X, MessageCircle, Loader2, ShieldCheck } from "lucide-react";
 import AdminNav from "@/components/admin/AdminNav";
+import AdminAkashaMaiores from "@/components/admin/AdminAkashaMaiores";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface Conversa {
   email: string;
@@ -142,6 +144,17 @@ const AdminAkasha = () => {
             </h1>
           </div>
 
+          <Tabs defaultValue="conversas" className="space-y-6">
+            <TabsList>
+              <TabsTrigger value="conversas">Conversas</TabsTrigger>
+              <TabsTrigger value="maiores">Maiores conversas</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="maiores">
+              <AdminAkashaMaiores />
+            </TabsContent>
+
+            <TabsContent value="conversas" className="space-y-6">
           {/* Busca */}
           <section className="bg-card border border-border rounded-xl p-4 flex flex-col sm:flex-row gap-2">
             <Input
@@ -249,6 +262,8 @@ const AdminAkasha = () => {
               </div>
             </>
           )}
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
 

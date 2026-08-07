@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
-import { ArrowRight, Play, FileText, Utensils, Leaf, Calendar, GraduationCap, Link as LinkIcon } from "lucide-react";
+import { ArrowRight, ChevronRight, Play, FileText, Utensils, Leaf, Calendar, GraduationCap, Link as LinkIcon } from "lucide-react";
 
 const INTERNAL_PREFIXES = [
   "/video/",
@@ -137,21 +137,147 @@ const extractInternalCards = (
   return { cleanText, cards };
 };
 
+export interface AkashaRichCard {
+  tipo?: string | null;
+  titulo?: string | null;
+  link?: string | null;
+  imagem?: string | null;
+  preco?: string | number | null;
+}
+
+// Remove lixo técnico de sistema antigo ("Calling xyz with input ...")
+const stripSystemNoise = (text: string) =>
+  text
+    .split("\n")
+    .filter((line) => !/^\s*Calling\s+\S+\s+with\s+input/i.test(line))
+    .join("\n")
+    .trim();
+
+const kindFromTipo = (tipo?: string | null): InternalCard["kind"] => {
+  const t = (tipo || "").toLowerCase();
+  if (t.includes("video") || t.includes("vídeo")) return "video";
+  if (t.includes("receita")) return "receita";
+  if (t.includes("produto")) return "produto";
+  if (t.includes("kit")) return "kit";
+  if (t.includes("curso")) return "curso";
+  if (t.includes("rotina")) return "rotina";
+  if (t.includes("artigo") || t.includes("blog")) return "blog";
+  return "generic";
+};
+
+const toRouterPath = (rawLink?: string | null): string | null => {
+  const url = (rawLink || "").trim();
+  if (!url) return null;
+  if (url.startsWith("/")) return url;
+  if (/^https?:\/\//i.test(url)) {
+    try {
+      const parsed = new URL(url);
+      if (/(^|\.)portalayurveda\.com$/i.test(parsed.hostname)) {
+        return parsed.pathname + parsed.search + parsed.hash;
+      }
+    } catch {
+      return null;
+    }
+  }
+  return null;
+};
+
+const formatPreco = (preco?: string | number | null): string | null => {
+  if (preco === null || preco === undefined || preco === "") return null;
+  if (typeof preco === "number") {
+    return preco.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+  }
+  const s = String(preco).trim();
+  if (!s) return null;
+  return /r\$/i.test(s) ? s : `R$ ${s}`;
+};
+
 interface AkashaMessageContentProps {
   content: string;
   proseClassName?: string;
   onNavigate?: () => void;
+  cards?: AkashaRichCard[] | null;
 }
 
-const AkashaMessageContent = ({ content, proseClassName, onNavigate }: AkashaMessageContentProps) => {
-  const { cleanText, cards } = useMemo(() => extractInternalCards(content), [content]);
+const MiniCard = ({
+  card,
+  onNavigate,
+}: {
+  card: AkashaRichCard;
+  onNavigate?: () => void;
+}) => {
+  const kind = kindFromTipo(card.tipo);
+  const Icon = iconFor(kind);
+  const path = toRouterPath(card.link);
+  const titulo = (card.titulo || "").trim() || "Ver mais";
+  const preco = kind === "produto" ? formatPreco(card.preco) : null;
+  const isExternal = !path && !!card.link;
+
+  const inner = (
+    <>
+      <span className="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-akasha/10 text-akasha">
+        {card.imagem ? (
+          <img src={card.imagem} alt="" className="h-full w-full object-cover" loading="lazy" />
+        ) : (
+          <Icon className="h-4.5 w-4.5" />
+        )}
+        {kind === "video" && (
+          <span className="absolute inset-0 flex items-center justify-center">
+            <span className="flex h-4 w-4 items-center justify-center rounded-full bg-black/55">
+              <Play className="h-2.5 w-2.5 fill-white text-white" />
+            </span>
+          </span>
+        )}
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="block text-xs font-medium leading-snug text-foreground line-clamp-2">
+          {titulo}
+        </span>
+        {preco && (
+          <span className="mt-0.5 block text-[11px] font-semibold text-akasha">{preco}</span>
+        )}
+      </span>
+      <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
+    </>
+  );
+
+  const className =
+    "group flex items-center gap-2.5 rounded-xl border border-border bg-card px-2 py-1.5 shadow-sm transition hover:border-akasha/40 hover:shadow-md";
+
+  if (path) {
+    return (
+      <Link to={path} onClick={() => onNavigate?.()} className={className}>
+        {inner}
+      </Link>
+    );
+  }
+  if (isExternal) {
+    return (
+      <a href={card.link!} target="_blank" rel="noopener noreferrer" className={className}>
+        {inner}
+      </a>
+    );
+  }
+  return <div className={className}>{inner}</div>;
+};
+
+const AkashaMessageContent = ({ content, proseClassName, onNavigate, cards: richCards }: AkashaMessageContentProps) => {
+  const hasRich = Array.isArray(richCards) && richCards.length > 0;
+  const sanitized = useMemo(() => stripSystemNoise(content), [content]);
+  const { cleanText, cards } = useMemo(() => extractInternalCards(sanitized), [sanitized]);
 
   return (
     <>
       <div className={proseClassName ?? "prose prose-sm max-w-none [&_p]:text-sm [&_p]:leading-relaxed [&_p]:text-foreground [&_li]:text-sm [&_strong]:text-foreground"}>
         <ReactMarkdown skipHtml>{cleanText}</ReactMarkdown>
       </div>
-      {cards.length > 0 && (
+      {hasRich ? (
+        <div className="mt-2 flex flex-col gap-1.5">
+          {richCards!.slice(0, 1).map((c, i) => (
+            <MiniCard key={i} card={c} onNavigate={onNavigate} />
+          ))}
+        </div>
+      ) : cards.length > 0 ? (
         <div className="mt-2 flex flex-col gap-1.5">
           {cards.map((card) => {
             const Icon = iconFor(card.kind);
@@ -174,7 +300,7 @@ const AkashaMessageContent = ({ content, proseClassName, onNavigate }: AkashaMes
             );
           })}
         </div>
-      )}
+      ) : null}
     </>
   );
 };

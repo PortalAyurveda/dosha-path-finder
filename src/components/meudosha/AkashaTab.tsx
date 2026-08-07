@@ -3,7 +3,8 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/contexts/UserContext";
 import { Send, Loader2, Lock } from "lucide-react";
-import AkashaMessageContent from "@/components/akasha/AkashaMessageContent";
+import AkashaMessageContent, { type AkashaRichCard } from "@/components/akasha/AkashaMessageContent";
+import MemoriaBadge from "@/components/akasha/MemoriaBadge";
 import { Link } from "react-router-dom";
 
 // Tokens renovam no 1º dia de cada mês
@@ -37,6 +38,7 @@ interface ChatMessage {
   role: "user" | "assistant";
   content: string;
   time?: string;
+  cards?: AkashaRichCard[] | null;
 }
 
 const formatBrazilTime = (value?: string | Date | null) => {
@@ -225,8 +227,9 @@ const AkashaTab = ({
       });
       const data = await response.json();
       const botReply = data?.resposta || data?.output || data?.text || "Desculpe, não consegui processar sua mensagem.";
+      const botCards: AkashaRichCard[] = Array.isArray(data?.cards) ? data.cards : [];
 
-      const botMsg: ChatMessage = { role: "assistant", content: botReply, time: getNowBrazilTime() };
+      const botMsg: ChatMessage = { role: "assistant", content: botReply, time: getNowBrazilTime(), cards: botCards };
       setMessages(prev => {
         const next = [...prev, botMsg];
         updateCache(next);
@@ -266,6 +269,7 @@ const AkashaTab = ({
             <p className="text-[10px] text-muted-foreground/80">
               {isPremium ? "Conversas ilimitadas ✨" : tokens > 0 ? `${tokens} conversas restantes` : "Tokens esgotados"}
             </p>
+            <MemoriaBadge className="mt-0.5 self-start" />
           </div>
         </div>
 
@@ -294,8 +298,10 @@ const AkashaTab = ({
               ) : (
                 <AkashaMessageContent
                   content={msg.content}
+                  cards={msg.cards}
                   proseClassName="prose prose-sm max-w-none [&_p]:text-sm [&_p]:leading-relaxed [&_p]:text-foreground [&_li]:text-sm [&_li]:text-foreground [&_strong]:text-foreground"
                 />
+
 
               )}
               {msg.time && (
