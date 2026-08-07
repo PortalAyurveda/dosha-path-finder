@@ -662,7 +662,7 @@ const Assinar = () => {
               <PortalMark size={44} />
             </div>
             <h1
-              className="font-serif italic font-bold text-3xl md:text-[42px] leading-tight mb-3"
+              className="font-serif italic font-bold text-[30px] md:text-[38px] leading-tight mb-3"
               style={{ color: PRIMARY }}
             >
               Seu Ayurveda, do seu jeito
@@ -794,7 +794,7 @@ const Assinar = () => {
         <section style={{ background: SURFACE }}>
           <div className="max-w-[1040px] mx-auto px-4 sm:px-6 py-6 md:py-8">
             <h2
-              className="font-serif italic font-bold text-xl md:text-[24px] text-center mb-1.5"
+              className="font-serif italic font-bold text-2xl md:text-[28px] text-center mb-1.5"
               style={{ color: PRIMARY }}
             >
               Tudo começa pelo seu retrato
@@ -924,7 +924,7 @@ const Assinar = () => {
               Sua revisão mensal
             </p>
             <h2
-              className="font-serif italic font-bold text-xl md:text-[24px] text-center mb-1.5"
+              className="font-serif italic font-bold text-2xl md:text-[28px] text-center mb-1.5"
               style={{ color: PRIMARY }}
             >
               Você vê seu corpo melhorar, mês a mês
@@ -1112,7 +1112,7 @@ const Assinar = () => {
               className="text-center text-sm md:text-base mb-8 max-w-xl mx-auto"
               style={{ color: PRIMARY, opacity: 0.75, fontFamily: "'DM Sans', sans-serif" }}
             >
-              Alunas do Portal, desta semana — só tiramos os nomes.
+              Trechos reais de conversas desta semana — só tiramos os nomes.
             </p>
 
             {(() => {
@@ -1207,23 +1207,16 @@ const Assinar = () => {
               className="text-center text-sm md:text-base mb-8 max-w-xl mx-auto"
               style={{ color: PRIMARY, opacity: 0.75, fontFamily: "'DM Sans', sans-serif" }}
             >
-              Relatos da nossa Database
+              Resultados contados por alunas — só tiramos os nomes.
             </p>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4 items-stretch">
               {DEPOIMENTOS.map((d) => (
                 <figure
                   key={d.fala}
-                  className="rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm border p-4 md:p-5 flex flex-col"
+                  className="h-full rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm border p-4 md:p-5 flex flex-col"
                   style={{ background: PAPER, borderColor: "rgba(53,47,84,0.08)" }}
                 >
-                  <span
-                    aria-hidden
-                    className="block leading-none mb-1"
-                    style={{ fontFamily: "Georgia, serif", fontStyle: "italic", fontSize: 40, color: SALMAO, opacity: 0.55 }}
-                  >
-                    “
-                  </span>
                   <blockquote
                     className="flex-1 text-[14px] leading-relaxed"
                     style={{ color: PRIMARY, fontFamily: "Georgia, serif", fontStyle: "italic" }}
@@ -1272,7 +1265,7 @@ const Assinar = () => {
                     <p className="text-[9px] sm:text-[10px] uppercase tracking-wider font-bold mb-0.5" style={{ color: "#C93F3F" }}>
                       Receita
                     </p>
-                    <h3 className="font-serif font-bold text-[13px] sm:text-sm leading-tight mb-0.5" style={{ color: PRIMARY }}>
+                    <h3 className="font-serif font-bold text-[15px] sm:text-base leading-tight mb-0.5" style={{ color: PRIMARY }}>
                       {r.titulo}
                     </h3>
                     <p
@@ -1421,7 +1414,7 @@ const Assinar = () => {
         <section id="planos" style={{ background: SURFACE }}>
           <div className="max-w-[1040px] mx-auto px-4 sm:px-6 py-12 md:py-16">
             <h2
-              className="font-serif italic font-bold text-2xl md:text-[32px] text-center mb-2"
+              className="font-serif italic font-bold text-2xl md:text-[28px] text-center mb-2"
               style={{ color: PRIMARY }}
             >
               Escolha seu plano
@@ -1614,7 +1607,7 @@ const Assinar = () => {
                 <p className="text-[11px] uppercase tracking-wider font-bold mb-1.5" style={{ color: SALMAO }}>
                   Quem te guia
                 </p>
-                <h2 className="font-serif italic font-bold text-xl md:text-2xl mb-2" style={{ color: PRIMARY }}>
+                <h2 className="font-serif italic font-bold text-2xl md:text-[28px] mb-2" style={{ color: PRIMARY }}>
                   Edson Osorio
                 </h2>
                 <p
