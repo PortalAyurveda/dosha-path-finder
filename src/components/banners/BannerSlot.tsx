@@ -10,7 +10,24 @@ interface BannerSlotProps {
   slot: string;
   className?: string;
   fallback?: React.ReactNode;
+  /** Altura reservada (px) enquanto o banner carrega — evita pulo de layout (CLS). */
+  minHeight?: number;
 }
+
+/** Altura típica medida de cada slot em mobile. */
+const SLOT_MIN_HEIGHT: Record<string, number> = {
+  biblioteca: 140,
+  samkhya_home: 160,
+  blog_fim: 140,
+  video: 140,
+  video_fim: 140,
+  meu_dosha_meio: 150,
+  pesquisa_pos: 140,
+  home_topo: 150,
+  home_meio: 150,
+};
+const DEFAULT_MIN_HEIGHT = 140;
+
 
 const PRIORIDADE: Record<string, number> = { Vata: 0, Pitta: 1, Kapha: 2 };
 
