@@ -3,7 +3,8 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/contexts/UserContext";
 import { Send, Loader2, Lock } from "lucide-react";
-import AkashaMessageContent from "@/components/akasha/AkashaMessageContent";
+import AkashaMessageContent, { type AkashaRichCard } from "@/components/akasha/AkashaMessageContent";
+import MemoriaBadge from "@/components/akasha/MemoriaBadge";
 import { Link } from "react-router-dom";
 
 // Tokens renovam no 1º dia de cada mês
