@@ -144,6 +144,17 @@ const AdminAkasha = () => {
             </h1>
           </div>
 
+          <Tabs defaultValue="conversas" className="space-y-6">
+            <TabsList>
+              <TabsTrigger value="conversas">Conversas</TabsTrigger>
+              <TabsTrigger value="maiores">Maiores conversas</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="maiores">
+              <AdminAkashaMaiores />
+            </TabsContent>
+
+            <TabsContent value="conversas" className="space-y-6">
           {/* Busca */}
           <section className="bg-card border border-border rounded-xl p-4 flex flex-col sm:flex-row gap-2">
             <Input
