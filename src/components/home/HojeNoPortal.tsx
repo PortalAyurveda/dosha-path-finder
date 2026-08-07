@@ -83,6 +83,7 @@ const Media = ({
           src={imagem!}
           alt={titulo || ""}
           loading="lazy"
+              decoding="async"
           className="w-full h-full object-cover"
           onError={() => setOk(false)}
         />

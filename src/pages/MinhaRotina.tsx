@@ -1083,6 +1083,7 @@ const RotinaSlotCard = ({
           src={nugget.imagem_url}
           alt={nugget.titulo}
           loading="lazy"
+              decoding="async"
           className="float-right ml-4 mb-2 w-32 sm:w-40 aspect-square object-cover rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm shadow-sm"
         />
       )}
@@ -1257,6 +1258,7 @@ const RotinaSlotCard = ({
                       src={nugget.imagem_url}
                       alt={nugget.titulo}
                       loading="lazy"
+              decoding="async"
                       className="w-full h-full object-cover"
                     />
                   ) : (
@@ -1582,6 +1584,7 @@ const SuplementosSection = ({ vata, pitta, kapha }: SuplementosSectionProps) => 
                     alt={nome}
                     className="h-16 w-16 rounded-lg object-cover shrink-0 bg-muted"
                     loading="lazy"
+              decoding="async"
                   />
                 ) : (
                   <div className="h-16 w-16 rounded-lg bg-secondary/10 text-secondary flex items-center justify-center shrink-0">

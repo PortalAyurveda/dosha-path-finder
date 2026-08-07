@@ -50,6 +50,7 @@ const TerapeutaCard = ({ nome, cidade, estado, especialidade, resumo, imagem, sl
                     alt={`Foto de ${displayName}`}
                     className="h-full w-full object-cover object-center"
                     loading="lazy"
+              decoding="async"
                   />
                 ) : (
                   <div className="flex h-full w-full items-center justify-center bg-therapist-soft text-3xl font-bold text-therapist-ink">

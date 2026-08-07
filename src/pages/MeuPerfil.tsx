@@ -1201,6 +1201,7 @@ const CursosCard = ({ matriculas }: { matriculas: Matricula[] }) => {
                 alt=""
                 aria-hidden
                 loading="lazy"
+              decoding="async"
                 className="w-16 h-16 object-cover rounded-lg shrink-0"
               />
             ) : (

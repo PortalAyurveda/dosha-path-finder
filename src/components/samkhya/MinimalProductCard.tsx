@@ -25,6 +25,7 @@ const MinimalProductCard = ({ slug, nome, precoPix, imagemUrl, resumoCurto, to }
             src={imagemUrl}
             alt={nome}
             loading="lazy"
+              decoding="async"
             className="max-h-full max-w-full object-contain"
           />
         ) : (

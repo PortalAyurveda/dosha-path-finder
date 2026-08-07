@@ -129,6 +129,7 @@ const PreviaPersonalizada = ({ fallback }: Props) => {
               src={getTransformedImageUrl(a.image_url)}
               alt={a.title}
               loading="lazy"
+              decoding="async"
               className="w-24 h-20 sm:w-32 sm:h-24 object-cover rounded-lg shrink-0"
             />
           )}

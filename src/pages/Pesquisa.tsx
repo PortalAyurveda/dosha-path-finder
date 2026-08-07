@@ -117,6 +117,7 @@ const Pesquisa = () => {
                             alt=""
                             className="w-16 h-16 rounded-lg object-cover shrink-0 bg-muted"
                             loading="lazy"
+              decoding="async"
                           />
                         ) : (
                           <div className="w-16 h-16 rounded-lg bg-muted shrink-0" />

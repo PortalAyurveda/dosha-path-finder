@@ -168,6 +168,7 @@ const RegistrosAkashikos = () => {
               height={56}
               className="w-14 h-14 object-contain shrink-0 mt-1"
               loading="lazy"
+              decoding="async"
             />
             <div>
               <h1

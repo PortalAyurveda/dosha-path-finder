@@ -60,6 +60,7 @@ const LastItemCard = ({
             alt=""
             className="w-14 h-14 rounded-lg object-cover bg-muted shrink-0"
             loading="lazy"
+              decoding="async"
           />
         ) : (
           <div

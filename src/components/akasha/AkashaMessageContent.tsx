@@ -217,7 +217,8 @@ const MiniCard = ({
     <>
       <span className="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-akasha/10 text-akasha">
         {card.imagem ? (
-          <img src={card.imagem} alt="" className="h-full w-full object-cover" loading="lazy" />
+          <img src={card.imagem} alt="" className="h-full w-full object-cover" loading="lazy"
+              decoding="async" />
         ) : (
           <Icon className="h-4.5 w-4.5" />
         )}

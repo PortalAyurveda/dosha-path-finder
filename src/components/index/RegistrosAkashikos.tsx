@@ -70,6 +70,7 @@ const RegistrosAkashikos = () => {
               height={48}
               className="w-12 h-12 md:w-14 md:h-14 object-contain shrink-0 mt-1"
               loading="lazy"
+              decoding="async"
             />
             <Link to="/registros-akashikos" className="hover:opacity-80 transition-opacity">
               <span>

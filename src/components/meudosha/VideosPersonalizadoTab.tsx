@@ -307,6 +307,7 @@ const VideosPersonalizadoTab = ({
                 alt={video.novo_titulo || "Vídeo"}
                 className="w-full sm:w-48 aspect-video object-cover rounded-lg shrink-0"
                 loading="lazy"
+              decoding="async"
               />
               <div className="flex-1 space-y-2 pr-20">
                 <h3 className="font-serif text-base font-semibold text-primary line-clamp-2">

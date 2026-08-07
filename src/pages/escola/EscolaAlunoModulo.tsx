@@ -269,6 +269,7 @@ const AulasBlock = ({ modulo, theme }: { modulo: Modulo; theme: Theme }) => {
                         src={`https://img.youtube.com/vi/${yt}/mqdefault.jpg`}
                         alt={v.titulo}
                         loading="lazy"
+              decoding="async"
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                       />
                     ) : (

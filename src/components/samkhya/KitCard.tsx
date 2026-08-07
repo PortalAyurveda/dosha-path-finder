@@ -33,6 +33,7 @@ const KitCard = ({ kit }: KitCardProps) => {
             src={kit.imagem_url}
             alt={kit.nome}
             loading="lazy"
+              decoding="async"
             className="max-h-full max-w-full object-contain"
           />
         ) : (

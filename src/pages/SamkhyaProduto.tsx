@@ -235,6 +235,7 @@ const SamkhyaProduto = () => {
                             src={p.imagem}
                             alt={p.nome}
                             loading="lazy"
+              decoding="async"
                             className="max-h-full max-w-full object-contain"
                           />
                         ) : (
