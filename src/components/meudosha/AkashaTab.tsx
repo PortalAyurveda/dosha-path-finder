@@ -38,6 +38,7 @@ interface ChatMessage {
   role: "user" | "assistant";
   content: string;
   time?: string;
+  cards?: AkashaRichCard[] | null;
 }
 
 const formatBrazilTime = (value?: string | Date | null) => {
