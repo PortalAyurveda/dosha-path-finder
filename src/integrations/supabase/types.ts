@@ -625,6 +625,45 @@ export type Database = {
           },
         ]
       }
+      banners_backup_070826: {
+        Row: {
+          ativo: boolean | null
+          atualizado_em: string | null
+          campanha: string | null
+          criado_em: string | null
+          html: string | null
+          id: string | null
+          ordem: number | null
+          slot: string | null
+          tags: string[] | null
+          titulo_admin: string | null
+        }
+        Insert: {
+          ativo?: boolean | null
+          atualizado_em?: string | null
+          campanha?: string | null
+          criado_em?: string | null
+          html?: string | null
+          id?: string | null
+          ordem?: number | null
+          slot?: string | null
+          tags?: string[] | null
+          titulo_admin?: string | null
+        }
+        Update: {
+          ativo?: boolean | null
+          atualizado_em?: string | null
+          campanha?: string | null
+          criado_em?: string | null
+          html?: string | null
+          id?: string | null
+          ordem?: number | null
+          slot?: string | null
+          tags?: string[] | null
+          titulo_admin?: string | null
+        }
+        Relationships: []
+      }
       banners_molde: {
         Row: {
           atualizado_em: string

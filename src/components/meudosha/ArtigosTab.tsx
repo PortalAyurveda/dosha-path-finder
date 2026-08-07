@@ -62,6 +62,7 @@ const ArtigosTab = ({ agravVataTags, agravPittaTags, agravKaphaTags, doshaprinci
   const [subTab, setSubTab] = useState<SubTab>(initialMode);
   const { profile } = useUser();
   const isPremium = profile?.is_premium === true;
+  const isAssinante = profile?.subscription_status === "active";
   const [searchTerm, setSearchTerm] = useState("");
   const [isAdvanced, setIsAdvanced] = useState(false);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
@@ -269,7 +270,7 @@ const ArtigosTab = ({ agravVataTags, agravPittaTags, agravKaphaTags, doshaprinci
       )}
 
       {/* Premium lock for personalizado / pesquisa */}
-      {subTab !== "registros" && ((subTab === "personalizado" || subTab === "pesquisa") && !isPremium ? (
+      {subTab !== "registros" && ((subTab === "personalizado" && !isAssinante) || (subTab === "pesquisa" && !isPremium) ? (
         <PremiumLock>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 min-h-[300px]">
             {[1, 2, 3].map((i) => (

@@ -20,6 +20,7 @@ const VideosTab = ({ doshaprincipal, agravVataTags, agravPittaTags, agravKaphaTa
   const [mode, setMode] = useState<Mode>(initialMode);
   const { profile } = useUser();
   const isPremium = profile?.is_premium === true;
+  const isAssinante = profile?.subscription_status === "active";
 
   return (
     <div className="space-y-4 mt-4">
@@ -59,7 +60,7 @@ const VideosTab = ({ doshaprincipal, agravVataTags, agravPittaTags, agravKaphaTa
       {mode === "gerais" && <VideosGeneralTab doshaprincipal={doshaprincipal} />}
 
       {mode === "personalizado" && (
-        isPremium ? (
+        isAssinante ? (
           <VideosPersonalizadoTab
             agravVataTags={agravVataTags}
             agravPittaTags={agravPittaTags}

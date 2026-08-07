@@ -33,6 +33,7 @@ import { toast } from "@/hooks/use-toast";
 import { ClinicalThermometer } from "./MeuDosha";
 import DoshaPieChart from "@/components/charts/DoshaPieChart";
 import DoshaClock from "@/components/dosha/DoshaClock";
+import PreviaPersonalizada from "@/components/assinar/PreviaPersonalizada";
 
 import {
   AlertDialog,
@@ -81,6 +82,41 @@ const INCLUSOS: Record<Plano, Set<number>> = {
   mensal: new Set([1, 2, 3, 4, 5, 7]),
   anual: new Set([1, 2, 3, 4, 5, 6, 7]),
 };
+
+const DEPOIMENTOS = [
+  {
+    fala: "Fiz 3 consultas com o Edson — era Vata e Pitta agravadíssimo, com alergias de 8 anos. Em 6 meses de tratamento disciplinado saí do quadro alérgico e emagreci uns 10 kg. Fiquei ótima.",
+    credencial: "2 meses no Portal · 33 conversas com a Akasha · paciente da clínica",
+  },
+  {
+    fala: "Dormi melhor. E peguei meus exames laboratoriais — estão ótimos. Gratidão.",
+    credencial: "3 meses no Portal · 363 conversas com a Akasha",
+  },
+  {
+    fala: "Meu intestino tem funcionado bem — e não como salada crua desde que comecei com o Ayurveda, há 1 ano.",
+    credencial: "1 ano de Ayurveda",
+  },
+  {
+    fala: "A rinite melhorou. Eu melhorei bastante.",
+    credencial: "Assinante da Rotina · aluna de Rotinas Diárias",
+  },
+  {
+    fala: "Tomei a panacéia e a sensação de saliva grossa passou.",
+    credencial: "Assinante Anual · 200 conversas com a Akasha",
+  },
+  {
+    fala: "Quando tomo o madhu anti vata, durmo melhor.",
+    credencial: "Cliente Samkhya",
+  },
+  {
+    fala: "Estou seguindo a rotina de alimentação que comprei aqui no portal.",
+    credencial: "Assinante da Rotina",
+  },
+  {
+    fala: "Os pés incham menos desde que comecei a introduzir o Ayurveda.",
+    credencial: "Aluna do Portal",
+  },
+];
 
 const RECEITAS = [
   {
@@ -750,6 +786,9 @@ const Assinar = () => {
               O teste gratuito desenha seu quadro — e o Portal trabalha em cima dele.
             </p>
 
+            <PreviaPersonalizada
+              fallback={
+                <>
             <div
               className="relative rounded-2xl border bg-card shadow-sm overflow-hidden max-w-[680px] mx-auto"
               style={{ borderColor: "rgba(53,47,84,0.14)" }}
@@ -837,6 +876,21 @@ const Assinar = () => {
                 </p>
               </div>
             </div>
+
+            <div className="text-center mt-5">
+              <button
+                type="button"
+                onClick={() => navigate("/teste-de-dosha")}
+                className="inline-flex items-center justify-center px-6 py-2.5 rounded-full font-semibold text-sm text-white transition-colors"
+                style={{ backgroundColor: SALMAO }}
+              >
+                Fazer meu teste grátis (5 min)
+              </button>
+            </div>
+                </>
+              }
+            />
+
           </div>
         </section>
 
@@ -1120,6 +1174,54 @@ const Assinar = () => {
           </div>
         </section>
 
+        {/* 4b) QUEM JÁ VIVE ISSO — depoimentos */}
+        <section className="bg-background">
+          <div className="max-w-[1040px] mx-auto px-4 sm:px-6 pb-10 md:pb-14">
+            <h2
+              className="font-serif italic font-bold text-2xl md:text-[28px] text-center mb-2"
+              style={{ color: PRIMARY }}
+            >
+              Quem já vive isso
+            </h2>
+            <p
+              className="text-center text-sm md:text-base mb-8 max-w-xl mx-auto"
+              style={{ color: PRIMARY, opacity: 0.75, fontFamily: "'DM Sans', sans-serif" }}
+            >
+              Falas reais de alunas e pacientes — só tiramos os nomes.
+            </p>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
+              {DEPOIMENTOS.map((d) => (
+                <figure
+                  key={d.fala}
+                  className="rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm border p-4 md:p-5 flex flex-col"
+                  style={{ background: PAPER, borderColor: "rgba(53,47,84,0.08)" }}
+                >
+                  <span
+                    aria-hidden
+                    className="block leading-none mb-1"
+                    style={{ fontFamily: "Georgia, serif", fontStyle: "italic", fontSize: 40, color: SALMAO, opacity: 0.55 }}
+                  >
+                    “
+                  </span>
+                  <blockquote
+                    className="flex-1 text-[14px] leading-relaxed"
+                    style={{ color: PRIMARY, fontFamily: "Georgia, serif", fontStyle: "italic" }}
+                  >
+                    {d.fala}
+                  </blockquote>
+                  <figcaption
+                    className="mt-3 pt-3 border-t text-[10px] uppercase tracking-wider font-bold"
+                    style={{ borderColor: "rgba(53,47,84,0.08)", color: PRIMARY, opacity: 0.6, fontFamily: "'DM Sans', sans-serif" }}
+                  >
+                    {d.credencial}
+                  </figcaption>
+                </figure>
+              ))}
+            </div>
+          </div>
+        </section>
+
         {/* 5) COMIDA E CONTEÚDO DE VERDADE */}
         <section style={{ background: SURFACE }}>
           <div className="max-w-[1040px] mx-auto px-4 sm:px-6 py-10 md:py-14">
@@ -1311,7 +1413,61 @@ const Assinar = () => {
               Comece pela rotina ou vá direto no Portal inteiro — a escolha é sua.
             </p>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-5 items-stretch">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5 items-stretch">
+              {/* CARD 0 — BÁSICO (GRÁTIS) */}
+              <div className={cardBase} style={{ background: "#fff", borderColor: "rgba(53,47,84,0.16)" }}>
+                <div className="flex items-center justify-between mb-3">
+                  <p className="text-[11px] uppercase tracking-wider font-bold" style={{ color: PRIMARY, opacity: 0.6 }}>
+                    Básico
+                  </p>
+                  <PortalMark size={22} />
+                </div>
+                <h3 className="font-serif font-bold text-xl mb-1" style={{ color: PRIMARY }}>
+                  Descobrindo meu Dosha
+                </h3>
+                <p className="font-serif font-bold text-2xl mb-1" style={{ color: PRIMARY }}>
+                  R$ 0
+                </p>
+                <p className="text-xs mb-4" style={{ color: PRIMARY, opacity: 0.6, fontFamily: "'DM Sans', sans-serif" }}>
+                  O primeiro degrau — sempre grátis.
+                </p>
+                <ul className="space-y-2 mb-5 flex-1">
+                  {[
+                    "Teste de dosha completo + análise",
+                    "Seu retrato no /meu-dosha",
+                    "Biblioteca com 900+ aulas abertas",
+                    "Akasha — 10 conversas por mês (memória de 24h)",
+                  ].map((texto) => (
+                    <li key={texto} className="flex items-start gap-2">
+                      <Check className="w-4 h-4 shrink-0 mt-0.5" style={{ color: "rgba(53,47,84,0.55)" }} strokeWidth={2.6} />
+                      <span
+                        className="text-[13px] leading-snug"
+                        style={{ color: PRIMARY, opacity: 0.85, fontFamily: "'DM Sans', sans-serif" }}
+                      >
+                        {texto}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+                {user && !isAssinante && doshaResult ? (
+                  <div
+                    className="mt-auto w-full py-2.5 rounded-full text-sm text-center font-semibold"
+                    style={{ background: "rgba(53,47,84,0.06)", color: PRIMARY, fontFamily: "'DM Sans', sans-serif" }}
+                  >
+                    Seu plano atual
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => navigate("/teste-de-dosha")}
+                    className="mt-auto w-full py-2.5 rounded-full font-semibold text-sm border transition-colors"
+                    style={{ borderColor: "rgba(53,47,84,0.25)", color: PRIMARY, background: "#fff" }}
+                  >
+                    Fazer meu teste grátis
+                  </button>
+                )}
+              </div>
+
               {/* CARD 1 — MINHA ROTINA */}
               <div className={cardBase} style={{ background: VERDE_BG, borderColor: `${VERDE}33` }}>
                 {planoAtual === "rotina" && <SeuPlanoBadge />}

@@ -4,9 +4,11 @@ import { Button } from "@/components/ui/button";
 
 interface PremiumLockProps {
   children: React.ReactNode;
+  ctaLabel?: string;
+  message?: string;
 }
 
-const PremiumLock = ({ children }: PremiumLockProps) => {
+const PremiumLock = ({ children, ctaLabel = "Assinar agora", message = "Conteúdo exclusivo para membros Premium" }: PremiumLockProps) => {
   return (
     <div className="relative">
       {/* Conteúdo desfocado abaixo */}
@@ -24,11 +26,12 @@ const PremiumLock = ({ children }: PremiumLockProps) => {
             <Lock className="h-6 w-6 text-primary" />
           </div>
           <p className="text-sm font-medium text-foreground">
-            Conteúdo exclusivo para membros Premium
+            {message}
           </p>
           <Button asChild className="w-full">
-            <Link to="/assinar">Assinar agora</Link>
+            <Link to="/assinar">{ctaLabel}</Link>
           </Button>
+
         </div>
       </div>
     </div>
