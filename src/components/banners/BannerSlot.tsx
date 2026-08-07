@@ -176,6 +176,14 @@ const BannerSlot = ({ slot, className, fallback, minHeight }: BannerSlotProps) =
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [escolhido?.id]);
 
+  const alturaReservada = minHeight ?? SLOT_MIN_HEIGHT[slot] ?? DEFAULT_MIN_HEIGHT;
+
+  // Enquanto o banner não chega, o espaço já fica reservado (evita CLS).
+  if (bannersLoading) {
+    return <div className={className} style={{ minHeight: alturaReservada }} aria-hidden="true" />;
+  }
+
+  // Slot vazio no banco: colapsa de vez (sem flash de espaço vazio).
   if (!escolhido) return <>{fallback ?? null}</>;
 
   return (
