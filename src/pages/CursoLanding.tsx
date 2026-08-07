@@ -211,7 +211,7 @@ const CursoLanding = () => {
                 width={1600}
                 height={900}
                 className="w-full h-full object-cover"
-              />
+               loading="lazy" decoding="async" />
             </div>
           )}
           <div className="max-w-4xl mx-auto px-4 -mt-16 md:-mt-24 relative">

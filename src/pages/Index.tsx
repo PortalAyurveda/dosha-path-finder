@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, Suspense, lazy } from "react";
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { useQuery } from "@tanstack/react-query";
@@ -23,11 +23,14 @@ import { Badge } from "@/components/ui/badge";
 import { BLOG_TAGS } from "@/data/blogTags";
 import { cn } from "@/lib/utils";
 import { slugify } from "@/lib/slugify";
-import FundamentosAyurveda from "@/components/index/FundamentosAyurveda";
 import Hero from "@/components/home/Hero";
 import LoggedHero from "@/components/home/LoggedHero";
-import PrateleiraSamkhya from "@/components/samkhya/PrateleiraSamkhya";
 import HojeNoPortal from "@/components/home/HojeNoPortal";
+
+// Seções abaixo da dobra — chunks separados, com altura reservada no fallback.
+const FundamentosAyurveda = lazy(() => import("@/components/index/FundamentosAyurveda"));
+const PrateleiraSamkhya = lazy(() => import("@/components/samkhya/PrateleiraSamkhya"));
+
 
 
 /* ---------- Design tokens (scoped to this page) ---------- */
@@ -259,6 +262,7 @@ const ColumnCard = ({
             width={400}
             height={225}
             loading="lazy"
+              decoding="async"
             className="w-full h-full object-cover"
             onError={(e) => {
               (e.currentTarget as HTMLImageElement).style.display = "none";
@@ -660,8 +664,12 @@ const Index = () => {
         )}
         <HojeNoPortal />
         <FeedSocial />
-        <FundamentosAyurveda />
-        <PrateleiraSamkhya doshaPrincipal={doshaResult?.doshaprincipal ?? null} />
+        <Suspense fallback={<div className="min-h-[520px]" aria-hidden />}>
+          <FundamentosAyurveda />
+        </Suspense>
+        <Suspense fallback={<div className="min-h-[420px]" aria-hidden />}>
+          <PrateleiraSamkhya doshaPrincipal={doshaResult?.doshaprincipal ?? null} />
+        </Suspense>
       </main>
     </>
   );

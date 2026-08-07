@@ -252,7 +252,7 @@ const Conteudo = ({ aluno }: { aluno: AlunoRow }) => {
                         aria-hidden
                         className="pointer-events-none absolute -right-2 top-1/2 -translate-y-1/2 w-[72px] h-[72px] object-contain z-0"
                         style={{ opacity: 0.09 }}
-                      />
+                       loading="lazy" decoding="async" />
                     </div>
                   );
 

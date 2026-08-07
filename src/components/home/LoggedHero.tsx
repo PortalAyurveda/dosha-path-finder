@@ -551,6 +551,7 @@ const LoggedHero = () => {
                                 alt={nug.titulo}
                                 className="w-full h-full object-cover"
                                 loading="lazy"
+              decoding="async"
                               />
                             </div>
                           )}

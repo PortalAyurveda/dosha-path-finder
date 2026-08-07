@@ -10,7 +10,24 @@ interface BannerSlotProps {
   slot: string;
   className?: string;
   fallback?: React.ReactNode;
+  /** Altura reservada (px) enquanto o banner carrega — evita pulo de layout (CLS). */
+  minHeight?: number;
 }
+
+/** Altura típica medida de cada slot em mobile. */
+const SLOT_MIN_HEIGHT: Record<string, number> = {
+  biblioteca: 140,
+  samkhya_home: 160,
+  blog_fim: 140,
+  video: 140,
+  video_fim: 140,
+  meu_dosha_meio: 150,
+  pesquisa_pos: 140,
+  home_topo: 150,
+  home_meio: 150,
+};
+const DEFAULT_MIN_HEIGHT = 140;
+
 
 const PRIORIDADE: Record<string, number> = { Vata: 0, Pitta: 1, Kapha: 2 };
 
@@ -46,7 +63,7 @@ function agniTag(agni: string | null | undefined): string | null {
   return null;
 }
 
-const BannerSlot = ({ slot, className, fallback }: BannerSlotProps) => {
+const BannerSlot = ({ slot, className, fallback, minHeight }: BannerSlotProps) => {
   const { user, profile, doshaResult } = useUser();
   const location = useLocation();
 
@@ -67,7 +84,7 @@ const BannerSlot = ({ slot, className, fallback }: BannerSlotProps) => {
     staleTime: 10 * 60 * 1000,
   });
 
-  const { data: banners } = useQuery({
+  const { data: banners, isLoading: bannersLoading } = useQuery({
     queryKey: ["banners-slot", slot],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -159,6 +176,19 @@ const BannerSlot = ({ slot, className, fallback }: BannerSlotProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [escolhido?.id]);
 
+  const alturaReservada = minHeight ?? SLOT_MIN_HEIGHT[slot] ?? DEFAULT_MIN_HEIGHT;
+
+  // Enquanto o banner não chega, o espaço já fica reservado (evita CLS).
+  if (bannersLoading) {
+    return (
+      <div className={className} aria-hidden="true">
+        {/* filho vazio garante que o `[&:empty]:hidden` dos slots não esconda a reserva */}
+        <span className="block" style={{ minHeight: alturaReservada }} />
+      </div>
+    );
+  }
+
+  // Slot vazio no banco: colapsa de vez (sem flash de espaço vazio).
   if (!escolhido) return <>{fallback ?? null}</>;
 
   return (

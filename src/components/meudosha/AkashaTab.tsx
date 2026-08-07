@@ -263,7 +263,7 @@ const AkashaTab = ({
       <div ref={chatContainerRef} className="flex-1 overflow-y-auto overscroll-contain space-y-3 pb-3 px-1 min-h-[50vh]">
         {/* Akasha Header - compacto */}
         <div className="flex items-center justify-center gap-2 pb-2 pt-1">
-          <img src={AKASHA_LOGO} alt="Akasha IA" className="w-7 h-7 object-contain shrink-0" />
+          <img src={AKASHA_LOGO} alt="Akasha IA" className="w-7 h-7 object-contain shrink-0"  loading="lazy" decoding="async" />
           <div className="flex flex-col leading-tight">
             <h2 className="font-serif text-sm font-bold text-akasha">Akasha IA</h2>
             <p className="text-[10px] text-muted-foreground/80">
@@ -284,7 +284,7 @@ const AkashaTab = ({
         {messages.map((msg, i) => (
           <div key={i} className={`flex items-start gap-2 ${msg.role === "user" ? "flex-row-reverse" : ""}`}>
             {msg.role === "assistant" && (
-              <img src={AKASHA_LOGO} alt="" className="w-7 h-7 rounded-full object-contain shrink-0 mt-1 bg-akasha/10 p-0.5" />
+              <img src={AKASHA_LOGO} alt="" className="w-7 h-7 rounded-full object-contain shrink-0 mt-1 bg-akasha/10 p-0.5"  loading="lazy" decoding="async" />
             )}
             <div className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${
               msg.role === "user"
@@ -315,7 +315,7 @@ const AkashaTab = ({
 
         {sending && (
           <div className="flex items-start gap-2">
-            <img src={AKASHA_LOGO} alt="" className="w-7 h-7 rounded-full object-contain shrink-0 mt-1 bg-akasha/10 p-0.5" />
+            <img src={AKASHA_LOGO} alt="" className="w-7 h-7 rounded-full object-contain shrink-0 mt-1 bg-akasha/10 p-0.5"  loading="lazy" decoding="async" />
             <div className="bg-akasha/10 rounded-2xl rounded-tl-sm px-4 py-3">
               <div className="flex gap-1">
                 <span className="w-2 h-2 bg-akasha/60 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />

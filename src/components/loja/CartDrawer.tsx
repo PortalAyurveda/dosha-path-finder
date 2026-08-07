@@ -481,7 +481,7 @@ const CartDrawer = () => {
                   >
                     <div className="w-16 h-16 flex-shrink-0 rounded overflow-hidden bg-white flex items-center justify-center">
                       {it.imagem_url ? (
-                        <img src={it.imagem_url} alt={it.nome} className="max-w-full max-h-full object-contain" />
+                        <img src={it.imagem_url} alt={it.nome} className="max-w-full max-h-full object-contain"  loading="lazy" decoding="async" />
                       ) : null}
                     </div>
                     <div className="flex-1 min-w-0">

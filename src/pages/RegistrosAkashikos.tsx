@@ -101,7 +101,7 @@ const RegistrosAkashikos = () => {
     queryKey: ["registros_akashikos_list", debouncedQuery, selectedTags, page],
     queryFn: async () => {
       let q = supabase
-        .from("akasha_memory")
+        .from("registros_akashikos_publicos")
         .select("id, titulo, texto_inicio, tags, data_postagem", { count: "exact" })
         .not("titulo", "is", null);
 
@@ -168,6 +168,7 @@ const RegistrosAkashikos = () => {
               height={56}
               className="w-14 h-14 object-contain shrink-0 mt-1"
               loading="lazy"
+              decoding="async"
             />
             <div>
               <h1

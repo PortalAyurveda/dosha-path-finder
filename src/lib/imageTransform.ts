@@ -21,13 +21,27 @@ export function rewriteImageHost(url: string | null | undefined): string {
 }
 
 /**
- * Returns the image URL as-is (sem transform), mas reescrevendo o host
- * para o domínio público de imagens.
+ * Retorna a URL da imagem já reescrita para o domínio público e, quando for
+ * uma imagem do Supabase Storage, usando o endpoint de transformação
+ * (`/render/image/public/...?width=...&quality=...`) no tamanho de exibição.
+ * Formatos que não suportam transform (svg/gif) e URLs externas passam direto.
  */
 export function getTransformedImageUrl(
   url: string | null | undefined,
-  _width = 600,
-  _quality = 80,
+  width = 600,
+  quality = 75,
 ): string {
-  return rewriteImageHost(url);
+  const base = rewriteImageHost(url);
+  if (!base) return "";
+  if (!base.includes("/storage/v1/object/public/")) return base;
+  if (/\.(svg|gif)(\?|$)/i.test(base)) return base;
+  if (base.includes("/render/image/")) return base;
+
+  const [path, existingQuery] = base.split("?");
+  const rendered = path.replace("/storage/v1/object/public/", "/storage/v1/render/image/public/");
+  const params = new URLSearchParams(existingQuery ?? "");
+  params.set("width", String(Math.round(width)));
+  params.set("quality", String(quality));
+  return `${rendered}?${params.toString()}`;
 }
+

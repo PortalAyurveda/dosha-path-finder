@@ -24,7 +24,7 @@ const CourseHeader = ({ courseLogo, courseColor, darkColor, ctaText, onCtaClick 
             src={courseLogo}
             alt="Curso de Alimentação Ayurveda"
             className="h-10 md:h-12 w-auto object-contain"
-          />
+           loading="lazy" decoding="async" />
         </a>
 
         {/* Desktop CTA */}
@@ -53,7 +53,7 @@ const CourseHeader = ({ courseLogo, courseColor, darkColor, ctaText, onCtaClick 
           >
             <SheetTitle className="sr-only">Menu</SheetTitle>
             <div className="flex flex-col gap-6 pt-8">
-              <img src={courseLogo} alt="" className="h-14 w-auto object-contain self-start" />
+              <img src={courseLogo} alt="" className="h-14 w-auto object-contain self-start"  loading="lazy" decoding="async" />
               <button
                 onClick={() => {
                   setOpen(false);

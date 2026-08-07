@@ -294,7 +294,7 @@ const SamkhyaPedido = () => {
                             src={it.imagem_url}
                             alt=""
                             className="w-12 h-12 rounded object-cover"
-                          />
+                           loading="lazy" decoding="async" />
                         )}
                         <div className="flex-1 min-w-0">
                           <div

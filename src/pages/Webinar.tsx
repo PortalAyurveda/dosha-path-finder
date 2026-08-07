@@ -239,6 +239,7 @@ const Webinar = ({ data }: { data: WebinarRow }) => {
                   "linear-gradient(to bottom, black 0%, black 82%, transparent 100%)",
               }}
               loading="lazy"
+              decoding="async"
             />
           )}
         </div>

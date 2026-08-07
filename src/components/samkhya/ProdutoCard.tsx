@@ -32,6 +32,7 @@ const ProdutoCard = ({ produto }: ProdutoCardProps) => {
             src={produto.imagem_url}
             alt={produto.nome_display}
             loading="lazy"
+              decoding="async"
             className="max-h-full max-w-full object-contain transition-transform group-hover:scale-105"
           />
         ) : (

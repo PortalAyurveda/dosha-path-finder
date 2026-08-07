@@ -28,6 +28,7 @@ const FormacaoProfessorSection = ({ data, branding }: Props) => (
               className="w-full h-full object-cover"
               style={{ objectPosition: "center 15%" }}
               loading="lazy"
+              decoding="async"
             />
           </div>
         </motion.div>

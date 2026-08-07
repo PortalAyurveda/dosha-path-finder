@@ -340,6 +340,7 @@ const ArtigosTab = ({ agravVataTags, agravPittaTags, agravKaphaTags, doshaprinci
                           alt={article.title}
                           className="w-full sm:w-48 aspect-video object-cover rounded-lg"
                           loading="lazy"
+              decoding="async"
                         />
                       </Link>
                     )}
@@ -403,6 +404,7 @@ const ArtigosTab = ({ agravVataTags, agravPittaTags, agravKaphaTags, doshaprinci
                             alt={article.title}
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                             loading="lazy"
+              decoding="async"
                           />
                         </div>
                       )}
@@ -491,7 +493,7 @@ const RegistrosAkashikosInline = () => {
     queryKey: ["artigos_tab_registros_akashikos"],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("akasha_memory")
+        .from("registros_akashikos_publicos")
         .select("id, titulo, tags, data_postagem")
         .not("titulo", "is", null)
         .order("data_postagem", { ascending: false })

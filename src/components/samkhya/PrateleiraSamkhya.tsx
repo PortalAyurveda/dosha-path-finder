@@ -69,7 +69,7 @@ const PrateleiraSamkhya = ({ doshaPrincipal, titulo }: PrateleiraSamkhyaProps) =
               alt="Samkhya"
               style={{ height: 30 }}
               className="w-auto"
-            />
+             loading="lazy" decoding="async" />
           </div>
           <div className="text-center">
             <h2
@@ -117,6 +117,7 @@ const PrateleiraSamkhya = ({ doshaPrincipal, titulo }: PrateleiraSamkhyaProps) =
                     src={item.imagem}
                     alt={item.nome}
                     loading="lazy"
+              decoding="async"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                 ) : null}

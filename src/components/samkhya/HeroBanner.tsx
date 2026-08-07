@@ -32,16 +32,27 @@ const HeroBanner = ({
       <img
         src={bannerUrl}
         alt="Banner Samkhya"
+        width={1920}
+        height={550}
         className="hidden md:block w-full h-auto"
+        loading="eager"
+        fetchPriority="high"
+        decoding="async"
       />
       <img
         src={bannerMobileUrl}
         alt="Banner Samkhya"
+        width={1920}
+        height={550}
         className="block md:hidden w-full h-auto"
+        loading="eager"
+        fetchPriority="high"
+        decoding="async"
         onError={(e) => {
           (e.currentTarget as HTMLImageElement).src = bannerUrl;
         }}
       />
+
     </Link>
   );
 };

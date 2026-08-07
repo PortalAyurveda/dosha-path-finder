@@ -390,6 +390,7 @@ const Video = () => {
                             src={`https://img.youtube.com/vi/${r.video_id}/mqdefault.jpg`}
                             alt={r.novo_titulo || "Vídeo"}
                             loading="lazy"
+              decoding="async"
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                           />
                           <span className="absolute inset-0 flex items-center justify-center bg-black/10 group-hover:bg-black/0">

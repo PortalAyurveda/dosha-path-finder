@@ -265,7 +265,7 @@ const CursoEstudar = () => {
                 alt=""
                 aria-hidden
                 className="w-full sm:w-40 md:w-48 aspect-[4/3] object-cover rounded-2xl shadow-md shrink-0"
-              />
+               loading="lazy" decoding="async" />
             )}
             <div className="flex-1 min-w-0">
               <h1

@@ -14,6 +14,7 @@ const Bullet = ({ src, size = 20, className = "" }: BulletProps) => (
     className={`shrink-0 select-none ${className}`}
     style={{ width: size, height: size }}
     loading="lazy"
+              decoding="async"
   />
 );
 

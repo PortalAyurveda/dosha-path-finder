@@ -209,7 +209,7 @@ const LiveChat = ({ slug }: Props) => {
                     src="/favicon.svg"
                     alt="Portal Ayurveda"
                     className="h-3.5 w-3.5 shrink-0"
-                  />
+                   loading="lazy" decoding="async" />
                 )}
                 <span className="font-semibold text-primary text-[13px]">{m.nome}</span>
                 <span className="text-[10px] text-muted-foreground">

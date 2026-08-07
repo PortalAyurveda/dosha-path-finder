@@ -163,6 +163,7 @@ const EscolaHub = () => {
                           width={80}
                           height={80}
                           loading="lazy"
+              decoding="async"
                           className="w-16 h-16 rounded object-cover shrink-0"
                         />
                       ) : (

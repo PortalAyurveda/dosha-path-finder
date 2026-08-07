@@ -288,6 +288,7 @@ const ResultItem = ({ r, onClick }: { r: Resultado; onClick: () => void }) => (
         alt=""
         className="w-10 h-10 rounded-md object-cover shrink-0 bg-muted"
         loading="lazy"
+              decoding="async"
       />
     ) : (
       <div className="w-10 h-10 rounded-md bg-muted shrink-0" />

@@ -136,7 +136,7 @@ const SamkhyaKit = () => {
           <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-start">
             <div className="aspect-square rounded-lg flex items-center justify-center p-4 md:p-6">
               {kit.imagem_url ? (
-                <img src={kit.imagem_url} alt={kit.nome} className="max-h-full max-w-full object-contain" />
+                <img src={kit.imagem_url} alt={kit.nome} className="max-h-full max-w-full object-contain"  loading="lazy" decoding="async" />
               ) : (
                 <span style={{ color: samkhyaTokens.textoSec }}>Sem imagem</span>
               )}
@@ -216,7 +216,7 @@ const SamkhyaKit = () => {
                                   src={op.imagem_url}
                                   alt={op.nome}
                                   className="max-w-full max-h-full object-contain"
-                                />
+                                 loading="lazy" decoding="async" />
                               ) : null}
                             </div>
                             <div className="min-w-0">

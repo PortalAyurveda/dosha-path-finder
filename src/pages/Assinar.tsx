@@ -177,7 +177,7 @@ const PortalMark = ({ size = 28 }: { size?: number }) => (
     height={size}
     className="inline-block"
     style={{ width: size, height: size }}
-  />
+   loading="lazy" decoding="async" />
 );
 
 const Assinar = () => {
@@ -474,7 +474,8 @@ const Assinar = () => {
         style={{ background: "#fff", borderColor: `${DOURADO}55` }}
       >
         {cursoRotinas?.capa_url ? (
-          <img src={cursoRotinas.capa_url} alt="" aria-hidden loading="lazy" className="w-10 h-10 object-cover rounded-lg shrink-0" />
+          <img src={cursoRotinas.capa_url} alt="" aria-hidden loading="lazy"
+              decoding="async" className="w-10 h-10 object-cover rounded-lg shrink-0" />
         ) : (
           <span className="w-10 h-10 rounded-lg shrink-0 flex items-center justify-center" style={{ background: DOURADO_BG }}>
             <Gift className="w-4 h-4" style={{ color: DOURADO }} />
@@ -560,7 +561,7 @@ const Assinar = () => {
                       src={cardReceita.imagem_url}
                       alt={cardReceita.titulo ?? "Receita"}
                       className="w-full h-[220px] object-cover"
-                    />
+                     loading="lazy" decoding="async" />
                   ) : (
                     <div className="w-full h-[220px]" style={{ background: PAPER }} />
                   )}
@@ -1259,7 +1260,8 @@ const Assinar = () => {
                   style={{ background: PAPER, borderColor: "rgba(53,47,84,0.08)" }}
                 >
                   <div className="w-24 shrink-0 sm:w-auto sm:aspect-[4/3] overflow-hidden">
-                    <img src={r.url} alt={r.titulo} loading="lazy" className="w-full h-full object-cover" />
+                    <img src={r.url} alt={r.titulo} loading="lazy"
+              decoding="async" className="w-full h-full object-cover" />
                   </div>
                   <div className="p-2.5 sm:p-3 min-w-0 flex-1">
                     <p className="text-[9px] sm:text-[10px] uppercase tracking-wider font-bold mb-0.5" style={{ color: "#C93F3F" }}>
@@ -1368,6 +1370,7 @@ const Assinar = () => {
                       alt=""
                       aria-hidden
                       loading="lazy"
+              decoding="async"
                       className="w-16 h-16 object-cover rounded-lg shrink-0"
                     />
                   ) : (
@@ -1599,6 +1602,7 @@ const Assinar = () => {
                     src={PROFESSOR_PHOTO}
                     alt="Professor Edson Osorio"
                     loading="lazy"
+              decoding="async"
                     className="w-full h-full object-cover"
                   />
                 </div>

@@ -120,11 +120,17 @@ const BlogArticle = () => {
         {article.image_url && (
           <div className="aspect-video rounded-xl overflow-hidden mb-8">
             <img
-              src={getTransformedImageUrl(article.image_url)}
+              src={getTransformedImageUrl(article.image_url, 900)}
               alt={article.title}
+              width={900}
+              height={506}
+              loading="eager"
+              fetchPriority="high"
+              decoding="async"
               className="w-full h-full object-cover"
             />
           </div>
+
         )}
 
         {(() => {

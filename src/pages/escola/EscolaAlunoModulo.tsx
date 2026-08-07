@@ -269,6 +269,7 @@ const AulasBlock = ({ modulo, theme }: { modulo: Modulo; theme: Theme }) => {
                         src={`https://img.youtube.com/vi/${yt}/mqdefault.jpg`}
                         alt={v.titulo}
                         loading="lazy"
+              decoding="async"
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                       />
                     ) : (
@@ -1090,7 +1091,7 @@ const Conteudo = ({ aluno }: { aluno: AlunoRow }) => {
             aria-hidden
             className="pointer-events-none absolute -right-6 top-1/2 -translate-y-1/2 h-[110%] w-auto object-contain"
             style={{ opacity: 0.09 }}
-          />
+           loading="lazy" decoding="async" />
 
           <div className="relative flex items-start gap-4">
             <span

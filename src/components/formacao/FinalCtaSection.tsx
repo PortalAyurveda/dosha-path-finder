@@ -23,7 +23,7 @@ const FinalCtaSection = ({ data, branding, onPrimary, onSecondary }: Props) => (
           alt=""
           aria-hidden
           className="h-14 w-auto opacity-90"
-        />
+         loading="lazy" decoding="async" />
       </motion.div>
 
       <motion.h2
