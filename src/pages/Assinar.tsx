@@ -1584,18 +1584,10 @@ const Assinar = () => {
                 <BeneficiosList
                   plano="anual"
                   checkColor={DOURADO_DARK}
-                  renderItem6Extra={cursoIncluso}
+                  extra={cursoIncluso}
                 />
-                <div
-                  className="rounded-xl border p-3 mb-3 text-xs leading-relaxed"
-                  style={{ background: "#fff", borderColor: `${DOURADO}55`, color: PRIMARY, fontFamily: "'DM Sans', sans-serif" }}
-                >
-                  <p className="text-[9px] uppercase tracking-wider font-bold mb-1" style={{ color: DOURADO_DARK }}>
-                    Conta feita
-                  </p>
-                  12 meses de Premium (R$ 958,80) + curso Rotinas Diárias (R$ 99) = <strong>R$ 1.057,80</strong> em valor. Você paga <strong>R$ 597</strong>.
-                </div>
                 <CardAction plano="anual" color={DOURADO} label="Assinar Anual" />
+
               </div>
             </div>
           </div>
