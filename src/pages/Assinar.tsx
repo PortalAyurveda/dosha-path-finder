@@ -840,6 +840,21 @@ const Assinar = () => {
                 </p>
               </div>
             </div>
+
+            <div className="text-center mt-5">
+              <button
+                type="button"
+                onClick={() => navigate("/teste-de-dosha")}
+                className="inline-flex items-center justify-center px-6 py-2.5 rounded-full font-semibold text-sm text-white transition-colors"
+                style={{ backgroundColor: SALMAO }}
+              >
+                Fazer meu teste grátis (5 min)
+              </button>
+            </div>
+                </>
+              }
+            />
+
           </div>
         </section>
 
