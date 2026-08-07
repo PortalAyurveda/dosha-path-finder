@@ -84,7 +84,7 @@ const BannerSlot = ({ slot, className, fallback, minHeight }: BannerSlotProps) =
     staleTime: 10 * 60 * 1000,
   });
 
-  const { data: banners } = useQuery({
+  const { data: banners, isLoading: bannersLoading } = useQuery({
     queryKey: ["banners-slot", slot],
     queryFn: async () => {
       const { data, error } = await supabase
