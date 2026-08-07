@@ -23,11 +23,14 @@ import { Badge } from "@/components/ui/badge";
 import { BLOG_TAGS } from "@/data/blogTags";
 import { cn } from "@/lib/utils";
 import { slugify } from "@/lib/slugify";
-import FundamentosAyurveda from "@/components/index/FundamentosAyurveda";
 import Hero from "@/components/home/Hero";
 import LoggedHero from "@/components/home/LoggedHero";
-import PrateleiraSamkhya from "@/components/samkhya/PrateleiraSamkhya";
 import HojeNoPortal from "@/components/home/HojeNoPortal";
+
+// Seções abaixo da dobra — chunks separados, com altura reservada no fallback.
+const FundamentosAyurveda = lazy(() => import("@/components/index/FundamentosAyurveda"));
+const PrateleiraSamkhya = lazy(() => import("@/components/samkhya/PrateleiraSamkhya"));
+
 
 
 /* ---------- Design tokens (scoped to this page) ---------- */
