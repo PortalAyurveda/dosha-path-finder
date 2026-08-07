@@ -62,6 +62,7 @@ const ArtigosTab = ({ agravVataTags, agravPittaTags, agravKaphaTags, doshaprinci
   const [subTab, setSubTab] = useState<SubTab>(initialMode);
   const { profile } = useUser();
   const isPremium = profile?.is_premium === true;
+  const isAssinante = profile?.subscription_status === "active";
   const [searchTerm, setSearchTerm] = useState("");
   const [isAdvanced, setIsAdvanced] = useState(false);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
