@@ -1413,7 +1413,61 @@ const Assinar = () => {
               Comece pela rotina ou vá direto no Portal inteiro — a escolha é sua.
             </p>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-5 items-stretch">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5 items-stretch">
+              {/* CARD 0 — BÁSICO (GRÁTIS) */}
+              <div className={cardBase} style={{ background: "#fff", borderColor: "rgba(53,47,84,0.16)" }}>
+                <div className="flex items-center justify-between mb-3">
+                  <p className="text-[11px] uppercase tracking-wider font-bold" style={{ color: PRIMARY, opacity: 0.6 }}>
+                    Básico
+                  </p>
+                  <PortalMark size={22} />
+                </div>
+                <h3 className="font-serif font-bold text-xl mb-1" style={{ color: PRIMARY }}>
+                  Descobrindo meu Dosha
+                </h3>
+                <p className="font-serif font-bold text-2xl mb-1" style={{ color: PRIMARY }}>
+                  R$ 0
+                </p>
+                <p className="text-xs mb-4" style={{ color: PRIMARY, opacity: 0.6, fontFamily: "'DM Sans', sans-serif" }}>
+                  O primeiro degrau — sempre grátis.
+                </p>
+                <ul className="space-y-2 mb-5 flex-1">
+                  {[
+                    "Teste de dosha completo + análise",
+                    "Seu retrato no /meu-dosha",
+                    "Biblioteca com 900+ aulas abertas",
+                    "Akasha — 10 conversas por mês (memória de 24h)",
+                  ].map((texto) => (
+                    <li key={texto} className="flex items-start gap-2">
+                      <Check className="w-4 h-4 shrink-0 mt-0.5" style={{ color: "rgba(53,47,84,0.55)" }} strokeWidth={2.6} />
+                      <span
+                        className="text-[13px] leading-snug"
+                        style={{ color: PRIMARY, opacity: 0.85, fontFamily: "'DM Sans', sans-serif" }}
+                      >
+                        {texto}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+                {user && !isAssinante && doshaResult ? (
+                  <div
+                    className="mt-auto w-full py-2.5 rounded-full text-sm text-center font-semibold"
+                    style={{ background: "rgba(53,47,84,0.06)", color: PRIMARY, fontFamily: "'DM Sans', sans-serif" }}
+                  >
+                    Seu plano atual
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => navigate("/teste-de-dosha")}
+                    className="mt-auto w-full py-2.5 rounded-full font-semibold text-sm border transition-colors"
+                    style={{ borderColor: "rgba(53,47,84,0.25)", color: PRIMARY, background: "#fff" }}
+                  >
+                    Fazer meu teste grátis
+                  </button>
+                )}
+              </div>
+
               {/* CARD 1 — MINHA ROTINA */}
               <div className={cardBase} style={{ background: VERDE_BG, borderColor: `${VERDE}33` }}>
                 {planoAtual === "rotina" && <SeuPlanoBadge />}
