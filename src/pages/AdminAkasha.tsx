@@ -262,6 +262,8 @@ const AdminAkasha = () => {
               </div>
             </>
           )}
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
 
