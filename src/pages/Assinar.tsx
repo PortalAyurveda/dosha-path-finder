@@ -85,36 +85,36 @@ const INCLUSOS: Record<Plano, Set<number>> = {
 
 const DEPOIMENTOS = [
   {
-    fala: "Fiz 3 consultas com o Edson — era Vata e Pitta agravadíssimo, com alergias de 8 anos. Em 6 meses de tratamento disciplinado saí do quadro alérgico e emagreci uns 10 kg. Fiquei ótima.",
-    credencial: "2 meses no Portal · 33 conversas com a Akasha · paciente da clínica",
+    fala: "Já fiz consulta com o prof. Edson, era Vata e Pitta agravadíssimo, com alergias de 8 anos. Em 6 meses de tratamento disciplinado saí do quadro alérgico e emagreci uns 10 kg. Fiquei ótima. Vou dar continuidade com você",
+    credencial: "Conhecendo Akasha - nossa IA",
   },
   {
-    fala: "Dormi melhor. E peguei meus exames laboratoriais — estão ótimos. Gratidão.",
-    credencial: "3 meses no Portal · 363 conversas com a Akasha",
+    fala: "Sim, desde então tenho dormido melhor. E peguei meus exames laboratoriais, estão ótimos. Gratidão.",
+    credencial: "Vata retirando fruta crua e salada",
   },
   {
-    fala: "Meu intestino tem funcionado bem — e não como salada crua desde que comecei com o Ayurveda, há 1 ano.",
-    credencial: "1 ano de Ayurveda",
+    fala: "Meu intestino tem funcionado bem e não como salada crua desde que comecei com o Ayurveda, há 1 ano. Que bom que concordamos, vou fazer conforme indicou e entrar com essa dieta.",
+    credencial: "Resultados práticos",
   },
   {
-    fala: "A rinite melhorou. Eu melhorei bastante.",
-    credencial: "Assinante da Rotina · aluna de Rotinas Diárias",
+    fala: "A rinite melhorou. Eu melhorei bastante. Nunca imaginei que o Ghee ia fazer isso por mim, achei que ia me pesar e piorar a alergia por ser do leite.",
+    credencial: "Problemas respiratórios",
   },
   {
-    fala: "Tomei a panacéia e a sensação de saliva grossa passou.",
-    credencial: "Assinante Anual · 200 conversas com a Akasha",
+    fala: "Tomei a panacéia e a sensação de peso e letargia passou no dia seguinte. Vou tomar conforme indicou então.",
+    credencial: "Indicações certeiras",
   },
   {
-    fala: "Quando tomo o madhu anti vata, durmo melhor.",
-    credencial: "Cliente Samkhya",
+    fala: "Ta bem, vou adquirir um Madhu novo, realmente quando tomo o madhu anti vata,  ou algo como o chai, durmo melhor e acordo bem.",
+    credencial: "Produtos Ayurvédicos",
   },
   {
-    fala: "Estou seguindo a rotina de alimentação que comprei aqui no portal.",
-    credencial: "Assinante da Rotina",
+    fala: "\n",
+    credencial: "Resultados práticos",
   },
   {
-    fala: "Os pés incham menos desde que comecei a introduzir o Ayurveda.",
-    credencial: "Aluna do Portal",
+    fala: "Os pés já incham menos desde que comecei a introduzir o Ayurveda. Estou seguindo a rotina de alimentação que comprei aqui no portal, vou experimentar esse haridra que comentou então e volto pra te contar",
+    credencial: "A Akasha te auxilia",
   },
 ];
 
@@ -1187,7 +1187,7 @@ const Assinar = () => {
               className="text-center text-sm md:text-base mb-8 max-w-xl mx-auto"
               style={{ color: PRIMARY, opacity: 0.75, fontFamily: "'DM Sans', sans-serif" }}
             >
-              Experiências reais de nossa database
+              Relatos da nossa Database
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
