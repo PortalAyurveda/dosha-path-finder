@@ -60,7 +60,7 @@ const VideosTab = ({ doshaprincipal, agravVataTags, agravPittaTags, agravKaphaTa
       {mode === "gerais" && <VideosGeneralTab doshaprincipal={doshaprincipal} />}
 
       {mode === "personalizado" && (
-        isPremium ? (
+        isAssinante ? (
           <VideosPersonalizadoTab
             agravVataTags={agravVataTags}
             agravPittaTags={agravPittaTags}
