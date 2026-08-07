@@ -4,7 +4,8 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/contexts/UserContext";
 import { Send, Loader2, X } from "lucide-react";
-import AkashaMessageContent from "@/components/akasha/AkashaMessageContent";
+import AkashaMessageContent, { type AkashaRichCard } from "@/components/akasha/AkashaMessageContent";
+import MemoriaBadge from "@/components/akasha/MemoriaBadge";
 import { Link } from "react-router-dom";
 
 const AKASHA_LOGO = "https://static.wixstatic.com/media/b8f47f_105371e1ade24ccd9bd3406b83bd925e~mv2.png";
