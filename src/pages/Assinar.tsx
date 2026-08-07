@@ -83,6 +83,41 @@ const INCLUSOS: Record<Plano, Set<number>> = {
   anual: new Set([1, 2, 3, 4, 5, 6, 7]),
 };
 
+const DEPOIMENTOS = [
+  {
+    fala: "Fiz 3 consultas com o Edson — era Vata e Pitta agravadíssimo, com alergias de 8 anos. Em 6 meses de tratamento disciplinado saí do quadro alérgico e emagreci uns 10 kg. Fiquei ótima.",
+    credencial: "2 meses no Portal · 33 conversas com a Akasha · paciente da clínica",
+  },
+  {
+    fala: "Dormi melhor. E peguei meus exames laboratoriais — estão ótimos. Gratidão.",
+    credencial: "3 meses no Portal · 363 conversas com a Akasha",
+  },
+  {
+    fala: "Meu intestino tem funcionado bem — e não como salada crua desde que comecei com o Ayurveda, há 1 ano.",
+    credencial: "1 ano de Ayurveda",
+  },
+  {
+    fala: "A rinite melhorou. Eu melhorei bastante.",
+    credencial: "Assinante da Rotina · aluna de Rotinas Diárias",
+  },
+  {
+    fala: "Tomei a panacéia e a sensação de saliva grossa passou.",
+    credencial: "Assinante Anual · 200 conversas com a Akasha",
+  },
+  {
+    fala: "Quando tomo o madhu anti vata, durmo melhor.",
+    credencial: "Cliente Samkhya",
+  },
+  {
+    fala: "Estou seguindo a rotina de alimentação que comprei aqui no portal.",
+    credencial: "Assinante da Rotina",
+  },
+  {
+    fala: "Os pés incham menos desde que comecei a introduzir o Ayurveda.",
+    credencial: "Aluna do Portal",
+  },
+];
+
 const RECEITAS = [
   {
     titulo: "Kitchari com salsa",
