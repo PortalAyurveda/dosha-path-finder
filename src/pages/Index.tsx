@@ -664,8 +664,12 @@ const Index = () => {
         )}
         <HojeNoPortal />
         <FeedSocial />
-        <FundamentosAyurveda />
-        <PrateleiraSamkhya doshaPrincipal={doshaResult?.doshaprincipal ?? null} />
+        <Suspense fallback={<div className="min-h-[520px]" aria-hidden />}>
+          <FundamentosAyurveda />
+        </Suspense>
+        <Suspense fallback={<div className="min-h-[420px]" aria-hidden />}>
+          <PrateleiraSamkhya doshaPrincipal={doshaResult?.doshaprincipal ?? null} />
+        </Suspense>
       </main>
     </>
   );
