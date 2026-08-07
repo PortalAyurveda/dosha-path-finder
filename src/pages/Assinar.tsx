@@ -750,6 +750,9 @@ const Assinar = () => {
               O teste gratuito desenha seu quadro — e o Portal trabalha em cima dele.
             </p>
 
+            <PreviaPersonalizada
+              fallback={
+                <>
             <div
               className="relative rounded-2xl border bg-card shadow-sm overflow-hidden max-w-[680px] mx-auto"
               style={{ borderColor: "rgba(53,47,84,0.14)" }}
