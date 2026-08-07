@@ -1139,6 +1139,54 @@ const Assinar = () => {
           </div>
         </section>
 
+        {/* 4b) QUEM JÁ VIVE ISSO — depoimentos */}
+        <section className="bg-background">
+          <div className="max-w-[1040px] mx-auto px-4 sm:px-6 pb-10 md:pb-14">
+            <h2
+              className="font-serif italic font-bold text-2xl md:text-[28px] text-center mb-2"
+              style={{ color: PRIMARY }}
+            >
+              Quem já vive isso
+            </h2>
+            <p
+              className="text-center text-sm md:text-base mb-8 max-w-xl mx-auto"
+              style={{ color: PRIMARY, opacity: 0.75, fontFamily: "'DM Sans', sans-serif" }}
+            >
+              Falas reais de alunas e pacientes — só tiramos os nomes.
+            </p>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
+              {DEPOIMENTOS.map((d) => (
+                <figure
+                  key={d.fala}
+                  className="rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm border p-4 md:p-5 flex flex-col"
+                  style={{ background: PAPER, borderColor: "rgba(53,47,84,0.08)" }}
+                >
+                  <span
+                    aria-hidden
+                    className="block leading-none mb-1"
+                    style={{ fontFamily: "Georgia, serif", fontStyle: "italic", fontSize: 40, color: SALMAO, opacity: 0.55 }}
+                  >
+                    “
+                  </span>
+                  <blockquote
+                    className="flex-1 text-[14px] leading-relaxed"
+                    style={{ color: PRIMARY, fontFamily: "Georgia, serif", fontStyle: "italic" }}
+                  >
+                    {d.fala}
+                  </blockquote>
+                  <figcaption
+                    className="mt-3 pt-3 border-t text-[10px] uppercase tracking-wider font-bold"
+                    style={{ borderColor: "rgba(53,47,84,0.08)", color: PRIMARY, opacity: 0.6, fontFamily: "'DM Sans', sans-serif" }}
+                  >
+                    {d.credencial}
+                  </figcaption>
+                </figure>
+              ))}
+            </div>
+          </div>
+        </section>
+
         {/* 5) COMIDA E CONTEÚDO DE VERDADE */}
         <section style={{ background: SURFACE }}>
           <div className="max-w-[1040px] mx-auto px-4 sm:px-6 py-10 md:py-14">
