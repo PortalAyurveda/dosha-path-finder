@@ -5863,6 +5863,33 @@ export type Database = {
         }
         Relationships: []
       }
+      registros_akashikos_publicos: {
+        Row: {
+          data_postagem: string | null
+          id: number | null
+          tags: string | null
+          texto_inicio: string | null
+          texto_resumo: string | null
+          titulo: string | null
+        }
+        Insert: {
+          data_postagem?: string | null
+          id?: number | null
+          tags?: string | null
+          texto_inicio?: string | null
+          texto_resumo?: string | null
+          titulo?: string | null
+        }
+        Update: {
+          data_postagem?: string | null
+          id?: number | null
+          tags?: string | null
+          texto_inicio?: string | null
+          texto_resumo?: string | null
+          titulo?: string | null
+        }
+        Relationships: []
+      }
       sitemap_urls: {
         Row: {
           lastmod: string | null
