@@ -332,43 +332,42 @@ const Assinar = () => {
     plano,
     checkColor,
     dimmedColor,
-    renderItem6Extra,
-    renderItem7Extra,
+    extra,
   }: {
     plano: Plano;
     checkColor: string;
     dimmedColor?: string;
-    renderItem6Extra?: React.ReactNode;
-    renderItem7Extra?: React.ReactNode;
+    extra?: React.ReactNode;
   }) => {
     const inclusos = INCLUSOS[plano];
     return (
-      <ul className="space-y-2 mb-5 flex-1">
-        {BENEFICIOS.map((texto, idx) => {
-          const n = idx + 1;
-          const on = inclusos.has(n);
-          const color = on ? PRIMARY : dimmedColor ?? "rgba(53,47,84,0.35)";
-          return (
-            <li key={n} className="flex items-start gap-2">
-              {on ? (
-                <Check className="w-4 h-4 shrink-0 mt-0.5" style={{ color: checkColor }} strokeWidth={2.6} />
-              ) : (
-                <span className="w-4 h-4 shrink-0 mt-0.5 flex items-center justify-center" aria-hidden>
-                  <span className="block w-1.5 h-1.5 rounded-full" style={{ background: "rgba(53,47,84,0.18)" }} />
+      <div className="flex-1 flex flex-col">
+        <ul className="space-y-2 mb-3">
+          {BENEFICIOS.map((texto, idx) => {
+            const n = idx + 1;
+            const on = inclusos.has(n);
+            const color = on ? PRIMARY : dimmedColor ?? "rgba(53,47,84,0.35)";
+            return (
+              <li key={n} className="flex items-start gap-2">
+                {on ? (
+                  <Check className="w-4 h-4 shrink-0 mt-0.5" style={{ color: checkColor }} strokeWidth={2.6} />
+                ) : (
+                  <span className="w-4 h-4 shrink-0 mt-0.5 flex items-center justify-center" aria-hidden>
+                    <span className="block w-1.5 h-1.5 rounded-full" style={{ background: "rgba(53,47,84,0.18)" }} />
+                  </span>
+                )}
+                <span
+                  className="text-[13px] leading-snug"
+                  style={{ color, fontFamily: "'DM Sans', sans-serif", opacity: on ? 1 : 0.7 }}
+                >
+                  {texto}
                 </span>
-              )}
-              <span
-                className="text-[13px] leading-snug"
-                style={{ color, fontFamily: "'DM Sans', sans-serif", opacity: on ? 1 : 0.7 }}
-              >
-                {texto}
-                {n === 6 && on && renderItem6Extra}
-                {n === 7 && on && renderItem7Extra}
-              </span>
-            </li>
-          );
-        })}
-      </ul>
+              </li>
+            );
+          })}
+        </ul>
+        {extra}
+      </div>
     );
   };
 
@@ -377,57 +376,84 @@ const Assinar = () => {
     color,
     hoverColor,
     label,
+    nota,
   }: {
     plano: Plano;
     color: string;
     hoverColor?: string;
     label: string;
+    nota?: string;
   }) => {
+    const Nota = () =>
+      nota ? (
+        <p
+          className="mt-2 text-[11px] leading-snug text-center"
+          style={{ color: PRIMARY, opacity: 0.6, fontFamily: "'DM Sans', sans-serif" }}
+        >
+          {nota}
+        </p>
+      ) : null;
+
     if (!isAssinante) {
       return (
-        <button
-          onClick={() => handleClickPlano(plano)}
-          disabled={loadingPlan !== null}
-          className="mt-auto w-full py-2.5 rounded-full font-semibold text-sm text-white transition-colors disabled:opacity-60"
-          style={{ backgroundColor: color }}
-          onMouseEnter={(e) => !loadingPlan && hoverColor && (e.currentTarget.style.backgroundColor = hoverColor)}
-          onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = color)}
-        >
-          {loadingPlan === plano ? "Redirecionando…" : label}
-        </button>
+        <div className="mt-auto w-full pt-2">
+          <button
+            onClick={() => handleClickPlano(plano)}
+            disabled={loadingPlan !== null}
+            className="w-full py-2.5 rounded-full font-semibold text-sm text-white transition-colors disabled:opacity-60"
+            style={{ backgroundColor: color }}
+            onMouseEnter={(e) => !loadingPlan && hoverColor && (e.currentTarget.style.backgroundColor = hoverColor)}
+            onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = color)}
+          >
+            {loadingPlan === plano ? "Redirecionando…" : label}
+          </button>
+          <Nota />
+        </div>
       );
     }
     const rankPlano = RANK[plano];
     if (rankPlano === rankAtual) {
       return (
-        <button
-          onClick={() => handleClickPlano(plano)}
-          disabled={loadingPlan !== null}
-          className="mt-auto w-full py-2.5 rounded-full font-semibold text-sm text-white transition-colors disabled:opacity-60"
-          style={{ backgroundColor: color }}
-        >
-          {loadingPlan === plano ? "Abrindo…" : "Gerenciar assinatura"}
-        </button>
+        <div className="mt-auto w-full pt-2">
+          <button
+            onClick={() => handleClickPlano(plano)}
+            disabled={loadingPlan !== null}
+            className="w-full py-2.5 rounded-full font-semibold text-sm text-white transition-colors disabled:opacity-60"
+            style={{ backgroundColor: color }}
+          >
+            {loadingPlan === plano ? "Abrindo…" : "Gerenciar assinatura"}
+          </button>
+        </div>
       );
     }
     if (rankPlano > rankAtual) {
       return (
-        <button
-          onClick={() => handleClickPlano(plano)}
-          disabled={loadingPlan !== null}
-          className="mt-auto w-full py-2.5 rounded-full font-semibold text-sm text-white transition-colors disabled:opacity-60"
-          style={{ backgroundColor: color }}
-        >
-          {loadingPlan === plano ? "Aguarde…" : "Fazer upgrade — pague só a diferença"}
-        </button>
+        <div className="mt-auto w-full pt-2">
+          <button
+            onClick={() => handleClickPlano(plano)}
+            disabled={loadingPlan !== null}
+            className="w-full py-2.5 rounded-full font-semibold text-sm text-white transition-colors disabled:opacity-60"
+            style={{ backgroundColor: color }}
+          >
+            {loadingPlan === plano ? "Aguarde…" : "Fazer upgrade"}
+          </button>
+          <p
+            className="mt-2 text-[11px] leading-snug text-center"
+            style={{ color: PRIMARY, opacity: 0.6, fontFamily: "'DM Sans', sans-serif" }}
+          >
+            Você paga só a diferença do que já pagou.
+          </p>
+        </div>
       );
     }
     return (
-      <div
-        className="mt-auto w-full py-2.5 rounded-full text-sm text-center font-semibold"
-        style={{ background: "rgba(53,47,84,0.06)", color: PRIMARY, fontFamily: "'DM Sans', sans-serif" }}
-      >
-        Já incluído no seu plano
+      <div className="mt-auto w-full pt-2">
+        <div
+          className="w-full py-2.5 rounded-full text-sm text-center font-semibold"
+          style={{ background: "rgba(53,47,84,0.06)", color: PRIMARY, fontFamily: "'DM Sans', sans-serif" }}
+        >
+          Já incluído no seu plano
+        </div>
       </div>
     );
   };
