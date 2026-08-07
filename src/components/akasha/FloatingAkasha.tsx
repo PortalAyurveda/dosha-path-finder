@@ -294,6 +294,7 @@ const FloatingAkasha = () => {
                   ? (isPremium ? "Conversas ilimitadas ✨" : `${tokens} conversas restantes`)
                   : "Faça login para conversas personalizadas"}
               </p>
+              <MemoriaBadge className="mt-0.5 self-start" onNavigate={() => setOpen(false)} />
             </div>
           </div>
           <button
