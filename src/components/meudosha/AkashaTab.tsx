@@ -297,8 +297,10 @@ const AkashaTab = ({
               ) : (
                 <AkashaMessageContent
                   content={msg.content}
+                  cards={msg.cards}
                   proseClassName="prose prose-sm max-w-none [&_p]:text-sm [&_p]:leading-relaxed [&_p]:text-foreground [&_li]:text-sm [&_li]:text-foreground [&_strong]:text-foreground"
                 />
+
 
               )}
               {msg.time && (
