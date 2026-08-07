@@ -7,6 +7,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Search, X, MessageCircle, Loader2, ShieldCheck } from "lucide-react";
 import AdminNav from "@/components/admin/AdminNav";
+import AdminAkashaMaiores from "@/components/admin/AdminAkashaMaiores";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface Conversa {
   email: string;
