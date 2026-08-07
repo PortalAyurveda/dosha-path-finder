@@ -530,7 +530,7 @@ const Cabecalho = ({
               width={128}
               height={128}
               className="w-32 h-32 rounded-full object-cover border-4 border-white shadow-md"
-            />
+             loading="lazy" decoding="async" />
           ) : (
             <div
               className="w-32 h-32 rounded-full flex items-center justify-center text-4xl font-bold text-white shadow-md border-4 border-white"

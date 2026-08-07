@@ -43,7 +43,7 @@ const CourseHero = ({ data, branding, onCtaClick, logo, courseName = "Alimentaç
               src={logo ?? branding.logo}
               alt={courseName}
               className="h-20 md:h-28 w-auto object-contain"
-            />
+             loading="lazy" decoding="async" />
           </motion.div>
 
           <motion.h1
@@ -118,7 +118,7 @@ const CourseHero = ({ data, branding, onCtaClick, logo, courseName = "Alimentaç
               src={heroImage}
               alt={courseName}
               className="w-full max-w-[280px] h-[240px] md:h-[320px] mx-auto object-cover rounded-tl-[3rem] rounded-br-[3rem] rounded-tr-md rounded-bl-md shadow-lg"
-            />
+             loading="lazy" decoding="async" />
           </motion.div>
         )}
       </div>

@@ -69,7 +69,7 @@ const PrateleiraSamkhya = ({ doshaPrincipal, titulo }: PrateleiraSamkhyaProps) =
               alt="Samkhya"
               style={{ height: 30 }}
               className="w-auto"
-            />
+             loading="lazy" decoding="async" />
           </div>
           <div className="text-center">
             <h2

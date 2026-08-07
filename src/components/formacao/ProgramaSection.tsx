@@ -296,7 +296,7 @@ const ProgramaSection = ({ data, branding }: Props) => {
               src={branding.bulletSvg}
               alt="Portal Ayurveda"
               className="h-12 md:h-14 w-auto opacity-90"
-            />
+             loading="lazy" decoding="async" />
           </div>
         </motion.div>
 

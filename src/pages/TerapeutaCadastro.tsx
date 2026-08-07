@@ -402,7 +402,7 @@ const TerapeutaCadastro = () => {
               <div className="w-24 h-24 rounded-xl overflow-hidden bg-muted border border-border flex items-center justify-center shrink-0">
                 {form.imagem ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={form.imagem} alt="Sua foto" className="w-full h-full object-cover" />
+                  <img src={form.imagem} alt="Sua foto" className="w-full h-full object-cover"  loading="lazy" decoding="async" />
                 ) : (
                   <span className="text-xs text-muted-foreground">Sem foto</span>
                 )}

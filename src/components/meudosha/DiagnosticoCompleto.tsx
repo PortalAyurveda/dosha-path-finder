@@ -282,7 +282,7 @@ const RightCard = ({
 
 const AkashaPlaceholder = ({ cor }: { cor: string }) => (
   <div className="flex flex-col items-center text-center gap-2 py-3">
-    <img src={AKASHA_LOGO} alt="Akasha" className="w-12 h-12 object-contain opacity-90" />
+    <img src={AKASHA_LOGO} alt="Akasha" className="w-12 h-12 object-contain opacity-90"  loading="lazy" decoding="async" />
     <p
       className="text-sm font-medium leading-snug"
       style={{ color: COLOR.primary, fontFamily: "'DM Sans', sans-serif" }}
@@ -743,7 +743,7 @@ const ProtocoloSamkhya = ({
                     src={p.imagem_url}
                     alt={p.nome_display}
                     className="w-[100px] h-[100px] object-cover rounded-lg"
-                  />
+                   loading="lazy" decoding="async" />
                 ) : (
                   <div className="w-[100px] h-[100px] bg-muted rounded-lg" />
                 )}

@@ -36,7 +36,7 @@ const LaunchPage = () => {
         src="https://api.portalayurveda.com/storage/v1/object/public/portal_images/simbolo-positivo.svg"
         alt="Portal Ayurveda"
         className="max-w-[200px] mb-8"
-      />
+       loading="lazy" decoding="async" />
       <h1 className="font-serif text-primary text-4xl md:text-5xl font-bold">
         Portal Ayurveda
       </h1>

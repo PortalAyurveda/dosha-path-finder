@@ -59,7 +59,7 @@ export default function ProdutoCarrossel({ imagens, alt }: ProdutoCarrosselProps
           src={atual}
           alt={alt}
           className="max-h-full max-w-full object-contain transition-opacity duration-200"
-        />
+         loading="lazy" decoding="async" />
 
         {hasMultiple && (
           <>
@@ -122,7 +122,7 @@ export default function ProdutoCarrossel({ imagens, alt }: ProdutoCarrosselProps
                 opacity: i === index ? 1 : 0.7,
               }}
             >
-              <img src={url} alt="" className="max-w-full max-h-full object-contain" />
+              <img src={url} alt="" className="max-w-full max-h-full object-contain"  loading="lazy" decoding="async" />
             </button>
           ))}
         </div>

@@ -177,7 +177,7 @@ const PortalMark = ({ size = 28 }: { size?: number }) => (
     height={size}
     className="inline-block"
     style={{ width: size, height: size }}
-  />
+   loading="lazy" decoding="async" />
 );
 
 const Assinar = () => {
@@ -561,7 +561,7 @@ const Assinar = () => {
                       src={cardReceita.imagem_url}
                       alt={cardReceita.titulo ?? "Receita"}
                       className="w-full h-[220px] object-cover"
-                    />
+                     loading="lazy" decoding="async" />
                   ) : (
                     <div className="w-full h-[220px]" style={{ background: PAPER }} />
                   )}

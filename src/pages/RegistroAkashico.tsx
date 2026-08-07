@@ -170,7 +170,7 @@ const RegistroAkashico = () => {
             <>
               <header className="mb-6">
                 <div className="flex items-center gap-2 mb-4">
-                  <img src={AKASHA_LOGO} alt="" className="w-10 h-10 object-contain" />
+                  <img src={AKASHA_LOGO} alt="" className="w-10 h-10 object-contain"  loading="lazy" decoding="async" />
                   <span
                     className="text-[11px] font-semibold uppercase tracking-wider px-2.5 py-1 rounded-full inline-flex items-center gap-1"
                     style={{ background: `${AKASHA}18`, color: AKASHA }}

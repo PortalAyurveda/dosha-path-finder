@@ -75,7 +75,7 @@ const Footer = () => {
               width={160}
               height={44}
               className="h-10 w-auto brightness-0 invert"
-            />
+             loading="lazy" decoding="async" />
             <p className="text-sm max-w-xs" style={textStyle}>
               Saúde integrativa personalizada com base na sabedoria milenar do Ayurveda.
             </p>

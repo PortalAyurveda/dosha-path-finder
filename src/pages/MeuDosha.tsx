@@ -312,7 +312,7 @@ const FormacaoDestaqueCard = () => {
         alt=""
         aria-hidden
         className="absolute right-0 top-1/2 -translate-y-1/2 h-[110%] w-auto opacity-[0.09] pointer-events-none"
-      />
+       loading="lazy" decoding="async" />
       <div className="relative p-5 md:p-6 space-y-3">
         <div className="flex items-center gap-2 text-xs uppercase tracking-wider" style={{ color: theme.primaryColor }}>
           <CalendarDays className="w-3.5 h-3.5" />

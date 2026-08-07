@@ -33,7 +33,7 @@ const HeroBanner = ({
         src={bannerUrl}
         alt="Banner Samkhya"
         className="hidden md:block w-full h-auto"
-      />
+       loading="lazy" decoding="async" />
       <img
         src={bannerMobileUrl}
         alt="Banner Samkhya"

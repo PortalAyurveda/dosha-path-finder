@@ -14,7 +14,7 @@ const sizeMap = {
 const SamkhyaLogo = ({ logoUrl, size = "md" }: SamkhyaLogoProps) => {
   if (logoUrl) {
     const heightMap = { sm: "h-8", md: "h-12 md:h-16", lg: "h-16 md:h-20" };
-    return <img src={logoUrl} alt="samkhya" className={`${heightMap[size]} w-auto`} />;
+    return <img src={logoUrl} alt="samkhya" className={`${heightMap[size]} w-auto`}  loading="lazy" decoding="async" />;
   }
   return (
     <span
