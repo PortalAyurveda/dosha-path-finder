@@ -269,6 +269,7 @@ const AkashaTab = ({
             <p className="text-[10px] text-muted-foreground/80">
               {isPremium ? "Conversas ilimitadas ✨" : tokens > 0 ? `${tokens} conversas restantes` : "Tokens esgotados"}
             </p>
+            <MemoriaBadge className="mt-0.5 self-start" />
           </div>
         </div>
 
