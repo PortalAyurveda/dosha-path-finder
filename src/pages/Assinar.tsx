@@ -87,28 +87,28 @@ const INCLUSOS: Record<Plano, Set<number>> = {
 
 const DEPOIMENTOS = [
   {
-    fala: "Fiz consultas com o Edson — era Vata e Pitta agravadíssimo, com alergias de 8 anos. Em 6 meses de tratamento disciplinado saí do quadro alérgico e emagreci uns 10 kg. Fiquei ótima. Agora estou seguindo com a Akasha.",
-    credencial: "Paciente da clínica · 33 conversas com a Akasha",
+    fala: "Fiz consultas com o Edson, era Vata e Pitta agravadíssimo, com alergias de 8 anos. Em 6 meses de tratamento disciplinado saí do quadro alérgico e emagreci uns 10 kg. Fiquei ótima. Agora estou seguindo com a Akasha.",
+    credencial: "PREMIUM E PACIENTE DA CLÍNICA - 33 CONVERSAS COM A AKASHA",
   },
   {
-    fala: "Estou dormindo profundamente — não fazia isso há mais de 6 anos. Sem as câimbras e quase sem os calores da menopausa. Fiz a dieta que o professor me indicou e melhorei muito.",
-    credencial: "19 conversas com a Akasha",
+    fala: "Estou dormindo profundamente. não fazia isso há mais de 6 anos. Sem as câimbras e quase sem os calores da menopausa. Fiz a dieta que o professor me indicou e melhorei muito.\u00a0\nAgora aprendi a ler minha língua aqui no Portal.",
+    credencial: "PREMIUM - 1 MÊS - 39 CONVERSAS COM A AKASHA",
   },
   {
-    fala: "A rinite melhorou. Nunca imaginei que o Ghee ia fazer isso por mim — achei que ia me pesar e piorar a alergia por ser do leite.",
-    credencial: "Assinante da Rotina",
+    fala: "A rinite melhorou. Nunca imaginei que o Ghee ia fazer isso por mim achei que ia me pesar e piorar a alergia por ser do leite.\nInclusive eu to evitando gordura pra diminuir o muco, e foi a gordura do ghee que tirou meu muco.. confiei na rotina e veio o resultado.",
+    credencial: "ASSINANTE DA ROTINA MENSAL - 2 MESES",
   },
   {
-    fala: "Aquela fome do diabetes eu não sinto mais. Fome zerada, comendo nos horários normais.",
-    credencial: "8 conversas com a Akasha",
+    fala: "Aquela fome do diabetes eu não sinto mais. Fome zerada, comendo nos horários normais. Que bom que conheci Tâmaras e Ayurveda.",
+    credencial: "PREMIUM - 801 CONVERSAS COM A AKASHA",
   },
   {
-    fala: "Não acordo mais de madrugada para urinar. Até o ronco diminuiu — segundo o marido.",
-    credencial: "6 meses no Portal · 168 conversas com a Akasha",
+    fala: "Não acordo mais de madrugada para urinar. Até o ronco diminuiu segundo o marido. Passei a digerir melhor quando coloquei essas receitas novas. Obrigada.",
+    credencial: "PREMIUM - 6 MESES NO PORTAL · 1686 CONVERSAS COM A AKASHA",
   },
   {
-    fala: "Dormi melhor. E peguei meus exames laboratoriais — estão ótimos. Gratidão.",
-    credencial: "6 meses com a Akasha · 363 conversas",
+    fala: "Dormi melhor. E peguei meus exames laboratoriais estão ótimos. Gratidão. Vou continuar a dieta e o Madhu anti vata. Acho que ele que baixou meu colesterol e me fez ir ao banheiro todo dia.",
+    credencial: "PREMIUM - 3 MESES NO PORTAL - 72 CONVERSAS COM A AKASHA",
   },
 ];
 
@@ -1208,7 +1208,7 @@ const Assinar = () => {
               className="text-center text-sm md:text-base mb-8 max-w-xl mx-auto"
               style={{ color: PRIMARY, opacity: 0.75, fontFamily: "'DM Sans', sans-serif" }}
             >
-              Resultados contados por alunas — só tiramos os nomes.
+              Relatos reais dos usuários do Portal Ayurveda
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4 items-stretch">
