@@ -1208,7 +1208,7 @@ const Assinar = () => {
               className="text-center text-sm md:text-base mb-8 max-w-xl mx-auto"
               style={{ color: PRIMARY, opacity: 0.75, fontFamily: "'DM Sans', sans-serif" }}
             >
-              Resultados contados por alunas — só tiramos os nomes.
+              Relatos reais dos usuários do Portal Ayurveda
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4 items-stretch">
