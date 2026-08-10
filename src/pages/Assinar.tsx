@@ -87,7 +87,7 @@ const INCLUSOS: Record<Plano, Set<number>> = {
 
 const DEPOIMENTOS = [
   {
-    fala: "Fiz consultas com o Edson — era Vata e Pitta agravadíssimo, com alergias de 8 anos. Em 6 meses de tratamento disciplinado saí do quadro alérgico e emagreci uns 10 kg. Fiquei ótima.",
+    fala: "Fiz consultas com o Edson — era Vata e Pitta agravadíssimo, com alergias de 8 anos. Em 6 meses de tratamento disciplinado saí do quadro alérgico e emagreci uns 10 kg. Fiquei ótima. Agora estou seguindo com a Akasha.",
     credencial: "Paciente da clínica · 33 conversas com a Akasha",
   },
   {
