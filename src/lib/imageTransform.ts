@@ -40,7 +40,10 @@ export function getTransformedImageUrl(
   const [path, existingQuery] = base.split("?");
   const rendered = path.replace("/storage/v1/object/public/", "/storage/v1/render/image/public/");
   const params = new URLSearchParams(existingQuery ?? "");
-  params.set("width", String(Math.round(width)));
+  const w = Math.round(width);
+  params.set("width", String(w));
+  params.set("height", String(w));
+  params.set("resize", "contain");
   params.set("quality", String(quality));
   return `${rendered}?${params.toString()}`;
 }
