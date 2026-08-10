@@ -2525,14 +2525,14 @@ export type Database = {
           user_id: string
         }
         Insert: {
-          aluno_nome: string
+          aluno_nome?: string
           created_at?: string
           id?: string
           modulo_id: string
           storage_path: string
           tamanho_bytes?: number | null
           titulo: string
-          user_id: string
+          user_id?: string
         }
         Update: {
           aluno_nome?: string
