@@ -1174,12 +1174,12 @@ const Assinar = () => {
                     </Akasha>
                   </Card>
 
-                  <Card label="Ela não inventa">
+                  <Card label="ELA TE CONHECE">
                     <Person>
-                      Na receita do vídeo fala de pimenta rosa e branca. Vai?
+                      Na receita do vídeo fala de pimenta rosa e branca. Posso por?
                     </Person>
                     <Akasha>
-                      Essa receita de pimenta rosa não está no caderno, então não vou inventar. Mas pro seu Vata e no frio, eu teria cuidado com pimentas — elas secam e aquecem demais, e a branca é a mais pungente.
+                      Por mais que tenha receita com pimentas, como seu Vata está muito agravado, e você quer fazer uma panqueca, pega leve na pimenta branca. Pode ficar seco demais. A pimenta rosa pode usar sem medo.
                     </Akasha>
                   </Card>
                 </div>
