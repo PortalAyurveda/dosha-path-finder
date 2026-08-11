@@ -83,9 +83,19 @@ const Video = () => {
       const { data, error } = await supabase.rpc("find_video_by_slug", { _slug: slug! });
       if (error) {
         console.error("find_video_by_slug error:", error);
-        return null;
+      } else if (Array.isArray(data) && data.length > 0) {
+        return data[0] as any;
       }
-      if (Array.isArray(data) && data.length > 0) return data[0] as any;
+
+      // 3) Slug com cara de ID cru do YouTube → resolve pelo video_id
+      if (/^[A-Za-z0-9_-]{11}$/.test(slug!)) {
+        const { data: canonRow } = await (supabase.from("videos_canonicos") as any)
+          .select("video_id, slug, novo_titulo, nova_descricao, mini_resumo, tags, criado_em, is_receita, is_live, is_oficial")
+          .eq("video_id", slug!)
+          .maybeSingle();
+        if (canonRow) return canonRow as any;
+      }
+
       return null;
     },
     enabled: !!slug,
