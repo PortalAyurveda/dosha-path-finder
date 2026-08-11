@@ -258,7 +258,7 @@ const Video = () => {
 
   const title = video.novo_titulo || "Sem título";
   const description = limparDescricaoVideo(video.nova_descricao || video.mini_resumo || "");
-  const canonicalSlug = slugify(title);
+  const canonicalSlug = (video as any).slug || slugify(title);
 
   const jsonLd = {
     "@context": "https://schema.org",
