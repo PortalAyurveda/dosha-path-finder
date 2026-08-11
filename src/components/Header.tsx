@@ -407,7 +407,7 @@ const Header = () => {
         </div>
 
         {/* RIGHT — Search + cart + agenda + profile */}
-        <div className="flex items-center gap-1.5 justify-self-end justify-end w-full">
+        <div className="flex items-center gap-1.5 justify-self-end justify-end w-full min-w-0 overflow-hidden">
           {/* Desktop: inline expanded search takes cart/agenda space */}
           {searchOpen && (
             <div className="hidden lg:flex flex-1 min-w-0 justify-end">
