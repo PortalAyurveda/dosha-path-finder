@@ -185,9 +185,10 @@ const Header = () => {
       className={`sticky top-0 z-50 w-full text-primary-foreground shadow-md ${isSamkhya ? "" : "bg-primary"}`}
       style={headerBg}
     >
-      <div className="max-w-6xl mx-auto grid h-16 grid-cols-[1fr_auto_1fr] items-center gap-3 px-4 sm:px-6">
+      <div className="max-w-6xl mx-auto grid h-16 grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3 px-4 sm:px-6">
         {/* LEFT — Hamburger (mobile) + Mobile search trigger + Desktop nav */}
-        <div className="flex items-center gap-1.5 justify-self-start min-w-0">
+        <div className="flex items-center gap-1.5 justify-self-start min-w-0 overflow-hidden">
+
           {/* Mobile: search trigger (icon) on the LEFT — opens fixed overlay */}
           <button
             type="button"
