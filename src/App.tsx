@@ -16,6 +16,12 @@ const AkashaRedirect = () => {
   return <Navigate to="/meu-dosha" replace />;
 };
 
+// Legado Wix: /posts/:slug → /blog/:slug
+const PostsRedirect = () => {
+  const { slug } = useParams<{ slug: string }>();
+  return <Navigate to={`/blog/${slug ?? ""}`} replace />;
+};
+
 import Index from "./pages/Index";
 const MinhaRotina = lazy(() => import("./pages/MinhaRotina"));
 const LaunchPage = lazy(() => import("./pages/LaunchPage"));
