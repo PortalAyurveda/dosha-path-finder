@@ -83,9 +83,19 @@ const Video = () => {
       const { data, error } = await supabase.rpc("find_video_by_slug", { _slug: slug! });
       if (error) {
         console.error("find_video_by_slug error:", error);
-        return null;
+      } else if (Array.isArray(data) && data.length > 0) {
+        return data[0] as any;
       }
-      if (Array.isArray(data) && data.length > 0) return data[0] as any;
+
+      // 3) Slug com cara de ID cru do YouTube → resolve pelo video_id
+      if (/^[A-Za-z0-9_-]{11}$/.test(slug!)) {
+        const { data: canonRow } = await (supabase.from("videos_canonicos") as any)
+          .select("video_id, slug, novo_titulo, nova_descricao, mini_resumo, tags, criado_em, is_receita, is_live, is_oficial")
+          .eq("video_id", slug!)
+          .maybeSingle();
+        if (canonRow) return canonRow as any;
+      }
+
       return null;
     },
     enabled: !!slug,
@@ -201,7 +211,7 @@ const Video = () => {
   const isYoutubeId = !!slug && /^[A-Za-z0-9_-]{11}$/.test(slug);
   useEffect(() => {
     if (!isLoading && video && isYoutubeId) {
-      const canonical = slugify((video as any).novo_titulo || "");
+      const canonical = (video as any).slug || slugify((video as any).novo_titulo || "");
       if (canonical && canonical !== slug) {
         navigate(`/video/${canonical}`, { replace: true, state: { videoId: (video as any).video_id } });
       }
@@ -248,7 +258,7 @@ const Video = () => {
 
   const title = video.novo_titulo || "Sem título";
   const description = limparDescricaoVideo(video.nova_descricao || video.mini_resumo || "");
-  const canonicalSlug = slugify(title);
+  const canonicalSlug = (video as any).slug || slugify(title);
 
   const jsonLd = {
     "@context": "https://schema.org",

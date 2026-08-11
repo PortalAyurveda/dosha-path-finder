@@ -1,6 +1,6 @@
 import { lazy, Suspense } from "react";
 import { QueryClient, QueryClientProvider, hydrate, dehydrate } from "@tanstack/react-query";
-import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes, useLocation, useParams } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
@@ -14,6 +14,12 @@ import CartDrawer from "./components/loja/CartDrawer";
 
 const AkashaRedirect = () => {
   return <Navigate to="/meu-dosha" replace />;
+};
+
+// Legado Wix: /posts/:slug → /blog/:slug
+const PostsRedirect = () => {
+  const { slug } = useParams<{ slug: string }>();
+  return <Navigate to={`/blog/${slug ?? ""}`} replace />;
 };
 
 import Index from "./pages/Index";
@@ -185,6 +191,7 @@ const RoutedApp = () => {
               <Route path="/terapeutas/:slug" element={<TerapeutaPerfil />} />
               <Route path="/akasha" element={<AkashaRedirect />} />
               <Route path="/video/:slug" element={<Video />} />
+              <Route path="/posts/:slug" element={<PostsRedirect />} />
 
               {/* Vata */}
               <Route path="/biblioteca/vata" element={<DoshaVata />} />
