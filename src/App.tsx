@@ -191,6 +191,7 @@ const RoutedApp = () => {
               <Route path="/terapeutas/:slug" element={<TerapeutaPerfil />} />
               <Route path="/akasha" element={<AkashaRedirect />} />
               <Route path="/video/:slug" element={<Video />} />
+              <Route path="/posts/:slug" element={<PostsRedirect />} />
 
               {/* Vata */}
               <Route path="/biblioteca/vata" element={<DoshaVata />} />
