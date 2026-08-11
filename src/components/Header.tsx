@@ -467,10 +467,11 @@ const Header = () => {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 {doshaResult ? (
-                  <button className="flex items-center gap-2 h-9 pl-3 pr-2.5 rounded-full bg-white hover:bg-white/90 transition-colors border border-border/30 shadow-sm">
-                    <span className="text-xs sm:text-sm font-semibold text-foreground truncate max-w-[80px] sm:max-w-[120px] leading-none">
+                  <button className="flex shrink-0 min-w-0 items-center gap-2 h-9 pl-3 pr-2.5 rounded-full bg-white hover:bg-white/90 transition-colors border border-border/30 shadow-sm">
+                    <span className="text-xs sm:text-sm font-semibold text-foreground truncate max-w-[64px] sm:max-w-[120px] leading-none">
                       {firstName ? firstName.charAt(0).toUpperCase() + firstName.slice(1).toLowerCase() : ""}
                     </span>
+
                     <span className="shrink-0 inline-flex items-center justify-center">
                       {profile?.avatar_url ? (
                         <img
