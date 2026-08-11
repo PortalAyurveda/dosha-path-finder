@@ -429,7 +429,7 @@ const Header = () => {
             type="button"
             onClick={abrirCarrinho}
             aria-label={`Abrir carrinho (${totalItens} itens)`}
-            className={`relative flex items-center justify-center w-9 h-9 rounded-full bg-white hover:bg-white/90 transition-colors shadow-sm ${searchOpen ? "lg:hidden" : ""}`}
+            className={`relative shrink-0 flex items-center justify-center w-9 h-9 rounded-full bg-white hover:bg-white/90 transition-colors shadow-sm ${searchOpen ? "lg:hidden" : ""}`}
             style={buttonTextColor ? { color: buttonTextColor } : { color: "hsl(var(--primary))" }}
           >
             <ShoppingCart className="h-[18px] w-[18px]" strokeWidth={2.2} />
@@ -446,11 +446,12 @@ const Header = () => {
             <Link
               to="/minha-rotina"
               aria-label="Minha rotina"
-              className={`flex items-center justify-center w-9 h-9 rounded-full bg-white hover:bg-white/90 transition-colors shadow-sm ${searchOpen ? "lg:hidden" : ""}`}
+              className={`hidden lg:flex shrink-0 items-center justify-center w-9 h-9 rounded-full bg-white hover:bg-white/90 transition-colors shadow-sm ${searchOpen ? "lg:hidden" : ""}`}
             >
               <CalendarHeart className="h-[18px] w-[18px] text-secondary" strokeWidth={2.2} />
             </Link>
           )}
+
           {profile?.subscription_status !== "active" && (
             <Link to="/assinar" className={`hidden lg:block ${searchOpen ? "lg:hidden" : ""}`}>
               <Button
