@@ -211,7 +211,7 @@ const Video = () => {
   const isYoutubeId = !!slug && /^[A-Za-z0-9_-]{11}$/.test(slug);
   useEffect(() => {
     if (!isLoading && video && isYoutubeId) {
-      const canonical = slugify((video as any).novo_titulo || "");
+      const canonical = (video as any).slug || slugify((video as any).novo_titulo || "");
       if (canonical && canonical !== slug) {
         navigate(`/video/${canonical}`, { replace: true, state: { videoId: (video as any).video_id } });
       }
