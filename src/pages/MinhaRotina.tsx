@@ -22,7 +22,7 @@ import {
   X,
 } from "lucide-react";
 import { getIconeLucide } from "@/lib/iconesLucide";
-import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
+const RotinaPie = lazy(() => import("@/components/charts/RotinaPie"));
 
 import PageContainer from "@/components/PageContainer";
 import PrateleiraSamkhya from "@/components/samkhya/PrateleiraSamkhya";
@@ -889,26 +889,9 @@ const SemanaHeader = ({ agniPrincipal, analise, vata, pitta, kapha, ultimaRevisa
           )}
         >
           <div className="w-20 h-20 shrink-0">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={pieData}
-                  dataKey="value"
-                  nameKey="name"
-                  innerRadius={18}
-                  outerRadius={36}
-                  startAngle={90}
-                  endAngle={-270}
-                  stroke="none"
-                  isAnimationActive
-                  animationDuration={700}
-                >
-                  {pieData.map((d) => (
-                    <Cell key={d.name} fill={PIE_COLORS[d.name]} />
-                  ))}
-                </Pie>
-              </PieChart>
-            </ResponsiveContainer>
+            <Suspense fallback={<div className="w-20 h-20" />}>
+              <RotinaPie data={pieData} colors={PIE_COLORS} />
+            </Suspense>
           </div>
           <div className="flex-1 min-w-0">
             <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold mb-1.5">
