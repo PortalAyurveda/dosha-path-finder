@@ -376,7 +376,7 @@ const Header = () => {
 
 
         {/* CENTER — Logo (swap when in /samkhya/*) */}
-        <div className="flex min-w-0 justify-center justify-self-center items-center h-full overflow-visible">
+        <div className="flex shrink-0 justify-center justify-self-center items-center h-full overflow-visible">
           <Link
             to={isSamkhya ? "/samkhya" : (location.pathname.startsWith("/aula") ? "/curso/alimentacao" : "/")}
             className="flex items-center justify-center animate-fade-in"
