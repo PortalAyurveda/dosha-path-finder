@@ -1108,6 +1108,93 @@ function CardOferta({ o, formato }: { o: Oferta; formato: Formato }) {
   );
 }
 
+// ---------- card exportável ----------
+function CardExport({
+  item,
+  formato,
+  copiado,
+  onCopiar,
+}: {
+  item: { key: string; filename: string; node: React.ReactNode };
+  formato: Formato;
+  copiado: boolean;
+  onCopiar: () => void;
+}) {
+  const ref = useRef<HTMLDivElement | null>(null);
+  const pronto = useRef<File | null>(null);
+  const [gerando, setGerando] = useState(false);
+  const [visivel, setVisivel] = useState(false);
+
+  // só pré-gera quando o card está na tela
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || typeof IntersectionObserver === "undefined") return;
+    const io = new IntersectionObserver(
+      (entries) => entries.forEach((e) => e.isIntersecting && setVisivel(true)),
+      { rootMargin: "200px" },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  // pré-gera o PNG em segundo plano (debounce) para o share funcionar no iOS
+  useEffect(() => {
+    if (!visivel) return;
+    let cancelado = false;
+    pronto.current = null;
+    const t = setTimeout(async () => {
+      const el = ref.current;
+      if (!el) return;
+      try {
+        const file = await gerarArquivo(el, item.filename, formato);
+        if (!cancelado) pronto.current = file;
+      } catch {
+        /* silencioso: gera na hora do clique */
+      }
+    }, 600);
+    return () => {
+      cancelado = true;
+      clearTimeout(t);
+    };
+  }, [visivel, formato, item.filename, item.node]);
+
+  const salvar = async () => {
+    if (pronto.current) {
+      await salvarArquivo(pronto.current);
+      return;
+    }
+    const el = ref.current;
+    if (!el) return;
+    setGerando(true);
+    try {
+      const file = await gerarArquivo(el, item.filename, formato);
+      pronto.current = file;
+      await salvarArquivo(file);
+    } catch {
+      toast({ title: "Não consegui gerar a imagem", variant: "destructive" });
+    } finally {
+      setGerando(false);
+    }
+  };
+
+  return (
+    <div className="flex flex-col gap-2">
+      <div ref={ref}>{item.node}</div>
+      <Button size="sm" variant="outline" className="gap-2" onClick={salvar} disabled={gerando}>
+        {gerando ? (
+          <Loader2 className="w-3.5 h-3.5 animate-spin" />
+        ) : (
+          <Download className="w-3.5 h-3.5" />
+        )}
+        {IS_IOS ? "Salvar / Compartilhar" : "Baixar PNG"}
+      </Button>
+      <Button size="sm" variant="ghost" className="gap-2" onClick={onCopiar}>
+        {copiado ? <Check className="w-3.5 h-3.5" /> : <Link2 className="w-3.5 h-3.5" />}
+        Copiar link
+      </Button>
+    </div>
+  );
+}
 
 // ---------- grupo ----------
 function Grupo({
