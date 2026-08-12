@@ -4,7 +4,7 @@ import AdminNav from "@/components/admin/AdminNav";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toPng } from "html-to-image";
-import { Download, Play, ArrowUp, ArrowDown, MapPin, Link2, Check } from "lucide-react";
+import { Download, Play, ArrowUp, ArrowDown, MapPin, Link2, Check, Loader2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
 const SITE = "https://portalayurveda.com";
