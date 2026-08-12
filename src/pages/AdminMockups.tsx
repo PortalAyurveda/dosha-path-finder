@@ -4,7 +4,7 @@ import AdminNav from "@/components/admin/AdminNav";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toPng } from "html-to-image";
-import { Download, Play, ArrowUp, ArrowDown, MapPin, Link2, Check } from "lucide-react";
+import { Download, Play, ArrowUp, ArrowDown, MapPin, Link2, Check, Loader2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
 const SITE = "https://portalayurveda.com";
@@ -148,20 +148,82 @@ const T: Record<
 const Serif: React.CSSProperties = { fontFamily: "'Roboto Serif', Georgia, serif" };
 
 // ---------- helpers ----------
-async function baixarCard(el: HTMLElement, filename: string, formato: Formato) {
+const IS_IOS =
+  typeof navigator !== "undefined" &&
+  (/iPad|iPhone|iPod/.test(navigator.userAgent) ||
+    (navigator.platform === "MacIntel" && (navigator as any).maxTouchPoints > 1));
+
+function decodeSafe(img: HTMLImageElement): Promise<void> {
+  return (img.decode?.() ?? Promise.resolve()).then(
+    () => undefined,
+    () => undefined,
+  );
+}
+
+// Garante que <img> e backgrounds CSS estejam decodificados antes da captura
+async function prepararImagens(el: HTMLElement) {
+  const tags = Array.from(el.querySelectorAll("img"));
+  const urls = new Set<string>();
+  el.querySelectorAll<HTMLElement>("*").forEach((n) => {
+    const bg = getComputedStyle(n).backgroundImage;
+    if (!bg || bg === "none") return;
+    for (const m of bg.matchAll(/url\(["']?(.*?)["']?\)/g)) {
+      if (m[1]) urls.add(m[1]);
+    }
+  });
+  await Promise.all([
+    ...tags.map((t) => decodeSafe(t)),
+    ...Array.from(urls).map((u) => {
+      const im = new Image();
+      im.crossOrigin = "anonymous";
+      im.src = u;
+      return decodeSafe(im);
+    }),
+  ]);
+}
+
+async function gerarDataUrl(el: HTMLElement, formato: Formato) {
   const target = FORMATOS[formato];
-  const pixelRatio = target.w / el.offsetWidth;
-  const dataUrl = await toPng(el, {
-    pixelRatio,
-    cacheBust: true,
+  const opts = {
+    pixelRatio: target.w / el.offsetWidth,
+    cacheBust: false,
     backgroundColor: undefined,
     width: el.offsetWidth,
     height: el.offsetHeight,
-  });
+  };
+  await prepararImagens(el);
+  // Safari: a primeira captura só aquece o cache interno de imagens
+  await toPng(el, opts).catch(() => "");
+  return toPng(el, opts);
+}
+
+async function gerarArquivo(el: HTMLElement, filename: string, formato: Formato) {
+  const dataUrl = await gerarDataUrl(el, formato);
+  const blob = await (await fetch(dataUrl)).blob();
+  return new File([blob], filename, { type: "image/png" });
+}
+
+function baixarArquivo(file: File) {
+  const url = URL.createObjectURL(file);
   const a = document.createElement("a");
-  a.href = dataUrl;
-  a.download = filename;
+  a.href = url;
+  a.download = file.name;
   a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 4000);
+}
+
+// Compartilha (iOS → "Salvar Imagem" na galeria) com fallback pra download
+async function salvarArquivo(file: File) {
+  const nav = navigator as Navigator & { canShare?: (d: any) => boolean };
+  if (nav.canShare?.({ files: [file] })) {
+    try {
+      await nav.share({ files: [file] } as ShareData);
+      return;
+    } catch (e: any) {
+      if (e?.name === "AbortError") return;
+    }
+  }
+  baixarArquivo(file);
 }
 
 function tituloSize(text: string, t: (typeof T)[Formato]) {
@@ -1046,6 +1108,93 @@ function CardOferta({ o, formato }: { o: Oferta; formato: Formato }) {
   );
 }
 
+// ---------- card exportável ----------
+function CardExport({
+  item,
+  formato,
+  copiado,
+  onCopiar,
+}: {
+  item: { key: string; filename: string; node: React.ReactNode };
+  formato: Formato;
+  copiado: boolean;
+  onCopiar: () => void;
+}) {
+  const ref = useRef<HTMLDivElement | null>(null);
+  const pronto = useRef<File | null>(null);
+  const [gerando, setGerando] = useState(false);
+  const [visivel, setVisivel] = useState(false);
+
+  // só pré-gera quando o card está na tela
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || typeof IntersectionObserver === "undefined") return;
+    const io = new IntersectionObserver(
+      (entries) => entries.forEach((e) => e.isIntersecting && setVisivel(true)),
+      { rootMargin: "200px" },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  // pré-gera o PNG em segundo plano (debounce) para o share funcionar no iOS
+  useEffect(() => {
+    if (!visivel) return;
+    let cancelado = false;
+    pronto.current = null;
+    const t = setTimeout(async () => {
+      const el = ref.current;
+      if (!el) return;
+      try {
+        const file = await gerarArquivo(el, item.filename, formato);
+        if (!cancelado) pronto.current = file;
+      } catch {
+        /* silencioso: gera na hora do clique */
+      }
+    }, 600);
+    return () => {
+      cancelado = true;
+      clearTimeout(t);
+    };
+  }, [visivel, formato, item.filename, item.node]);
+
+  const salvar = async () => {
+    if (pronto.current) {
+      await salvarArquivo(pronto.current);
+      return;
+    }
+    const el = ref.current;
+    if (!el) return;
+    setGerando(true);
+    try {
+      const file = await gerarArquivo(el, item.filename, formato);
+      pronto.current = file;
+      await salvarArquivo(file);
+    } catch {
+      toast({ title: "Não consegui gerar a imagem", variant: "destructive" });
+    } finally {
+      setGerando(false);
+    }
+  };
+
+  return (
+    <div className="flex flex-col gap-2">
+      <div ref={ref}>{item.node}</div>
+      <Button size="sm" variant="outline" className="gap-2" onClick={salvar} disabled={gerando}>
+        {gerando ? (
+          <Loader2 className="w-3.5 h-3.5 animate-spin" />
+        ) : (
+          <Download className="w-3.5 h-3.5" />
+        )}
+        {IS_IOS ? "Salvar / Compartilhar" : "Baixar PNG"}
+      </Button>
+      <Button size="sm" variant="ghost" className="gap-2" onClick={onCopiar}>
+        {copiado ? <Check className="w-3.5 h-3.5" /> : <Link2 className="w-3.5 h-3.5" />}
+        Copiar link
+      </Button>
+    </div>
+  );
+}
 
 // ---------- grupo ----------
 function Grupo({
@@ -1089,33 +1238,13 @@ function Grupo({
       <h2 className="text-lg font-heading font-bold text-foreground mb-4">{titulo}</h2>
       <div className="flex flex-wrap gap-6">
         {visiveis.map((it) => (
-          <div key={it.key} className="flex flex-col gap-2">
-            <div ref={(el) => (refs.current[it.key] = el)}>{it.node}</div>
-            <Button
-              size="sm"
-              variant="outline"
-              className="gap-2"
-              onClick={() => {
-                const el = refs.current[it.key];
-                if (el) baixarCard(el, it.filename, formato);
-              }}
-            >
-              <Download className="w-3.5 h-3.5" /> Baixar PNG
-            </Button>
-            <Button
-              size="sm"
-              variant="ghost"
-              className="gap-2"
-              onClick={() => copiarUrl(it.key, it.url || SITE)}
-            >
-              {copiado === it.key ? (
-                <Check className="w-3.5 h-3.5" />
-              ) : (
-                <Link2 className="w-3.5 h-3.5" />
-              )}
-              Copiar link
-            </Button>
-          </div>
+          <CardExport
+            key={it.key}
+            item={it}
+            formato={formato}
+            copiado={copiado === it.key}
+            onCopiar={() => copiarUrl(it.key, it.url || SITE)}
+          />
         ))}
       </div>
     </section>
