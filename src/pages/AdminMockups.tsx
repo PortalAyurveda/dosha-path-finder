@@ -148,20 +148,82 @@ const T: Record<
 const Serif: React.CSSProperties = { fontFamily: "'Roboto Serif', Georgia, serif" };
 
 // ---------- helpers ----------
-async function baixarCard(el: HTMLElement, filename: string, formato: Formato) {
+const IS_IOS =
+  typeof navigator !== "undefined" &&
+  (/iPad|iPhone|iPod/.test(navigator.userAgent) ||
+    (navigator.platform === "MacIntel" && (navigator as any).maxTouchPoints > 1));
+
+function decodeSafe(img: HTMLImageElement): Promise<void> {
+  return (img.decode?.() ?? Promise.resolve()).then(
+    () => undefined,
+    () => undefined,
+  );
+}
+
+// Garante que <img> e backgrounds CSS estejam decodificados antes da captura
+async function prepararImagens(el: HTMLElement) {
+  const tags = Array.from(el.querySelectorAll("img"));
+  const urls = new Set<string>();
+  el.querySelectorAll<HTMLElement>("*").forEach((n) => {
+    const bg = getComputedStyle(n).backgroundImage;
+    if (!bg || bg === "none") return;
+    for (const m of bg.matchAll(/url\(["']?(.*?)["']?\)/g)) {
+      if (m[1]) urls.add(m[1]);
+    }
+  });
+  await Promise.all([
+    ...tags.map((t) => decodeSafe(t)),
+    ...Array.from(urls).map((u) => {
+      const im = new Image();
+      im.crossOrigin = "anonymous";
+      im.src = u;
+      return decodeSafe(im);
+    }),
+  ]);
+}
+
+async function gerarDataUrl(el: HTMLElement, formato: Formato) {
   const target = FORMATOS[formato];
-  const pixelRatio = target.w / el.offsetWidth;
-  const dataUrl = await toPng(el, {
-    pixelRatio,
-    cacheBust: true,
+  const opts = {
+    pixelRatio: target.w / el.offsetWidth,
+    cacheBust: false,
     backgroundColor: undefined,
     width: el.offsetWidth,
     height: el.offsetHeight,
-  });
+  };
+  await prepararImagens(el);
+  // Safari: a primeira captura só aquece o cache interno de imagens
+  await toPng(el, opts).catch(() => "");
+  return toPng(el, opts);
+}
+
+async function gerarArquivo(el: HTMLElement, filename: string, formato: Formato) {
+  const dataUrl = await gerarDataUrl(el, formato);
+  const blob = await (await fetch(dataUrl)).blob();
+  return new File([blob], filename, { type: "image/png" });
+}
+
+function baixarArquivo(file: File) {
+  const url = URL.createObjectURL(file);
   const a = document.createElement("a");
-  a.href = dataUrl;
-  a.download = filename;
+  a.href = url;
+  a.download = file.name;
   a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 4000);
+}
+
+// Compartilha (iOS → "Salvar Imagem" na galeria) com fallback pra download
+async function salvarArquivo(file: File) {
+  const nav = navigator as Navigator & { canShare?: (d: any) => boolean };
+  if (nav.canShare?.({ files: [file] })) {
+    try {
+      await nav.share({ files: [file] } as ShareData);
+      return;
+    } catch (e: any) {
+      if (e?.name === "AbortError") return;
+    }
+  }
+  baixarArquivo(file);
 }
 
 function tituloSize(text: string, t: (typeof T)[Formato]) {
