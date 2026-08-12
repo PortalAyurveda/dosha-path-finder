@@ -1151,33 +1151,13 @@ function Grupo({
       <h2 className="text-lg font-heading font-bold text-foreground mb-4">{titulo}</h2>
       <div className="flex flex-wrap gap-6">
         {visiveis.map((it) => (
-          <div key={it.key} className="flex flex-col gap-2">
-            <div ref={(el) => (refs.current[it.key] = el)}>{it.node}</div>
-            <Button
-              size="sm"
-              variant="outline"
-              className="gap-2"
-              onClick={() => {
-                const el = refs.current[it.key];
-                if (el) baixarCard(el, it.filename, formato);
-              }}
-            >
-              <Download className="w-3.5 h-3.5" /> Baixar PNG
-            </Button>
-            <Button
-              size="sm"
-              variant="ghost"
-              className="gap-2"
-              onClick={() => copiarUrl(it.key, it.url || SITE)}
-            >
-              {copiado === it.key ? (
-                <Check className="w-3.5 h-3.5" />
-              ) : (
-                <Link2 className="w-3.5 h-3.5" />
-              )}
-              Copiar link
-            </Button>
-          </div>
+          <CardExport
+            key={it.key}
+            item={it}
+            formato={formato}
+            copiado={copiado === it.key}
+            onCopiar={() => copiarUrl(it.key, it.url || SITE)}
+          />
         ))}
       </div>
     </section>
