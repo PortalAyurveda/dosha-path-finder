@@ -6,7 +6,18 @@
     <meta name="theme-color" content="#352F54" />
     <meta name="format-detection" content="telephone=no" />
 
-    <style>#root { min-height: 100vh; }</style>
+    <style>#root { min-height: 100vh; }
+#boot-shell{position:fixed;inset:0;z-index:2147483000;background:#FAF8F4;font-family:"DM Sans",system-ui,-apple-system,sans-serif;color:#352F54;overflow:hidden}
+#bs-bar{height:56px;background:#352F54;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:17px;letter-spacing:.02em}
+#bs-main{max-width:520px;margin:0 auto;padding:44px 24px 0;text-align:center}
+#bs-main h1{margin:0;font-weight:700;font-size:30px;line-height:1.2;letter-spacing:-.01em}
+#bs-main p{margin:16px 0 0;font-size:16px;line-height:1.5;opacity:.75}
+#bs-card{margin-top:32px;display:flex;flex-direction:column;align-items:center;gap:14px}
+.bs-ph{display:block;height:48px;border-radius:14px;background:#EDE8DE}
+.bs-cta{height:52px;border-radius:26px}
+@media(min-width:768px){#bs-main{padding-top:72px}#bs-main h1{font-size:38px}}
+</style>
+
     <link rel="preconnect" href="https://api.portalayurveda.com" crossorigin />
     <link rel="preconnect" href="https://fwezkasjfguarjmjxifh.supabase.co" crossorigin />
 
@@ -151,7 +162,20 @@
     <!-- Meta Pixel (noscript fallback) -->
     <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=727901213560105&ev=PageView&noscript=1" alt="" /></noscript>
 
+    <div id="boot-shell" aria-hidden="true">
+      <div id="bs-bar">Portal Ayurveda</div>
+      <div id="bs-main">
+        <h1>Seu guia completo para saúde e longevidade.</h1>
+        <p>Descubra e cuide dos seus Doshas por meio da medicina milenar.</p>
+        <div id="bs-card">
+          <span class="bs-ph" style="width:100%"></span>
+          <span class="bs-ph" style="width:82%"></span>
+          <span class="bs-ph bs-cta" style="width:60%"></span>
+        </div>
+      </div>
+    </div>
     <div id="root"></div>
+
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

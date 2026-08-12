@@ -1,4 +1,4 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { QueryClient, QueryClientProvider, hydrate, dehydrate } from "@tanstack/react-query";
 import { BrowserRouter, Navigate, Route, Routes, useLocation, useParams } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
@@ -314,17 +314,33 @@ const RoutedApp = () => {
   );
 };
 
-const App = () => (
-  <HelmetProvider>
-    <QueryClientProvider client={queryClient}>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <RoutedApp />
-        <AnalyticsLoader />
-      </BrowserRouter>
-    </QueryClientProvider>
-  </HelmetProvider>
-);
+const App = () => {
+  useEffect(() => {
+    const el = document.getElementById("boot-shell");
+    if (!el) return;
+    const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    if (reduce) {
+      el.remove();
+      return;
+    }
+    el.style.transition = "opacity 150ms";
+    el.style.opacity = "0";
+    setTimeout(() => el.remove(), 200);
+  }, []);
+
+  return (
+    <HelmetProvider>
+      <QueryClientProvider client={queryClient}>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <RoutedApp />
+          <AnalyticsLoader />
+        </BrowserRouter>
+      </QueryClientProvider>
+    </HelmetProvider>
+  );
+};
+
 
 export default App;
