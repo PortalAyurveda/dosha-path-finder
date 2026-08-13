@@ -530,6 +530,33 @@ export type Database = {
         }
         Relationships: []
       }
+      backup_nomes_12_08_2026: {
+        Row: {
+          criado_em: string
+          email: string | null
+          nome_antigo: string | null
+          nome_completo_antigo: string | null
+          ref_id: string
+          tipo: string
+        }
+        Insert: {
+          criado_em?: string
+          email?: string | null
+          nome_antigo?: string | null
+          nome_completo_antigo?: string | null
+          ref_id: string
+          tipo: string
+        }
+        Update: {
+          criado_em?: string
+          email?: string | null
+          nome_antigo?: string | null
+          nome_completo_antigo?: string | null
+          ref_id?: string
+          tipo?: string
+        }
+        Relationships: []
+      }
       banner_eventos: {
         Row: {
           banner_id: string | null
@@ -5455,7 +5482,7 @@ export type Database = {
           cpf: string | null
           created_at: string
           cupom_id: string | null
-          email: string
+          email: string | null
           endereco: Json | null
           id: string
           is_cortesia: boolean | null
@@ -5482,7 +5509,7 @@ export type Database = {
           cpf?: string | null
           created_at?: string
           cupom_id?: string | null
-          email: string
+          email?: string | null
           endereco?: Json | null
           id: string
           is_cortesia?: boolean | null
@@ -5509,7 +5536,7 @@ export type Database = {
           cpf?: string | null
           created_at?: string
           cupom_id?: string | null
-          email?: string
+          email?: string | null
           endereco?: Json | null
           id?: string
           is_cortesia?: boolean | null
