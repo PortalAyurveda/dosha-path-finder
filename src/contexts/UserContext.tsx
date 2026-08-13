@@ -31,6 +31,8 @@ export interface DoshaResult {
 
 interface UserContextType {
   user: User | null;
+  /** true quando a sessão é anônima (teste feito, conta ainda não verificada) */
+  isAnonymous: boolean;
   session: Session | null;
   profile: UserProfile | null;
   doshaResult: DoshaResult | null;
