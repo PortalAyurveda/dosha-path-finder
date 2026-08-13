@@ -130,13 +130,16 @@ const Header = () => {
   ];
 
 
+  const metaNome = (user?.user_metadata as { nome?: string } | undefined)?.nome;
+
   const firstName = doshaResult?.nome?.split(" ")[0] 
     || profile?.nome?.split(" ")[0] 
+    || metaNome?.split(" ")[0]
     || user?.email?.split("@")[0] 
     || "";
 
 
-  const userInitial = profile?.nome?.[0] || user?.email?.[0] || "?";
+  const userInitial = profile?.nome?.[0] || metaNome?.[0] || user?.email?.[0] || "?";
 
   // Estilo dinâmico para fundo do header
   const headerBg = isSamkhya
