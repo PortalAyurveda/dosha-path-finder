@@ -158,10 +158,16 @@ type HomePayload = {
 
 // ---------- page ----------
 const MeuPerfil = () => {
-  const { user, loading: authLoading, doshaResult, refreshProfile } = useUser();
+  const { user, isAnonymous, loading: authLoading, doshaResult, refreshProfile } = useUser();
 
-  if (!authLoading && !user) {
-    return <Navigate to="/entrar?redirect=/meu-perfil" replace />;
+  if (!authLoading && (!user || isAnonymous)) {
+    const claim = doshaResult?.idPublico || localStorage.getItem("activeDoshaId");
+    return (
+      <Navigate
+        to={`/entrar?${claim ? `claim=${claim}&` : ""}redirect=/meu-perfil`}
+        replace
+      />
+    );
   }
 
   return (

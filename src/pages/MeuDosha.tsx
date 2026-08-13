@@ -639,7 +639,7 @@ const MeuDosha = () => {
     : 'perfil';
   const initialMode = modeParam === 'personalizado' ? 'personalizado' : 'gerais';
   const queryClient = useQueryClient();
-  const { user, profile, doshaResult, loading: authLoading } = useUser();
+  const { user, isAnonymous, profile, doshaResult, loading: authLoading } = useUser();
   const isPremium = !!profile?.is_premium;
   const navigate = useNavigate();
   const [evolucaoOpen, setEvolucaoOpen] = useState(false);
@@ -1203,6 +1203,26 @@ const MeuDosha = () => {
           </TabsContent>
 
         </Tabs>
+
+        {isAnonymous && (id || result?.idPublico) && (
+          <div className="rounded-2xl border border-secondary/40 bg-secondary/10 p-5 space-y-3">
+            <p className="font-serif text-lg font-bold text-foreground">
+              Salve seu resultado no seu celular
+            </p>
+            <p className="text-sm text-muted-foreground">
+              Sua rotina de 30 dias já está montada e fica guardada na sua conta.
+            </p>
+            <Button
+              className="w-full sm:w-auto"
+              onClick={() => {
+                const cid = (id || result?.idPublico) as string;
+                navigate(`/entrar?claim=${cid}&redirect=${encodeURIComponent(`/meu-dosha?id=${cid}`)}`);
+              }}
+            >
+              Salvar meu acesso
+            </Button>
+          </div>
+        )}
 
         {!isVisitor && <PraVoceRail doshaPrincipal={result?.doshaprincipal} />}
       </div>
