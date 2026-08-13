@@ -150,14 +150,35 @@ const RouteFallback = () => (
 );
 
 if (typeof window !== "undefined") {
-  const idle: (cb: () => void) => void =
-    (window as any).requestIdleCallback ?? ((cb: () => void) => setTimeout(cb, 1500));
-  idle(() => {
+  const preloadPages = () => {
     import("./pages/Samkhya");
     import("./pages/Biblioteca");
     import("./pages/MeuDosha");
     import("./pages/MinhaRotina");
-  });
+  };
+
+  const shouldPreload = () => {
+    const conn = (navigator as any).connection;
+    if (!conn) return true;
+    if (conn.saveData === true) return false;
+    const type = conn.effectiveType;
+    if (typeof type === "string") {
+      if (type === "3g") return false;
+      if (/2g$/i.test(type)) return false;
+    }
+    return true;
+  };
+
+  const schedulePreload = () => {
+    if (!shouldPreload()) return;
+    setTimeout(preloadPages, 3000);
+  };
+
+  if (document.readyState === "complete") {
+    schedulePreload();
+  } else {
+    window.addEventListener("load", schedulePreload, { once: true });
+  }
 }
 
 const RoutedApp = () => {
