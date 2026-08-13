@@ -129,6 +129,8 @@ const Hero = () => {
   const handleStart = () => {
     if (!canStart) return;
     localStorage.setItem("dosha_test_info", JSON.stringify({ nome: nome.trim(), idade, nivel }));
+    // Sessão anônima silenciosa: nunca bloqueia o início do teste.
+    void ensureAnonSession().then(() => setSessionNome(nome));
     navigate("/teste-de-dosha");
   };
 
