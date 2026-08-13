@@ -1204,7 +1204,7 @@ const MeuDosha = () => {
 
         </Tabs>
 
-        {isAnonymous && (id || result?.idPublico) && (
+        {isAnonymous && id && (
           <div className="rounded-2xl border border-secondary/40 bg-secondary/10 p-5 space-y-3">
             <p className="font-serif text-lg font-bold text-foreground">
               Salve seu resultado no seu celular
@@ -1215,7 +1215,7 @@ const MeuDosha = () => {
             <Button
               className="w-full sm:w-auto"
               onClick={() => {
-                const cid = (id || result?.idPublico) as string;
+                const cid = id;
                 navigate(`/entrar?claim=${cid}&redirect=${encodeURIComponent(`/meu-dosha?id=${cid}`)}`);
               }}
             >
