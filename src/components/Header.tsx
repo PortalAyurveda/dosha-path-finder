@@ -85,7 +85,7 @@ const Header = () => {
 
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, doshaResult, profile, signOut } = useUser();
+  const { user, isAnonymous, doshaResult, profile, signOut } = useUser();
   const { totalItens, abrirCarrinho } = useCart();
   const { immersive } = useImmersive();
   const { aluno: escolaAluno } = useEscolaAluno();
@@ -115,6 +115,10 @@ const Header = () => {
     ? `/meu-dosha?id=${doshaResult.idPublico}`
     : "/meu-dosha";
 
+  const salvarContaHref = doshaResult?.idPublico
+    ? `/entrar?claim=${doshaResult.idPublico}&redirect=${encodeURIComponent(`/meu-dosha?id=${doshaResult.idPublico}`)}`
+    : "/entrar";
+
   const jornadaLinks = [
     { label: "Meu Dosha", to: profileLink },
     { label: "Minha Rotina", to: "/minha-rotina" },
@@ -130,13 +134,16 @@ const Header = () => {
   ];
 
 
+  const metaNome = (user?.user_metadata as { nome?: string } | undefined)?.nome;
+
   const firstName = doshaResult?.nome?.split(" ")[0] 
-    || profile?.nome?.split(" ")[0] 
+    || metaNome?.split(" ")[0]
+    || profile?.nome?.split(" ")[0]
     || user?.email?.split("@")[0] 
     || "";
 
 
-  const userInitial = profile?.nome?.[0] || user?.email?.[0] || "?";
+  const userInitial = metaNome?.[0] || profile?.nome?.[0] || user?.email?.[0] || "?";
 
   // Estilo dinâmico para fundo do header
   const headerBg = isSamkhya
@@ -303,13 +310,23 @@ const Header = () => {
                 {user && (
                   <>
                     <div className="border-t border-white/20 my-1" />
-                    <button
-                      onClick={() => { setOpen(false); handleSignOut(); }}
-                      className="px-4 py-3 rounded-xl text-base font-medium text-white/70 hover:text-white hover:bg-white/10 transition-colors flex items-center gap-2 text-left"
-                    >
-                      <LogOut className="h-4 w-4" />
-                      Sair
-                    </button>
+                    {isAnonymous ? (
+                      <Link
+                        to={salvarContaHref}
+                        onClick={() => setOpen(false)}
+                        className="px-4 py-3 rounded-xl text-base font-medium text-white/90 hover:text-white hover:bg-white/10 transition-colors text-left"
+                      >
+                        Salvar minha conta
+                      </Link>
+                    ) : (
+                      <button
+                        onClick={() => { setOpen(false); handleSignOut(); }}
+                        className="px-4 py-3 rounded-xl text-base font-medium text-white/70 hover:text-white hover:bg-white/10 transition-colors flex items-center gap-2 text-left"
+                      >
+                        <LogOut className="h-4 w-4" />
+                        Sair
+                      </button>
+                    )}
                   </>
                 )}
               </nav>
@@ -518,9 +535,15 @@ const Header = () => {
 
                   <Link to="/meu-perfil">Minha conta</Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={handleSignOut}>
-                  <LogOut className="h-4 w-4 mr-2" /> Sair
-                </DropdownMenuItem>
+                {isAnonymous ? (
+                  <DropdownMenuItem asChild>
+                    <Link to={salvarContaHref}>Salvar minha conta</Link>
+                  </DropdownMenuItem>
+                ) : (
+                  <DropdownMenuItem onClick={handleSignOut}>
+                    <LogOut className="h-4 w-4 mr-2" /> Sair
+                  </DropdownMenuItem>
+                )}
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (

@@ -14,6 +14,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/contexts/UserContext";
 import { cn } from "@/lib/utils";
 import { STEP_CONFIG, useDoshaTestContent, type Question } from "@/lib/doshaTest";
+import { ensureAnonSession, setSessionNome, currentUserId } from "@/lib/anonSession";
 import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 
 const INTERESSE_OPTIONS = [
@@ -126,6 +127,13 @@ const [step, setStep] = useState(0);
     })();
     return () => { cancelled = true; };
   }, [user?.email, profile?.nome]);
+
+  // Sessão anônima ao iniciar as perguntas (silenciosa, nunca bloqueia o teste)
+  useEffect(() => {
+    if (needsHeroInfo) return;
+    void ensureAnonSession().then(() => setSessionNome(info.nome));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [needsHeroInfo]);
 
   // Fetch cidades when estado changes — preserve pre-filled cidade on first load
   const isFirstCidadesFetch = useRef(true);
@@ -338,9 +346,11 @@ const [step, setStep] = useState(0);
       // Visitor ID from browser
       const visitorIdBrowser = `${navigator.userAgent.slice(0, 20)}_${Date.now()}`;
 
+      const sessionUid = (await currentUserId()) ?? user?.id ?? null;
+
       const dbPayload = {
         idPublico,
-        user_id: user?.id ?? null,
+        user_id: sessionUid,
         email: info.email.toLowerCase(),
         nome: info.nome,
         idade: parseInt(info.idade),

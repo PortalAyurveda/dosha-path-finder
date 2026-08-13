@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { ensureAnonSession, setSessionNome } from "@/lib/anonSession";
 import MundoQueSeAbre from "./MundoQueSeAbre";
 
 const DoshaPreview = () => (
@@ -129,6 +130,8 @@ const Hero = () => {
   const handleStart = () => {
     if (!canStart) return;
     localStorage.setItem("dosha_test_info", JSON.stringify({ nome: nome.trim(), idade, nivel }));
+    // Sessão anônima silenciosa: nunca bloqueia o início do teste.
+    void ensureAnonSession().then(() => setSessionNome(nome));
     navigate("/teste-de-dosha");
   };
 

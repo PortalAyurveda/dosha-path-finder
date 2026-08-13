@@ -181,7 +181,7 @@ const PortalMark = ({ size = 28 }: { size?: number }) => (
 );
 
 const Assinar = () => {
-  const { user, profile, refreshProfile, doshaResult } = useUser();
+  const { user, isAnonymous, profile, refreshProfile, doshaResult } = useUser();
   const [searchParams] = useSearchParams();
   const itemParam = searchParams.get("item");
   const navigate = useNavigate();
@@ -257,8 +257,9 @@ const Assinar = () => {
   };
 
   const handleClickPlano = async (plano: Plano) => {
-    if (!user) {
-      navigate(`/entrar?redirect=/assinar`);
+    if (!user || isAnonymous) {
+      const claim = doshaResult?.idPublico || localStorage.getItem("activeDoshaId");
+      navigate(`/entrar?${claim ? `claim=${claim}&` : ""}redirect=/assinar`);
       return;
     }
     trackPixel("InitiateCheckout", { content_type: "subscription", plano });

@@ -29,7 +29,7 @@ const Auth = () => {
 
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { user, doshaResult } = useUser();
+  const { user, isAnonymous, doshaResult } = useUser();
   const { toast } = useToast();
 
   const isInstagram = useMemo(() => isInAppBrowser(), []);
@@ -41,7 +41,7 @@ const Auth = () => {
 
 
   useEffect(() => {
-    if (user && !waitingForDosha) {
+    if (user && !isAnonymous && !waitingForDosha) {
       setWaitingForDosha(true);
     }
   }, [user]);
