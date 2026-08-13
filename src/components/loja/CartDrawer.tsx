@@ -54,7 +54,7 @@ const validateCPF = (cpf: string) => {
 
 const CartDrawer = () => {
   const navigate = useNavigate();
-  const { user, profile, doshaResult } = useUser();
+  const { user, isAnonymous, profile, doshaResult } = useUser();
   const {
     itens,
     isOpen,
@@ -162,7 +162,7 @@ const CartDrawer = () => {
           codigo,
           subtotal,
           email_comprador: form.email || user?.email || null,
-          user_id: user?.id ?? null,
+          user_id: isAnonymous ? null : (user?.id ?? null),
           escopo: "loja",
         },
       });
@@ -318,7 +318,7 @@ const CartDrawer = () => {
     setEnviando(true);
     try {
       // Salva dados do comprador no perfil quando logado
-      if (user?.id) {
+      if (user?.id && !isAnonymous) {
         await supabase
           .from("user_profiles")
           .update({
@@ -334,7 +334,7 @@ const CartDrawer = () => {
         body: {
           success_url: `${origin}/samkhya/obrigado?session_id={CHECKOUT_SESSION_ID}`,
           cancel_url: `${origin}/samkhya?checkout=cancelado`,
-          user_id: user?.id ?? null,
+          user_id: isAnonymous ? null : (user?.id ?? null),
           itens: itens.map((it) => ({
             slug: it.slug,
             tipo: it.tipo,
