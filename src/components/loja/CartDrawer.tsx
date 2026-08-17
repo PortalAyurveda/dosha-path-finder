@@ -859,7 +859,7 @@ const CartDrawer = () => {
           )}
         </div>
 
-        {itens.length > 0 && (
+        {itens.length > 0 && step !== "pix" && (
           <div className="border-t px-5 py-4 space-y-3" style={{ borderColor: samkhyaTokens.cardBorder, background: samkhyaTokens.cardBg }}>
             <div className="flex justify-between text-sm">
               <span style={{ color: samkhyaTokens.textoSec }}>Subtotal</span>
