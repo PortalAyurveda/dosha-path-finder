@@ -188,7 +188,7 @@ const Opiniao = () => {
     (async () => {
       const { data, error } = await supabase.rpc("pesquisa_minha");
       if (!vivo) return;
-      const d = data as { elegivel?: boolean; slug?: string } | null;
+      const d = data as unknown as { elegivel?: boolean; slug?: string } | null;
       if (error || !d || !d.elegivel || !d.slug) {
         setSemPesquisa(true);
         setLoading(false);
@@ -216,7 +216,7 @@ const Opiniao = () => {
         setLoading(false);
         return;
       }
-      const payload = data as AbrirPayload;
+      const payload = data as unknown as AbrirPayload;
       if (!payload?.ok) {
         if (payload?.motivo === "sem_login") {
           const dest = `${window.location.pathname}${window.location.search}`;
@@ -314,13 +314,13 @@ const Opiniao = () => {
     const itens = montarItens(lista);
     const { data, error } = await supabase.rpc("pesquisa_responder", {
       p_slug: dados?.pesquisa?.slug ?? slugParam ?? "",
-      p_itens: itens,
+      p_itens: itens as unknown as never,
       p_token: token ?? null,
       p_concluir: concluir,
       p_origem: origem,
     });
     if (error) return { ok: false as const, motivo: "erro" };
-    return (data as { ok: boolean; motivo?: string }) ?? { ok: false, motivo: "erro" };
+    return (data as unknown as { ok: boolean; motivo?: string }) ?? { ok: false, motivo: "erro" };
   };
 
   const avancar = async () => {
