@@ -77,8 +77,17 @@ const FloatingAkasha = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
+  const [engaged, setEngaged] = useState(() => {
+    try { return localStorage.getItem("akasha_engaged") === "1"; } catch { return false; }
+  });
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const hasHydratedRef = useRef(false);
+
+  const markEngaged = useCallback(() => {
+    setEngaged(true);
+    try { localStorage.setItem("akasha_engaged", "1"); } catch { /* noop */ }
+  }, []);
+
   
   
   const inputRef = useRef<HTMLInputElement>(null);
