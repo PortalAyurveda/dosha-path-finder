@@ -532,7 +532,7 @@ const CartDrawer = () => {
   };
 
   return (
-    <Sheet open={isOpen} onOpenChange={(o) => !o && fecharCarrinho()}>
+    <Sheet open={isOpen} onOpenChange={(o) => !o && handleFecharDrawer()}>
       <SheetContent
         side="right"
         className="w-full sm:max-w-md flex flex-col p-0"
@@ -549,12 +549,86 @@ const CartDrawer = () => {
               </button>
             )}
             <ShoppingBag className="h-5 w-5" />
-            {step === "cart" ? "Seu carrinho" : "Dados de entrega"}
+            {step === "cart" ? "Seu carrinho" : step === "pix" ? "Pagamento via Pix" : "Dados de entrega"}
           </SheetTitle>
         </SheetHeader>
 
         <div className="flex-1 overflow-y-auto px-5 py-4">
-          {itens.length === 0 ? (
+          {step === "pix" && pixData ? (
+            <div className="space-y-4">
+              <div>
+                <h3 className="text-xl" style={{ color: samkhyaTokens.roxo, fontFamily: "Georgia, serif" }}>
+                  Falta pagar
+                </h3>
+                <p className="text-xs mt-0.5" style={{ color: samkhyaTokens.textoSec }}>
+                  Pedido {pixData.numero_pedido}
+                </p>
+              </div>
+
+              <p className="text-2xl font-semibold" style={{ color: samkhyaTokens.ouroDark }}>
+                {formatBRL(Number(pixData.total))}
+              </p>
+
+              {pixExpirado ? (
+                <div
+                  className="p-4 rounded-md space-y-3 text-center"
+                  style={{ background: samkhyaTokens.cardBg, border: `1px solid ${samkhyaTokens.cardBorder}` }}
+                >
+                  <p className="text-sm" style={{ color: samkhyaTokens.texto }}>
+                    Este código Pix expirou.
+                  </p>
+                  <Button
+                    onClick={gerarNovoCodigoPix}
+                    disabled={renovandoPix}
+                    className="w-full"
+                    style={{ background: samkhyaTokens.roxo, color: "#fff" }}
+                  >
+                    {renovandoPix ? "Gerando..." : "Gerar novo código"}
+                  </Button>
+                </div>
+              ) : (
+                <>
+                  <div className="flex justify-center">
+                    <div className="bg-white p-3 rounded-md" style={{ border: `1px solid ${samkhyaTokens.cardBorder}` }}>
+                      <img
+                        src={`data:image/png;base64,${pixData.qr_code_base64}`}
+                        alt="QR Code Pix"
+                        className="w-full"
+                        style={{ maxWidth: 240 }}
+                      />
+                    </div>
+                  </div>
+
+                  <p className="text-sm text-center" style={{ color: samkhyaTokens.textoSec }}>
+                    Abra o app do seu banco, escolha Pix e escaneie o código. Ou copie o código abaixo.
+                  </p>
+
+                  <div
+                    className="p-3 rounded-md text-xs font-mono break-all max-h-28 overflow-y-auto"
+                    style={{ background: samkhyaTokens.cardBg, border: `1px solid ${samkhyaTokens.cardBorder}`, color: samkhyaTokens.texto }}
+                  >
+                    {pixData.qr_code}
+                  </div>
+
+                  <Button
+                    onClick={copiarPix}
+                    className="w-full"
+                    style={{ background: samkhyaTokens.ouro, color: "#fff" }}
+                  >
+                    {pixCopiado ? "Copiado!" : "Copiar código Pix"}
+                  </Button>
+
+                  <p className="text-sm text-center" style={{ color: samkhyaTokens.texto }}>
+                    Faltam {fmtContador(segundosRestantes)}
+                  </p>
+                </>
+              )}
+
+              <p className="text-xs text-center" style={{ color: samkhyaTokens.textoSec }}>
+                Assim que o pagamento cair, esta tela avança sozinha. Mandamos o código também no seu email.
+              </p>
+            </div>
+          ) : itens.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center gap-4 py-16">
               <ShoppingBag className="h-12 w-12" style={{ color: samkhyaTokens.textoSec }} />
               <p style={{ color: samkhyaTokens.textoSec }}>Seu carrinho está vazio</p>
