@@ -52,6 +52,24 @@ const validateCPF = (cpf: string) => {
   return d2 === parseInt(c[10]);
 };
 
+const extrairMensagemErro = async (error: unknown, fallback: string) => {
+  let msg = (error as { message?: string })?.message || fallback;
+  try {
+    const resp = (error as { context?: { response?: Response } })?.context?.response;
+    if (resp) {
+      const body = await resp.clone().json();
+      if (body?.error) msg = String(body.error);
+    }
+  } catch { /* ignore */ }
+  return msg;
+};
+
+const fmtContador = (s: number) => {
+  const m = Math.floor(s / 60);
+  const sec = s % 60;
+  return `${String(m).padStart(2, "0")}:${String(sec).padStart(2, "0")}`;
+};
+
 const CartDrawer = () => {
   const navigate = useNavigate();
   const { user, isAnonymous, profile, doshaResult } = useUser();
