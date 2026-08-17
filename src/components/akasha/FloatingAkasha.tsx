@@ -184,12 +184,20 @@ const FloatingAkasha = () => {
 
   useEffect(() => {
     if (cachedHistory === undefined) return;
+    if (cachedHistory.filter((m) => m.role === "user").length >= 2) markEngaged();
     if (hasHydratedRef.current) return;
     hasHydratedRef.current = true;
     if (cachedHistory.length > 0) {
       setMessages(cachedHistory);
     }
-  }, [cachedHistory]);
+  }, [cachedHistory, markEngaged]);
+
+  // Se já consumiu tokens (menos de 10 restantes), não é mais "novo"
+  useEffect(() => {
+    const t = profile?.tokens_akasha;
+    if (typeof t === "number" && t < 10) markEngaged();
+  }, [profile?.tokens_akasha, markEngaged]);
+
 
 
 
