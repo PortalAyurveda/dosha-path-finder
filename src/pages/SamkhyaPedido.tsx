@@ -48,6 +48,9 @@ interface PedidoDetalhe {
   boleto_url?: string | null;
   nfe_url?: string | null;
   nfe_numero?: string | null;
+  pix_qr_code?: string | null;
+  pix_expira_em?: string | null;
+  pix_expirado?: boolean | null;
 }
 
 const fmtBRL = (n: number) =>
