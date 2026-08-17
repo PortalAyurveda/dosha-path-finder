@@ -429,8 +429,12 @@ const FloatingAkasha = () => {
 
       {/* Botão flutuante */}
       <button
-        onClick={() => setOpen((o) => !o)}
-        className={`fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-[60] w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-white border border-akasha/20 shadow-[0_0_22px_-4px_hsl(var(--akasha)/0.45)] hover:shadow-[0_0_30px_-2px_hsl(var(--akasha)/0.6)] ring-2 ring-akasha/10 flex items-center justify-center text-akasha hover:scale-105 transition-all overflow-hidden ${!open ? "motion-safe:animate-pulse" : ""}`}
+        onClick={() => { markEngaged(); setOpen((o) => !o); }}
+        className={`fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-[60] w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-white border border-akasha/20 ring-2 ring-akasha/10 flex items-center justify-center text-akasha hover:scale-105 transition-all overflow-hidden ${
+          !open && !engaged
+            ? "akasha-call ring-akasha/40"
+            : "shadow-[0_0_22px_-4px_hsl(var(--akasha)/0.45)] hover:shadow-[0_0_30px_-2px_hsl(var(--akasha)/0.6)]"
+        }`}
         aria-label={open ? "Fechar Akasha" : "Abrir Akasha"}
       >
         {open ? (
