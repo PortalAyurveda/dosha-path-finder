@@ -310,3 +310,15 @@ body {
   #contrato-print { position: absolute !important; inset: 0 !important; }
   #contrato-print .no-print { display: none !important; }
 }
+
+/* Akasha: glow "chamando" para quem ainda não conversou */
+@keyframes akasha-call {
+  0%, 100% { box-shadow: 0 0 0 0 hsl(var(--akasha) / 0.45), 0 0 18px -4px hsl(var(--akasha) / 0.5); }
+  50%      { box-shadow: 0 0 0 10px hsl(var(--akasha) / 0), 0 0 34px -2px hsl(var(--akasha) / 0.75); }
+}
+.akasha-call {
+  animation: akasha-call 2.2s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .akasha-call { animation: none; box-shadow: 0 0 26px -4px hsl(var(--akasha) / 0.6); }
+}
