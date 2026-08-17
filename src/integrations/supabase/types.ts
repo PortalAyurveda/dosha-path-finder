@@ -1640,6 +1640,27 @@ export type Database = {
         }
         Relationships: []
       }
+      documents_jiva: {
+        Row: {
+          content: string
+          embedding: string | null
+          id: number
+          metadata: Json | null
+        }
+        Insert: {
+          content: string
+          embedding?: string | null
+          id?: number
+          metadata?: Json | null
+        }
+        Update: {
+          content?: string
+          embedding?: string | null
+          id?: number
+          metadata?: Json | null
+        }
+        Relationships: []
+      }
       dosha_test_questions: {
         Row: {
           created_at: string
@@ -3163,6 +3184,90 @@ export type Database = {
           remediosAyurvedicos?: string | null
           rotinasequilibrar?: string | null
           rotinasinadequadas?: string | null
+        }
+        Relationships: []
+      }
+      jiva_descartes: {
+        Row: {
+          chunk_idx: number | null
+          criado_em: string | null
+          id: number
+          motivo: string | null
+          trecho: string | null
+          video_id: string | null
+        }
+        Insert: {
+          chunk_idx?: number | null
+          criado_em?: string | null
+          id?: number
+          motivo?: string | null
+          trecho?: string | null
+          video_id?: string | null
+        }
+        Update: {
+          chunk_idx?: number | null
+          criado_em?: string | null
+          id?: number
+          motivo?: string | null
+          trecho?: string | null
+          video_id?: string | null
+        }
+        Relationships: []
+      }
+      jiva_fila: {
+        Row: {
+          atualizado_em: string | null
+          chunks_aprovados: number | null
+          chunks_total: number | null
+          fichas: number | null
+          is_live: boolean | null
+          origem: string
+          status: string
+          titulo: string | null
+          video_id: string
+        }
+        Insert: {
+          atualizado_em?: string | null
+          chunks_aprovados?: number | null
+          chunks_total?: number | null
+          fichas?: number | null
+          is_live?: boolean | null
+          origem: string
+          status?: string
+          titulo?: string | null
+          video_id: string
+        }
+        Update: {
+          atualizado_em?: string | null
+          chunks_aprovados?: number | null
+          chunks_total?: number | null
+          fichas?: number | null
+          is_live?: boolean | null
+          origem?: string
+          status?: string
+          titulo?: string | null
+          video_id?: string
+        }
+        Relationships: []
+      }
+      jiva_legendas_extra: {
+        Row: {
+          criado_em: string | null
+          legenda: string
+          origem: string | null
+          video_id: string
+        }
+        Insert: {
+          criado_em?: string | null
+          legenda: string
+          origem?: string | null
+          video_id: string
+        }
+        Update: {
+          criado_em?: string | null
+          legenda?: string
+          origem?: string | null
+          video_id?: string
         }
         Relationships: []
       }
@@ -6492,6 +6597,20 @@ export type Database = {
         Returns: boolean
       }
       is_admin: { Args: never; Returns: boolean }
+      jiva_concluir: {
+        Args: { total: number; vid: string }
+        Returns: undefined
+      }
+      jiva_proximo_video: {
+        Args: never
+        Returns: {
+          is_live: boolean
+          legenda: string
+          origem: string
+          titulo: string
+          video_id: string
+        }[]
+      }
       jogo_nivel_de: {
         Args: { p_email: string }
         Returns: {
