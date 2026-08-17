@@ -73,6 +73,43 @@ const SamkhyaPedido = () => {
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [pixCopiado, setPixCopiado] = useState(false);
+  const [pixCodigo, setPixCodigo] = useState<string | null>(null);
+  const [pixExpirado, setPixExpirado] = useState(false);
+  const [renovandoPix, setRenovandoPix] = useState(false);
+
+  useEffect(() => {
+    setPixCodigo(pedido?.pix_qr_code ?? null);
+    setPixExpirado(Boolean(pedido?.pix_expirado));
+  }, [pedido]);
+
+  const copiarPix = async (code: string) => {
+    try {
+      await navigator.clipboard.writeText(code);
+      setPixCopiado(true);
+      setTimeout(() => setPixCopiado(false), 2000);
+    } catch {
+      toast.error("Não foi possível copiar");
+    }
+  };
+
+  const gerarNovoPix = async () => {
+    if (!session_id) return;
+    setRenovandoPix(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("create-pix-pagamento", {
+        body: { renovar_pedido_id: session_id },
+      });
+      if (error) throw new Error(error.message || "Erro ao gerar novo código");
+      if ((data as any)?.error) throw new Error(String((data as any).error));
+      setPixCodigo((data as any)?.qr_code ?? null);
+      setPixExpirado(false);
+    } catch (e: unknown) {
+      toast.error(e instanceof Error ? e.message : "Erro ao gerar novo código");
+    } finally {
+      setRenovandoPix(false);
+    }
+  };
 
   useEffect(() => {
     if (!session_id) return;
