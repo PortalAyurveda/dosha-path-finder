@@ -11,6 +11,8 @@ const SamkhyaObrigado = () => {
   const { limparCarrinho } = useCart();
   const [params] = useSearchParams();
   const sessionId = params.get("session_id");
+  const pedidoId = params.get("pedido");
+  const trackingId = pedidoId || sessionId;
 
   useEffect(() => {
     limparCarrinho();
