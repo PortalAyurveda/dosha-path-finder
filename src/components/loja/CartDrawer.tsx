@@ -118,8 +118,95 @@ const CartDrawer = () => {
   useEffect(() => {
     if (!isOpen) {
       setStep("cart");
+      setPixData(null);
+      setPixExpirado(false);
+      setPixCopiado(false);
     }
   }, [isOpen]);
+
+  // Contador regressivo do Pix
+  useEffect(() => {
+    if (step !== "pix" || !pixData) return;
+    setAgora(Date.now());
+    const id = setInterval(() => setAgora(Date.now()), 1000);
+    return () => clearInterval(id);
+  }, [step, pixData]);
+
+  // Marca expirado quando o contador zera
+  const segundosRestantes = pixData
+    ? Math.max(0, Math.floor((new Date(pixData.expira_em).getTime() - agora) / 1000))
+    : 0;
+
+  useEffect(() => {
+    if (step === "pix" && pixData && segundosRestantes === 0) setPixExpirado(true);
+  }, [step, pixData, segundosRestantes]);
+
+  // Conferência automática do pagamento a cada 5s
+  useEffect(() => {
+    if (step !== "pix" || !isOpen || !pixData || pixExpirado) return;
+    let cancelled = false;
+    const pedidoId = pixData.pedido_id;
+    const id = setInterval(async () => {
+      try {
+        const { data, error } = await supabase.functions.invoke("conferir-pix", {
+          body: { pedido_id: pedidoId },
+        });
+        if (cancelled || error) return;
+        if (data?.status === "pago") {
+          clearInterval(id);
+          fecharCarrinho();
+          navigate(`/samkhya/obrigado?pedido=${pedidoId}`);
+        } else if (data?.status === "expirado") {
+          clearInterval(id);
+          setPixExpirado(true);
+        }
+      } catch {
+        /* ignore */
+      }
+    }, 5000);
+    return () => {
+      cancelled = true;
+      clearInterval(id);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [step, isOpen, pixData?.pedido_id, pixExpirado]);
+
+  const copiarPix = async () => {
+    if (!pixData) return;
+    try {
+      await navigator.clipboard.writeText(pixData.qr_code);
+      setPixCopiado(true);
+      setTimeout(() => setPixCopiado(false), 2000);
+    } catch {
+      toast.error("Não foi possível copiar");
+    }
+  };
+
+  const gerarNovoCodigoPix = async () => {
+    if (!pixData) return;
+    setRenovandoPix(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("create-pix-pagamento", {
+        body: { renovar_pedido_id: pixData.pedido_id },
+      });
+      if (error) throw new Error(await extrairMensagemErro(error, "Erro ao gerar novo código"));
+      if (data?.error) throw new Error(String(data.error));
+      setPixData(data as PixData);
+      setPixExpirado(false);
+      setAgora(Date.now());
+    } catch (e: unknown) {
+      toast.error(e instanceof Error ? e.message : "Erro ao gerar novo código");
+    } finally {
+      setRenovandoPix(false);
+    }
+  };
+
+  const handleFecharDrawer = () => {
+    if (step === "pix" && pixData && !pixExpirado) {
+      toast.info("Seu código Pix continua válido — ele também está no seu email.");
+    }
+    fecharCarrinho();
+  };
 
   // Pré-preenche dados a partir do usuário logado (user_profiles), sem sobrescrever edições
   useEffect(() => {
