@@ -230,6 +230,8 @@ const FloatingAkasha = () => {
       return next;
     });
     setSending(true);
+    markEngaged();
+
 
     try {
       if (user?.id && !isPremium) {
