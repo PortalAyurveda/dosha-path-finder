@@ -956,14 +956,48 @@ const CartDrawer = () => {
                 )}
               </>
             ) : (
-              <Button
-                onClick={handleFinalizar}
-                disabled={enviando}
-                className="w-full"
-                style={{ background: samkhyaTokens.ouro, color: "#fff" }}
-              >
-                {enviando ? "Processando..." : "Finalizar compra"}
-              </Button>
+              <>
+                <div className="pt-1">
+                  <Label className="text-sm" style={{ color: samkhyaTokens.texto }}>
+                    Forma de pagamento
+                  </Label>
+                  <RadioGroup
+                    value={metodoPagamento}
+                    onValueChange={(v) => setMetodoPagamento(v as "pix" | "cartao" | "boleto")}
+                    className="mt-2 space-y-2"
+                  >
+                    {[
+                      { id: "pix", nome: "Pix", desc: "Aprovação na hora" },
+                      { id: "cartao", nome: "Cartão de crédito", desc: "Em até 12x" },
+                      { id: "boleto", nome: "Boleto", desc: "Vence em 3 dias úteis" },
+                    ].map((op) => (
+                      <label
+                        key={op.id}
+                        className="flex items-center gap-3 p-2 rounded cursor-pointer"
+                        style={{ background: "#fff", border: `1px solid ${samkhyaTokens.cardBorder}` }}
+                      >
+                        <RadioGroupItem value={op.id} id={`pag-${op.id}`} />
+                        <div className="flex-1">
+                          <p className="text-sm" style={{ color: samkhyaTokens.texto }}>{op.nome}</p>
+                          <p className="text-xs" style={{ color: samkhyaTokens.textoSec }}>{op.desc}</p>
+                        </div>
+                      </label>
+                    ))}
+                  </RadioGroup>
+                </div>
+                <Button
+                  onClick={handleFinalizar}
+                  disabled={enviando}
+                  className="w-full"
+                  style={{ background: samkhyaTokens.ouro, color: "#fff" }}
+                >
+                  {enviando
+                    ? "Processando..."
+                    : metodoPagamento === "pix"
+                      ? "Pagar com Pix"
+                      : "Ir para o pagamento"}
+                </Button>
+              </>
             )}
           </div>
         )}
