@@ -241,8 +241,54 @@ const SamkhyaPedido = () => {
               </header>
 
               {/* Ações */}
-              {(pedido.boleto_url || pedido.rastreio_url || pedido.nfe_url) && (
+              {(pedido.boleto_url || pedido.rastreio_url || pedido.nfe_url || pixCodigo || pixExpirado) && (
                 <div className="grid gap-3 md:grid-cols-2">
+                  {pixExpirado && !pixCodigo && (
+                    <div
+                      className="rounded-lg border p-4 bg-white"
+                      style={{ borderColor: samkhyaTokens.cardBorder }}
+                    >
+                      <p className="text-sm mb-3" style={{ color: samkhyaTokens.texto }}>
+                        O código Pix deste pedido expirou.
+                      </p>
+                      <button
+                        type="button"
+                        onClick={gerarNovoPix}
+                        disabled={renovandoPix}
+                        className="w-full rounded-md px-4 py-2 text-white text-sm font-medium disabled:opacity-60"
+                        style={{ background: samkhyaTokens.roxo }}
+                      >
+                        {renovandoPix ? "Gerando..." : "Gerar novo código"}
+                      </button>
+                    </div>
+                  )}
+                  {pixCodigo && (
+                    <div
+                      className="rounded-lg border p-4 bg-white"
+                      style={{ borderColor: samkhyaTokens.cardBorder }}
+                    >
+                      <h2
+                        className="text-base mb-2"
+                        style={{ color: samkhyaTokens.roxo, fontFamily: "Georgia, serif" }}
+                      >
+                        Pagar com Pix
+                      </h2>
+                      <div
+                        className="p-2 rounded text-xs font-mono break-all max-h-28 overflow-y-auto mb-3"
+                        style={{ background: samkhyaTokens.cardBg, color: samkhyaTokens.texto }}
+                      >
+                        {pixCodigo}
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => copiarPix(pixCodigo)}
+                        className="w-full rounded-md px-4 py-2 text-white text-sm font-medium"
+                        style={{ background: samkhyaTokens.roxo }}
+                      >
+                        {pixCopiado ? "Copiado!" : "Copiar código Pix"}
+                      </button>
+                    </div>
+                  )}
                   {pedido.boleto_url && (
                     <a
                       href={pedido.boleto_url}
