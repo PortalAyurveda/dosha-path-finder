@@ -64,7 +64,21 @@ const CartDrawer = () => {
     subtotal,
   } = useCart();
 
-  const [step, setStep] = useState<"cart" | "checkout">("cart");
+  const [step, setStep] = useState<"cart" | "checkout" | "pix">("cart");
+  const [metodoPagamento, setMetodoPagamento] = useState<"pix" | "cartao" | "boleto">("pix");
+  type PixData = {
+    pedido_id: string;
+    numero_pedido: string;
+    qr_code: string;
+    qr_code_base64: string;
+    expira_em: string;
+    total: number;
+  };
+  const [pixData, setPixData] = useState<PixData | null>(null);
+  const [pixExpirado, setPixExpirado] = useState(false);
+  const [pixCopiado, setPixCopiado] = useState(false);
+  const [renovandoPix, setRenovandoPix] = useState(false);
+  const [agora, setAgora] = useState(() => Date.now());
   const [cep, setCep] = useState(() => localStorage.getItem("samkhya:cep") || "");
   const [calculandoFrete, setCalculandoFrete] = useState(false);
   const [opcoesFrete, setOpcoesFrete] = useState<FreteOpcao[]>([]);
