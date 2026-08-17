@@ -48,6 +48,9 @@ interface PedidoDetalhe {
   boleto_url?: string | null;
   nfe_url?: string | null;
   nfe_numero?: string | null;
+  pix_qr_code?: string | null;
+  pix_expira_em?: string | null;
+  pix_expirado?: boolean | null;
 }
 
 const fmtBRL = (n: number) =>
@@ -70,6 +73,43 @@ const SamkhyaPedido = () => {
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [pixCopiado, setPixCopiado] = useState(false);
+  const [pixCodigo, setPixCodigo] = useState<string | null>(null);
+  const [pixExpirado, setPixExpirado] = useState(false);
+  const [renovandoPix, setRenovandoPix] = useState(false);
+
+  useEffect(() => {
+    setPixCodigo(pedido?.pix_qr_code ?? null);
+    setPixExpirado(Boolean(pedido?.pix_expirado));
+  }, [pedido]);
+
+  const copiarPix = async (code: string) => {
+    try {
+      await navigator.clipboard.writeText(code);
+      setPixCopiado(true);
+      setTimeout(() => setPixCopiado(false), 2000);
+    } catch {
+      toast.error("Não foi possível copiar");
+    }
+  };
+
+  const gerarNovoPix = async () => {
+    if (!session_id) return;
+    setRenovandoPix(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("create-pix-pagamento", {
+        body: { renovar_pedido_id: session_id },
+      });
+      if (error) throw new Error(error.message || "Erro ao gerar novo código");
+      if ((data as any)?.error) throw new Error(String((data as any).error));
+      setPixCodigo((data as any)?.qr_code ?? null);
+      setPixExpirado(false);
+    } catch (e: unknown) {
+      toast.error(e instanceof Error ? e.message : "Erro ao gerar novo código");
+    } finally {
+      setRenovandoPix(false);
+    }
+  };
 
   useEffect(() => {
     if (!session_id) return;
@@ -201,8 +241,54 @@ const SamkhyaPedido = () => {
               </header>
 
               {/* Ações */}
-              {(pedido.boleto_url || pedido.rastreio_url || pedido.nfe_url) && (
+              {(pedido.boleto_url || pedido.rastreio_url || pedido.nfe_url || pixCodigo || pixExpirado) && (
                 <div className="grid gap-3 md:grid-cols-2">
+                  {pixExpirado && !pixCodigo && (
+                    <div
+                      className="rounded-lg border p-4 bg-white"
+                      style={{ borderColor: samkhyaTokens.cardBorder }}
+                    >
+                      <p className="text-sm mb-3" style={{ color: samkhyaTokens.texto }}>
+                        O código Pix deste pedido expirou.
+                      </p>
+                      <button
+                        type="button"
+                        onClick={gerarNovoPix}
+                        disabled={renovandoPix}
+                        className="w-full rounded-md px-4 py-2 text-white text-sm font-medium disabled:opacity-60"
+                        style={{ background: samkhyaTokens.roxo }}
+                      >
+                        {renovandoPix ? "Gerando..." : "Gerar novo código"}
+                      </button>
+                    </div>
+                  )}
+                  {pixCodigo && (
+                    <div
+                      className="rounded-lg border p-4 bg-white"
+                      style={{ borderColor: samkhyaTokens.cardBorder }}
+                    >
+                      <h2
+                        className="text-base mb-2"
+                        style={{ color: samkhyaTokens.roxo, fontFamily: "Georgia, serif" }}
+                      >
+                        Pagar com Pix
+                      </h2>
+                      <div
+                        className="p-2 rounded text-xs font-mono break-all max-h-28 overflow-y-auto mb-3"
+                        style={{ background: samkhyaTokens.cardBg, color: samkhyaTokens.texto }}
+                      >
+                        {pixCodigo}
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => copiarPix(pixCodigo)}
+                        className="w-full rounded-md px-4 py-2 text-white text-sm font-medium"
+                        style={{ background: samkhyaTokens.roxo }}
+                      >
+                        {pixCopiado ? "Copiado!" : "Copiar código Pix"}
+                      </button>
+                    </div>
+                  )}
                   {pedido.boleto_url && (
                     <a
                       href={pedido.boleto_url}

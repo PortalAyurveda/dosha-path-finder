@@ -52,6 +52,24 @@ const validateCPF = (cpf: string) => {
   return d2 === parseInt(c[10]);
 };
 
+const extrairMensagemErro = async (error: unknown, fallback: string) => {
+  let msg = (error as { message?: string })?.message || fallback;
+  try {
+    const resp = (error as { context?: { response?: Response } })?.context?.response;
+    if (resp) {
+      const body = await resp.clone().json();
+      if (body?.error) msg = String(body.error);
+    }
+  } catch { /* ignore */ }
+  return msg;
+};
+
+const fmtContador = (s: number) => {
+  const m = Math.floor(s / 60);
+  const sec = s % 60;
+  return `${String(m).padStart(2, "0")}:${String(sec).padStart(2, "0")}`;
+};
+
 const CartDrawer = () => {
   const navigate = useNavigate();
   const { user, isAnonymous, profile, doshaResult } = useUser();
@@ -64,7 +82,21 @@ const CartDrawer = () => {
     subtotal,
   } = useCart();
 
-  const [step, setStep] = useState<"cart" | "checkout">("cart");
+  const [step, setStep] = useState<"cart" | "checkout" | "pix">("cart");
+  const [metodoPagamento, setMetodoPagamento] = useState<"pix" | "cartao" | "boleto">("pix");
+  type PixData = {
+    pedido_id: string;
+    numero_pedido: string;
+    qr_code: string;
+    qr_code_base64: string;
+    expira_em: string;
+    total: number;
+  };
+  const [pixData, setPixData] = useState<PixData | null>(null);
+  const [pixExpirado, setPixExpirado] = useState(false);
+  const [pixCopiado, setPixCopiado] = useState(false);
+  const [renovandoPix, setRenovandoPix] = useState(false);
+  const [agora, setAgora] = useState(() => Date.now());
   const [cep, setCep] = useState(() => localStorage.getItem("samkhya:cep") || "");
   const [calculandoFrete, setCalculandoFrete] = useState(false);
   const [opcoesFrete, setOpcoesFrete] = useState<FreteOpcao[]>([]);
@@ -104,8 +136,95 @@ const CartDrawer = () => {
   useEffect(() => {
     if (!isOpen) {
       setStep("cart");
+      setPixData(null);
+      setPixExpirado(false);
+      setPixCopiado(false);
     }
   }, [isOpen]);
+
+  // Contador regressivo do Pix
+  useEffect(() => {
+    if (step !== "pix" || !pixData) return;
+    setAgora(Date.now());
+    const id = setInterval(() => setAgora(Date.now()), 1000);
+    return () => clearInterval(id);
+  }, [step, pixData]);
+
+  // Marca expirado quando o contador zera
+  const segundosRestantes = pixData
+    ? Math.max(0, Math.floor((new Date(pixData.expira_em).getTime() - agora) / 1000))
+    : 0;
+
+  useEffect(() => {
+    if (step === "pix" && pixData && segundosRestantes === 0) setPixExpirado(true);
+  }, [step, pixData, segundosRestantes]);
+
+  // Conferência automática do pagamento a cada 5s
+  useEffect(() => {
+    if (step !== "pix" || !isOpen || !pixData || pixExpirado) return;
+    let cancelled = false;
+    const pedidoId = pixData.pedido_id;
+    const id = setInterval(async () => {
+      try {
+        const { data, error } = await supabase.functions.invoke("conferir-pix", {
+          body: { pedido_id: pedidoId },
+        });
+        if (cancelled || error) return;
+        if (data?.status === "pago") {
+          clearInterval(id);
+          fecharCarrinho();
+          navigate(`/samkhya/obrigado?pedido=${pedidoId}`);
+        } else if (data?.status === "expirado") {
+          clearInterval(id);
+          setPixExpirado(true);
+        }
+      } catch {
+        /* ignore */
+      }
+    }, 5000);
+    return () => {
+      cancelled = true;
+      clearInterval(id);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [step, isOpen, pixData?.pedido_id, pixExpirado]);
+
+  const copiarPix = async () => {
+    if (!pixData) return;
+    try {
+      await navigator.clipboard.writeText(pixData.qr_code);
+      setPixCopiado(true);
+      setTimeout(() => setPixCopiado(false), 2000);
+    } catch {
+      toast.error("Não foi possível copiar");
+    }
+  };
+
+  const gerarNovoCodigoPix = async () => {
+    if (!pixData) return;
+    setRenovandoPix(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("create-pix-pagamento", {
+        body: { renovar_pedido_id: pixData.pedido_id },
+      });
+      if (error) throw new Error(await extrairMensagemErro(error, "Erro ao gerar novo código"));
+      if (data?.error) throw new Error(String(data.error));
+      setPixData(data as PixData);
+      setPixExpirado(false);
+      setAgora(Date.now());
+    } catch (e: unknown) {
+      toast.error(e instanceof Error ? e.message : "Erro ao gerar novo código");
+    } finally {
+      setRenovandoPix(false);
+    }
+  };
+
+  const handleFecharDrawer = () => {
+    if (step === "pix" && pixData && !pixExpirado) {
+      toast.info("Seu código Pix continua válido — ele também está no seu email.");
+    }
+    fecharCarrinho();
+  };
 
   // Pré-preenche dados a partir do usuário logado (user_profiles), sem sobrescrever edições
   useEffect(() => {
@@ -330,67 +449,77 @@ const CartDrawer = () => {
       }
 
       const origin = window.location.origin;
-      const { data, error } = await supabase.functions.invoke("create-checkout", {
-        body: {
-          success_url: `${origin}/samkhya/obrigado?session_id={CHECKOUT_SESSION_ID}`,
-          cancel_url: `${origin}/samkhya?checkout=cancelado`,
-          user_id: isAnonymous ? null : (user?.id ?? null),
-          itens: itens.map((it) => ({
-            slug: it.slug,
-            tipo: it.tipo,
-            nome: it.nome,
-            quantidade: it.quantidade,
-            preco_pix: Number(it.preco_pix),
-            preco_normal: Number(it.preco_normal),
-            stripe_price_id: it.stripe_price_id,
-            peso_gramas: it.peso_gramas,
-            ...(it.escolhas ? { escolhas: it.escolhas } : {}),
-          })),
-          frete: freteSelecionado.preco === 0
-            ? { id: null, prazo_dias: null, preco: 0, nome: "Frete Grátis" }
-            : {
-                id: freteSelecionado.id,
-                nome: freteSelecionado.nome,
-                preco: freteSelecionado.preco,
-                prazo_dias: freteSelecionado.prazo_dias,
-              },
-          comprador: {
-            nome: form.nome.trim() || "Cliente",
-            email: form.email.trim(),
-            telefone: onlyDigits(form.telefone),
-            cpf: onlyDigits(form.cpf),
-          },
-          endereco: {
-            cep: onlyDigits(cep),
-            logradouro: form.logradouro.trim(),
-            numero: form.numero.trim(),
-            complemento: form.complemento.trim(),
-            bairro: form.bairro.trim(),
-            cidade: form.cidade,
-            estado: form.estado,
-          },
-          cupom: cupomAplicado
-            ? {
-                cupom_id: cupomAplicado.cupom_id,
-                codigo: cupomAplicado.codigo,
-                desconto_calculado: descontoCupom,
-                tipo_desconto: cupomAplicado.tipo_desconto,
-                valor_desconto: cupomAplicado.valor_desconto,
-              }
-            : null,
+      const bodyBase = {
+        success_url: `${origin}/samkhya/obrigado?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${origin}/samkhya?checkout=cancelado`,
+        user_id: isAnonymous ? null : (user?.id ?? null),
+        itens: itens.map((it) => ({
+          slug: it.slug,
+          tipo: it.tipo,
+          nome: it.nome,
+          quantidade: it.quantidade,
+          preco_pix: Number(it.preco_pix),
+          preco_normal: Number(it.preco_normal),
+          stripe_price_id: it.stripe_price_id,
+          peso_gramas: it.peso_gramas,
+          ...(it.escolhas ? { escolhas: it.escolhas } : {}),
+        })),
+        frete: freteSelecionado.preco === 0
+          ? { id: null, prazo_dias: null, preco: 0, nome: "Frete Grátis" }
+          : {
+              id: freteSelecionado.id,
+              nome: freteSelecionado.nome,
+              preco: freteSelecionado.preco,
+              prazo_dias: freteSelecionado.prazo_dias,
+            },
+        comprador: {
+          nome: form.nome.trim() || "Cliente",
+          email: form.email.trim(),
+          telefone: onlyDigits(form.telefone),
+          cpf: onlyDigits(form.cpf),
         },
+        endereco: {
+          cep: onlyDigits(cep),
+          logradouro: form.logradouro.trim(),
+          numero: form.numero.trim(),
+          complemento: form.complemento.trim(),
+          bairro: form.bairro.trim(),
+          cidade: form.cidade,
+          estado: form.estado,
+        },
+        cupom: cupomAplicado
+          ? {
+              cupom_id: cupomAplicado.cupom_id,
+              codigo: cupomAplicado.codigo,
+              desconto_calculado: descontoCupom,
+              tipo_desconto: cupomAplicado.tipo_desconto,
+              valor_desconto: cupomAplicado.valor_desconto,
+            }
+          : null,
+      };
+
+      if (metodoPagamento === "pix") {
+        const { data, error } = await supabase.functions.invoke("create-pix-pagamento", {
+          body: bodyBase,
+        });
+        if (error) throw new Error(await extrairMensagemErro(error, "Erro ao gerar o Pix"));
+        if (data?.error) throw new Error(String(data.error));
+        if (!data?.qr_code) throw new Error("Não foi possível gerar o código Pix");
+        setPixData(data as PixData);
+        setPixExpirado(false);
+        setPixCopiado(false);
+        setAgora(Date.now());
+        setStep("pix");
+        setEnviando(false);
+        return;
+      }
+
+      const { data, error } = await supabase.functions.invoke("create-checkout", {
+        body: bodyBase,
       });
       if (error) {
         // Tenta extrair a mensagem retornada pela edge function (ex.: erro de kit inválido)
-        let msg = error.message || "Erro ao iniciar checkout";
-        try {
-          const resp = (error as unknown as { context?: { response?: Response } })?.context?.response;
-          if (resp) {
-            const body = await resp.clone().json();
-            if (body?.error) msg = String(body.error);
-          }
-        } catch { /* ignore */ }
-        throw new Error(msg);
+        throw new Error(await extrairMensagemErro(error, "Erro ao iniciar checkout"));
       }
       const url = data?.url || data?.checkout_url;
       if (!url) throw new Error("URL de checkout não recebida");
@@ -403,7 +532,7 @@ const CartDrawer = () => {
   };
 
   return (
-    <Sheet open={isOpen} onOpenChange={(o) => !o && fecharCarrinho()}>
+    <Sheet open={isOpen} onOpenChange={(o) => !o && handleFecharDrawer()}>
       <SheetContent
         side="right"
         className="w-full sm:max-w-md flex flex-col p-0"
@@ -420,12 +549,86 @@ const CartDrawer = () => {
               </button>
             )}
             <ShoppingBag className="h-5 w-5" />
-            {step === "cart" ? "Seu carrinho" : "Dados de entrega"}
+            {step === "cart" ? "Seu carrinho" : step === "pix" ? "Pagamento via Pix" : "Dados de entrega"}
           </SheetTitle>
         </SheetHeader>
 
         <div className="flex-1 overflow-y-auto px-5 py-4">
-          {itens.length === 0 ? (
+          {step === "pix" && pixData ? (
+            <div className="space-y-4">
+              <div>
+                <h3 className="text-xl" style={{ color: samkhyaTokens.roxo, fontFamily: "Georgia, serif" }}>
+                  Falta pagar
+                </h3>
+                <p className="text-xs mt-0.5" style={{ color: samkhyaTokens.textoSec }}>
+                  Pedido {pixData.numero_pedido}
+                </p>
+              </div>
+
+              <p className="text-2xl font-semibold" style={{ color: samkhyaTokens.ouroDark }}>
+                {formatBRL(Number(pixData.total))}
+              </p>
+
+              {pixExpirado ? (
+                <div
+                  className="p-4 rounded-md space-y-3 text-center"
+                  style={{ background: samkhyaTokens.cardBg, border: `1px solid ${samkhyaTokens.cardBorder}` }}
+                >
+                  <p className="text-sm" style={{ color: samkhyaTokens.texto }}>
+                    Este código Pix expirou.
+                  </p>
+                  <Button
+                    onClick={gerarNovoCodigoPix}
+                    disabled={renovandoPix}
+                    className="w-full"
+                    style={{ background: samkhyaTokens.roxo, color: "#fff" }}
+                  >
+                    {renovandoPix ? "Gerando..." : "Gerar novo código"}
+                  </Button>
+                </div>
+              ) : (
+                <>
+                  <div className="flex justify-center">
+                    <div className="bg-white p-3 rounded-md" style={{ border: `1px solid ${samkhyaTokens.cardBorder}` }}>
+                      <img
+                        src={`data:image/png;base64,${pixData.qr_code_base64}`}
+                        alt="QR Code Pix"
+                        className="w-full"
+                        style={{ maxWidth: 240 }}
+                      />
+                    </div>
+                  </div>
+
+                  <p className="text-sm text-center" style={{ color: samkhyaTokens.textoSec }}>
+                    Abra o app do seu banco, escolha Pix e escaneie o código. Ou copie o código abaixo.
+                  </p>
+
+                  <div
+                    className="p-3 rounded-md text-xs font-mono break-all max-h-28 overflow-y-auto"
+                    style={{ background: samkhyaTokens.cardBg, border: `1px solid ${samkhyaTokens.cardBorder}`, color: samkhyaTokens.texto }}
+                  >
+                    {pixData.qr_code}
+                  </div>
+
+                  <Button
+                    onClick={copiarPix}
+                    className="w-full"
+                    style={{ background: samkhyaTokens.ouro, color: "#fff" }}
+                  >
+                    {pixCopiado ? "Copiado!" : "Copiar código Pix"}
+                  </Button>
+
+                  <p className="text-sm text-center" style={{ color: samkhyaTokens.texto }}>
+                    Faltam {fmtContador(segundosRestantes)}
+                  </p>
+                </>
+              )}
+
+              <p className="text-xs text-center" style={{ color: samkhyaTokens.textoSec }}>
+                Assim que o pagamento cair, esta tela avança sozinha. Mandamos o código também no seu email.
+              </p>
+            </div>
+          ) : itens.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center gap-4 py-16">
               <ShoppingBag className="h-12 w-12" style={{ color: samkhyaTokens.textoSec }} />
               <p style={{ color: samkhyaTokens.textoSec }}>Seu carrinho está vazio</p>
@@ -656,7 +859,7 @@ const CartDrawer = () => {
           )}
         </div>
 
-        {itens.length > 0 && (
+        {itens.length > 0 && step !== "pix" && (
           <div className="border-t px-5 py-4 space-y-3" style={{ borderColor: samkhyaTokens.cardBorder, background: samkhyaTokens.cardBg }}>
             <div className="flex justify-between text-sm">
               <span style={{ color: samkhyaTokens.textoSec }}>Subtotal</span>
@@ -753,14 +956,48 @@ const CartDrawer = () => {
                 )}
               </>
             ) : (
-              <Button
-                onClick={handleFinalizar}
-                disabled={enviando}
-                className="w-full"
-                style={{ background: samkhyaTokens.ouro, color: "#fff" }}
-              >
-                {enviando ? "Processando..." : "Finalizar compra"}
-              </Button>
+              <>
+                <div className="pt-1">
+                  <Label className="text-sm" style={{ color: samkhyaTokens.texto }}>
+                    Forma de pagamento
+                  </Label>
+                  <RadioGroup
+                    value={metodoPagamento}
+                    onValueChange={(v) => setMetodoPagamento(v as "pix" | "cartao" | "boleto")}
+                    className="mt-2 space-y-2"
+                  >
+                    {[
+                      { id: "pix", nome: "Pix", desc: "Aprovação na hora" },
+                      { id: "cartao", nome: "Cartão de crédito", desc: "Em até 12x" },
+                      { id: "boleto", nome: "Boleto", desc: "Vence em 3 dias úteis" },
+                    ].map((op) => (
+                      <label
+                        key={op.id}
+                        className="flex items-center gap-3 p-2 rounded cursor-pointer"
+                        style={{ background: "#fff", border: `1px solid ${samkhyaTokens.cardBorder}` }}
+                      >
+                        <RadioGroupItem value={op.id} id={`pag-${op.id}`} />
+                        <div className="flex-1">
+                          <p className="text-sm" style={{ color: samkhyaTokens.texto }}>{op.nome}</p>
+                          <p className="text-xs" style={{ color: samkhyaTokens.textoSec }}>{op.desc}</p>
+                        </div>
+                      </label>
+                    ))}
+                  </RadioGroup>
+                </div>
+                <Button
+                  onClick={handleFinalizar}
+                  disabled={enviando}
+                  className="w-full"
+                  style={{ background: samkhyaTokens.ouro, color: "#fff" }}
+                >
+                  {enviando
+                    ? "Processando..."
+                    : metodoPagamento === "pix"
+                      ? "Pagar com Pix"
+                      : "Ir para o pagamento"}
+                </Button>
+              </>
             )}
           </div>
         )}

@@ -4155,6 +4155,289 @@ export type Database = {
         }
         Relationships: []
       }
+      pesquisa_convites: {
+        Row: {
+          aberto_em: string | null
+          canal: string
+          criado_em: string
+          dias_de_assinatura: number | null
+          email: string
+          enviado_em: string | null
+          id: string
+          nome: string | null
+          pesquisa_id: string
+          plano: string | null
+          respondido_em: string | null
+          token: string
+          user_id: string | null
+        }
+        Insert: {
+          aberto_em?: string | null
+          canal?: string
+          criado_em?: string
+          dias_de_assinatura?: number | null
+          email: string
+          enviado_em?: string | null
+          id?: string
+          nome?: string | null
+          pesquisa_id: string
+          plano?: string | null
+          respondido_em?: string | null
+          token?: string
+          user_id?: string | null
+        }
+        Update: {
+          aberto_em?: string | null
+          canal?: string
+          criado_em?: string
+          dias_de_assinatura?: number | null
+          email?: string
+          enviado_em?: string | null
+          id?: string
+          nome?: string | null
+          pesquisa_id?: string
+          plano?: string | null
+          respondido_em?: string | null
+          token?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pesquisa_convites_pesquisa_id_fkey"
+            columns: ["pesquisa_id"]
+            isOneToOne: false
+            referencedRelation: "pesquisas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pesquisa_perguntas: {
+        Row: {
+          ajuda: string | null
+          ativa: boolean
+          atualizado_em: string
+          codigo: string
+          condicao: Json | null
+          criado_em: string
+          enunciado: string
+          id: string
+          max_escolhas: number | null
+          obrigatoria: boolean
+          opcoes: Json
+          ordem: number
+          pesquisa_id: string
+          secao: string
+          tipo: string
+        }
+        Insert: {
+          ajuda?: string | null
+          ativa?: boolean
+          atualizado_em?: string
+          codigo: string
+          condicao?: Json | null
+          criado_em?: string
+          enunciado: string
+          id?: string
+          max_escolhas?: number | null
+          obrigatoria?: boolean
+          opcoes?: Json
+          ordem?: number
+          pesquisa_id: string
+          secao?: string
+          tipo: string
+        }
+        Update: {
+          ajuda?: string | null
+          ativa?: boolean
+          atualizado_em?: string
+          codigo?: string
+          condicao?: Json | null
+          criado_em?: string
+          enunciado?: string
+          id?: string
+          max_escolhas?: number | null
+          obrigatoria?: boolean
+          opcoes?: Json
+          ordem?: number
+          pesquisa_id?: string
+          secao?: string
+          tipo?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pesquisa_perguntas_pesquisa_id_fkey"
+            columns: ["pesquisa_id"]
+            isOneToOne: false
+            referencedRelation: "pesquisas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pesquisa_respostas: {
+        Row: {
+          concluida_em: string | null
+          convite_id: string | null
+          dias_de_assinatura: number | null
+          dosha: string | null
+          email: string | null
+          id: string
+          iniciada_em: string
+          meta: Json
+          origem: string
+          pesquisa_id: string
+          plano_no_momento: string | null
+          status: string
+          user_id: string | null
+        }
+        Insert: {
+          concluida_em?: string | null
+          convite_id?: string | null
+          dias_de_assinatura?: number | null
+          dosha?: string | null
+          email?: string | null
+          id?: string
+          iniciada_em?: string
+          meta?: Json
+          origem?: string
+          pesquisa_id: string
+          plano_no_momento?: string | null
+          status?: string
+          user_id?: string | null
+        }
+        Update: {
+          concluida_em?: string | null
+          convite_id?: string | null
+          dias_de_assinatura?: number | null
+          dosha?: string | null
+          email?: string | null
+          id?: string
+          iniciada_em?: string
+          meta?: Json
+          origem?: string
+          pesquisa_id?: string
+          plano_no_momento?: string | null
+          status?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pesquisa_respostas_convite_id_fkey"
+            columns: ["convite_id"]
+            isOneToOne: false
+            referencedRelation: "pesquisa_convites"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pesquisa_respostas_pesquisa_id_fkey"
+            columns: ["pesquisa_id"]
+            isOneToOne: false
+            referencedRelation: "pesquisas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pesquisa_respostas_itens: {
+        Row: {
+          codigo: string
+          id: number
+          pergunta_id: string | null
+          respondido_em: string
+          resposta_id: string
+          valor_json: Json | null
+          valor_num: number | null
+          valor_texto: string | null
+        }
+        Insert: {
+          codigo: string
+          id?: number
+          pergunta_id?: string | null
+          respondido_em?: string
+          resposta_id: string
+          valor_json?: Json | null
+          valor_num?: number | null
+          valor_texto?: string | null
+        }
+        Update: {
+          codigo?: string
+          id?: number
+          pergunta_id?: string | null
+          respondido_em?: string
+          resposta_id?: string
+          valor_json?: Json | null
+          valor_num?: number | null
+          valor_texto?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pesquisa_respostas_itens_pergunta_id_fkey"
+            columns: ["pergunta_id"]
+            isOneToOne: false
+            referencedRelation: "pesquisa_perguntas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pesquisa_respostas_itens_resposta_id_fkey"
+            columns: ["resposta_id"]
+            isOneToOne: false
+            referencedRelation: "pesquisa_respostas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pesquisas: {
+        Row: {
+          abre_em: string | null
+          ativa: boolean
+          atualizado_em: string
+          criado_em: string
+          fecha_em: string | null
+          id: string
+          intro_html: string | null
+          mensagem_final: string | null
+          ordem: number
+          publico_rotulo: string
+          regras: Json
+          slug: string
+          subtitulo: string | null
+          tempo_estimado_min: number | null
+          titulo: string
+        }
+        Insert: {
+          abre_em?: string | null
+          ativa?: boolean
+          atualizado_em?: string
+          criado_em?: string
+          fecha_em?: string | null
+          id?: string
+          intro_html?: string | null
+          mensagem_final?: string | null
+          ordem?: number
+          publico_rotulo?: string
+          regras?: Json
+          slug: string
+          subtitulo?: string | null
+          tempo_estimado_min?: number | null
+          titulo: string
+        }
+        Update: {
+          abre_em?: string | null
+          ativa?: boolean
+          atualizado_em?: string
+          criado_em?: string
+          fecha_em?: string | null
+          id?: string
+          intro_html?: string | null
+          mensagem_final?: string | null
+          ordem?: number
+          publico_rotulo?: string
+          regras?: Json
+          slug?: string
+          subtitulo?: string | null
+          tempo_estimado_min?: number | null
+          titulo?: string
+        }
+        Relationships: []
+      }
       plano_30_dias: {
         Row: {
           data_criacao: string | null
@@ -5995,6 +6278,70 @@ export type Database = {
         }
         Relationships: []
       }
+      pesquisa_perfil_usuario: {
+        Row: {
+          autoriza_depoimento: boolean | null
+          continuar: string | null
+          dosha: string | null
+          email: string | null
+          mudou_algo: string | null
+          nota_ajuda: number | null
+          nps: number | null
+          nps_classe: string | null
+          pesquisas: string[] | null
+          pesquisas_abandonadas: number | null
+          pesquisas_respondidas: number | null
+          quer_resposta_pessoal: boolean | null
+          risco_saida: boolean | null
+          ultima_resposta_em: string | null
+          ultimo_plano: string | null
+          user_id: string | null
+          vale_preco: string | null
+        }
+        Relationships: []
+      }
+      pesquisa_resumo: {
+        Row: {
+          abriram: number | null
+          ativa: boolean | null
+          comecaram: number | null
+          concluiram: number | null
+          convidados: number | null
+          enviados: number | null
+          nota_ajuda_media: number | null
+          nps_media: number | null
+          publico_rotulo: string | null
+          slug: string | null
+          titulo: string | null
+        }
+        Insert: {
+          abriram?: never
+          ativa?: boolean | null
+          comecaram?: never
+          concluiram?: never
+          convidados?: never
+          enviados?: never
+          nota_ajuda_media?: never
+          nps_media?: never
+          publico_rotulo?: string | null
+          slug?: string | null
+          titulo?: string | null
+        }
+        Update: {
+          abriram?: never
+          ativa?: boolean | null
+          comecaram?: never
+          concluiram?: never
+          convidados?: never
+          enviados?: never
+          nota_ajuda_media?: never
+          nps_media?: never
+          publico_rotulo?: string | null
+          slug?: string | null
+          titulo?: string | null
+        }
+        Relationships: []
+      }
       registros_akashikos_publicos: {
         Row: {
           data_postagem: string | null
@@ -6384,6 +6731,10 @@ export type Database = {
         }[]
       }
       claim_dosha_test: { Args: { p_id_publico?: string }; Returns: Json }
+      confirmar_pagamento_pix: {
+        Args: { p_mp_payment_id: string }
+        Returns: Json
+      }
       corrigir_grafia: { Args: { t: string }; Returns: string }
       descadastro_confirmar: {
         Args: { p_email: string; p_token: string }
@@ -6702,6 +7053,44 @@ export type Database = {
       }
       mockups_dados: { Args: never; Returns: Json }
       owns_rotina: { Args: { p_test_id: string }; Returns: boolean }
+      pesquisa_abrir: {
+        Args: { p_slug: string; p_token?: string }
+        Returns: Json
+      }
+      pesquisa_destinatarios: {
+        Args: { p_limite?: number; p_slug: string }
+        Returns: {
+          email: string
+          payload: Json
+        }[]
+      }
+      pesquisa_elegivel: { Args: { p_slug: string }; Returns: Json }
+      pesquisa_marcar_enviado: {
+        Args: { p_email: string; p_slug: string }
+        Returns: boolean
+      }
+      pesquisa_minha: { Args: never; Returns: Json }
+      pesquisa_publico: {
+        Args: { p_slug: string }
+        Returns: {
+          dias_de_assinatura: number
+          dosha: string
+          email: string
+          nome: string
+          plano: string
+          user_id: string
+        }[]
+      }
+      pesquisa_responder: {
+        Args: {
+          p_concluir?: boolean
+          p_itens: Json
+          p_origem?: string
+          p_slug: string
+          p_token?: string
+        }
+        Returns: Json
+      }
       prateleira_samkhya: {
         Args: { p_dosha?: string }
         Returns: {
