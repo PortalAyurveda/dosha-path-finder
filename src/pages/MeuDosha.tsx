@@ -19,6 +19,7 @@ import PrateleiraSamkhya from "@/components/samkhya/PrateleiraSamkhya";
 import VideosTab from "@/components/meudosha/VideosTab";
 
 import RetesteCard from "@/components/meudosha/RetesteCard";
+import ConvitePesquisa from "@/components/meudosha/ConvitePesquisa";
 import PraVoceRail from "@/components/meudosha/PraVoceRail";
 import BannerSlot from "@/components/banners/BannerSlot";
 import ClaimLock from "@/components/meudosha/ClaimLock";
@@ -955,6 +956,8 @@ const MeuDosha = () => {
             <RetesteCard />
           </div>
         )}
+
+        {!isVisitor && <ConvitePesquisa />}
         
 
 
