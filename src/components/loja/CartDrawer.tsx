@@ -449,67 +449,77 @@ const CartDrawer = () => {
       }
 
       const origin = window.location.origin;
-      const { data, error } = await supabase.functions.invoke("create-checkout", {
-        body: {
-          success_url: `${origin}/samkhya/obrigado?session_id={CHECKOUT_SESSION_ID}`,
-          cancel_url: `${origin}/samkhya?checkout=cancelado`,
-          user_id: isAnonymous ? null : (user?.id ?? null),
-          itens: itens.map((it) => ({
-            slug: it.slug,
-            tipo: it.tipo,
-            nome: it.nome,
-            quantidade: it.quantidade,
-            preco_pix: Number(it.preco_pix),
-            preco_normal: Number(it.preco_normal),
-            stripe_price_id: it.stripe_price_id,
-            peso_gramas: it.peso_gramas,
-            ...(it.escolhas ? { escolhas: it.escolhas } : {}),
-          })),
-          frete: freteSelecionado.preco === 0
-            ? { id: null, prazo_dias: null, preco: 0, nome: "Frete Grátis" }
-            : {
-                id: freteSelecionado.id,
-                nome: freteSelecionado.nome,
-                preco: freteSelecionado.preco,
-                prazo_dias: freteSelecionado.prazo_dias,
-              },
-          comprador: {
-            nome: form.nome.trim() || "Cliente",
-            email: form.email.trim(),
-            telefone: onlyDigits(form.telefone),
-            cpf: onlyDigits(form.cpf),
-          },
-          endereco: {
-            cep: onlyDigits(cep),
-            logradouro: form.logradouro.trim(),
-            numero: form.numero.trim(),
-            complemento: form.complemento.trim(),
-            bairro: form.bairro.trim(),
-            cidade: form.cidade,
-            estado: form.estado,
-          },
-          cupom: cupomAplicado
-            ? {
-                cupom_id: cupomAplicado.cupom_id,
-                codigo: cupomAplicado.codigo,
-                desconto_calculado: descontoCupom,
-                tipo_desconto: cupomAplicado.tipo_desconto,
-                valor_desconto: cupomAplicado.valor_desconto,
-              }
-            : null,
+      const bodyBase = {
+        success_url: `${origin}/samkhya/obrigado?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${origin}/samkhya?checkout=cancelado`,
+        user_id: isAnonymous ? null : (user?.id ?? null),
+        itens: itens.map((it) => ({
+          slug: it.slug,
+          tipo: it.tipo,
+          nome: it.nome,
+          quantidade: it.quantidade,
+          preco_pix: Number(it.preco_pix),
+          preco_normal: Number(it.preco_normal),
+          stripe_price_id: it.stripe_price_id,
+          peso_gramas: it.peso_gramas,
+          ...(it.escolhas ? { escolhas: it.escolhas } : {}),
+        })),
+        frete: freteSelecionado.preco === 0
+          ? { id: null, prazo_dias: null, preco: 0, nome: "Frete Grátis" }
+          : {
+              id: freteSelecionado.id,
+              nome: freteSelecionado.nome,
+              preco: freteSelecionado.preco,
+              prazo_dias: freteSelecionado.prazo_dias,
+            },
+        comprador: {
+          nome: form.nome.trim() || "Cliente",
+          email: form.email.trim(),
+          telefone: onlyDigits(form.telefone),
+          cpf: onlyDigits(form.cpf),
         },
+        endereco: {
+          cep: onlyDigits(cep),
+          logradouro: form.logradouro.trim(),
+          numero: form.numero.trim(),
+          complemento: form.complemento.trim(),
+          bairro: form.bairro.trim(),
+          cidade: form.cidade,
+          estado: form.estado,
+        },
+        cupom: cupomAplicado
+          ? {
+              cupom_id: cupomAplicado.cupom_id,
+              codigo: cupomAplicado.codigo,
+              desconto_calculado: descontoCupom,
+              tipo_desconto: cupomAplicado.tipo_desconto,
+              valor_desconto: cupomAplicado.valor_desconto,
+            }
+          : null,
+      };
+
+      if (metodoPagamento === "pix") {
+        const { data, error } = await supabase.functions.invoke("create-pix-pagamento", {
+          body: bodyBase,
+        });
+        if (error) throw new Error(await extrairMensagemErro(error, "Erro ao gerar o Pix"));
+        if (data?.error) throw new Error(String(data.error));
+        if (!data?.qr_code) throw new Error("Não foi possível gerar o código Pix");
+        setPixData(data as PixData);
+        setPixExpirado(false);
+        setPixCopiado(false);
+        setAgora(Date.now());
+        setStep("pix");
+        setEnviando(false);
+        return;
+      }
+
+      const { data, error } = await supabase.functions.invoke("create-checkout", {
+        body: bodyBase,
       });
       if (error) {
         // Tenta extrair a mensagem retornada pela edge function (ex.: erro de kit inválido)
-        let msg = error.message || "Erro ao iniciar checkout";
-        try {
-          const resp = (error as unknown as { context?: { response?: Response } })?.context?.response;
-          if (resp) {
-            const body = await resp.clone().json();
-            if (body?.error) msg = String(body.error);
-          }
-        } catch { /* ignore */ }
-        throw new Error(msg);
+        throw new Error(await extrairMensagemErro(error, "Erro ao iniciar checkout"));
       }
       const url = data?.url || data?.checkout_url;
       if (!url) throw new Error("URL de checkout não recebida");
