@@ -38,9 +38,9 @@ const SamkhyaObrigado = () => {
             Seu pedido foi recebido com sucesso. Você receberá em breve um email com os detalhes da compra e o código de rastreio assim que despachado.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-            {sessionId && (
+            {trackingId && (
               <Link
-                to={`/samkhya/pedido/${sessionId}`}
+                to={`/samkhya/pedido/${trackingId}`}
                 className="inline-flex items-center justify-center px-6 py-3 rounded-md text-white text-sm font-medium transition-opacity hover:opacity-90"
                 style={{ background: samkhyaTokens.roxo }}
               >
