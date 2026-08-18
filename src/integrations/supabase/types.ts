@@ -4266,8 +4266,10 @@ export type Database = {
           atualizado_em: string
           codigo: string
           condicao: Json | null
+          cor: string | null
           criado_em: string
           enunciado: string
+          icone: string | null
           id: string
           max_escolhas: number | null
           obrigatoria: boolean
@@ -4283,8 +4285,10 @@ export type Database = {
           atualizado_em?: string
           codigo: string
           condicao?: Json | null
+          cor?: string | null
           criado_em?: string
           enunciado: string
+          icone?: string | null
           id?: string
           max_escolhas?: number | null
           obrigatoria?: boolean
@@ -4300,8 +4304,10 @@ export type Database = {
           atualizado_em?: string
           codigo?: string
           condicao?: Json | null
+          cor?: string | null
           criado_em?: string
           enunciado?: string
+          icone?: string | null
           id?: string
           max_escolhas?: number | null
           obrigatoria?: boolean
@@ -6341,7 +6347,8 @@ export type Database = {
           pesquisas: string[] | null
           pesquisas_respondidas: number | null
           plano: string | null
-          receitas: number | null
+          rotina: number | null
+          samkhya: string | null
           ultima_resposta_em: string | null
           user_id: string | null
         }
@@ -6357,7 +6364,7 @@ export type Database = {
           enviados: number | null
           estrelas_akasha: number | null
           estrelas_conteudo: number | null
-          estrelas_receitas: number | null
+          estrelas_rotina: number | null
           estrelas_site: number | null
           nunca_usou_akasha: number | null
           publico_rotulo: string | null
@@ -6373,7 +6380,7 @@ export type Database = {
           enviados?: never
           estrelas_akasha?: never
           estrelas_conteudo?: never
-          estrelas_receitas?: never
+          estrelas_rotina?: never
           estrelas_site?: never
           nunca_usou_akasha?: never
           publico_rotulo?: string | null
@@ -6389,7 +6396,7 @@ export type Database = {
           enviados?: never
           estrelas_akasha?: never
           estrelas_conteudo?: never
-          estrelas_receitas?: never
+          estrelas_rotina?: never
           estrelas_site?: never
           nunca_usou_akasha?: never
           publico_rotulo?: string | null
