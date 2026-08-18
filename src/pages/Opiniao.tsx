@@ -195,16 +195,19 @@ const Estrelas = ({
   onChange,
   naoUsei,
   onNaoUsei,
+  cor,
 }: {
   value: number | null;
   texto: string | null;
   onChange: (n: number | null) => void;
   naoUsei?: { valor: string; rotulo: string } | null;
   onNaoUsei?: (v: string | null) => void;
+  cor?: string;
 }) => {
   const [hover, setHover] = useState<number | null>(null);
   const ativo = hover ?? value ?? 0;
   const marcadoNaoUsei = !!naoUsei && texto === naoUsei.valor;
+  const tom = cor || PRIMARY;
   return (
     <div className="space-y-3">
       <div
@@ -230,13 +233,13 @@ const Estrelas = ({
                 }
               }}
               onMouseEnter={() => setHover(n)}
-              className="flex h-10 w-10 items-center justify-center rounded-md transition-transform hover:scale-110 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF7676]"
-              style={{ color: preenchida ? "#FACC15" : "hsl(var(--border))" }}
+              className="flex h-10 w-10 items-center justify-center rounded-md transition-transform hover:scale-110 focus:outline-none focus-visible:ring-2"
+              style={{ color: preenchida ? tom : "hsl(var(--border))" }}
             >
               <Star
                 className="h-7 w-7"
-                fill={preenchida ? "#FACC15" : "transparent"}
-                stroke={preenchida ? "#FACC15" : "currentColor"}
+                fill={preenchida ? tom : "transparent"}
+                stroke={preenchida ? tom : "currentColor"}
                 strokeWidth={preenchida ? 0 : 1.5}
               />
             </button>
