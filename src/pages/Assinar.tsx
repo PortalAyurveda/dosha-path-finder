@@ -34,6 +34,7 @@ import { ClinicalThermometer } from "./MeuDosha";
 import DoshaPieChart from "@/components/charts/DoshaPieChart";
 import DoshaClock from "@/components/dosha/DoshaClock";
 import PreviaPersonalizada from "@/components/assinar/PreviaPersonalizada";
+import PixAssinaturaDialog from "@/components/assinar/PixAssinaturaDialog";
 
 import {
   AlertDialog,
@@ -194,6 +195,7 @@ const Assinar = () => {
     mensagem: string;
   }>(null);
   const [confirmandoUpgrade, setConfirmandoUpgrade] = useState(false);
+  const [pixPlano, setPixPlano] = useState<Plano | null>(null);
 
   const isAssinante = profile?.subscription_status === "active";
   const planoAtual = (isAssinante ? (profile?.plano as Plano | null) : null) ?? null;
@@ -255,6 +257,16 @@ const Assinar = () => {
       },
     });
   };
+
+  const abrirPix = (plano: Plano) => {
+    if (!user || isAnonymous) {
+      const claim = doshaResult?.idPublico || localStorage.getItem("activeDoshaId");
+      navigate(`/entrar?${claim ? `claim=${claim}&` : ""}redirect=/assinar`);
+      return;
+    }
+    setPixPlano(plano);
+  };
+
 
   const handleClickPlano = async (plano: Plano) => {
     if (!user || isAnonymous) {
@@ -407,6 +419,13 @@ const Assinar = () => {
             onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = color)}
           >
             {loadingPlan === plano ? "Redirecionando…" : label}
+          </button>
+          <button
+            onClick={() => abrirPix(plano)}
+            className="mt-2 w-full text-[12px] underline underline-offset-4 transition-opacity hover:opacity-100"
+            style={{ color: PRIMARY, opacity: 0.7, fontFamily: "'DM Sans', sans-serif" }}
+          >
+            ou pague com Pix
           </button>
           <Nota />
         </div>
@@ -1708,6 +1727,18 @@ const Assinar = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {pixPlano && (
+        <PixAssinaturaDialog
+          open={pixPlano !== null}
+          onOpenChange={(o) => !o && setPixPlano(null)}
+          plano={pixPlano}
+          email={profile?.email ?? user?.email ?? ""}
+          onConfirmado={async () => {
+            await refreshProfile();
+          }}
+        />
+      )}
     </>
   );
 };

@@ -18,7 +18,7 @@ export type Database = {
         Row: {
           assunto: string
           ativo: boolean
-          corpo_html: string
+          corpo_html: string | null
           created_at: string
           cta_texto: string | null
           cta_url: string | null
@@ -27,6 +27,8 @@ export type Database = {
           id: string
           label: string
           nome: string
+          publico_dosha: string | null
+          publico_premium: string | null
           regras: Json
           tipo: string
           updated_at: string
@@ -34,7 +36,7 @@ export type Database = {
         Insert: {
           assunto: string
           ativo?: boolean
-          corpo_html: string
+          corpo_html?: string | null
           created_at?: string
           cta_texto?: string | null
           cta_url?: string | null
@@ -43,6 +45,8 @@ export type Database = {
           id: string
           label: string
           nome: string
+          publico_dosha?: string | null
+          publico_premium?: string | null
           regras?: Json
           tipo: string
           updated_at?: string
@@ -50,7 +54,7 @@ export type Database = {
         Update: {
           assunto?: string
           ativo?: boolean
-          corpo_html?: string
+          corpo_html?: string | null
           created_at?: string
           cta_texto?: string | null
           cta_url?: string | null
@@ -59,11 +63,116 @@ export type Database = {
           id?: string
           label?: string
           nome?: string
+          publico_dosha?: string | null
+          publico_premium?: string | null
           regras?: Json
           tipo?: string
           updated_at?: string
         }
         Relationships: []
+      }
+      agenda_comunicacoes_secoes: {
+        Row: {
+          artigo_id: string | null
+          ativo: boolean
+          atualizado_em: string
+          banner_id: string | null
+          biblioteca_pagina: string | null
+          comunicacao_id: string
+          criado_em: string
+          cta_texto: string | null
+          cta_url: string | null
+          id: string
+          ordem: number
+          produto_id: number | null
+          receita_id: string | null
+          texto: string | null
+          tipo: string
+          titulo: string | null
+          video_id: string | null
+        }
+        Insert: {
+          artigo_id?: string | null
+          ativo?: boolean
+          atualizado_em?: string
+          banner_id?: string | null
+          biblioteca_pagina?: string | null
+          comunicacao_id: string
+          criado_em?: string
+          cta_texto?: string | null
+          cta_url?: string | null
+          id?: string
+          ordem: number
+          produto_id?: number | null
+          receita_id?: string | null
+          texto?: string | null
+          tipo: string
+          titulo?: string | null
+          video_id?: string | null
+        }
+        Update: {
+          artigo_id?: string | null
+          ativo?: boolean
+          atualizado_em?: string
+          banner_id?: string | null
+          biblioteca_pagina?: string | null
+          comunicacao_id?: string
+          criado_em?: string
+          cta_texto?: string | null
+          cta_url?: string | null
+          id?: string
+          ordem?: number
+          produto_id?: number | null
+          receita_id?: string | null
+          texto?: string | null
+          tipo?: string
+          titulo?: string | null
+          video_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agenda_comunicacoes_secoes_artigo_id_fkey"
+            columns: ["artigo_id"]
+            isOneToOne: false
+            referencedRelation: "portal_conteudo"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "agenda_comunicacoes_secoes_banner_id_fkey"
+            columns: ["banner_id"]
+            isOneToOne: false
+            referencedRelation: "banner_placar"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "agenda_comunicacoes_secoes_banner_id_fkey"
+            columns: ["banner_id"]
+            isOneToOne: false
+            referencedRelation: "banners"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "agenda_comunicacoes_secoes_comunicacao_id_fkey"
+            columns: ["comunicacao_id"]
+            isOneToOne: false
+            referencedRelation: "agenda_comunicacoes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "agenda_comunicacoes_secoes_receita_id_fkey"
+            columns: ["receita_id"]
+            isOneToOne: false
+            referencedRelation: "portal_receitas"
+            referencedColumns: ["video_id"]
+          },
+          {
+            foreignKeyName: "agenda_comunicacoes_secoes_video_id_fkey"
+            columns: ["video_id"]
+            isOneToOne: false
+            referencedRelation: "videos_seo"
+            referencedColumns: ["video_id"]
+          },
+        ]
       }
       agenda_semana: {
         Row: {
@@ -325,12 +434,20 @@ export type Database = {
       }
       assinaturas: {
         Row: {
+          acesso_ate: string | null
           canceled_at: string | null
+          ciclo_dias: number | null
           created_at: string
           email: string
           email_falha_enviado_em: string | null
+          gateway: string
           id: string
+          lembrete_enviado_em: string | null
+          mp_payment_id: string | null
           nome: string | null
+          pix_expira_em: string | null
+          pix_qr_code: string | null
+          pix_qr_image_url: string | null
           plano: string
           status: string
           stripe_customer_id: string | null
@@ -341,12 +458,20 @@ export type Database = {
           valor: number
         }
         Insert: {
+          acesso_ate?: string | null
           canceled_at?: string | null
+          ciclo_dias?: number | null
           created_at?: string
           email: string
           email_falha_enviado_em?: string | null
+          gateway?: string
           id?: string
+          lembrete_enviado_em?: string | null
+          mp_payment_id?: string | null
           nome?: string | null
+          pix_expira_em?: string | null
+          pix_qr_code?: string | null
+          pix_qr_image_url?: string | null
           plano: string
           status?: string
           stripe_customer_id?: string | null
@@ -357,12 +482,20 @@ export type Database = {
           valor: number
         }
         Update: {
+          acesso_ate?: string | null
           canceled_at?: string | null
+          ciclo_dias?: number | null
           created_at?: string
           email?: string
           email_falha_enviado_em?: string | null
+          gateway?: string
           id?: string
+          lembrete_enviado_em?: string | null
+          mp_payment_id?: string | null
           nome?: string | null
+          pix_expira_em?: string | null
+          pix_qr_code?: string | null
+          pix_qr_image_url?: string | null
           plano?: string
           status?: string
           stripe_customer_id?: string | null
@@ -6217,6 +6350,39 @@ export type Database = {
       }
     }
     Views: {
+      agenda_pessoa: {
+        Row: {
+          cidade: string | null
+          dosha_principal: string | null
+          elegivel_personalizado: boolean | null
+          email: string | null
+          estado: string | null
+          faixa_etaria: string | null
+          idade: number | null
+          is_premium: boolean | null
+          motivo_supressao: string | null
+          na_lista_campanhas: boolean | null
+          nivel_evolucao: string | null
+          nome: string | null
+          plano: string | null
+          premium_until: string | null
+          sede_predominante: string | null
+          subscription_status: string | null
+          suprimido: boolean | null
+          tem_conta: boolean | null
+          tem_teste_dosha: boolean | null
+          teste_em: string | null
+          teve_problema_entrega: boolean | null
+          total_aberturas: number | null
+          total_cliques: number | null
+          total_envios: number | null
+          ultima_abertura_em: string | null
+          ultima_comunicacao_id: string | null
+          ultima_edicao_enviada: string | null
+          ultimo_envio_em: string | null
+        }
+        Relationships: []
+      }
       arquitetura_saude: {
         Row: {
           categoria: string | null
@@ -6598,6 +6764,22 @@ export type Database = {
     }
     Functions: {
       acervo_stats: { Args: never; Returns: Json }
+      admin_agenda_visao: {
+        Args: never
+        Returns: {
+          assunto: string
+          ativo: boolean
+          elegiveis_agora: number
+          envios_ultimos_30d: number
+          id: string
+          nome: string
+          qtd_secoes: number
+          regras: Json
+          tem_secoes: boolean
+          tipo: string
+          ultimo_envio_em: string
+        }[]
+      }
       admin_akasha_conversas: {
         Args: { p_busca?: string; p_limit?: number; p_offset?: number }
         Returns: {
@@ -6797,6 +6979,7 @@ export type Database = {
         Args: { dosha: string; score: number }
         Returns: string
       }
+      cancelar_assinaturas_pix_vencidas: { Args: never; Returns: undefined }
       cards_da_resposta: {
         Args: { p_texto: string }
         Returns: {
@@ -6809,6 +6992,10 @@ export type Database = {
         }[]
       }
       claim_dosha_test: { Args: { p_id_publico?: string }; Returns: Json }
+      confirmar_assinatura_pix: {
+        Args: { p_mp_payment_id: string }
+        Returns: Json
+      }
       confirmar_cobranca_pix: {
         Args: { p_mp_payment_id: string }
         Returns: Json
@@ -7226,6 +7413,10 @@ export type Database = {
       recompute_user_level: { Args: { p_user: string }; Returns: undefined }
       registrar_evento_email: { Args: { p: Json }; Returns: number }
       relatorio_dossie: { Args: { p_horas?: number }; Returns: Json }
+      renderizar_secoes_email: {
+        Args: { p_comunicacao_id: string }
+        Returns: string
+      }
       restaurar_creditos_pedido_desculpas: {
         Args: { p_email: string }
         Returns: number
@@ -7262,6 +7453,10 @@ export type Database = {
       rpg_admin_select: { Args: { _table: string }; Returns: Json }
       rpg_play: { Args: { _args?: Json; _fn: string }; Returns: Json }
       rpg_rpc: { Args: { _args?: Json; _fn: string }; Returns: Json }
+      sede_predominante_dosha: {
+        Args: { p_dosha: string; p_tags: string }
+        Returns: string
+      }
       seo_conteudo: { Args: { p_path: string }; Returns: Json }
       seo_meta: { Args: { p_path: string }; Returns: Json }
       seo_slug_video: { Args: { p_titulo: string }; Returns: string }
