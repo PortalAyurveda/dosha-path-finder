@@ -194,6 +194,7 @@ const Assinar = () => {
     mensagem: string;
   }>(null);
   const [confirmandoUpgrade, setConfirmandoUpgrade] = useState(false);
+  const [pixPlano, setPixPlano] = useState<Plano | null>(null);
 
   const isAssinante = profile?.subscription_status === "active";
   const planoAtual = (isAssinante ? (profile?.plano as Plano | null) : null) ?? null;
