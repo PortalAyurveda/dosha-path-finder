@@ -770,10 +770,6 @@ const Opiniao = () => {
             </p>
           ) : null}
         </div>
-            {enviando ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-            {secoes.length === 1 || ultima ? "Enviar minhas respostas" : "Continuar"}
-          </button>
-        </div>
       </div>
     </main>
   );
