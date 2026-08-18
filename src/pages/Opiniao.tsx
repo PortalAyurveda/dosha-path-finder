@@ -732,33 +732,44 @@ const Opiniao = () => {
 
         {erro ? <p className="text-sm text-destructive">{erro}</p> : null}
 
-        <div
-          className={`flex items-center gap-3 pb-6 ${
-            secoes.length > 1 ? "justify-between" : "justify-end"
-          }`}
-        >
-          {secoes.length > 1 ? (
+        <div className="pb-6">
+          <div
+            className={`flex items-center gap-3 ${
+              secoes.length > 1 ? "justify-between" : "justify-end"
+            }`}
+          >
+            {secoes.length > 1 ? (
+              <button
+                type="button"
+                onClick={() => {
+                  setTentouAvancar(false);
+                  setSecaoIdx((i) => Math.max(0, i - 1));
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+                }}
+                disabled={secaoIdx === 0}
+                className="rounded-full px-5 py-3 text-sm font-medium disabled:opacity-40"
+                style={{ color: PRIMARY }}
+              >
+                Voltar
+              </button>
+            ) : null}
             <button
               type="button"
-              onClick={() => {
-                setTentouAvancar(false);
-                setSecaoIdx((i) => Math.max(0, i - 1));
-                window.scrollTo({ top: 0, behavior: "smooth" });
-              }}
-              disabled={secaoIdx === 0}
-              className="rounded-full px-5 py-3 text-sm font-medium disabled:opacity-40"
-              style={{ color: PRIMARY }}
+              onClick={avancar}
+              disabled={enviando || !temAlgumaResposta}
+              className="inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold text-white disabled:opacity-50"
+              style={{ background: SALMAO }}
             >
-              Voltar
+              {enviando ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+              {secoes.length === 1 || ultima ? "Enviar minhas respostas" : "Continuar"}
             </button>
+          </div>
+          {!temAlgumaResposta ? (
+            <p className="mt-2 text-right text-xs text-muted-foreground">
+              Marque ao menos uma estrela ou escreva alguma coisa
+            </p>
           ) : null}
-          <button
-            type="button"
-            onClick={avancar}
-            disabled={enviando}
-            className="inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold text-white disabled:opacity-70"
-            style={{ background: SALMAO }}
-          >
+        </div>
             {enviando ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
             {secoes.length === 1 || ultima ? "Enviar minhas respostas" : "Continuar"}
           </button>
