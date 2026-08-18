@@ -4448,6 +4448,7 @@ export type Database = {
           id: string
           intro_html: string | null
           mensagem_final: string | null
+          mostrar_banner: boolean
           ordem: number
           publico_rotulo: string
           regras: Json
@@ -4465,6 +4466,7 @@ export type Database = {
           id?: string
           intro_html?: string | null
           mensagem_final?: string | null
+          mostrar_banner?: boolean
           ordem?: number
           publico_rotulo?: string
           regras?: Json
@@ -4482,6 +4484,7 @@ export type Database = {
           id?: string
           intro_html?: string | null
           mensagem_final?: string | null
+          mostrar_banner?: boolean
           ordem?: number
           publico_rotulo?: string
           regras?: Json
