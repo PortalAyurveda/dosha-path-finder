@@ -1726,6 +1726,18 @@ const Assinar = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {pixPlano && (
+        <PixAssinaturaDialog
+          open={pixPlano !== null}
+          onOpenChange={(o) => !o && setPixPlano(null)}
+          plano={pixPlano}
+          email={profile?.email ?? user?.email ?? ""}
+          onConfirmado={async () => {
+            await refreshProfile();
+          }}
+        />
+      )}
     </>
   );
 };
