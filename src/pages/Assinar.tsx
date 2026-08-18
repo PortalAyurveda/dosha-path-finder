@@ -257,6 +257,16 @@ const Assinar = () => {
     });
   };
 
+  const abrirPix = (plano: Plano) => {
+    if (!user || isAnonymous) {
+      const claim = doshaResult?.idPublico || localStorage.getItem("activeDoshaId");
+      navigate(`/entrar?${claim ? `claim=${claim}&` : ""}redirect=/assinar`);
+      return;
+    }
+    setPixPlano(plano);
+  };
+
+
   const handleClickPlano = async (plano: Plano) => {
     if (!user || isAnonymous) {
       const claim = doshaResult?.idPublico || localStorage.getItem("activeDoshaId");
