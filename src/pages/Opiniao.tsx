@@ -695,20 +695,26 @@ const Opiniao = () => {
 
         {erro ? <p className="text-sm text-destructive">{erro}</p> : null}
 
-        <div className="flex items-center justify-between gap-3 pb-6">
-          <button
-            type="button"
-            onClick={() => {
-              setTentouAvancar(false);
-              setSecaoIdx((i) => Math.max(0, i - 1));
-              window.scrollTo({ top: 0, behavior: "smooth" });
-            }}
-            disabled={secaoIdx === 0}
-            className="rounded-full px-5 py-3 text-sm font-medium disabled:opacity-40"
-            style={{ color: PRIMARY }}
-          >
-            Voltar
-          </button>
+        <div
+          className={`flex items-center gap-3 pb-6 ${
+            secoes.length > 1 ? "justify-between" : "justify-end"
+          }`}
+        >
+          {secoes.length > 1 ? (
+            <button
+              type="button"
+              onClick={() => {
+                setTentouAvancar(false);
+                setSecaoIdx((i) => Math.max(0, i - 1));
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
+              disabled={secaoIdx === 0}
+              className="rounded-full px-5 py-3 text-sm font-medium disabled:opacity-40"
+              style={{ color: PRIMARY }}
+            >
+              Voltar
+            </button>
+          ) : null}
           <button
             type="button"
             onClick={avancar}
@@ -717,7 +723,7 @@ const Opiniao = () => {
             style={{ background: SALMAO }}
           >
             {enviando ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-            {ultima ? "Enviar minhas respostas" : "Continuar"}
+            {secoes.length === 1 || ultima ? "Enviar minhas respostas" : "Continuar"}
           </button>
         </div>
       </div>
