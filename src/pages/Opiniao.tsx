@@ -596,6 +596,15 @@ const Opiniao = () => {
                       </>
                     )}
 
+                    {p.tipo === "estrelas" && (
+                      <Estrelas
+                        value={r?.num ?? null}
+                        onChange={(n) => set(p.codigo, { num: n, texto: null })}
+                        naoUsei={p.opcoes?.[0] ?? null}
+                        onNaoUsei={(v) => set(p.codigo, { num: null, texto: v })}
+                      />
+                    )}
+
                     {p.tipo === "escolha_unica" && (
                       <div className="space-y-2">
                         {opcoes.map((o) => (
