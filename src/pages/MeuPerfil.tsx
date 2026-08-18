@@ -1116,6 +1116,70 @@ const AssinaturaCard = ({
   );
 };
 
+const AssinaturaPixBloco = ({
+  assinatura,
+  planoLabel,
+  onChanged,
+}: {
+  assinatura: NonNullable<Assinatura>;
+  planoLabel: string;
+  onChanged: () => void | Promise<void>;
+}) => {
+  const [pixOpen, setPixOpen] = useState(false);
+
+  const planoPix = (["rotina", "mensal", "anual"].includes((assinatura.plano ?? "").toLowerCase())
+    ? (assinatura.plano as string).toLowerCase()
+    : "mensal") as "rotina" | "mensal" | "anual";
+
+  const codigoInicial =
+    assinatura.pix_pendente && assinatura.pix_qr_code
+      ? {
+          assinatura_id: "",
+          qr_code: assinatura.pix_qr_code,
+          qr_code_image_url: assinatura.pix_qr_image_url ?? null,
+          expira_em: new Date(Date.now() + 30 * 60 * 1000).toISOString(),
+          valor: Number(assinatura.valor ?? 0),
+        }
+      : undefined;
+
+  return (
+    <div className="space-y-4">
+      <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
+        <div className="text-lg font-semibold text-foreground">{planoLabel}</div>
+        {assinatura.valor != null && (
+          <div className="text-sm text-muted-foreground">{formatMoeda(assinatura.valor)}</div>
+        )}
+        <span className="text-xs rounded-full px-2 py-0.5 bg-muted text-muted-foreground">Pix</span>
+      </div>
+
+      <p className="text-sm text-muted-foreground">
+        Seu acesso é válido até{" "}
+        <span className="font-medium text-foreground">
+          {formatDataExtenso(assinatura.proxima_cobranca)}
+        </span>
+        . Não há cobrança automática — para continuar, é só renovar pelo Pix.
+      </p>
+
+      <Button onClick={() => setPixOpen(true)}>Renovar agora</Button>
+
+      {pixOpen && (
+        <PixAssinaturaDialog
+          open={pixOpen}
+          onOpenChange={setPixOpen}
+          plano={planoPix}
+          email={assinatura.email ?? ""}
+          codigoInicial={codigoInicial}
+          onConfirmado={async () => {
+            await onChanged();
+          }}
+        />
+      )}
+    </div>
+  );
+};
+
+
+
 // ---------- 5. Cursos ----------
 type CursoDetalhe = {
   matriculaId: string;
