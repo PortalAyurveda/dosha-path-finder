@@ -20,6 +20,7 @@ type Cobranca = {
   url: string | null;
   created_at: string;
   paid_at: string | null;
+  gateway: string | null;
 };
 
 const brl = (v: number | null | undefined) =>
@@ -48,7 +49,9 @@ const AdminCobranca = () => {
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
   const [gerando, setGerando] = useState(false);
+  const [forma, setForma] = useState<"pix" | "cartao">("pix");
   const [linkGerado, setLinkGerado] = useState<string | null>(null);
+  const [formaGerada, setFormaGerada] = useState<"pix" | "cartao">("pix");
 
   const [lista, setLista] = useState<Cobranca[]>([]);
   const [loading, setLoading] = useState(false);
@@ -57,7 +60,7 @@ const AdminCobranca = () => {
     setLoading(true);
     const { data, error } = await supabase
       .from("cobrancas")
-      .select("id, descricao, valor, nome_cliente, email_cliente, status, url, created_at, paid_at")
+      .select("id, descricao, valor, nome_cliente, email_cliente, status, url, created_at, paid_at, gateway")
       .order("created_at", { ascending: false });
     if (error) {
       toast.error(error.message);
@@ -84,7 +87,7 @@ const AdminCobranca = () => {
     setGerando(true);
     setLinkGerado(null);
     const { data, error } = await supabase.functions.invoke("criar-cobranca", {
-      body: { descricao: descricao.trim(), valor: v, nome: nome.trim() || undefined, email: email.trim() || undefined },
+      body: { descricao: descricao.trim(), valor: v, nome: nome.trim() || undefined, email: email.trim() || undefined, forma },
     });
     setGerando(false);
     if (error) {
@@ -100,6 +103,7 @@ const AdminCobranca = () => {
       toast.error("A função não retornou um link");
       return;
     }
+    setFormaGerada(((data as any)?.forma === "cartao" ? "cartao" : "pix"));
     setLinkGerado(url);
     toast.success("Cobrança criada");
     setDescricao("");
@@ -160,6 +164,23 @@ const AdminCobranca = () => {
               <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
             </div>
           </div>
+          <div>
+            <Label>Forma de pagamento</Label>
+            <div className="flex gap-2 mt-1">
+              {(["pix", "cartao"] as const).map((f) => (
+                <Button
+                  key={f}
+                  type="button"
+                  variant={forma === f ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setForma(f)}
+                >
+                  {f === "pix" ? "Pix" : "Cartão"}
+                </Button>
+              ))}
+            </div>
+          </div>
+
           <div className="flex justify-end">
             <Button onClick={handleGerar} disabled={gerando}>
               {gerando && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
@@ -169,7 +190,7 @@ const AdminCobranca = () => {
 
           {linkGerado && (
             <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-4 space-y-2">
-              <p className="text-sm text-emerald-800 font-medium">Link gerado:</p>
+              <p className="text-sm text-emerald-800 font-medium">{formaGerada === "pix" ? "Link Pix gerado:" : "Link de pagamento gerado:"}</p>
               <div className="flex flex-col sm:flex-row gap-2 sm:items-center">
                 <a
                   href={linkGerado}
@@ -211,6 +232,7 @@ const AdminCobranca = () => {
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className="font-medium truncate">{c.descricao || "—"}</span>
                       {statusBadge(c.status)}
+                      <Badge variant="outline">{c.gateway === "stripe" ? "Cartão" : "Pix"}</Badge>
                     </div>
                     <div className="text-sm text-muted-foreground mt-1">
                       {brl(c.valor)}
