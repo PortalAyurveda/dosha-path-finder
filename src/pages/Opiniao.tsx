@@ -435,11 +435,7 @@ const Opiniao = () => {
   };
 
   const avancar = async () => {
-    const pendencia = perguntasDaSecao.some(faltando);
-    if (pendencia) {
-      setTentouAvancar(true);
-      return;
-    }
+    if (!temAlgumaResposta) return;
     setTentouAvancar(false);
     const ultima = secaoIdx === secoes.length - 1;
     if (!ultima) {
