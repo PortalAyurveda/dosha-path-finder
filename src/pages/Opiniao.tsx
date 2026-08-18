@@ -642,6 +642,7 @@ const Opiniao = () => {
 
                     {p.tipo === "estrelas" && (
                       <Estrelas
+                        cor={cor}
                         value={r?.num ?? null}
                         texto={r?.texto ?? null}
                         onChange={(n) => set(p.codigo, { num: n, texto: null })}
