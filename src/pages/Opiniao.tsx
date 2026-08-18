@@ -546,15 +546,17 @@ const Opiniao = () => {
         ) : null}
       </Cartao>
 
-      <div className="mt-6">
-        <div className="h-1 w-full overflow-hidden rounded-full bg-muted">
-          <div className="h-full rounded-full transition-all" style={{ width: `${progresso}%`, background: SALMAO }} />
+      {secoes.length > 1 ? (
+        <div className="mt-6">
+          <div className="h-1 w-full overflow-hidden rounded-full bg-muted">
+            <div className="h-full rounded-full transition-all" style={{ width: `${progresso}%`, background: SALMAO }} />
+          </div>
+          <p className="mt-2 text-xs text-muted-foreground">
+            {`Parte ${secaoIdx + 1} de ${secoes.length}`}
+            {secoes[secaoIdx] && secoes[secaoIdx].toLowerCase() !== "geral" ? ` · ${secoes[secaoIdx]}` : ""}
+          </p>
         </div>
-        <p className="mt-2 text-xs text-muted-foreground">
-          {secoes.length ? `Parte ${secaoIdx + 1} de ${secoes.length}` : ""}
-          {secoes[secaoIdx] ? ` · ${secoes[secaoIdx]}` : ""}
-        </p>
-      </div>
+      ) : null}
 
       <div className="mt-4 space-y-6">
         <Cartao>
