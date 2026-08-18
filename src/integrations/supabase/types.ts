@@ -2121,6 +2121,54 @@ export type Database = {
         }
         Relationships: []
       }
+      email_eventos: {
+        Row: {
+          assunto: string | null
+          comunicacao_id: string | null
+          criado_em: string
+          edicao: string | null
+          email: string
+          evento: string
+          evento_bruto: string | null
+          id: number
+          message_id: string | null
+          ocorreu_em: string
+          payload: Json | null
+          provedor: string
+          url: string | null
+        }
+        Insert: {
+          assunto?: string | null
+          comunicacao_id?: string | null
+          criado_em?: string
+          edicao?: string | null
+          email: string
+          evento: string
+          evento_bruto?: string | null
+          id?: number
+          message_id?: string | null
+          ocorreu_em?: string
+          payload?: Json | null
+          provedor?: string
+          url?: string | null
+        }
+        Update: {
+          assunto?: string | null
+          comunicacao_id?: string | null
+          criado_em?: string
+          edicao?: string | null
+          email?: string
+          evento?: string
+          evento_bruto?: string | null
+          id?: number
+          message_id?: string | null
+          ocorreu_em?: string
+          payload?: Json | null
+          provedor?: string
+          url?: string | null
+        }
+        Relationships: []
+      }
       email_supressao: {
         Row: {
           created_at: string
@@ -6280,23 +6328,22 @@ export type Database = {
       }
       pesquisa_perfil_usuario: {
         Row: {
-          autoriza_depoimento: boolean | null
-          continuar: string | null
+          akasha: number | null
+          akasha_texto: string | null
+          conteudo: number | null
+          dias_de_assinatura: number | null
           dosha: string | null
           email: string | null
-          mudou_algo: string | null
-          nota_ajuda: number | null
-          nps: number | null
-          nps_classe: string | null
+          emails: string | null
+          livre: string | null
+          media_estrelas: number | null
+          nav_site: number | null
           pesquisas: string[] | null
-          pesquisas_abandonadas: number | null
           pesquisas_respondidas: number | null
-          quer_resposta_pessoal: boolean | null
-          risco_saida: boolean | null
+          plano: string | null
+          receitas: number | null
           ultima_resposta_em: string | null
-          ultimo_plano: string | null
           user_id: string | null
-          vale_preco: string | null
         }
         Relationships: []
       }
@@ -6308,8 +6355,11 @@ export type Database = {
           concluiram: number | null
           convidados: number | null
           enviados: number | null
-          nota_ajuda_media: number | null
-          nps_media: number | null
+          estrelas_akasha: number | null
+          estrelas_conteudo: number | null
+          estrelas_receitas: number | null
+          estrelas_site: number | null
+          nunca_usou_akasha: number | null
           publico_rotulo: string | null
           slug: string | null
           titulo: string | null
@@ -6321,8 +6371,11 @@ export type Database = {
           concluiram?: never
           convidados?: never
           enviados?: never
-          nota_ajuda_media?: never
-          nps_media?: never
+          estrelas_akasha?: never
+          estrelas_conteudo?: never
+          estrelas_receitas?: never
+          estrelas_site?: never
+          nunca_usou_akasha?: never
           publico_rotulo?: string | null
           slug?: string | null
           titulo?: string | null
@@ -6334,8 +6387,11 @@ export type Database = {
           concluiram?: never
           convidados?: never
           enviados?: never
-          nota_ajuda_media?: never
-          nps_media?: never
+          estrelas_akasha?: never
+          estrelas_conteudo?: never
+          estrelas_receitas?: never
+          estrelas_site?: never
+          nunca_usou_akasha?: never
           publico_rotulo?: string | null
           slug?: string | null
           titulo?: string | null
@@ -7142,6 +7198,7 @@ export type Database = {
       }
       receita_teaser: { Args: { p_item: string }; Returns: Json }
       recompute_user_level: { Args: { p_user: string }; Returns: undefined }
+      registrar_evento_email: { Args: { p: Json }; Returns: number }
       relatorio_dossie: { Args: { p_horas?: number }; Returns: Json }
       restaurar_creditos_pedido_desculpas: {
         Args: { p_email: string }

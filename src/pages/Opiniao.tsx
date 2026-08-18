@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams, useSearchParams, Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2 } from "lucide-react";
+import { Loader2, Star } from "lucide-react";
 
 const PRIMARY = "#352F54";
 const SALMAO = "#FF7676";
@@ -11,6 +11,7 @@ const SALMAO_SOFT = "#FFF1F1";
 type Tipo =
   | "escala_0_10"
   | "escala_1_5"
+  | "estrelas"
   | "escolha_unica"
   | "multipla"
   | "texto_curto"
@@ -163,6 +164,81 @@ const TextareaAuto = ({ value, onChange }: { value: string; onChange: (v: string
   );
 };
 
+const Estrelas = ({
+  value,
+  texto,
+  onChange,
+  naoUsei,
+  onNaoUsei,
+}: {
+  value: number | null;
+  texto: string | null;
+  onChange: (n: number | null) => void;
+  naoUsei?: { valor: string; rotulo: string } | null;
+  onNaoUsei?: (v: string | null) => void;
+}) => {
+  const [hover, setHover] = useState<number | null>(null);
+  const ativo = hover ?? value ?? 0;
+  const marcadoNaoUsei = !!naoUsei && texto === naoUsei.valor;
+  return (
+    <div className="space-y-3">
+      <div
+        className="flex gap-1"
+        onMouseLeave={() => setHover(null)}
+        role="radiogroup"
+        aria-label="Nota de 1 a 5 estrelas"
+      >
+        {[1, 2, 3, 4, 5].map((n) => {
+          const preenchida = n <= ativo;
+          return (
+            <button
+              key={n}
+              type="button"
+              role="radio"
+              aria-checked={value === n}
+              onClick={() => {
+                if (value === n && !marcadoNaoUsei) {
+                  onChange(null);
+                } else {
+                  onChange(n);
+                  onNaoUsei?.(null);
+                }
+              }}
+              onMouseEnter={() => setHover(n)}
+              className="flex h-10 w-10 items-center justify-center rounded-md transition-transform hover:scale-110 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF7676]"
+              style={{ color: preenchida ? "#FACC15" : "hsl(var(--border))" }}
+            >
+              <Star
+                className="h-7 w-7"
+                fill={preenchida ? "#FACC15" : "transparent"}
+                stroke={preenchida ? "#FACC15" : "currentColor"}
+                strokeWidth={preenchida ? 0 : 1.5}
+              />
+            </button>
+          );
+        })}
+      </div>
+      {naoUsei ? (
+        <button
+          type="button"
+          onClick={() => {
+            if (marcadoNaoUsei) {
+              onNaoUsei?.(null);
+            } else {
+              onChange(null);
+              onNaoUsei?.(naoUsei.valor);
+            }
+          }}
+          className="text-sm underline-offset-2 transition-colors hover:underline"
+          style={{ color: marcadoNaoUsei ? SALMAO : undefined }}
+        >
+          {naoUsei.rotulo}
+        </button>
+      ) : null}
+    </div>
+  );
+};
+
 const Opiniao = () => {
   const { slug: slugParam } = useParams<{ slug: string }>();
   const [searchParams] = useSearchParams();
@@ -289,6 +365,7 @@ const Opiniao = () => {
     const r = respostas[p.codigo];
     if (p.tipo === "multipla") return !r?.lista || r.lista.length === 0;
     if (p.tipo === "escala_0_10" || p.tipo === "escala_1_5" || p.tipo === "sim_nao") return r?.num == null;
+    if (p.tipo === "estrelas") return r?.num == null && !r?.texto;
     return !r?.texto || String(r.texto).trim() === "";
   };
 
@@ -304,6 +381,11 @@ const Opiniao = () => {
         if (p.tipo === "escala_0_10" || p.tipo === "escala_1_5" || p.tipo === "sim_nao") {
           if (r.num == null) return null;
           return { codigo: p.codigo, num: r.num };
+        }
+        if (p.tipo === "estrelas") {
+          if (r.num != null) return { codigo: p.codigo, num: r.num };
+          if (r.texto) return { codigo: p.codigo, texto: r.texto };
+          return null;
         }
         if (!r.texto || String(r.texto).trim() === "") return null;
         return { codigo: p.codigo, texto: r.texto };
@@ -465,15 +547,17 @@ const Opiniao = () => {
         ) : null}
       </Cartao>
 
-      <div className="mt-6">
-        <div className="h-1 w-full overflow-hidden rounded-full bg-muted">
-          <div className="h-full rounded-full transition-all" style={{ width: `${progresso}%`, background: SALMAO }} />
+      {secoes.length > 1 ? (
+        <div className="mt-6">
+          <div className="h-1 w-full overflow-hidden rounded-full bg-muted">
+            <div className="h-full rounded-full transition-all" style={{ width: `${progresso}%`, background: SALMAO }} />
+          </div>
+          <p className="mt-2 text-xs text-muted-foreground">
+            {`Parte ${secaoIdx + 1} de ${secoes.length}`}
+            {secoes[secaoIdx] && secoes[secaoIdx].toLowerCase() !== "geral" ? ` · ${secoes[secaoIdx]}` : ""}
+          </p>
         </div>
-        <p className="mt-2 text-xs text-muted-foreground">
-          {secoes.length ? `Parte ${secaoIdx + 1} de ${secoes.length}` : ""}
-          {secoes[secaoIdx] ? ` · ${secoes[secaoIdx]}` : ""}
-        </p>
-      </div>
+      ) : null}
 
       <div className="mt-4 space-y-6">
         <Cartao>
@@ -513,6 +597,16 @@ const Opiniao = () => {
                           </div>
                         ) : null}
                       </>
+                    )}
+
+                    {p.tipo === "estrelas" && (
+                      <Estrelas
+                        value={r?.num ?? null}
+                        texto={r?.texto ?? null}
+                        onChange={(n) => set(p.codigo, { num: n, texto: null })}
+                        naoUsei={p.opcoes?.[0] ?? null}
+                        onNaoUsei={(v) => set(p.codigo, { num: null, texto: v })}
+                      />
                     )}
 
                     {p.tipo === "escolha_unica" && (
@@ -603,20 +697,26 @@ const Opiniao = () => {
 
         {erro ? <p className="text-sm text-destructive">{erro}</p> : null}
 
-        <div className="flex items-center justify-between gap-3 pb-6">
-          <button
-            type="button"
-            onClick={() => {
-              setTentouAvancar(false);
-              setSecaoIdx((i) => Math.max(0, i - 1));
-              window.scrollTo({ top: 0, behavior: "smooth" });
-            }}
-            disabled={secaoIdx === 0}
-            className="rounded-full px-5 py-3 text-sm font-medium disabled:opacity-40"
-            style={{ color: PRIMARY }}
-          >
-            Voltar
-          </button>
+        <div
+          className={`flex items-center gap-3 pb-6 ${
+            secoes.length > 1 ? "justify-between" : "justify-end"
+          }`}
+        >
+          {secoes.length > 1 ? (
+            <button
+              type="button"
+              onClick={() => {
+                setTentouAvancar(false);
+                setSecaoIdx((i) => Math.max(0, i - 1));
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
+              disabled={secaoIdx === 0}
+              className="rounded-full px-5 py-3 text-sm font-medium disabled:opacity-40"
+              style={{ color: PRIMARY }}
+            >
+              Voltar
+            </button>
+          ) : null}
           <button
             type="button"
             onClick={avancar}
@@ -625,7 +725,7 @@ const Opiniao = () => {
             style={{ background: SALMAO }}
           >
             {enviando ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-            {ultima ? "Enviar minhas respostas" : "Continuar"}
+            {secoes.length === 1 || ultima ? "Enviar minhas respostas" : "Continuar"}
           </button>
         </div>
       </div>
