@@ -11,6 +11,7 @@ const SALMAO_SOFT = "#FFF1F1";
 type Tipo =
   | "escala_0_10"
   | "escala_1_5"
+  | "estrelas"
   | "escolha_unica"
   | "multipla"
   | "texto_curto"
