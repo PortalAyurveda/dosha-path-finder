@@ -128,6 +128,10 @@ type Assinatura = {
   cancela_no_fim: boolean | null;
   valor: number | null;
   cortesia?: boolean | null;
+  gateway?: "mercadopago" | "stripe" | null;
+  pix_pendente?: boolean | null;
+  pix_qr_code?: string | null;
+  pix_qr_image_url?: string | null;
 } | null;
 
 type Matricula = {
