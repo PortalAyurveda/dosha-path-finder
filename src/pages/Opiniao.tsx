@@ -397,6 +397,9 @@ const Opiniao = () => {
     return !!r.texto && String(r.texto).trim() !== "";
   };
 
+  const temAlgumaResposta = perguntas.filter(visiveis).some(preenchida);
+
+
 
   const montarItens = (lista: Pergunta[]) =>
     lista
