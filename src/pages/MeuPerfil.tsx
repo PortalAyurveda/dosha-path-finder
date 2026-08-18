@@ -20,6 +20,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/contexts/UserContext";
 import { optimizeImageToWebP } from "@/lib/imageOptimize";
 import PageContainer from "@/components/PageContainer";
+import PixAssinaturaDialog from "@/components/assinar/PixAssinaturaDialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -1126,6 +1127,7 @@ const AssinaturaPixBloco = ({
   onChanged: () => void | Promise<void>;
 }) => {
   const [pixOpen, setPixOpen] = useState(false);
+  const { user } = useUser();
 
   const planoPix = (["rotina", "mensal", "anual"].includes((assinatura.plano ?? "").toLowerCase())
     ? (assinatura.plano as string).toLowerCase()
@@ -1167,7 +1169,7 @@ const AssinaturaPixBloco = ({
           open={pixOpen}
           onOpenChange={setPixOpen}
           plano={planoPix}
-          email={assinatura.email ?? ""}
+          email={user?.email ?? ""}
           codigoInicial={codigoInicial}
           onConfirmado={async () => {
             await onChanged();
