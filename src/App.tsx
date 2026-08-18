@@ -107,6 +107,7 @@ const SamkhyaTodos = lazy(() => import("./pages/SamkhyaTodos"));
 const SamkhyaObrigado = lazy(() => import("./pages/SamkhyaObrigado"));
 const SamkhyaPedido = lazy(() => import("./pages/SamkhyaPedido"));
 const SamkhyaCompras = lazy(() => import("./pages/SamkhyaCompras"));
+const Cobranca = lazy(() => import("./pages/Cobranca"));
 const Pesquisa = lazy(() => import("./pages/Pesquisa"));
 const Revisao = lazy(() => import("./pages/Revisao"));
 const AdminBanners = lazy(() => import("./pages/AdminBanners"));
@@ -322,6 +323,7 @@ const RoutedApp = () => {
               <Route path="/samkhya/obrigado" element={<SamkhyaObrigado />} />
               <Route path="/samkhya/pedido/:session_id" element={<SamkhyaPedido />} />
               <Route path="/samkhya/compras" element={<SamkhyaCompras />} />
+              <Route path="/cobranca/:id" element={<Cobranca />} />
 
               <Route path="/pesquisa" element={<Pesquisa />} />
               <Route path="/revisao" element={<Revisao />} />
