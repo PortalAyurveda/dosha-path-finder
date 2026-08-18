@@ -459,9 +459,6 @@ const Opiniao = () => {
     }
   };
 
-  const Cartao = ({ children }: { children: React.ReactNode }) => (
-    <div className="rounded-2xl border border-border bg-card p-6 md:p-8">{children}</div>
-  );
 
   if (loading) {
     return (
@@ -645,9 +642,8 @@ const Opiniao = () => {
                         cor={cor}
                         value={r?.num ?? null}
                         texto={r?.texto ?? null}
-                        onChange={(n) => set(p.codigo, { num: n, texto: null })}
+                        onSet={(valor) => set(p.codigo, valor)}
                         naoUsei={p.opcoes?.[0] ?? null}
-                        onNaoUsei={(v) => set(p.codigo, { num: null, texto: v })}
                       />
                     )}
 
