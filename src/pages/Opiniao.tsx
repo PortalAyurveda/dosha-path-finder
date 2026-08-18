@@ -166,17 +166,20 @@ const TextareaAuto = ({ value, onChange }: { value: string; onChange: (v: string
 
 const Estrelas = ({
   value,
+  texto,
   onChange,
   naoUsei,
   onNaoUsei,
 }: {
   value: number | null;
+  texto: string | null;
   onChange: (n: number | null) => void;
   naoUsei?: { valor: string; rotulo: string } | null;
   onNaoUsei?: (v: string | null) => void;
 }) => {
   const [hover, setHover] = useState<number | null>(null);
   const ativo = hover ?? value ?? 0;
+  const marcadoNaoUsei = !!naoUsei && texto === naoUsei.valor;
   return (
     <div className="space-y-3">
       <div
@@ -194,7 +197,7 @@ const Estrelas = ({
               role="radio"
               aria-checked={value === n}
               onClick={() => {
-                if (value === n) {
+                if (value === n && !marcadoNaoUsei) {
                   onChange(null);
                 } else {
                   onChange(n);
@@ -219,17 +222,15 @@ const Estrelas = ({
         <button
           type="button"
           onClick={() => {
-            if (value === null && onNaoUsei) {
-              onNaoUsei(null);
+            if (marcadoNaoUsei) {
+              onNaoUsei?.(null);
             } else {
               onChange(null);
               onNaoUsei?.(naoUsei.valor);
             }
           }}
-          className={`text-sm underline-offset-2 transition-colors hover:underline ${
-            value === null && onNaoUsei ? "text-muted-foreground" : "text-muted-foreground"
-          }`}
-          style={{ color: value === null && onNaoUsei ? SALMAO : undefined }}
+          className="text-sm underline-offset-2 transition-colors hover:underline"
+          style={{ color: marcadoNaoUsei ? SALMAO : undefined }}
         >
           {naoUsei.rotulo}
         </button>
