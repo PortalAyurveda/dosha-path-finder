@@ -1149,10 +1149,14 @@ export type Database = {
           criado_por: string | null
           descricao: string
           email_cliente: string | null
+          gateway: string
           id: string
           moeda: string
+          mp_payment_id: string | null
           nome_cliente: string | null
           paid_at: string | null
+          pix_expira_em: string | null
+          pix_qr_code: string | null
           status: string
           stripe_payment_intent_id: string | null
           stripe_payment_link_id: string | null
@@ -1167,10 +1171,14 @@ export type Database = {
           criado_por?: string | null
           descricao: string
           email_cliente?: string | null
+          gateway?: string
           id?: string
           moeda?: string
+          mp_payment_id?: string | null
           nome_cliente?: string | null
           paid_at?: string | null
+          pix_expira_em?: string | null
+          pix_qr_code?: string | null
           status?: string
           stripe_payment_intent_id?: string | null
           stripe_payment_link_id?: string | null
@@ -1185,10 +1193,14 @@ export type Database = {
           criado_por?: string | null
           descricao?: string
           email_cliente?: string | null
+          gateway?: string
           id?: string
           moeda?: string
+          mp_payment_id?: string | null
           nome_cliente?: string | null
           paid_at?: string | null
+          pix_expira_em?: string | null
+          pix_qr_code?: string | null
           status?: string
           stripe_payment_intent_id?: string | null
           stripe_payment_link_id?: string | null
@@ -6797,6 +6809,10 @@ export type Database = {
         }[]
       }
       claim_dosha_test: { Args: { p_id_publico?: string }; Returns: Json }
+      confirmar_cobranca_pix: {
+        Args: { p_mp_payment_id: string }
+        Returns: Json
+      }
       confirmar_pagamento_pix: {
         Args: { p_mp_payment_id: string }
         Returns: Json
