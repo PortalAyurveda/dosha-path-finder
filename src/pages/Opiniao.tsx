@@ -592,20 +592,33 @@ const Opiniao = () => {
           <div className="space-y-8">
             {perguntasDaSecao.map((p) => {
               const r = respostas[p.codigo];
-              const invalido = tentouAvancar && faltando(p);
               const opcoes = opcoesDe(p);
               const legendas = (p.ajuda || "").split("|").map((s) => s.trim());
+              const cor = p.cor && /^#[0-9a-fA-F]{6}$/.test(p.cor) ? p.cor : PRIMARY;
+              const Icone = p.icone ? ICONES[p.icone] : undefined;
               return (
                 <div key={p.codigo}>
-                  <p className="text-[16px] font-medium leading-snug" style={{ color: PRIMARY }}>
-                    {p.enunciado}
-                  </p>
+                  <div className="flex items-center gap-3">
+                    {Icone ? (
+                      <span
+                        aria-hidden
+                        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg"
+                        style={{ background: `${cor}24` }}
+                      >
+                        <Icone size={18} style={{ color: cor }} />
+                      </span>
+                    ) : null}
+                    <p className="text-[16px] font-medium leading-snug" style={{ color: PRIMARY }}>
+                      {p.enunciado}
+                    </p>
+                  </div>
                   {p.tipo === "multipla" && p.max_escolhas ? (
                     <p className="mt-1 text-xs text-muted-foreground">Escolha até {p.max_escolhas}</p>
                   ) : null}
                   {p.ajuda && !["escala_0_10", "escala_1_5"].includes(p.tipo) ? (
                     <p className="mt-1 text-sm text-muted-foreground">{p.ajuda}</p>
                   ) : null}
+
 
                   <div className="mt-3">
                     {(p.tipo === "escala_0_10" || p.tipo === "escala_1_5") && (
