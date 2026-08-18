@@ -65,6 +65,8 @@ interface Pergunta {
   obrigatoria: boolean;
   max_escolhas: number | null;
   condicao: Condicao | null;
+  cor?: string | null;
+  icone?: string | null;
 }
 
 interface RespostaValor {
