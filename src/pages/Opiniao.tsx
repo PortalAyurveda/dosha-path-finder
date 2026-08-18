@@ -724,12 +724,6 @@ const Opiniao = () => {
                       <TextareaAuto value={r?.texto ?? ""} onChange={(v) => set(p.codigo, { texto: v })} />
                     )}
                   </div>
-
-                  {invalido ? (
-                    <p className="mt-2 text-xs" style={{ color: SALMAO }}>
-                      Essa aqui eu preciso saber
-                    </p>
-                  ) : null}
                 </div>
               );
             })}
