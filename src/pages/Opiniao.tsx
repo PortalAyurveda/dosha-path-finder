@@ -381,6 +381,11 @@ const Opiniao = () => {
           if (r.num == null) return null;
           return { codigo: p.codigo, num: r.num };
         }
+        if (p.tipo === "estrelas") {
+          if (r.num != null) return { codigo: p.codigo, num: r.num };
+          if (r.texto) return { codigo: p.codigo, texto: r.texto };
+          return null;
+        }
         if (!r.texto || String(r.texto).trim() === "") return null;
         return { codigo: p.codigo, texto: r.texto };
       })
