@@ -192,16 +192,14 @@ const TextareaAuto = ({ value, onChange }: { value: string; onChange: (v: string
 const Estrelas = ({
   value,
   texto,
-  onChange,
+  onSet,
   naoUsei,
-  onNaoUsei,
   cor,
 }: {
   value: number | null;
   texto: string | null;
-  onChange: (n: number | null) => void;
+  onSet: (valor: RespostaValor) => void;
   naoUsei?: { valor: string; rotulo: string } | null;
-  onNaoUsei?: (v: string | null) => void;
   cor?: string;
 }) => {
   const [hover, setHover] = useState<number | null>(null);
@@ -226,10 +224,9 @@ const Estrelas = ({
               aria-checked={value === n}
               onClick={() => {
                 if (value === n && !marcadoNaoUsei) {
-                  onChange(null);
+                  onSet({ num: null, texto: null });
                 } else {
-                  onChange(n);
-                  onNaoUsei?.(null);
+                  onSet({ num: n, texto: null });
                 }
               }}
               onMouseEnter={() => setHover(n)}
@@ -251,10 +248,9 @@ const Estrelas = ({
           type="button"
           onClick={() => {
             if (marcadoNaoUsei) {
-              onNaoUsei?.(null);
+              onSet({ num: null, texto: null });
             } else {
-              onChange(null);
-              onNaoUsei?.(naoUsei.valor);
+              onSet({ num: null, texto: naoUsei.valor });
             }
           }}
           className="text-sm underline-offset-2 transition-colors hover:underline"
@@ -266,6 +262,10 @@ const Estrelas = ({
     </div>
   );
 };
+
+const Cartao = ({ children }: { children: React.ReactNode }) => (
+  <div className="rounded-2xl border border-border bg-card p-6 md:p-8">{children}</div>
+);
 
 const Opiniao = () => {
   const { slug: slugParam } = useParams<{ slug: string }>();
