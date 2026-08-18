@@ -364,6 +364,7 @@ const Opiniao = () => {
     const r = respostas[p.codigo];
     if (p.tipo === "multipla") return !r?.lista || r.lista.length === 0;
     if (p.tipo === "escala_0_10" || p.tipo === "escala_1_5" || p.tipo === "sim_nao") return r?.num == null;
+    if (p.tipo === "estrelas") return r?.num == null && !r?.texto;
     return !r?.texto || String(r.texto).trim() === "";
   };
 
