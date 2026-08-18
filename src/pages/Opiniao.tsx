@@ -164,6 +164,80 @@ const TextareaAuto = ({ value, onChange }: { value: string; onChange: (v: string
   );
 };
 
+const Estrelas = ({
+  value,
+  onChange,
+  naoUsei,
+  onNaoUsei,
+}: {
+  value: number | null;
+  onChange: (n: number | null) => void;
+  naoUsei?: { valor: string; rotulo: string } | null;
+  onNaoUsei?: (v: string | null) => void;
+}) => {
+  const [hover, setHover] = useState<number | null>(null);
+  const ativo = hover ?? value ?? 0;
+  return (
+    <div className="space-y-3">
+      <div
+        className="flex gap-1"
+        onMouseLeave={() => setHover(null)}
+        role="radiogroup"
+        aria-label="Nota de 1 a 5 estrelas"
+      >
+        {[1, 2, 3, 4, 5].map((n) => {
+          const preenchida = n <= ativo;
+          return (
+            <button
+              key={n}
+              type="button"
+              role="radio"
+              aria-checked={value === n}
+              onClick={() => {
+                if (value === n) {
+                  onChange(null);
+                } else {
+                  onChange(n);
+                  onNaoUsei?.(null);
+                }
+              }}
+              onMouseEnter={() => setHover(n)}
+              className="flex h-10 w-10 items-center justify-center rounded-md transition-transform hover:scale-110 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF7676]"
+              style={{ color: preenchida ? "#FACC15" : "hsl(var(--border))" }}
+            >
+              <Star
+                className="h-7 w-7"
+                fill={preenchida ? "#FACC15" : "transparent"}
+                stroke={preenchida ? "#FACC15" : "currentColor"}
+                strokeWidth={preenchida ? 0 : 1.5}
+              />
+            </button>
+          );
+        })}
+      </div>
+      {naoUsei ? (
+        <button
+          type="button"
+          onClick={() => {
+            if (value === null && onNaoUsei) {
+              onNaoUsei(null);
+            } else {
+              onChange(null);
+              onNaoUsei?.(naoUsei.valor);
+            }
+          }}
+          className={`text-sm underline-offset-2 transition-colors hover:underline ${
+            value === null && onNaoUsei ? "text-muted-foreground" : "text-muted-foreground"
+          }`}
+          style={{ color: value === null && onNaoUsei ? SALMAO : undefined }}
+        >
+          {naoUsei.rotulo}
+        </button>
+      ) : null}
+    </div>
+  );
+};
+
 const Opiniao = () => {
   const { slug: slugParam } = useParams<{ slug: string }>();
   const [searchParams] = useSearchParams();
