@@ -2,7 +2,30 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams, useSearchParams, Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, Star } from "lucide-react";
+import {
+  Loader2,
+  Star,
+  Smartphone,
+  BookOpen,
+  Sunrise,
+  Sparkles,
+  Mail,
+  ShoppingBag,
+  MessageCircle,
+  type LucideIcon,
+} from "lucide-react";
+
+const ICONES: Record<string, LucideIcon> = {
+  Smartphone,
+  BookOpen,
+  Sunrise,
+  Sparkles,
+  Mail,
+  ShoppingBag,
+  MessageCircle,
+  Star,
+};
+
 
 const PRIMARY = "#352F54";
 const SALMAO = "#FF7676";
@@ -42,6 +65,8 @@ interface Pergunta {
   obrigatoria: boolean;
   max_escolhas: number | null;
   condicao: Condicao | null;
+  cor?: string | null;
+  icone?: string | null;
 }
 
 interface RespostaValor {
@@ -170,16 +195,19 @@ const Estrelas = ({
   onChange,
   naoUsei,
   onNaoUsei,
+  cor,
 }: {
   value: number | null;
   texto: string | null;
   onChange: (n: number | null) => void;
   naoUsei?: { valor: string; rotulo: string } | null;
   onNaoUsei?: (v: string | null) => void;
+  cor?: string;
 }) => {
   const [hover, setHover] = useState<number | null>(null);
   const ativo = hover ?? value ?? 0;
   const marcadoNaoUsei = !!naoUsei && texto === naoUsei.valor;
+  const tom = cor || PRIMARY;
   return (
     <div className="space-y-3">
       <div
@@ -205,13 +233,13 @@ const Estrelas = ({
                 }
               }}
               onMouseEnter={() => setHover(n)}
-              className="flex h-10 w-10 items-center justify-center rounded-md transition-transform hover:scale-110 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF7676]"
-              style={{ color: preenchida ? "#FACC15" : "hsl(var(--border))" }}
+              className="flex h-10 w-10 items-center justify-center rounded-md transition-transform hover:scale-110 focus:outline-none focus-visible:ring-2"
+              style={{ color: preenchida ? tom : "hsl(var(--border))" }}
             >
               <Star
                 className="h-7 w-7"
-                fill={preenchida ? "#FACC15" : "transparent"}
-                stroke={preenchida ? "#FACC15" : "currentColor"}
+                fill={preenchida ? tom : "transparent"}
+                stroke={preenchida ? tom : "currentColor"}
                 strokeWidth={preenchida ? 0 : 1.5}
               />
             </button>
@@ -360,14 +388,18 @@ const Opiniao = () => {
   const set = (codigo: string, val: RespostaValor) =>
     setRespostas((prev) => ({ ...prev, [codigo]: { ...prev[codigo], ...val } }));
 
-  const faltando = (p: Pergunta): boolean => {
-    if (!p.obrigatoria) return false;
+  const preenchida = (p: Pergunta): boolean => {
     const r = respostas[p.codigo];
-    if (p.tipo === "multipla") return !r?.lista || r.lista.length === 0;
-    if (p.tipo === "escala_0_10" || p.tipo === "escala_1_5" || p.tipo === "sim_nao") return r?.num == null;
-    if (p.tipo === "estrelas") return r?.num == null && !r?.texto;
-    return !r?.texto || String(r.texto).trim() === "";
+    if (!r) return false;
+    if (p.tipo === "multipla") return !!r.lista && r.lista.length > 0;
+    if (p.tipo === "escala_0_10" || p.tipo === "escala_1_5" || p.tipo === "sim_nao") return r.num != null;
+    if (p.tipo === "estrelas") return r.num != null || !!r.texto;
+    return !!r.texto && String(r.texto).trim() !== "";
   };
+
+  const temAlgumaResposta = perguntas.filter(visiveis).some(preenchida);
+
+
 
   const montarItens = (lista: Pergunta[]) =>
     lista
@@ -406,11 +438,7 @@ const Opiniao = () => {
   };
 
   const avancar = async () => {
-    const pendencia = perguntasDaSecao.some(faltando);
-    if (pendencia) {
-      setTentouAvancar(true);
-      return;
-    }
+    if (!temAlgumaResposta) return;
     setTentouAvancar(false);
     const ultima = secaoIdx === secoes.length - 1;
     if (!ultima) {
@@ -564,20 +592,33 @@ const Opiniao = () => {
           <div className="space-y-8">
             {perguntasDaSecao.map((p) => {
               const r = respostas[p.codigo];
-              const invalido = tentouAvancar && faltando(p);
               const opcoes = opcoesDe(p);
               const legendas = (p.ajuda || "").split("|").map((s) => s.trim());
+              const cor = p.cor && /^#[0-9a-fA-F]{6}$/.test(p.cor) ? p.cor : PRIMARY;
+              const Icone = p.icone ? ICONES[p.icone] : undefined;
               return (
                 <div key={p.codigo}>
-                  <p className="text-[16px] font-medium leading-snug" style={{ color: PRIMARY }}>
-                    {p.enunciado}
-                  </p>
+                  <div className="flex items-center gap-3">
+                    {Icone ? (
+                      <span
+                        aria-hidden
+                        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg"
+                        style={{ background: `${cor}24` }}
+                      >
+                        <Icone size={18} style={{ color: cor }} />
+                      </span>
+                    ) : null}
+                    <p className="text-[16px] font-medium leading-snug" style={{ color: PRIMARY }}>
+                      {p.enunciado}
+                    </p>
+                  </div>
                   {p.tipo === "multipla" && p.max_escolhas ? (
                     <p className="mt-1 text-xs text-muted-foreground">Escolha até {p.max_escolhas}</p>
                   ) : null}
                   {p.ajuda && !["escala_0_10", "escala_1_5"].includes(p.tipo) ? (
                     <p className="mt-1 text-sm text-muted-foreground">{p.ajuda}</p>
                   ) : null}
+
 
                   <div className="mt-3">
                     {(p.tipo === "escala_0_10" || p.tipo === "escala_1_5") && (
@@ -601,6 +642,7 @@ const Opiniao = () => {
 
                     {p.tipo === "estrelas" && (
                       <Estrelas
+                        cor={cor}
                         value={r?.num ?? null}
                         texto={r?.texto ?? null}
                         onChange={(n) => set(p.codigo, { num: n, texto: null })}
@@ -683,12 +725,6 @@ const Opiniao = () => {
                       <TextareaAuto value={r?.texto ?? ""} onChange={(v) => set(p.codigo, { texto: v })} />
                     )}
                   </div>
-
-                  {invalido ? (
-                    <p className="mt-2 text-xs" style={{ color: SALMAO }}>
-                      Essa aqui eu preciso saber
-                    </p>
-                  ) : null}
                 </div>
               );
             })}
@@ -697,36 +733,43 @@ const Opiniao = () => {
 
         {erro ? <p className="text-sm text-destructive">{erro}</p> : null}
 
-        <div
-          className={`flex items-center gap-3 pb-6 ${
-            secoes.length > 1 ? "justify-between" : "justify-end"
-          }`}
-        >
-          {secoes.length > 1 ? (
+        <div className="pb-6">
+          <div
+            className={`flex items-center gap-3 ${
+              secoes.length > 1 ? "justify-between" : "justify-end"
+            }`}
+          >
+            {secoes.length > 1 ? (
+              <button
+                type="button"
+                onClick={() => {
+                  setTentouAvancar(false);
+                  setSecaoIdx((i) => Math.max(0, i - 1));
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+                }}
+                disabled={secaoIdx === 0}
+                className="rounded-full px-5 py-3 text-sm font-medium disabled:opacity-40"
+                style={{ color: PRIMARY }}
+              >
+                Voltar
+              </button>
+            ) : null}
             <button
               type="button"
-              onClick={() => {
-                setTentouAvancar(false);
-                setSecaoIdx((i) => Math.max(0, i - 1));
-                window.scrollTo({ top: 0, behavior: "smooth" });
-              }}
-              disabled={secaoIdx === 0}
-              className="rounded-full px-5 py-3 text-sm font-medium disabled:opacity-40"
-              style={{ color: PRIMARY }}
+              onClick={avancar}
+              disabled={enviando || !temAlgumaResposta}
+              className="inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold text-white disabled:opacity-50"
+              style={{ background: SALMAO }}
             >
-              Voltar
+              {enviando ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+              {secoes.length === 1 || ultima ? "Enviar minhas respostas" : "Continuar"}
             </button>
+          </div>
+          {!temAlgumaResposta ? (
+            <p className="mt-2 text-right text-xs text-muted-foreground">
+              Marque ao menos uma estrela ou escreva alguma coisa
+            </p>
           ) : null}
-          <button
-            type="button"
-            onClick={avancar}
-            disabled={enviando}
-            className="inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold text-white disabled:opacity-70"
-            style={{ background: SALMAO }}
-          >
-            {enviando ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-            {secoes.length === 1 || ultima ? "Enviar minhas respostas" : "Continuar"}
-          </button>
         </div>
       </div>
     </main>
