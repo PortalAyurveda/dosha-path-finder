@@ -3452,20 +3452,52 @@ export type Database = {
         }
         Relationships: []
       }
-      jiva_gabarito: {
+      jiva_gabarito_foto: {
+        Row: {
+          created_at: string
+          id: string
+          imagem_confianca: string | null
+          imagem_local_path: string
+          pasta_id: string
+          tipo_foto: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          imagem_confianca?: string | null
+          imagem_local_path: string
+          pasta_id: string
+          tipo_foto: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          imagem_confianca?: string | null
+          imagem_local_path?: string
+          pasta_id?: string
+          tipo_foto?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "jiva_gabarito_foto_pasta_id_fkey"
+            columns: ["pasta_id"]
+            isOneToOne: false
+            referencedRelation: "jiva_gabarito_pasta"
+            referencedColumns: ["pasta_id"]
+          },
+        ]
+      }
+      jiva_gabarito_pasta: {
         Row: {
           created_at: string
           diagnostico_texto: string | null
           fonte: string
           id: string
-          imagem_confianca: string | null
-          imagem_local_path: string
           lingua_texto: string
           olhos_texto: string | null
           pasta_id: string
           rotulo_dosha: string | null
           status: string
-          tipo_foto: string
           tratamento_texto: string | null
           unhas_texto: string | null
         }
@@ -3474,14 +3506,11 @@ export type Database = {
           diagnostico_texto?: string | null
           fonte?: string
           id?: string
-          imagem_confianca?: string | null
-          imagem_local_path: string
           lingua_texto: string
           olhos_texto?: string | null
           pasta_id: string
           rotulo_dosha?: string | null
           status?: string
-          tipo_foto: string
           tratamento_texto?: string | null
           unhas_texto?: string | null
         }
@@ -3490,14 +3519,11 @@ export type Database = {
           diagnostico_texto?: string | null
           fonte?: string
           id?: string
-          imagem_confianca?: string | null
-          imagem_local_path?: string
           lingua_texto?: string
           olhos_texto?: string | null
           pasta_id?: string
           rotulo_dosha?: string | null
           status?: string
-          tipo_foto?: string
           tratamento_texto?: string | null
           unhas_texto?: string | null
         }
@@ -7397,6 +7423,10 @@ export type Database = {
       }
       mockups_dados: { Args: never; Returns: Json }
       owns_rotina: { Args: { p_test_id: string }; Returns: boolean }
+      payload_pessoa_preview: {
+        Args: { p_comunicacao_id: string; p_email: string }
+        Returns: Json
+      }
       pesquisa_abrir: {
         Args: { p_slug: string; p_token?: string }
         Returns: Json
