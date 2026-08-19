@@ -208,14 +208,18 @@ function baixarArquivo(file: File) {
   const a = document.createElement("a");
   a.href = url;
   a.download = file.name;
+  a.rel = "noopener";
+  a.style.display = "none";
+  document.body.appendChild(a);
   a.click();
+  a.remove();
   setTimeout(() => URL.revokeObjectURL(url), 4000);
 }
 
-// Compartilha (iOS → "Salvar Imagem" na galeria) com fallback pra download
+// iOS: compartilhar (permite "Salvar Imagem" na galeria). Demais: download direto.
 async function salvarArquivo(file: File) {
   const nav = navigator as Navigator & { canShare?: (d: any) => boolean };
-  if (nav.canShare?.({ files: [file] })) {
+  if (IS_IOS && nav.canShare?.({ files: [file] })) {
     try {
       await nav.share({ files: [file] } as ShareData);
       return;
@@ -225,6 +229,7 @@ async function salvarArquivo(file: File) {
   }
   baixarArquivo(file);
 }
+
 
 function tituloSize(text: string, t: (typeof T)[Formato]) {
   const len = (text || "").length;
