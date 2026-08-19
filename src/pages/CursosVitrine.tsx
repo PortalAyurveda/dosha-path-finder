@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { CheckCircle2, Lock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/contexts/UserContext";
 import PageContainer from "@/components/PageContainer";
@@ -11,9 +12,13 @@ interface Curso {
   slug: string;
   titulo: string;
   descricao: string | null;
+  descricao_em_breve: string | null;
   capa_url: string | null;
   ordem: number | null;
   preco: number | null;
+  ativo: boolean;
+  data_lancamento: string | null;
+  pagina_lancamento_url: string | null;
 }
 
 const AZUL = "#6A88FB";
@@ -23,6 +28,27 @@ const tituloClass = (titulo: string) => {
   if (len <= 30) return "text-2xl";
   if (len <= 55) return "text-xl";
   return "text-lg";
+};
+
+const formatarDataLancamento = (dataStr: string): string => {
+  const data = new Date(dataStr + "T12:00:00");
+  const meses = [
+    "JANEIRO",
+    "FEVEREIRO",
+    "MARÇO",
+    "ABRIL",
+    "MAIO",
+    "JUNHO",
+    "JULHO",
+    "AGOSTO",
+    "SETEMBRO",
+    "OUTUBRO",
+    "NOVEMBRO",
+    "DEZEMBRO",
+  ];
+  const dia = data.getDate();
+  const mes = meses[data.getMonth()];
+  return `LANÇA ${dia} DE ${mes}`;
 };
 
 const CursosVitrine = () => {
@@ -35,7 +61,9 @@ const CursosVitrine = () => {
     (async () => {
       const { data } = await supabase
         .from("cursos")
-        .select("id,slug,titulo,descricao,capa_url,ordem,preco")
+        .select(
+          "id,slug,titulo,descricao,descricao_em_breve,capa_url,ordem,preco,ativo,data_lancamento,pagina_lancamento_url"
+        )
         .order("ordem", { ascending: true });
       setCursos((data as Curso[]) ?? []);
       if (user) {
@@ -49,8 +77,31 @@ const CursosVitrine = () => {
     })();
   }, [user]);
 
-  const destinoLanding = (slug: string) =>
-    slug === "rotinas-diarias" ? "/cursos/rotinas" : `/cursos/${slug}`;
+  const destinoLanding = (slug: string, paginaLancamentoUrl?: string | null) => {
+    if (paginaLancamentoUrl) return paginaLancamentoUrl;
+    return slug === "rotinas-diarias" ? "/cursos/rotinas" : `/cursos/${slug}`;
+  };
+
+  const renderCapa = (c: Curso, classes?: string) => {
+    if (!c.capa_url) {
+      return (
+        <div className="aspect-[4/3] w-full bg-gradient-to-br from-primary/20 to-secondary/20" />
+      );
+    }
+    return (
+      <div className="aspect-[4/3] w-full overflow-hidden bg-muted relative">
+        <img
+          src={getTransformedImageUrl(c.capa_url, 800)}
+          alt={c.titulo}
+          width={800}
+          height={600}
+          loading="lazy"
+          decoding="async"
+          className={`w-full h-full object-cover ${classes ?? ""}`}
+        />
+      </div>
+    );
+  };
 
   return (
     <PageContainer
@@ -72,21 +123,80 @@ const CursosVitrine = () => {
             ))}
           </div>
         ) : cursos.length === 0 ? (
-          <p className="text-center text-muted-foreground">Nenhum curso disponível no momento.</p>
+          <p className="text-center text-muted-foreground">
+            Nenhum curso disponível no momento.
+          </p>
         ) : (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 items-stretch">
             {cursos.map((c) => {
               const isRotinas = c.slug === "rotinas-diarias";
               const jaTem = matriculadas.has(c.id);
-              const landing = destinoLanding(c.slug);
-              const acessar = `/cursos/${c.slug}/estudar`;
-              const linkDestino = jaTem ? acessar : landing;
-              return (
-                <article
-                  key={c.id}
-                  className="group bg-card border border-border rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all flex flex-col h-full"
-                >
-                  <Link to={linkDestino} className="flex flex-col flex-1">
+              const disponivel = c.ativo;
+
+              // Estado 1: matriculado
+              if (jaTem) {
+                const acessar = `/cursos/${c.slug}/estudar`;
+                return (
+                  <article
+                    key={c.id}
+                    className="group bg-card border border-border rounded-2xl overflow-hidden ring-2 ring-amber-400 shadow-[0_0_30px_-5px_rgba(242,203,5,0.5)] hover:shadow-[0_0_40px_-5px_rgba(242,203,5,0.6)] transition-all flex flex-col h-full"
+                  >
+                    <Link to={acessar} className="flex flex-col flex-1">
+                      {c.capa_url ? (
+                        <div className="aspect-[4/3] w-full overflow-hidden bg-muted relative">
+                          <img
+                            src={getTransformedImageUrl(c.capa_url, 800)}
+                            alt={c.titulo}
+                            width={800}
+                            height={600}
+                            loading="lazy"
+                            decoding="async"
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                          />
+                          <span className="absolute top-3 left-3 inline-flex items-center gap-1.5 text-sm font-bold px-3 py-1.5 rounded-full text-white shadow-md bg-gradient-to-r from-amber-400 to-amber-500">
+                            <CheckCircle2 className="w-4 h-4" />
+                            Seu Curso
+                          </span>
+                        </div>
+                      ) : (
+                        <div className="aspect-[4/3] w-full bg-gradient-to-br from-primary/20 to-secondary/20" />
+                      )}
+                      <div className="p-6 flex flex-col flex-1">
+                        <h3
+                          className={`mb-2 ${tituloClass(c.titulo)} line-clamp-2 leading-tight`}
+                          title={c.titulo}
+                        >
+                          {c.titulo}
+                        </h3>
+                        {c.descricao && (
+                          <p className="text-sm text-muted-foreground mb-5 line-clamp-3 flex-1">
+                            {c.descricao}
+                          </p>
+                        )}
+                      </div>
+                    </Link>
+                    <div className="px-6 pb-6 -mt-2">
+                      <Button asChild className="w-full">
+                        <Link to={acessar}>Acessar curso</Link>
+                      </Button>
+                    </div>
+                  </article>
+                );
+              }
+
+              // Estado 3: em breve
+              if (!disponivel) {
+                const temData =
+                  !!c.data_lancamento &&
+                  new Date(c.data_lancamento + "T12:00:00") > new Date();
+                const badgeText = temData
+                  ? formatarDataLancamento(c.data_lancamento!)
+                  : "EM BREVE";
+                return (
+                  <article
+                    key={c.id}
+                    className="bg-card border border-border rounded-2xl overflow-hidden flex flex-col h-full opacity-95"
+                  >
                     {c.capa_url ? (
                       <div className="aspect-[4/3] w-full overflow-hidden bg-muted relative">
                         <img
@@ -95,14 +205,76 @@ const CursosVitrine = () => {
                           width={800}
                           height={600}
                           loading="lazy"
-              decoding="async"
+                          decoding="async"
+                          className="w-full h-full object-cover grayscale-[70%] opacity-80"
+                        />
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <div className="bg-black/40 backdrop-blur-sm rounded-full p-4">
+                            <Lock className="w-8 h-8 text-white" />
+                          </div>
+                        </div>
+                        <span className="absolute top-3 left-3 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full text-white shadow-md bg-slate-600">
+                          {badgeText}
+                        </span>
+                      </div>
+                    ) : (
+                      <div className="aspect-[4/3] w-full bg-gradient-to-br from-slate-700/40 to-slate-600/40" />
+                    )}
+                    <div className="p-6 flex flex-col flex-1">
+                      <h3
+                        className={`mb-2 ${tituloClass(c.titulo)} line-clamp-2 leading-tight text-muted-foreground`}
+                        title={c.titulo}
+                      >
+                        {c.titulo}
+                      </h3>
+                      <p className="text-sm text-muted-foreground mb-5 line-clamp-3 flex-1">
+                        {c.descricao_em_breve?.trim() ||
+                          "Em breve disponível no Portal."}
+                      </p>
+                    </div>
+                    <div className="px-6 pb-6 -mt-2">
+                      <Button
+                        disabled
+                        className="w-full cursor-not-allowed bg-muted text-muted-foreground hover:bg-muted"
+                      >
+                        Em breve
+                      </Button>
+                    </div>
+                  </article>
+                );
+              }
+
+              // Estado 2: disponível
+              const landing = destinoLanding(c.slug, c.pagina_lancamento_url);
+              const acessar = `/cursos/${c.slug}/estudar`;
+              const isExternal =
+                !!c.pagina_lancamento_url &&
+                /^(https?:\/\/)/i.test(c.pagina_lancamento_url);
+
+              return (
+                <article
+                  key={c.id}
+                  className="group bg-card border border-border rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all flex flex-col h-full"
+                >
+                  <Link
+                    to={landing}
+                    {...(isExternal
+                      ? { target: "_blank", rel: "noopener noreferrer" }
+                      : {})}
+                    className="flex flex-col flex-1"
+                  >
+                    {c.capa_url ? (
+                      <div className="aspect-[4/3] w-full overflow-hidden bg-muted relative">
+                        <img
+                          src={getTransformedImageUrl(c.capa_url, 800)}
+                          alt={c.titulo}
+                          width={800}
+                          height={600}
+                          loading="lazy"
+                          decoding="async"
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                         />
-                        {jaTem ? (
-                          <span className="absolute top-3 left-3 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full text-white shadow-md bg-primary">
-                            Seu curso ✓
-                          </span>
-                        ) : isRotinas ? (
+                        {isRotinas ? (
                           <span
                             className="absolute top-3 left-3 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full text-white shadow-md"
                             style={{ backgroundColor: AZUL }}
@@ -129,11 +301,7 @@ const CursosVitrine = () => {
                     </div>
                   </Link>
                   <div className="px-6 pb-6 -mt-2">
-                    {jaTem ? (
-                      <Button asChild className="w-full">
-                        <Link to={acessar}>Acessar curso</Link>
-                      </Button>
-                    ) : isRotinas ? (
+                    {isRotinas ? (
                       <Button
                         asChild
                         className="w-full text-white hover:opacity-90"
