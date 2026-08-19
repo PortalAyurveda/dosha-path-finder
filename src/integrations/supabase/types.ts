@@ -1679,9 +1679,12 @@ export type Database = {
           ativo: boolean
           capa_url: string | null
           created_at: string
+          data_lancamento: string | null
           descricao: string | null
+          descricao_em_breve: string | null
           id: string
           ordem: number
+          pagina_lancamento_url: string | null
           preco: number | null
           preco_pix: number | null
           slug: string
@@ -1692,9 +1695,12 @@ export type Database = {
           ativo?: boolean
           capa_url?: string | null
           created_at?: string
+          data_lancamento?: string | null
           descricao?: string | null
+          descricao_em_breve?: string | null
           id?: string
           ordem?: number
+          pagina_lancamento_url?: string | null
           preco?: number | null
           preco_pix?: number | null
           slug: string
@@ -1705,9 +1711,12 @@ export type Database = {
           ativo?: boolean
           capa_url?: string | null
           created_at?: string
+          data_lancamento?: string | null
           descricao?: string | null
+          descricao_em_breve?: string | null
           id?: string
           ordem?: number
+          pagina_lancamento_url?: string | null
           preco?: number | null
           preco_pix?: number | null
           slug?: string
@@ -3443,6 +3452,57 @@ export type Database = {
         }
         Relationships: []
       }
+      jiva_gabarito: {
+        Row: {
+          created_at: string
+          diagnostico_texto: string | null
+          fonte: string
+          id: string
+          imagem_confianca: string | null
+          imagem_local_path: string
+          lingua_texto: string
+          olhos_texto: string | null
+          pasta_id: string
+          rotulo_dosha: string | null
+          status: string
+          tipo_foto: string
+          tratamento_texto: string | null
+          unhas_texto: string | null
+        }
+        Insert: {
+          created_at?: string
+          diagnostico_texto?: string | null
+          fonte?: string
+          id?: string
+          imagem_confianca?: string | null
+          imagem_local_path: string
+          lingua_texto: string
+          olhos_texto?: string | null
+          pasta_id: string
+          rotulo_dosha?: string | null
+          status?: string
+          tipo_foto: string
+          tratamento_texto?: string | null
+          unhas_texto?: string | null
+        }
+        Update: {
+          created_at?: string
+          diagnostico_texto?: string | null
+          fonte?: string
+          id?: string
+          imagem_confianca?: string | null
+          imagem_local_path?: string
+          lingua_texto?: string
+          olhos_texto?: string | null
+          pasta_id?: string
+          rotulo_dosha?: string | null
+          status?: string
+          tipo_foto?: string
+          tratamento_texto?: string | null
+          unhas_texto?: string | null
+        }
+        Relationships: []
+      }
       jiva_legendas_extra: {
         Row: {
           criado_em: string | null
@@ -4358,6 +4418,7 @@ export type Database = {
           enviado_em: string | null
           id: string
           nome: string | null
+          pedido_id: string | null
           pesquisa_id: string
           plano: string | null
           respondido_em: string | null
@@ -4373,6 +4434,7 @@ export type Database = {
           enviado_em?: string | null
           id?: string
           nome?: string | null
+          pedido_id?: string | null
           pesquisa_id: string
           plano?: string | null
           respondido_em?: string | null
@@ -4388,6 +4450,7 @@ export type Database = {
           enviado_em?: string | null
           id?: string
           nome?: string | null
+          pedido_id?: string | null
           pesquisa_id?: string
           plano?: string | null
           respondido_em?: string | null
@@ -6816,6 +6879,13 @@ export type Database = {
           payload: Json
         }[]
       }
+      agenda_destinatarios_compra: {
+        Args: { p_comunicacao_id: string }
+        Returns: {
+          email: string
+          payload: Json
+        }[]
+      }
       agenda_dominical: {
         Args: { p_limite?: number }
         Returns: {
@@ -6992,6 +7062,7 @@ export type Database = {
         }[]
       }
       claim_dosha_test: { Args: { p_id_publico?: string }; Returns: Json }
+      coletar_dados_sintese_mensal: { Args: { p_email: string }; Returns: Json }
       confirmar_assinatura_pix: {
         Args: { p_mp_payment_id: string }
         Returns: Json
@@ -7005,6 +7076,10 @@ export type Database = {
         Returns: Json
       }
       corrigir_grafia: { Args: { t: string }; Returns: string }
+      criar_convite_avaliacao_produto: {
+        Args: { p_pedido_id: string }
+        Returns: string
+      }
       descadastro_confirmar: {
         Args: { p_email: string; p_token: string }
         Returns: boolean
