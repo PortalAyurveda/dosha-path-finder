@@ -1126,7 +1126,9 @@ function CardExport({
   onCopiar: () => void;
 }) {
   const ref = useRef<HTMLDivElement | null>(null);
-  const pronto = useRef<File | null>(null);
+  const tema = useTema();
+  const chave = `${tema.key}|${formato}`;
+  const pronto = useRef<{ chave: string; file: File } | null>(null);
   const [gerando, setGerando] = useState(false);
   const [visivel, setVisivel] = useState(false);
 
@@ -1152,7 +1154,7 @@ function CardExport({
       if (!el) return;
       try {
         const file = await gerarArquivo(el, item.filename, formato);
-        if (!cancelado) pronto.current = file;
+        if (!cancelado) pronto.current = { chave, file };
       } catch {
         /* silencioso: gera na hora do clique */
       }
@@ -1161,11 +1163,11 @@ function CardExport({
       cancelado = true;
       clearTimeout(t);
     };
-  }, [visivel, formato, item.filename, item.node]);
+  }, [visivel, formato, chave, item.filename, item.node]);
 
   const salvar = async () => {
-    if (pronto.current) {
-      await salvarArquivo(pronto.current);
+    if (pronto.current?.chave === chave) {
+      await salvarArquivo(pronto.current.file);
       return;
     }
     const el = ref.current;
@@ -1173,7 +1175,7 @@ function CardExport({
     setGerando(true);
     try {
       const file = await gerarArquivo(el, item.filename, formato);
-      pronto.current = file;
+      pronto.current = { chave, file };
       await salvarArquivo(file);
     } catch {
       toast({ title: "Não consegui gerar a imagem", variant: "destructive" });
