@@ -218,8 +218,7 @@ const TarefaModal = ({ aberto, tarefa, onFechar, onSalvo }: Props) => {
       ...anexos,
       { tipo: ehImagem ? "imagem" : "arquivo", titulo: file.name, path },
     ];
-    const { error: e2 } = await supabase
-      .from("admin_tarefas")
+    const { error: e2 } = await (supabase.from("admin_tarefas") as any)
       .update({ anexos: novos })
       .eq("id", tarefa.id);
     setSubindo(false);
@@ -243,8 +242,7 @@ const TarefaModal = ({ aberto, tarefa, onFechar, onSalvo }: Props) => {
     const novos = anexos.filter((_, i) => i !== idx);
     setAnexos(novos);
     if (tarefa) {
-      const { error } = await supabase
-        .from("admin_tarefas")
+      const { error } = await (supabase.from("admin_tarefas") as any)
         .update({ anexos: novos })
         .eq("id", tarefa.id);
       if (error) toast.error(error.message);
@@ -254,8 +252,7 @@ const TarefaModal = ({ aberto, tarefa, onFechar, onSalvo }: Props) => {
 
   const arquivar = async () => {
     if (!tarefa) return;
-    const { error } = await supabase
-      .from("admin_tarefas")
+    const { error } = await (supabase.from("admin_tarefas") as any)
       .update({ arquivada: true })
       .eq("id", tarefa.id);
     if (error) return toast.error(error.message);
