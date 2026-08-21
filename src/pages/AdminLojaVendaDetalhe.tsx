@@ -461,9 +461,78 @@ const AdminLojaVendaDetalhe = () => {
                   Salvar
                 </Button>
               </div>
+              <p className="text-xs text-muted-foreground mt-1">
+                Preenchido sozinho quando a transportadora posta a encomenda. Só edite se precisar
+                corrigir à mão.
+              </p>
             </div>
           </CardContent>
         </Card>
+
+        {/* Melhor Envio */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Melhor Envio</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4 text-sm">
+            <div className="grid md:grid-cols-2 gap-3">
+              <div>
+                <span className="text-muted-foreground block text-xs">Situação</span>
+                <MelhorEnvioBadge pedido={pedido} />
+              </div>
+              <div>
+                <span className="text-muted-foreground block text-xs">Número do envio</span>
+                <span className="font-mono text-xs">
+                  {pedido.frete_melhorenvio_order_id || "—"}
+                </span>
+              </div>
+              <div>
+                <span className="text-muted-foreground block text-xs">Código de rastreio</span>
+                {pedido.frete_codigo_rastreio ? (
+                  <span className="font-mono text-xs">{pedido.frete_codigo_rastreio}</span>
+                ) : (
+                  "ainda não postado"
+                )}
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <span className="text-muted-foreground block text-xs">Enviado em</span>
+                  {pedido.shipped_at ? formatDateTime(pedido.shipped_at) : "—"}
+                </div>
+                <div>
+                  <span className="text-muted-foreground block text-xs">Entregue em</span>
+                  {pedido.delivered_at ? formatDateTime(pedido.delivered_at) : "—"}
+                </div>
+              </div>
+            </div>
+
+            {erroME && (
+              <div className="rounded-lg border border-red-300 bg-red-50 px-3 py-2 text-xs">
+                {erroME}
+              </div>
+            )}
+
+            <div className="flex items-center gap-3 flex-wrap">
+              <Button size="sm" onClick={handleEnviarMelhorEnvio} disabled={enviandoME}>
+                {enviandoME ? (
+                  <Loader2 className="h-4 w-4 animate-spin mr-1" />
+                ) : (
+                  <Send className="h-4 w-4 mr-1" />
+                )}
+                {pedido.frete_melhorenvio_order_id ? "Reenviar" : "Enviar para o Melhor Envio"}
+              </Button>
+              <a
+                href={MELHORENVIO_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 text-xs underline text-muted-foreground"
+              >
+                Abrir no Melhor Envio <ExternalLink className="h-3 w-3" />
+              </a>
+            </div>
+          </CardContent>
+        </Card>
+
 
         {/* Totais */}
         <Card>
