@@ -320,7 +320,12 @@ const AdminLojaVendaDetalhe = () => {
                       ))}
                     </SelectContent>
                   </Select>
+                  <p className="text-[11px] text-muted-foreground mt-1 max-w-[240px]">
+                    "Enviado" e "Entregue" são marcados sozinhos pelo Melhor Envio. Mude aqui só
+                    para corrigir.
+                  </p>
                 </div>
+
                 {pedido.status !== "pago" && (
                   <Button
                     type="button"
