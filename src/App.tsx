@@ -78,6 +78,7 @@ const AdminEstoque = lazy(() => import("./pages/AdminEstoque"));
 const AdminTags = lazy(() => import("./pages/AdminTags"));
 const AdminCupons = lazy(() => import("./pages/AdminCupons"));
 const AdminCobranca = lazy(() => import("./pages/AdminCobranca"));
+const AdminCertificados = lazy(() => import("./pages/AdminCertificados"));
 const AdminAlunos = lazy(() => import("./pages/AdminAlunos"));
 const AdminEscola = lazy(() => import("./pages/AdminEscola"));
 const AdminCursos = lazy(() => import("./pages/AdminCursos"));
@@ -293,6 +294,7 @@ const RoutedApp = () => {
               <Route path="/admin/tags" element={<AdminRoute><AdminTags /></AdminRoute>} />
               <Route path="/admin/cupons" element={<AdminRoute><AdminCupons /></AdminRoute>} />
               <Route path="/admin/cobranca" element={<AdminRoute><AdminCobranca /></AdminRoute>} />
+              <Route path="/admin/certificados" element={<AdminRoute><AdminCertificados /></AdminRoute>} />
               <Route path="/admin/alunos" element={<AdminRoute><AdminAlunos /></AdminRoute>} />
               <Route path="/admin/escola" element={<AdminRoute><AdminEscola /></AdminRoute>} />
               <Route path="/admin/tarefas" element={<AdminRoute><AdminTarefas /></AdminRoute>} />
