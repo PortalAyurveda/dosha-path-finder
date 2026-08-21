@@ -754,6 +754,13 @@ const Assinar = () => {
             >
               Ver os planos
             </button>
+            <p
+              className="mt-3 text-[15px]"
+              style={{ color: PRIMARY, opacity: 0.75, fontFamily: "'DM Sans', sans-serif" }}
+            >
+              A partir de R$30/mês · comece grátis com o teste de dosha
+            </p>
+
           </div>
         </section>
 
