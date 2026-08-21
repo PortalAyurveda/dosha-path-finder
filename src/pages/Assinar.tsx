@@ -1684,16 +1684,16 @@ const Assinar = () => {
                   </h3>
                   <div className="flex items-baseline gap-2 mb-1 flex-wrap">
                     <span
-                      className="text-sm line-through"
+                      className="text-sm line-through order-1"
                       style={{ color: CINZA_ROTULO, fontFamily: "'DM Sans', sans-serif" }}
                     >
                       R$ 79,90
                     </span>
-                    <p className="font-serif font-bold text-[26px]" style={{ color: PRIMARY }}>
+                    <p className="font-serif font-bold text-[26px] order-2" style={{ color: PRIMARY }}>
                       R$ 49,75<span className="text-sm font-normal">/mês</span>
                     </p>
                     <span
-                      className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider"
+                      className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider order-3"
                       style={{ background: DOURADO, color: "#fff" }}
                     >
                       <BadgePercent className="w-3 h-3" /> 38% off
