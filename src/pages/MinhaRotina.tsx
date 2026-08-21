@@ -1419,16 +1419,21 @@ const RotinaSlotCard = ({
           <button
             onClick={onToggleFeito}
             disabled={!row}
-            className="p-2 rounded-full hover:bg-muted disabled:opacity-40"
-            aria-label="marcar como praticado"
+            className="flex items-center gap-2 min-h-[48px] px-3 rounded-lg hover:bg-muted disabled:opacity-40"
+            aria-label="guardar esta receita nas favoritas"
           >
             <Star
-              className={cn(
-                "h-7 w-7",
-                feito ? "fill-secondary text-secondary" : "text-muted-foreground"
-              )}
+              className={cn("h-6 w-6", feito ? "fill-secondary text-secondary" : "text-[#3F3A52]")}
+              strokeWidth={2}
             />
+            <span
+              className="text-base font-medium"
+              style={{ color: feito ? "#352F54" : "#3F3A52" }}
+            >
+              {feito ? "Favorita" : "Favoritar"}
+            </span>
           </button>
+
         </div>
 
         <CollapsibleContent>
