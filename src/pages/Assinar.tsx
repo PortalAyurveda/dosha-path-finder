@@ -111,7 +111,7 @@ const FaixaAkasha = ({
       fontFamily: "'DM Sans', sans-serif",
     }}
   >
-    <div className="flex items-center justify-between gap-2 mb-1.5">
+    <div className="flex items-center justify-between gap-x-3 gap-y-1 flex-wrap mb-1.5">
       <span className="inline-flex items-center gap-1.5 min-w-0">
         <img src={AKASHA_LOGO} alt="" aria-hidden width={22} height={22} className="w-[22px] h-[22px] shrink-0" loading="lazy" decoding="async" />
         <span className="text-[14px] font-bold" style={{ color: AKASHA_TEXTO }}>Akasha</span>
