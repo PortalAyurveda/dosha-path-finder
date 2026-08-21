@@ -177,6 +177,13 @@ const DEPOIMENTOS = [
   },
 ];
 
+const DEPO_DESTAQUE = DEPOIMENTOS.filter((d) =>
+  d.credencial.includes("CONVERSAS COM A AKASHA"),
+).slice(0, 3);
+const DEPO_RESTO = DEPOIMENTOS.filter((d) => !DEPO_DESTAQUE.includes(d));
+
+
+
 const RECEITAS = [
   {
     titulo: "Kitchari com salsa",
