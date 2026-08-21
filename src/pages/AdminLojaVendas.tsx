@@ -62,7 +62,10 @@ export interface Pedido {
     preco_unitario?: number;
     peso_gramas?: number;
   }>;
+  frete_melhorenvio_order_id: string | null;
+  frete_melhorenvio_cart_id: string | null;
   bling_nfe_numero: string | null;
+
   bling_nfe_url: string | null;
   bling_nfe_status: string | null;
   notas_internas: string | null;
