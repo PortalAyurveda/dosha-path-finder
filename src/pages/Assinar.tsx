@@ -125,28 +125,68 @@ const RotuloBloco = ({ children, cor }: { children: React.ReactNode; cor: string
   </p>
 );
 
+const Caixinha = ({ on, cor }: { on: boolean; cor: string }) => (
+  <span
+    className="shrink-0 mt-0.5 flex items-center justify-center rounded"
+    style={{
+      width: 16,
+      height: 16,
+      border: on ? `1.5px solid ${cor}` : `1.5px solid ${CAIXA_OFF}`,
+      background: on ? cor : "transparent",
+    }}
+    aria-hidden
+  >
+    {on && <Check className="w-3 h-3" style={{ color: "#fff" }} strokeWidth={3} />}
+  </span>
+);
+
 const LinhaCheck = ({ texto, on, cor }: { texto: string; on: boolean; cor: string }) => (
   <li className="flex items-start gap-2">
-    <span
-      className="shrink-0 mt-0.5 flex items-center justify-center rounded"
-      style={{
-        width: 16,
-        height: 16,
-        border: on ? `1.5px solid ${cor}` : `1.5px solid ${CAIXA_OFF}`,
-        background: on ? cor : "transparent",
-      }}
-      aria-hidden
-    >
-      {on && <Check className="w-3 h-3" style={{ color: "#fff" }} strokeWidth={3} />}
-    </span>
+    <Caixinha on={on} cor={cor} />
     <span
       className="text-[16px] md:text-[14px] leading-snug"
-      style={{ color: TEXTO_LISTA, fontFamily: "'DM Sans', sans-serif" }}
+      style={{ color: on ? TEXTO_LISTA : CINZA_ROTULO, fontFamily: "'DM Sans', sans-serif" }}
     >
       {texto}
     </span>
   </li>
 );
+
+const LinhaCurso = ({ on, cor }: { on: boolean; cor: string }) => (
+  <li
+    className="flex items-center gap-2 rounded-xl"
+    style={{
+      padding: "8px 10px",
+      border: `1px solid ${on ? cor : "#E4E0EA"}`,
+      background: on ? `${cor}12` : "#FAF9FC",
+    }}
+  >
+    <Caixinha on={on} cor={cor} />
+    <span
+      className="shrink-0 flex items-center justify-center rounded-lg"
+      style={{ width: 26, height: 26, background: on ? "#352F54" : "#EDEAF2" }}
+    >
+      <img
+        src={CURSO_LOGO}
+        alt=""
+        aria-hidden
+        width={18}
+        height={18}
+        className="w-[18px] h-[18px]"
+        style={{ opacity: on ? 1 : 0.55 }}
+        loading="lazy"
+        decoding="async"
+      />
+    </span>
+    <span
+      className="text-[16px] md:text-[14px] leading-snug font-semibold"
+      style={{ color: on ? TEXTO_LISTA : CINZA_ROTULO, fontFamily: "'DM Sans', sans-serif" }}
+    >
+      {CURSO_LINHA.texto}
+    </span>
+  </li>
+);
+
 
 const FaixaAkasha = ({ plano, cor }: { plano: PlanoCard; cor: string }) => {
   const est = AKASHA_ESTILO[plano];
