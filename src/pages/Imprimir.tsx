@@ -79,6 +79,7 @@ interface CompraRow {
   receitas: string[] | null;
   confianca: string | null;
   tem_estimativa: boolean | null;
+  sugestao_troca?: string | null;
 }
 
 type Peca = "rotina" | "receitas" | "compras";
