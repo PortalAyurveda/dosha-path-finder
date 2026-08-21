@@ -79,6 +79,7 @@ interface CompraRow {
   receitas: string[] | null;
   confianca: string | null;
   tem_estimativa: boolean | null;
+  sugestao_troca?: string | null;
 }
 
 type Peca = "rotina" | "receitas" | "compras";
@@ -702,21 +703,35 @@ const Imprimir = () => {
       return <span style={{ lineHeight: 1.5 }}>{c.ingrediente}</span>;
     };
 
-    const Linha = ({ c }: { c: CompraRow }) => (
+    const Linha = ({ c, variacao = false }: { c: CompraRow; variacao?: boolean }) => (
       <li
         className="nao-quebrar"
         style={{
-          display: "flex",
-          gap: "3mm",
-          alignItems: "flex-start",
           fontSize: pt(16, escala),
           marginBottom: "11mm",
         }}
       >
-        <Quadradinho escala={escala} />
-        {nomeItem(c)}
+        <div style={{ display: "flex", gap: "3mm", alignItems: "flex-start" }}>
+          <Quadradinho escala={escala} />
+          {nomeItem(c)}
+        </div>
+        {variacao && c.sugestao_troca && (
+          <div
+            style={{
+              marginLeft: "8mm",
+              marginTop: "2mm",
+              fontSize: pt(12, escala),
+              lineHeight: 1.5,
+              color: "#000",
+              fontStyle: "normal",
+            }}
+          >
+            {c.sugestao_troca}
+          </div>
+        )}
       </li>
     );
+
 
     const nReceitas = receitas.length || idsReceitasSemana.length;
 
@@ -754,7 +769,8 @@ const Imprimir = () => {
                 {principais
                   .filter((c) => c.setor === s)
                   .map((c, i) => (
-                    <Linha key={`${c.ingrediente}-${i}`} c={c} />
+                    <Linha key={`${c.ingrediente}-${i}`} c={c} variacao />
+
                   ))}
               </ul>
             </div>

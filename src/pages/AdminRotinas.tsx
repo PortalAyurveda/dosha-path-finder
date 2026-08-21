@@ -11,6 +11,7 @@ import {
   Edit3,
   GripVertical,
   Plus,
+  Printer,
   Trash2,
   X,
 } from "lucide-react";
@@ -404,6 +405,15 @@ const AdminRotinas = () => {
                           <Button size="sm" variant="outline" className="h-8" onClick={() => setEditing(structuredClone(r))}>
                             <Edit3 className="w-3.5 h-3.5 mr-1" /> Editar
                           </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="h-8"
+                            onClick={() => window.open(`/imprimir?pecas=receitas&ids=${r.id}`, "_blank")}
+                          >
+                            <Printer className="w-5 h-5 mr-1" strokeWidth={2} /> Imprimir
+                          </Button>
+
                           <Button size="sm" variant="ghost" className="h-8 text-destructive hover:text-destructive" onClick={() => setConfirmDel(r.id)}>
                             <Trash2 className="w-3.5 h-3.5" />
                           </Button>

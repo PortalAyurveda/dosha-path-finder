@@ -20,7 +20,12 @@ import {
   Sun,
   Sparkles,
   X,
+  Printer,
+  ShoppingCart,
+  CalendarDays,
+  BookOpen,
 } from "lucide-react";
+
 import { getIconeLucide } from "@/lib/iconesLucide";
 const RotinaPie = lazy(() => import("@/components/charts/RotinaPie"));
 
@@ -41,6 +46,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useUser } from "@/contexts/UserContext";
 import { supabase } from "@/integrations/supabase/client";
 import { lojaSupabase } from "@/integrations/supabase/loja-client";
@@ -144,6 +150,7 @@ const parseTimestamp = (ts: string | null): number | undefined => {
 const MinhaRotina = () => {
   const { user, loading, doshaResult, profile, refreshProfile } = useUser();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const [diaSelecionado, setDiaSelecionado] = useState<number>(1);
 
   // ?item= : deep-link para abrir um nugget específico já expandido (reativo à URL)
@@ -353,6 +360,102 @@ const MinhaRotina = () => {
       return ((data ?? []) as { pontos: number }[]).reduce((acc, r) => acc + (r.pontos ?? 0), 0);
     },
   });
+
+  // ===== Seleção pra lista de compras =====
+  const selecaoKey = ["rotina-selecao", user?.id] as const;
+  const { data: selecaoIds } = useQuery({
+    queryKey: selecaoKey,
+    enabled: !!user?.id,
+    queryFn: async () => {
+      const { data, error } = await (supabase.from("rotina_selecao") as any)
+        .select("nugget_id")
+        .eq("user_id", user!.id);
+      if (error) throw error;
+      return ((data ?? []) as { nugget_id: string }[]).map((r) => r.nugget_id);
+    },
+  });
+  const selecionados = useMemo(() => new Set(selecaoIds ?? []), [selecaoIds]);
+  const [erroSelecao, setErroSelecao] = useState<string | null>(null);
+
+  const toggleSelecao = async (nuggetId: string) => {
+    if (!user) return;
+    const jaTem = selecionados.has(nuggetId);
+    setErroSelecao(null);
+    queryClient.setQueryData<string[]>(selecaoKey as any, (prev) => {
+      const arr = prev ?? [];
+      return jaTem ? arr.filter((x) => x !== nuggetId) : [...arr, nuggetId];
+    });
+    try {
+      if (jaTem) {
+        const { error } = await (supabase.from("rotina_selecao") as any)
+          .delete()
+          .eq("user_id", user.id)
+          .eq("nugget_id", nuggetId);
+        if (error) throw error;
+      } else {
+        const { error } = await (supabase.from("rotina_selecao") as any).upsert(
+          { user_id: user.id, nugget_id: nuggetId },
+          { onConflict: "user_id,nugget_id" }
+        );
+        if (error) throw error;
+      }
+      queryClient.invalidateQueries({ queryKey: selecaoKey as any });
+    } catch {
+      queryClient.setQueryData<string[]>(selecaoKey as any, (prev) => {
+        const arr = prev ?? [];
+        return jaTem ? [...arr, nuggetId] : arr.filter((x) => x !== nuggetId);
+      });
+      setErroSelecao(nuggetId);
+    }
+  };
+
+  const limparSelecao = async () => {
+    if (!user) return;
+    queryClient.setQueryData<string[]>(selecaoKey as any, () => []);
+    await (supabase.from("rotina_selecao") as any).delete().eq("user_id", user.id);
+    queryClient.invalidateQueries({ queryKey: selecaoKey as any });
+  };
+
+  // ===== Favoritas =====
+  const { data: favoritosRows } = useQuery({
+    queryKey: ["minhas-favoritas", user?.id],
+    enabled: !!user?.id,
+    queryFn: async () => {
+      const { data, error } = await (supabase.from("rotina_favoritos") as any)
+        .select("nugget_id, created_at")
+        .eq("user_id", user!.id)
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return (data ?? []) as { nugget_id: string; created_at: string }[];
+    },
+  });
+
+  const favoritas = useMemo(
+    () =>
+      (favoritosRows ?? [])
+        .map((f) => nuggetsById.get(f.nugget_id))
+        .filter((n): n is Nugget => !!n),
+    [favoritosRows, nuggetsById]
+  );
+
+
+
+  // A estrela grava em rotina_favoritos junto com os pontos: revalida a lista
+  useEffect(() => {
+    if (!user?.id) return;
+    queryClient.invalidateQueries({ queryKey: ["minhas-favoritas", user.id] });
+  }, [pontosHoje, user?.id, queryClient]);
+
+  // Modal de impressão
+
+  const [imprimirOpen, setImprimirOpen] = useState(false);
+  const [pecasEscolhidas, setPecasEscolhidas] = useState<Record<string, boolean>>({
+    rotina: true,
+    receitas: false,
+    compras: false,
+  });
+  const [erroPecas, setErroPecas] = useState(false);
+
 
   // Gate de login
   if (loading) {
@@ -612,12 +715,24 @@ const MinhaRotina = () => {
 
       {/* Topo */}
       <header className="mb-6">
-        <h1 className="font-serif text-3xl md:text-4xl text-foreground">
-          Sua rotina
-        </h1>
-        <p className="text-muted-foreground mt-1">
-          Dia {diaSelecionado} da sua semana
-        </p>
+        <div className="flex items-start justify-between gap-3 flex-wrap">
+          <div>
+            <h1 className="font-serif text-3xl md:text-4xl text-foreground">
+              Sua rotina
+            </h1>
+            <p className="text-muted-foreground mt-1">
+              Dia {diaSelecionado} da sua semana
+            </p>
+          </div>
+          <button
+            onClick={() => setImprimirOpen(true)}
+            className="inline-flex items-center gap-2 rounded-xl px-5 font-semibold text-white"
+            style={{ minHeight: 56, fontSize: 17, background: "#352F54" }}
+          >
+            <Printer className="h-6 w-6" strokeWidth={2} />
+            Imprimir
+          </button>
+        </div>
         <div className="flex items-center gap-2 mt-3 flex-wrap">
           <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-secondary/15 text-secondary text-xs font-medium border border-secondary/30">
             {nivelDia}
@@ -627,6 +742,72 @@ const MinhaRotina = () => {
           </span>
         </div>
       </header>
+
+      <Dialog open={imprimirOpen} onOpenChange={setImprimirOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="font-serif text-2xl" style={{ color: "#352F54" }}>
+              O que você quer imprimir?
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-2">
+            {[
+              { k: "rotina", icon: CalendarDays, titulo: "Sua rotina da semana", sub: "Os 7 dias, pra pôr na geladeira" },
+              { k: "receitas", icon: BookOpen, titulo: "As fichas de receita", sub: "Uma folha por receita, pra usar na cozinha" },
+              { k: "compras", icon: ShoppingCart, titulo: "A lista de compras", sub: "Tudo que a semana pede, por setor do mercado" },
+            ].map(({ k, icon: Ic, titulo, sub }) => (
+              <label
+                key={k}
+                className="flex items-start gap-3 rounded-xl border p-3 cursor-pointer"
+                style={{
+                  minHeight: 56,
+                  borderColor: pecasEscolhidas[k] ? "#352F54" : "#D9D5CD",
+                  background: pecasEscolhidas[k] ? "#F0EEE9" : "transparent",
+                }}
+              >
+                <Checkbox
+                  checked={!!pecasEscolhidas[k]}
+                  onCheckedChange={(v) => {
+                    setErroPecas(false);
+                    setPecasEscolhidas((p) => ({ ...p, [k]: !!v }));
+                  }}
+                  className="h-6 w-6 mt-0.5"
+                />
+                <Ic className="h-6 w-6 mt-0.5" style={{ color: "#352F54" }} strokeWidth={2} />
+                <span>
+                  <span className="block font-semibold" style={{ fontSize: 17, color: "#352F54" }}>
+                    {titulo}
+                  </span>
+                  <span className="block" style={{ fontSize: 16, color: "#3F3A52" }}>
+                    {sub}
+                  </span>
+                </span>
+              </label>
+            ))}
+          </div>
+          {erroPecas && (
+            <p style={{ fontSize: 16, color: "#B3261E" }}>
+              Escolha pelo menos uma coisa pra imprimir.
+            </p>
+          )}
+          <button
+            onClick={() => {
+              const pecas = Object.keys(pecasEscolhidas).filter((k) => pecasEscolhidas[k]);
+              if (pecas.length === 0) {
+                setErroPecas(true);
+                return;
+              }
+              setImprimirOpen(false);
+              navigate(`/imprimir?pecas=${pecas.join(",")}`);
+            }}
+            className="w-full rounded-xl font-semibold text-white"
+            style={{ minHeight: 56, fontSize: 17, background: "#352F54" }}
+          >
+            Ver como vai ficar
+          </button>
+        </DialogContent>
+      </Dialog>
+
 
       {/* Pílulas de dias */}
       <div className="flex gap-2 overflow-x-auto pb-2 -mx-1 px-1 mb-5">
@@ -692,6 +873,11 @@ const MinhaRotina = () => {
                     onToggleFeito={() => row && toggleFeito(row)}
                     focus={!!nugget && nugget.id === focusNuggetId}
                     compact
+                    mostrarLista={!!nugget}
+                    naLista={!!nugget && selecionados.has(nugget.id)}
+                    onToggleLista={() => nugget && toggleSelecao(nugget.id)}
+                    erroLista={!!nugget && erroSelecao === nugget.id}
+
                   />
                   {!isLast && (
                     <ArrowRight
@@ -761,6 +947,54 @@ const MinhaRotina = () => {
           </section>
         )}
 
+        {/* ===== Suas receitas favoritas ===== */}
+        <section>
+          <h2 className="font-serif" style={{ fontSize: 18, color: "#352F54", fontWeight: 600 }}>
+            Suas receitas favoritas
+          </h2>
+          {favoritas.length === 0 ? (
+            <p className="mt-2" style={{ fontSize: 16, color: "#3F3A52", lineHeight: 1.6 }}>
+              Você ainda não guardou nenhuma. Toque em <strong>Favoritar</strong> no card de uma
+              receita que você gostou: ela fica guardada aqui pra você imprimir depois.
+            </p>
+          ) : (
+            <>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mt-3">
+                {favoritas.map((n) => (
+                  <RotinaSlotCard
+                    key={`fav-${n.id}`}
+                    slotLabel=""
+                    semSlotLabel
+                    row={undefined}
+                    nugget={n}
+                    feito
+                    agniFracoOuIrregular={agniFracoOuIrregular}
+                    onToggleFeito={() => {}}
+                    compact
+                    mostrarLista
+                    naLista={selecionados.has(n.id)}
+                    onToggleLista={() => toggleSelecao(n.id)}
+                    erroLista={erroSelecao === n.id}
+                  />
+                ))}
+              </div>
+              <button
+                onClick={() =>
+                  navigate(
+                    `/imprimir?pecas=receitas&ids=${favoritas.map((n) => n.id).join(",")}`
+                  )
+                }
+                className="mt-4 inline-flex items-center gap-2 rounded-xl px-5 font-semibold text-white"
+                style={{ minHeight: 56, fontSize: 17, background: "#352F54" }}
+              >
+                <Printer className="h-6 w-6" strokeWidth={2} />
+                Imprimir as favoritas
+              </button>
+            </>
+          )}
+        </section>
+
+
         {/* ===== Sempre Faz Bem (suplementos personalizados) ===== */}
         <SuplementosSection
           vata={(doshaInfo?.vatascore as number | null) ?? null}
@@ -768,13 +1002,62 @@ const MinhaRotina = () => {
           kapha={(doshaInfo?.kaphascore as number | null) ?? null}
         />
       </div>
-      <div className="mt-8">
+      <div className="mt-8" style={{ paddingBottom: selecionados.size > 0 ? 104 : undefined }}>
         <PrateleiraSamkhya
           doshaPrincipal={doshaResult?.doshaprincipal ?? null}
           titulo="✦ Os ingredientes do seu ritual ✦"
         />
       </div>
+
+      {selecionados.size > 0 && (
+        <div
+          className="fixed left-0 right-0 z-40 bottom-24 lg:bottom-6 px-3"
+          style={{ pointerEvents: "none" }}
+        >
+          <div
+            className="mx-auto max-w-3xl rounded-2xl shadow-lg flex items-center gap-3 flex-wrap px-4 py-3"
+            style={{ minHeight: 72, background: "#FFFFFF", border: "2px solid #352F54", pointerEvents: "auto" }}
+          >
+            <span className="font-semibold" style={{ fontSize: 17, color: "#352F54" }}>
+              {selecionados.size === 1
+                ? "1 receita marcada"
+                : `${selecionados.size} receitas marcadas`}
+            </span>
+            <div className="flex items-center gap-2 flex-wrap ml-auto">
+              <button
+                onClick={() =>
+                  navigate(
+                    `/imprimir?pecas=receitas&ids=${[...selecionados].join(",")}`
+                  )
+                }
+                className="inline-flex items-center gap-2 rounded-xl px-4 font-semibold text-white"
+                style={{ minHeight: 56, fontSize: 17, background: "#352F54" }}
+              >
+                <BookOpen className="h-6 w-6" strokeWidth={2} />
+                Receitas
+              </button>
+              <button
+                onClick={() => navigate("/imprimir?pecas=compras")}
+                className="inline-flex items-center gap-2 rounded-xl px-4 font-semibold text-white"
+                style={{ minHeight: 56, fontSize: 17, background: "#FF7676" }}
+              >
+                <ShoppingCart className="h-6 w-6" strokeWidth={2} />
+                Lista de compras
+              </button>
+              <button
+                onClick={limparSelecao}
+                className="inline-flex items-center gap-2 rounded-xl px-4 font-semibold"
+                style={{ minHeight: 56, fontSize: 17, color: "#352F54", border: "2px solid #352F54" }}
+              >
+                <X className="h-6 w-6" strokeWidth={2} />
+                Limpar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </PageContainer>
+
   );
 };
 
@@ -1021,6 +1304,11 @@ interface SlotCardProps {
   onToggleFeito: () => void;
   focus?: boolean;
   compact?: boolean;
+  semSlotLabel?: boolean;
+  mostrarLista?: boolean;
+  naLista?: boolean;
+  onToggleLista?: () => void;
+  erroLista?: boolean;
 }
 
 const RotinaSlotCard = ({
@@ -1032,7 +1320,13 @@ const RotinaSlotCard = ({
   onToggleFeito,
   focus = false,
   compact = false,
+  semSlotLabel = false,
+  mostrarLista = false,
+  naLista = false,
+  onToggleLista,
+  erroLista = false,
 }: SlotCardProps) => {
+
   const [open, setOpen] = useState(false);
   const [porqueOpen, setPorqueOpen] = useState(false);
   const [videoOpen, setVideoOpen] = useState(false);
@@ -1209,6 +1503,36 @@ const RotinaSlotCard = ({
     />
   ) : null;
 
+  const faixaLista = mostrarLista ? (
+    <div
+      className="flex items-center gap-3 px-3 cursor-pointer select-none"
+      style={{
+        minHeight: 56,
+        borderLeft: "4px solid #352F54",
+        background: naLista ? "#F0EEE9" : "transparent",
+        borderTop: "1px solid #E4E1DA",
+      }}
+      onClick={(e) => {
+        e.stopPropagation();
+        onToggleLista?.();
+      }}
+    >
+      <Checkbox
+        checked={!!naLista}
+        onCheckedChange={() => onToggleLista?.()}
+        onClick={(e) => e.stopPropagation()}
+        className="h-6 w-6"
+        aria-label="pôr esta receita na lista de compras"
+      />
+      <span className="font-medium" style={{ fontSize: 17, color: "#352F54" }}>
+        Pôr na lista de compras
+      </span>
+      {erroLista && (
+        <span style={{ fontSize: 16, color: "#B3261E" }}>Não deu. Toque de novo.</span>
+      )}
+    </div>
+  ) : null;
+
   if (compact) {
     return (
       <>
@@ -1222,16 +1546,24 @@ const RotinaSlotCard = ({
           <button
             onClick={onToggleFeito}
             disabled={!row}
-            className="absolute top-2 right-2 z-10 p-1.5 rounded-full bg-background/80 backdrop-blur hover:bg-muted disabled:opacity-40"
-            aria-label="marcar como praticado"
+            className="absolute top-2 right-2 z-10 flex items-center gap-1.5 min-h-[48px] px-2.5 rounded-full bg-background/90 backdrop-blur hover:bg-muted disabled:opacity-40"
+            aria-label="guardar esta receita nas favoritas"
           >
             <Star
               className={cn(
-                "h-5 w-5",
-                feito ? "fill-secondary text-secondary" : "text-muted-foreground"
+                "h-6 w-6",
+                feito ? "fill-secondary text-secondary" : "text-[#3F3A52]"
               )}
+              strokeWidth={2}
             />
+            <span
+              className="text-base font-medium"
+              style={{ color: feito ? "#352F54" : "#3F3A52" }}
+            >
+              {feito ? "Favorita" : "Favoritar"}
+            </span>
           </button>
+
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
               <button className="w-full text-left">
@@ -1251,9 +1583,12 @@ const RotinaSlotCard = ({
                   )}
                 </div>
                 <div className="p-3">
-                  <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
-                    {slotLabel}
-                  </div>
+                  {!semSlotLabel && (
+                    <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
+                      {slotLabel}
+                    </div>
+                  )}
+
                   <div className="flex items-start gap-1.5 mt-0.5">
                     <span className="font-medium text-foreground text-sm leading-snug line-clamp-2">
                       {nugget?.titulo ?? "—"}
@@ -1285,7 +1620,9 @@ const RotinaSlotCard = ({
               {detalhes}
             </DialogContent>
           </Dialog>
+          {faixaLista}
         </Card>
+
         {videoDialog}
       </>
     );
@@ -1327,16 +1664,21 @@ const RotinaSlotCard = ({
           <button
             onClick={onToggleFeito}
             disabled={!row}
-            className="p-2 rounded-full hover:bg-muted disabled:opacity-40"
-            aria-label="marcar como praticado"
+            className="flex items-center gap-2 min-h-[48px] px-3 rounded-lg hover:bg-muted disabled:opacity-40"
+            aria-label="guardar esta receita nas favoritas"
           >
             <Star
-              className={cn(
-                "h-7 w-7",
-                feito ? "fill-secondary text-secondary" : "text-muted-foreground"
-              )}
+              className={cn("h-6 w-6", feito ? "fill-secondary text-secondary" : "text-[#3F3A52]")}
+              strokeWidth={2}
             />
+            <span
+              className="text-base font-medium"
+              style={{ color: feito ? "#352F54" : "#3F3A52" }}
+            >
+              {feito ? "Favorita" : "Favoritar"}
+            </span>
           </button>
+
         </div>
 
         <CollapsibleContent>
@@ -1347,6 +1689,9 @@ const RotinaSlotCard = ({
           )}
         </CollapsibleContent>
       </Collapsible>
+
+      {faixaLista}
+
 
       {videoDialog}
     </Card>
