@@ -429,7 +429,14 @@ const MinhaRotina = () => {
     },
   });
 
+  // A estrela grava em rotina_favoritos junto com os pontos: revalida a lista
+  useEffect(() => {
+    if (!user?.id) return;
+    queryClient.invalidateQueries({ queryKey: ["minhas-favoritas", user.id] });
+  }, [pontosHoje, user?.id, queryClient]);
+
   // Modal de impressão
+
   const [imprimirOpen, setImprimirOpen] = useState(false);
   const [pecasEscolhidas, setPecasEscolhidas] = useState<Record<string, boolean>>({
     rotina: true,
