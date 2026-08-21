@@ -618,7 +618,9 @@ const Assinar = () => {
     </span>
   );
 
-  const cardBase = "rounded-2xl p-5 md:p-6 flex flex-col border relative";
+  const cardBase =
+    "rounded-2xl p-5 md:p-6 flex flex-col gap-4 border-2 relative lg:row-span-6 lg:grid lg:grid-rows-subgrid lg:gap-4";
+
 
   return (
     <>
