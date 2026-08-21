@@ -1381,9 +1381,12 @@ const RotinaSlotCard = ({
                   )}
                 </div>
                 <div className="p-3">
-                  <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
-                    {slotLabel}
-                  </div>
+                  {!semSlotLabel && (
+                    <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
+                      {slotLabel}
+                    </div>
+                  )}
+
                   <div className="flex items-start gap-1.5 mt-0.5">
                     <span className="font-medium text-foreground text-sm leading-snug line-clamp-2">
                       {nugget?.titulo ?? "—"}
