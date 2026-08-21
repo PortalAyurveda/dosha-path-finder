@@ -1039,7 +1039,9 @@ const Imprimir = () => {
           {/* bloco 3 */}
           <div role="status" aria-live="polite" className="rounded-lg bg-[#F0EEE9] p-4">
             <p className="text-[18px] font-bold text-[#1A1A1A]">
-              {carregando ? "Montando as suas folhas…" : `Vai sair em ${totalFolhas} folhas`}
+              {carregando
+                ? "Montando as suas folhas…"
+                : `Vai sair em ${totalFolhas} ${totalFolhas === 1 ? "folha" : "folhas"}`}
             </p>
             {!carregando && detalheFolhas && (
               <p className="text-[16px] text-[#1A1A1A]">{detalheFolhas}</p>
