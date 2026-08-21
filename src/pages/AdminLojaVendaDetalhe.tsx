@@ -29,12 +29,15 @@ import {
 import {
   STATUS_META,
   MetodoPagamentoBadge,
+  MelhorEnvioBadge,
+  MELHORENVIO_URL,
   formatBRL,
   formatDateTime,
   whatsappLink,
   type Pedido,
   type PedidoStatus,
 } from "./AdminLojaVendas";
+
 
 
 const enderecoCompleto = (e: Record<string, string>) =>
