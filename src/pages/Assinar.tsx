@@ -1135,6 +1135,9 @@ const Assinar = () => {
                 </div>
               </div>
             </div>
+              </div>
+            </div>
+
 
             {/* Chips objetivos */}
             <div className="mt-6 flex flex-col md:flex-row md:items-center gap-3 md:gap-4 justify-center">
