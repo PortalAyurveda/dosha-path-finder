@@ -1571,7 +1571,7 @@ const Assinar = () => {
               Comece pela rotina ou vá direto no Portal inteiro — a escolha é sua.
             </p>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 lg:grid-rows-[auto_auto_auto_auto_1fr_auto] gap-4 md:gap-5 items-stretch">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 lg:grid-rows-[auto_auto_auto_auto_auto_1fr] gap-4 md:gap-5 items-stretch">
               {/* CARD 0 — BÁSICO (GRÁTIS) */}
               <div className={cardBase} style={{ background: "#fff", borderColor: "rgba(53,47,84,0.16)" }}>
                 <div className="flex items-center justify-between">
