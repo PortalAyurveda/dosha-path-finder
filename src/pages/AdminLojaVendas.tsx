@@ -351,6 +351,7 @@ const AdminLojaVendas = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="todos">Todos</SelectItem>
+                <SelectItem value="fora_melhorenvio">Fora do Melhor Envio</SelectItem>
                 {Object.entries(STATUS_META).map(([k, v]) => (
                   <SelectItem key={k} value={k}>
                     {v.label}
@@ -359,6 +360,11 @@ const AdminLojaVendas = () => {
               </SelectContent>
             </Select>
           </div>
+        </div>
+
+        <div className="rounded-lg border bg-muted/40 px-4 py-3 text-xs text-muted-foreground">
+          Pedidos pagos entram no Melhor Envio sozinhos, a cada 5 minutos. O botão abaixo serve para
+          reenviar um pedido que falhou ou que você quer adiantar.
         </div>
 
         {selecionados.size > 0 && (
@@ -387,6 +393,49 @@ const AdminLojaVendas = () => {
           </div>
         )}
 
+        {resultadoEnvio && (
+          <div
+            className={`rounded-lg border px-4 py-3 space-y-2 text-sm ${
+              resultadoEnvio.total_erro > 0
+                ? "border-red-300 bg-red-50"
+                : "border-green-300 bg-green-50"
+            }`}
+          >
+            <div className="flex items-center justify-between gap-3 flex-wrap">
+              <span className="font-medium">
+                {resultadoEnvio.total_ok} no carrinho · {resultadoEnvio.total_erro} com erro
+              </span>
+              <div className="flex items-center gap-2">
+                {resultadoEnvio.total_ok > 0 && (
+                  <a
+                    href={resultadoEnvio.melhorenvio_url || MELHORENVIO_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-xs underline"
+                  >
+                    Abrir o Melhor Envio <ExternalLink className="h-3 w-3" />
+                  </a>
+                )}
+                <Button variant="ghost" size="sm" onClick={() => setResultadoEnvio(null)}>
+                  Fechar
+                </Button>
+              </div>
+            </div>
+            {resultadoEnvio.total_erro > 0 && (
+              <ul className="space-y-1 text-xs">
+                {resultadoEnvio.resultados
+                  .filter((r) => !r.ok)
+                  .map((r, i) => (
+                    <li key={`${r.numero_pedido || i}`}>
+                      <span className="font-mono">{r.numero_pedido || "—"}</span>:{" "}
+                      {r.erro || "Erro não informado"}
+                    </li>
+                  ))}
+              </ul>
+            )}
+          </div>
+        )}
+
         <div className="border rounded-lg overflow-hidden bg-card">
           {loading ? (
             <div className="flex items-center justify-center py-16">
@@ -401,11 +450,11 @@ const AdminLojaVendas = () => {
               <TableHeader>
                 <TableRow>
                   <TableHead className="w-10">
-                    {pagosVisiveis.length > 0 ? (
+                    {selecionaveisVisiveis.length > 0 ? (
                       <Checkbox
-                        checked={todosPagosSelecionados}
+                        checked={todosSelecionaveisSelecionados}
                         onCheckedChange={toggleAll}
-                        aria-label="Selecionar todos os pagos"
+                        aria-label="Selecionar todos os pedidos fora do Melhor Envio"
                       />
                     ) : null}
                   </TableHead>
@@ -416,6 +465,7 @@ const AdminLojaVendas = () => {
                   <TableHead className="text-right">Total</TableHead>
                   <TableHead>Pagamento</TableHead>
                   <TableHead>Status</TableHead>
+                  <TableHead>Melhor Envio</TableHead>
                   <TableHead></TableHead>
                 </TableRow>
               </TableHeader>
@@ -424,7 +474,7 @@ const AdminLojaVendas = () => {
                 {filtrados.map((p) => (
                   <TableRow key={p.id} data-state={selecionados.has(p.id) ? "selected" : undefined}>
                     <TableCell>
-                      {p.status === "pago" ? (
+                      {podeSelecionar(p) ? (
                         <Checkbox
                           checked={selecionados.has(p.id)}
                           onCheckedChange={() => toggleOne(p.id)}
@@ -432,6 +482,7 @@ const AdminLojaVendas = () => {
                         />
                       ) : null}
                     </TableCell>
+
                     <TableCell className="font-mono text-xs">
                       {p.numero_pedido || p.id.slice(0, 8)}
                     </TableCell>
