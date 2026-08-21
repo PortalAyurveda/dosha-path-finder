@@ -140,6 +140,8 @@ const TarefaCard = ({
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="z-50">
+                <DropdownMenuItem onClick={() => onTopo(tarefa)}>Mandar pro topo</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => onFim(tarefa)}>Mandar pro fim</DropdownMenuItem>
                 {COLUNAS.filter((c) => c.key !== tarefa.status).map((c) => (
                   <DropdownMenuItem key={c.key} onClick={() => onMoverColuna(tarefa, c.key)}>
                     Mover para {c.label}
