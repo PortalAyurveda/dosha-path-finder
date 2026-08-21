@@ -68,23 +68,112 @@ const PORTAL_ICON = "/favicon.svg";
 type Plano = "rotina" | "mensal" | "anual";
 const RANK: Record<Plano, number> = { rotina: 1, mensal: 2, anual: 3 };
 
-const BENEFICIOS: string[] = [
-  "Rotina completa da semana: café, almoço, jantar, lanches e tônicos",
-  "Montada para o SEU dosha, com preparo e porquê de cada item",
-  "Revisão mensal do seu quadro",
-  "Artigos e vídeos escolhidos pro seu quadro (aba Personalizado)",
-  "Akasha com memória de 7 dias (10 conversas por mês)",
-  "Akasha ilimitada: converse de dia ou de madrugada",
-  "Modo Pesquisa: mergulhos profundos no acervo",
-  "Acervo completo: 900+ aulas do professor",
-  "Cancele quando quiser",
+const AKASHA_TEXTO = "#5E3F6E";
+const AKASHA_TOM = "#9B73AD";
+const AKASHA_LOGO =
+  "https://api.portalayurveda.com/storage/v1/object/public/portal_images/logo-akasha.svg";
+
+const CINZA_ROTULO = "#565169";
+const TEXTO_LISTA = "#42304E";
+const CAIXA_OFF = "#BFB9CC";
+
+type PlanoCard = "basico" | "rotina" | "mensal" | "anual";
+
+type LinhaPlano = { texto: string; on: PlanoCard[] };
+
+const BASE_PORTAL: LinhaPlano[] = [
+  { texto: "Teste de dosha completo + análise", on: ["basico", "rotina", "mensal", "anual"] },
+  { texto: "Biblioteca com 900+ aulas abertas", on: ["basico", "rotina", "mensal", "anual"] },
 ];
 
-const INCLUSOS: Record<Plano, Set<number>> = {
-  rotina: new Set([1, 2, 3, 4, 5, 9]),
-  mensal: new Set([1, 2, 3, 4, 5, 6, 7, 8, 9]),
-  anual: new Set([1, 2, 3, 4, 5, 6, 7, 8, 9]),
+const AKASHA_LINHAS: LinhaPlano[] = [
+  { texto: "Conversas sem limite, de dia ou de madrugada", on: ["mensal", "anual"] },
+  { texto: "Ela lembra de você por 7 dias", on: ["rotina", "mensal", "anual"] },
+  { texto: "Modo Pesquisa: mergulha nas 900+ aulas", on: ["mensal", "anual"] },
+  { texto: "Conhece seu dosha e seu quadro", on: ["basico", "rotina", "mensal", "anual"] },
+];
+
+const PLANO_LINHAS: LinhaPlano[] = [
+  { texto: "Rotina completa da semana: café, almoço, jantar, lanches e tônicos", on: ["rotina", "mensal", "anual"] },
+  { texto: "Montada para o SEU dosha, com preparo e porquê de cada item", on: ["rotina", "mensal", "anual"] },
+  { texto: "Revisão mensal do seu quadro", on: ["rotina", "mensal", "anual"] },
+  { texto: "Artigos e vídeos escolhidos pro seu quadro", on: ["rotina", "mensal", "anual"] },
+  { texto: "Curso Rotinas Diárias do Ayurveda", on: ["anual"] },
+];
+
+const AKASHA_ESTILO: Record<
+  PlanoCard,
+  { bg: string; border: string; pilulaCheia: boolean; pilula: string }
+> = {
+  basico: { bg: "#FFFFFF", border: "1px solid #DFCDE8", pilulaCheia: false, pilula: "7 dias livres" },
+  rotina: { bg: "#F5EFF8", border: "1px solid #DFCDE8", pilulaCheia: false, pilula: "10 por mês" },
+  mensal: { bg: "#F5EFF8", border: `2px solid ${AKASHA_TOM}`, pilulaCheia: true, pilula: "Sem limite" },
+  anual: { bg: "#EFE3F5", border: `2px solid ${AKASHA_TOM}`, pilulaCheia: true, pilula: "Sem limite" },
 };
+
+const RotuloBloco = ({ children, cor }: { children: React.ReactNode; cor: string }) => (
+  <p
+    className="text-[10px] uppercase font-bold mb-2"
+    style={{ color: cor, letterSpacing: "0.08em", fontFamily: "'DM Sans', sans-serif" }}
+  >
+    {children}
+  </p>
+);
+
+const LinhaCheck = ({ texto, on, cor }: { texto: string; on: boolean; cor: string }) => (
+  <li className="flex items-start gap-2">
+    <span
+      className="shrink-0 mt-0.5 flex items-center justify-center rounded"
+      style={{
+        width: 16,
+        height: 16,
+        border: on ? `1.5px solid ${cor}` : `1.5px solid ${CAIXA_OFF}`,
+        background: on ? cor : "transparent",
+      }}
+      aria-hidden
+    >
+      {on && <Check className="w-3 h-3" style={{ color: "#fff" }} strokeWidth={3} />}
+    </span>
+    <span
+      className="text-[16px] md:text-[14px] leading-snug"
+      style={{ color: TEXTO_LISTA, fontFamily: "'DM Sans', sans-serif" }}
+    >
+      {texto}
+    </span>
+  </li>
+);
+
+const FaixaAkasha = ({ plano, cor }: { plano: PlanoCard; cor: string }) => {
+  const est = AKASHA_ESTILO[plano];
+  return (
+    <div className="rounded-xl" style={{ background: est.bg, border: est.border, padding: "11px 12px" }}>
+      <div className="flex items-center justify-between gap-2 mb-2">
+        <span className="flex items-center gap-1.5 min-w-0">
+          <img src={AKASHA_LOGO} alt="" aria-hidden width={22} height={22} className="w-[22px] h-[22px] shrink-0" loading="lazy" decoding="async" />
+          <span className="text-[14.5px] font-bold truncate" style={{ color: AKASHA_TEXTO, fontFamily: "'DM Sans', sans-serif" }}>
+            Akasha IA
+          </span>
+        </span>
+        <span
+          className="shrink-0 px-2 py-0.5 rounded-full text-[11px] font-bold whitespace-nowrap"
+          style={
+            est.pilulaCheia
+              ? { background: AKASHA_TEXTO, color: "#fff" }
+              : { background: "transparent", color: AKASHA_TEXTO, border: "1px solid #B79BC5" }
+          }
+        >
+          {est.pilula}
+        </span>
+      </div>
+      <ul className="space-y-1.5">
+        {AKASHA_LINHAS.map((l) => (
+          <LinhaCheck key={l.texto} texto={l.texto} on={l.on.includes(plano)} cor={cor} />
+        ))}
+      </ul>
+    </div>
+  );
+};
+
 
 const DEPOIMENTOS = [
   {
