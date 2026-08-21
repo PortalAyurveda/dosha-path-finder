@@ -1303,166 +1303,6 @@ const Assinar = () => {
           </div>
         </section>
 
-        {/* 5) COMIDA E CONTEÚDO DE VERDADE */}
-        <section style={{ background: SURFACE }}>
-          <div className="max-w-[1040px] mx-auto px-4 sm:px-6 py-10 md:py-14">
-            <h2
-              className="font-serif italic font-bold text-2xl md:text-[28px] text-center mb-2"
-              style={{ color: PRIMARY }}
-            >
-              Comida e conteúdo de verdade
-            </h2>
-            <p
-              className="text-center text-sm md:text-base mb-8 max-w-xl mx-auto"
-              style={{ color: PRIMARY, opacity: 0.75, fontFamily: "'DM Sans', sans-serif" }}
-            >
-              Receitas com ingredientes do mercado do seu bairro — e um acervo inteiro por trás.
-            </p>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 mb-6">
-              {RECEITAS.map((r) => (
-                <div
-                  key={r.titulo}
-                  className="rounded-tl-xl rounded-br-xl rounded-tr-sm rounded-bl-sm overflow-hidden border shadow-sm flex sm:block"
-                  style={{ background: PAPER, borderColor: "rgba(53,47,84,0.08)" }}
-                >
-                  <div className="w-24 shrink-0 sm:w-auto sm:aspect-[4/3] overflow-hidden">
-                    <img src={r.url} alt={r.titulo} loading="lazy"
-              decoding="async" className="w-full h-full object-cover" />
-                  </div>
-                  <div className="p-2.5 sm:p-3 min-w-0 flex-1">
-                    <p className="text-[9px] sm:text-[10px] uppercase tracking-wider font-bold mb-0.5" style={{ color: "#C93F3F" }}>
-                      Receita
-                    </p>
-                    <h3 className="font-serif font-bold text-[15px] sm:text-base leading-tight mb-0.5" style={{ color: PRIMARY }}>
-                      {r.titulo}
-                    </h3>
-                    <p
-                      className="text-[11px] sm:text-xs leading-snug line-clamp-2 sm:line-clamp-none"
-                      style={{ color: PRIMARY, opacity: 0.75, fontFamily: "'DM Sans', sans-serif" }}
-                    >
-                      {r.resumo}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-          </div>
-        </section>
-
-        {/* 6) TUDO NUM SÓ LUGAR — biblioteca + Relógio dos Doshas + curso */}
-        <section className="bg-background">
-          <div className="max-w-[1040px] mx-auto px-4 sm:px-6 py-10 md:py-14">
-            <p
-              className="text-[11px] uppercase tracking-wider font-bold text-center mb-2"
-              style={{ color: SALMAO, fontFamily: "'DM Sans', sans-serif" }}
-            >
-              Tudo num só lugar
-            </p>
-            <h2
-              className="font-serif italic font-bold text-2xl md:text-[28px] text-center mb-8"
-              style={{ color: PRIMARY }}
-            >
-              O acervo inteiro, organizado pra você
-            </h2>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
-              {/* Esquerda: Relógio dos Doshas */}
-              <a
-                href="/biblioteca/horarios"
-                className="rounded-2xl border p-5 bg-card shadow-sm flex flex-col items-center text-center transition-shadow hover:shadow-md"
-                style={{ borderColor: "rgba(53,47,84,0.14)" }}
-              >
-                <div className="w-[190px] px-5 py-2">
-                  <DoshaClock variant="neutral" compact hideCenter hiddenMarkers={["00h", "12h"]} />
-                </div>
-
-
-                <p className="font-serif font-bold text-[15px] mt-4" style={{ color: PRIMARY }}>
-                  O Relógio dos Doshas
-                </p>
-                <p
-                  className="text-[12px] leading-snug mt-1 max-w-xs"
-                  style={{ color: PRIMARY, opacity: 0.75, fontFamily: "'DM Sans', sans-serif" }}
-                >
-                  Os horários do seu corpo: quando comer, mover e descansar.
-                </p>
-              </a>
-
-              {/* Direita: 3 blocos */}
-              <div className="flex flex-col gap-3">
-                <div
-                  className="rounded-xl border p-3.5 flex items-start gap-3"
-                  style={{ background: "#fff", borderColor: "rgba(53,47,84,0.10)" }}
-                >
-                  <div className="w-9 h-9 rounded-full flex items-center justify-center shrink-0" style={{ background: `${SALMAO}22` }}>
-                    <VideoIcon className="w-4 h-4" style={{ color: SALMAO }} strokeWidth={1.9} />
-                  </div>
-                  <div>
-                    <p className="font-serif font-bold text-sm leading-tight mb-0.5" style={{ color: PRIMARY }}>
-                      900+ aulas do professor
-                    </p>
-                    <p className="text-xs leading-snug" style={{ color: PRIMARY, opacity: 0.75, fontFamily: "'DM Sans', sans-serif" }}>
-                      Acervo completo organizado por tema e por dosha.
-                    </p>
-                  </div>
-                </div>
-
-                <div
-                  className="rounded-xl border p-3.5 flex items-start gap-3"
-                  style={{ background: "#fff", borderColor: "rgba(53,47,84,0.10)" }}
-                >
-                  <div className="w-9 h-9 rounded-full flex items-center justify-center shrink-0" style={{ background: `${SALMAO}22` }}>
-                    <Library className="w-4 h-4" style={{ color: SALMAO }} strokeWidth={1.9} />
-                  </div>
-                  <div>
-                    <p className="font-serif font-bold text-sm leading-tight mb-0.5" style={{ color: PRIMARY }}>
-                      Artigos por dosha
-                    </p>
-                    <p className="text-xs leading-snug" style={{ color: PRIMARY, opacity: 0.75, fontFamily: "'DM Sans', sans-serif" }}>
-                      Guias práticos aplicados ao seu quadro.
-                    </p>
-                  </div>
-                </div>
-
-                {/* Bloco destacado do curso */}
-                <div
-                  className="rounded-xl border-2 p-3.5 flex items-start gap-3 relative"
-                  style={{ background: DOURADO_BG, borderColor: DOURADO }}
-                >
-                  {cursoRotinas?.capa_url ? (
-                    <img
-                      src={cursoRotinas.capa_url}
-                      alt=""
-                      aria-hidden
-                      loading="lazy"
-              decoding="async"
-                      className="w-16 h-16 object-cover rounded-lg shrink-0"
-                    />
-                  ) : (
-                    <div className="w-16 h-16 rounded-lg shrink-0 flex items-center justify-center" style={{ background: "#fff" }}>
-                      <Gift className="w-6 h-6" style={{ color: DOURADO }} />
-                    </div>
-                  )}
-                  <div className="min-w-0">
-                    <p className="text-[9px] uppercase tracking-wider font-bold mb-0.5" style={{ color: DOURADO_DARK, fontFamily: "'DM Sans', sans-serif" }}>
-                      Curso incluso no plano anual
-                    </p>
-                    <p className="font-serif font-bold text-sm leading-tight mb-1" style={{ color: PRIMARY }}>
-                      {cursoRotinas?.titulo ?? "Rotinas Diárias do Ayurveda"}
-                    </p>
-                    <p className="text-xs leading-snug" style={{ color: PRIMARY, opacity: 0.8, fontFamily: "'DM Sans', sans-serif" }}>
-                      As videoaulas do professor sobre os hábitos que sustentam sua saúde · 11 aulas.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-
         {/* 7) NÚMEROS */}
         <section style={{ background: PRIMARY }}>
           <div className="max-w-[1040px] mx-auto px-4 sm:px-6 py-6 md:py-7">
@@ -1691,6 +1531,146 @@ const Assinar = () => {
                 />
                 <CardAction plano="anual" color={DOURADO} label="Assinar Anual" />
 
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* O QUE TEM DENTRO — receitas + acervo (depois dos planos) */}
+        <section style={{ background: SURFACE }}>
+          <div className="max-w-[1040px] mx-auto px-4 sm:px-6 py-10 md:py-14">
+            <h2
+              className="font-serif italic font-bold text-2xl md:text-[28px] text-center mb-2"
+              style={{ color: PRIMARY }}
+            >
+              O que tem dentro
+            </h2>
+            <p
+              className="text-center text-sm md:text-base mb-8 max-w-xl mx-auto"
+              style={{ color: PRIMARY, opacity: 0.75, fontFamily: "'DM Sans', sans-serif" }}
+            >
+              Receitas com ingredientes do mercado do seu bairro — e um acervo inteiro por trás.
+            </p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 mb-6">
+              {RECEITAS.map((r) => (
+                <div
+                  key={r.titulo}
+                  className="rounded-tl-xl rounded-br-xl rounded-tr-sm rounded-bl-sm overflow-hidden border shadow-sm flex sm:block"
+                  style={{ background: PAPER, borderColor: "rgba(53,47,84,0.08)" }}
+                >
+                  <div className="w-24 shrink-0 sm:w-auto sm:aspect-[4/3] overflow-hidden">
+                    <img src={r.url} alt={r.titulo} loading="lazy"
+              decoding="async" className="w-full h-full object-cover" />
+                  </div>
+                  <div className="p-2.5 sm:p-3 min-w-0 flex-1">
+                    <p className="text-[9px] sm:text-[10px] uppercase tracking-wider font-bold mb-0.5" style={{ color: "#C93F3F" }}>
+                      Receita
+                    </p>
+                    <h3 className="font-serif font-bold text-[15px] sm:text-base leading-tight mb-0.5" style={{ color: PRIMARY }}>
+                      {r.titulo}
+                    </h3>
+                    <p
+                      className="text-[11px] sm:text-xs leading-snug line-clamp-2 sm:line-clamp-none"
+                      style={{ color: PRIMARY, opacity: 0.75, fontFamily: "'DM Sans', sans-serif" }}
+                    >
+                      {r.resumo}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
+              {/* Esquerda: Relógio dos Doshas */}
+              <a
+                href="/biblioteca/horarios"
+                className="rounded-2xl border p-5 bg-card shadow-sm flex flex-col items-center text-center transition-shadow hover:shadow-md"
+                style={{ borderColor: "rgba(53,47,84,0.14)" }}
+              >
+                <div className="w-[190px] px-5 py-2">
+                  <DoshaClock variant="neutral" compact hideCenter hiddenMarkers={["00h", "12h"]} />
+                </div>
+
+
+                <p className="font-serif font-bold text-[15px] mt-4" style={{ color: PRIMARY }}>
+                  O Relógio dos Doshas
+                </p>
+                <p
+                  className="text-[12px] leading-snug mt-1 max-w-xs"
+                  style={{ color: PRIMARY, opacity: 0.75, fontFamily: "'DM Sans', sans-serif" }}
+                >
+                  Os horários do seu corpo: quando comer, mover e descansar.
+                </p>
+              </a>
+
+              {/* Direita: 3 blocos */}
+              <div className="flex flex-col gap-3">
+                <div
+                  className="rounded-xl border p-3.5 flex items-start gap-3"
+                  style={{ background: "#fff", borderColor: "rgba(53,47,84,0.10)" }}
+                >
+                  <div className="w-9 h-9 rounded-full flex items-center justify-center shrink-0" style={{ background: `${SALMAO}22` }}>
+                    <VideoIcon className="w-4 h-4" style={{ color: SALMAO }} strokeWidth={1.9} />
+                  </div>
+                  <div>
+                    <p className="font-serif font-bold text-sm leading-tight mb-0.5" style={{ color: PRIMARY }}>
+                      900+ aulas do professor
+                    </p>
+                    <p className="text-xs leading-snug" style={{ color: PRIMARY, opacity: 0.75, fontFamily: "'DM Sans', sans-serif" }}>
+                      Acervo completo organizado por tema e por dosha.
+                    </p>
+                  </div>
+                </div>
+
+                <div
+                  className="rounded-xl border p-3.5 flex items-start gap-3"
+                  style={{ background: "#fff", borderColor: "rgba(53,47,84,0.10)" }}
+                >
+                  <div className="w-9 h-9 rounded-full flex items-center justify-center shrink-0" style={{ background: `${SALMAO}22` }}>
+                    <Library className="w-4 h-4" style={{ color: SALMAO }} strokeWidth={1.9} />
+                  </div>
+                  <div>
+                    <p className="font-serif font-bold text-sm leading-tight mb-0.5" style={{ color: PRIMARY }}>
+                      Artigos por dosha
+                    </p>
+                    <p className="text-xs leading-snug" style={{ color: PRIMARY, opacity: 0.75, fontFamily: "'DM Sans', sans-serif" }}>
+                      Guias práticos aplicados ao seu quadro.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Bloco destacado do curso */}
+                <div
+                  className="rounded-xl border-2 p-3.5 flex items-start gap-3 relative"
+                  style={{ background: DOURADO_BG, borderColor: DOURADO }}
+                >
+                  {cursoRotinas?.capa_url ? (
+                    <img
+                      src={cursoRotinas.capa_url}
+                      alt=""
+                      aria-hidden
+                      loading="lazy"
+              decoding="async"
+                      className="w-16 h-16 object-cover rounded-lg shrink-0"
+                    />
+                  ) : (
+                    <div className="w-16 h-16 rounded-lg shrink-0 flex items-center justify-center" style={{ background: "#fff" }}>
+                      <Gift className="w-6 h-6" style={{ color: DOURADO }} />
+                    </div>
+                  )}
+                  <div className="min-w-0">
+                    <p className="text-[9px] uppercase tracking-wider font-bold mb-0.5" style={{ color: DOURADO_DARK, fontFamily: "'DM Sans', sans-serif" }}>
+                      Curso incluso no plano anual
+                    </p>
+                    <p className="font-serif font-bold text-sm leading-tight mb-1" style={{ color: PRIMARY }}>
+                      {cursoRotinas?.titulo ?? "Rotinas Diárias do Ayurveda"}
+                    </p>
+                    <p className="text-xs leading-snug" style={{ color: PRIMARY, opacity: 0.8, fontFamily: "'DM Sans', sans-serif" }}>
+                      As videoaulas do professor sobre os hábitos que sustentam sua saúde · 11 aulas.
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
