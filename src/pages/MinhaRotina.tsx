@@ -1002,13 +1002,62 @@ const MinhaRotina = () => {
           kapha={(doshaInfo?.kaphascore as number | null) ?? null}
         />
       </div>
-      <div className="mt-8">
+      <div className="mt-8" style={{ paddingBottom: selecionados.size > 0 ? 104 : undefined }}>
         <PrateleiraSamkhya
           doshaPrincipal={doshaResult?.doshaprincipal ?? null}
           titulo="✦ Os ingredientes do seu ritual ✦"
         />
       </div>
+
+      {selecionados.size > 0 && (
+        <div
+          className="fixed left-0 right-0 z-40 bottom-24 lg:bottom-6 px-3"
+          style={{ pointerEvents: "none" }}
+        >
+          <div
+            className="mx-auto max-w-3xl rounded-2xl shadow-lg flex items-center gap-3 flex-wrap px-4 py-3"
+            style={{ minHeight: 72, background: "#FFFFFF", border: "2px solid #352F54", pointerEvents: "auto" }}
+          >
+            <span className="font-semibold" style={{ fontSize: 17, color: "#352F54" }}>
+              {selecionados.size === 1
+                ? "1 receita marcada"
+                : `${selecionados.size} receitas marcadas`}
+            </span>
+            <div className="flex items-center gap-2 flex-wrap ml-auto">
+              <button
+                onClick={() =>
+                  navigate(
+                    `/imprimir?pecas=receitas&ids=${[...selecionados].join(",")}`
+                  )
+                }
+                className="inline-flex items-center gap-2 rounded-xl px-4 font-semibold text-white"
+                style={{ minHeight: 56, fontSize: 17, background: "#352F54" }}
+              >
+                <BookOpen className="h-6 w-6" strokeWidth={2} />
+                Receitas
+              </button>
+              <button
+                onClick={() => navigate("/imprimir?pecas=compras")}
+                className="inline-flex items-center gap-2 rounded-xl px-4 font-semibold text-white"
+                style={{ minHeight: 56, fontSize: 17, background: "#FF7676" }}
+              >
+                <ShoppingCart className="h-6 w-6" strokeWidth={2} />
+                Lista de compras
+              </button>
+              <button
+                onClick={limparSelecao}
+                className="inline-flex items-center gap-2 rounded-xl px-4 font-semibold"
+                style={{ minHeight: 56, fontSize: 17, color: "#352F54", border: "2px solid #352F54" }}
+              >
+                <X className="h-6 w-6" strokeWidth={2} />
+                Limpar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </PageContainer>
+
   );
 };
 
