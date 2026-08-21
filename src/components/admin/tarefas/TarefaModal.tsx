@@ -169,9 +169,11 @@ const TarefaModal = ({ aberto, tarefa, onFechar, onSalvo }: Props) => {
       devlog_id: devlogId,
       anexos: anexos as unknown as never,
     };
+    const tabela = supabase.from("admin_tarefas") as any;
     const { error } = editando
-      ? await supabase.from("admin_tarefas").update(payload).eq("id", tarefa!.id)
-      : await supabase.from("admin_tarefas").insert([payload]);
+      ? await tabela.update(payload).eq("id", tarefa!.id)
+      : await tabela.insert(payload);
+
 
     setSalvando(false);
     if (error) {
