@@ -406,43 +406,30 @@ const Assinar = () => {
   ];
 
   const BeneficiosList = ({
-    plano,
+    itens,
     checkColor,
-    dimmedColor,
     extra,
   }: {
-    plano: Plano;
+    itens: string[];
     checkColor: string;
-    dimmedColor?: string;
     extra?: React.ReactNode;
   }) => {
-    const inclusos = INCLUSOS[plano];
     return (
       <div className="flex-1 flex flex-col">
         <ul className="space-y-2 mb-3">
-          {BENEFICIOS.map((texto, idx) => {
-            const n = idx + 1;
-            const on = inclusos.has(n);
-            const color = on ? PRIMARY : dimmedColor ?? "rgba(53,47,84,0.35)";
-            return (
-              <li key={n} className="flex items-start gap-2">
-                {on ? (
-                  <Check className="w-4 h-4 shrink-0 mt-0.5" style={{ color: checkColor }} strokeWidth={2.6} />
-                ) : (
-                  <span className="w-4 h-4 shrink-0 mt-0.5 flex items-center justify-center" aria-hidden>
-                    <span className="block w-1.5 h-1.5 rounded-full" style={{ background: "rgba(53,47,84,0.18)" }} />
-                  </span>
-                )}
-                <span
-                  className="text-[13px] leading-snug"
-                  style={{ color, fontFamily: "'DM Sans', sans-serif", opacity: on ? 1 : 0.7 }}
-                >
-                  {texto}
-                </span>
-              </li>
-            );
-          })}
+          {itens.map((texto) => (
+            <li key={texto} className="flex items-start gap-2">
+              <Check className="w-4 h-4 shrink-0 mt-0.5" style={{ color: checkColor }} strokeWidth={2.6} />
+              <span
+                className="text-[16px] md:text-[14px] leading-snug"
+                style={{ color: PRIMARY, fontFamily: "'DM Sans', sans-serif" }}
+              >
+                {texto}
+              </span>
+            </li>
+          ))}
         </ul>
+
         {extra}
       </div>
     );
