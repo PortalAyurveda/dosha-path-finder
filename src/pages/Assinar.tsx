@@ -1648,7 +1648,17 @@ const Assinar = () => {
                 <p className="text-xs mb-4" style={{ color: DOURADO_DARK, fontFamily: "'DM Sans', sans-serif" }}>
                   R$ 597 cobrados uma vez por ano · você economiza R$ 361,80
                 </p>
+                <FaixaAkasha
+                  pilula="Sem limite"
+                  pilulaCheia
+                  frase={<strong className="font-bold">Um ano inteiro de conversa sem conta pra fazer.</strong>}
+                  itens={[
+                    { texto: "Lembra de você por 7 dias", check: true },
+                    { texto: "Modo Pesquisa: ela mergulha nas 900+ aulas", check: true },
+                  ]}
+                />
                 <BeneficiosList
+                  itens={[RESUMO_ANUAL, "Cancele quando quiser"]}
                   plano="anual"
                   checkColor={DOURADO_DARK}
                   extra={cursoIncluso}
