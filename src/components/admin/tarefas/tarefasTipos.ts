@@ -10,10 +10,9 @@ export type Anexo = {
 };
 
 export type Nota = {
-  texto?: string;
   em?: string;
-  autor?: string;
-  autor_email?: string;
+  por?: string;
+  texto?: string;
   [k: string]: unknown;
 };
 
