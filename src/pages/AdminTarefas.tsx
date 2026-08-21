@@ -172,22 +172,61 @@ const AdminTarefas = () => {
     carregar();
   };
 
-  // reposiciona localmente (otimista) e devolve a lista final da coluna destino
-  const aplicarOtimista = (tarefa: Tarefa, destino: Status, indice: number) => {
+  // lista completa da coluna destino, sem a tarefa que está sendo movida
+  const colunaSem = (destino: Status, id: string) =>
+    porColunaCompleta[destino].filter((t) => t.id !== id);
+
+  // reposiciona localmente (otimista) usando os vizinhos REAIS (lista completa)
+  const aplicarOtimista = (
+    tarefa: Tarefa,
+    destino: Status,
+    acima: string | null,
+    abaixo: string | null
+  ) => {
     const anterior = tarefas;
     const restantes = tarefas.filter((t) => t.id !== tarefa.id);
     const daColuna = restantes.filter((t) => t.status === destino);
     const fora = restantes.filter((t) => t.status !== destino);
-    const atualizada = { ...tarefa, status: destino };
+    let indice = daColuna.length;
+    if (abaixo) {
+      const i = daColuna.findIndex((t) => t.id === abaixo);
+      if (i >= 0) indice = i;
+    } else if (acima) {
+      const i = daColuna.findIndex((t) => t.id === acima);
+      if (i >= 0) indice = i + 1;
+    } else {
+      indice = 0;
+    }
     const novaColuna = [...daColuna];
-    novaColuna.splice(Math.max(0, Math.min(indice, novaColuna.length)), 0, atualizada);
+    novaColuna.splice(indice, 0, { ...tarefa, status: destino });
     setTarefas([...fora, ...novaColuna]);
-    const pos = novaColuna.findIndex((t) => t.id === tarefa.id);
-    return {
-      anterior,
-      acima: pos > 0 ? novaColuna[pos - 1].id : null,
-      abaixo: pos < novaColuna.length - 1 ? novaColuna[pos + 1].id : null,
-    };
+    return anterior;
+  };
+
+  // posiciona logo ACIMA de um card alvo, com vizinhos da lista completa
+  const vizinhosAcimaDe = (tarefa: Tarefa, destino: Status, alvoId: string) => {
+    const lista = colunaSem(destino, tarefa.id);
+    const i = lista.findIndex((t) => t.id === alvoId);
+    if (i < 0) return { acima: lista.length ? lista[lista.length - 1].id : null, abaixo: null };
+    return { acima: i > 0 ? lista[i - 1].id : null, abaixo: alvoId };
+  };
+
+  // posiciona logo ABAIXO de um card alvo, com vizinhos da lista completa
+  const vizinhosAbaixoDe = (tarefa: Tarefa, destino: Status, alvoId: string) => {
+    const lista = colunaSem(destino, tarefa.id);
+    const i = lista.findIndex((t) => t.id === alvoId);
+    if (i < 0) return { acima: lista.length ? lista[lista.length - 1].id : null, abaixo: null };
+    return { acima: alvoId, abaixo: i < lista.length - 1 ? lista[i + 1].id : null };
+  };
+
+  const aplicarEMover = async (
+    tarefa: Tarefa,
+    destino: Status,
+    acima: string | null,
+    abaixo: string | null
+  ) => {
+    const anterior = aplicarOtimista(tarefa, destino, acima, abaixo);
+    await mover(tarefa, destino, acima, abaixo, anterior);
   };
 
   const onDragStart = (e: DragStartEvent) => {
@@ -202,38 +241,49 @@ const AdminTarefas = () => {
     if (!tarefa) return;
 
     const overId = String(over.id);
-    let destino: Status;
-    let indice: number;
 
     if (overId.startsWith("coluna:")) {
-      destino = overId.split(":")[1] as Status;
-      indice = porColuna[destino].filter((t) => t.id !== tarefa.id).length;
-    } else {
-      const alvo = tarefas.find((t) => t.id === overId);
-      if (!alvo || alvo.id === tarefa.id) return;
-      destino = alvo.status;
-      const lista = porColuna[destino].filter((t) => t.id !== tarefa.id);
-      indice = lista.findIndex((t) => t.id === alvo.id);
-      if (indice < 0) indice = lista.length;
+      const destino = overId.split(":")[1] as Status;
+      const lista = colunaSem(destino, tarefa.id);
+      await aplicarEMover(tarefa, destino, lista.length ? lista[lista.length - 1].id : null, null);
+      return;
     }
 
-    const { anterior, acima, abaixo } = aplicarOtimista(tarefa, destino, indice);
-    await mover(tarefa, destino, acima, abaixo, anterior);
+    const alvo = tarefas.find((t) => t.id === overId);
+    if (!alvo || alvo.id === tarefa.id) return;
+    const destino = alvo.status;
+    const { acima, abaixo } = vizinhosAcimaDe(tarefa, destino, alvo.id);
+    await aplicarEMover(tarefa, destino, acima, abaixo);
   };
 
   const moverPorSeta = async (tarefa: Tarefa, direcao: -1 | 1) => {
+    // usa o vizinho VISÍVEL como referência, mas resolve os ids na lista completa
     const lista = porColuna[tarefa.status];
     const pos = lista.findIndex((t) => t.id === tarefa.id);
-    const novoIndice = pos + direcao;
-    if (pos < 0 || novoIndice < 0 || novoIndice >= lista.length) return;
-    const { anterior, acima, abaixo } = aplicarOtimista(tarefa, tarefa.status, novoIndice);
-    await mover(tarefa, tarefa.status, acima, abaixo, anterior);
+    const alvo = lista[pos + direcao];
+    if (pos < 0 || !alvo) return;
+    const { acima, abaixo } =
+      direcao === -1
+        ? vizinhosAcimaDe(tarefa, tarefa.status, alvo.id)
+        : vizinhosAbaixoDe(tarefa, tarefa.status, alvo.id);
+    await aplicarEMover(tarefa, tarefa.status, acima, abaixo);
   };
 
   const moverParaColuna = async (tarefa: Tarefa, destino: Status) => {
-    const indice = porColuna[destino].length;
-    const { anterior, acima, abaixo } = aplicarOtimista(tarefa, destino, indice);
-    await mover(tarefa, destino, acima, abaixo, anterior);
+    const lista = colunaSem(destino, tarefa.id);
+    await aplicarEMover(tarefa, destino, lista.length ? lista[lista.length - 1].id : null, null);
+  };
+
+  const mandarProTopo = async (tarefa: Tarefa) => {
+    const lista = colunaSem(tarefa.status, tarefa.id);
+    if (!lista.length) return;
+    await aplicarEMover(tarefa, tarefa.status, null, lista[0].id);
+  };
+
+  const mandarProFim = async (tarefa: Tarefa) => {
+    const lista = colunaSem(tarefa.status, tarefa.id);
+    if (!lista.length) return;
+    await aplicarEMover(tarefa, tarefa.status, lista[lista.length - 1].id, null);
   };
 
   const arquivar = async (tarefa: Tarefa) => {
