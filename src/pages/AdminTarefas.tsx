@@ -51,7 +51,7 @@ const Coluna = ({
       </header>
       <div
         ref={setNodeRef}
-        className={`rounded-xl p-2 space-y-2 min-h-[120px] transition-colors ${
+        className={`rounded-xl p-2 space-y-2 min-h-[120px] transition-colors md:max-h-[calc(100vh-260px)] md:overflow-y-auto ${
           isOver ? "bg-muted" : "bg-muted/40"
         }`}
       >
