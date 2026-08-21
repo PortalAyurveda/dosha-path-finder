@@ -130,6 +130,54 @@ const StatusBadge = ({ status }: { status: PedidoStatus }) => {
   );
 };
 
+export const MELHORENVIO_URL = "https://melhorenvio.com.br/carrinho";
+
+export type SituacaoME = "postado" | "carrinho" | "fora" | "na";
+
+export const situacaoMelhorEnvio = (p: {
+  frete_melhorenvio_order_id?: string | null;
+  frete_codigo_rastreio?: string | null;
+  status_pagamento?: string | null;
+}): SituacaoME => {
+  if (p.frete_melhorenvio_order_id) {
+    return p.frete_codigo_rastreio ? "postado" : "carrinho";
+  }
+  return p.status_pagamento === "paid" ? "fora" : "na";
+};
+
+export const MelhorEnvioBadge = ({
+  pedido,
+}: {
+  pedido: {
+    frete_melhorenvio_order_id?: string | null;
+    frete_codigo_rastreio?: string | null;
+    status_pagamento?: string | null;
+  };
+}) => {
+  const sit = situacaoMelhorEnvio(pedido);
+  if (sit === "na") return <span className="text-xs text-muted-foreground">—</span>;
+  const meta =
+    sit === "postado"
+      ? { label: "Postado", cls: "bg-green-100 text-green-800 border-green-300" }
+      : sit === "carrinho"
+        ? { label: "No carrinho", cls: "bg-blue-100 text-blue-800 border-blue-300" }
+        : { label: "Fora", cls: "bg-amber-100 text-amber-800 border-amber-300" };
+  return (
+    <div className="space-y-1">
+      <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium border ${meta.cls}`}>
+        {meta.label}
+      </span>
+      {sit === "postado" && pedido.frete_codigo_rastreio && (
+        <div className="font-mono text-[11px] text-muted-foreground">
+          {pedido.frete_codigo_rastreio}
+        </div>
+      )}
+    </div>
+  );
+};
+
+
+
 const AdminLojaVendas = () => {
   const [loading, setLoading] = useState(true);
   const [pedidos, setPedidos] = useState<Pedido[]>([]);
