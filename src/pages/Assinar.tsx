@@ -1573,7 +1573,16 @@ const Assinar = () => {
                 <p className="text-xs mb-4" style={{ color: VERDE, fontFamily: "'DM Sans', sans-serif" }}>
                   Menos de R$1 por dia.
                 </p>
-                <BeneficiosList plano="rotina" checkColor={VERDE} />
+                <FaixaAkasha
+                  pilula="10 por mês"
+                  pilulaCheia={false}
+                  frase={<strong className="font-bold">Ela monta sua rotina e explica cada escolha.</strong>}
+                  itens={[
+                    { texto: "Lembra de você por 7 dias", check: true },
+                    { texto: "10 conversas por mês", check: false },
+                  ]}
+                />
+                <BeneficiosList itens={BENEFICIOS} checkColor={VERDE} />
                 <CardAction plano="rotina" color={VERDE} label="Começar minha rotina" />
               </div>
 
