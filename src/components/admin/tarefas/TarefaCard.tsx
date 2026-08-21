@@ -35,6 +35,8 @@ type Props = {
   onSubir: (t: Tarefa) => void;
   onDescer: (t: Tarefa) => void;
   onMoverColuna: (t: Tarefa, s: Status) => void;
+  onTopo: (t: Tarefa) => void;
+  onFim: (t: Tarefa) => void;
   onArquivar: (t: Tarefa) => void;
   podeSubir: boolean;
   podeDescer: boolean;
@@ -46,6 +48,8 @@ const TarefaCard = ({
   onSubir,
   onDescer,
   onMoverColuna,
+  onTopo,
+  onFim,
   onArquivar,
   podeSubir,
   podeDescer,
