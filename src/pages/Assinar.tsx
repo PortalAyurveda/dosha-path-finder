@@ -73,18 +73,82 @@ const BENEFICIOS: string[] = [
   "Montada para o SEU dosha, com preparo e porquê de cada item",
   "Revisão mensal do seu quadro",
   "Artigos e vídeos escolhidos pro seu quadro (aba Personalizado)",
-  "Akasha com memória de 7 dias (10 conversas por mês)",
-  "Akasha ilimitada: converse de dia ou de madrugada",
-  "Modo Pesquisa: mergulhos profundos no acervo",
   "Acervo completo: 900+ aulas do professor",
   "Cancele quando quiser",
 ];
 
-const INCLUSOS: Record<Plano, Set<number>> = {
-  rotina: new Set([1, 2, 3, 4, 5, 9]),
-  mensal: new Set([1, 2, 3, 4, 5, 6, 7, 8, 9]),
-  anual: new Set([1, 2, 3, 4, 5, 6, 7, 8, 9]),
-};
+// Premium e Anual não repetem a lista da Rotina: resumem em 1 linha.
+const RESUMO_PREMIUM = "Tudo da Rotina — a semana montada, a revisão mensal e as 900+ aulas";
+const RESUMO_ANUAL = "Tudo do Premium, pagando 38% menos";
+
+const AKASHA_TOM = "#9B73AD";    // identidade: fundo, borda. NUNCA como texto
+const AKASHA_TEXTO = "#5E3F6E";  // todo texto da faixa e o fundo da pílula
+const AKASHA_VEU = "#F5EFF8";    // fundo da faixa
+const AKASHA_LOGO =
+  "https://api.portalayurveda.com/storage/v1/object/public/portal_images/logo-akasha.svg";
+
+type FaixaItem = { texto: string; check: boolean };
+
+const FaixaAkasha = ({
+  pilula,
+  pilulaCheia,
+  frase,
+  itens,
+}: {
+  pilula: string;
+  pilulaCheia: boolean;
+  frase: React.ReactNode;
+  itens: FaixaItem[];
+}) => (
+  <div
+    className="rounded-xl border mb-4"
+    style={{
+      background: AKASHA_VEU,
+      borderColor: "#DFCDE8",
+      borderWidth: 1,
+      padding: "11px 12px",
+      fontFamily: "'DM Sans', sans-serif",
+    }}
+  >
+    <div className="flex items-center justify-between gap-2 mb-1.5">
+      <span className="inline-flex items-center gap-1.5 min-w-0">
+        <img src={AKASHA_LOGO} alt="" aria-hidden width={22} height={22} className="w-[22px] h-[22px] shrink-0" loading="lazy" decoding="async" />
+        <span className="text-[14px] font-bold" style={{ color: AKASHA_TEXTO }}>Akasha</span>
+      </span>
+      <span
+        className="shrink-0 px-2 py-0.5 rounded-full text-[12px] font-bold whitespace-nowrap"
+        style={
+          pilulaCheia
+            ? { background: AKASHA_TEXTO, color: "#fff" }
+            : { background: "transparent", color: AKASHA_TEXTO, border: `1px solid #C6A9D3` }
+        }
+      >
+        {pilula}
+      </span>
+    </div>
+    <p className="text-[16px] md:text-[14px] leading-snug mb-1.5" style={{ color: "#4A3357" }}>
+      {frase}
+    </p>
+    <ul className="space-y-1">
+      {itens.map((it) => (
+        <li key={it.texto} className="flex items-start gap-1.5">
+          {it.check ? (
+            <Check className="w-4 h-4 shrink-0 mt-0.5" style={{ color: AKASHA_TEXTO }} strokeWidth={2.6} />
+          ) : (
+            <span className="w-4 h-4 shrink-0" aria-hidden />
+          )}
+          <span
+            className="text-[16px] md:text-[13.5px] leading-snug"
+            style={{ color: it.check ? AKASHA_TEXTO : "#6B5A76" }}
+          >
+            {it.texto}
+          </span>
+        </li>
+      ))}
+    </ul>
+  </div>
+);
+
 
 const DEPOIMENTOS = [
   {
