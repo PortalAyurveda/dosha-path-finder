@@ -11,6 +11,7 @@ import {
   Edit3,
   GripVertical,
   Plus,
+  Printer,
   Trash2,
   X,
 } from "lucide-react";
