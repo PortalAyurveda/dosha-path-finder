@@ -139,6 +139,13 @@ const AdminTarefas = () => {
     return mapa;
   }, [visiveis]);
 
+  // colunas completas (sem filtro) — base para calcular vizinhos reais
+  const porColunaCompleta = useMemo(() => {
+    const mapa: Record<Status, Tarefa[]> = { a_fazer: [], fazendo: [], feito: [] };
+    for (const t of tarefas) (mapa[t.status] ?? mapa.a_fazer).push(t);
+    return mapa;
+  }, [tarefas]);
+
   const sensors = useSensors(
     useSensor(MouseSensor, { activationConstraint: { distance: 6 } }),
     useSensor(TouchSensor, { activationConstraint: { delay: 220, tolerance: 8 } })
