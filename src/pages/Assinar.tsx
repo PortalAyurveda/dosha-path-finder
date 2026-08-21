@@ -87,19 +87,24 @@ const BASE_PORTAL: LinhaPlano[] = [
 ];
 
 const AKASHA_LINHAS: LinhaPlano[] = [
-  { texto: "Conversas sem limite, de dia ou de madrugada", on: ["mensal", "anual"] },
-  { texto: "Ela lembra de você por 7 dias", on: ["rotina", "mensal", "anual"] },
-  { texto: "Modo Pesquisa: mergulha nas 900+ aulas", on: ["mensal", "anual"] },
   { texto: "Conhece seu dosha e seu quadro", on: ["basico", "rotina", "mensal", "anual"] },
+  { texto: "Ela lembra de você por 7 dias", on: ["rotina", "mensal", "anual"] },
+  { texto: "Conversas sem limite, de dia ou de madrugada", on: ["mensal", "anual"] },
+  { texto: "Modo Pesquisa: mergulha nas 900+ aulas", on: ["mensal", "anual"] },
 ];
+
+const CURSO_LOGO =
+  "https://api.portalayurveda.com/storage/v1/object/public/portal_images/logo-rotinas-3.svg";
 
 const PLANO_LINHAS: LinhaPlano[] = [
   { texto: "Rotina completa da semana: café, almoço, jantar, lanches e tônicos", on: ["rotina", "mensal", "anual"] },
   { texto: "Montada para o SEU dosha, com preparo e porquê de cada item", on: ["rotina", "mensal", "anual"] },
   { texto: "Revisão mensal do seu quadro", on: ["rotina", "mensal", "anual"] },
   { texto: "Artigos e vídeos escolhidos pro seu quadro", on: ["rotina", "mensal", "anual"] },
-  { texto: "Curso Rotinas Diárias do Ayurveda", on: ["anual"] },
 ];
+
+const CURSO_LINHA: LinhaPlano = { texto: "Curso Rotinas Diárias do Ayurveda", on: ["anual"] };
+
 
 const AKASHA_ESTILO: Record<
   PlanoCard,
