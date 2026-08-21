@@ -573,21 +573,21 @@ const Assinar = () => {
     const rankPlano = RANK[plano];
     if (rankPlano < rankAtual) {
       return (
-        <div className="w-full">
+        <div className="w-full self-end">
           <EstadoFaixa texto="Incluído no seu plano" />
         </div>
       );
     }
     if (rankPlano === rankAtual) {
-      if (plano === "rotina") {
+      if (plano !== "anual") {
         return (
-          <div className="w-full">
+          <div className="w-full self-end">
             <EstadoFaixa texto="Seu plano atual" />
           </div>
         );
       }
       return (
-        <div className="w-full">
+        <div className="w-full self-end">
           <button
             onClick={() => handleClickPlano(plano)}
             disabled={loadingPlan !== null}
@@ -600,7 +600,8 @@ const Assinar = () => {
       );
     }
     return (
-      <div className="w-full">
+      <div className="w-full self-end">
+        {topo}
         <button
           onClick={() => handleClickPlano(plano)}
           disabled={loadingPlan !== null}
@@ -617,6 +618,7 @@ const Assinar = () => {
         </p>
       </div>
     );
+
   };
 
 
