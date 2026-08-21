@@ -62,7 +62,10 @@ export interface Pedido {
     preco_unitario?: number;
     peso_gramas?: number;
   }>;
+  frete_melhorenvio_order_id: string | null;
+  frete_melhorenvio_cart_id: string | null;
   bling_nfe_numero: string | null;
+
   bling_nfe_url: string | null;
   bling_nfe_status: string | null;
   notas_internas: string | null;
@@ -127,6 +130,54 @@ const StatusBadge = ({ status }: { status: PedidoStatus }) => {
   );
 };
 
+export const MELHORENVIO_URL = "https://melhorenvio.com.br/carrinho";
+
+export type SituacaoME = "postado" | "carrinho" | "fora" | "na";
+
+export const situacaoMelhorEnvio = (p: {
+  frete_melhorenvio_order_id?: string | null;
+  frete_codigo_rastreio?: string | null;
+  status_pagamento?: string | null;
+}): SituacaoME => {
+  if (p.frete_melhorenvio_order_id) {
+    return p.frete_codigo_rastreio ? "postado" : "carrinho";
+  }
+  return p.status_pagamento === "paid" ? "fora" : "na";
+};
+
+export const MelhorEnvioBadge = ({
+  pedido,
+}: {
+  pedido: {
+    frete_melhorenvio_order_id?: string | null;
+    frete_codigo_rastreio?: string | null;
+    status_pagamento?: string | null;
+  };
+}) => {
+  const sit = situacaoMelhorEnvio(pedido);
+  if (sit === "na") return <span className="text-xs text-muted-foreground">—</span>;
+  const meta =
+    sit === "postado"
+      ? { label: "Postado", cls: "bg-green-100 text-green-800 border-green-300" }
+      : sit === "carrinho"
+        ? { label: "No carrinho", cls: "bg-blue-100 text-blue-800 border-blue-300" }
+        : { label: "Fora", cls: "bg-amber-100 text-amber-800 border-amber-300" };
+  return (
+    <div className="space-y-1">
+      <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium border ${meta.cls}`}>
+        {meta.label}
+      </span>
+      {sit === "postado" && pedido.frete_codigo_rastreio && (
+        <div className="font-mono text-[11px] text-muted-foreground">
+          {pedido.frete_codigo_rastreio}
+        </div>
+      )}
+    </div>
+  );
+};
+
+
+
 const AdminLojaVendas = () => {
   const [loading, setLoading] = useState(true);
   const [pedidos, setPedidos] = useState<Pedido[]>([]);
@@ -134,6 +185,17 @@ const AdminLojaVendas = () => {
   const [statusFiltro, setStatusFiltro] = useState<string>("todos");
   const [selecionados, setSelecionados] = useState<Set<string>>(new Set());
   const [enviando, setEnviando] = useState(false);
+  const [resultadoEnvio, setResultadoEnvio] = useState<{
+    total_ok: number;
+    total_erro: number;
+    melhorenvio_url?: string | null;
+    resultados: Array<{
+      numero_pedido?: string | null;
+      ok?: boolean;
+      erro?: string | null;
+      ja_estava?: boolean;
+    }>;
+  } | null>(null);
 
   const carregarPedidos = async () => {
     setLoading(true);
@@ -155,10 +217,17 @@ const AdminLojaVendas = () => {
     carregarPedidos();
   }, []);
 
+  const podeSelecionar = (p: Pedido) =>
+    p.status_pagamento === "paid" && !p.frete_melhorenvio_order_id && p.status !== "cancelado";
+
   const filtrados = useMemo(() => {
     const q = busca.trim().toLowerCase();
     return pedidos.filter((p) => {
-      if (statusFiltro !== "todos" && p.status !== statusFiltro) return false;
+      if (statusFiltro === "fora_melhorenvio") {
+        if (!podeSelecionar(p)) return false;
+      } else if (statusFiltro !== "todos" && p.status !== statusFiltro) {
+        return false;
+      }
       if (!q) return true;
       return (
         (p.numero_pedido || "").toLowerCase().includes(q) ||
@@ -168,12 +237,12 @@ const AdminLojaVendas = () => {
     });
   }, [pedidos, busca, statusFiltro]);
 
-  const pagosVisiveis = useMemo(
-    () => filtrados.filter((p) => p.status === "pago"),
+  const selecionaveisVisiveis = useMemo(
+    () => filtrados.filter(podeSelecionar),
     [filtrados],
   );
-  const todosPagosSelecionados =
-    pagosVisiveis.length > 0 && pagosVisiveis.every((p) => selecionados.has(p.id));
+  const todosSelecionaveisSelecionados =
+    selecionaveisVisiveis.length > 0 && selecionaveisVisiveis.every((p) => selecionados.has(p.id));
 
   const toggleOne = (id: string) => {
     setSelecionados((prev) => {
@@ -187,10 +256,10 @@ const AdminLojaVendas = () => {
   const toggleAll = () => {
     setSelecionados((prev) => {
       const next = new Set(prev);
-      if (todosPagosSelecionados) {
-        pagosVisiveis.forEach((p) => next.delete(p.id));
+      if (todosSelecionaveisSelecionados) {
+        selecionaveisVisiveis.forEach((p) => next.delete(p.id));
       } else {
-        pagosVisiveis.forEach((p) => next.add(p.id));
+        selecionaveisVisiveis.forEach((p) => next.add(p.id));
       }
       return next;
     });
@@ -199,24 +268,45 @@ const AdminLojaVendas = () => {
   const enviarMelhorEnvio = async () => {
     if (selecionados.size === 0) return;
     setEnviando(true);
+    setResultadoEnvio(null);
     try {
       const { data, error } = await supabase.functions.invoke("enviar-melhorenvio", {
         body: { pedido_ids: Array.from(selecionados) },
       });
       if (error) throw error;
-      const resultados = (data?.resultados ?? []) as Array<{ ok?: boolean; status?: string }>;
-      const sucessos = resultados.filter((r) => r.ok || r.status === "ok").length || resultados.length;
-      if (data?.print_url) {
-        window.open(data.print_url, "_blank", "noopener,noreferrer");
+      const resultados = (data?.resultados ?? []) as Array<{
+        numero_pedido?: string | null;
+        ok?: boolean;
+        erro?: string | null;
+        ja_estava?: boolean;
+      }>;
+      const totalOk =
+        typeof data?.total_ok === "number"
+          ? data.total_ok
+          : resultados.filter((r) => r.ok).length;
+      const totalErro =
+        typeof data?.total_erro === "number"
+          ? data.total_erro
+          : resultados.filter((r) => !r.ok).length;
+
+      setResultadoEnvio({
+        total_ok: totalOk,
+        total_erro: totalErro,
+        melhorenvio_url: data?.melhorenvio_url ?? MELHORENVIO_URL,
+        resultados,
+      });
+
+      if (totalErro === 0) {
+        toast.success(`${totalOk} pedido(s) no carrinho do Melhor Envio`);
+        setSelecionados(new Set());
       }
-      toast.success(`${sucessos} pedido(s) enviado(s) com sucesso`);
-      setSelecionados(new Set());
       await carregarPedidos();
     } catch (e: any) {
       console.error(e);
       toast.error(e?.message || "Falha ao enviar para o MelhorEnvio");
     } finally {
       setEnviando(false);
+
     }
   };
 
@@ -261,6 +351,7 @@ const AdminLojaVendas = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="todos">Todos</SelectItem>
+                <SelectItem value="fora_melhorenvio">Fora do Melhor Envio</SelectItem>
                 {Object.entries(STATUS_META).map(([k, v]) => (
                   <SelectItem key={k} value={k}>
                     {v.label}
@@ -269,6 +360,11 @@ const AdminLojaVendas = () => {
               </SelectContent>
             </Select>
           </div>
+        </div>
+
+        <div className="rounded-lg border bg-muted/40 px-4 py-3 text-xs text-muted-foreground">
+          Pedidos pagos entram no Melhor Envio sozinhos, a cada 5 minutos. O botão abaixo serve para
+          reenviar um pedido que falhou ou que você quer adiantar.
         </div>
 
         {selecionados.size > 0 && (
@@ -297,6 +393,49 @@ const AdminLojaVendas = () => {
           </div>
         )}
 
+        {resultadoEnvio && (
+          <div
+            className={`rounded-lg border px-4 py-3 space-y-2 text-sm ${
+              resultadoEnvio.total_erro > 0
+                ? "border-red-300 bg-red-50"
+                : "border-green-300 bg-green-50"
+            }`}
+          >
+            <div className="flex items-center justify-between gap-3 flex-wrap">
+              <span className="font-medium">
+                {resultadoEnvio.total_ok} no carrinho · {resultadoEnvio.total_erro} com erro
+              </span>
+              <div className="flex items-center gap-2">
+                {resultadoEnvio.total_ok > 0 && (
+                  <a
+                    href={resultadoEnvio.melhorenvio_url || MELHORENVIO_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-xs underline"
+                  >
+                    Abrir o Melhor Envio <ExternalLink className="h-3 w-3" />
+                  </a>
+                )}
+                <Button variant="ghost" size="sm" onClick={() => setResultadoEnvio(null)}>
+                  Fechar
+                </Button>
+              </div>
+            </div>
+            {resultadoEnvio.total_erro > 0 && (
+              <ul className="space-y-1 text-xs">
+                {resultadoEnvio.resultados
+                  .filter((r) => !r.ok)
+                  .map((r, i) => (
+                    <li key={`${r.numero_pedido || i}`}>
+                      <span className="font-mono">{r.numero_pedido || "—"}</span>:{" "}
+                      {r.erro || "Erro não informado"}
+                    </li>
+                  ))}
+              </ul>
+            )}
+          </div>
+        )}
+
         <div className="border rounded-lg overflow-hidden bg-card">
           {loading ? (
             <div className="flex items-center justify-center py-16">
@@ -311,11 +450,11 @@ const AdminLojaVendas = () => {
               <TableHeader>
                 <TableRow>
                   <TableHead className="w-10">
-                    {pagosVisiveis.length > 0 ? (
+                    {selecionaveisVisiveis.length > 0 ? (
                       <Checkbox
-                        checked={todosPagosSelecionados}
+                        checked={todosSelecionaveisSelecionados}
                         onCheckedChange={toggleAll}
-                        aria-label="Selecionar todos os pagos"
+                        aria-label="Selecionar todos os pedidos fora do Melhor Envio"
                       />
                     ) : null}
                   </TableHead>
@@ -326,6 +465,7 @@ const AdminLojaVendas = () => {
                   <TableHead className="text-right">Total</TableHead>
                   <TableHead>Pagamento</TableHead>
                   <TableHead>Status</TableHead>
+                  <TableHead>Melhor Envio</TableHead>
                   <TableHead></TableHead>
                 </TableRow>
               </TableHeader>
@@ -334,7 +474,7 @@ const AdminLojaVendas = () => {
                 {filtrados.map((p) => (
                   <TableRow key={p.id} data-state={selecionados.has(p.id) ? "selected" : undefined}>
                     <TableCell>
-                      {p.status === "pago" ? (
+                      {podeSelecionar(p) ? (
                         <Checkbox
                           checked={selecionados.has(p.id)}
                           onCheckedChange={() => toggleOne(p.id)}
@@ -342,6 +482,7 @@ const AdminLojaVendas = () => {
                         />
                       ) : null}
                     </TableCell>
+
                     <TableCell className="font-mono text-xs">
                       {p.numero_pedido || p.id.slice(0, 8)}
                     </TableCell>
@@ -369,7 +510,11 @@ const AdminLojaVendas = () => {
                     <TableCell>
                       <StatusBadge status={p.status} />
                     </TableCell>
+                    <TableCell>
+                      <MelhorEnvioBadge pedido={p} />
+                    </TableCell>
                     <TableCell className="text-right">
+
                       <Button asChild size="sm" variant="outline">
                         <Link to={`/admin/loja/vendas/${p.id}`}>Ver detalhes</Link>
                       </Button>
