@@ -104,7 +104,7 @@ const TarefaCard = ({
               {tarefa.status === "feito" && (
                 <Check className="w-3.5 h-3.5 mt-0.5 shrink-0 text-green-700/70" />
               )}
-              <span className="min-w-0">{tarefa.titulo}</span>
+              <span className="min-w-0 line-clamp-2">{tarefa.titulo}</span>
             </p>
           </div>
 
@@ -154,7 +154,7 @@ const TarefaCard = ({
         </div>
 
         {tarefa.objetivo && (
-          <p className="text-xs text-muted-foreground line-clamp-2">{tarefa.objetivo}</p>
+          <p className="text-xs text-muted-foreground line-clamp-1">{tarefa.objetivo}</p>
         )}
 
         {tarefa.ultima_nota && (
@@ -178,7 +178,7 @@ const TarefaCard = ({
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <span className="px-1.5 py-0.5 rounded-full bg-muted text-foreground/70">
+                  <span className="px-1.5 py-0.5 rounded-full bg-muted text-foreground/70 max-w-[140px] truncate">
                     {tarefa.devlog_modulo}
                   </span>
                 </TooltipTrigger>
