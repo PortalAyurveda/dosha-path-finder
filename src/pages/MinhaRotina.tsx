@@ -1415,7 +1415,9 @@ const RotinaSlotCard = ({
               {detalhes}
             </DialogContent>
           </Dialog>
+          {faixaLista}
         </Card>
+
         {videoDialog}
       </>
     );
