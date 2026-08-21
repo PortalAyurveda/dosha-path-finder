@@ -391,7 +391,7 @@ const TarefaModal = ({ aberto, tarefa, onFechar, onSalvo }: Props) => {
 
             {/* Anexos */}
             <div className="space-y-2">
-              <Label>Links e caminhos</Label>
+              <Label>Anexos</Label>
               <div className="space-y-2">
                 {anexos.map((a, i) => (
                   <div key={i} className="flex items-center gap-2">
@@ -519,7 +519,7 @@ const TarefaModal = ({ aberto, tarefa, onFechar, onSalvo }: Props) => {
                       <p className="text-sm whitespace-pre-wrap">{String(n.texto ?? "")}</p>
                       <p className="text-[11px] text-muted-foreground mt-0.5">
                         {dataLonga(String(n.em ?? ""))}
-                        {n.autor_email ? ` · ${String(n.autor_email)}` : ""}
+                        {n.por ? ` · ${String(n.por)}` : ""}
                       </p>
                     </div>
                   ))}

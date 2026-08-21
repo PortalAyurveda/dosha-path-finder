@@ -35,6 +35,8 @@ type Props = {
   onSubir: (t: Tarefa) => void;
   onDescer: (t: Tarefa) => void;
   onMoverColuna: (t: Tarefa, s: Status) => void;
+  onTopo: (t: Tarefa) => void;
+  onFim: (t: Tarefa) => void;
   onArquivar: (t: Tarefa) => void;
   podeSubir: boolean;
   podeDescer: boolean;
@@ -46,6 +48,8 @@ const TarefaCard = ({
   onSubir,
   onDescer,
   onMoverColuna,
+  onTopo,
+  onFim,
   onArquivar,
   podeSubir,
   podeDescer,
@@ -82,12 +86,13 @@ const TarefaCard = ({
         ))}
       </div>
 
-      <div className="pl-4 pr-2 py-3 space-y-1.5">
+      <div className="pl-4 pr-2 py-2.5 space-y-1">
         <div className="flex items-start gap-2">
           <div className="flex-1 min-w-0">
             <p
-              className="text-sm leading-snug flex items-start gap-1.5"
+              className="!text-sm leading-snug flex items-start gap-1.5"
               style={{
+                fontSize: "0.875rem",
                 fontWeight: tarefa.urgente ? 700 : 500,
                 color: "#352F54",
                 opacity: tarefa.status === "feito" ? 0.7 : 1,
@@ -99,7 +104,7 @@ const TarefaCard = ({
               {tarefa.status === "feito" && (
                 <Check className="w-3.5 h-3.5 mt-0.5 shrink-0 text-green-700/70" />
               )}
-              <span className="min-w-0">{tarefa.titulo}</span>
+              <span className="min-w-0 line-clamp-2">{tarefa.titulo}</span>
             </p>
           </div>
 
@@ -136,6 +141,8 @@ const TarefaCard = ({
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="z-50">
+                <DropdownMenuItem onClick={() => onTopo(tarefa)}>Mandar pro topo</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => onFim(tarefa)}>Mandar pro fim</DropdownMenuItem>
                 {COLUNAS.filter((c) => c.key !== tarefa.status).map((c) => (
                   <DropdownMenuItem key={c.key} onClick={() => onMoverColuna(tarefa, c.key)}>
                     Mover para {c.label}
@@ -147,7 +154,7 @@ const TarefaCard = ({
         </div>
 
         {tarefa.objetivo && (
-          <p className="text-xs text-muted-foreground line-clamp-2">{tarefa.objetivo}</p>
+          <p className="text-xs text-muted-foreground line-clamp-1">{tarefa.objetivo}</p>
         )}
 
         {tarefa.ultima_nota && (
@@ -171,7 +178,7 @@ const TarefaCard = ({
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <span className="px-1.5 py-0.5 rounded-full bg-muted text-foreground/70">
+                  <span className="px-1.5 py-0.5 rounded-full bg-muted text-foreground/70 max-w-[140px] truncate">
                     {tarefa.devlog_modulo}
                   </span>
                 </TooltipTrigger>

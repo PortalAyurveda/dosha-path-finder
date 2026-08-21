@@ -3457,6 +3457,60 @@ export type Database = {
         }
         Relationships: []
       }
+      ingredientes_catalogo: {
+        Row: {
+          created_at: string
+          despensa: boolean
+          forma: string | null
+          id: string
+          nome: string
+          nome_exibicao: string
+          nome_exibicao_plural: string | null
+          observacao: string | null
+          perecivel_dias: number | null
+          rende_por_embalagem: number | null
+          revisado_humano: boolean
+          setor: string
+          sinonimos: string[]
+          unidade_compra: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          despensa?: boolean
+          forma?: string | null
+          id?: string
+          nome: string
+          nome_exibicao: string
+          nome_exibicao_plural?: string | null
+          observacao?: string | null
+          perecivel_dias?: number | null
+          rende_por_embalagem?: number | null
+          revisado_humano?: boolean
+          setor: string
+          sinonimos?: string[]
+          unidade_compra?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          despensa?: boolean
+          forma?: string | null
+          id?: string
+          nome?: string
+          nome_exibicao?: string
+          nome_exibicao_plural?: string | null
+          observacao?: string | null
+          perecivel_dias?: number | null
+          rende_por_embalagem?: number | null
+          revisado_humano?: boolean
+          setor?: string
+          sinonimos?: string[]
+          unidade_compra?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       jiva_descartes: {
         Row: {
           chunk_idx: number | null
@@ -5553,6 +5607,155 @@ export type Database = {
         }
         Relationships: []
       }
+      receita_ingredientes: {
+        Row: {
+          alternativas: string[]
+          comprar: boolean
+          confianca: string | null
+          created_at: string
+          exibicao: string
+          id: string
+          ingrediente_id: string | null
+          ingrediente_texto: string
+          item_original: string | null
+          nota: string | null
+          nugget_id: string
+          opcional: boolean
+          ordem: number
+          origem_composta: string | null
+          papel: string | null
+          preparo: string | null
+          qtd_original: string | null
+          quantidade: number | null
+          tamanho: string | null
+          unidade: string | null
+        }
+        Insert: {
+          alternativas?: string[]
+          comprar?: boolean
+          confianca?: string | null
+          created_at?: string
+          exibicao: string
+          id?: string
+          ingrediente_id?: string | null
+          ingrediente_texto: string
+          item_original?: string | null
+          nota?: string | null
+          nugget_id: string
+          opcional?: boolean
+          ordem: number
+          origem_composta?: string | null
+          papel?: string | null
+          preparo?: string | null
+          qtd_original?: string | null
+          quantidade?: number | null
+          tamanho?: string | null
+          unidade?: string | null
+        }
+        Update: {
+          alternativas?: string[]
+          comprar?: boolean
+          confianca?: string | null
+          created_at?: string
+          exibicao?: string
+          id?: string
+          ingrediente_id?: string | null
+          ingrediente_texto?: string
+          item_original?: string | null
+          nota?: string | null
+          nugget_id?: string
+          opcional?: boolean
+          ordem?: number
+          origem_composta?: string | null
+          papel?: string | null
+          preparo?: string | null
+          qtd_original?: string | null
+          quantidade?: number | null
+          tamanho?: string | null
+          unidade?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "receita_ingredientes_ingrediente_id_fkey"
+            columns: ["ingrediente_id"]
+            isOneToOne: false
+            referencedRelation: "ingredientes_catalogo"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "receita_ingredientes_nugget_id_fkey"
+            columns: ["nugget_id"]
+            isOneToOne: false
+            referencedRelation: "rotina_nuggets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "receita_ingredientes_nugget_id_fkey"
+            columns: ["nugget_id"]
+            isOneToOne: false
+            referencedRelation: "v_receitas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "receita_ingredientes_unidade_fkey"
+            columns: ["unidade"]
+            isOneToOne: false
+            referencedRelation: "unidades_medida"
+            referencedColumns: ["unidade"]
+          },
+        ]
+      }
+      receita_meta: {
+        Row: {
+          created_at: string
+          nugget_id: string
+          rende_confianca: string | null
+          rende_justificativa: string | null
+          rende_porcoes: number | null
+          revisado_humano: boolean
+          tempo_confianca: string | null
+          tempo_preparo_min: number | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          nugget_id: string
+          rende_confianca?: string | null
+          rende_justificativa?: string | null
+          rende_porcoes?: number | null
+          revisado_humano?: boolean
+          tempo_confianca?: string | null
+          tempo_preparo_min?: number | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          nugget_id?: string
+          rende_confianca?: string | null
+          rende_justificativa?: string | null
+          rende_porcoes?: number | null
+          revisado_humano?: boolean
+          tempo_confianca?: string | null
+          tempo_preparo_min?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "receita_meta_nugget_id_fkey"
+            columns: ["nugget_id"]
+            isOneToOne: true
+            referencedRelation: "rotina_nuggets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "receita_meta_nugget_id_fkey"
+            columns: ["nugget_id"]
+            isOneToOne: true
+            referencedRelation: "v_receitas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       recepcionista_memoria: {
         Row: {
           id: number
@@ -6007,6 +6210,39 @@ export type Database = {
           },
         ]
       }
+      rotina_selecao: {
+        Row: {
+          created_at: string
+          nugget_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          nugget_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          nugget_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rotina_selecao_nugget_id_fkey"
+            columns: ["nugget_id"]
+            isOneToOne: false
+            referencedRelation: "rotina_nuggets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rotina_selecao_nugget_id_fkey"
+            columns: ["nugget_id"]
+            isOneToOne: false
+            referencedRelation: "v_receitas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       rotinas_usuario: {
         Row: {
           created_at: string | null
@@ -6196,6 +6432,39 @@ export type Database = {
           profundidade?: string | null
           qualidade_reteste?: string | null
           tag?: string | null
+        }
+        Relationships: []
+      }
+      unidades_medida: {
+        Row: {
+          familia: string
+          g: number | null
+          ml: number | null
+          ordem: number
+          rotulo_plural: string
+          rotulo_singular: string
+          somavel: boolean
+          unidade: string
+        }
+        Insert: {
+          familia: string
+          g?: number | null
+          ml?: number | null
+          ordem?: number
+          rotulo_plural: string
+          rotulo_singular: string
+          somavel?: boolean
+          unidade: string
+        }
+        Update: {
+          familia?: string
+          g?: number | null
+          ml?: number | null
+          ordem?: number
+          rotulo_plural?: string
+          rotulo_singular?: string
+          somavel?: boolean
+          unidade?: string
         }
         Relationships: []
       }
@@ -7348,6 +7617,7 @@ export type Database = {
           video_id: string
         }[]
       }
+      fmt_qtd: { Args: { q: number }; Returns: string }
       gerar_insights_ayurvedicos: {
         Args: { p_registro_id: string }
         Returns: Json
@@ -7522,6 +7792,20 @@ export type Database = {
         Args: { p_escolhas?: Json; p_slug: string }
         Returns: Json
       }
+      lista_de_compras: {
+        Args: { p_nugget_ids?: string[]; p_teste_id: string }
+        Returns: {
+          confianca: string
+          despensa: boolean
+          ingrediente: string
+          quantidade_texto: string
+          receitas: string[]
+          setor: string
+          setor_ordem: number
+          tem_estimativa: boolean
+          unidade_compra: string
+        }[]
+      }
       match_conteudo: {
         Args: {
           p_dosha?: string
@@ -7692,6 +7976,27 @@ export type Database = {
         }
       }
       receita_teaser: { Args: { p_item: string }; Returns: Json }
+      receitas_para_impressao: {
+        Args: { p_nugget_ids: string[] }
+        Returns: {
+          dicas: string
+          dravya_guna: Json
+          efeito_esperado: string
+          imagem_url: string
+          ingredientes: Json
+          kapha: number
+          modo_preparo: Json
+          nugget_id: string
+          pitta: number
+          rende_porcoes: number
+          resumo: string
+          slug: string
+          subcategoria: string
+          tempo_preparo_min: number
+          titulo: string
+          vata: number
+        }[]
+      }
       recompute_user_level: { Args: { p_user: string }; Returns: undefined }
       registrar_evento_email: { Args: { p: Json }; Returns: number }
       relatorio_dossie: { Args: { p_horas?: number }; Returns: Json }
@@ -7730,6 +8035,28 @@ export type Database = {
           peso: string
           pittascore: number
           vatascore: number
+        }[]
+      }
+      rotina_para_impressao: {
+        Args: { p_teste_id: string }
+        Returns: {
+          categoria: string
+          dia: number
+          dicas: string
+          efeito_esperado: string
+          eh_receita: boolean
+          icone: string
+          imagem_url: string
+          ingredientes: Json
+          modo_preparo: Json
+          nugget_id: string
+          praticado: boolean
+          rende_porcoes: number
+          resumo: string
+          slot: string
+          subcategoria: string
+          tempo_preparo_min: number
+          titulo: string
         }[]
       }
       rpg_admin_select: { Args: { _table: string }; Returns: Json }
