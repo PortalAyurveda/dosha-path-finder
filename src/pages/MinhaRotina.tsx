@@ -784,6 +784,11 @@ const MinhaRotina = () => {
                     onToggleFeito={() => row && toggleFeito(row)}
                     focus={!!nugget && nugget.id === focusNuggetId}
                     compact
+                    mostrarLista={!!nugget}
+                    naLista={!!nugget && selecionados.has(nugget.id)}
+                    onToggleLista={() => nugget && toggleSelecao(nugget.id)}
+                    erroLista={!!nugget && erroSelecao === nugget.id}
+
                   />
                   {!isLast && (
                     <ArrowRight
