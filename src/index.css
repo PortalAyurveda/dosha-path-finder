@@ -305,10 +305,17 @@ body {
 }
 
 @media print {
-  body * { visibility: hidden !important; }
-  #contrato-print, #contrato-print * { visibility: visible !important; }
-  #contrato-print { position: absolute !important; inset: 0 !important; }
+  body:has(#contrato-print) * { visibility: hidden !important; }
+  body:has(#contrato-print) #contrato-print,
+  body:has(#contrato-print) #contrato-print * { visibility: visible !important; }
+  body:has(#contrato-print) #contrato-print { position: absolute !important; inset: 0 !important; }
   #contrato-print .no-print { display: none !important; }
+
+  .no-print { display: none !important; }
+  html, body { background: #fff !important; }
+  a[href]:after { content: none !important; }
+  .quebra-antes { break-before: page; }
+  .nao-quebrar  { break-inside: avoid; }
 }
 
 /* Akasha: glow "chamando" para quem ainda não conversou */
