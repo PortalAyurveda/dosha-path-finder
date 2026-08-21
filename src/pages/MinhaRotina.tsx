@@ -1440,6 +1440,9 @@ const RotinaSlotCard = ({
         </CollapsibleContent>
       </Collapsible>
 
+      {faixaLista}
+
+
       {videoDialog}
     </Card>
   );
