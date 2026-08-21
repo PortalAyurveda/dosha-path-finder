@@ -1659,7 +1659,6 @@ const Assinar = () => {
                 />
                 <BeneficiosList
                   itens={[RESUMO_ANUAL, "Cancele quando quiser"]}
-                  plano="anual"
                   checkColor={DOURADO_DARK}
                   extra={cursoIncluso}
                 />
