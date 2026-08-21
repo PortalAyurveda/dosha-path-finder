@@ -1704,7 +1704,7 @@ const Assinar = () => {
                   className="text-sm md:text-base leading-relaxed"
                   style={{ color: PRIMARY, opacity: 0.85, fontFamily: "'DM Sans', sans-serif" }}
                 >
-                  Terapeuta Ayurveda, fundador do Portal. 15 anos de clínica, 13 de sala de aula, mais de 4.500 alunos formados. Tudo no Portal nasce do que funciona na clínica dele, adaptado ao Brasil.
+                  Terapeuta Ayurveda com 15 anos de consultório e 13 de sala de aula. Professor na pós-graduação da Santa Casa de São Paulo e em cursos de formação e especialização — clínica, diagnóstico, formulação e nutrição ayurvédica. Fundador do Portal Ayurveda e da Samkhya.
                 </p>
               </div>
             </div>
