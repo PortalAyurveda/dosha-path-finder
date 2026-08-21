@@ -150,6 +150,7 @@ const parseTimestamp = (ts: string | null): number | undefined => {
 const MinhaRotina = () => {
   const { user, loading, doshaResult, profile, refreshProfile } = useUser();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const [diaSelecionado, setDiaSelecionado] = useState<number>(1);
 
   // ?item= : deep-link para abrir um nugget específico já expandido (reativo à URL)
