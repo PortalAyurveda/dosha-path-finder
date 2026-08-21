@@ -510,7 +510,11 @@ const AdminLojaVendas = () => {
                     <TableCell>
                       <StatusBadge status={p.status} />
                     </TableCell>
+                    <TableCell>
+                      <MelhorEnvioBadge pedido={p} />
+                    </TableCell>
                     <TableCell className="text-right">
+
                       <Button asChild size="sm" variant="outline">
                         <Link to={`/admin/loja/vendas/${p.id}`}>Ver detalhes</Link>
                       </Button>
