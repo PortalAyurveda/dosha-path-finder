@@ -86,12 +86,13 @@ const TarefaCard = ({
         ))}
       </div>
 
-      <div className="pl-4 pr-2 py-3 space-y-1.5">
+      <div className="pl-4 pr-2 py-2.5 space-y-1">
         <div className="flex items-start gap-2">
           <div className="flex-1 min-w-0">
             <p
-              className="text-sm leading-snug flex items-start gap-1.5"
+              className="!text-sm leading-snug flex items-start gap-1.5"
               style={{
+                fontSize: "0.875rem",
                 fontWeight: tarefa.urgente ? 700 : 500,
                 color: "#352F54",
                 opacity: tarefa.status === "feito" ? 0.7 : 1,
