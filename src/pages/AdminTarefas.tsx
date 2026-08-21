@@ -314,7 +314,9 @@ const AdminTarefas = () => {
         <header className="flex flex-wrap items-center gap-3 justify-between">
           <div className="flex items-baseline gap-2">
             <h1 className="text-2xl font-heading font-bold text-foreground">Tarefas</h1>
-            <span className="text-sm text-muted-foreground">{tarefas.length} no quadro</span>
+            <span className="text-sm text-muted-foreground">
+              {filtros.length ? `${visiveis.length} de ${tarefas.length}` : `${tarefas.length} no quadro`}
+            </span>
           </div>
           <Button
             onClick={() => {
@@ -392,6 +394,8 @@ const AdminTarefas = () => {
                           onSubir={(x) => moverPorSeta(x, -1)}
                           onDescer={(x) => moverPorSeta(x, 1)}
                           onMoverColuna={moverParaColuna}
+                          onTopo={mandarProTopo}
+                          onFim={mandarProFim}
                           onArquivar={arquivar}
                         />
                       ))}
