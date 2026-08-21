@@ -477,26 +477,22 @@ const Assinar = () => {
   ];
 
   const BaseBloco = ({ plano, cor }: { plano: PlanoCard; cor: string }) => (
-    <div>
-      <RotuloBloco cor={CINZA_ROTULO}>Do Portal, pra todo mundo</RotuloBloco>
-      <ul className="space-y-1.5">
-        {BASE_PORTAL.map((l) => (
-          <LinhaCheck key={l.texto} texto={l.texto} on={l.on.includes(plano)} cor={cor} />
-        ))}
-      </ul>
-    </div>
+    <ul className="space-y-1.5">
+      {BASE_PORTAL.map((l) => (
+        <LinhaCheck key={l.texto} texto={l.texto} on={l.on.includes(plano)} cor={cor} />
+      ))}
+    </ul>
   );
 
   const PlanoBloco = ({ plano, cor }: { plano: PlanoCard; cor: string }) => (
-    <div>
-      <RotuloBloco cor={CINZA_ROTULO}>O que vem no plano</RotuloBloco>
-      <ul className="space-y-1.5">
-        {PLANO_LINHAS.map((l) => (
-          <LinhaCheck key={l.texto} texto={l.texto} on={l.on.includes(plano)} cor={cor} />
-        ))}
-      </ul>
-    </div>
+    <ul className="space-y-1.5">
+      {PLANO_LINHAS.map((l) => (
+        <LinhaCheck key={l.texto} texto={l.texto} on={l.on.includes(plano)} cor={cor} />
+      ))}
+      <LinhaCurso on={CURSO_LINHA.on.includes(plano)} cor={cor} />
+    </ul>
   );
+
 
   const EstadoFaixa = ({ texto }: { texto: string }) => (
     <div
