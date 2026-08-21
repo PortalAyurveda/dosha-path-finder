@@ -430,6 +430,16 @@ const MinhaRotina = () => {
     },
   });
 
+  const favoritas = useMemo(
+    () =>
+      (favoritosRows ?? [])
+        .map((f) => nuggetsById.get(f.nugget_id))
+        .filter((n): n is Nugget => !!n),
+    [favoritosRows, nuggetsById]
+  );
+
+
+
   // A estrela grava em rotina_favoritos junto com os pontos: revalida a lista
   useEffect(() => {
     if (!user?.id) return;
