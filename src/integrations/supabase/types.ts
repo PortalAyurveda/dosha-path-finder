@@ -1615,6 +1615,65 @@ export type Database = {
           },
         ]
       }
+      curso_diplomas: {
+        Row: {
+          carga_horaria: string
+          cor_acento: string
+          cor_clara: string
+          cor_escura: string
+          cor_primaria: string
+          created_at: string
+          curso_id: string
+          id: string
+          logo_url: string | null
+          n_aulas: number | null
+          n_modulos: number | null
+          nome_exibicao: string
+          texto_certificado: string
+          updated_at: string
+        }
+        Insert: {
+          carga_horaria?: string
+          cor_acento?: string
+          cor_clara?: string
+          cor_escura?: string
+          cor_primaria?: string
+          created_at?: string
+          curso_id: string
+          id?: string
+          logo_url?: string | null
+          n_aulas?: number | null
+          n_modulos?: number | null
+          nome_exibicao?: string
+          texto_certificado?: string
+          updated_at?: string
+        }
+        Update: {
+          carga_horaria?: string
+          cor_acento?: string
+          cor_clara?: string
+          cor_escura?: string
+          cor_primaria?: string
+          created_at?: string
+          curso_id?: string
+          id?: string
+          logo_url?: string | null
+          n_aulas?: number | null
+          n_modulos?: number | null
+          nome_exibicao?: string
+          texto_certificado?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "curso_diplomas_curso_id_fkey"
+            columns: ["curso_id"]
+            isOneToOne: true
+            referencedRelation: "cursos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       curso_materiais: {
         Row: {
           aula_id: string
