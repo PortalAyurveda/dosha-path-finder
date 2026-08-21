@@ -360,6 +360,85 @@ const MinhaRotina = () => {
     },
   });
 
+  // ===== Seleção pra lista de compras =====
+  const selecaoKey = ["rotina-selecao", user?.id] as const;
+  const { data: selecaoIds } = useQuery({
+    queryKey: selecaoKey,
+    enabled: !!user?.id,
+    queryFn: async () => {
+      const { data, error } = await (supabase.from("rotina_selecao") as any)
+        .select("nugget_id")
+        .eq("user_id", user!.id);
+      if (error) throw error;
+      return ((data ?? []) as { nugget_id: string }[]).map((r) => r.nugget_id);
+    },
+  });
+  const selecionados = useMemo(() => new Set(selecaoIds ?? []), [selecaoIds]);
+  const [erroSelecao, setErroSelecao] = useState<string | null>(null);
+
+  const toggleSelecao = async (nuggetId: string) => {
+    if (!user) return;
+    const jaTem = selecionados.has(nuggetId);
+    setErroSelecao(null);
+    queryClient.setQueryData<string[]>(selecaoKey as any, (prev) => {
+      const arr = prev ?? [];
+      return jaTem ? arr.filter((x) => x !== nuggetId) : [...arr, nuggetId];
+    });
+    try {
+      if (jaTem) {
+        const { error } = await (supabase.from("rotina_selecao") as any)
+          .delete()
+          .eq("user_id", user.id)
+          .eq("nugget_id", nuggetId);
+        if (error) throw error;
+      } else {
+        const { error } = await (supabase.from("rotina_selecao") as any).upsert(
+          { user_id: user.id, nugget_id: nuggetId },
+          { onConflict: "user_id,nugget_id" }
+        );
+        if (error) throw error;
+      }
+      queryClient.invalidateQueries({ queryKey: selecaoKey as any });
+    } catch {
+      queryClient.setQueryData<string[]>(selecaoKey as any, (prev) => {
+        const arr = prev ?? [];
+        return jaTem ? [...arr, nuggetId] : arr.filter((x) => x !== nuggetId);
+      });
+      setErroSelecao(nuggetId);
+    }
+  };
+
+  const limparSelecao = async () => {
+    if (!user) return;
+    queryClient.setQueryData<string[]>(selecaoKey as any, () => []);
+    await (supabase.from("rotina_selecao") as any).delete().eq("user_id", user.id);
+    queryClient.invalidateQueries({ queryKey: selecaoKey as any });
+  };
+
+  // ===== Favoritas =====
+  const { data: favoritosRows } = useQuery({
+    queryKey: ["minhas-favoritas", user?.id],
+    enabled: !!user?.id,
+    queryFn: async () => {
+      const { data, error } = await (supabase.from("rotina_favoritos") as any)
+        .select("nugget_id, created_at")
+        .eq("user_id", user!.id)
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return (data ?? []) as { nugget_id: string; created_at: string }[];
+    },
+  });
+
+  // Modal de impressão
+  const [imprimirOpen, setImprimirOpen] = useState(false);
+  const [pecasEscolhidas, setPecasEscolhidas] = useState<Record<string, boolean>>({
+    rotina: true,
+    receitas: false,
+    compras: false,
+  });
+  const [erroPecas, setErroPecas] = useState(false);
+
+
   // Gate de login
   if (loading) {
     return (
