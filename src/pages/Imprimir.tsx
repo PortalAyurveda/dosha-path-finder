@@ -901,6 +901,20 @@ const Imprimir = () => {
         #folha-impressao, #folha-impressao * { visibility: visible !important; }
         #folha-impressao { position: static !important; }
       }`}</style>
+      <style>{`#folha-impressao p,
+        #folha-impressao span,
+        #folha-impressao li,
+        #folha-impressao td,
+        #folha-impressao th,
+        #folha-impressao h1,
+        #folha-impressao h2,
+        #folha-impressao h3 {
+          color: #000 !important;
+        }
+        #folha-impressao span:not([style*="font-size"]) {
+          font-size: inherit;
+        }`}</style>
+
 
       {/* ------------ barra de opções ------------ */}
       <div className="no-print px-4 pt-6">
