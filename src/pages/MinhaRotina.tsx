@@ -1301,6 +1301,36 @@ const RotinaSlotCard = ({
     />
   ) : null;
 
+  const faixaLista = mostrarLista ? (
+    <div
+      className="flex items-center gap-3 px-3 cursor-pointer select-none"
+      style={{
+        minHeight: 56,
+        borderLeft: "4px solid #352F54",
+        background: naLista ? "#F0EEE9" : "transparent",
+        borderTop: "1px solid #E4E1DA",
+      }}
+      onClick={(e) => {
+        e.stopPropagation();
+        onToggleLista?.();
+      }}
+    >
+      <Checkbox
+        checked={!!naLista}
+        onCheckedChange={() => onToggleLista?.()}
+        onClick={(e) => e.stopPropagation()}
+        className="h-6 w-6"
+        aria-label="pôr esta receita na lista de compras"
+      />
+      <span className="font-medium" style={{ fontSize: 17, color: "#352F54" }}>
+        Pôr na lista de compras
+      </span>
+      {erroLista && (
+        <span style={{ fontSize: 16, color: "#B3261E" }}>Não deu. Toque de novo.</span>
+      )}
+    </div>
+  ) : null;
+
   if (compact) {
     return (
       <>
@@ -1314,16 +1344,24 @@ const RotinaSlotCard = ({
           <button
             onClick={onToggleFeito}
             disabled={!row}
-            className="absolute top-2 right-2 z-10 p-1.5 rounded-full bg-background/80 backdrop-blur hover:bg-muted disabled:opacity-40"
-            aria-label="marcar como praticado"
+            className="absolute top-2 right-2 z-10 flex items-center gap-1.5 min-h-[48px] px-2.5 rounded-full bg-background/90 backdrop-blur hover:bg-muted disabled:opacity-40"
+            aria-label="guardar esta receita nas favoritas"
           >
             <Star
               className={cn(
-                "h-5 w-5",
-                feito ? "fill-secondary text-secondary" : "text-muted-foreground"
+                "h-6 w-6",
+                feito ? "fill-secondary text-secondary" : "text-[#3F3A52]"
               )}
+              strokeWidth={2}
             />
+            <span
+              className="text-base font-medium"
+              style={{ color: feito ? "#352F54" : "#3F3A52" }}
+            >
+              {feito ? "Favorita" : "Favoritar"}
+            </span>
           </button>
+
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
               <button className="w-full text-left">
