@@ -121,6 +121,10 @@ const AdminTarefas = () => {
     };
   }, [carregar, carregarArquivadas, verArquivadas]);
 
+  useEffect(() => {
+    setEmEdicao((atual) => (atual ? tarefas.find((t) => t.id === atual.id) ?? atual : atual));
+  }, [tarefas]);
+
   const visiveis = useMemo(
     () =>
       filtros.length === 0
