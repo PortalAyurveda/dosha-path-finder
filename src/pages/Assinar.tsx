@@ -147,10 +147,11 @@ const FaixaAkasha = ({ plano, cor }: { plano: PlanoCard; cor: string }) => {
   const est = AKASHA_ESTILO[plano];
   return (
     <div className="rounded-xl" style={{ background: est.bg, border: est.border, padding: "11px 12px" }}>
-      <div className="flex items-center justify-between gap-2 mb-2">
-        <span className="flex items-center gap-1.5 min-w-0">
+      <div className="flex items-center justify-between gap-x-2 gap-y-1 mb-2 flex-wrap">
+        <span className="flex items-center gap-1.5">
           <img src={AKASHA_LOGO} alt="" aria-hidden width={22} height={22} className="w-[22px] h-[22px] shrink-0" loading="lazy" decoding="async" />
-          <span className="text-[14.5px] font-bold truncate" style={{ color: AKASHA_TEXTO, fontFamily: "'DM Sans', sans-serif" }}>
+          <span className="text-[14.5px] font-bold whitespace-nowrap" style={{ color: AKASHA_TEXTO, fontFamily: "'DM Sans', sans-serif" }}>
+
             Akasha IA
           </span>
         </span>
