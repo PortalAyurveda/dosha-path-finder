@@ -1641,14 +1641,32 @@ const Assinar = () => {
                   <p className="font-serif font-bold text-[26px] mb-1" style={{ color: PRIMARY }}>
                     R$ 79,90<span className="text-sm font-normal">/mês</span>
                   </p>
-                  <p className="text-[12.5px]" style={{ color: SALMAO, fontFamily: "'DM Sans', sans-serif" }}>
-                    Tudo da Rotina, mais a companhia dela.
+                  <p className="text-[13px]" style={{ color: SALMAO, fontFamily: "'DM Sans', sans-serif" }}>
+                    Tudo da Rotina, mais a companhia.
                   </p>
                 </div>
                 <BaseBloco plano="mensal" cor={SALMAO} />
                 <FaixaAkasha plano="mensal" cor={SALMAO} />
                 <PlanoBloco plano="mensal" cor={SALMAO} />
-                <CardAction plano="mensal" color={SALMAO} hoverColor={SALMAO_HOVER} label="Assinar Premium" />
+                <CardAction
+                  plano="mensal"
+                  color={SALMAO}
+                  hoverColor={SALMAO_HOVER}
+                  label="Assinar Premium"
+                  topo={
+                    <button
+                      type="button"
+                      onClick={() =>
+                        document.getElementById("plano-anual")?.scrollIntoView({ behavior: "smooth", block: "center" })
+                      }
+                      className="mb-2 w-full text-[12.5px] underline underline-offset-4 text-center"
+                      style={{ color: DOURADO_DARK, fontFamily: "'DM Sans', sans-serif" }}
+                    >
+                      ou R$ 49,75/mês assinando o ano →
+                    </button>
+                  }
+                />
+
               </div>
 
               {/* CARD 3 — PREMIUM ANUAL */}
