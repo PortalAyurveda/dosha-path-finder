@@ -3462,6 +3462,7 @@ export type Database = {
           created_at: string
           despensa: boolean
           forma: string | null
+          g_por_unidade_uso: number | null
           id: string
           nome: string
           nome_exibicao: string
@@ -3470,15 +3471,19 @@ export type Database = {
           perecivel_dias: number | null
           rende_por_embalagem: number | null
           revisado_humano: boolean
+          rotulo_compra: string | null
+          rotulo_compra_plural: string | null
           setor: string
           sinonimos: string[]
           unidade_compra: string | null
+          unidade_de_uso: string | null
           updated_at: string
         }
         Insert: {
           created_at?: string
           despensa?: boolean
           forma?: string | null
+          g_por_unidade_uso?: number | null
           id?: string
           nome: string
           nome_exibicao: string
@@ -3487,15 +3492,19 @@ export type Database = {
           perecivel_dias?: number | null
           rende_por_embalagem?: number | null
           revisado_humano?: boolean
+          rotulo_compra?: string | null
+          rotulo_compra_plural?: string | null
           setor: string
           sinonimos?: string[]
           unidade_compra?: string | null
+          unidade_de_uso?: string | null
           updated_at?: string
         }
         Update: {
           created_at?: string
           despensa?: boolean
           forma?: string | null
+          g_por_unidade_uso?: number | null
           id?: string
           nome?: string
           nome_exibicao?: string
@@ -3504,12 +3513,23 @@ export type Database = {
           perecivel_dias?: number | null
           rende_por_embalagem?: number | null
           revisado_humano?: boolean
+          rotulo_compra?: string | null
+          rotulo_compra_plural?: string | null
           setor?: string
           sinonimos?: string[]
           unidade_compra?: string | null
+          unidade_de_uso?: string | null
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "ingredientes_catalogo_unidade_de_uso_fkey"
+            columns: ["unidade_de_uso"]
+            isOneToOne: false
+            referencedRelation: "unidades_medida"
+            referencedColumns: ["unidade"]
+          },
+        ]
       }
       jiva_descartes: {
         Row: {
@@ -7798,6 +7818,7 @@ export type Database = {
           confianca: string
           despensa: boolean
           ingrediente: string
+          opcional: boolean
           quantidade_texto: string
           receitas: string[]
           setor: string
