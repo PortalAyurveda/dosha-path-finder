@@ -116,15 +116,6 @@ const AKASHA_ESTILO: Record<
   anual: { bg: "#EFE3F5", border: `2px solid ${AKASHA_TOM}`, pilulaCheia: true, pilula: "Sem limite" },
 };
 
-const RotuloBloco = ({ children, cor }: { children: React.ReactNode; cor: string }) => (
-  <p
-    className="text-[10px] uppercase font-bold mb-2"
-    style={{ color: cor, letterSpacing: "0.08em", fontFamily: "'DM Sans', sans-serif" }}
-  >
-    {children}
-  </p>
-);
-
 const Caixinha = ({ on, cor }: { on: boolean; cor: string }) => (
   <span
     className="shrink-0 mt-0.5 flex items-center justify-center rounded"
@@ -1764,7 +1755,7 @@ const Assinar = () => {
                   className="text-sm md:text-base leading-relaxed"
                   style={{ color: PRIMARY, opacity: 0.85, fontFamily: "'DM Sans', sans-serif" }}
                 >
-                  Terapeuta Ayurveda com 15 anos de consultório e 13 de sala de aula. Professor na pós-graduação da Santa Casa de São Paulo e em cursos de formação e especialização — clínica, diagnóstico, formulação e nutrição ayurvédica. Fundador do Portal Ayurveda e da Samkhya.
+                  Terapeuta Ayurveda com 15 anos de consultório e 13 de sala de aula. Professor na pós-graduação da Santa Casa de São Paulo e em cursos de formação e especialização — clínica, diagnóstico, formulação e nutrição ayurvédica. Fundador do Portal Ayurveda e da Samkhya. Tudo o que está no Portal nasce do que funciona na clínica dele, adaptado ao Brasil.
                 </p>
               </div>
             </div>
