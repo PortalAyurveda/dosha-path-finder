@@ -1286,7 +1286,7 @@ const Assinar = () => {
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4 items-stretch">
-              {DEPOIMENTOS.map((d) => (
+              {(verMaisRelatos ? [...DEPO_DESTAQUE, ...DEPO_RESTO] : DEPO_DESTAQUE).map((d) => (
                 <figure
                   key={d.fala}
                   className="h-full rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm border p-4 md:p-5 flex flex-col"
@@ -1307,6 +1307,26 @@ const Assinar = () => {
                 </figure>
               ))}
             </div>
+
+            {!verMaisRelatos && DEPO_RESTO.length > 0 && (
+              <div className="mt-5 text-center">
+                <button
+                  type="button"
+                  onClick={() => setVerMaisRelatos(true)}
+                  className="inline-flex items-center justify-center px-6 rounded-full border font-semibold text-[15px] transition-colors"
+                  style={{
+                    minHeight: 48,
+                    borderColor: "rgba(53,47,84,0.25)",
+                    color: PRIMARY,
+                    background: "#fff",
+                    fontFamily: "'DM Sans', sans-serif",
+                  }}
+                >
+                  Ver mais relatos
+                </button>
+              </div>
+            )}
+
           </div>
         </section>
 
