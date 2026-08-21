@@ -1039,7 +1039,7 @@ const MinhaRotina = () => {
               <button
                 onClick={() => navigate("/imprimir?pecas=compras")}
                 className="inline-flex items-center gap-2 rounded-xl px-4 font-semibold text-white"
-                style={{ minHeight: 56, fontSize: 17, background: "#FF7676" }}
+                style={{ minHeight: 56, fontSize: 17, background: "#352F54" }}
               >
                 <ShoppingCart className="h-6 w-6" strokeWidth={2} />
                 Lista de compras
@@ -1539,7 +1539,7 @@ const RotinaSlotCard = ({
         <Card
           ref={cardRef}
           className={cn(
-            "overflow-hidden transition-shadow duration-500 relative",
+            "h-full flex flex-col overflow-hidden transition-shadow duration-500 relative",
             ringOn && "ring-2 ring-primary ring-offset-2 ring-offset-background"
           )}
         >
@@ -1566,7 +1566,7 @@ const RotinaSlotCard = ({
 
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-              <button className="w-full text-left">
+              <button className="w-full text-left flex-1">
                 <div className="aspect-[4/3] w-full bg-muted overflow-hidden">
                   {nugget?.imagem_url ? (
                     <img
