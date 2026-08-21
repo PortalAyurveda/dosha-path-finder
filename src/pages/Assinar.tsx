@@ -537,15 +537,18 @@ const Assinar = () => {
     color,
     hoverColor,
     label,
+    topo,
   }: {
     plano: Plano;
     color: string;
     hoverColor?: string;
     label: string;
+    topo?: React.ReactNode;
   }) => {
     if (!isAssinante) {
       return (
-        <div className="w-full">
+        <div className="w-full self-end">
+          {topo}
           <button
             onClick={() => handleClickPlano(plano)}
             disabled={loadingPlan !== null}
@@ -566,6 +569,7 @@ const Assinar = () => {
         </div>
       );
     }
+
     const rankPlano = RANK[plano];
     if (rankPlano < rankAtual) {
       return (
