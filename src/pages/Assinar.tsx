@@ -68,23 +68,113 @@ const PORTAL_ICON = "/favicon.svg";
 type Plano = "rotina" | "mensal" | "anual";
 const RANK: Record<Plano, number> = { rotina: 1, mensal: 2, anual: 3 };
 
-const BENEFICIOS: string[] = [
-  "Rotina completa da semana: café, almoço, jantar, lanches e tônicos",
-  "Montada para o SEU dosha, com preparo e porquê de cada item",
-  "Revisão mensal do seu quadro",
-  "Artigos e vídeos escolhidos pro seu quadro (aba Personalizado)",
-  "Akasha com memória de 7 dias (10 conversas por mês)",
-  "Akasha ilimitada: converse de dia ou de madrugada",
-  "Modo Pesquisa: mergulhos profundos no acervo",
-  "Acervo completo: 900+ aulas do professor",
-  "Cancele quando quiser",
+const AKASHA_TEXTO = "#5E3F6E";
+const AKASHA_TOM = "#9B73AD";
+const AKASHA_LOGO =
+  "https://api.portalayurveda.com/storage/v1/object/public/portal_images/logo-akasha.svg";
+
+const CINZA_ROTULO = "#565169";
+const TEXTO_LISTA = "#42304E";
+const CAIXA_OFF = "#BFB9CC";
+
+type PlanoCard = "basico" | "rotina" | "mensal" | "anual";
+
+type LinhaPlano = { texto: string; on: PlanoCard[] };
+
+const BASE_PORTAL: LinhaPlano[] = [
+  { texto: "Teste de dosha completo + análise", on: ["basico", "rotina", "mensal", "anual"] },
+  { texto: "Biblioteca com 900+ aulas abertas", on: ["basico", "rotina", "mensal", "anual"] },
 ];
 
-const INCLUSOS: Record<Plano, Set<number>> = {
-  rotina: new Set([1, 2, 3, 4, 5, 9]),
-  mensal: new Set([1, 2, 3, 4, 5, 6, 7, 8, 9]),
-  anual: new Set([1, 2, 3, 4, 5, 6, 7, 8, 9]),
+const AKASHA_LINHAS: LinhaPlano[] = [
+  { texto: "Conversas sem limite, de dia ou de madrugada", on: ["mensal", "anual"] },
+  { texto: "Ela lembra de você por 7 dias", on: ["rotina", "mensal", "anual"] },
+  { texto: "Modo Pesquisa: mergulha nas 900+ aulas", on: ["mensal", "anual"] },
+  { texto: "Conhece seu dosha e seu quadro", on: ["basico", "rotina", "mensal", "anual"] },
+];
+
+const PLANO_LINHAS: LinhaPlano[] = [
+  { texto: "Rotina completa da semana: café, almoço, jantar, lanches e tônicos", on: ["rotina", "mensal", "anual"] },
+  { texto: "Montada para o SEU dosha, com preparo e porquê de cada item", on: ["rotina", "mensal", "anual"] },
+  { texto: "Revisão mensal do seu quadro", on: ["rotina", "mensal", "anual"] },
+  { texto: "Artigos e vídeos escolhidos pro seu quadro", on: ["rotina", "mensal", "anual"] },
+  { texto: "Curso Rotinas Diárias do Ayurveda", on: ["anual"] },
+];
+
+const AKASHA_ESTILO: Record<
+  PlanoCard,
+  { bg: string; border: string; pilulaCheia: boolean; pilula: string }
+> = {
+  basico: { bg: "#FFFFFF", border: "1px solid #DFCDE8", pilulaCheia: false, pilula: "7 dias livres" },
+  rotina: { bg: "#F5EFF8", border: "1px solid #DFCDE8", pilulaCheia: false, pilula: "10 por mês" },
+  mensal: { bg: "#F5EFF8", border: `2px solid ${AKASHA_TOM}`, pilulaCheia: true, pilula: "Sem limite" },
+  anual: { bg: "#EFE3F5", border: `2px solid ${AKASHA_TOM}`, pilulaCheia: true, pilula: "Sem limite" },
 };
+
+const RotuloBloco = ({ children, cor }: { children: React.ReactNode; cor: string }) => (
+  <p
+    className="text-[10px] uppercase font-bold mb-2"
+    style={{ color: cor, letterSpacing: "0.08em", fontFamily: "'DM Sans', sans-serif" }}
+  >
+    {children}
+  </p>
+);
+
+const LinhaCheck = ({ texto, on, cor }: { texto: string; on: boolean; cor: string }) => (
+  <li className="flex items-start gap-2">
+    <span
+      className="shrink-0 mt-0.5 flex items-center justify-center rounded"
+      style={{
+        width: 16,
+        height: 16,
+        border: on ? `1.5px solid ${cor}` : `1.5px solid ${CAIXA_OFF}`,
+        background: on ? cor : "transparent",
+      }}
+      aria-hidden
+    >
+      {on && <Check className="w-3 h-3" style={{ color: "#fff" }} strokeWidth={3} />}
+    </span>
+    <span
+      className="text-[16px] md:text-[14px] leading-snug"
+      style={{ color: TEXTO_LISTA, fontFamily: "'DM Sans', sans-serif" }}
+    >
+      {texto}
+    </span>
+  </li>
+);
+
+const FaixaAkasha = ({ plano, cor }: { plano: PlanoCard; cor: string }) => {
+  const est = AKASHA_ESTILO[plano];
+  return (
+    <div className="rounded-xl" style={{ background: est.bg, border: est.border, padding: "11px 12px" }}>
+      <div className="flex items-center justify-between gap-x-2 gap-y-1 mb-2 flex-wrap">
+        <span className="flex items-center gap-1.5">
+          <img src={AKASHA_LOGO} alt="" aria-hidden width={22} height={22} className="w-[22px] h-[22px] shrink-0" loading="lazy" decoding="async" />
+          <span className="text-[14.5px] font-bold whitespace-nowrap" style={{ color: AKASHA_TEXTO, fontFamily: "'DM Sans', sans-serif" }}>
+
+            Akasha IA
+          </span>
+        </span>
+        <span
+          className="shrink-0 px-2 py-0.5 rounded-full text-[11px] font-bold whitespace-nowrap"
+          style={
+            est.pilulaCheia
+              ? { background: AKASHA_TEXTO, color: "#fff" }
+              : { background: "transparent", color: AKASHA_TEXTO, border: "1px solid #B79BC5" }
+          }
+        >
+          {est.pilula}
+        </span>
+      </div>
+      <ul className="space-y-1.5">
+        {AKASHA_LINHAS.map((l) => (
+          <LinhaCheck key={l.texto} texto={l.texto} on={l.on.includes(plano)} cor={cor} />
+        ))}
+      </ul>
+    </div>
+  );
+};
+
 
 const DEPOIMENTOS = [
   {
@@ -341,45 +431,62 @@ const Assinar = () => {
     { name: "Kapha", score: 16 },
   ];
 
-  const BeneficiosList = ({
-    plano,
-    checkColor,
-    dimmedColor,
-    extra,
-  }: {
-    plano: Plano;
-    checkColor: string;
-    dimmedColor?: string;
-    extra?: React.ReactNode;
-  }) => {
-    const inclusos = INCLUSOS[plano];
+  const BaseBloco = ({ plano, cor }: { plano: PlanoCard; cor: string }) => (
+    <div>
+      <RotuloBloco cor={CINZA_ROTULO}>Do Portal, pra todo mundo</RotuloBloco>
+      <ul className="space-y-1.5">
+        {BASE_PORTAL.map((l) => (
+          <LinhaCheck key={l.texto} texto={l.texto} on={l.on.includes(plano)} cor={cor} />
+        ))}
+      </ul>
+    </div>
+  );
+
+  const PlanoBloco = ({ plano, cor }: { plano: PlanoCard; cor: string }) => (
+    <div>
+      <RotuloBloco cor={CINZA_ROTULO}>O que vem no plano</RotuloBloco>
+      <ul className="space-y-1.5">
+        {PLANO_LINHAS.map((l) => (
+          <LinhaCheck key={l.texto} texto={l.texto} on={l.on.includes(plano)} cor={cor} />
+        ))}
+      </ul>
+    </div>
+  );
+
+  const EstadoFaixa = ({ texto }: { texto: string }) => (
+    <div
+      className="w-full min-h-[48px] px-3 flex items-center justify-center rounded-full text-sm text-center font-semibold"
+      style={{ background: "#EFEDF2", color: PRIMARY, fontFamily: "'DM Sans', sans-serif" }}
+    >
+      {texto}
+    </div>
+  );
+
+  const AcaoBasico = () => {
+    if (isAssinante) {
+      return (
+        <div className="w-full">
+          <EstadoFaixa texto="Incluído no seu plano" />
+        </div>
+      );
+    }
+    if (user && !isAnonymous) {
+      return (
+        <div className="w-full">
+          <EstadoFaixa texto="Você está aqui hoje" />
+        </div>
+      );
+    }
     return (
-      <div className="flex-1 flex flex-col">
-        <ul className="space-y-2 mb-3">
-          {BENEFICIOS.map((texto, idx) => {
-            const n = idx + 1;
-            const on = inclusos.has(n);
-            const color = on ? PRIMARY : dimmedColor ?? "rgba(53,47,84,0.35)";
-            return (
-              <li key={n} className="flex items-start gap-2">
-                {on ? (
-                  <Check className="w-4 h-4 shrink-0 mt-0.5" style={{ color: checkColor }} strokeWidth={2.6} />
-                ) : (
-                  <span className="w-4 h-4 shrink-0 mt-0.5 flex items-center justify-center" aria-hidden>
-                    <span className="block w-1.5 h-1.5 rounded-full" style={{ background: "rgba(53,47,84,0.18)" }} />
-                  </span>
-                )}
-                <span
-                  className="text-[13px] leading-snug"
-                  style={{ color, fontFamily: "'DM Sans', sans-serif", opacity: on ? 1 : 0.7 }}
-                >
-                  {texto}
-                </span>
-              </li>
-            );
-          })}
-        </ul>
-        {extra}
+      <div className="w-full">
+        <button
+          type="button"
+          onClick={() => navigate("/teste-de-dosha")}
+          className="w-full min-h-[48px] rounded-full font-semibold text-sm border transition-colors"
+          style={{ borderColor: "rgba(53,47,84,0.35)", color: PRIMARY, background: "#fff" }}
+        >
+          Fazer meu teste grátis
+        </button>
       </div>
     );
   };
@@ -389,31 +496,19 @@ const Assinar = () => {
     color,
     hoverColor,
     label,
-    nota,
   }: {
     plano: Plano;
     color: string;
     hoverColor?: string;
     label: string;
-    nota?: string;
   }) => {
-    const Nota = () =>
-      nota ? (
-        <p
-          className="mt-2 text-[11px] leading-snug text-center"
-          style={{ color: PRIMARY, opacity: 0.6, fontFamily: "'DM Sans', sans-serif" }}
-        >
-          {nota}
-        </p>
-      ) : null;
-
     if (!isAssinante) {
       return (
-        <div className="mt-auto w-full pt-2">
+        <div className="w-full">
           <button
             onClick={() => handleClickPlano(plano)}
             disabled={loadingPlan !== null}
-            className="w-full py-2.5 rounded-full font-semibold text-sm text-white transition-colors disabled:opacity-60"
+            className="w-full min-h-[48px] rounded-full font-semibold text-sm text-white transition-colors disabled:opacity-60"
             style={{ backgroundColor: color }}
             onMouseEnter={(e) => !loadingPlan && hoverColor && (e.currentTarget.style.backgroundColor = hoverColor)}
             onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = color)}
@@ -422,23 +517,36 @@ const Assinar = () => {
           </button>
           <button
             onClick={() => abrirPix(plano)}
-            className="mt-2 w-full text-[12px] underline underline-offset-4 transition-opacity hover:opacity-100"
-            style={{ color: PRIMARY, opacity: 0.7, fontFamily: "'DM Sans', sans-serif" }}
+            className="mt-2 w-full text-[12px] underline underline-offset-4"
+            style={{ color: PRIMARY, fontFamily: "'DM Sans', sans-serif" }}
           >
             ou pague com Pix
           </button>
-          <Nota />
         </div>
       );
     }
     const rankPlano = RANK[plano];
-    if (rankPlano === rankAtual) {
+    if (rankPlano < rankAtual) {
       return (
-        <div className="mt-auto w-full pt-2">
+        <div className="w-full">
+          <EstadoFaixa texto="Incluído no seu plano" />
+        </div>
+      );
+    }
+    if (rankPlano === rankAtual) {
+      if (plano === "rotina") {
+        return (
+          <div className="w-full">
+            <EstadoFaixa texto="Seu plano atual" />
+          </div>
+        );
+      }
+      return (
+        <div className="w-full">
           <button
             onClick={() => handleClickPlano(plano)}
             disabled={loadingPlan !== null}
-            className="w-full py-2.5 rounded-full font-semibold text-sm text-white transition-colors disabled:opacity-60"
+            className="w-full min-h-[48px] rounded-full font-semibold text-sm text-white transition-colors disabled:opacity-60"
             style={{ backgroundColor: color }}
           >
             {loadingPlan === plano ? "Abrindo…" : "Gerenciar assinatura"}
@@ -446,37 +554,26 @@ const Assinar = () => {
         </div>
       );
     }
-    if (rankPlano > rankAtual) {
-      return (
-        <div className="mt-auto w-full pt-2">
-          <button
-            onClick={() => handleClickPlano(plano)}
-            disabled={loadingPlan !== null}
-            className="w-full py-2.5 rounded-full font-semibold text-sm text-white transition-colors disabled:opacity-60"
-            style={{ backgroundColor: color }}
-          >
-            {loadingPlan === plano ? "Aguarde…" : "Fazer upgrade"}
-          </button>
-          <p
-            className="mt-2 text-[11px] leading-snug text-center"
-            style={{ color: PRIMARY, opacity: 0.6, fontFamily: "'DM Sans', sans-serif" }}
-          >
-            Você paga só a diferença do que já pagou.
-          </p>
-        </div>
-      );
-    }
     return (
-      <div className="mt-auto w-full pt-2">
-        <div
-          className="w-full py-2.5 rounded-full text-sm text-center font-semibold"
-          style={{ background: "rgba(53,47,84,0.06)", color: PRIMARY, fontFamily: "'DM Sans', sans-serif" }}
+      <div className="w-full">
+        <button
+          onClick={() => handleClickPlano(plano)}
+          disabled={loadingPlan !== null}
+          className="w-full min-h-[48px] rounded-full font-semibold text-sm text-white transition-colors disabled:opacity-60"
+          style={{ backgroundColor: color }}
         >
-          Já incluído no seu plano
-        </div>
+          {loadingPlan === plano ? "Aguarde…" : "Fazer upgrade"}
+        </button>
+        <p
+          className="mt-2 text-[12px] leading-snug text-center"
+          style={{ color: PRIMARY, fontFamily: "'DM Sans', sans-serif" }}
+        >
+          Você paga só a diferença do que já pagou.
+        </p>
       </div>
     );
   };
+
 
   const SeuPlanoBadge = () => (
     <span
@@ -487,31 +584,6 @@ const Assinar = () => {
     </span>
   );
 
-  const cursoIncluso = (
-    <span className="block mt-2">
-      <span
-        className="inline-flex items-center gap-2.5 rounded-xl border p-2 pr-2.5"
-        style={{ background: "#fff", borderColor: `${DOURADO}55` }}
-      >
-        {cursoRotinas?.capa_url ? (
-          <img src={cursoRotinas.capa_url} alt="" aria-hidden loading="lazy"
-              decoding="async" className="w-10 h-10 object-cover rounded-lg shrink-0" />
-        ) : (
-          <span className="w-10 h-10 rounded-lg shrink-0 flex items-center justify-center" style={{ background: DOURADO_BG }}>
-            <Gift className="w-4 h-4" style={{ color: DOURADO }} />
-          </span>
-        )}
-        <span className="min-w-0 text-left">
-          <span className="block text-[9px] uppercase tracking-wider font-bold" style={{ color: DOURADO_DARK }}>
-            Curso incluso
-          </span>
-          <span className="block font-serif font-bold text-[13px] leading-tight" style={{ color: PRIMARY }}>
-            {cursoRotinas?.titulo ?? "Rotinas Diárias do Ayurveda"}
-          </span>
-        </span>
-      </span>
-    </span>
-  );
 
   const seloDesconto = (
     <span
@@ -522,7 +594,10 @@ const Assinar = () => {
     </span>
   );
 
-  const cardBase = "rounded-2xl p-5 md:p-6 flex flex-col border relative";
+  const cardBase =
+    "rounded-2xl p-5 md:p-6 flex flex-col gap-4 border-2 relative min-w-0 lg:row-span-6 lg:grid lg:grid-cols-1 lg:grid-rows-subgrid lg:gap-4";
+
+
 
   return (
     <>
@@ -1449,163 +1524,131 @@ const Assinar = () => {
               Comece pela rotina ou vá direto no Portal inteiro — a escolha é sua.
             </p>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5 items-stretch">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 lg:grid-rows-[auto_auto_auto_auto_1fr_auto] gap-4 md:gap-5 items-stretch">
               {/* CARD 0 — BÁSICO (GRÁTIS) */}
               <div className={cardBase} style={{ background: "#fff", borderColor: "rgba(53,47,84,0.16)" }}>
-                <div className="flex items-center justify-between mb-3">
-                  <p className="text-[11px] uppercase tracking-wider font-bold" style={{ color: PRIMARY, opacity: 0.6 }}>
+                <div className="flex items-center justify-between">
+                  <p className="text-[11px] uppercase tracking-wider font-bold" style={{ color: CINZA_ROTULO }}>
                     Básico
                   </p>
                   <PortalMark size={22} />
                 </div>
-                <h3 className="font-serif font-bold text-xl mb-1" style={{ color: PRIMARY }}>
-                  Descobrindo meu Dosha
-                </h3>
-                <p className="font-serif font-bold text-2xl mb-1" style={{ color: PRIMARY }}>
-                  R$ 0
-                </p>
-                <p className="text-xs mb-4" style={{ color: PRIMARY, opacity: 0.6, fontFamily: "'DM Sans', sans-serif" }}>
-                  O primeiro degrau — sempre grátis.
-                </p>
-                <ul className="space-y-2 mb-5 flex-1">
-                  {[
-                    "Teste de dosha completo + análise",
-                    "Seu retrato no /meu-dosha",
-                    "Biblioteca com 900+ aulas abertas",
-                    "Akasha — 10 conversas por mês (memória de 24h)",
-                  ].map((texto) => (
-                    <li key={texto} className="flex items-start gap-2">
-                      <Check className="w-4 h-4 shrink-0 mt-0.5" style={{ color: "rgba(53,47,84,0.55)" }} strokeWidth={2.6} />
-                      <span
-                        className="text-[13px] leading-snug"
-                        style={{ color: PRIMARY, opacity: 0.85, fontFamily: "'DM Sans', sans-serif" }}
-                      >
-                        {texto}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-                {user && !isAssinante && doshaResult ? (
-                  <div
-                    className="mt-auto w-full py-2.5 rounded-full text-sm text-center font-semibold"
-                    style={{ background: "rgba(53,47,84,0.06)", color: PRIMARY, fontFamily: "'DM Sans', sans-serif" }}
-                  >
-                    Seu plano atual
-                  </div>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={() => navigate("/teste-de-dosha")}
-                    className="mt-auto w-full py-2.5 rounded-full font-semibold text-sm border transition-colors"
-                    style={{ borderColor: "rgba(53,47,84,0.25)", color: PRIMARY, background: "#fff" }}
-                  >
-                    Fazer meu teste grátis
-                  </button>
-                )}
+                <div>
+                  <h3 className="font-serif font-bold text-[20px] mb-1" style={{ color: PRIMARY }}>
+                    Descobrindo meu Dosha
+                  </h3>
+                  <p className="font-serif font-bold text-[26px] mb-1" style={{ color: PRIMARY }}>
+                    R$ 0
+                  </p>
+                  <p className="text-[12.5px]" style={{ color: CINZA_ROTULO, fontFamily: "'DM Sans', sans-serif" }}>
+                    O primeiro degrau — sempre grátis.
+                  </p>
+                </div>
+                <BaseBloco plano="basico" cor={CINZA_ROTULO} />
+                <FaixaAkasha plano="basico" cor={CINZA_ROTULO} />
+                <PlanoBloco plano="basico" cor={CINZA_ROTULO} />
+                <AcaoBasico />
               </div>
 
               {/* CARD 1 — MINHA ROTINA */}
-              <div className={cardBase} style={{ background: VERDE_BG, borderColor: `${VERDE}33` }}>
-                {planoAtual === "rotina" && <SeuPlanoBadge />}
-                <div className="flex items-center justify-between mb-3">
+              <div className={cardBase} style={{ background: VERDE_BG, borderColor: `${VERDE}55` }}>
+                <div className="flex items-center justify-between">
+                  {planoAtual === "rotina" && <SeuPlanoBadge />}
                   <p className="text-[11px] uppercase tracking-wider font-bold" style={{ color: VERDE }}>
                     Minha Rotina
                   </p>
                   <PortalMark size={22} />
                 </div>
-                <h3 className="font-serif font-bold text-xl mb-1" style={{ color: PRIMARY }}>
-                  Sua semana pronta
-                </h3>
-                <p className="font-serif font-bold text-2xl mb-1" style={{ color: PRIMARY }}>
-                  R$ 30<span className="text-sm font-normal opacity-70">/mês</span>
-                </p>
-                <p className="text-xs mb-4" style={{ color: VERDE, fontFamily: "'DM Sans', sans-serif" }}>
-                  Menos de R$1 por dia.
-                </p>
-                <BeneficiosList plano="rotina" checkColor={VERDE} />
+                <div>
+                  <h3 className="font-serif font-bold text-[20px] mb-1" style={{ color: PRIMARY }}>
+                    Sua semana pronta
+                  </h3>
+                  <p className="font-serif font-bold text-[26px] mb-1" style={{ color: PRIMARY }}>
+                    R$ 30<span className="text-sm font-normal">/mês</span>
+                  </p>
+                  <p className="text-[12.5px]" style={{ color: VERDE, fontFamily: "'DM Sans', sans-serif" }}>
+                    Menos de R$1 por dia.
+                  </p>
+                </div>
+                <BaseBloco plano="rotina" cor={VERDE} />
+                <FaixaAkasha plano="rotina" cor={VERDE} />
+                <PlanoBloco plano="rotina" cor={VERDE} />
                 <CardAction plano="rotina" color={VERDE} label="Começar minha rotina" />
               </div>
 
               {/* CARD 2 — PREMIUM MENSAL */}
-              <div className={cardBase} style={{ background: `${SALMAO}12`, borderColor: `${SALMAO}55` }}>
-                {planoAtual === "mensal" && <SeuPlanoBadge />}
-                <div className="flex items-center justify-between mb-3">
+              <div className={cardBase} style={{ background: `${SALMAO}12`, borderColor: SALMAO }}>
+                <div className="flex items-center justify-between">
+                  {planoAtual === "mensal" && <SeuPlanoBadge />}
                   <p className="text-[11px] uppercase tracking-wider font-bold inline-flex items-center gap-1.5" style={{ color: SALMAO }}>
                     <Sparkles className="w-3.5 h-3.5" /> Premium
                   </p>
                   <PortalMark size={22} />
                 </div>
-                <h3 className="font-serif font-bold text-xl mb-1" style={{ color: PRIMARY }}>
-                  Tudo do Portal
-                </h3>
-                <p className="font-serif font-bold text-2xl mb-1" style={{ color: PRIMARY }}>
-                  R$ 79,90<span className="text-sm font-normal opacity-70">/mês</span>
-                </p>
-                <p className="text-xs mb-4" style={{ color: SALMAO, fontFamily: "'DM Sans', sans-serif" }}>
-                  Tudo da Rotina, mais a companhia.
-                </p>
-                <BeneficiosList plano="mensal" checkColor={SALMAO} />
-                <button
-                  type="button"
-                  onClick={() => {
-                    const el = document.getElementById("plano-anual");
-                    el?.scrollIntoView({ behavior: "smooth", block: "center" });
-                  }}
-                  className="text-xs mb-2 text-center underline underline-offset-2 hover:opacity-80 transition-opacity"
-                  style={{ color: DOURADO_DARK, fontFamily: "'DM Sans', sans-serif" }}
-                >
-                  ou R$ 49,75/mês assinando o ano →
-                </button>
+                <div>
+                  <h3 className="font-serif font-bold text-[20px] mb-1" style={{ color: PRIMARY }}>
+                    Tudo do Portal
+                  </h3>
+                  <p className="font-serif font-bold text-[26px] mb-1" style={{ color: PRIMARY }}>
+                    R$ 79,90<span className="text-sm font-normal">/mês</span>
+                  </p>
+                  <p className="text-[12.5px]" style={{ color: SALMAO, fontFamily: "'DM Sans', sans-serif" }}>
+                    Tudo da Rotina, mais a companhia dela.
+                  </p>
+                </div>
+                <BaseBloco plano="mensal" cor={SALMAO} />
+                <FaixaAkasha plano="mensal" cor={SALMAO} />
+                <PlanoBloco plano="mensal" cor={SALMAO} />
                 <CardAction plano="mensal" color={SALMAO} hoverColor={SALMAO_HOVER} label="Assinar Premium" />
               </div>
 
               {/* CARD 3 — PREMIUM ANUAL */}
-              <div id="plano-anual" className={cardBase + " border-2 shadow-xl scroll-mt-24"} style={{ background: DOURADO_BG, borderColor: DOURADO }}>
-                {planoAtual === "anual" ? (
-                  <SeuPlanoBadge />
-                ) : (
-                  <span
-                    className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider text-white whitespace-nowrap"
-                    style={{ backgroundColor: DOURADO }}
-                  >
-                    Mais vantajoso
-                  </span>
-                )}
-                <div className="flex items-center justify-between mb-3 mt-1">
+              <div id="plano-anual" className={cardBase + " shadow-xl scroll-mt-24"} style={{ background: DOURADO_BG, borderColor: DOURADO }}>
+                <div className="flex items-center justify-between">
+                  {planoAtual === "anual" ? (
+                    <SeuPlanoBadge />
+                  ) : (
+                    <span
+                      className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider text-white whitespace-nowrap"
+                      style={{ backgroundColor: DOURADO }}
+                    >
+                      Mais vantajoso
+                    </span>
+                  )}
                   <p className="text-[11px] uppercase tracking-wider font-bold" style={{ color: DOURADO_DARK }}>
                     Premium Anual
                   </p>
                   <PortalMark size={22} />
                 </div>
-                <h3 className="font-serif font-bold text-xl mb-1" style={{ color: PRIMARY }}>
-                  Um ano inteiro
-                </h3>
-                <p className="text-sm mb-0.5 line-through" style={{ color: "rgba(53,47,84,0.5)", fontFamily: "'DM Sans', sans-serif" }}>
-                  R$ 79,90
-                </p>
-                <div className="flex items-baseline gap-2 mb-1 flex-wrap">
-                  <p className="font-serif font-bold text-2xl" style={{ color: PRIMARY }}>
-                    R$ 49,75<span className="text-sm font-normal opacity-70">/mês</span>
+                <div>
+                  <h3 className="font-serif font-bold text-[20px] mb-1" style={{ color: PRIMARY }}>
+                    Um ano inteiro
+                  </h3>
+                  <p className="text-sm mb-0.5 line-through" style={{ color: CINZA_ROTULO, fontFamily: "'DM Sans', sans-serif" }}>
+                    R$ 79,90
                   </p>
-                  <span
-                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider"
-                    style={{ background: DOURADO, color: "#fff" }}
-                  >
-                    <BadgePercent className="w-3 h-3" /> 38% off
-                  </span>
+                  <div className="flex items-baseline gap-2 mb-1 flex-wrap">
+                    <p className="font-serif font-bold text-[26px]" style={{ color: PRIMARY }}>
+                      R$ 49,75<span className="text-sm font-normal">/mês</span>
+                    </p>
+                    <span
+                      className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider"
+                      style={{ background: DOURADO, color: "#fff" }}
+                    >
+                      <BadgePercent className="w-3 h-3" /> 38% off
+                    </span>
+                  </div>
+                  <p className="text-[12.5px]" style={{ color: DOURADO_DARK, fontFamily: "'DM Sans', sans-serif" }}>
+                    R$ 597 uma vez por ano · você economiza R$ 361,80
+                  </p>
                 </div>
-                <p className="text-xs mb-4" style={{ color: DOURADO_DARK, fontFamily: "'DM Sans', sans-serif" }}>
-                  R$ 597 cobrados uma vez por ano · você economiza R$ 361,80
-                </p>
-                <BeneficiosList
-                  plano="anual"
-                  checkColor={DOURADO_DARK}
-                  extra={cursoIncluso}
-                />
+                <BaseBloco plano="anual" cor={DOURADO_DARK} />
+                <FaixaAkasha plano="anual" cor={DOURADO_DARK} />
+                <PlanoBloco plano="anual" cor={DOURADO_DARK} />
                 <CardAction plano="anual" color={DOURADO} label="Assinar Anual" />
-
               </div>
             </div>
+
           </div>
         </section>
 
@@ -1638,7 +1681,7 @@ const Assinar = () => {
                   className="text-sm md:text-base leading-relaxed"
                   style={{ color: PRIMARY, opacity: 0.85, fontFamily: "'DM Sans', sans-serif" }}
                 >
-                  Terapeuta Ayurveda, fundador do Portal. 15 anos de clínica, 13 de sala de aula, mais de 4.500 alunos formados. Tudo no Portal nasce do que funciona na clínica dele, adaptado ao Brasil.
+                  Terapeuta Ayurveda com 15 anos de consultório e 13 de sala de aula. Professor na pós-graduação da Santa Casa de São Paulo e em cursos de formação e especialização — clínica, diagnóstico, formulação e nutrição ayurvédica. Fundador do Portal Ayurveda e da Samkhya.
                 </p>
               </div>
             </div>
