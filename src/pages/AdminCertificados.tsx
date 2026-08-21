@@ -231,11 +231,6 @@ const AdminCertificados = () => {
             </div>
 
             {/* pétalas ornamentais */}
-            <Petala
-              cor={dip.cor_primaria}
-              className="absolute"
-              // eslint-disable-next-line react/no-unknown-property
-            />
             <div style={{ position: "absolute", top: "14mm", left: "14mm", width: 90, height: 90 }}>
               <Petala cor={dip.cor_primaria} className="w-full h-full" />
             </div>
