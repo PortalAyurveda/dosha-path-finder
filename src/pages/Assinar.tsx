@@ -1587,9 +1587,10 @@ const Assinar = () => {
                   <p className="font-serif font-bold text-[26px] mb-1" style={{ color: PRIMARY }}>
                     R$ 0
                   </p>
-                  <p className="text-[12.5px]" style={{ color: CINZA_ROTULO, fontFamily: "'DM Sans', sans-serif" }}>
-                    O primeiro degrau — sempre grátis.
+                  <p className="text-[13px]" style={{ color: CINZA_ROTULO, fontFamily: "'DM Sans', sans-serif" }}>
+                    Sempre grátis.
                   </p>
+
                 </div>
                 <BaseBloco plano="basico" cor={CINZA_ROTULO} />
                 <FaixaAkasha plano="basico" cor={CINZA_ROTULO} />
