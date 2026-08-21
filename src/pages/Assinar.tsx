@@ -862,23 +862,26 @@ const Assinar = () => {
         </section>
 
 
-        {/* 3) TUDO COMEÇA PELO SEU RETRATO — painel único compacto */}
+        {/* 3) SEU RETRATO, E COMO ELE MUDA — retrato + revisão mensal fundidos */}
         <section style={{ background: SURFACE }}>
           <div className="max-w-[1040px] mx-auto px-4 sm:px-6 py-6 md:py-8">
             <h2
               className="font-serif italic font-bold text-2xl md:text-[28px] text-center mb-1.5"
               style={{ color: PRIMARY }}
             >
-              Tudo começa pelo seu retrato
+              Seu retrato, e como ele muda
             </h2>
             <p
-              className="text-center text-[13px] md:text-sm mb-4 max-w-xl mx-auto"
+              className="text-center text-[13px] md:text-sm mb-5 max-w-2xl mx-auto"
               style={{ color: PRIMARY, opacity: 0.75, fontFamily: "'DM Sans', sans-serif" }}
             >
-              O teste gratuito desenha seu quadro — e o Portal trabalha em cima dele.
+              O teste gratuito desenha seu quadro — e todo mês a Akasha refaz sua leitura e ajusta sua rotina.
             </p>
 
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6 items-start">
+            <div>
             <PreviaPersonalizada
+
               fallback={
                 <>
             <div
