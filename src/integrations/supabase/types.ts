@@ -3461,6 +3461,7 @@ export type Database = {
         Row: {
           created_at: string
           despensa: boolean
+          familia_troca: string | null
           forma: string | null
           g_por_unidade_uso: number | null
           id: string
@@ -3482,6 +3483,7 @@ export type Database = {
         Insert: {
           created_at?: string
           despensa?: boolean
+          familia_troca?: string | null
           forma?: string | null
           g_por_unidade_uso?: number | null
           id?: string
@@ -3503,6 +3505,7 @@ export type Database = {
         Update: {
           created_at?: string
           despensa?: boolean
+          familia_troca?: string | null
           forma?: string | null
           g_por_unidade_uso?: number | null
           id?: string
@@ -5729,6 +5732,7 @@ export type Database = {
         Row: {
           created_at: string
           nugget_id: string
+          receita_base: boolean
           rende_confianca: string | null
           rende_justificativa: string | null
           rende_porcoes: number | null
@@ -5740,6 +5744,7 @@ export type Database = {
         Insert: {
           created_at?: string
           nugget_id: string
+          receita_base?: boolean
           rende_confianca?: string | null
           rende_justificativa?: string | null
           rende_porcoes?: number | null
@@ -5751,6 +5756,7 @@ export type Database = {
         Update: {
           created_at?: string
           nugget_id?: string
+          receita_base?: boolean
           rende_confianca?: string | null
           rende_justificativa?: string | null
           rende_porcoes?: number | null
@@ -7813,7 +7819,11 @@ export type Database = {
         Returns: Json
       }
       lista_de_compras: {
-        Args: { p_nugget_ids?: string[]; p_teste_id: string }
+        Args: {
+          p_nugget_ids?: string[]
+          p_pessoas?: number
+          p_teste_id: string
+        }
         Returns: {
           confianca: string
           despensa: boolean
@@ -7823,6 +7833,7 @@ export type Database = {
           receitas: string[]
           setor: string
           setor_ordem: number
+          sugestao_troca: string
           tem_estimativa: boolean
           unidade_compra: string
         }[]
