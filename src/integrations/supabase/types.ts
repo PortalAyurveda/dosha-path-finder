@@ -14,6 +14,74 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_tarefas: {
+        Row: {
+          anexos: Json
+          arquivada: boolean
+          atualizado_em: string
+          concluida_em: string | null
+          criado_em: string
+          criado_por: string | null
+          devlog_id: string | null
+          funcoes: string[]
+          id: string
+          iniciada_em: string | null
+          notas: Json
+          objetivo: string | null
+          ordem: number
+          status: string
+          status_em: string
+          titulo: string
+          urgente: boolean
+        }
+        Insert: {
+          anexos?: Json
+          arquivada?: boolean
+          atualizado_em?: string
+          concluida_em?: string | null
+          criado_em?: string
+          criado_por?: string | null
+          devlog_id?: string | null
+          funcoes?: string[]
+          id?: string
+          iniciada_em?: string | null
+          notas?: Json
+          objetivo?: string | null
+          ordem: number
+          status?: string
+          status_em?: string
+          titulo: string
+          urgente?: boolean
+        }
+        Update: {
+          anexos?: Json
+          arquivada?: boolean
+          atualizado_em?: string
+          concluida_em?: string | null
+          criado_em?: string
+          criado_por?: string | null
+          devlog_id?: string | null
+          funcoes?: string[]
+          id?: string
+          iniciada_em?: string | null
+          notas?: Json
+          objetivo?: string | null
+          ordem?: number
+          status?: string
+          status_em?: string
+          titulo?: string
+          urgente?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "admin_tarefas_devlog_id_fkey"
+            columns: ["devlog_id"]
+            isOneToOne: false
+            referencedRelation: "portal_devlog"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       agenda_comunicacoes: {
         Row: {
           assunto: string
@@ -6439,6 +6507,48 @@ export type Database = {
       }
     }
     Views: {
+      admin_tarefas_visao: {
+        Row: {
+          anexos: Json | null
+          arquivada: boolean | null
+          atualizado_em: string | null
+          concluida_em: string | null
+          criado_em: string | null
+          criado_por: string | null
+          criado_por_email: string | null
+          devlog_id: string | null
+          devlog_modulo: string | null
+          devlog_titulo: string | null
+          dias_aberta: number | null
+          dias_na_coluna: number | null
+          dias_parada: number | null
+          funcoes: string[] | null
+          id: string | null
+          iniciada_em: string | null
+          notas: Json | null
+          objetivo: string | null
+          ordem: number | null
+          qtd_anexos: number | null
+          qtd_notas: number | null
+          status: string | null
+          status_em: string | null
+          sugerir_arquivar: boolean | null
+          temperatura: string | null
+          titulo: string | null
+          ultima_nota: string | null
+          ultima_nota_em: string | null
+          urgente: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "admin_tarefas_devlog_id_fkey"
+            columns: ["devlog_id"]
+            isOneToOne: false
+            referencedRelation: "portal_devlog"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       agenda_pessoa: {
         Row: {
           cidade: string | null
@@ -6897,6 +7007,73 @@ export type Database = {
           destaque_ordem: number
           id: string
         }[]
+      }
+      admin_tarefa_anotar: {
+        Args: { p_id: string; p_texto: string }
+        Returns: {
+          anexos: Json
+          arquivada: boolean
+          atualizado_em: string
+          concluida_em: string | null
+          criado_em: string
+          criado_por: string | null
+          devlog_id: string | null
+          funcoes: string[]
+          id: string
+          iniciada_em: string | null
+          notas: Json
+          objetivo: string | null
+          ordem: number
+          status: string
+          status_em: string
+          titulo: string
+          urgente: boolean
+        }
+        SetofOptions: {
+          from: "*"
+          to: "admin_tarefas"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      admin_tarefa_mover: {
+        Args: {
+          p_abaixo?: string
+          p_acima?: string
+          p_id: string
+          p_status: string
+        }
+        Returns: {
+          anexos: Json
+          arquivada: boolean
+          atualizado_em: string
+          concluida_em: string | null
+          criado_em: string
+          criado_por: string | null
+          devlog_id: string | null
+          funcoes: string[]
+          id: string
+          iniciada_em: string | null
+          notas: Json
+          objetivo: string | null
+          ordem: number
+          status: string
+          status_em: string
+          titulo: string
+          urgente: boolean
+        }
+        SetofOptions: {
+          from: "*"
+          to: "admin_tarefas"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      admin_tarefas_anexos_ok: { Args: { p: Json }; Returns: boolean }
+      admin_tarefas_arquivar_antigas: { Args: never; Returns: number }
+      admin_tarefas_funcoes_canonicas: {
+        Args: { p: string[] }
+        Returns: string[]
       }
       agenda_destinatarios: {
         Args: { p_comunicacao_id: string }
