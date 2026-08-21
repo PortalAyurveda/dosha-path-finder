@@ -1518,24 +1518,37 @@ const Assinar = () => {
                 <p className="text-xs mb-4" style={{ color: PRIMARY, opacity: 0.6, fontFamily: "'DM Sans', sans-serif" }}>
                   O primeiro degrau — sempre grátis.
                 </p>
+                <FaixaAkasha
+                  pilula="7 dias livres"
+                  pilulaCheia
+                  frase={
+                    <>
+                      <strong className="font-bold">Sua primeira semana é sem limite.</strong> Pergunte à vontade, ela já sabe seu dosha.
+                    </>
+                  }
+                  itens={[
+                    { texto: "Depois: 10 conversas por mês", check: false },
+                    { texto: "Ela esquece você em 24 horas", check: false },
+                  ]}
+                />
                 <ul className="space-y-2 mb-5 flex-1">
                   {[
                     "Teste de dosha completo + análise",
                     "Seu retrato no /meu-dosha",
                     "Biblioteca com 900+ aulas abertas",
-                    "Akasha — 10 conversas por mês (memória de 24h)",
                   ].map((texto) => (
                     <li key={texto} className="flex items-start gap-2">
                       <Check className="w-4 h-4 shrink-0 mt-0.5" style={{ color: "rgba(53,47,84,0.55)" }} strokeWidth={2.6} />
                       <span
-                        className="text-[13px] leading-snug"
-                        style={{ color: PRIMARY, opacity: 0.85, fontFamily: "'DM Sans', sans-serif" }}
+                        className="text-[16px] md:text-[14px] leading-snug"
+                        style={{ color: PRIMARY, fontFamily: "'DM Sans', sans-serif" }}
                       >
                         {texto}
                       </span>
                     </li>
                   ))}
                 </ul>
+
                 {user && !isAssinante && doshaResult ? (
                   <div
                     className="mt-auto w-full py-2.5 rounded-full text-sm text-center font-semibold"
