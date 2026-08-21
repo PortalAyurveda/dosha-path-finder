@@ -131,10 +131,8 @@ const Quadradinho = ({ escala }: { escala: number }) => (
 );
 
 const textoIngrediente = (i: Ingrediente) => {
-  let t = (i.exibicao ?? "").trim();
-  if (i.preparo) t += `, ${i.preparo}`;
-  if (i.opcional) t += " (opcional)";
-  return t;
+  const t = (i.exibicao ?? "").trim();
+  return i.opcional ? `${t} (opcional)` : t;
 };
 
 /* ------------------------------------------------------------------ */
@@ -572,7 +570,9 @@ const Imprimir = () => {
 
   const FichaReceita = ({ r, primeira }: { r: ReceitaRow; primeira: boolean }) => {
     const apoio = [
-      r.rende_porcoes ? `Rende ${r.rende_porcoes} porções` : null,
+      r.rende_porcoes
+        ? `Rende ${r.rende_porcoes} ${r.rende_porcoes === 1 ? "porção" : "porções"}`
+        : null,
       r.tempo_preparo_min ? `${r.tempo_preparo_min} min` : null,
       r.subcategoria || null,
     ]
@@ -690,17 +690,17 @@ const Imprimir = () => {
         (principais.find((c) => c.setor === b)?.setor_ordem ?? 0)
     );
 
-    const nomeItem = (c: CompraRow) => (
-      <span style={{ lineHeight: 1.5 }}>
-        {c.quantidade_texto && (
-          <span style={{ fontWeight: 700 }}>
+    const nomeItem = (c: CompraRow) => {
+      if (c.quantidade_texto) {
+        return (
+          <span style={{ lineHeight: 1.5, fontWeight: 700 }}>
             {c.tem_estimativa ? "mais ou menos " : ""}
-            {c.quantidade_texto}{" "}
+            {c.quantidade_texto}
           </span>
-        )}
-        {c.ingrediente}
-      </span>
-    );
+        );
+      }
+      return <span style={{ lineHeight: 1.5 }}>{c.ingrediente}</span>;
+    };
 
     const Linha = ({ c }: { c: CompraRow }) => (
       <li
