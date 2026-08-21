@@ -63,6 +63,45 @@ const AdminLojaVendaDetalhe = () => {
   const [emailAssunto, setEmailAssunto] = useState("");
   const [emailMensagem, setEmailMensagem] = useState("");
   const [sendingEmail, setSendingEmail] = useState(false);
+  const [enviandoME, setEnviandoME] = useState(false);
+  const [erroME, setErroME] = useState<string | null>(null);
+
+  const handleEnviarMelhorEnvio = async () => {
+    if (!pedido) return;
+    setEnviandoME(true);
+    setErroME(null);
+    try {
+      const { data, error } = await supabase.functions.invoke("enviar-melhorenvio", {
+        body: { pedido_ids: [pedido.id] },
+      });
+      if (error) throw error;
+      const r = (data?.resultados ?? [])[0] as
+        | { ok?: boolean; erro?: string | null }
+        | undefined;
+      if (r && r.ok === false) {
+        setErroME(r.erro || "Erro não informado pelo Melhor Envio.");
+        return;
+      }
+      toast.success("Pedido no carrinho do Melhor Envio");
+      const { data: novo } = await lojaSupabase
+        .from("pedidos")
+        .select("*")
+        .eq("id", pedido.id)
+        .maybeSingle();
+      if (novo) {
+        const p = novo as unknown as Pedido;
+        setPedido(p);
+        setRastreio(p.frete_codigo_rastreio || "");
+      }
+    } catch (e: any) {
+      console.error(e);
+      setErroME(e?.message || "Falha ao enviar para o Melhor Envio");
+    } finally {
+      setEnviandoME(false);
+    }
+  };
+
+
 
   useEffect(() => {
     if (!id) return;
