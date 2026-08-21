@@ -1614,9 +1614,10 @@ const Assinar = () => {
                   <p className="font-serif font-bold text-[26px] mb-1" style={{ color: PRIMARY }}>
                     R$ 30<span className="text-sm font-normal">/mês</span>
                   </p>
-                  <p className="text-[12.5px]" style={{ color: VERDE, fontFamily: "'DM Sans', sans-serif" }}>
+                  <p className="text-[13px]" style={{ color: VERDE, fontFamily: "'DM Sans', sans-serif" }}>
                     Menos de R$1 por dia.
                   </p>
+
                 </div>
                 <BaseBloco plano="rotina" cor={VERDE} />
                 <FaixaAkasha plano="rotina" cor={VERDE} />
