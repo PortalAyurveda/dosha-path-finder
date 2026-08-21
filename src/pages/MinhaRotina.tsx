@@ -937,6 +937,54 @@ const MinhaRotina = () => {
           </section>
         )}
 
+        {/* ===== Suas receitas favoritas ===== */}
+        <section>
+          <h2 className="font-serif" style={{ fontSize: 18, color: "#352F54", fontWeight: 600 }}>
+            Suas receitas favoritas
+          </h2>
+          {favoritas.length === 0 ? (
+            <p className="mt-2" style={{ fontSize: 16, color: "#3F3A52", lineHeight: 1.6 }}>
+              Você ainda não guardou nenhuma. Toque em <strong>Favoritar</strong> no card de uma
+              receita que você gostou: ela fica guardada aqui pra você imprimir depois.
+            </p>
+          ) : (
+            <>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mt-3">
+                {favoritas.map((n) => (
+                  <RotinaSlotCard
+                    key={`fav-${n.id}`}
+                    slotLabel=""
+                    semSlotLabel
+                    row={undefined}
+                    nugget={n}
+                    feito
+                    agniFracoOuIrregular={agniFracoOuIrregular}
+                    onToggleFeito={() => {}}
+                    compact
+                    mostrarLista
+                    naLista={selecionados.has(n.id)}
+                    onToggleLista={() => toggleSelecao(n.id)}
+                    erroLista={erroSelecao === n.id}
+                  />
+                ))}
+              </div>
+              <button
+                onClick={() =>
+                  navigate(
+                    `/imprimir?pecas=receitas&ids=${favoritas.map((n) => n.id).join(",")}`
+                  )
+                }
+                className="mt-4 inline-flex items-center gap-2 rounded-xl px-5 font-semibold text-white"
+                style={{ minHeight: 56, fontSize: 17, background: "#352F54" }}
+              >
+                <Printer className="h-6 w-6" strokeWidth={2} />
+                Imprimir as favoritas
+              </button>
+            </>
+          )}
+        </section>
+
+
         {/* ===== Sempre Faz Bem (suplementos personalizados) ===== */}
         <SuplementosSection
           vata={(doshaInfo?.vatascore as number | null) ?? null}
