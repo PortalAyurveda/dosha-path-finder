@@ -167,11 +167,12 @@ const TarefaModal = ({ aberto, tarefa, onFechar, onSalvo }: Props) => {
       funcoes,
       urgente,
       devlog_id: devlogId,
-      anexos,
+      anexos: anexos as unknown as never,
     };
     const { error } = editando
       ? await supabase.from("admin_tarefas").update(payload).eq("id", tarefa!.id)
-      : await supabase.from("admin_tarefas").insert(payload);
+      : await supabase.from("admin_tarefas").insert([payload]);
+
     setSalvando(false);
     if (error) {
       toast.error(error.message);
