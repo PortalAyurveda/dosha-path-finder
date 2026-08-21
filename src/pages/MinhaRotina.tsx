@@ -1113,6 +1113,11 @@ interface SlotCardProps {
   onToggleFeito: () => void;
   focus?: boolean;
   compact?: boolean;
+  semSlotLabel?: boolean;
+  mostrarLista?: boolean;
+  naLista?: boolean;
+  onToggleLista?: () => void;
+  erroLista?: boolean;
 }
 
 const RotinaSlotCard = ({
@@ -1124,7 +1129,13 @@ const RotinaSlotCard = ({
   onToggleFeito,
   focus = false,
   compact = false,
+  semSlotLabel = false,
+  mostrarLista = false,
+  naLista = false,
+  onToggleLista,
+  erroLista = false,
 }: SlotCardProps) => {
+
   const [open, setOpen] = useState(false);
   const [porqueOpen, setPorqueOpen] = useState(false);
   const [videoOpen, setVideoOpen] = useState(false);
