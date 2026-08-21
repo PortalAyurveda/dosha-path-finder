@@ -1691,10 +1691,13 @@ const Assinar = () => {
                   <h3 className="font-serif font-bold text-[20px] mb-1" style={{ color: PRIMARY }}>
                     Um ano inteiro
                   </h3>
-                  <p className="text-sm mb-0.5 line-through" style={{ color: CINZA_ROTULO, fontFamily: "'DM Sans', sans-serif" }}>
-                    R$ 79,90
-                  </p>
                   <div className="flex items-baseline gap-2 mb-1 flex-wrap">
+                    <span
+                      className="text-sm line-through"
+                      style={{ color: CINZA_ROTULO, fontFamily: "'DM Sans', sans-serif" }}
+                    >
+                      R$ 79,90
+                    </span>
                     <p className="font-serif font-bold text-[26px]" style={{ color: PRIMARY }}>
                       R$ 49,75<span className="text-sm font-normal">/mês</span>
                     </p>
@@ -1705,14 +1708,27 @@ const Assinar = () => {
                       <BadgePercent className="w-3 h-3" /> 38% off
                     </span>
                   </div>
-                  <p className="text-[12.5px]" style={{ color: DOURADO_DARK, fontFamily: "'DM Sans', sans-serif" }}>
-                    R$ 597 uma vez por ano · você economiza R$ 361,80
+                  <p className="text-[13px]" style={{ color: DOURADO_DARK, fontFamily: "'DM Sans', sans-serif" }}>
+                    Menos de R$1,70 por dia.
                   </p>
                 </div>
                 <BaseBloco plano="anual" cor={DOURADO_DARK} />
                 <FaixaAkasha plano="anual" cor={DOURADO_DARK} />
                 <PlanoBloco plano="anual" cor={DOURADO_DARK} />
-                <CardAction plano="anual" color={DOURADO} label="Assinar Anual" />
+                <CardAction
+                  plano="anual"
+                  color={DOURADO}
+                  label="Assinar Anual"
+                  topo={
+                    <p
+                      className="mb-2 text-[12.5px] leading-snug text-center"
+                      style={{ color: DOURADO_DARK, fontFamily: "'DM Sans', sans-serif" }}
+                    >
+                      R$ 597 cobrados uma vez por ano · você economiza R$ 361,80
+                    </p>
+                  }
+                />
+
               </div>
             </div>
 
