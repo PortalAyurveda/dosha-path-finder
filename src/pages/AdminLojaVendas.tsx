@@ -185,6 +185,17 @@ const AdminLojaVendas = () => {
   const [statusFiltro, setStatusFiltro] = useState<string>("todos");
   const [selecionados, setSelecionados] = useState<Set<string>>(new Set());
   const [enviando, setEnviando] = useState(false);
+  const [resultadoEnvio, setResultadoEnvio] = useState<{
+    total_ok: number;
+    total_erro: number;
+    melhorenvio_url?: string | null;
+    resultados: Array<{
+      numero_pedido?: string | null;
+      ok?: boolean;
+      erro?: string | null;
+      ja_estava?: boolean;
+    }>;
+  } | null>(null);
 
   const carregarPedidos = async () => {
     setLoading(true);
@@ -206,10 +217,17 @@ const AdminLojaVendas = () => {
     carregarPedidos();
   }, []);
 
+  const podeSelecionar = (p: Pedido) =>
+    p.status_pagamento === "paid" && !p.frete_melhorenvio_order_id && p.status !== "cancelado";
+
   const filtrados = useMemo(() => {
     const q = busca.trim().toLowerCase();
     return pedidos.filter((p) => {
-      if (statusFiltro !== "todos" && p.status !== statusFiltro) return false;
+      if (statusFiltro === "fora_melhorenvio") {
+        if (!podeSelecionar(p)) return false;
+      } else if (statusFiltro !== "todos" && p.status !== statusFiltro) {
+        return false;
+      }
       if (!q) return true;
       return (
         (p.numero_pedido || "").toLowerCase().includes(q) ||
@@ -219,12 +237,12 @@ const AdminLojaVendas = () => {
     });
   }, [pedidos, busca, statusFiltro]);
 
-  const pagosVisiveis = useMemo(
-    () => filtrados.filter((p) => p.status === "pago"),
+  const selecionaveisVisiveis = useMemo(
+    () => filtrados.filter(podeSelecionar),
     [filtrados],
   );
-  const todosPagosSelecionados =
-    pagosVisiveis.length > 0 && pagosVisiveis.every((p) => selecionados.has(p.id));
+  const todosSelecionaveisSelecionados =
+    selecionaveisVisiveis.length > 0 && selecionaveisVisiveis.every((p) => selecionados.has(p.id));
 
   const toggleOne = (id: string) => {
     setSelecionados((prev) => {
@@ -238,10 +256,10 @@ const AdminLojaVendas = () => {
   const toggleAll = () => {
     setSelecionados((prev) => {
       const next = new Set(prev);
-      if (todosPagosSelecionados) {
-        pagosVisiveis.forEach((p) => next.delete(p.id));
+      if (todosSelecionaveisSelecionados) {
+        selecionaveisVisiveis.forEach((p) => next.delete(p.id));
       } else {
-        pagosVisiveis.forEach((p) => next.add(p.id));
+        selecionaveisVisiveis.forEach((p) => next.add(p.id));
       }
       return next;
     });
@@ -250,24 +268,45 @@ const AdminLojaVendas = () => {
   const enviarMelhorEnvio = async () => {
     if (selecionados.size === 0) return;
     setEnviando(true);
+    setResultadoEnvio(null);
     try {
       const { data, error } = await supabase.functions.invoke("enviar-melhorenvio", {
         body: { pedido_ids: Array.from(selecionados) },
       });
       if (error) throw error;
-      const resultados = (data?.resultados ?? []) as Array<{ ok?: boolean; status?: string }>;
-      const sucessos = resultados.filter((r) => r.ok || r.status === "ok").length || resultados.length;
-      if (data?.print_url) {
-        window.open(data.print_url, "_blank", "noopener,noreferrer");
+      const resultados = (data?.resultados ?? []) as Array<{
+        numero_pedido?: string | null;
+        ok?: boolean;
+        erro?: string | null;
+        ja_estava?: boolean;
+      }>;
+      const totalOk =
+        typeof data?.total_ok === "number"
+          ? data.total_ok
+          : resultados.filter((r) => r.ok).length;
+      const totalErro =
+        typeof data?.total_erro === "number"
+          ? data.total_erro
+          : resultados.filter((r) => !r.ok).length;
+
+      setResultadoEnvio({
+        total_ok: totalOk,
+        total_erro: totalErro,
+        melhorenvio_url: data?.melhorenvio_url ?? MELHORENVIO_URL,
+        resultados,
+      });
+
+      if (totalErro === 0) {
+        toast.success(`${totalOk} pedido(s) no carrinho do Melhor Envio`);
+        setSelecionados(new Set());
       }
-      toast.success(`${sucessos} pedido(s) enviado(s) com sucesso`);
-      setSelecionados(new Set());
       await carregarPedidos();
     } catch (e: any) {
       console.error(e);
       toast.error(e?.message || "Falha ao enviar para o MelhorEnvio");
     } finally {
       setEnviando(false);
+
     }
   };
 
