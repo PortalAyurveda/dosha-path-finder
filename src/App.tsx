@@ -24,6 +24,7 @@ const PostsRedirect = () => {
 
 import Index from "./pages/Index";
 const MinhaRotina = lazy(() => import("./pages/MinhaRotina"));
+const Imprimir = lazy(() => import("./pages/Imprimir"));
 const LaunchPage = lazy(() => import("./pages/LaunchPage"));
 const PreviewLoading = lazy(() => import("./pages/PreviewLoading"));
 const TesteDeDosha = lazy(() => import("./pages/TesteDeDosha"));
@@ -138,8 +139,8 @@ if (typeof window !== "undefined") {
 
 const LayoutOrBare = ({ children }: { children: React.ReactNode }) => {
   const { pathname } = useLocation();
-  const bare = pathname === "/aovivo";
-  if (bare) return <>{children}</>;
+  const SEM_MOLDURA = ["/aovivo", "/imprimir"];
+  if (SEM_MOLDURA.includes(pathname)) return <>{children}</>;
   return <Layout>{children}</Layout>;
 };
 
@@ -200,6 +201,7 @@ const RoutedApp = () => {
               <Route path="/meu-dosha" element={<MeuDosha />} />
               <Route path="/meu-perfil" element={<MeuPerfil />} />
               <Route path="/minha-rotina" element={<MinhaRotina />} />
+              <Route path="/imprimir" element={<Imprimir />} />
               <Route path="/biblioteca" element={<Biblioteca />} />
               <Route path="/cursos" element={<CursosVitrine />} />
               <Route path="/cursos/:slug" element={<CursoLanding />} />
