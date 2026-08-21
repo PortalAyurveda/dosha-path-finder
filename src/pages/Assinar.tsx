@@ -106,6 +106,7 @@ const FaixaAkasha = ({
       background: AKASHA_VEU,
       borderColor: "#DFCDE8",
       borderWidth: 1,
+      boxShadow: `inset 3px 0 0 ${AKASHA_TOM}`,
       padding: "11px 12px",
       fontFamily: "'DM Sans', sans-serif",
     }}
