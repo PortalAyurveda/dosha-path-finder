@@ -704,12 +704,24 @@ const MinhaRotina = () => {
 
       {/* Topo */}
       <header className="mb-6">
-        <h1 className="font-serif text-3xl md:text-4xl text-foreground">
-          Sua rotina
-        </h1>
-        <p className="text-muted-foreground mt-1">
-          Dia {diaSelecionado} da sua semana
-        </p>
+        <div className="flex items-start justify-between gap-3 flex-wrap">
+          <div>
+            <h1 className="font-serif text-3xl md:text-4xl text-foreground">
+              Sua rotina
+            </h1>
+            <p className="text-muted-foreground mt-1">
+              Dia {diaSelecionado} da sua semana
+            </p>
+          </div>
+          <button
+            onClick={() => setImprimirOpen(true)}
+            className="inline-flex items-center gap-2 rounded-xl px-5 font-semibold text-white"
+            style={{ minHeight: 56, fontSize: 17, background: "#352F54" }}
+          >
+            <Printer className="h-6 w-6" strokeWidth={2} />
+            Imprimir
+          </button>
+        </div>
         <div className="flex items-center gap-2 mt-3 flex-wrap">
           <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-secondary/15 text-secondary text-xs font-medium border border-secondary/30">
             {nivelDia}
@@ -719,6 +731,72 @@ const MinhaRotina = () => {
           </span>
         </div>
       </header>
+
+      <Dialog open={imprimirOpen} onOpenChange={setImprimirOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="font-serif text-2xl" style={{ color: "#352F54" }}>
+              O que você quer imprimir?
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-2">
+            {[
+              { k: "rotina", icon: CalendarDays, titulo: "Sua rotina da semana", sub: "Os 7 dias, pra pôr na geladeira" },
+              { k: "receitas", icon: BookOpen, titulo: "As fichas de receita", sub: "Uma folha por receita, pra usar na cozinha" },
+              { k: "compras", icon: ShoppingCart, titulo: "A lista de compras", sub: "Tudo que a semana pede, por setor do mercado" },
+            ].map(({ k, icon: Ic, titulo, sub }) => (
+              <label
+                key={k}
+                className="flex items-start gap-3 rounded-xl border p-3 cursor-pointer"
+                style={{
+                  minHeight: 56,
+                  borderColor: pecasEscolhidas[k] ? "#352F54" : "#D9D5CD",
+                  background: pecasEscolhidas[k] ? "#F0EEE9" : "transparent",
+                }}
+              >
+                <Checkbox
+                  checked={!!pecasEscolhidas[k]}
+                  onCheckedChange={(v) => {
+                    setErroPecas(false);
+                    setPecasEscolhidas((p) => ({ ...p, [k]: !!v }));
+                  }}
+                  className="h-6 w-6 mt-0.5"
+                />
+                <Ic className="h-6 w-6 mt-0.5" style={{ color: "#352F54" }} strokeWidth={2} />
+                <span>
+                  <span className="block font-semibold" style={{ fontSize: 17, color: "#352F54" }}>
+                    {titulo}
+                  </span>
+                  <span className="block" style={{ fontSize: 16, color: "#3F3A52" }}>
+                    {sub}
+                  </span>
+                </span>
+              </label>
+            ))}
+          </div>
+          {erroPecas && (
+            <p style={{ fontSize: 16, color: "#B3261E" }}>
+              Escolha pelo menos uma coisa pra imprimir.
+            </p>
+          )}
+          <button
+            onClick={() => {
+              const pecas = Object.keys(pecasEscolhidas).filter((k) => pecasEscolhidas[k]);
+              if (pecas.length === 0) {
+                setErroPecas(true);
+                return;
+              }
+              setImprimirOpen(false);
+              navigate(`/imprimir?pecas=${pecas.join(",")}`);
+            }}
+            className="w-full rounded-xl font-semibold text-white"
+            style={{ minHeight: 56, fontSize: 17, background: "#352F54" }}
+          >
+            Ver como vai ficar
+          </button>
+        </DialogContent>
+      </Dialog>
+
 
       {/* Pílulas de dias */}
       <div className="flex gap-2 overflow-x-auto pb-2 -mx-1 px-1 mb-5">
