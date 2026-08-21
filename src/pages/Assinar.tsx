@@ -259,6 +259,7 @@ const Assinar = () => {
   const navigate = useNavigate();
   const [loadingPlan, setLoadingPlan] = useState<Plano | null>(null);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [verMaisRelatos, setVerMaisRelatos] = useState(false);
 
   const [upgradeDialog, setUpgradeDialog] = useState<null | {
     plano_atual: Plano;
