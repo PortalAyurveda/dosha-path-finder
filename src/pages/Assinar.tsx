@@ -583,31 +583,6 @@ const Assinar = () => {
     </span>
   );
 
-  const cursoIncluso = (
-    <span className="block mt-2">
-      <span
-        className="inline-flex items-center gap-2.5 rounded-xl border p-2 pr-2.5"
-        style={{ background: "#fff", borderColor: `${DOURADO}55` }}
-      >
-        {cursoRotinas?.capa_url ? (
-          <img src={cursoRotinas.capa_url} alt="" aria-hidden loading="lazy"
-              decoding="async" className="w-10 h-10 object-cover rounded-lg shrink-0" />
-        ) : (
-          <span className="w-10 h-10 rounded-lg shrink-0 flex items-center justify-center" style={{ background: DOURADO_BG }}>
-            <Gift className="w-4 h-4" style={{ color: DOURADO }} />
-          </span>
-        )}
-        <span className="min-w-0 text-left">
-          <span className="block text-[9px] uppercase tracking-wider font-bold" style={{ color: DOURADO_DARK }}>
-            Curso incluso
-          </span>
-          <span className="block font-serif font-bold text-[13px] leading-tight" style={{ color: PRIMARY }}>
-            {cursoRotinas?.titulo ?? "Rotinas Diárias do Ayurveda"}
-          </span>
-        </span>
-      </span>
-    </span>
-  );
 
   const seloDesconto = (
     <span
