@@ -20,7 +20,12 @@ import {
   Sun,
   Sparkles,
   X,
+  Printer,
+  ShoppingCart,
+  CalendarDays,
+  BookOpen,
 } from "lucide-react";
+
 import { getIconeLucide } from "@/lib/iconesLucide";
 const RotinaPie = lazy(() => import("@/components/charts/RotinaPie"));
 
