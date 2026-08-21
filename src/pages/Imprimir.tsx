@@ -769,7 +769,8 @@ const Imprimir = () => {
                 {principais
                   .filter((c) => c.setor === s)
                   .map((c, i) => (
-                    <Linha key={`${c.ingrediente}-${i}`} c={c} />
+                    <Linha key={`${c.ingrediente}-${i}`} c={c} variacao />
+
                   ))}
               </ul>
             </div>
