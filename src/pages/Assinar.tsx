@@ -1595,7 +1595,16 @@ const Assinar = () => {
                 <p className="text-xs mb-4" style={{ color: SALMAO, fontFamily: "'DM Sans', sans-serif" }}>
                   Tudo da Rotina, mais a companhia.
                 </p>
-                <BeneficiosList plano="mensal" checkColor={SALMAO} />
+                <FaixaAkasha
+                  pilula="Sem limite"
+                  pilulaCheia
+                  frase={<strong className="font-bold">Converse quantas vezes quiser, de dia ou de madrugada.</strong>}
+                  itens={[
+                    { texto: "Lembra de você por 7 dias", check: true },
+                    { texto: "Modo Pesquisa: ela mergulha nas 900+ aulas", check: true },
+                  ]}
+                />
+                <BeneficiosList itens={[RESUMO_PREMIUM, "Cancele quando quiser"]} checkColor={SALMAO} />
                 <button
                   type="button"
                   onClick={() => {
