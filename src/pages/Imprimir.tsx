@@ -177,11 +177,10 @@ export default function Imprimir() {
     return ativo && planoOk && dataOk;
   })();
 
-  const soFichaAvulsa = !!ids && querReceitas && !querSemana && !querCompras;
-
   const { data: testeId } = useQuery({
     queryKey: ["imprimir-teste-id", doshaResult?.idPublico],
-    enabled: !!doshaResult?.idPublico && temAcesso && !soFichaAvulsa,
+    enabled: !!doshaResult?.idPublico && temAcesso,
+
     queryFn: async () => {
       const { data, error } = await supabase.rpc("resultado_teste" as any, {
         p_idpublico: doshaResult!.idPublico,
