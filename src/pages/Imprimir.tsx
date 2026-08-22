@@ -358,7 +358,9 @@ export default function Imprimir() {
 
   const textoItem = (c: CompraRow) => c.quantidade_texto ?? c.ingrediente;
 
-  const semReceita = querReceitas && !carregando && !erro && receitas.length === 0;
+  const semReceita =
+    querReceitas && !carregando && !erro && receitas.length === 0 && receitasDaSemana.length === 0;
+
 
   return (
     <div style={{ background: "#EDEBE6", minHeight: "100vh", padding: "16px 8px 40px" }}>
