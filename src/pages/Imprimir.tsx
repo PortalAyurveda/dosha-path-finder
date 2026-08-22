@@ -1,71 +1,35 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { useQuery } from "@tanstack/react-query";
-import {
-  BookOpen,
-  CalendarDays,
-  Image as ImageIcon,
-  Printer,
-  ShoppingCart,
-} from "lucide-react";
+import { Printer } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/contexts/UserContext";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
-/* ------------------------------------------------------------------ */
-/* tipos                                                               */
-/* ------------------------------------------------------------------ */
+type Peca = "semana" | "receitas" | "compras";
+const PECAS_VALIDAS: Peca[] = ["semana", "receitas", "compras"];
 
-interface Ingrediente {
-  exibicao?: string | null;
-  preparo?: string | null;
-  opcional?: boolean | null;
-  papel?: string | null;
-}
-
-interface RotinaImpressaoRow {
+interface RotinaRow {
   dia: number;
   slot: string;
-  nugget_id: string | null;
-  titulo: string | null;
-  icone: string | null;
-  categoria: string | null;
-  subcategoria: string | null;
-  resumo: string | null;
-  imagem_url: string | null;
-  praticado: boolean | null;
-  eh_receita: boolean | null;
+  nugget_id: string;
+  titulo: string;
+  eh_receita: boolean;
   rende_porcoes: number | null;
   tempo_preparo_min: number | null;
-  ingredientes: Ingrediente[] | null;
+  ingredientes: { exibicao: string; preparo?: string | null; opcional?: boolean }[] | null;
   modo_preparo: string[] | null;
-  dicas: string | null;
-  efeito_esperado: string | null;
 }
 
 interface ReceitaRow {
   nugget_id: string;
-  titulo: string | null;
-  slug: string | null;
-  subcategoria: string | null;
-  resumo: string | null;
-  imagem_url: string | null;
+  titulo: string;
   rende_porcoes: number | null;
   tempo_preparo_min: number | null;
-  ingredientes: Ingrediente[] | null;
+  ingredientes: { exibicao: string; preparo?: string | null; opcional?: boolean }[] | null;
   modo_preparo: string[] | null;
-  dicas: string | null;
-  efeito_esperado: string | null;
 }
 
 interface CompraRow {
@@ -74,29 +38,13 @@ interface CompraRow {
   ingrediente: string;
   despensa: boolean | null;
   quantidade_texto: string | null;
-  unidade_compra: string | null;
   opcional: boolean | null;
-  receitas: string[] | null;
   confianca: string | null;
   tem_estimativa: boolean | null;
-  sugestao_troca?: string | null;
+  sugestao_troca: string | null;
 }
 
-type Peca = "rotina" | "receitas" | "compras";
-const PECAS_VALIDAS: Peca[] = ["rotina", "receitas", "compras"];
-
-const SLOTS: { slot: string; label: string }[] = [
-  { slot: "rotina_manha", label: "Ritual da manhã" },
-  { slot: "cafe_manha", label: "Café da manhã" },
-  { slot: "lanche_manha", label: "Lanche da manhã" },
-  { slot: "almoco", label: "Almoço" },
-  { slot: "lanche_tarde", label: "Lanche da tarde" },
-  { slot: "jantar", label: "Jantar" },
-  { slot: "tonico_noite", label: "Tônico da noite" },
-  { slot: "bonus_diario", label: "Bônus do dia" },
-];
-
-const SETORES: Record<string, string> = {
+const SETOR_NOME: Record<string, string> = {
   hortifruti: "Hortifrúti",
   proteinas: "Proteínas",
   laticinios: "Laticínios",
@@ -109,113 +57,113 @@ const SETORES: Record<string, string> = {
   loja_samkhya: "Da Samkhya",
 };
 
-const SETORES_LOJA = ["loja_samkhya", "ervas_medicinais"];
+const SLOTS: { slot: string; nome: string }[] = [
+  { slot: "ritual_manha", nome: "Ritual da manhã" },
+  { slot: "cafe_manha", nome: "Café da manhã" },
+  { slot: "lanche_manha", nome: "Lanche da manhã" },
+  { slot: "almoco", nome: "Almoço" },
+  { slot: "lanche_tarde", nome: "Lanche da tarde" },
+  { slot: "jantar", nome: "Jantar" },
+  { slot: "tonico_noite", nome: "Tônico da noite" },
+  { slot: "bonus", nome: "Bônus do dia" },
+];
 
-/* ------------------------------------------------------------------ */
-/* helpers de folha                                                    */
-/* ------------------------------------------------------------------ */
+const MarcaPortal = ({ size = "10mm" }: { size?: string }) => (
+  <svg viewBox="0 0 120.32 120.17" style={{ width: size, height: size, flexShrink: 0 }} aria-hidden="true">
+    <path fill="#ff8f8f" d="M120.32,120.17c-21.92-1.21-41.82-12.92-53.5-31.45h53.5v31.45Z" />
+    <path fill="#6e81ff" d="M119.22,70.17c-13.34-17.6-35.27-28.05-59.1-28.05S14.41,52.57,1.09,70.17C8.75,26.39,35.17,10.11,60.16,0c24.99,10.11,51.42,26.4,59.06,70.17Z" />
+    <path fill="#ff8f8f" d="M0,88.72h53.49c-11.68,18.53-31.58,30.24-53.49,31.45v-31.45Z" />
+    <path fill="#f2cd00" d="M2.83,81.05c11.81-19.23,34.16-31.61,57.19-31.61h.28c23.04,0,45.39,12.38,57.2,31.61H2.83Z" />
+  </svg>
+);
 
-const pt = (v: number, escala: number) => `${(v * escala).toFixed(2)}pt`;
+const Cabecalho = ({ nome, dosha }: { nome: string; dosha: string | null }) => (
+  <div
+    style={{
+      display: "flex",
+      alignItems: "center",
+      borderBottom: "1px solid #352F54",
+      paddingBottom: "3mm",
+      marginBottom: "5mm",
+    }}
+  >
+    <MarcaPortal />
+    <span style={{ marginLeft: "4mm", fontSize: "12pt", color: "#000" }}>
+      {nome}
+      {dosha ? ` · ${dosha}` : ""}
+    </span>
+    <span style={{ marginLeft: "auto", fontSize: "10pt", color: "#000" }}>portalayurveda.com</span>
+  </div>
+);
 
-const Quadradinho = ({ escala }: { escala: number }) => (
+const Quadradinho = ({ mm }: { mm: string }) => (
   <span
-    aria-hidden="true"
     style={{
       display: "inline-block",
-      width: `${7 * escala}mm`,
-      height: `${7 * escala}mm`,
+      width: mm,
+      height: mm,
       border: "1pt solid #000",
-      flex: "none",
-      marginTop: "1mm",
+      flexShrink: 0,
+      marginRight: "3mm",
     }}
   />
 );
 
-const textoIngrediente = (i: Ingrediente) => {
-  const t = (i.exibicao ?? "").trim();
-  return i.opcional ? `${t} (opcional)` : t;
+const CartaoReceita = ({ r }: { r: ReceitaRow }) => {
+  const apoio: string[] = [];
+  if (r.rende_porcoes) apoio.push(`Rende ${r.rende_porcoes} ${r.rende_porcoes === 1 ? "porção" : "porções"}`);
+  if (r.tempo_preparo_min) apoio.push(`${r.tempo_preparo_min} min`);
+  const ings = (r.ingredientes ?? [])
+    .map((i) => `${i.exibicao}${i.opcional ? " (opcional)" : ""}`)
+    .join(" · ");
+  const passos = (r.modo_preparo ?? []).map((p, i) => `${i + 1}. ${p}`).join(" ");
+  return (
+    <div
+      style={{
+        breakInside: "avoid",
+        WebkitColumnBreakInside: "avoid",
+        border: "0.5pt dashed #000",
+        padding: "4mm",
+        marginBottom: "5mm",
+      }}
+    >
+      <h3 className="font-serif" style={{ fontSize: "11pt", fontWeight: 700, margin: 0, color: "#000" }}>
+        {r.titulo}
+      </h3>
+      {apoio.length > 0 && (
+        <p style={{ fontSize: "8.5pt", margin: "1mm 0 0", color: "#000" }}>{apoio.join(" · ")}</p>
+      )}
+      {ings && <p style={{ fontSize: "10pt", margin: "2mm 0 0", color: "#000" }}>{ings}</p>}
+      {passos && <p style={{ fontSize: "10pt", margin: "2mm 0 0", color: "#000" }}>{passos}</p>}
+    </div>
+  );
 };
 
-/* ------------------------------------------------------------------ */
-/* página                                                              */
-/* ------------------------------------------------------------------ */
-
-const Imprimir = () => {
+export default function Imprimir() {
   const { user, profile, loading, role, roleLoading, doshaResult } = useUser();
-  const [params, setParams] = useSearchParams();
-  const [avisoSemPeca, setAvisoSemPeca] = useState(false);
-  const [avisoReceitas, setAvisoReceitas] = useState<string | null>(null);
-  const [depoisDeImprimir, setDepoisDeImprimir] = useState(false);
-  const [ajudaExtra, setAjudaExtra] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [erroVazio, setErroVazio] = useState(false);
   const [imprimindo, setImprimindo] = useState(false);
-  const bloco1Ref = useRef<HTMLDivElement | null>(null);
-  const primeiraCaixaRef = useRef<HTMLInputElement | null>(null);
 
-  /* ---------- parâmetros ---------- */
   const pecas = useMemo<Peca[]>(() => {
-    const brutos = (params.get("pecas") ?? "rotina").split(",").map((p) => p.trim());
-    const validos = brutos.filter((p): p is Peca => (PECAS_VALIDAS as string[]).includes(p));
-    return validos.length > 0 ? validos : ["rotina"];
-  }, [params]);
+    const raw = (searchParams.get("pecas") ?? "receitas").split(",").map((s) => s.trim());
+    const ok = raw.filter((s): s is Peca => (PECAS_VALIDAS as string[]).includes(s));
+    return ok.length > 0 ? ok : ["receitas"];
+  }, [searchParams]);
 
-  const idsDaUrl = useMemo(() => {
-    const raw = params.get("ids");
-    if (!raw) return undefined;
-    const lista = raw.split(",").map((s) => s.trim()).filter(Boolean);
-    return lista.length > 0 ? lista : undefined;
-  }, [params]);
+  const ids = useMemo(() => {
+    const raw = searchParams.get("ids");
+    if (!raw) return null;
+    const arr = raw.split(",").map((s) => s.trim()).filter(Boolean);
+    return arr.length > 0 ? arr : null;
+  }, [searchParams]);
 
-  const diaParam = useMemo(() => {
-    const n = Number(params.get("dia"));
-    return Number.isInteger(n) && n >= 1 && n <= 7 ? n : null;
-  }, [params]);
+  const querSemana = pecas.includes("semana");
+  const querReceitas = pecas.includes("receitas");
+  const querCompras = pecas.includes("compras");
+  const soSemana = querSemana && !querReceitas && !querCompras;
 
-  const comFoto = params.get("img") === "1";
-
-  const letraUrl = params.get("letra") === "grande" ? "grande" : params.get("letra") === "normal" ? "normal" : null;
-  const [letra, setLetra] = useState<"normal" | "grande">(() => {
-    if (letraUrl) return letraUrl;
-    if (typeof window !== "undefined") {
-      const salvo = window.localStorage.getItem("imprimir:letra");
-      if (salvo === "grande") return "grande";
-    }
-    return "normal";
-  });
-  useEffect(() => {
-    if (letraUrl && letraUrl !== letra) setLetra(letraUrl);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [letraUrl]);
-
-  const escala = letra === "grande" ? 1.25 : 1;
-
-  const temRotina = pecas.includes("rotina");
-  const temReceitas = pecas.includes("receitas");
-  const temCompras = pecas.includes("compras");
-  const soRotina = temRotina && !diaParam;
-  const soFichasAvulsas = !!idsDaUrl && temReceitas && !temRotina && !temCompras;
-
-  const atualizar = useCallback(
-    (mudar: (p: URLSearchParams) => void) => {
-      const p = new URLSearchParams(params);
-      mudar(p);
-      setParams(p, { replace: true });
-    },
-    [params, setParams]
-  );
-
-  const alternarPeca = (peca: Peca, ligado: boolean) => {
-    const novas = ligado ? [...new Set([...pecas, peca])] : pecas.filter((p) => p !== peca);
-    setAvisoSemPeca(false);
-    atualizar((p) => {
-      if (novas.length === 0) p.set("pecas", "");
-      else p.set("pecas", PECAS_VALIDAS.filter((x) => novas.includes(x)).join(","));
-    });
-  };
-
-  const pecasMarcadas = (params.get("pecas") ?? "rotina") === "" ? [] : pecas;
-
-  /* ---------- acesso ---------- */
-  const temAcessoRotina = (() => {
+  const temAcesso = (() => {
     if (role === "admin") return true;
     if (!user || !profile) return false;
     if (profile.is_premium === true) return true;
@@ -226,12 +174,11 @@ const Imprimir = () => {
     return ativo && planoOk && dataOk;
   })();
 
-  /* ---------- dados ---------- */
-  const podeConsultar = !loading && !roleLoading && (temAcessoRotina || false);
+  const soFichaAvulsa = !!ids && querReceitas && !querSemana && !querCompras;
 
-  const testeQuery = useQuery({
+  const { data: testeId } = useQuery({
     queryKey: ["imprimir-teste-id", doshaResult?.idPublico],
-    enabled: podeConsultar && !!doshaResult?.idPublico && !soFichasAvulsas,
+    enabled: !!doshaResult?.idPublico && temAcesso && !soFichaAvulsa,
     queryFn: async () => {
       const { data, error } = await supabase.rpc("resultado_teste" as any, {
         p_idpublico: doshaResult!.idPublico,
@@ -240,64 +187,54 @@ const Imprimir = () => {
       return Array.isArray(data) && data[0]?.id ? (data[0].id as string) : null;
     },
   });
-  const testeId = testeQuery.data ?? null;
 
-  const rotinaQuery = useQuery({
-    queryKey: ["imprimir-rotina", testeId],
-    enabled: podeConsultar && !!testeId && !soFichasAvulsas,
-    queryFn: async () => {
-      const { data, error } = await supabase.rpc("rotina_para_impressao" as any, {
-        p_teste_id: testeId!,
-      });
-      if (error) throw error;
-      return (data ?? []) as RotinaImpressaoRow[];
-    },
-  });
-  const rotinaRows = rotinaQuery.data ?? [];
-
-  const selecaoQuery = useQuery({
+  const { data: selecaoIds } = useQuery({
     queryKey: ["imprimir-selecao", user?.id],
-    enabled: podeConsultar && !!user?.id && !idsDaUrl,
+    enabled: !!user?.id && temAcesso && !ids,
     queryFn: async () => {
       const { data, error } = await (supabase.from("rotina_selecao") as any)
         .select("nugget_id")
         .eq("user_id", user!.id);
       if (error) throw error;
-      return ((data ?? []) as { nugget_id: string }[]).map((r) => r.nugget_id).filter(Boolean);
+      return ((data ?? []) as { nugget_id: string }[]).map((r) => r.nugget_id);
     },
   });
 
-  const idsSelecao = selecaoQuery.data && selecaoQuery.data.length > 0 ? selecaoQuery.data : undefined;
-  const idsEscolhidos = idsDaUrl ?? idsSelecao;
-  const pIds = idsEscolhidos && idsEscolhidos.length > 0 ? idsEscolhidos : null;
+  const rotinaQuery = useQuery({
+    queryKey: ["imprimir-rotina", testeId],
+    enabled: !!testeId && temAcesso,
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("rotina_para_impressao" as any, { p_teste_id: testeId! });
+      if (error) throw error;
+      return (data ?? []) as RotinaRow[];
+    },
+  });
 
-  // ids das receitas da semana quando não vier nada
-  const idsReceitasSemana = useMemo(() => {
+  const nuggetIds = useMemo<string[]>(() => {
+    if (ids) return ids;
+    if (selecaoIds && selecaoIds.length > 0) return selecaoIds;
+    const rows = rotinaQuery.data ?? [];
     const set = new Set<string>();
-    rotinaRows.forEach((r) => {
-      if (r.eh_receita && r.nugget_id) set.add(r.nugget_id);
-    });
-    return [...set];
-  }, [rotinaRows]);
-
-  const idsReceitas = pIds ?? (idsReceitasSemana.length > 0 ? idsReceitasSemana : null);
+    rows.filter((r) => r.eh_receita).forEach((r) => set.add(r.nugget_id));
+    return Array.from(set);
+  }, [ids, selecaoIds, rotinaQuery.data]);
 
   const receitasQuery = useQuery({
-    queryKey: ["imprimir-receitas", idsReceitas],
-    enabled: podeConsultar && temReceitas && !!idsReceitas,
+    queryKey: ["imprimir-receitas", nuggetIds.join(",")],
+    enabled: temAcesso && querReceitas && nuggetIds.length > 0,
     queryFn: async () => {
       const { data, error } = await supabase.rpc("receitas_para_impressao" as any, {
-        p_nugget_ids: idsReceitas,
+        p_nugget_ids: nuggetIds,
       });
       if (error) throw error;
       return (data ?? []) as ReceitaRow[];
     },
   });
-  const receitas = receitasQuery.data ?? [];
 
+  const pIds = ids && ids.length > 0 ? ids : null;
   const comprasQuery = useQuery({
-    queryKey: ["imprimir-compras", testeId, pIds],
-    enabled: podeConsultar && temCompras && !!testeId,
+    queryKey: ["imprimir-compras", testeId, pIds?.join(",") ?? "null"],
+    enabled: temAcesso && querCompras && !!testeId,
     queryFn: async () => {
       const { data, error } = await supabase.rpc("lista_de_compras" as any, {
         p_teste_id: testeId!,
@@ -307,93 +244,58 @@ const Imprimir = () => {
       return (data ?? []) as CompraRow[];
     },
   });
+
+  const carregando =
+    (querReceitas && nuggetIds.length > 0 && receitasQuery.isLoading) ||
+    ((querSemana || querCompras) && !!testeId && rotinaQuery.isLoading) ||
+    (querCompras && !!testeId && comprasQuery.isLoading);
+
+  const erro = receitasQuery.isError || rotinaQuery.isError || comprasQuery.isError;
+
+  const receitas = receitasQuery.data ?? [];
   const compras = comprasQuery.data ?? [];
+  const rotina = rotinaQuery.data ?? [];
 
-  /* semana sem receita → desmarca sozinho */
-  useEffect(() => {
-    if (!temReceitas || soFichasAvulsas) return;
-    if (rotinaQuery.isSuccess && idsReceitasSemana.length === 0 && !pIds) {
-      setAvisoReceitas(
-        "Essa semana não tem receita pra imprimir — desmarquei as fichas de receita pra você."
-      );
-      alternarPeca("receitas", false);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [rotinaQuery.isSuccess, idsReceitasSemana.length, temReceitas]);
+  const folhas =
+    (querReceitas ? Math.ceil(receitas.length / 6) : 0) +
+    (querSemana ? 2 : 0) +
+    (querCompras ? Math.max(1, Math.ceil(compras.length / 30)) : 0);
 
-  /* ---------- contagem de folhas ---------- */
-  const comprasPrincipais = compras.filter((c) => !c.despensa);
-  const folhasRotina = temRotina ? (diaParam ? 1 : 2) : 0;
-  const folhasReceitas = temReceitas ? receitas.length : 0;
-  const folhasCompras = temCompras ? Math.max(1, Math.ceil(compras.length / 28)) : 0;
-  const baseFolhas = folhasRotina + folhasReceitas + folhasCompras;
-  const totalFolhas = pecasMarcadas.length === 0 ? 0 : Math.ceil(baseFolhas * escala);
+  const togglePeca = (p: Peca, on: boolean) => {
+    const atual = new Set(pecas);
+    if (on) atual.add(p);
+    else atual.delete(p);
+    const next = new URLSearchParams(searchParams);
+    next.set("pecas", Array.from(atual).join(","));
+    setSearchParams(next, { replace: true });
+    setErroVazio(false);
+  };
 
-  const detalheFolhas = [
-    folhasRotina > 0 &&
-      `${folhasRotina} ${folhasRotina === 1 ? "folha" : "folhas"} do quadro da semana`,
-    folhasReceitas > 0 && `${folhasReceitas} ${folhasReceitas === 1 ? "folha" : "folhas"} de receita`,
-    folhasCompras > 0 &&
-      `${folhasCompras} ${folhasCompras === 1 ? "folha" : "folhas"} de lista de compras`,
-  ]
-    .filter(Boolean)
-    .join(" · ");
+  const marcado = (p: Peca) => (searchParams.get("pecas") ?? "receitas").split(",").includes(p);
+  const nenhumaMarcada = !(marcado("semana") || marcado("receitas") || marcado("compras"));
 
-  /* ---------- carregando / erro ---------- */
-  const carregandoDados =
-    (temRotina || temCompras) && !soFichasAvulsas
-      ? testeQuery.isLoading || rotinaQuery.isLoading || (temCompras && comprasQuery.isLoading)
-      : false;
-  const carregandoReceitas = temReceitas && receitasQuery.isLoading;
-  const carregando = carregandoDados || carregandoReceitas;
-  const erro = rotinaQuery.isError || receitasQuery.isError || comprasQuery.isError || testeQuery.isError;
-
-  /* ---------- imprimir ---------- */
-  const dispararImpressao = async () => {
+  const imprimir = () => {
     if (imprimindo || carregando) return;
-    if (pecasMarcadas.length === 0) {
-      setAvisoSemPeca(true);
-      bloco1Ref.current?.scrollIntoView({ behavior: "smooth", block: "center" });
-      setTimeout(() => primeiraCaixaRef.current?.focus(), 350);
+    if (nenhumaMarcada) {
+      setErroVazio(true);
       return;
     }
     setImprimindo(true);
-    try {
-      if (comFoto) {
-        const imgs = Array.from(document.querySelectorAll<HTMLImageElement>("#folha-impressao img"));
-        await Promise.all(imgs.map((i) => i.decode().catch(() => undefined)));
-      }
-      window.print();
-    } finally {
-      setTimeout(() => setImprimindo(false), 800);
-    }
+    window.print();
+    setTimeout(() => setImprimindo(false), 1500);
   };
 
   useEffect(() => {
-    const aoVoltar = () => setDepoisDeImprimir(true);
-    window.addEventListener("afterprint", aoVoltar);
-    return () => window.removeEventListener("afterprint", aoVoltar);
+    document.body.style.background = "#EDEBE6";
+    return () => {
+      document.body.style.background = "";
+    };
   }, []);
 
-  /* ---------- textos de cabeçalho ---------- */
-  const nome = (profile?.nome || (profile as any)?.nome_completo || doshaResult?.nome || "").trim();
-  const dosha = doshaResult?.doshaprincipal ?? "";
-  const titulo = `Rotina — ${nome || "Portal Ayurveda"}${dosha ? ` — ${dosha}` : ""}`;
+  const primeiroNome = (profile?.nome ?? doshaResult?.nome ?? "").split(" ")[0] || "Você";
+  const nomeCompleto = profile?.nome ?? doshaResult?.nome ?? "Você";
+  const dosha = doshaResult?.doshaprincipal ?? null;
 
-  useEffect(() => {
-    document.title = titulo;
-  }, [titulo]);
-
-  const linkVoltar = (
-    <Link
-      to="/minha-rotina"
-      className="inline-flex h-12 items-center text-[18px] font-medium text-[#352F54] underline underline-offset-4 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-[#352F54] focus-visible:ring-offset-2"
-    >
-      ← Voltar pra minha rotina
-    </Link>
-  );
-
-  /* ---------- gates ---------- */
   if (loading || roleLoading) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
@@ -402,794 +304,330 @@ const Imprimir = () => {
     );
   }
 
-  if (!user || !temAcessoRotina) {
-    const next = `/imprimir?${params.toString()}`;
+  if (!temAcesso) {
     return (
-      <div className="min-h-screen bg-[#EDEBE6] px-4 py-12">
-        <div className="mx-auto max-w-[210mm] rounded-xl border border-[#352F54] bg-white p-6">
-          <p className="text-[18px] text-[#1A1A1A]">
-            Pra imprimir a sua rotina você precisa entrar na sua conta.
-          </p>
-          <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-            <Button asChild size="lg" className="h-14 text-[18px] bg-primary text-primary-foreground hover:bg-primary/90">
-              <Link to={`/auth?next=${encodeURIComponent(next)}`}>Entrar</Link>
+      <div className="min-h-screen flex items-center justify-center p-6">
+        <div className="max-w-md text-center space-y-6">
+          <p className="text-lg">Pra imprimir suas receitas você precisa entrar na sua conta.</p>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <Button asChild className="h-12 text-base">
+              <Link to="/auth">Entrar</Link>
             </Button>
-            <Button asChild size="lg" variant="outline" className="h-14 text-[18px] border-2 border-[#352F54] text-[#352F54]">
-              <Link to={`/assinar?next=${encodeURIComponent(next)}`}>Ver os planos</Link>
+            <Button asChild variant="outline" className="h-12 text-base">
+              <Link to="/assinar">Ver os planos</Link>
             </Button>
           </div>
-          <div className="mt-6">{linkVoltar}</div>
         </div>
       </div>
     );
   }
 
-  /* ---------- folha ---------- */
-  const larguraFolha = soRotina ? "297mm" : "210mm";
+  const comprasNormais = compras.filter((c) => !c.opcional && !c.despensa && c.setor !== "nao_se_compra");
+  const comprasOpcionais = compras.filter((c) => c.opcional && !c.despensa && c.setor !== "nao_se_compra");
+  const comprasDespensa = compras.filter((c) => c.despensa && c.setor !== "nao_se_compra");
 
-  const LogoMarca = () => (
-    <svg
-      viewBox="0 0 120.32 120.17"
-      style={{ width: `${10 * escala}mm`, height: `${10 * escala}mm`, flexShrink: 0 }}
-      aria-hidden="true"
-    >
-      <path fill="#ff8f8f" d="M120.32,120.17c-21.92-1.21-41.82-12.92-53.5-31.45h53.5v31.45Z" />
-      <path fill="#6e81ff" d="M119.22,70.17c-13.34-17.6-35.27-28.05-59.1-28.05S14.41,52.57,1.09,70.17C8.75,26.39,35.17,10.11,60.16,0c24.99,10.11,51.42,26.4,59.06,70.17Z" />
-      <path fill="#ff8f8f" d="M0,88.72h53.49c-11.68,18.53-31.58,30.24-53.49,31.45v-31.45Z" />
-      <path fill="#f2cd00" d="M2.83,81.05c11.81-19.23,34.16-31.61,57.19-31.61h.28c23.04,0,45.39,12.38,57.2,31.61H2.83Z" />
-    </svg>
-  );
+  const setores = Array.from(
+    comprasNormais.reduce((map, c) => {
+      if (!map.has(c.setor)) map.set(c.setor, []);
+      map.get(c.setor)!.push(c);
+      return map;
+    }, new Map<string, CompraRow[]>())
+  ).sort((a, b) => (a[1][0].setor_ordem ?? 0) - (b[1][0].setor_ordem ?? 0));
 
-  const CabecalhoFolha = () => (
-    <div
-      className="nao-quebrar"
-      style={{
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        gap: "6mm",
-        borderBottom: "1px solid #352F54",
-        paddingBottom: "3mm",
-        marginBottom: "5mm",
-        color: "#000",
-      }}
-    >
-      <span style={{ display: "flex", alignItems: "center", gap: "4mm" }}>
-        <LogoMarca />
-        <span style={{ fontSize: pt(14, escala), fontWeight: 500, lineHeight: 1.5 }}>
-          {nome ? `${nome}${dosha ? ` · ${dosha}` : ""}` : dosha}
-        </span>
-      </span>
-      <span style={{ fontSize: pt(12, escala), fontWeight: 500 }}>portalayurveda.com</span>
-    </div>
-  );
+  const textoItem = (c: CompraRow) => c.quantidade_texto ?? c.ingrediente;
 
-  const rotinaPorDia = (dia: number) => {
-    const mapa = new Map<string, RotinaImpressaoRow>();
-    rotinaRows.filter((r) => r.dia === dia).forEach((r) => mapa.set(r.slot, r));
-    return mapa;
-  };
-
-  const QuadroSemana = ({ dias, primeira }: { dias: number[]; primeira: boolean }) => (
-    <section
-      className={primeira ? "folha nao-quebrar" : "folha quebra-antes nao-quebrar"}
-      style={{ color: "#000" }}
-    >
-      <CabecalhoFolha />
-      <table style={{ width: "100%", borderCollapse: "collapse", tableLayout: "fixed" }}>
-        <thead>
-          <tr>
-            <th style={{ width: `${34 * escala}mm`, borderRight: "1pt solid #000", textAlign: "left" }} />
-            {dias.map((d) => (
-              <th
-                key={d}
-                style={{
-                  border: "0.5pt solid #000",
-                  fontSize: pt(16, escala),
-                  fontWeight: 700,
-                  padding: "2mm",
-                  textAlign: "left",
-                }}
-              >
-                Dia {d}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {SLOTS.map((s) => (
-            <tr key={s.slot}>
-              <th
-                scope="row"
-                style={{
-                  fontSize: pt(14, escala),
-                  fontWeight: 700,
-                  textAlign: "left",
-                  padding: "2mm 3mm 2mm 0",
-                  borderRight: "1pt solid #000",
-                  borderBottom: "0.5pt solid #000",
-                  lineHeight: 1.5,
-                }}
-              >
-                {s.label}
-              </th>
-              {dias.map((d) => {
-                const row = rotinaPorDia(d).get(s.slot);
-                return (
-                  <td
-                    key={d}
-                    style={{
-                      border: "0.5pt solid #000",
-                      padding: "2mm",
-                      verticalAlign: "top",
-                      fontSize: pt(14, escala),
-                      lineHeight: 1.5,
-                    }}
-                  >
-                    <span style={{ display: "flex", gap: "2mm", alignItems: "flex-start" }}>
-                      <Quadradinho escala={escala} />
-                      <span>{row?.titulo ?? ""}</span>
-                    </span>
-                  </td>
-                );
-              })}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </section>
-  );
-
-  const FolhaDoDia = ({ dia }: { dia: number }) => {
-    const mapa = rotinaPorDia(dia);
-    return (
-      <section className="folha" style={{ color: "#000" }}>
-        <CabecalhoFolha />
-        <h2
-          className="font-serif"
-          style={{ fontSize: pt(24, escala), fontWeight: 600, marginBottom: "6mm", lineHeight: 1.5 }}
-        >
-          Dia {dia}
-        </h2>
-        {SLOTS.map((s) => {
-          const row = mapa.get(s.slot);
-          if (!row) return null;
-          return (
-            <div key={s.slot} className="nao-quebrar" style={{ marginBottom: "8mm" }}>
-              <p style={{ fontSize: pt(16, escala), fontWeight: 700, lineHeight: 1.5 }}>{s.label}</p>
-              <p style={{ fontSize: pt(20, escala), lineHeight: 1.5 }}>{row.titulo}</p>
-              {(row.ingredientes ?? []).length > 0 && (
-                <ul style={{ listStyle: "none", padding: 0, margin: "3mm 0 0" }}>
-                  {(row.ingredientes ?? []).map((ing, i) => (
-                    <li
-                      key={i}
-                      style={{
-                        display: "flex",
-                        gap: "3mm",
-                        alignItems: "flex-start",
-                        fontSize: pt(16, escala),
-                        marginBottom: "8mm",
-                        lineHeight: 1.5,
-                      }}
-                    >
-                      <Quadradinho escala={escala} />
-                      <span>{textoIngrediente(ing)}</span>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          );
-        })}
-      </section>
-    );
-  };
-
-  const FichaReceita = ({ r, primeira }: { r: ReceitaRow; primeira: boolean }) => {
-    const apoio = [
-      r.rende_porcoes
-        ? `Rende ${r.rende_porcoes} ${r.rende_porcoes === 1 ? "porção" : "porções"}`
-        : null,
-      r.tempo_preparo_min ? `${r.tempo_preparo_min} min` : null,
-      r.subcategoria || null,
-    ]
-      .filter(Boolean)
-      .join(" · ");
-    return (
-      <section className={primeira ? "folha" : "folha quebra-antes"} style={{ color: "#000" }}>
-        <CabecalhoFolha />
-        <div style={{ display: "flex", gap: "6mm", alignItems: "flex-start" }}>
-          <div style={{ flex: 1 }}>
-            <h2 className="font-serif" style={{ fontSize: pt(24, escala), fontWeight: 600, lineHeight: 1.4 }}>
-              {r.titulo}
-            </h2>
-            {apoio && <p style={{ fontSize: pt(14, escala), lineHeight: 1.5 }}>{apoio}</p>}
-          </div>
-          {comFoto && r.imagem_url && (
-            <img
-              src={r.imagem_url}
-              alt=""
-              loading="eager"
-              style={{ width: "45mm", height: "45mm", objectFit: "cover", flex: "none" }}
-            />
-          )}
-        </div>
-
-        {r.resumo && (
-          <p style={{ fontSize: pt(14, escala), lineHeight: 1.5, marginLeft: "6mm", marginTop: "4mm" }}>
-            {r.resumo}
-          </p>
-        )}
-
-        {(r.ingredientes ?? []).length > 0 && (
-          <>
-            <h3 style={{ fontSize: pt(16, escala), fontWeight: 700, margin: "6mm 0 3mm" }}>Ingredientes</h3>
-            <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-              {(r.ingredientes ?? []).map((ing, i) => (
-                <li
-                  key={i}
-                  className="nao-quebrar"
-                  style={{
-                    display: "flex",
-                    gap: "3mm",
-                    alignItems: "flex-start",
-                    fontSize: pt(16, escala),
-                    marginBottom: "10mm",
-                    lineHeight: 1.5,
-                  }}
-                >
-                  <Quadradinho escala={escala} />
-                  <span>{textoIngrediente(ing)}</span>
-                </li>
-              ))}
-            </ul>
-          </>
-        )}
-
-        {(r.modo_preparo ?? []).length > 0 && (
-          <>
-            <h3 style={{ fontSize: pt(16, escala), fontWeight: 700, margin: "6mm 0 3mm" }}>Modo de preparo</h3>
-            <ol style={{ listStyle: "none", padding: 0, margin: 0 }}>
-              {(r.modo_preparo ?? []).map((passo, i) => (
-                <li
-                  key={i}
-                  className="nao-quebrar"
-                  style={{
-                    display: "flex",
-                    gap: "4mm",
-                    alignItems: "flex-start",
-                    fontSize: pt(16, escala),
-                    marginBottom: "10mm",
-                    lineHeight: 1.5,
-                  }}
-                >
-                  <span style={{ fontWeight: 700, width: "8mm", flex: "none" }}>{i + 1}.</span>
-                  <span>{passo}</span>
-                </li>
-              ))}
-            </ol>
-          </>
-        )}
-
-        {r.dicas && (
-          <div className="nao-quebrar" style={{ border: "1pt solid #000", padding: "4mm", marginTop: "5mm" }}>
-            <p style={{ fontSize: pt(14, escala), lineHeight: 1.5 }}>
-              <span style={{ fontWeight: 700 }}>Dica: </span>
-              {r.dicas}
-            </p>
-          </div>
-        )}
-        {r.efeito_esperado && (
-          <div className="nao-quebrar" style={{ border: "1pt solid #000", padding: "4mm", marginTop: "4mm" }}>
-            <p style={{ fontSize: pt(14, escala), lineHeight: 1.5 }}>
-              <span style={{ fontWeight: 700 }}>O que ela faz por você: </span>
-              {r.efeito_esperado}
-            </p>
-          </div>
-        )}
-
-        <p style={{ fontSize: pt(12, escala), fontWeight: 500, marginTop: "6mm" }}>
-          portalayurveda.com{r.slug ? ` · portalayurveda.com/receita/${r.slug}` : ""}
-        </p>
-      </section>
-    );
-  };
-
-  const ListaCompras = ({ primeira }: { primeira: boolean }) => {
-    const principais = compras.filter((c) => !c.despensa && !c.opcional && !SETORES_LOJA.includes(c.setor) && c.setor !== "nao_se_compra");
-    const opcionais = compras.filter((c) => !c.despensa && c.opcional && c.setor !== "nao_se_compra");
-    const loja = compras.filter((c) => !c.despensa && !c.opcional && SETORES_LOJA.includes(c.setor));
-    const despensa = compras.filter((c) => c.despensa && c.setor !== "nao_se_compra");
-
-    const setores = [...new Set(principais.map((c) => c.setor))].sort(
-      (a, b) =>
-        (principais.find((c) => c.setor === a)?.setor_ordem ?? 0) -
-        (principais.find((c) => c.setor === b)?.setor_ordem ?? 0)
-    );
-
-    const nomeItem = (c: CompraRow) => {
-      if (c.quantidade_texto) {
-        return (
-          <span style={{ lineHeight: 1.5, fontWeight: 700 }}>
-            {c.tem_estimativa ? "mais ou menos " : ""}
-            {c.quantidade_texto}
-          </span>
-        );
-      }
-      return <span style={{ lineHeight: 1.5 }}>{c.ingrediente}</span>;
-    };
-
-    const Linha = ({ c, variacao = false }: { c: CompraRow; variacao?: boolean }) => (
-      <li
-        className="nao-quebrar"
-        style={{
-          fontSize: pt(16, escala),
-          marginBottom: "11mm",
-        }}
-      >
-        <div style={{ display: "flex", gap: "3mm", alignItems: "flex-start" }}>
-          <Quadradinho escala={escala} />
-          {nomeItem(c)}
-        </div>
-        {variacao && c.sugestao_troca && (
-          <div
-            style={{
-              marginLeft: "8mm",
-              marginTop: "2mm",
-              fontSize: pt(12, escala),
-              lineHeight: 1.5,
-              color: "#000",
-              fontStyle: "normal",
-            }}
-          >
-            {c.sugestao_troca}
-          </div>
-        )}
-      </li>
-    );
-
-
-    const nReceitas = receitas.length || idsReceitasSemana.length;
-
-    return (
-      <section className={primeira ? "folha" : "folha quebra-antes"} style={{ color: "#000" }}>
-        <CabecalhoFolha />
-        <h2 className="font-serif" style={{ fontSize: pt(24, escala), fontWeight: 600, lineHeight: 1.4 }}>
-          Lista de compras
-        </h2>
-        <p style={{ fontSize: pt(14, escala), lineHeight: 1.5 }}>
-          Da sua semana{nReceitas ? ` · ${nReceitas} receitas` : ""}
-        </p>
-
-        {principais.length === 0 && despensa.length > 0 && (
-          <p style={{ fontSize: pt(14, escala), lineHeight: 1.5, marginTop: "4mm" }}>
-            Tudo que essa semana pede você já costuma ter em casa. Confira a lista abaixo.
-          </p>
-        )}
-
-        <div style={{ paddingLeft: "20mm", marginTop: "6mm" }}>
-          {setores.map((s) => (
-            <div key={s} style={{ marginBottom: "8mm" }}>
-              <h3
-                style={{
-                  fontSize: pt(16, escala),
-                  fontWeight: 700,
-                  borderBottom: "1pt solid #000",
-                  paddingBottom: "1.5mm",
-                  marginBottom: "5mm",
-                }}
-              >
-                {SETORES[s] ?? s}
-              </h3>
-              <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-                {principais
-                  .filter((c) => c.setor === s)
-                  .map((c, i) => (
-                    <Linha key={`${c.ingrediente}-${i}`} c={c} variacao />
-
-                  ))}
-              </ul>
-            </div>
-          ))}
-
-          {opcionais.length > 0 && (
-            <div style={{ marginBottom: "8mm" }}>
-              <h3 style={{ fontSize: pt(16, escala), fontWeight: 700 }}>Se você quiser</h3>
-              <p style={{ fontSize: pt(14, escala), lineHeight: 1.5, marginBottom: "4mm" }}>
-                Nada aqui é obrigatório: a receita sai bem sem.
-              </p>
-              <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-                {opcionais.map((c, i) => (
-                  <Linha key={`${c.ingrediente}-${i}`} c={c} />
-                ))}
-              </ul>
-            </div>
-          )}
-
-          {loja.length > 0 && (
-            <div style={{ marginBottom: "8mm" }}>
-              <h3 style={{ fontSize: pt(16, escala), fontWeight: 700 }}>Compre uma vez na loja</h3>
-              <p style={{ fontSize: pt(14, escala), lineHeight: 1.5, marginBottom: "4mm" }}>
-                Massalas e tônico rendem meses; quem está na primeira semana precisa comprar, senão a
-                receita não sai.
-              </p>
-              <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-                {loja.map((c, i) => (
-                  <Linha key={`${c.ingrediente}-${i}`} c={c} />
-                ))}
-              </ul>
-            </div>
-          )}
-
-          {despensa.length > 0 && (
-            <div>
-              <h3 style={{ fontSize: pt(16, escala), fontWeight: 700 }}>Confira se você já tem em casa</h3>
-              <p style={{ fontSize: pt(14, escala), lineHeight: 1.5, marginBottom: "4mm" }}>
-                Tempero seco, sal e óleo duram meses. Só marque o que estiver acabando.
-              </p>
-              <ul
-                style={{
-                  listStyle: "none",
-                  padding: 0,
-                  margin: 0,
-                  columnCount: 2,
-                  columnGap: "10mm",
-                }}
-              >
-                {despensa.map((c, i) => (
-                  <li
-                    key={`${c.ingrediente}-${i}`}
-                    className="nao-quebrar"
-                    style={{
-                      display: "flex",
-                      gap: "3mm",
-                      alignItems: "flex-start",
-                      fontSize: pt(14, escala),
-                      marginBottom: "8mm",
-                      breakInside: "avoid",
-                    }}
-                  >
-                    <Quadradinho escala={escala} />
-                    <span style={{ lineHeight: 1.5 }}>{c.ingrediente}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </div>
-      </section>
-    );
-  };
-
-  /* ---------- montagem das folhas ---------- */
-  const folhas: JSX.Element[] = [];
-  if (!erro && !carregando) {
-    let primeira = true;
-    if (temRotina) {
-      if (diaParam) {
-        folhas.push(<FolhaDoDia key="dia" dia={diaParam} />);
-      } else {
-        folhas.push(<QuadroSemana key="q1" dias={[1, 2, 3, 4]} primeira />);
-        folhas.push(<QuadroSemana key="q2" dias={[5, 6, 7]} primeira={false} />);
-      }
-      primeira = false;
-    }
-    if (temReceitas) {
-      receitas.forEach((r) => {
-        folhas.push(<FichaReceita key={r.nugget_id} r={r} primeira={primeira} />);
-        primeira = false;
-      });
-    }
-    if (temCompras) {
-      folhas.push(<ListaCompras key="compras" primeira={primeira} />);
-      primeira = false;
-    }
-  }
-
-  const rotuloBotao = carregando
-    ? "Preparando as folhas…"
-    : `Imprimir ${totalFolhas === 1 ? "a folha" : `as ${totalFolhas} folhas`}`;
+  const semReceita = querReceitas && !carregando && !erro && receitas.length === 0;
 
   return (
-    <div className="min-h-screen bg-[#EDEBE6] pb-16">
+    <div style={{ background: "#EDEBE6", minHeight: "100vh", padding: "16px 8px 40px" }}>
       <Helmet>
-        <title>{titulo}</title>
+        <title>{`Receitas — ${primeiroNome}`}</title>
         <meta name="robots" content="noindex" />
       </Helmet>
-      <style>{`@page { size: ${soRotina ? "A4 landscape" : "A4 portrait"}; margin: ${soRotina ? "10mm" : "14mm"}; }`}</style>
+
+      <style>{`@page { size: ${soSemana ? "A4 landscape" : "A4 portrait"}; margin: ${soSemana ? "10mm" : "12mm"}; }`}</style>
       <style>{`@media print {
+        body * { visibility: hidden !important; }
+        .no-print { display: none !important; }
         #folha-impressao, #folha-impressao * { visibility: visible !important; }
-        #folha-impressao { position: static !important; }
+        #folha-impressao { position: static !important; width: auto !important; box-shadow: none !important; margin: 0 !important; padding: 0 !important; }
       }`}</style>
-      <style>{`#folha-impressao p,
-        #folha-impressao span,
-        #folha-impressao li,
-        #folha-impressao td,
-        #folha-impressao th,
-        #folha-impressao h1,
-        #folha-impressao h2,
-        #folha-impressao h3 {
-          color: #000 !important;
-        }
-        #folha-impressao span:not([style*="font-size"]) {
-          font-size: inherit;
-        }`}</style>
+      <style>{`#folha-impressao p, #folha-impressao span, #folha-impressao li,
+        #folha-impressao td, #folha-impressao th, #folha-impressao h1,
+        #folha-impressao h2, #folha-impressao h3 { color: #000 !important; }`}</style>
 
-
-      {/* ------------ barra de opções ------------ */}
-      <div className="no-print px-4 pt-6">
-        <div className="mx-auto max-w-[210mm] space-y-4 rounded-xl border border-[#352F54] bg-white p-6">
-          {linkVoltar}
-
-          {depoisDeImprimir && (
-            <div role="status" className="rounded-lg border-2 border-[#352F54] p-4">
-              <p className="text-[18px] font-bold text-[#1A1A1A]">Saiu tudo certo?</p>
-              <div className="mt-3 flex flex-wrap gap-3">
-                <Button
-                  size="lg"
-                  className="h-14 text-[18px] bg-primary text-primary-foreground hover:bg-primary/90"
-                  onClick={() => setDepoisDeImprimir(false)}
-                >
-                  Sim, obrigado
-                </Button>
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="h-14 text-[18px] border-2 border-[#352F54] text-[#352F54]"
-                  onClick={() => {
-                    setAjudaExtra(true);
-                    setDepoisDeImprimir(false);
-                  }}
-                >
-                  Não saiu direito
-                </Button>
-              </div>
-            </div>
-          )}
-
-          <h1 className="font-serif text-[26px] font-bold text-[#1A1A1A]">Pronto pra imprimir</h1>
-          <p className="text-[18px] text-[#3F3A52]">
-            Marque o que vai pro papel. Logo abaixo você vê a folha exatamente como ela vai sair da
-            impressora.
-          </p>
-
-          {/* bloco 1 */}
-          <section ref={bloco1Ref} className="space-y-3">
-            <h2 className="text-[20px] font-bold text-[#1A1A1A]">O que vai pro papel</h2>
-            {[
-              {
-                id: "rotina" as Peca,
-                Icone: CalendarDays,
-                titulo: "A rotina da semana",
-                apoio:
-                  "um quadro com os 7 dias, pra colar na geladeira — sai em 2 folhas, pra letra ficar grande o bastante pra ler de longe",
-              },
-              {
-                id: "receitas" as Peca,
-                Icone: BookOpen,
-                titulo: "As fichas das receitas",
-                apoio: "uma receita por folha, com ingredientes e modo de preparo",
-              },
-              {
-                id: "compras" as Peca,
-                Icone: ShoppingCart,
-                titulo: "A lista de compras",
-                apoio: "tudo que você precisa comprar, somado e separado por setor do mercado",
-              },
-            ].map(({ id, Icone, titulo: t, apoio }, i) => (
-              <label
-                key={id}
-                className="flex min-h-[60px] cursor-pointer items-start gap-4 rounded-lg border-2 border-[#3F3A52] p-3"
-              >
-                <Checkbox
-                  ref={i === 0 ? (primeiraCaixaRef as any) : undefined}
-                  checked={pecasMarcadas.includes(id)}
-                  onCheckedChange={(v) => alternarPeca(id, v === true)}
-                  className="mt-1 h-6 w-6 border-2 border-[#3F3A52] focus-visible:ring-[3px] focus-visible:ring-[#352F54] focus-visible:ring-offset-2"
-                />
-                <Icone className="mt-1 h-6 w-6 shrink-0 text-[#352F54]" strokeWidth={2} aria-hidden="true" />
-                <span>
-                  <span className="block text-[18px] font-bold text-[#1A1A1A]">{t}</span>
-                  <span className="block text-[16px] text-[#3F3A52]">{apoio}</span>
-                </span>
-              </label>
-            ))}
-            {avisoSemPeca && (
-              <p className="text-[18px] text-[#8A2A1B]">
-                Marque pelo menos uma coisa lá em cima pra eu saber o que imprimir.
-              </p>
-            )}
-            {avisoReceitas && <p className="text-[18px] text-[#8A2A1B]">{avisoReceitas}</p>}
-          </section>
-
-          {/* bloco 2 */}
-          <section className="space-y-3">
-            <h2 className="text-[20px] font-bold text-[#1A1A1A]">Como vai sair</h2>
-
-            {temRotina && (
-              <div className="space-y-2">
-                <label htmlFor="dias" className="block text-[18px] font-medium text-[#1A1A1A]">
-                  Quais dias entram no quadro
-                </label>
-                <Select
-                  value={diaParam ? String(diaParam) : "todos"}
-                  onValueChange={(v) =>
-                    atualizar((p) => (v === "todos" ? p.delete("dia") : p.set("dia", v)))
-                  }
-                >
-                  <SelectTrigger id="dias" className="h-[60px] text-[18px] border-2 border-[#3F3A52]">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem className="text-[18px]" value="todos">
-                      A semana inteira
-                    </SelectItem>
-                    {[1, 2, 3, 4, 5, 6, 7].map((d) => (
-                      <SelectItem className="text-[18px]" key={d} value={String(d)}>
-                        Só o dia {d}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
-
-            {temReceitas && (
-              <label className="flex min-h-[60px] cursor-pointer items-start gap-4 rounded-lg border-2 border-[#3F3A52] p-3">
-                <Checkbox
-                  checked={comFoto}
-                  onCheckedChange={(v) => atualizar((p) => p.set("img", v === true ? "1" : "0"))}
-                  className="mt-1 h-6 w-6 border-2 border-[#3F3A52] focus-visible:ring-[3px] focus-visible:ring-[#352F54] focus-visible:ring-offset-2"
-                />
-                <ImageIcon className="mt-1 h-6 w-6 shrink-0 text-[#352F54]" strokeWidth={2} aria-hidden="true" />
-                <span>
-                  <span className="block text-[18px] font-bold text-[#1A1A1A]">
-                    Imprimir as fotos das receitas
-                  </span>
-                  <span className="block text-[16px] text-[#3F3A52]">
-                    sem foto a impressora gasta bem menos tinta
-                  </span>
-                </span>
-              </label>
-            )}
-
-            <div className="space-y-2">
-              <span className="block text-[18px] font-medium text-[#1A1A1A]">Tamanho das letras</span>
-              <ToggleGroup
-                type="single"
-                value={letra}
-                onValueChange={(v) => {
-                  if (!v) return;
-                  setLetra(v as "normal" | "grande");
-                  window.localStorage.setItem("imprimir:letra", v);
-                  atualizar((p) => p.set("letra", v));
-                }}
-                className="justify-start gap-3"
-              >
-                <ToggleGroupItem
-                  value="normal"
-                  className="h-14 px-6 text-[18px] border-2 border-[#3F3A52] data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
-                >
-                  Normal
-                </ToggleGroupItem>
-                <ToggleGroupItem
-                  value="grande"
-                  className="h-14 px-6 text-[18px] border-2 border-[#3F3A52] data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
-                >
-                  Grande
-                </ToggleGroupItem>
-              </ToggleGroup>
-            </div>
-          </section>
-
-          {/* bloco 3 */}
-          <div role="status" aria-live="polite" className="rounded-lg bg-[#F0EEE9] p-4">
-            <p className="text-[18px] font-bold text-[#1A1A1A]">
-              {carregando
-                ? "Montando as suas folhas…"
-                : `Vai sair em ${totalFolhas} ${totalFolhas === 1 ? "folha" : "folhas"}`}
-            </p>
-            {!carregando && detalheFolhas && (
-              <p className="text-[16px] text-[#1A1A1A]">{detalheFolhas}</p>
-            )}
-          </div>
-
-          {/* bloco 4 */}
-          <div className="space-y-3">
-            <Button
-              onClick={dispararImpressao}
-              disabled={imprimindo}
-              size="lg"
-              className="w-full h-16 text-xl gap-2 bg-primary text-primary-foreground hover:bg-primary/90 focus-visible:ring-[3px] focus-visible:ring-[#352F54] focus-visible:ring-offset-2"
+      {/* BARRA DE OPÇÕES */}
+      <div
+        className="no-print"
+        style={{
+          background: "#fff",
+          border: "1px solid #352F54",
+          borderRadius: 12,
+          maxWidth: "210mm",
+          margin: "0 auto 20px",
+          padding: 20,
+        }}
+      >
+        <Link
+          to="/minha-rotina"
+          className="flex items-center underline text-[#352F54]"
+          style={{ height: 48, fontSize: 17 }}
+        >
+          ← Voltar pra minha rotina
+        </Link>
+        <h1 className="font-serif" style={{ fontSize: 22, margin: "4px 0 12px", color: "#352F54" }}>
+          O que você quer imprimir?
+        </h1>
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          {([
+            ["receitas", "As receitas"],
+            ["compras", "A lista de compras"],
+            ["semana", "A semana"],
+          ] as [Peca, string][]).map(([p, label]) => (
+            <label
+              key={p}
+              className="flex items-center gap-3 cursor-pointer"
+              style={{ height: 56, fontSize: 17 }}
             >
-              <Printer className="h-6 w-6" strokeWidth={2} aria-hidden="true" />
-              {rotuloBotao}
-            </Button>
-            <p className="text-[16px] text-[#3F3A52]">
-              Não tem impressora? Esse mesmo botão dá a opção de salvar em PDF, no computador e no
-              celular.
-            </p>
-            <div className="rounded-lg border-2 border-[#3F3A52] p-4">
-              <p className="text-[18px] font-bold text-[#1A1A1A]">
-                Vai abrir a janela de impressão do seu computador
-              </p>
-              <ul className="mt-2 space-y-2 text-[16px] text-[#1A1A1A]">
-                <li>
-                  Onde aparecer "Retrato" e "Paisagem", deixe como já vem — a página já escolheu o
-                  certo pra você.
-                </li>
-                <li>
-                  Em "Mais configurações", deixe <strong>"Cabeçalhos e rodapés" desligado</strong> —
-                  senão o navegador escreve a data e o endereço do site por cima da sua folha.
-                </li>
-                <li>Deixe "Escala" em "Padrão". Se você diminuir a escala, a letra encolhe junto.</li>
-                {ajudaExtra && (
-                  <li>
-                    Se saiu em branco, espere a folha aparecer aqui embaixo antes de clicar em
-                    Imprimir de novo.
-                  </li>
-                )}
-              </ul>
-            </div>
-          </div>
+              <Checkbox
+                className="h-6 w-6 border-2 border-[#3F3A52]"
+                checked={marcado(p)}
+                onCheckedChange={(v) => togglePeca(p, v === true)}
+              />
+              <span>{label}</span>
+            </label>
+          ))}
         </div>
+        <p role="status" style={{ fontSize: 17, margin: "12px 0" }}>
+          {carregando
+            ? "Montando as suas folhas…"
+            : `Vai sair em ${folhas} ${folhas === 1 ? "folha" : "folhas"}`}
+        </p>
+        <Button
+          onClick={imprimir}
+          className="w-full h-14 text-lg gap-2 bg-primary text-primary-foreground hover:bg-primary/90"
+        >
+          <Printer style={{ width: 24, height: 24 }} />
+          {carregando ? "Preparando…" : "Imprimir"}
+        </Button>
+        {erroVazio && (
+          <p style={{ fontSize: 17, marginTop: 10 }} className="text-[#8A2A1B]">
+            Marque o que você quer imprimir.
+          </p>
+        )}
+        <p style={{ fontSize: 16, marginTop: 10 }}>No celular, esse botão salva em PDF.</p>
       </div>
 
-      {/* ------------ prévia / folha ------------ */}
-      <div className="mt-8 overflow-x-auto px-4">
-        {erro ? (
-          <div className="no-print mx-auto max-w-[210mm] rounded-xl border border-[#352F54] bg-white p-6">
-            <p className="text-[18px] font-bold text-[#1A1A1A]">Não consegui montar as folhas agora.</p>
-            <p className="text-[16px] text-[#3F3A52]">
-              Tente de novo daqui a pouco, ou volte pra sua rotina.
-            </p>
-            <div className="mt-4 flex flex-wrap gap-3">
-              <Button
-                size="lg"
-                className="h-14 text-[18px] bg-primary text-primary-foreground hover:bg-primary/90"
-                onClick={() => {
-                  rotinaQuery.refetch();
-                  receitasQuery.refetch();
-                  comprasQuery.refetch();
-                }}
-              >
-                Tentar de novo
-              </Button>
-              {linkVoltar}
-            </div>
-          </div>
-        ) : carregando ? (
-          <p className="no-print mx-auto max-w-[210mm] text-[18px] text-[#1A1A1A]">
-            Montando as suas folhas…
+      {erro && (
+        <div className="no-print" style={{ maxWidth: "210mm", margin: "0 auto", textAlign: "center" }}>
+          <p style={{ fontSize: 18, marginBottom: 12 }}>Não consegui montar as folhas agora.</p>
+          <Button
+            className="h-12"
+            onClick={() => {
+              receitasQuery.refetch();
+              rotinaQuery.refetch();
+              comprasQuery.refetch();
+            }}
+          >
+            Tentar de novo
+          </Button>
+        </div>
+      )}
+
+      {!erro && semReceita && !querSemana && !querCompras && (
+        <div className="no-print" style={{ maxWidth: "210mm", margin: "0 auto", textAlign: "center" }}>
+          <p style={{ fontSize: 18 }}>Você ainda não marcou nenhuma receita.</p>
+          <p style={{ fontSize: 16, margin: "8px 0 16px" }}>
+            Volte pra sua rotina e marque as receitas que você quer levar pro papel.
           </p>
-        ) : (
+          <Button asChild className="h-12">
+            <Link to="/minha-rotina">Ir pra minha rotina</Link>
+          </Button>
+        </div>
+      )}
+
+      {!erro && !carregando && (
+        <div style={{ overflowX: "auto" }}>
           <div
             id="folha-impressao"
-            className="mx-auto bg-white"
-            style={{ width: larguraFolha, maxWidth: "100%", minWidth: larguraFolha }}
+            style={{
+              width: "210mm",
+              margin: "0 auto",
+              background: "#fff",
+              boxShadow: "0 2px 12px rgba(0,0,0,.15)",
+              padding: "12mm",
+              lineHeight: 1.35,
+              textAlign: "left",
+              hyphens: "none",
+              color: "#000",
+            }}
           >
-            <style>{`
-              #folha-impressao .folha {
-                background: #fff;
-                padding: 14mm;
-                margin-bottom: 8mm;
-                box-shadow: 0 6px 20px -12px rgba(0,0,0,.5);
-                hyphens: none;
-                text-align: left;
-                font-weight: 400;
-              }
-              @media print {
-                #folha-impressao .folha { box-shadow: none; padding: 0; margin: 0; }
-              }
-            `}</style>
-            {folhas}
-          </div>
-        )}
-      </div>
+            {/* RECEITAS */}
+            {querReceitas && receitas.length > 0 && (
+              <section>
+                <Cabecalho nome={nomeCompleto} dosha={dosha} />
+                <div style={{ columnCount: 2, columnGap: "6mm" }}>
+                  {receitas.map((r) => (
+                    <CartaoReceita key={r.nugget_id} r={r} />
+                  ))}
+                </div>
+              </section>
+            )}
 
-      <div className="no-print mt-8 px-4 text-center">{linkVoltar}</div>
+            {/* SEMANA */}
+            {querSemana && rotina.length > 0 && (
+              <>
+                {[
+                  [1, 2, 3, 4],
+                  [5, 6, 7],
+                ].map((dias, idx) => (
+                  <section
+                    key={idx}
+                    style={idx === 1 || querReceitas ? { breakBefore: "page", paddingTop: idx === 1 ? "6mm" : 0 } : undefined}
+                  >
+                    <Cabecalho nome={nomeCompleto} dosha={dosha} />
+                    <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                      <thead>
+                        <tr>
+                          <th style={{ border: "0.5pt solid #000", width: "32mm", fontSize: "13pt", padding: "2mm", textAlign: "left" }} />
+                          {dias.map((d) => (
+                            <th
+                              key={d}
+                              style={{ border: "0.5pt solid #000", fontSize: "13pt", fontWeight: 700, padding: "2mm", textAlign: "left" }}
+                            >
+                              Dia {d}
+                            </th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {SLOTS.map((s) => (
+                          <tr key={s.slot}>
+                            <td
+                              style={{
+                                border: "0.5pt solid #000",
+                                borderRight: "1pt solid #000",
+                                width: "32mm",
+                                fontSize: "12pt",
+                                fontWeight: 700,
+                                padding: "2mm",
+                                verticalAlign: "top",
+                              }}
+                            >
+                              {s.nome}
+                            </td>
+                            {dias.map((d) => {
+                              const item = rotina.find((r) => r.dia === d && r.slot === s.slot);
+                              return (
+                                <td
+                                  key={d}
+                                  style={{ border: "0.5pt solid #000", padding: "2mm", fontSize: "12pt", verticalAlign: "top" }}
+                                >
+                                  {item ? (
+                                    <span style={{ display: "flex", alignItems: "flex-start" }}>
+                                      <span
+                                        style={{
+                                          display: "inline-block",
+                                          width: "6mm",
+                                          height: "6mm",
+                                          border: "1pt solid #000",
+                                          flexShrink: 0,
+                                          marginRight: "2mm",
+                                        }}
+                                      />
+                                      <span>{item.titulo}</span>
+                                    </span>
+                                  ) : null}
+                                </td>
+                              );
+                            })}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </section>
+                ))}
+              </>
+            )}
+
+            {/* COMPRAS */}
+            {querCompras && compras.length > 0 && (
+              <section style={querReceitas || querSemana ? { breakBefore: "page", paddingTop: "6mm" } : undefined}>
+                <Cabecalho nome={nomeCompleto} dosha={dosha} />
+                <h2 className="font-serif" style={{ fontSize: "18pt", margin: "0 0 4mm", color: "#000" }}>
+                  Lista de compras
+                </h2>
+                <div style={{ marginLeft: "16mm" }}>
+                  {setores.map(([setor, itens]) => (
+                    <div key={setor} style={{ marginBottom: "6mm", breakInside: "avoid" }}>
+                      <h3
+                        style={{
+                          fontSize: "13pt",
+                          fontWeight: 700,
+                          borderBottom: "1px solid #000",
+                          paddingBottom: "1mm",
+                          margin: "0 0 3mm",
+                          color: "#000",
+                        }}
+                      >
+                        {SETOR_NOME[setor] ?? setor}
+                      </h3>
+                      {itens.map((c, i) => (
+                        <div key={`${c.ingrediente}-${i}`} style={{ marginBottom: "7mm" }}>
+                          <span style={{ display: "flex", alignItems: "flex-start", fontSize: "12pt" }}>
+                            <Quadradinho mm="5mm" />
+                            <span style={{ fontWeight: 700 }}>{textoItem(c)}</span>
+                          </span>
+                          {c.sugestao_troca && (
+                            <p style={{ fontSize: "10pt", margin: "1mm 0 0 6mm", color: "#000" }}>{c.sugestao_troca}</p>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  ))}
+
+                  {comprasOpcionais.length > 0 && (
+                    <div style={{ marginBottom: "6mm" }}>
+                      <h3 style={{ fontSize: "13pt", fontWeight: 700, borderBottom: "1px solid #000", paddingBottom: "1mm", margin: "0 0 3mm", color: "#000" }}>
+                        Se você quiser
+                      </h3>
+                      {comprasOpcionais.map((c, i) => (
+                        <div key={`${c.ingrediente}-op-${i}`} style={{ marginBottom: "7mm" }}>
+                          <span style={{ display: "flex", alignItems: "flex-start", fontSize: "12pt" }}>
+                            <Quadradinho mm="5mm" />
+                            <span style={{ fontWeight: 700 }}>{textoItem(c)}</span>
+                          </span>
+                          {c.sugestao_troca && (
+                            <p style={{ fontSize: "10pt", margin: "1mm 0 0 6mm", color: "#000" }}>{c.sugestao_troca}</p>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {comprasDespensa.length > 0 && (
+                    <div>
+                      <h3 style={{ fontSize: "13pt", fontWeight: 700, borderBottom: "1px solid #000", paddingBottom: "1mm", margin: "0 0 2mm", color: "#000" }}>
+                        Confira se você já tem em casa
+                      </h3>
+                      <p style={{ fontSize: "11pt", margin: "0 0 3mm", color: "#000" }}>
+                        Tempero seco, sal e óleo duram meses.
+                      </p>
+                      <div style={{ columnCount: 2, columnGap: "6mm" }}>
+                        {comprasDespensa.map((c, i) => (
+                          <p key={`${c.ingrediente}-d-${i}`} style={{ fontSize: "11pt", margin: "0 0 2mm", color: "#000" }}>
+                            {c.ingrediente}
+                          </p>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </section>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
-};
-
-export default Imprimir;
+}
