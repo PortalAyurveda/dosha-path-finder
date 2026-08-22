@@ -122,21 +122,23 @@ const CartaoReceita = ({ r }: { r: ReceitaRow }) => {
       style={{
         breakInside: "avoid",
         border: "0.5pt dashed #000",
-        padding: "4mm",
-        marginBottom: "5mm",
+        padding: "3mm",
+        marginBottom: "4mm",
+        lineHeight: 1.25,
       }}
     >
-      <h3 className="font-serif" style={{ fontSize: "11pt", fontWeight: 700, margin: 0, color: "#000" }}>
+      <h3 className="font-serif" style={{ fontSize: "10.5pt", fontWeight: 700, margin: 0, color: "#000" }}>
         {r.titulo}
       </h3>
       {apoio.length > 0 && (
-        <p style={{ fontSize: "8.5pt", margin: "1mm 0 0", color: "#000" }}>{apoio.join(" · ")}</p>
+        <p style={{ fontSize: "8.5pt", margin: "1mm 0 0", color: "#000", lineHeight: 1.25 }}>{apoio.join(" · ")}</p>
       )}
-      {ings && <p style={{ fontSize: "10pt", margin: "2mm 0 0", color: "#000" }}>{ings}</p>}
-      {passos && <p style={{ fontSize: "10pt", margin: "2mm 0 0", color: "#000" }}>{passos}</p>}
+      {ings && <p style={{ fontSize: "9pt", margin: "2mm 0 0", color: "#000", lineHeight: 1.25 }}>{ings}</p>}
+      {passos && <p style={{ fontSize: "9pt", margin: "2mm 0 0", color: "#000", lineHeight: 1.25 }}>{passos}</p>}
     </div>
   );
 };
+
 
 export default function Imprimir() {
   const { user, profile, loading, role, roleLoading, doshaResult } = useUser();
@@ -150,12 +152,14 @@ export default function Imprimir() {
     return ok.length > 0 ? ok : ["receitas"];
   }, [searchParams]);
 
-  const ids = useMemo(() => {
-    const raw = searchParams.get("ids");
+  // Lido só na primeira renderização: depois disso a seleção é estado local.
+  const [idsIniciais] = useState<string[] | null>(() => {
+    const raw = new URLSearchParams(window.location.search).get("ids");
     if (!raw) return null;
     const arr = raw.split(",").map((s) => s.trim()).filter(Boolean);
     return arr.length > 0 ? arr : null;
-  }, [searchParams]);
+  });
+
 
   const querSemana = pecas.includes("semana");
   const querReceitas = pecas.includes("receitas");
@@ -173,29 +177,16 @@ export default function Imprimir() {
     return ativo && planoOk && dataOk;
   })();
 
-  const soFichaAvulsa = !!ids && querReceitas && !querSemana && !querCompras;
-
   const { data: testeId } = useQuery({
     queryKey: ["imprimir-teste-id", doshaResult?.idPublico],
-    enabled: !!doshaResult?.idPublico && temAcesso && !soFichaAvulsa,
+    enabled: !!doshaResult?.idPublico && temAcesso,
+
     queryFn: async () => {
       const { data, error } = await supabase.rpc("resultado_teste" as any, {
         p_idpublico: doshaResult!.idPublico,
       });
       if (error) throw error;
       return Array.isArray(data) && data[0]?.id ? (data[0].id as string) : null;
-    },
-  });
-
-  const { data: selecaoIds } = useQuery({
-    queryKey: ["imprimir-selecao", user?.id],
-    enabled: !!user?.id && temAcesso && !ids,
-    queryFn: async () => {
-      const { data, error } = await (supabase.from("rotina_selecao") as any)
-        .select("nugget_id")
-        .eq("user_id", user!.id);
-      if (error) throw error;
-      return ((data ?? []) as { nugget_id: string }[]).map((r) => r.nugget_id);
     },
   });
 
@@ -209,14 +200,44 @@ export default function Imprimir() {
     },
   });
 
-  const nuggetIds = useMemo<string[]>(() => {
-    if (ids) return ids;
-    if (selecaoIds && selecaoIds.length > 0) return selecaoIds;
+  // Receitas da semana (sem repetir nugget_id, na ordem em que aparecem)
+  const receitasDaSemana = useMemo(() => {
     const rows = rotinaQuery.data ?? [];
-    const set = new Set<string>();
-    rows.filter((r) => r.eh_receita).forEach((r) => set.add(r.nugget_id));
-    return Array.from(set);
-  }, [ids, selecaoIds, rotinaQuery.data]);
+    const vistos = new Set<string>();
+    const lista: { nugget_id: string; titulo: string }[] = [];
+    rows.forEach((r) => {
+      if (!r.eh_receita || vistos.has(r.nugget_id)) return;
+      vistos.add(r.nugget_id);
+      lista.push({ nugget_id: r.nugget_id, titulo: r.titulo });
+    });
+    return lista;
+  }, [rotinaQuery.data]);
+
+  const [selecionados, setSelecionados] = useState<string[] | null>(idsIniciais);
+
+  // Sem ids na URL: começa com todas marcadas assim que a semana carrega.
+  useEffect(() => {
+    if (selecionados === null && receitasDaSemana.length > 0) {
+      setSelecionados(receitasDaSemana.map((r) => r.nugget_id));
+    }
+  }, [selecionados, receitasDaSemana]);
+
+  const nuggetIds = useMemo<string[]>(() => selecionados ?? [], [selecionados]);
+
+  const aplicarSelecao = (proximos: string[]) => {
+    setSelecionados(proximos);
+    const next = new URLSearchParams(searchParams);
+    if (proximos.length > 0) next.set("ids", proximos.join(","));
+    else next.set("ids", "");
+    setSearchParams(next, { replace: true });
+  };
+
+  const alternarReceita = (id: string, on: boolean) => {
+    const atual = new Set(selecionados ?? []);
+    if (on) atual.add(id);
+    else atual.delete(id);
+    aplicarSelecao(receitasDaSemana.filter((r) => atual.has(r.nugget_id)).map((r) => r.nugget_id));
+  };
 
   const receitasQuery = useQuery({
     queryKey: ["imprimir-receitas", nuggetIds.join(",")],
@@ -230,7 +251,7 @@ export default function Imprimir() {
     },
   });
 
-  const pIds = ids && ids.length > 0 ? ids : null;
+  const pIds = nuggetIds.length > 0 ? nuggetIds : null;
   const comprasQuery = useQuery({
     queryKey: ["imprimir-compras", testeId, pIds?.join(",") ?? "null"],
     enabled: temAcesso && querCompras && !!testeId,
@@ -244,6 +265,7 @@ export default function Imprimir() {
     },
   });
 
+
   const carregando =
     (querReceitas && nuggetIds.length > 0 && receitasQuery.isLoading) ||
     ((querSemana || querCompras) && !!testeId && rotinaQuery.isLoading) ||
@@ -256,7 +278,8 @@ export default function Imprimir() {
   const rotina = rotinaQuery.data ?? [];
 
   const folhas =
-    (querReceitas ? Math.ceil(receitas.length / 6) : 0) +
+    (querReceitas ? Math.ceil(nuggetIds.length / 6) : 0) +
+
     (querSemana ? 2 : 0) +
     (querCompras ? Math.max(1, Math.ceil(compras.length / 30)) : 0);
 
@@ -335,7 +358,9 @@ export default function Imprimir() {
 
   const textoItem = (c: CompraRow) => c.quantidade_texto ?? c.ingrediente;
 
-  const semReceita = querReceitas && !carregando && !erro && receitas.length === 0;
+  const semReceita =
+    querReceitas && !carregando && !erro && receitas.length === 0 && receitasDaSemana.length === 0;
+
 
   return (
     <div style={{ background: "#EDEBE6", minHeight: "100vh", padding: "16px 8px 40px" }}>
@@ -383,25 +408,80 @@ export default function Imprimir() {
             ["compras", "A lista de compras"],
             ["semana", "A semana"],
           ] as [Peca, string][]).map(([p, label]) => (
-            <label
-              key={p}
-              className="flex items-center gap-3 cursor-pointer"
-              style={{ height: 56, fontSize: 17 }}
-            >
-              <Checkbox
-                className="h-6 w-6 border-2 border-[#3F3A52]"
-                checked={marcado(p)}
-                onCheckedChange={(v) => togglePeca(p, v === true)}
-              />
-              <span>{label}</span>
-            </label>
+            <div key={p}>
+              <label
+                className="flex items-center gap-3 cursor-pointer"
+                style={{ height: 56, fontSize: 17 }}
+              >
+                <Checkbox
+                  className="h-6 w-6 border-2 border-[#3F3A52]"
+                  checked={marcado(p)}
+                  onCheckedChange={(v) => togglePeca(p, v === true)}
+                />
+                <span>{label}</span>
+              </label>
+
+              {p === "receitas" && marcado("receitas") && receitasDaSemana.length > 0 && (
+                <div style={{ margin: "4px 0 12px" }}>
+                  <h2 style={{ fontSize: 17, fontWeight: 700, margin: "0 0 8px", color: "#352F54" }}>
+                    Quais receitas?
+                  </h2>
+                  <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      style={{ height: 40, fontSize: 15 }}
+                      onClick={() => aplicarSelecao(receitasDaSemana.map((r) => r.nugget_id))}
+                    >
+                      Marcar todas
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      style={{ height: 40, fontSize: 15 }}
+                      onClick={() => aplicarSelecao([])}
+                    >
+                      Desmarcar todas
+                    </Button>
+                  </div>
+                  <div
+                    style={{
+                      maxHeight: 320,
+                      overflowY: "auto",
+                      border: "1px solid #CFC9C0",
+                      borderRadius: 8,
+                      padding: "4px 10px",
+                    }}
+                  >
+                    {receitasDaSemana.map((r) => (
+                      <label
+                        key={r.nugget_id}
+                        className="flex items-center gap-3 cursor-pointer"
+                        style={{ height: 44, fontSize: 16 }}
+                      >
+                        <Checkbox
+                          className="h-[22px] w-[22px] border-2 border-[#3F3A52]"
+                          checked={(selecionados ?? []).includes(r.nugget_id)}
+                          onCheckedChange={(v) => alternarReceita(r.nugget_id, v === true)}
+                        />
+                        <span>{r.titulo}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
           ))}
         </div>
+
         <p role="status" style={{ fontSize: 17, margin: "12px 0" }}>
           {carregando
             ? "Montando as suas folhas…"
-            : `Vai sair em ${folhas} ${folhas === 1 ? "folha" : "folhas"}`}
+            : querReceitas && nuggetIds.length === 0
+              ? "Nenhuma receita marcada"
+              : `Vai sair em ${folhas} ${folhas === 1 ? "folha" : "folhas"}`}
         </p>
+
         <Button
           onClick={imprimir}
           className="w-full h-14 text-lg gap-2 bg-primary text-primary-foreground hover:bg-primary/90"
