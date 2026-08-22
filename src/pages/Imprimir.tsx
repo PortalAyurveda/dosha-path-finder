@@ -405,20 +405,72 @@ export default function Imprimir() {
             ["compras", "A lista de compras"],
             ["semana", "A semana"],
           ] as [Peca, string][]).map(([p, label]) => (
-            <label
-              key={p}
-              className="flex items-center gap-3 cursor-pointer"
-              style={{ height: 56, fontSize: 17 }}
-            >
-              <Checkbox
-                className="h-6 w-6 border-2 border-[#3F3A52]"
-                checked={marcado(p)}
-                onCheckedChange={(v) => togglePeca(p, v === true)}
-              />
-              <span>{label}</span>
-            </label>
+            <div key={p}>
+              <label
+                className="flex items-center gap-3 cursor-pointer"
+                style={{ height: 56, fontSize: 17 }}
+              >
+                <Checkbox
+                  className="h-6 w-6 border-2 border-[#3F3A52]"
+                  checked={marcado(p)}
+                  onCheckedChange={(v) => togglePeca(p, v === true)}
+                />
+                <span>{label}</span>
+              </label>
+
+              {p === "receitas" && marcado("receitas") && receitasDaSemana.length > 0 && (
+                <div style={{ margin: "4px 0 12px" }}>
+                  <h2 style={{ fontSize: 17, fontWeight: 700, margin: "0 0 8px", color: "#352F54" }}>
+                    Quais receitas?
+                  </h2>
+                  <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      style={{ height: 40, fontSize: 15 }}
+                      onClick={() => aplicarSelecao(receitasDaSemana.map((r) => r.nugget_id))}
+                    >
+                      Marcar todas
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      style={{ height: 40, fontSize: 15 }}
+                      onClick={() => aplicarSelecao([])}
+                    >
+                      Desmarcar todas
+                    </Button>
+                  </div>
+                  <div
+                    style={{
+                      maxHeight: 320,
+                      overflowY: "auto",
+                      border: "1px solid #CFC9C0",
+                      borderRadius: 8,
+                      padding: "4px 10px",
+                    }}
+                  >
+                    {receitasDaSemana.map((r) => (
+                      <label
+                        key={r.nugget_id}
+                        className="flex items-center gap-3 cursor-pointer"
+                        style={{ height: 44, fontSize: 16 }}
+                      >
+                        <Checkbox
+                          className="h-[22px] w-[22px] border-2 border-[#3F3A52]"
+                          checked={(selecionados ?? []).includes(r.nugget_id)}
+                          onCheckedChange={(v) => alternarReceita(r.nugget_id, v === true)}
+                        />
+                        <span>{r.titulo}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
           ))}
         </div>
+
         <p role="status" style={{ fontSize: 17, margin: "12px 0" }}>
           {carregando
             ? "Montando as suas folhas…"
