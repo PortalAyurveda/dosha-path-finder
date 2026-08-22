@@ -189,18 +189,6 @@ export default function Imprimir() {
     },
   });
 
-  const { data: selecaoIds } = useQuery({
-    queryKey: ["imprimir-selecao", user?.id],
-    enabled: !!user?.id && temAcesso && !ids,
-    queryFn: async () => {
-      const { data, error } = await (supabase.from("rotina_selecao") as any)
-        .select("nugget_id")
-        .eq("user_id", user!.id);
-      if (error) throw error;
-      return ((data ?? []) as { nugget_id: string }[]).map((r) => r.nugget_id);
-    },
-  });
-
   const rotinaQuery = useQuery({
     queryKey: ["imprimir-rotina", testeId],
     enabled: !!testeId && temAcesso,
@@ -211,14 +199,44 @@ export default function Imprimir() {
     },
   });
 
-  const nuggetIds = useMemo<string[]>(() => {
-    if (ids) return ids;
-    if (selecaoIds && selecaoIds.length > 0) return selecaoIds;
+  // Receitas da semana (sem repetir nugget_id, na ordem em que aparecem)
+  const receitasDaSemana = useMemo(() => {
     const rows = rotinaQuery.data ?? [];
-    const set = new Set<string>();
-    rows.filter((r) => r.eh_receita).forEach((r) => set.add(r.nugget_id));
-    return Array.from(set);
-  }, [ids, selecaoIds, rotinaQuery.data]);
+    const vistos = new Set<string>();
+    const lista: { nugget_id: string; titulo: string }[] = [];
+    rows.forEach((r) => {
+      if (!r.eh_receita || vistos.has(r.nugget_id)) return;
+      vistos.add(r.nugget_id);
+      lista.push({ nugget_id: r.nugget_id, titulo: r.titulo });
+    });
+    return lista;
+  }, [rotinaQuery.data]);
+
+  const [selecionados, setSelecionados] = useState<string[] | null>(idsIniciais);
+
+  // Sem ids na URL: começa com todas marcadas assim que a semana carrega.
+  useEffect(() => {
+    if (selecionados === null && receitasDaSemana.length > 0) {
+      setSelecionados(receitasDaSemana.map((r) => r.nugget_id));
+    }
+  }, [selecionados, receitasDaSemana]);
+
+  const nuggetIds = useMemo<string[]>(() => selecionados ?? [], [selecionados]);
+
+  const aplicarSelecao = (proximos: string[]) => {
+    setSelecionados(proximos);
+    const next = new URLSearchParams(searchParams);
+    if (proximos.length > 0) next.set("ids", proximos.join(","));
+    else next.set("ids", "");
+    setSearchParams(next, { replace: true });
+  };
+
+  const alternarReceita = (id: string, on: boolean) => {
+    const atual = new Set(selecionados ?? []);
+    if (on) atual.add(id);
+    else atual.delete(id);
+    aplicarSelecao(receitasDaSemana.filter((r) => atual.has(r.nugget_id)).map((r) => r.nugget_id));
+  };
 
   const receitasQuery = useQuery({
     queryKey: ["imprimir-receitas", nuggetIds.join(",")],
@@ -232,7 +250,7 @@ export default function Imprimir() {
     },
   });
 
-  const pIds = ids && ids.length > 0 ? ids : null;
+  const pIds = nuggetIds.length > 0 ? nuggetIds : null;
   const comprasQuery = useQuery({
     queryKey: ["imprimir-compras", testeId, pIds?.join(",") ?? "null"],
     enabled: temAcesso && querCompras && !!testeId,
@@ -245,6 +263,7 @@ export default function Imprimir() {
       return (data ?? []) as CompraRow[];
     },
   });
+
 
   const carregando =
     (querReceitas && nuggetIds.length > 0 && receitasQuery.isLoading) ||
