@@ -278,7 +278,8 @@ export default function Imprimir() {
   const rotina = rotinaQuery.data ?? [];
 
   const folhas =
-    (querReceitas ? Math.ceil(receitas.length / 6) : 0) +
+    (querReceitas ? Math.ceil(nuggetIds.length / 6) : 0) +
+
     (querSemana ? 2 : 0) +
     (querCompras ? Math.max(1, Math.ceil(compras.length / 30)) : 0);
 
