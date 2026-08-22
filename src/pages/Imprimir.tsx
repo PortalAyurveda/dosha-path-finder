@@ -475,8 +475,11 @@ export default function Imprimir() {
         <p role="status" style={{ fontSize: 17, margin: "12px 0" }}>
           {carregando
             ? "Montando as suas folhas…"
-            : `Vai sair em ${folhas} ${folhas === 1 ? "folha" : "folhas"}`}
+            : querReceitas && nuggetIds.length === 0
+              ? "Nenhuma receita marcada"
+              : `Vai sair em ${folhas} ${folhas === 1 ? "folha" : "folhas"}`}
         </p>
+
         <Button
           onClick={imprimir}
           className="w-full h-14 text-lg gap-2 bg-primary text-primary-foreground hover:bg-primary/90"
