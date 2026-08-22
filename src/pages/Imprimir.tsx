@@ -122,21 +122,23 @@ const CartaoReceita = ({ r }: { r: ReceitaRow }) => {
       style={{
         breakInside: "avoid",
         border: "0.5pt dashed #000",
-        padding: "4mm",
-        marginBottom: "5mm",
+        padding: "3mm",
+        marginBottom: "4mm",
+        lineHeight: 1.25,
       }}
     >
-      <h3 className="font-serif" style={{ fontSize: "11pt", fontWeight: 700, margin: 0, color: "#000" }}>
+      <h3 className="font-serif" style={{ fontSize: "10.5pt", fontWeight: 700, margin: 0, color: "#000" }}>
         {r.titulo}
       </h3>
       {apoio.length > 0 && (
-        <p style={{ fontSize: "8.5pt", margin: "1mm 0 0", color: "#000" }}>{apoio.join(" · ")}</p>
+        <p style={{ fontSize: "8.5pt", margin: "1mm 0 0", color: "#000", lineHeight: 1.25 }}>{apoio.join(" · ")}</p>
       )}
-      {ings && <p style={{ fontSize: "10pt", margin: "2mm 0 0", color: "#000" }}>{ings}</p>}
-      {passos && <p style={{ fontSize: "10pt", margin: "2mm 0 0", color: "#000" }}>{passos}</p>}
+      {ings && <p style={{ fontSize: "9pt", margin: "2mm 0 0", color: "#000", lineHeight: 1.25 }}>{ings}</p>}
+      {passos && <p style={{ fontSize: "9pt", margin: "2mm 0 0", color: "#000", lineHeight: 1.25 }}>{passos}</p>}
     </div>
   );
 };
+
 
 export default function Imprimir() {
   const { user, profile, loading, role, roleLoading, doshaResult } = useUser();
