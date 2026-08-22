@@ -152,12 +152,14 @@ export default function Imprimir() {
     return ok.length > 0 ? ok : ["receitas"];
   }, [searchParams]);
 
-  const ids = useMemo(() => {
-    const raw = searchParams.get("ids");
+  // Lido só na primeira renderização: depois disso a seleção é estado local.
+  const [idsIniciais] = useState<string[] | null>(() => {
+    const raw = new URLSearchParams(window.location.search).get("ids");
     if (!raw) return null;
     const arr = raw.split(",").map((s) => s.trim()).filter(Boolean);
     return arr.length > 0 ? arr : null;
-  }, [searchParams]);
+  });
+
 
   const querSemana = pecas.includes("semana");
   const querReceitas = pecas.includes("receitas");
