@@ -121,7 +121,6 @@ const CartaoReceita = ({ r }: { r: ReceitaRow }) => {
     <div
       style={{
         breakInside: "avoid",
-        WebkitColumnBreakInside: "avoid",
         border: "0.5pt dashed #000",
         padding: "4mm",
         marginBottom: "5mm",
