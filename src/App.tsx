@@ -12,9 +12,6 @@ import AdminRoute from "./components/admin/AdminRoute";
 import { CartProvider } from "./contexts/CartContext";
 import CartDrawer from "./components/loja/CartDrawer";
 
-const AkashaRedirect = () => {
-  return <Navigate to="/meu-dosha" replace />;
-};
 
 // Legado Wix: /posts/:slug → /blog/:slug
 const PostsRedirect = () => {
