@@ -119,7 +119,7 @@ const formatData = (s?: string) => {
 };
 
 const Revisao = () => {
-  const { user, loading: authLoading } = useUser();
+  const { user, isAnonymous, loading: authLoading } = useUser();
   const [loading, setLoading] = useState(true);
   const [teste, setTeste] = useState<DoshaTeste | null>(null);
   const [ultimaRevisao, setUltimaRevisao] = useState<RevisaoResultado | null>(null);
@@ -357,7 +357,7 @@ const Revisao = () => {
     );
   }
 
-  if (!user) return <Navigate to="/entrar?redirect=/revisao" replace />;
+  if (!user || isAnonymous) return <Navigate to="/entrar?redirect=/revisao" replace />;
 
   if (loading) {
     return (
