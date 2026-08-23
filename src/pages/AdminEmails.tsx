@@ -694,7 +694,83 @@ const Editor = ({ id, onVoltar }: { id: string; onVoltar: () => void }) => {
         </div>
       </div>
 
+      {/* Métricas (só leitura) */}
+      {metricas && (
+        <section className="rounded-xl border border-border bg-card overflow-hidden">
+          <div className={`h-1.5 w-full ${estiloSaude(metricas.saude).faixa}`} />
+          <div className="p-5 space-y-4">
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <SaudeBloco row={metricas} />
+              <SeloToken tokens={metricas.tokens_quebrados} />
+            </div>
+
+            {metricas.tokens_quebrados &&
+              metricas.tokens_quebrados.length > 0 && (
+                <div className="rounded-lg border border-destructive/40 bg-destructive/10 p-3">
+                  <p className="text-sm font-semibold text-foreground">
+                    Campos que o motor de envio não sabe preencher:
+                  </p>
+                  <ul className="mt-1 text-sm text-muted-foreground list-disc pl-5">
+                    {metricas.tokens_quebrados.map((t) => (
+                      <li key={t}>
+                        <code>{t}</code>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+            <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-6">
+              <div>
+                <div className="text-lg font-semibold text-foreground">
+                  {Number(metricas.envios_total ?? 0)}
+                </div>
+                <div className="text-xs text-muted-foreground">envios (total)</div>
+              </div>
+              <div>
+                <div className="text-lg font-semibold text-foreground">
+                  {Number(metricas.envios_30d ?? 0)}
+                </div>
+                <div className="text-xs text-muted-foreground">envios (30d)</div>
+              </div>
+              <div>
+                <div className="text-lg font-semibold text-foreground">
+                  {Number(metricas.aberturas_30d ?? 0)}
+                </div>
+                <div className="text-xs text-muted-foreground">
+                  aberturas (30d) · {fmtPct(metricas.taxa_abertura_30d)}
+                </div>
+              </div>
+              <div>
+                <div className="text-lg font-semibold text-foreground">
+                  {Number(metricas.cliques_30d ?? 0)}
+                </div>
+                <div className="text-xs text-muted-foreground">
+                  cliques (30d) · {fmtPct(metricas.taxa_clique_30d)}
+                </div>
+              </div>
+              <div>
+                <div className="text-lg font-semibold text-foreground">
+                  {fmtData(metricas.ultimo_envio_em)}
+                </div>
+                <div className="text-xs text-muted-foreground">último envio</div>
+              </div>
+              <div>
+                <div className="text-lg font-semibold text-foreground">
+                  {metricas.elegiveis_agora === null ||
+                  metricas.elegiveis_agora === undefined
+                    ? "—"
+                    : Number(metricas.elegiveis_agora)}
+                </div>
+                <div className="text-xs text-muted-foreground">elegíveis agora</div>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* A) Dados gerais */}
+
       <section className="rounded-xl border border-border bg-card p-5 space-y-4">
         <h3 className="font-heading font-bold text-foreground">Dados gerais</h3>
         <div className="grid gap-4 md:grid-cols-2">
