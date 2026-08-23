@@ -516,6 +516,9 @@ const Editor = ({ id, onVoltar }: { id: string; onVoltar: () => void }) => {
   const [form, setForm] = useState<Partial<Comunicacao>>({});
   const [previewHtml, setPreviewHtml] = useState<string | null>(null);
   const [previewAviso, setPreviewAviso] = useState<string | null>(null);
+  const { data: dashboard } = useDashboard();
+  const metricas = (dashboard ?? []).find((r) => r.id === id) ?? null;
+
 
   const { data: com, isLoading } = useQuery({
     queryKey: ["admin-emails-com", id],
