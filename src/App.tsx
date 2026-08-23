@@ -35,6 +35,7 @@ const CursoAlimentacao = lazy(() => import("./pages/curso/Alimentacao"));
 const CursoFormacao = lazy(() => import("./pages/curso/Formacao"));
 const CursoFormacaoLive = lazy(() => import("./pages/curso/FormacaoLive"));
 const CursoFormacaoInscricao = lazy(() => import("./pages/curso/FormacaoInscricao"));
+const CursoDiagnostico = lazy(() => import("./pages/curso/Diagnostico"));
 const CursoRotinas = lazy(() => import("./pages/curso/Rotinas"));
 const TerapeutasDoBrasil = lazy(() => import("./pages/TerapeutasDoBrasil"));
 const TerapeutaPerfil = lazy(() => import("./pages/TerapeutaPerfil"));
