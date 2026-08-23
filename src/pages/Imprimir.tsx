@@ -226,10 +226,12 @@ export default function Imprimir() {
 
   const aplicarSelecao = (proximos: string[]) => {
     setSelecionados(proximos);
-    const next = new URLSearchParams(searchParams);
-    if (proximos.length > 0) next.set("ids", proximos.join(","));
-    else next.set("ids", "");
-    setSearchParams(next, { replace: true });
+    setSearchParams((atual) => {
+      const next = new URLSearchParams(atual);
+      if (proximos.length > 0) next.set("ids", proximos.join(","));
+      else next.set("ids", "");
+      return next;
+    }, { replace: true });
   };
 
   const alternarReceita = (id: string, on: boolean) => {
@@ -251,7 +253,7 @@ export default function Imprimir() {
     },
   });
 
-  const pIds = nuggetIds.length > 0 ? nuggetIds : null;
+  const pIds = selecionados === null ? null : selecionados;
   const comprasQuery = useQuery({
     queryKey: ["imprimir-compras", testeId, pIds?.join(",") ?? "null"],
     enabled: temAcesso && querCompras && !!testeId,
@@ -287,9 +289,11 @@ export default function Imprimir() {
     const atual = new Set(pecas);
     if (on) atual.add(p);
     else atual.delete(p);
-    const next = new URLSearchParams(searchParams);
-    next.set("pecas", Array.from(atual).join(","));
-    setSearchParams(next, { replace: true });
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+      next.set("pecas", Array.from(atual).join(","));
+      return next;
+    }, { replace: true });
     setErroVazio(false);
   };
 
