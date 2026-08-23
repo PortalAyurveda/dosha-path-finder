@@ -123,6 +123,7 @@ const Header = () => {
     { label: "Meu Dosha", to: profileLink },
     { label: "Minha Rotina", to: "/minha-rotina" },
     { label: "Revisão Mensal", to: "/revisao" },
+    { label: "Perguntar à Akasha", to: "/akasha" },
   ];
   const aprenderLinks = [
     { label: "Biblioteca", to: "/biblioteca" },
