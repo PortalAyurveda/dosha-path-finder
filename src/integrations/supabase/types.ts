@@ -344,6 +344,68 @@ export type Database = {
         }
         Relationships: []
       }
+      alunos_plataformas_externas: {
+        Row: {
+          created_at: string
+          curso_id: string | null
+          curso_nome_externo: string
+          data_compra: string | null
+          data_vencimento_acesso: string | null
+          email: string
+          id: string
+          nome: string
+          origem_id: string | null
+          plataforma: string
+          progresso: number | null
+          status_acesso: string | null
+          telefone: string | null
+          turma: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          curso_id?: string | null
+          curso_nome_externo: string
+          data_compra?: string | null
+          data_vencimento_acesso?: string | null
+          email: string
+          id?: string
+          nome: string
+          origem_id?: string | null
+          plataforma: string
+          progresso?: number | null
+          status_acesso?: string | null
+          telefone?: string | null
+          turma?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          curso_id?: string | null
+          curso_nome_externo?: string
+          data_compra?: string | null
+          data_vencimento_acesso?: string | null
+          email?: string
+          id?: string
+          nome?: string
+          origem_id?: string | null
+          plataforma?: string
+          progresso?: number | null
+          status_acesso?: string | null
+          telefone?: string | null
+          turma?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "alunos_plataformas_externas_curso_id_fkey"
+            columns: ["curso_id"]
+            isOneToOne: false
+            referencedRelation: "cursos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       arquitetura_fluxos: {
         Row: {
           ativo: boolean | null
@@ -7352,6 +7414,16 @@ export type Database = {
           data_hora: string
           msg_id: number
           tipo: string
+        }[]
+      }
+      admin_buscar_pessoa: {
+        Args: { q: string }
+        Returns: {
+          dosha_principal: string
+          email: string
+          nome: string
+          plano: string
+          tem_teste_dosha: boolean
         }[]
       }
       admin_dashboard_resumo: { Args: never; Returns: Json }
