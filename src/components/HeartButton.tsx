@@ -15,7 +15,7 @@ interface HeartButtonProps {
 }
 
 const HeartButton = ({ contentType, contentId, className, variant = "compact" }: HeartButtonProps) => {
-  const { user } = useUser();
+  const { user, isAnonymous } = useUser();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const location = useLocation();
@@ -53,7 +53,7 @@ const HeartButton = ({ contentType, contentId, className, variant = "compact" }:
   const likeCount = likeData?.count ?? 0;
 
   const toggle = async () => {
-    if (!user) {
+    if (!user || isAnonymous) {
       const redirect = encodeURIComponent(location.pathname + location.search);
       navigate(`/entrar?redirect=${redirect}`);
       return;
@@ -104,7 +104,7 @@ const HeartButton = ({ contentType, contentId, className, variant = "compact" }:
         "inline-flex items-center gap-1.5 transition-all group bg-transparent border-0 p-0",
         className
       )}
-      title={user ? (liked ? "Remover curtida" : "Curtir") : "Entrar para curtir"}
+      title={user && !isAnonymous ? (liked ? "Remover curtida" : "Curtir") : "Entrar para curtir"}
       aria-label={liked ? "Remover curtida" : "Curtir"}
     >
       <span className={cn("relative", animating && "animate-heart-burst")}>
