@@ -932,7 +932,7 @@ const MeuDosha = () => {
     );
   }
 
-  const isVisitor = !user;
+  const isVisitor = !user || isAnonymous;
 
 
 
@@ -1136,17 +1136,23 @@ const MeuDosha = () => {
             </div>
 
             {/* ===== Diagnóstico clínico completo (substitui glossário + Recomeçar o Teste) ===== */}
-            <DiagnosticoCompleto
-              email={result.email}
-              doshaPrincipal={primaryDosha}
-              doshaPrincipalCompleto={result.doshaprincipal || primaryDosha}
-              refazerTeste={handleRefazerTeste}
-              isPremium={isPremium}
-            />
+            {isVisitor ? (
+              <ParedeCadastro idPublico={id!} />
+            ) : (
+              <>
+                <DiagnosticoCompleto
+                  email={result.email}
+                  doshaPrincipal={primaryDosha}
+                  doshaPrincipalCompleto={result.doshaprincipal || primaryDosha}
+                  refazerTeste={handleRefazerTeste}
+                  isPremium={isPremium}
+                />
 
-            <div className="mt-8 -mx-4 sm:-mx-6">
-              <PrateleiraSamkhya doshaPrincipal={result.doshaprincipal || primaryDosha} />
-            </div>
+                <div className="mt-8 -mx-4 sm:-mx-6">
+                  <PrateleiraSamkhya doshaPrincipal={result.doshaprincipal || primaryDosha} />
+                </div>
+              </>
+            )}
           </TabsContent>
 
           {/* ===== TAB: MÉTRICAS ===== */}
@@ -1207,26 +1213,6 @@ const MeuDosha = () => {
           </TabsContent>
 
         </Tabs>
-
-        {isAnonymous && id && (
-          <div className="rounded-2xl border border-secondary/40 bg-secondary/10 p-5 space-y-3">
-            <p className="font-serif text-lg font-bold text-foreground">
-              Salve seu resultado no seu celular
-            </p>
-            <p className="text-sm text-muted-foreground">
-              Sua rotina de 30 dias já está montada e fica guardada na sua conta.
-            </p>
-            <Button
-              className="w-full sm:w-auto"
-              onClick={() => {
-                const cid = id;
-                navigate(`/entrar?claim=${cid}&redirect=${encodeURIComponent(`/meu-dosha?id=${cid}`)}`);
-              }}
-            >
-              Salvar meu acesso
-            </Button>
-          </div>
-        )}
 
         {!isVisitor && <PraVoceRail doshaPrincipal={result?.doshaprincipal} />}
       </div>
