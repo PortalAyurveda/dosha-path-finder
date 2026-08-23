@@ -48,6 +48,7 @@ const DoshaKapha = lazy(() => import("./pages/DoshaKapha"));
 const Horarios = lazy(() => import("./pages/Horarios"));
 const Auth = lazy(() => import("./pages/Auth"));
 const Assinar = lazy(() => import("./pages/Assinar"));
+const Akasha = lazy(() => import("./pages/Akasha"));
 const PoliticaDePrivacidade = lazy(() => import("./pages/PoliticaDePrivacidade"));
 const TermosDeUso = lazy(() => import("./pages/TermosDeUso"));
 const NotFound = lazy(() => import("./pages/NotFound"));
@@ -215,7 +216,7 @@ const RoutedApp = () => {
               <Route path="/terapeutas-do-brasil/cadastro" element={<TerapeutaCadastro />} />
               <Route path="/terapeutas-do-brasil/:slug" element={<TerapeutaPerfil />} />
               <Route path="/terapeutas/:slug" element={<TerapeutaPerfil />} />
-              <Route path="/akasha" element={<AkashaRedirect />} />
+              <Route path="/akasha" element={<Akasha />} />
               <Route path="/video/:slug" element={<Video />} />
               <Route path="/receita/:slug" element={<Receita />} />
               <Route path="/opiniao" element={<Opiniao />} />
