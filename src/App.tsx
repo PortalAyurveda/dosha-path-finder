@@ -299,6 +299,7 @@ const RoutedApp = () => {
               <Route path="/admin/alunos" element={<AdminRoute><AdminAlunos /></AdminRoute>} />
               <Route path="/admin/escola" element={<AdminRoute><AdminEscola /></AdminRoute>} />
               <Route path="/admin/tarefas" element={<AdminRoute><AdminTarefas /></AdminRoute>} />
+              <Route path="/admin/emails" element={<AdminRoute><AdminEmails /></AdminRoute>} />
               <Route path="/admin/cursos" element={<AdminRoute><AdminCursos /></AdminRoute>} />
 
               {/* Área do Aluno da Formação (rota escondida) */}
