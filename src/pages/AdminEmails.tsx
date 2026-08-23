@@ -251,36 +251,89 @@ const SeletorConteudo = ({
 };
 
 // =========================================================================
-// Lista
+// Dashboard (saúde)
 // =========================================================================
-const Lista = ({ onAbrir }: { onAbrir: (id: string) => void }) => {
-  const qc = useQueryClient();
-  const { data, isLoading } = useQuery({
-    queryKey: ["admin-agenda-visao"],
-    queryFn: async (): Promise<VisaoRow[]> => {
-      const { data, error } = await (supabase as any).rpc("admin_agenda_visao");
+type DashboardRow = {
+  id: string;
+  nome: string | null;
+  tipo: string | null;
+  ativo: boolean | null;
+  publico_premium: string | null;
+  publico_dosha: string | null;
+  assunto: string | null;
+  label: string | null;
+  cta_url: string | null;
+  envios_total: number | null;
+  envios_30d: number | null;
+  ultimo_envio_em: string | null;
+  elegiveis_agora: number | null;
+  aberturas_30d: number | null;
+  cliques_30d: number | null;
+  taxa_abertura_30d: number | null;
+  taxa_clique_30d: number | null;
+  tokens_quebrados: string[] | null;
+  saude: string | null;
+  saude_motivo: string | null;
+};
+
+const useDashboard = () =>
+  useQuery({
+    queryKey: ["admin-agenda-dashboard"],
+    queryFn: async (): Promise<DashboardRow[]> => {
+      const { data, error } = await (supabase as any).rpc(
+        "admin_agenda_dashboard",
+      );
       if (error) throw error;
-      return (data ?? []) as VisaoRow[];
+      return (data ?? []) as DashboardRow[];
     },
   });
 
-  const { data: publicos } = useQuery({
-    queryKey: ["admin-agenda-publicos"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("agenda_comunicacoes")
-        .select("id, publico_premium, publico_dosha");
-      if (error) throw error;
-      const mapa: Record<string, { premium: string; dosha: string }> = {};
-      (data ?? []).forEach((r: any) => {
-        mapa[r.id] = {
-          premium: r.publico_premium ?? "todos",
-          dosha: r.publico_dosha ?? "todos",
-        };
-      });
-      return mapa;
-    },
-  });
+const SAUDE_ESTILO: Record<string, { faixa: string; ponto: string; label: string }> = {
+  critica: { faixa: "bg-destructive", ponto: "bg-destructive", label: "Crítica" },
+  atencao: { faixa: "bg-amber-500", ponto: "bg-amber-500", label: "Atenção" },
+  boa: { faixa: "bg-emerald-500", ponto: "bg-emerald-500", label: "Boa" },
+  desligada: { faixa: "bg-muted-foreground/50", ponto: "bg-muted-foreground/50", label: "Desligada" },
+  neutra: { faixa: "bg-muted", ponto: "bg-muted-foreground/30", label: "Neutra" },
+};
+
+const estiloSaude = (s: string | null) =>
+  SAUDE_ESTILO[s ?? "neutra"] ?? SAUDE_ESTILO.neutra;
+
+const fmtPct = (v: number | null | undefined) =>
+  v === null || v === undefined ? "—" : `${Number(v).toFixed(1).replace(".", ",")}%`;
+
+const SaudeBloco = ({ row }: { row: DashboardRow }) => {
+  const e = estiloSaude(row.saude);
+  return (
+    <div className="space-y-1">
+      <div className="flex items-center gap-2">
+        <span className={`inline-block w-2.5 h-2.5 rounded-full ${e.ponto}`} />
+        <span className="text-xs font-semibold text-foreground">{e.label}</span>
+      </div>
+      {row.saude_motivo && (
+        <p className="text-xs text-muted-foreground leading-snug">
+          {row.saude_motivo}
+        </p>
+      )}
+    </div>
+  );
+};
+
+const SeloToken = ({ tokens }: { tokens: string[] | null }) =>
+  tokens && tokens.length > 0 ? (
+    <Badge variant="destructive" className="gap-1">
+      <AlertTriangle className="w-3 h-3" />
+      token quebrado
+    </Badge>
+  ) : null;
+
+// =========================================================================
+// Lista (painel de cards)
+// =========================================================================
+const Lista = ({ onAbrir }: { onAbrir: (id: string) => void }) => {
+  const qc = useQueryClient();
+  const { data, isLoading } = useDashboard();
+  const [ordem, setOrdem] = useState<"tipo" | "saude" | "melhores">("tipo");
 
   const toggleAtivo = useMutation({
     mutationFn: async ({ id, ativo }: { id: string; ativo: boolean }) => {
@@ -291,26 +344,43 @@ const Lista = ({ onAbrir }: { onAbrir: (id: string) => void }) => {
       if (error) throw error;
     },
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["admin-agenda-visao"] });
+      qc.invalidateQueries({ queryKey: ["admin-agenda-dashboard"] });
       toast.success("Status atualizado");
     },
     onError: (e: any) => toast.error(e?.message ?? "Erro ao atualizar"),
   });
 
+  const pesoSaude: Record<string, number> = {
+    critica: 0,
+    atencao: 1,
+    boa: 2,
+    neutra: 3,
+    desligada: 4,
+  };
+
   const blocos = useMemo(() => {
-    const rows = data ?? [];
-    return (["regua", "campanha"] as const).map((tipo) => ({
-      tipo,
-      grupos: GRUPOS_PUBLICO.map((g) => ({
-        ...g,
-        linhas: rows.filter(
-          (r) =>
-            (r.tipo ?? "") === tipo &&
-            (publicos?.[r.id]?.premium ?? "todos") === g.value,
-        ),
-      })).filter((g) => g.linhas.length > 0),
-    }));
-  }, [data, publicos]);
+    const rows = [...(data ?? [])];
+    if (ordem === "saude") {
+      rows.sort(
+        (a, b) =>
+          (pesoSaude[a.saude ?? "neutra"] ?? 3) -
+          (pesoSaude[b.saude ?? "neutra"] ?? 3),
+      );
+      return [{ titulo: "Por saúde", linhas: rows }];
+    }
+    if (ordem === "melhores") {
+      rows.sort(
+        (a, b) => (b.taxa_abertura_30d ?? -1) - (a.taxa_abertura_30d ?? -1),
+      );
+      return [{ titulo: "Pelos melhores", linhas: rows }];
+    }
+    return (["regua", "campanha"] as const)
+      .map((tipo) => ({
+        titulo: tipo === "regua" ? "Réguas automáticas" : "Campanhas",
+        linhas: rows.filter((r) => (r.tipo ?? "") === tipo),
+      }))
+      .filter((b) => b.linhas.length > 0);
+  }, [data, ordem]);
 
   if (isLoading) {
     return (
@@ -322,32 +392,43 @@ const Lista = ({ onAbrir }: { onAbrir: (id: string) => void }) => {
   }
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-8">
+      <div className="flex items-center gap-3">
+        <Label htmlFor="ordenacao" className="text-sm text-muted-foreground">
+          Ordenar
+        </Label>
+        <Select value={ordem} onValueChange={(v) => setOrdem(v as any)}>
+          <SelectTrigger id="ordenacao" className="w-56">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="tipo">Por tipo (réguas primeiro)</SelectItem>
+            <SelectItem value="saude">Por saúde (crítica primeiro)</SelectItem>
+            <SelectItem value="melhores">Pelos melhores (abertura)</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
       {blocos.map((bloco) => (
-        <section key={bloco.tipo} className="space-y-5">
+        <section key={bloco.titulo} className="space-y-4">
           <h2 className="text-xl font-heading font-bold text-foreground">
-            {bloco.tipo === "regua" ? "Réguas automáticas" : "Campanhas"}
+            {bloco.titulo}
           </h2>
-          {bloco.grupos.length === 0 && (
-            <p className="text-sm text-muted-foreground">—</p>
-          )}
-          {bloco.grupos.map((grupo) => (
-            <div key={grupo.value} className="space-y-2">
-              <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-                {grupo.label}
-              </h3>
-              <div className="rounded-xl border border-border bg-card divide-y divide-border">
-                {grupo.linhas.map((r) => {
-                  const pub = publicos?.[r.id];
-                  return (
-                    <div
-                      key={r.id}
-                      className="flex flex-wrap items-center gap-3 px-4 py-3"
-                    >
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {bloco.linhas.map((r) => {
+              const e = estiloSaude(r.saude);
+              return (
+                <div
+                  key={r.id}
+                  className="rounded-xl border border-border bg-card overflow-hidden"
+                >
+                  <div className={`h-1.5 w-full ${e.faixa}`} />
+                  <div className="p-4 space-y-3">
+                    <div className="flex items-start gap-3">
                       <button
                         type="button"
                         onClick={() => onAbrir(r.id)}
-                        className="flex-1 min-w-[220px] text-left"
+                        className="flex-1 text-left"
                       >
                         <div className="font-medium text-foreground">
                           {r.nome ?? r.id}
@@ -355,33 +436,7 @@ const Lista = ({ onAbrir }: { onAbrir: (id: string) => void }) => {
                         <div className="text-xs text-muted-foreground">
                           {r.id}
                         </div>
-                        <div className="mt-1 flex flex-wrap gap-1">
-                          <Badge variant="secondary">
-                            {pub?.premium ?? "todos"}
-                          </Badge>
-                          {pub?.dosha && pub.dosha !== "todos" && (
-                            <Badge variant="outline">{pub.dosha}</Badge>
-                          )}
-                          {r.tem_secoes && (
-                            <Badge variant="outline">
-                              usa seções · {r.qtd_secoes ?? 0}
-                            </Badge>
-                          )}
-                        </div>
                       </button>
-
-                      <div className="text-sm text-muted-foreground w-28">
-                        <div>{Number(r.envios_ultimos_30d ?? 0)} envios/30d</div>
-                        <div className="text-xs">{fmtData(r.ultimo_envio_em)}</div>
-                      </div>
-
-                      <div className="text-sm text-muted-foreground w-28">
-                        {r.elegiveis_agora === null ||
-                        r.elegiveis_agora === undefined
-                          ? "—"
-                          : `${Number(r.elegiveis_agora)} elegíveis`}
-                      </div>
-
                       <Switch
                         checked={!!r.ativo}
                         onCheckedChange={(v) =>
@@ -390,16 +445,66 @@ const Lista = ({ onAbrir }: { onAbrir: (id: string) => void }) => {
                         aria-label={`Ativar ${r.nome ?? r.id}`}
                       />
                     </div>
-                  );
-                })}
-              </div>
-            </div>
-          ))}
+
+                    <div className="flex flex-wrap gap-1">
+                      <Badge variant="outline">
+                        {r.tipo === "regua" ? "régua" : "campanha"}
+                      </Badge>
+                      <Badge variant="secondary">
+                        {r.publico_premium ?? "todos"}
+                      </Badge>
+                      {r.publico_dosha && r.publico_dosha !== "todos" && (
+                        <Badge variant="outline">{r.publico_dosha}</Badge>
+                      )}
+                      <SeloToken tokens={r.tokens_quebrados} />
+                    </div>
+
+                    <SaudeBloco row={r} />
+
+                    <div className="grid grid-cols-3 gap-2 pt-1 border-t border-border">
+                      <div className="pt-2">
+                        <div className="text-lg font-semibold text-foreground">
+                          {Number(r.envios_30d ?? 0)}
+                        </div>
+                        <div className="text-[11px] text-muted-foreground">
+                          envios (30d)
+                        </div>
+                      </div>
+                      <div className="pt-2">
+                        <div className="text-lg font-semibold text-foreground">
+                          {fmtPct(r.taxa_abertura_30d)}
+                        </div>
+                        <div className="text-[11px] text-muted-foreground">
+                          abertura
+                        </div>
+                      </div>
+                      <div className="pt-2">
+                        <div className="text-lg font-semibold text-foreground">
+                          {fmtPct(r.taxa_clique_30d)}
+                        </div>
+                        <div className="text-[11px] text-muted-foreground">
+                          clique
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="text-xs text-muted-foreground">
+                      Último envio: {fmtData(r.ultimo_envio_em)}
+                      {r.elegiveis_agora !== null &&
+                        r.elegiveis_agora !== undefined &&
+                        ` · ${Number(r.elegiveis_agora)} elegíveis agora`}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </section>
       ))}
     </div>
   );
 };
+
 
 // =========================================================================
 // Editor
