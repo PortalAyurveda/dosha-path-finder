@@ -211,6 +211,7 @@ const RoutedApp = () => {
               <Route path="/curso/formacao" element={<CursoFormacao />} />
               <Route path="/curso/formacao/inscricao" element={<CursoFormacaoInscricao />} />
               <Route path="/curso/formacao/live" element={<CursoFormacaoLive />} />
+              <Route path="/curso/diagnostico" element={<CursoDiagnostico />} />
               <Route path="/cursos/rotinas" element={<CursoRotinas />} />
               <Route path="/curso/rotinas" element={<CursoRotinas />} />
               <Route path="/terapeutas-do-brasil" element={<TerapeutasDoBrasil />} />
