@@ -7379,6 +7379,31 @@ export type Database = {
     }
     Functions: {
       acervo_stats: { Args: never; Returns: Json }
+      admin_agenda_dashboard: {
+        Args: never
+        Returns: {
+          aberturas_30d: number
+          assunto: string
+          ativo: boolean
+          cliques_30d: number
+          cta_url: string
+          elegiveis_agora: number
+          envios_30d: number
+          envios_total: number
+          id: string
+          label: string
+          nome: string
+          publico_dosha: string
+          publico_premium: string
+          saude: string
+          saude_motivo: string
+          taxa_abertura_30d: number
+          taxa_clique_30d: number
+          tipo: string
+          tokens_quebrados: string[]
+          ultimo_envio_em: string
+        }[]
+      }
       admin_agenda_visao: {
         Args: never
         Returns: {
