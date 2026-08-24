@@ -134,22 +134,6 @@ const staticRoutes: Route[] = [
     description:
       "Todos os cursos do Portal Ayurveda: formação, alimentação, rotinas e trilhas curtas para você aprofundar sua prática.",
   },
-  {
-    path: "/samkhya/produto",
-    title: "Produtos Samkhya — Portal Ayurveda",
-    description: "Produtos ayurvédicos selecionados: óleos, ervas e ferramentas para sua prática diária.",
-  },
-  {
-    path: "/samkhya/categoria",
-    title: "Categorias Samkhya — Portal Ayurveda",
-    description: "Explore categorias de produtos ayurvédicos na loja Samkhya do Portal Ayurveda.",
-  },
-  {
-    path: "/artigos",
-    title: "Artigos de Ayurveda — Portal Ayurveda",
-    description:
-      "Artigos práticos de Ayurveda por dosha: alimentação, rotina, digestão, sono e equilíbrio no dia a dia.",
-  },
 ];
 
 // Rotas privadas: entregam o SPA fallback, mas devem sinalizar noindex ao Google
