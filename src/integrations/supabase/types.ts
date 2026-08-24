@@ -1698,6 +1698,7 @@ export type Database = {
           status: string
           tema: string | null
           tentativas: number
+          texto_limpo: string | null
           ultimo_erro: string | null
           video_id: string
           youtube_url: string | null
@@ -1716,6 +1717,7 @@ export type Database = {
           status?: string
           tema?: string | null
           tentativas?: number
+          texto_limpo?: string | null
           ultimo_erro?: string | null
           video_id: string
           youtube_url?: string | null
@@ -1734,6 +1736,7 @@ export type Database = {
           status?: string
           tema?: string | null
           tentativas?: number
+          texto_limpo?: string | null
           ultimo_erro?: string | null
           video_id?: string
           youtube_url?: string | null
@@ -7824,6 +7827,7 @@ export type Database = {
       }
       akasha_gate: { Args: { p_email: string }; Returns: Json }
       akasha_reset_mensal: { Args: never; Returns: number }
+      antiruido_ayurveda: { Args: { t: string }; Returns: string }
       arpg_record_rename: {
         Args: { p_nick: string; p_player: string }
         Returns: Json
@@ -8556,6 +8560,7 @@ export type Database = {
       video_slug_sitemap: { Args: { p_titulo: string }; Returns: string }
       videos_seo2_sincronizar: { Args: never; Returns: number }
       videos_slugify: { Args: { p_titulo: string }; Returns: string }
+      vtt_para_texto: { Args: { legenda: string }; Returns: string }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
