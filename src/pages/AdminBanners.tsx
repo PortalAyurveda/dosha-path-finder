@@ -245,10 +245,14 @@ const AdminBanners = () => {
   const banners = bannersQ.data ?? [];
 
   const slots = useMemo(() => {
-    const s = new Set<string>(moldes.map((m) => m.slot));
-    banners.forEach((b) => s.add(b.slot));
-    return Array.from(s).sort();
+    const ordenados = moldes.map((m) => m.slot);
+    const vistos = new Set(ordenados);
+    const extras = Array.from(
+      new Set(banners.map((b) => b.slot).filter((s) => !vistos.has(s))),
+    ).sort();
+    return [...ordenados, ...extras];
   }, [moldes, banners]);
+
 
   const moldeBySlot = useMemo(() => {
     const m: Record<string, Molde> = {};
