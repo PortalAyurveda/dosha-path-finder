@@ -338,6 +338,7 @@ const AdminBanners = () => {
     setFormOpen(true);
   };
   const openEdit = (b: Banner) => {
+    const img = parseHtmlImagem(b.html ?? "");
     setForm({
       id: b.id,
       slot: b.slot,
@@ -347,9 +348,14 @@ const AdminBanners = () => {
       tags: (b.tags ?? []).filter((t) => ALL_TAGS.includes(t)),
       ordem: b.ordem ?? 0,
       ativo: b.ativo,
+      modo: img ? "imagem" : "html",
+      imgUrl: img?.url ?? "",
+      imgDestino: img?.destino ?? "/samkhya",
+      imgAlt: img?.alt ?? "",
     });
     setFormOpen(true);
   };
+
 
   const toggleTag = (tag: string) => {
     setForm((f) => ({
