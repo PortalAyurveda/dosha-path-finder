@@ -1,5 +1,9 @@
 import { useCallback } from "react";
 import { Helmet } from "react-helmet-async";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { useUser } from "@/contexts/UserContext";
+import { toast } from "@/hooks/use-toast";
 import { diagnosticoAutocuidadoData } from "@/data/courses/diagnosticoAutocuidado";
 import CourseHero from "@/components/course/CourseHero";
 import ProblemSection from "@/components/course/ProblemSection";
