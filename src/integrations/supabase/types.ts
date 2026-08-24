@@ -7449,12 +7449,18 @@ export type Database = {
         Args: never
         Returns: {
           aberturas_30d: number
+          aberturas_7d: number
+          aberturas_hoje: number
           assunto: string
           ativo: boolean
           cliques_30d: number
+          cliques_7d: number
+          cliques_hoje: number
           cta_url: string
           elegiveis_agora: number
           envios_30d: number
+          envios_7d: number
+          envios_hoje: number
           envios_total: number
           id: string
           label: string
@@ -7464,7 +7470,9 @@ export type Database = {
           saude: string
           saude_motivo: string
           taxa_abertura_30d: number
+          taxa_abertura_7d: number
           taxa_clique_30d: number
+          taxa_clique_7d: number
           tipo: string
           tokens_quebrados: string[]
           ultimo_envio_em: string
@@ -7612,6 +7620,10 @@ export type Database = {
           email: string
           payload: Json
         }[]
+      }
+      agenda_elegiveis_count: {
+        Args: { p_comunicacao_id: string }
+        Returns: number
       }
       agenda_kit_refeicoes: {
         Args: { p_alvo: string; p_registro_id: string }
