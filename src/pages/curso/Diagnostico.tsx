@@ -1,5 +1,9 @@
 import { useCallback } from "react";
 import { Helmet } from "react-helmet-async";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { useUser } from "@/contexts/UserContext";
+import { toast } from "@/hooks/use-toast";
 import { diagnosticoAutocuidadoData } from "@/data/courses/diagnosticoAutocuidado";
 import CourseHero from "@/components/course/CourseHero";
 import ProblemSection from "@/components/course/ProblemSection";
@@ -17,18 +21,40 @@ import FinalCTASection from "@/components/course/FinalCTASection";
 const Diagnostico = () => {
   const data = diagnosticoAutocuidadoData;
 
+  const navigate = useNavigate();
+  const { user, isAnonymous } = useUser();
   const handleCtaClick = useCallback(
-    (origin: string) => () => {
+    (origin: string) => async () => {
       // eslint-disable-next-line no-console
       console.log("[course-cta]", { course: data.meta.slug, origin, ts: Date.now() });
-      if (data.checkoutUrl && data.checkoutUrl !== "#checkout") {
-        window.location.href = data.checkoutUrl;
-      } else {
-        const target = document.getElementById("pricing");
-        if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
+      if (!user || isAnonymous) {
+        navigate(`/entrar?redirect=/curso/diagnostico`);
+        return;
+      }
+      try {
+        const { data: resp, error } = await supabase.functions.invoke("comprar-curso", {
+          body: { curso_slug: data.meta.slug },
+        });
+        if (error) throw error;
+        if (resp?.ja_matriculado) {
+          navigate("/escola");
+          return;
+        }
+        if (resp?.url) {
+          window.location.href = resp.url;
+          return;
+        }
+        if (resp?.error) throw new Error(resp.error);
+        throw new Error("Resposta inesperada do servidor");
+      } catch (e) {
+        const msg =
+          (e as { message?: string; error?: string })?.message ??
+          (e as { error?: string })?.error ??
+          "Não conseguimos processar agora. Tente de novo em instantes.";
+        toast({ title: "Ops", description: String(msg), variant: "destructive" });
       }
     },
-    [data.checkoutUrl, data.meta.slug],
+    [data.meta.slug, user, isAnonymous, navigate],
   );
 
   return (
