@@ -1794,6 +1794,7 @@ export type Database = {
         Row: {
           criado_em: string
           curso_id: string
+          expira_em: string | null
           id: string
           origem: string
           status: string
@@ -1804,6 +1805,7 @@ export type Database = {
         Insert: {
           criado_em?: string
           curso_id: string
+          expira_em?: string | null
           id?: string
           origem?: string
           status?: string
@@ -1814,6 +1816,7 @@ export type Database = {
         Update: {
           criado_em?: string
           curso_id?: string
+          expira_em?: string | null
           id?: string
           origem?: string
           status?: string
@@ -5972,6 +5975,69 @@ export type Database = {
         }
         Relationships: []
       }
+      resgates_migracao: {
+        Row: {
+          aluno_externo_id: string | null
+          codigo: string
+          criado_em: string
+          curso_id: string
+          data_compra_origem: string | null
+          email: string
+          id: string
+          plataforma_origem: string | null
+          tipo: string
+          turma_origem: string | null
+          updated_at: string
+          usado_em: string | null
+          usado_por_user_id: string | null
+        }
+        Insert: {
+          aluno_externo_id?: string | null
+          codigo: string
+          criado_em?: string
+          curso_id: string
+          data_compra_origem?: string | null
+          email: string
+          id?: string
+          plataforma_origem?: string | null
+          tipo: string
+          turma_origem?: string | null
+          updated_at?: string
+          usado_em?: string | null
+          usado_por_user_id?: string | null
+        }
+        Update: {
+          aluno_externo_id?: string | null
+          codigo?: string
+          criado_em?: string
+          curso_id?: string
+          data_compra_origem?: string | null
+          email?: string
+          id?: string
+          plataforma_origem?: string | null
+          tipo?: string
+          turma_origem?: string | null
+          updated_at?: string
+          usado_em?: string | null
+          usado_por_user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "resgates_migracao_aluno_externo_id_fkey"
+            columns: ["aluno_externo_id"]
+            isOneToOne: false
+            referencedRelation: "alunos_plataformas_externas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "resgates_migracao_curso_id_fkey"
+            columns: ["curso_id"]
+            isOneToOne: false
+            referencedRelation: "cursos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       reteste_chat_history: {
         Row: {
           content: string
@@ -8277,6 +8343,7 @@ export type Database = {
         Args: { p_comunicacao_id: string }
         Returns: string
       }
+      resgatar_codigo_migracao: { Args: { p_codigo: string }; Returns: Json }
       restaurar_creditos_pedido_desculpas: {
         Args: { p_email: string }
         Returns: number
