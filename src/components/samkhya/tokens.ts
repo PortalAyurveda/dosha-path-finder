@@ -1,7 +1,7 @@
 // Samkhya Loja — design tokens (kept inline so the loja can evolve independently
 // of the main portal's design system without breaking shared components).
 // Identidade 2026: roxo profundo + laranja + creme. O roxo/ouro antigo
-// (#7b4963 / #C8922A) foi aposentado.
+// (#581C50 / #8F3B00) foi aposentado.
 export const samkhyaTokens = {
   // Roxo profundo — barra do menu, títulos, logo
   roxo: "#581C50",

@@ -32,7 +32,7 @@ const SamkhyaNavBar = () => {
   return (
     <nav
       className="w-full sticky top-16 z-40"
-      style={{ background: "#73465F" }}
+      style={{ background: "#581C50" }}
       aria-label="Categorias da Loja Samkhya"
     >
       <div className="mx-auto max-w-6xl px-3 md:px-6 py-1 flex items-center gap-3">
