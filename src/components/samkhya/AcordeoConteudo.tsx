@@ -20,7 +20,7 @@ const AcordeoConteudo = ({ clinico }: AcordeoConteudoProps) => {
         <AccordionItem key={s.id} value={s.id} style={{ borderColor: samkhyaTokens.cardBorder }}>
           <AccordionTrigger
             className="text-left hover:no-underline"
-            style={{ color: samkhyaTokens.roxo, fontFamily: "Georgia, 'Times New Roman', serif" }}
+            style={{ color: samkhyaTokens.roxo, fontFamily: samkhyaTokens.fonteTitulo }}
           >
             {s.title}
           </AccordionTrigger>

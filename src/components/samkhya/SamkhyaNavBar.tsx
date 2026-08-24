@@ -32,7 +32,7 @@ const SamkhyaNavBar = () => {
   return (
     <nav
       className="w-full sticky top-16 z-40"
-      style={{ background: "#73465F" }}
+      style={{ background: samkhyaTokens.roxo }}
       aria-label="Categorias da Loja Samkhya"
     >
       <div className="mx-auto max-w-6xl px-3 md:px-6 py-1 flex items-center gap-3">
@@ -52,7 +52,7 @@ const SamkhyaNavBar = () => {
                   className="block px-4 md:px-5 py-1.5 text-sm md:text-base whitespace-nowrap uppercase tracking-wider font-normal transition-opacity hover:opacity-70"
                   style={{
                     color: "#FFFFFF",
-                    fontFamily: "Helvetica, Arial, sans-serif",
+                    fontFamily: samkhyaTokens.fonteCorpo,
                     opacity: isActive ? 1 : 0.85,
                     textDecoration: isActive ? "underline" : "none",
                     textUnderlineOffset: "4px",

@@ -54,7 +54,7 @@ const SamkhyaTodos = () => {
             className="text-3xl md:text-4xl italic font-light tracking-wide"
             style={{
               color: samkhyaTokens.roxo,
-              fontFamily: "Georgia, 'Times New Roman', serif",
+              fontFamily: samkhyaTokens.fonteTitulo,
             }}
           >
             ✦ Todos os Produtos ✦

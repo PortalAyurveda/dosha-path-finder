@@ -1,0 +1,16 @@
+/* Fontes exclusivas da loja Samkhya — não afetam o design do portal. */
+@font-face {
+  font-family: "Acid Green";
+  src: url("/__l5e/assets-v1/1d147cae-4186-43bb-9356-a959ad286674/AcidGreen-Poster.ttf") format("truetype");
+  font-weight: 400 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Brandon Grotesque";
+  src: url("/__l5e/assets-v1/710b7717-5d53-4655-ac5a-3ad1195bc841/BrandonGrotesque-Medium.ttf") format("truetype");
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+}

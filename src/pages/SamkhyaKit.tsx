@@ -145,7 +145,7 @@ const SamkhyaKit = () => {
             <div className="flex flex-col gap-10">
               <h1
                 className="text-2xl md:text-3xl leading-tight"
-                style={{ color: samkhyaTokens.roxo, fontFamily: "Georgia, 'Times New Roman', serif" }}
+                style={{ color: samkhyaTokens.roxo, fontFamily: samkhyaTokens.fonteTitulo }}
               >
                 {kit.nome}
               </h1>
@@ -159,7 +159,7 @@ const SamkhyaKit = () => {
               <div>
                 <h2
                   className="text-base mb-3"
-                  style={{ color: samkhyaTokens.roxo, fontFamily: "Georgia, 'Times New Roman', serif" }}
+                  style={{ color: samkhyaTokens.roxo, fontFamily: samkhyaTokens.fonteTitulo }}
                 >
                   O que vem no kit
                 </h2>
@@ -179,7 +179,7 @@ const SamkhyaKit = () => {
                 <div key={grupo.grupo}>
                   <h2
                     className="text-base mb-3"
-                    style={{ color: samkhyaTokens.roxo, fontFamily: "Georgia, 'Times New Roman', serif" }}
+                    style={{ color: samkhyaTokens.roxo, fontFamily: samkhyaTokens.fonteTitulo }}
                   >
                     {grupo.rotulo}
                   </h2>

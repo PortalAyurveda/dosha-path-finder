@@ -173,7 +173,7 @@ const SamkhyaPedido = () => {
                 className="text-2xl mb-2"
                 style={{
                   color: samkhyaTokens.roxo,
-                  fontFamily: "Georgia, serif",
+                  fontFamily: samkhyaTokens.fonteTitulo,
                 }}
               >
                 Pedido não encontrado
@@ -204,7 +204,7 @@ const SamkhyaPedido = () => {
                       className="text-2xl md:text-3xl"
                       style={{
                         color: samkhyaTokens.roxo,
-                        fontFamily: "Georgia, serif",
+                        fontFamily: samkhyaTokens.fonteTitulo,
                       }}
                     >
                       Pedido {pedido.numero_pedido}
@@ -269,7 +269,7 @@ const SamkhyaPedido = () => {
                     >
                       <h2
                         className="text-base mb-2"
-                        style={{ color: samkhyaTokens.roxo, fontFamily: "Georgia, serif" }}
+                        style={{ color: samkhyaTokens.roxo, fontFamily: samkhyaTokens.fonteTitulo }}
                       >
                         Pagar com Pix
                       </h2>
@@ -366,7 +366,7 @@ const SamkhyaPedido = () => {
               >
                 <h2
                   className="text-lg mb-4"
-                  style={{ color: samkhyaTokens.roxo, fontFamily: "Georgia, serif" }}
+                  style={{ color: samkhyaTokens.roxo, fontFamily: samkhyaTokens.fonteTitulo }}
                 >
                   Itens
                 </h2>
@@ -416,7 +416,7 @@ const SamkhyaPedido = () => {
                 >
                   <h2
                     className="text-base mb-3"
-                    style={{ color: samkhyaTokens.roxo, fontFamily: "Georgia, serif" }}
+                    style={{ color: samkhyaTokens.roxo, fontFamily: samkhyaTokens.fonteTitulo }}
                   >
                     Resumo
                   </h2>
@@ -451,7 +451,7 @@ const SamkhyaPedido = () => {
                 >
                   <h2
                     className="text-base mb-3"
-                    style={{ color: samkhyaTokens.roxo, fontFamily: "Georgia, serif" }}
+                    style={{ color: samkhyaTokens.roxo, fontFamily: samkhyaTokens.fonteTitulo }}
                   >
                     Endereço de entrega
                   </h2>

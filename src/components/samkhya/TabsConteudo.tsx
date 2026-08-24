@@ -96,7 +96,7 @@ const TabsConteudo = ({ descricaoProduto }: TabsConteudoProps) => {
       <style>{`
         [data-samkhya-tab][data-state="active"] {
           border-bottom-color: ${samkhyaTokens.roxo} !important;
-          background-color: #f3eaf0 !important;
+          background-color: #F1E6EF !important;
           font-weight: 600;
         }
       `}</style>

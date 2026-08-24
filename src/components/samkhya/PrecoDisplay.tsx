@@ -19,7 +19,7 @@ const PrecoDisplay = ({ precoNormal, precoPix, showParcelas = false, size = "md"
 
   const pixSizeClass = size === "lg" ? "text-3xl md:text-4xl" : size === "sm" ? "text-lg" : "text-2xl";
   const normalSizeClass = size === "lg" ? "text-base" : "text-sm";
-  const helvetica = "Helvetica, 'Helvetica Neue', Arial, sans-serif";
+  const helvetica = samkhyaTokens.fonteCorpo;
 
   return (
     <div className="flex flex-col gap-1" style={{ fontFamily: helvetica }}>

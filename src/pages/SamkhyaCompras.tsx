@@ -44,7 +44,7 @@ const SamkhyaCompras = () => {
         <div className="max-w-3xl mx-auto py-6 md:py-10">
           <h1
             className="text-3xl md:text-4xl mb-6"
-            style={{ color: samkhyaTokens.roxo, fontFamily: "Georgia, serif" }}
+            style={{ color: samkhyaTokens.roxo, fontFamily: samkhyaTokens.fonteTitulo }}
           >
             Minhas compras
           </h1>

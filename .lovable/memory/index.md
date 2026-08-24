@@ -7,7 +7,7 @@ Supabase BaaS. Auth: sem login inicial, teste de dosha primeiro.
 Doshas: vata (#93C5FD), pitta (#FCA5A5), kapha (#86EFAC).
 Teste usa tabela `testededosha`. Monetização: tokens_akasha (10 default), áreas premium futuras.
 Akasha removida do menu esquerdo; aparece como ✨ no user area do Header + tab em /meu-dosha.
-Loja Samkhya em /samkhya/* tem identidade própria (roxo #7b4963 + ouro) e usa cliente Supabase separado para schema 'loja'.
+Loja Samkhya em /samkhya/* tem identidade própria (roxo #581C50 + laranja #C75100 + creme #E0DCAF, fontes Acid Green/Brandon Grotesque) e cliente Supabase separado para schema 'loja'. Portal mantém #352F54 / Roboto Serif / DM Sans.
 
 ## Memories
 - [Design system](mem://design/system) — Full color tokens, typography, surfaces, component patterns

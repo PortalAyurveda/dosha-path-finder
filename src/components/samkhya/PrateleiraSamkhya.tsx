@@ -18,7 +18,7 @@ interface PrateleiraSamkhyaProps {
   titulo?: string;
 }
 
-const serif = "Georgia, 'Times New Roman', serif";
+const serif = samkhyaTokens.fonteTitulo;
 
 const formatPreco = (v: number | null) => {
   if (v == null) return "";

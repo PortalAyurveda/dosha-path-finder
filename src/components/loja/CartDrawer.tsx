@@ -1,3 +1,4 @@
+import "@/components/samkhya/samkhya-fonts.css";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Minus, Plus, Trash2, ShoppingBag, ChevronLeft } from "lucide-react";
@@ -542,7 +543,7 @@ const CartDrawer = () => {
         <SheetHeader className="px-5 py-4 border-b" style={{ borderColor: samkhyaTokens.cardBorder }}>
           <SheetTitle
             className="text-lg flex items-center gap-2"
-            style={{ color: samkhyaTokens.roxo, fontFamily: "Georgia, serif" }}
+            style={{ color: samkhyaTokens.roxo, fontFamily: samkhyaTokens.fonteTitulo }}
           >
             {step === "checkout" && (
               <button onClick={() => setStep("cart")} aria-label="Voltar">
@@ -558,7 +559,7 @@ const CartDrawer = () => {
           {step === "pix" && pixData ? (
             <div className="space-y-4">
               <div>
-                <h3 className="text-xl" style={{ color: samkhyaTokens.roxo, fontFamily: "Georgia, serif" }}>
+                <h3 className="text-xl" style={{ color: samkhyaTokens.roxo, fontFamily: samkhyaTokens.fonteTitulo }}>
                   Falta pagar
                 </h3>
                 <p className="text-xs mt-0.5" style={{ color: samkhyaTokens.textoSec }}>
