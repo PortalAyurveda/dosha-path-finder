@@ -219,7 +219,9 @@ const AdminBanners = () => {
       const { data, error } = await supabase
         .from("banners_molde")
         .select("*")
-        .order("slot");
+        .order("ordem", { ascending: true, nullsFirst: false })
+        .order("rotulo", { ascending: true, nullsFirst: false });
+
       if (error) throw error;
       return (data ?? []) as Molde[];
     },
