@@ -14,6 +14,17 @@ type Row = {
 };
 
 const FundamentosAyurveda = () => {
+  const { data: giro } = useQuery({
+    queryKey: ["hoje-no-portal"],
+    queryFn: async () => {
+      const { data } = await (supabase.rpc as any)("hoje_no_portal");
+      const row = Array.isArray(data) ? data[0] : data;
+      return row?.giro ?? null;
+    },
+    staleTime: 30 * 60 * 1000,
+  });
+  const artigoDoTema = giro?.artigo_da_tag ?? null;
+
   const { data, isLoading } = useQuery({
     queryKey: ["index_fundamentos_ayurveda"],
     queryFn: async () => {
@@ -43,6 +54,40 @@ const FundamentosAyurveda = () => {
             Conheça Ayurveda por aqui
           </h2>
         </div>
+
+        {artigoDoTema && (
+          <Link
+            to={artigoDoTema.rota?.replace("/blog/", "/blog/") || "#"}
+            className="group block max-w-3xl mx-auto mb-8 bg-background border border-border overflow-hidden transition-all hover:-translate-y-1 hover:shadow-xl"
+            style={{ borderRadius: LEAF }}
+          >
+            {artigoDoTema.imagem && (
+              <div className="w-full aspect-video overflow-hidden bg-muted">
+                <img
+                  src={artigoDoTema.imagem}
+                  alt={artigoDoTema.titulo}
+                  loading="lazy"
+                  decoding="async"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+              </div>
+            )}
+            <div className="p-4 text-center">
+              <span
+                className="text-xs uppercase tracking-wider font-semibold mb-1.5 inline-block"
+                style={{ color: PRIMARY }}
+              >
+                Vale a pena ler hoje
+              </span>
+              <h3
+                className="font-serif font-bold text-lg leading-snug line-clamp-2 group-hover:underline"
+                style={{ color: PRIMARY }}
+              >
+                {artigoDoTema.titulo}
+              </h3>
+            </div>
+          </Link>
+        )}
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {isLoading
