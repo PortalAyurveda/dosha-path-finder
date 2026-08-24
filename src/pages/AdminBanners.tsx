@@ -416,16 +416,115 @@ const AdminBanners = () => {
             const list = bannersBySlot[slot] ?? [];
             const frameW = SLOT_FRAME_WIDTH[slot] ?? FRAME_DEFAULT;
             const scaled = !!scaledSlots[slot];
+            const molde = moldeBySlot[slot];
+            const disponiveis = list.filter((b) => !b.ativo);
+            const noAr = list.filter((b) => b.ativo);
+
+            const renderCard = (b: Banner) => (
+              <div
+                key={b.id}
+                className="border border-border rounded-xl p-3 space-y-3 bg-background/60"
+              >
+                <div
+                  className="flex justify-center overflow-hidden"
+                  style={{ minHeight: scaled ? 80 : 120 }}
+                >
+                  <div
+                    style={{
+                      transform: scaled ? "scale(0.7)" : "none",
+                      transformOrigin: "top center",
+                    }}
+                  >
+                    <SafePreview html={b.html} width={frameW} />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <div className="font-semibold text-sm truncate" title={b.titulo_admin ?? ""}>
+                    {b.titulo_admin || <span className="italic text-muted-foreground">(sem título)</span>}
+                  </div>
+
+                  {b.ativo && (
+                    <p className="text-xs text-muted-foreground">
+                      {noAr.length <= 1
+                        ? "Aparece sempre"
+                        : `Aparece em ${Math.round(100 / noAr.length)}% das visitas`}
+                    </p>
+                  )}
+
+                  <div className="flex flex-wrap gap-1">
+                    {b.campanha && (
+                      <Badge variant="secondary" className="text-[10px]">
+                        {b.campanha}
+                      </Badge>
+                    )}
+                    <Badge variant="outline" className="text-[10px]">
+                      ordem {b.ordem ?? 0}
+                    </Badge>
+                    {(b.tags ?? []).map((t) => (
+                      <Badge key={t} className="text-[10px]" variant="outline">
+                        {t}
+                      </Badge>
+                    ))}
+                  </div>
+
+                  <div>
+                    {b.ativo ? (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => toggleAtivoMut.mutate({ id: b.id, ativo: false })}
+                      >
+                        ← Tirar do ar
+                      </Button>
+                    ) : (
+                      <Button
+                        size="sm"
+                        onClick={() => toggleAtivoMut.mutate({ id: b.id, ativo: true })}
+                      >
+                        Publicar →
+                      </Button>
+                    )}
+                  </div>
+
+                  <div className="flex gap-2 pt-1 flex-wrap">
+                    <Button size="sm" variant="outline" className="gap-1.5" onClick={() => openEdit(b)}>
+                      <Pencil className="w-3.5 h-3.5" /> Editar
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="gap-1.5"
+                      onClick={() => duplicateMut.mutate(b)}
+                    >
+                      <Files className="w-3.5 h-3.5" /> Duplicar
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="gap-1.5 text-destructive hover:text-destructive"
+                      onClick={() => setConfirmDel(b)}
+                    >
+                      <Trash2 className="w-3.5 h-3.5" /> Deletar
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            );
+
             return (
               <section key={slot} className="bg-card border border-border rounded-2xl p-5 space-y-4">
                 <div className="flex items-center justify-between flex-wrap gap-3">
                   <div className="flex items-center gap-3">
-                    <h2
-                      className="text-lg font-bold"
-                      style={{ fontFamily: "'Roboto Serif', serif", color: "#352F54" }}
-                    >
-                      Slot · {slot}
-                    </h2>
+                    <div>
+                      <h2
+                        className="text-lg font-bold"
+                        style={{ fontFamily: "'Roboto Serif', serif", color: "#352F54" }}
+                      >
+                        {molde?.rotulo || slot}
+                      </h2>
+                      <p className="text-xs text-muted-foreground">{slot}</p>
+                    </div>
                     <Badge variant="outline">{list.length} banner(s)</Badge>
                   </div>
                   <div className="flex items-center gap-2">
@@ -455,84 +554,33 @@ const AdminBanners = () => {
                     Nenhum banner cadastrado neste slot.
                   </p>
                 ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {list.map((b) => (
-                      <div
-                        key={b.id}
-                        className="border border-border rounded-xl p-3 space-y-3 bg-background/60"
-                      >
-                        <div
-                          className="flex justify-center overflow-hidden"
-                          style={{ minHeight: scaled ? 80 : 120 }}
-                        >
-                          <div
-                            style={{
-                              transform: scaled ? "scale(0.7)" : "none",
-                              transformOrigin: "top center",
-                            }}
-                          >
-                            <SafePreview html={b.html} width={frameW} />
-                          </div>
-                        </div>
-
-                        <div className="space-y-2">
-                          <div className="flex items-center justify-between gap-2">
-                            <div className="font-semibold text-sm truncate" title={b.titulo_admin ?? ""}>
-                              {b.titulo_admin || <span className="italic text-muted-foreground">(sem título)</span>}
-                            </div>
-                            <Switch
-                              checked={b.ativo}
-                              onCheckedChange={(v) =>
-                                toggleAtivoMut.mutate({ id: b.id, ativo: !!v })
-                              }
-                            />
-                          </div>
-
-                          <div className="flex flex-wrap gap-1">
-                            {b.campanha && (
-                              <Badge variant="secondary" className="text-[10px]">
-                                {b.campanha}
-                              </Badge>
-                            )}
-                            <Badge variant="outline" className="text-[10px]">
-                              ordem {b.ordem ?? 0}
-                            </Badge>
-                            {(b.tags ?? []).map((t) => (
-                              <Badge key={t} className="text-[10px]" variant="outline">
-                                {t}
-                              </Badge>
-                            ))}
-                          </div>
-
-                          <div className="flex gap-2 pt-1">
-                            <Button size="sm" variant="outline" className="gap-1.5" onClick={() => openEdit(b)}>
-                              <Pencil className="w-3.5 h-3.5" /> Editar
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              className="gap-1.5"
-                              onClick={() => duplicateMut.mutate(b)}
-                            >
-                              <Files className="w-3.5 h-3.5" /> Duplicar
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              className="gap-1.5 text-destructive hover:text-destructive"
-                              onClick={() => setConfirmDel(b)}
-                            >
-                              <Trash2 className="w-3.5 h-3.5" /> Deletar
-                            </Button>
-                          </div>
-                        </div>
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                    <div className="space-y-3">
+                      <div className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                        Disponíveis · {disponiveis.length}
                       </div>
-                    ))}
+                      {disponiveis.length === 0 ? (
+                        <p className="text-sm text-muted-foreground italic">Nenhum banner disponível.</p>
+                      ) : (
+                        <div className="space-y-3">{disponiveis.map(renderCard)}</div>
+                      )}
+                    </div>
+                    <div className="space-y-3">
+                      <div className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                        No ar · {noAr.length}
+                      </div>
+                      {noAr.length === 0 ? (
+                        <p className="text-sm text-muted-foreground italic">Nenhum banner no ar.</p>
+                      ) : (
+                        <div className="space-y-3">{noAr.map(renderCard)}</div>
+                      )}
+                    </div>
                   </div>
                 )}
               </section>
             );
           })}
+
         </div>
 
         {/* ===================== Dialog: contrato do slot ===================== */}
