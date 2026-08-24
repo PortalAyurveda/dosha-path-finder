@@ -387,50 +387,18 @@ async function dynamicRoutes(): Promise<Route[]> {
   }
   console.log(`[prerender] video: ${counts.video || 0} gerados a partir de videos_sitemap`);
 
-  // Registros Akáshicos — akasha_memory. Paginado (PostgREST limita a 1000/req).
-  // Cap de segurança para não estourar o limite de arquivos do publish.
-  const MAX_AKASHA_PAGES = 4000;
-  const akashaRows: { titulo: string; texto_inicio: string | null; data_postagem: string | null }[] = [];
-  for (let offset = 0; offset < MAX_AKASHA_PAGES; offset += 1000) {
-    const page = await fetchRest<{ titulo: string; texto_inicio: string | null; data_postagem: string | null }>(
-      `akasha_memory?select=titulo,texto_inicio,data_postagem&titulo=not.is.null&order=data_postagem.desc&limit=1000&offset=${offset}`
-    );
-    akashaRows.push(...page);
-    if (page.length < 1000) break;
-  }
-  const seenAkasha = new Set<string>();
-  for (const r of akashaRows) {
-    const titulo = clean(r.titulo, 110);
-    if (!titulo) continue;
-    const slug = akashaSlugify(r.titulo);
-    if (!slug || seenAkasha.has(slug)) continue;
-    seenAkasha.add(slug);
-    const desc =
-      clean(r.texto_inicio, 200) ||
-      `Registro akáshico da Akasha, a inteligência do Portal Ayurveda: ${titulo}.`;
-    routes.push({
-      path: `/registros-akashikos/${slug}`,
-      title: `${titulo} — Portal Ayurveda`,
-      description: desc,
-      type: "article",
-      jsonld: {
-        "@context": "https://schema.org",
-        "@type": "Article",
-        headline: titulo,
-        description: desc,
-        datePublished: r.data_postagem || undefined,
-        mainEntityOfPage: `${BASE_URL}/registros-akashikos/${slug}`,
-        author: { "@type": "Organization", name: "Akasha — Portal Ayurveda" },
-        publisher: {
-          "@type": "Organization",
-          name: "Portal Ayurveda",
-          logo: { "@type": "ImageObject", url: `${BASE_URL}/og-image.jpg` },
-        },
-      },
-    });
-    bump("akasha");
-  }
-  console.log(`[prerender] registros-akashikos: ${counts.akasha || 0} gerados (de ${akashaRows.length} linhas)`);
+  // Registros akáshicos NÃO são pré-renderizados de propósito (decidido em 23/08/2026).
+  // Medido: 7 cliques e 292 impressões em 3 meses, ocupando 74% do sitemap; e os títulos são
+  // poéticos (sem intenção de busca), então não casam com busca real. Ficaram marcados noindex
+  // no index.html e saíram do sitemap (edge function `sitemap` v23).
+  // O noindex delas é escrito por JavaScript, então só conta depois que o Google renderiza.
+  // Fora do sitemap, o rastreio dessas URLs fica mais raro: as já indexadas saem do índice
+  // aos poucos, em semanas, não em dias. Isso é esperado.
+  // Para reativar seriam necessárias TRÊS mudanças juntas, nesta ordem:
+  //   1. ler `registros_akashikos_publicos` (view pública) em vez de `akasha_memory`;
+  //   2. tirar "/registros-akashikos" de privatePrefixes no index.html;
+  //   3. paginar de 1.000 em 1.000 na edge function `sitemap` (PostgREST corta em 1.000).
+  // Mudar só uma das três recria a contradição "sitemap manda indexar / página diz noindex".
 
 
 
