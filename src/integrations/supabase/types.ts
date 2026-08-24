@@ -961,6 +961,8 @@ export type Database = {
           criado_em: string
           descricao: string
           exemplo_html: string | null
+          ordem: number
+          rotulo: string | null
           slot: string
         }
         Insert: {
@@ -969,6 +971,8 @@ export type Database = {
           criado_em?: string
           descricao: string
           exemplo_html?: string | null
+          ordem?: number
+          rotulo?: string | null
           slot: string
         }
         Update: {
@@ -977,6 +981,8 @@ export type Database = {
           criado_em?: string
           descricao?: string
           exemplo_html?: string | null
+          ordem?: number
+          rotulo?: string | null
           slot?: string
         }
         Relationships: []
