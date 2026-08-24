@@ -39,7 +39,7 @@ const TestimonialsSection = ({ testimonials, branding }: TestimonialsSectionProp
               />
               <p
                 className="font-bold text-xs md:text-sm uppercase tracking-wide mb-2.5 pr-9"
-                style={{ color: "#3F7A2E" }}
+                style={{ color: branding.darkColor }}
               >
                 "{t.highlight}"
               </p>
