@@ -19,6 +19,7 @@ export type LandingPaletteKey =
   | "alimentacao-verde"
   | "remedios-salmao"
   | "diagnostico-alaranjado"
+  | "rotinas-dourado"
   | "formacao-azul"
   | "samkhya-roxo-ouro"
   | "akasha-roxo"
