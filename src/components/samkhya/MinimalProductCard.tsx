@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { samkhyaTokens } from "./tokens";
+import { useFreteGratisConfig } from "@/hooks/useFreteGratisConfig";
 
 interface MinimalProductCardProps {
   slug: string;
@@ -14,6 +15,10 @@ const formatBRL = (v: number) =>
   v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
 const MinimalProductCard = ({ slug, nome, precoPix, imagemUrl, resumoCurto, to }: MinimalProductCardProps) => {
+  const { data: config } = useFreteGratisConfig();
+  const pct = config?.desconto_vitrine_pct ?? null;
+  const precoExibido = pct != null ? Math.round(precoPix * (1 - pct / 100) * 100) / 100 : precoPix;
+
   return (
     <Link
       to={to ?? `/samkhya/produto/${slug}`}
@@ -59,8 +64,20 @@ const MinimalProductCard = ({ slug, nome, precoPix, imagemUrl, resumoCurto, to }
           {resumoCurto}
         </p>
       )}
+      {pct != null && (
+        <p
+          className="mt-1 line-through"
+          style={{
+            color: samkhyaTokens.textoSec,
+            fontFamily: samkhyaTokens.fonteCorpo,
+            fontSize: "12px",
+          }}
+        >
+          {formatBRL(precoExibido)}
+        </p>
+      )}
       <p
-        className="mt-1"
+        className={pct != null ? "" : "mt-1"}
         style={{
           color: samkhyaTokens.roxo,
           fontFamily: samkhyaTokens.fonteCorpo,
@@ -68,7 +85,7 @@ const MinimalProductCard = ({ slug, nome, precoPix, imagemUrl, resumoCurto, to }
           fontWeight: 600,
         }}
       >
-        {formatBRL(precoPix)}
+        {formatBRL(precoExibido)}
       </p>
     </Link>
   );
