@@ -858,7 +858,12 @@ const AdminBanners = () => {
               </Button>
               <Button
                 onClick={() => upsertMut.mutate(form)}
-                disabled={upsertMut.isPending || !form.slot || !form.html.trim()}
+                disabled={
+                  upsertMut.isPending ||
+                  !form.slot ||
+                  !form.html.trim() ||
+                  (form.modo === "imagem" && (!form.imgUrl.trim() || !form.imgAlt.trim()))
+                }
               >
                 {upsertMut.isPending ? "Salvando…" : "Salvar"}
               </Button>
