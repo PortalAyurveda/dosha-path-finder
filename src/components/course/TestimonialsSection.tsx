@@ -10,7 +10,7 @@ interface TestimonialsSectionProps {
 const TestimonialsSection = ({ testimonials, branding }: TestimonialsSectionProps) => {
   return (
     <section className="py-10 md:py-14" style={{ background: "#FAF9F6" }}>
-      <div className="max-w-4xl mx-auto px-6">
+      <div className="max-w-5xl mx-auto px-6">
         <motion.h2
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -22,7 +22,7 @@ const TestimonialsSection = ({ testimonials, branding }: TestimonialsSectionProp
           O que nossos alunos dizem
         </motion.h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-5">
           {testimonials.map((t, i) => (
             <motion.article
               key={i}
@@ -34,7 +34,7 @@ const TestimonialsSection = ({ testimonials, branding }: TestimonialsSectionProp
             >
               <Quote
                 className="absolute top-3.5 right-3.5 h-6 w-6 opacity-40"
-                style={{ color: "#3F7A2E" }}
+                style={{ color: branding.darkColor }}
                 fill="currentColor"
               />
               <p
@@ -46,7 +46,7 @@ const TestimonialsSection = ({ testimonials, branding }: TestimonialsSectionProp
               <p className="text-sm md:text-base text-gray-700 leading-relaxed mb-3.5">
                 {t.quote}
               </p>
-              <p className="font-bold text-xs md:text-sm" style={{ color: "#352F54" }}>
+              <p className="font-bold text-xs md:text-sm" style={{ color: branding.darkColor }}>
                 — {t.name}
               </p>
             </motion.article>

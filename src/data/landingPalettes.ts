@@ -19,6 +19,7 @@ export type LandingPaletteKey =
   | "alimentacao-verde"
   | "remedios-salmao"
   | "diagnostico-alaranjado"
+  | "rotinas-dourado"
   | "formacao-azul"
   | "samkhya-roxo-ouro"
   | "akasha-roxo"
@@ -107,6 +108,21 @@ export const LANDING_PALETTES: LandingPalette[] = [
       lightColor: "#FFE3B8",
       accentColor: "#FACC15",
       warmBg: "#FFF8EE",
+    },
+  },
+  {
+    key: "rotinas-dourado",
+    label: "Rotinas Diárias (Dourado)",
+    description: "Curso de Rotinas Diárias. Dourado sobre roxo-noturno da marca.",
+    theme: "warm",
+    swatch: ["#F2CB05", "#FFF7D6", "#352F54"],
+    branding: {
+      logo: "https://api.portalayurveda.com/storage/v1/object/public/portal_images/logo-rotinas-3.svg",
+      primaryColor: "#F2CB05",
+      darkColor: "#352F54",
+      lightColor: "#FFF7D6",
+      accentColor: "#6A88FB",
+      warmBg: "#FFFBEF",
     },
   },
   {
