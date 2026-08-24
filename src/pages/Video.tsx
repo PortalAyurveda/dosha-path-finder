@@ -51,9 +51,11 @@ const Video = () => {
   // videoId can come from router state (internal nav) or we resolve from slug
   const stateVideoId = (location.state as { videoId?: string })?.videoId;
 
-  const { data: video, isLoading } = useQuery({
+  const { data: video, isLoading, isError, isSuccess } = useQuery({
     queryKey: ["video-page", slug, stateVideoId],
     queryFn: async () => {
+      let algumaConsultaOk = false;
+
       // Internal navigation passes the videoId — look it up directly across tables
       if (stateVideoId) {
         for (const table of ALL_TABLES) {
@@ -63,8 +65,10 @@ const Video = () => {
             .eq("video_id", stateVideoId)
             .maybeSingle();
           if (error) continue;
+          algumaConsultaOk = true;
           if (data) return data as any;
         }
+        if (!algumaConsultaOk) throw new Error("Não foi possível consultar as tabelas de vídeo por ID.");
         return null;
       }
 
@@ -72,6 +76,7 @@ const Video = () => {
       try {
         const { data: canon, error: canonErr } = await (supabase.rpc as any)("find_video_canonico", { _slug: slug! });
         if (!canonErr) {
+          algumaConsultaOk = true;
           const row = Array.isArray(canon) ? canon[0] : canon;
           if (row) return row as any;
         }
@@ -83,19 +88,26 @@ const Video = () => {
       const { data, error } = await supabase.rpc("find_video_by_slug", { _slug: slug! });
       if (error) {
         console.error("find_video_by_slug error:", error);
-      } else if (Array.isArray(data) && data.length > 0) {
-        return data[0] as any;
+      } else {
+        algumaConsultaOk = true;
+        if (Array.isArray(data) && data.length > 0) return data[0] as any;
       }
 
       // 3) Slug com cara de ID cru do YouTube → resolve pelo video_id
       if (/^[A-Za-z0-9_-]{11}$/.test(slug!)) {
-        const { data: canonRow } = await (supabase.from("videos_canonicos") as any)
+        const { data: canonRow, error: canonRowErr } = await (supabase.from("videos_canonicos") as any)
           .select("video_id, slug, novo_titulo, nova_descricao, mini_resumo, tags, criado_em, is_receita, is_live, is_oficial")
           .eq("video_id", slug!)
           .maybeSingle();
-        if (canonRow) return canonRow as any;
+        if (!canonRowErr) {
+          algumaConsultaOk = true;
+          if (canonRow) return canonRow as any;
+        }
       }
 
+      if (!algumaConsultaOk) {
+        throw new Error("Todas as buscas de vídeo falharam (RPC e tabela indisponíveis).");
+      }
       return null;
     },
     enabled: !!slug,
