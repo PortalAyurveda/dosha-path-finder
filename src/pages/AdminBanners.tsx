@@ -744,15 +744,90 @@ const AdminBanners = () => {
                 </div>
 
                 <div>
-                  <Label>HTML</Label>
-                  <Textarea
-                    value={form.html}
-                    onChange={(e) => setForm((f) => ({ ...f, html: e.target.value }))}
-                    rows={16}
-                    className="font-mono text-xs"
-                    placeholder="<div class='...'>...</div>"
-                  />
+                  <Label>Tipo</Label>
+                  <Select
+                    value={form.modo}
+                    onValueChange={(v) =>
+                      setForm((f) => {
+                        const modo = v as Modo;
+                        if (modo === "imagem") {
+                          return {
+                            ...f,
+                            modo,
+                            html: f.imgUrl
+                              ? montarHtmlImagem(f.imgDestino, f.imgUrl, f.imgAlt)
+                              : f.html,
+                          };
+                        }
+                        return { ...f, modo };
+                      })
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="imagem">Imagem</SelectItem>
+                      <SelectItem value="html">HTML</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
+
+                {form.modo === "imagem" ? (
+                  <div className="space-y-3">
+                    <div>
+                      <Label>URL da imagem</Label>
+                      <Input
+                        value={form.imgUrl}
+                        onChange={(e) =>
+                          setForm((f) => {
+                            const imgUrl = e.target.value;
+                            return { ...f, imgUrl, html: montarHtmlImagem(f.imgDestino, imgUrl, f.imgAlt) };
+                          })
+                        }
+                        placeholder="https://…/banner.png"
+                      />
+                    </div>
+                    <div>
+                      <Label>Link de destino</Label>
+                      <Input
+                        value={form.imgDestino}
+                        onChange={(e) =>
+                          setForm((f) => {
+                            const imgDestino = e.target.value;
+                            return { ...f, imgDestino, html: montarHtmlImagem(imgDestino, f.imgUrl, f.imgAlt) };
+                          })
+                        }
+                        placeholder="/samkhya"
+                      />
+                    </div>
+                    <div>
+                      <Label>Texto alternativo</Label>
+                      <Input
+                        value={form.imgAlt}
+                        onChange={(e) =>
+                          setForm((f) => {
+                            const imgAlt = e.target.value;
+                            return { ...f, imgAlt, html: montarHtmlImagem(f.imgDestino, f.imgUrl, imgAlt) };
+                          })
+                        }
+                        placeholder="O que a arte diz"
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  <div>
+                    <Label>HTML</Label>
+                    <Textarea
+                      value={form.html}
+                      onChange={(e) => setForm((f) => ({ ...f, html: e.target.value }))}
+                      rows={16}
+                      className="font-mono text-xs"
+                      placeholder="<div class='...'>...</div>"
+                    />
+                  </div>
+                )}
+
 
                 <div className="flex items-center gap-3">
                   <Switch
