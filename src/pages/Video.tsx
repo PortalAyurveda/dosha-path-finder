@@ -243,8 +243,24 @@ const Video = () => {
     );
   }
 
+  if (isError) {
+    return (
+      <PageContainer title="Erro" description="">
+        <div className="max-w-2xl mx-auto text-center py-16 space-y-4">
+          <h1 className="font-serif text-2xl md:text-3xl font-bold text-primary">
+            Não foi possível carregar este vídeo agora
+          </h1>
+          <p className="text-muted-foreground">Tente novamente em instantes.</p>
+          <Button variant="outline" onClick={() => navigate("/biblioteca")}>
+            Ir para a biblioteca
+          </Button>
+        </div>
+      </PageContainer>
+    );
+  }
+
   // Soft-404 fix: vídeo não existe → renderiza página noindex na própria URL
-  if (!video) {
+  if (isSuccess && !video) {
     return (
       <>
         <Helmet>
