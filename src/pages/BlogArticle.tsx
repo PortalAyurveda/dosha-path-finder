@@ -96,7 +96,7 @@ const BlogArticle = () => {
         {article.meta_description && (
           <meta name="description" content={article.meta_description} />
         )}
-        <link rel="canonical" href={`https://portalayurveda.com/blog/${article.link_do_artigo}`} />
+        {/* canonical é injetado pelo hook global useCanonical — não duplicar aqui */}
         <meta property="og:type" content="article" />
         <meta property="og:title" content={`${article.title} | Portal Ayurveda`} />
         {article.meta_description && (
