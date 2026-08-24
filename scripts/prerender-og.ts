@@ -743,8 +743,8 @@ async function main() {
 // Fonte da home pré-renderizada. Pode ser sobrescrita por env (HOME_BAKE_URL).
 // Se a URL estiver 404/vazia, o build segue com o index.html padrão — mas
 // gritamos alto para não passar batido de novo.
-const HOME_SOURCE = process.env.HOME_BAKE_URL || "https://home-fixo-teste.portalayurveda.workers.dev/";
-const HOME_BAKE_DISABLED = process.env.HOME_BAKE_URL === "off";
+const HOME_SOURCE = process.env.HOME_BAKE_URL || "off";
+const HOME_BAKE_DISABLED = HOME_SOURCE === "off";
 
 async function bakeHome(distDir: string): Promise<void> {
   const outPath = resolve(distDir, "index.html");
