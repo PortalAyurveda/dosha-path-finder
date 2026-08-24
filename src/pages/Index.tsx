@@ -78,6 +78,7 @@ const MARQUEE_IDS = MARQUEE_TEMPLATE.map((m) => m.id);
 
 const FeedSocial = () => {
   const { user } = useUser();
+  const trackRef = useRef<HTMLDivElement | null>(null);
   const { data } = useQuery({
     queryKey: ["marquee_metricas_v1"],
     queryFn: async () => {
@@ -101,7 +102,6 @@ const FeedSocial = () => {
   });
 
   const map = useMemo(() => new Map((data ?? []).map((r) => [r.metrica_id, r])), [data]);
-
   const items = useMemo(
     () =>
       MARQUEE_TEMPLATE.map((m) => {
@@ -113,19 +113,31 @@ const FeedSocial = () => {
     [map]
   );
 
-  const prefersReducedMotion =
-    typeof window !== "undefined" &&
-    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-  const [indiceAtual, setIndiceAtual] = useState(0);
   useEffect(() => {
-    if (!prefersReducedMotion || items.length === 0) return;
-    const total = items.length + 1; // +1 pelo item de CTA que entra logo abaixo
-    const t = setInterval(() => {
-      setIndiceAtual((i) => (i + 1) % total);
-    }, 4000);
-    return () => clearInterval(t);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const el = trackRef.current;
+    if (!el || items.length === 0) return;
+    let raf = 0;
+    let x = 0;
+    let pausado = false;
+    const aoEntrar = () => { pausado = true; };
+    const aoSair = () => { pausado = false; };
+    el.addEventListener("mouseenter", aoEntrar);
+    el.addEventListener("mouseleave", aoSair);
+    const passo = () => {
+      if (!pausado) {
+        x -= 0.4;
+        const metade = el.scrollWidth / 2;
+        if (metade > 0 && Math.abs(x) >= metade) x = 0;
+        el.style.transform = `translateX(${x}px)`;
+      }
+      raf = requestAnimationFrame(passo);
+    };
+    raf = requestAnimationFrame(passo);
+    return () => {
+      cancelAnimationFrame(raf);
+      el.removeEventListener("mouseenter", aoEntrar);
+      el.removeEventListener("mouseleave", aoSair);
+    };
   }, [items.length]);
 
   if (items.length === 0) return null;
@@ -134,29 +146,6 @@ const FeedSocial = () => {
   const ctaItem = { id: "__cta__", emoji: "✦", tone: C.primary, text: ctaText, href: ctaHref } as const;
   const withCta = [...items, ctaItem];
   const loop = [...withCta, ...withCta];
-
-  if (prefersReducedMotion) {
-    const it: any = withCta[indiceAtual % withCta.length];
-    return (
-      <Link
-        to="/metricas"
-        className="sticky top-16 z-40 block py-3 min-h-[44px] group cursor-pointer transition-colors hover:bg-[color:var(--marquee-hover)] bg-background"
-        style={{
-          backgroundImage: `linear-gradient(${C.primary}14, ${C.primary}14)`,
-          borderTop: `1px solid ${C.primary}1A`,
-          borderBottom: `1px solid ${C.primary}1A`,
-          ['--marquee-hover' as any]: `${C.primary}1F`,
-        }}
-      >
-        <div className="flex items-center justify-center gap-2 text-center px-4">
-          <span aria-hidden="true" className="text-base">{it.emoji}</span>
-          <span className="text-sm font-sans font-semibold underline underline-offset-4" style={{ color: it.tone }}>
-            {it.text}
-          </span>
-        </div>
-      </Link>
-    );
-  }
 
   return (
     <Link
@@ -169,7 +158,11 @@ const FeedSocial = () => {
         ['--marquee-hover' as any]: `${C.primary}1F`,
       }}
     >
-      <div className="marquee-track flex gap-8 whitespace-nowrap">
+      <div
+        ref={trackRef}
+        className="flex gap-8 whitespace-nowrap"
+        style={{ width: "max-content", willChange: "transform" }}
+      >
         {loop.map((it: any, i) => {
           if (it.id === "__cta__") {
             return (
@@ -207,17 +200,6 @@ const FeedSocial = () => {
           );
         })}
       </div>
-      <style>{`
-        @keyframes marqueeX {
-          from { transform: translateX(0); }
-          to   { transform: translateX(-50%); }
-        }
-        .marquee-track {
-          animation: marqueeX 120s linear infinite;
-          width: max-content;
-        }
-        .marquee-track:hover { animation-play-state: paused; }
-      `}</style>
     </Link>
   );
 };
