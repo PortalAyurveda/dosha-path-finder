@@ -134,22 +134,6 @@ const staticRoutes: Route[] = [
     description:
       "Todos os cursos do Portal Ayurveda: formação, alimentação, rotinas e trilhas curtas para você aprofundar sua prática.",
   },
-  {
-    path: "/samkhya/produto",
-    title: "Produtos Samkhya — Portal Ayurveda",
-    description: "Produtos ayurvédicos selecionados: óleos, ervas e ferramentas para sua prática diária.",
-  },
-  {
-    path: "/samkhya/categoria",
-    title: "Categorias Samkhya — Portal Ayurveda",
-    description: "Explore categorias de produtos ayurvédicos na loja Samkhya do Portal Ayurveda.",
-  },
-  {
-    path: "/artigos",
-    title: "Artigos de Ayurveda — Portal Ayurveda",
-    description:
-      "Artigos práticos de Ayurveda por dosha: alimentação, rotina, digestão, sono e equilíbrio no dia a dia.",
-  },
 ];
 
 // Rotas privadas: entregam o SPA fallback, mas devem sinalizar noindex ao Google
@@ -190,6 +174,12 @@ async function fetchRest<T = any>(query: string, schema?: string): Promise<T[]> 
     }
     const data = (await res.json()) as T[];
     console.log(`[prerender] ✓ REST ${query.split("?")[0]}${schema ? ` (${schema})` : ""} → ${Array.isArray(data) ? data.length : "?"} itens`);
+    if (Array.isArray(data) && data.length === 0) {
+      console.error(
+        `\n[prerender] ⚠️  ZERO itens em ${query.split("?")[0]}${schema ? ` (schema ${schema})` : ""}. ` +
+        `Resposta foi 200, mas lista vazia — normalmente é permissão (RLS) bloqueando a chave anônima, não ausência de dado.\n`
+      );
+    }
     return data;
   } catch (err) {
     console.error(`[prerender] ✗ REST ${query} exceção`, err);
@@ -403,50 +393,18 @@ async function dynamicRoutes(): Promise<Route[]> {
   }
   console.log(`[prerender] video: ${counts.video || 0} gerados a partir de videos_sitemap`);
 
-  // Registros Akáshicos — akasha_memory. Paginado (PostgREST limita a 1000/req).
-  // Cap de segurança para não estourar o limite de arquivos do publish.
-  const MAX_AKASHA_PAGES = 4000;
-  const akashaRows: { titulo: string; texto_inicio: string | null; data_postagem: string | null }[] = [];
-  for (let offset = 0; offset < MAX_AKASHA_PAGES; offset += 1000) {
-    const page = await fetchRest<{ titulo: string; texto_inicio: string | null; data_postagem: string | null }>(
-      `akasha_memory?select=titulo,texto_inicio,data_postagem&titulo=not.is.null&order=data_postagem.desc&limit=1000&offset=${offset}`
-    );
-    akashaRows.push(...page);
-    if (page.length < 1000) break;
-  }
-  const seenAkasha = new Set<string>();
-  for (const r of akashaRows) {
-    const titulo = clean(r.titulo, 110);
-    if (!titulo) continue;
-    const slug = akashaSlugify(r.titulo);
-    if (!slug || seenAkasha.has(slug)) continue;
-    seenAkasha.add(slug);
-    const desc =
-      clean(r.texto_inicio, 200) ||
-      `Registro akáshico da Akasha, a inteligência do Portal Ayurveda: ${titulo}.`;
-    routes.push({
-      path: `/registros-akashikos/${slug}`,
-      title: `${titulo} — Portal Ayurveda`,
-      description: desc,
-      type: "article",
-      jsonld: {
-        "@context": "https://schema.org",
-        "@type": "Article",
-        headline: titulo,
-        description: desc,
-        datePublished: r.data_postagem || undefined,
-        mainEntityOfPage: `${BASE_URL}/registros-akashikos/${slug}`,
-        author: { "@type": "Organization", name: "Akasha — Portal Ayurveda" },
-        publisher: {
-          "@type": "Organization",
-          name: "Portal Ayurveda",
-          logo: { "@type": "ImageObject", url: `${BASE_URL}/og-image.jpg` },
-        },
-      },
-    });
-    bump("akasha");
-  }
-  console.log(`[prerender] registros-akashikos: ${counts.akasha || 0} gerados (de ${akashaRows.length} linhas)`);
+  // Registros akáshicos NÃO são pré-renderizados de propósito (decidido em 23/08/2026).
+  // Medido: 7 cliques e 292 impressões em 3 meses, ocupando 74% do sitemap; e os títulos são
+  // poéticos (sem intenção de busca), então não casam com busca real. Ficaram marcados noindex
+  // no index.html e saíram do sitemap (edge function `sitemap` v23).
+  // O noindex delas é escrito por JavaScript, então só conta depois que o Google renderiza.
+  // Fora do sitemap, o rastreio dessas URLs fica mais raro: as já indexadas saem do índice
+  // aos poucos, em semanas, não em dias. Isso é esperado.
+  // Para reativar seriam necessárias TRÊS mudanças juntas, nesta ordem:
+  //   1. ler `registros_akashikos_publicos` (view pública) em vez de `akasha_memory`;
+  //   2. tirar "/registros-akashikos" de privatePrefixes no index.html;
+  //   3. paginar de 1.000 em 1.000 na edge function `sitemap` (PostgREST corta em 1.000).
+  // Mudar só uma das três recria a contradição "sitemap manda indexar / página diz noindex".
 
 
 
@@ -686,6 +644,29 @@ function renderHtml(template: string, route: Route): string {
   }
   html = html.replace(/<\/head>/, `${extras.join("\n")}\n  </head>`);
 
+  // O boot-shell é o único texto visível no HTML antes do JS rodar. Sem isto, todas as páginas
+  // entregam o h1 da home e ficam idênticas entre si para o rastreador.
+  // A home fica de fora: renderHtml também roda para a rota "/" (em main(), na linha
+  // writeFileSync(templatePath, renderHtml(template, home))), e o h1 dela é copy de venda,
+  // não título de SEO.
+  if (route.path !== "/") {
+    const tituloCurto = route.title
+      .replace(/\s*—\s*Portal Ayurveda\s*$/, "")
+      .replace(/\s*\|\s*Portal Ayurveda\s*$/, "")
+      .replace(/\s*—\s*Samkhya\s*$/, "")
+      .trim() || route.title;
+    // Substituição por função (não por string) para que um "$" no título não seja lido
+    // como referência de grupo pelo replace.
+    html = html.replace(
+      /(<div id="bs-main">\s*<h1>)[\s\S]*?(<\/h1>)/,
+      (_m, abre, fecha) => `${abre}${escapeHtml(tituloCurto)}${fecha}`
+    );
+    html = html.replace(
+      /(<div id="bs-main">[\s\S]*?<p>)[\s\S]*?(<\/p>)/,
+      (_m, abre, fecha) => `${abre}${escapeHtml(route.description.slice(0, 110))}${fecha}`
+    );
+  }
+
   return html;
 }
 
@@ -700,6 +681,12 @@ async function main() {
   }
 
   const template = readFileSync(templatePath, "utf8");
+
+  // O h1 por rota do item 7 só funciona enquanto o boot-shell tiver esta forma.
+  if (!/<div id="bs-main">\s*<h1>[\s\S]*?<\/h1>[\s\S]*?<p>/.test(template)) {
+    console.error(`\n[prerender] ❌ O boot-shell mudou de forma: o h1 por rota não vai ser aplicado e todas as páginas voltariam a ter o corpo da home. Ajuste as expressões em renderHtml.\n`);
+    process.exit(1);
+  }
 
   const dynamic = await dynamicRoutes();
   const all = [...staticRoutes, ...dynamic];
@@ -746,21 +733,35 @@ async function main() {
     if (failed.length > 20) console.error(`  ... e mais ${failed.length - 20}`);
   }
 
-  // Verificação sanitária: confirma que /blog e /video têm arquivos no dist.
-  // Se algum ficou zero, grita bem alto — foi essa a regressão que passou
-  // silenciosa no build anterior e desindexou o site inteiro.
-  for (const fam of ["blog", "video"]) {
-    if ((writtenBy[fam] || 0) === 0) {
-      console.error(`\n[prerender] ⚠️  ATENÇÃO: 0 rotas /${fam}/{slug} escritas neste build. O SPA vai servir a home no lugar e o Google vai desindexar essas URLs.\n`);
-    }
+  // blog e video são o corpo do site: sair com zero aqui já desindexou o site uma vez.
+  // Os mínimos são baixos de propósito — servem para pegar "zero" e "quase zero",
+  // não para vigiar o número exato (isso é papel do vigia diário no Supabase).
+  const FAMILIAS_CRITICAS: Record<string, number> = { blog: 100, video: 150 };
+  const IGNORAR_MINIMO = process.env.PRERENDER_IGNORAR_MINIMO === "1";
+  const criticasFaltando: string[] = [];
+  for (const [fam, minimo] of Object.entries(FAMILIAS_CRITICAS)) {
+    const n = writtenBy[fam] || 0;
+    if (n < minimo) criticasFaltando.push(`${fam}: ${n} arquivos (mínimo ${minimo})`);
+  }
+  // terapeutas gera duas rotas por pessoa (a curta e a longa), então são duas chaves.
+  const nTerapeutas = (writtenBy["terapeutas"] || 0) + (writtenBy["terapeutas-do-brasil"] || 0);
+  if (nTerapeutas < 10) console.error(`\n[prerender] ⚠️  terapeutas: só ${nTerapeutas} arquivos. Confira a permissão da tabela.\n`);
+  if ((writtenBy["samkhya"] || 0) < 20) console.error(`\n[prerender] ⚠️  samkhya: só ${writtenBy["samkhya"] || 0} arquivos. Confira a permissão do schema loja.\n`);
+  if (criticasFaltando.length && IGNORAR_MINIMO) {
+    console.error(`\n[prerender] ⚠️  Mínimos abaixo do piso, mas PRERENDER_IGNORAR_MINIMO=1 — publicando assim mesmo.\n  ${criticasFaltando.join("\n  ")}\n`);
+  } else if (criticasFaltando.length) {
+    console.error(`\n[prerender] ❌ BUILD INTERROMPIDA — famílias essenciais abaixo do mínimo:\n  ${criticasFaltando.join("\n  ")}\n`);
+    console.error(`[prerender] Publicar assim faz o Google receber o HTML da home nessas URLs.\n`);
+    console.error(`[prerender] Para publicar mesmo assim (emergência), defina PRERENDER_IGNORAR_MINIMO=1.\n`);
+    process.exit(1);
   }
 }
 
 // Fonte da home pré-renderizada. Pode ser sobrescrita por env (HOME_BAKE_URL).
 // Se a URL estiver 404/vazia, o build segue com o index.html padrão — mas
 // gritamos alto para não passar batido de novo.
-const HOME_SOURCE = process.env.HOME_BAKE_URL || "https://home-fixo-teste.portalayurveda.workers.dev/";
-const HOME_BAKE_DISABLED = process.env.HOME_BAKE_URL === "off";
+const HOME_SOURCE = process.env.HOME_BAKE_URL || "off";
+const HOME_BAKE_DISABLED = HOME_SOURCE === "off";
 
 async function bakeHome(distDir: string): Promise<void> {
   const outPath = resolve(distDir, "index.html");

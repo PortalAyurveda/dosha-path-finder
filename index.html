@@ -56,7 +56,9 @@
             "/minha-rotina","/meu-dosha","/entrar","/admin",
             "/metricas","/registros","/registros-akashikos","/samkhya/obrigado",
             "/samkhya/pedido","/samkhya/compras","/samkhya/carrinho",
-            "/aovivo","/preview-loading"
+            "/aovivo","/preview-loading",
+            "/devlog","/revisao","/meu-perfil","/pesquisa",
+            "/imprimir","/escola","/rpg","/cobranca"
           ];
           var isPrivate = false;
           for (var i = 0; i < privatePrefixes.length; i++) {
@@ -78,14 +80,16 @@
             if (og && /^https?:\/\/portalayurveda\.com\/?$/.test(og.getAttribute("content") || "")) {
               og.setAttribute("content", self);
             }
+            var robots = document.querySelector('meta[name="robots"]');
             if (isPrivate) {
-              var robots = document.querySelector('meta[name="robots"]');
               if (!robots) {
                 robots = document.createElement("meta");
                 robots.setAttribute("name", "robots");
                 document.head.appendChild(robots);
               }
               robots.setAttribute("content", "noindex, follow");
+            } else if (robots && /noindex/.test(robots.getAttribute("content") || "")) {
+              robots.remove();
             }
           }
           if (document.readyState === "loading") {

@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { getTransformedImageUrl } from "@/lib/imageTransform";
 import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -11,7 +12,7 @@ import BannerSlot from "@/components/banners/BannerSlot";
 const BlogArticle = () => {
   const { slug } = useParams<{ slug: string }>();
 
-  const { data: article, isLoading } = useQuery({
+  const { data: article, isLoading, isError, isSuccess } = useQuery({
     queryKey: ["blog-article", slug],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -25,6 +26,18 @@ const BlogArticle = () => {
     },
     enabled: !!slug,
   });
+
+  // O canonical é escrito por DOM pelo hook global useCanonical (no pai desta página).
+  // O efeito do pai roda DEPOIS do efeito do filho, então o setTimeout é obrigatório.
+  const artigoInexistente = isSuccess && !article;
+  useEffect(() => {
+    if (!artigoInexistente) return;
+    const remover = () =>
+      document.querySelectorAll('link[rel="canonical"]').forEach((el) => el.remove());
+    remover();
+    const t = window.setTimeout(remover, 0);
+    return () => window.clearTimeout(t);
+  }, [artigoInexistente]);
 
   const formattedSlug = slug
     ? slug.replace(/-/g, " ").replace(/^\w/, (c) => c.toUpperCase())
@@ -49,14 +62,32 @@ const BlogArticle = () => {
     );
   }
 
-  if (!article) {
+  if (isError) {
     return (
       <div className="max-w-3xl mx-auto px-4 py-12 text-center">
-        <h1 className="text-2xl font-bold text-foreground mb-4">Artigo não encontrado</h1>
+        <h1 className="text-2xl font-bold text-foreground mb-4">Não foi possível carregar este artigo agora</h1>
         <Link to="/blog" className="text-primary hover:underline">← Voltar ao Blog</Link>
       </div>
     );
   }
+
+  if (isSuccess && !article) {
+    return (
+      <>
+        <Helmet defer={false}>
+          <title>Artigo não encontrado — Portal Ayurveda</title>
+          <meta name="robots" content="noindex, follow" />
+        </Helmet>
+        <div className="max-w-3xl mx-auto px-4 py-12 text-center">
+          <h1 className="text-2xl font-bold text-foreground mb-4">Artigo não encontrado</h1>
+          <Link to="/blog" className="text-primary hover:underline">← Voltar ao Blog</Link>
+        </div>
+      </>
+    );
+  }
+
+  if (!article) return null;
+
 
   return (
     <>

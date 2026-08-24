@@ -19,6 +19,12 @@ const PostsRedirect = () => {
   return <Navigate to={`/blog/${slug ?? ""}`} replace />;
 };
 
+// Endereço longo do terapeuta → forma curta (a que está no sitemap e concentra os cliques)
+const TerapeutaRedirect = () => {
+  const { slug } = useParams<{ slug: string }>();
+  return <Navigate to={`/terapeutas/${slug}`} replace />;
+};
+
 import Index from "./pages/Index";
 const MinhaRotina = lazy(() => import("./pages/MinhaRotina"));
 const Imprimir = lazy(() => import("./pages/Imprimir"));
@@ -216,7 +222,7 @@ const RoutedApp = () => {
               <Route path="/curso/rotinas" element={<CursoRotinas />} />
               <Route path="/terapeutas-do-brasil" element={<TerapeutasDoBrasil />} />
               <Route path="/terapeutas-do-brasil/cadastro" element={<TerapeutaCadastro />} />
-              <Route path="/terapeutas-do-brasil/:slug" element={<TerapeutaPerfil />} />
+              <Route path="/terapeutas-do-brasil/:slug" element={<TerapeutaRedirect />} />
               <Route path="/terapeutas/:slug" element={<TerapeutaPerfil />} />
               <Route path="/akasha" element={<Akasha />} />
               <Route path="/video/:slug" element={<Video />} />
@@ -224,6 +230,7 @@ const RoutedApp = () => {
               <Route path="/opiniao" element={<Opiniao />} />
               <Route path="/opiniao/:slug" element={<Opiniao />} />
               <Route path="/posts/:slug" element={<PostsRedirect />} />
+              <Route path="/artigos" element={<Navigate to="/blog" replace />} />
 
               {/* Vata */}
               <Route path="/biblioteca/vata" element={<DoshaVata />} />
@@ -323,10 +330,12 @@ const RoutedApp = () => {
 
               {/* Loja Samkhya */}
               <Route path="/samkhya" element={<Samkhya />} />
+              <Route path="/samkhya/produto" element={<Navigate to="/samkhya/todos" replace />} />
               <Route path="/samkhya/produto/:slug" element={<SamkhyaProduto />} />
               <Route path="/samkhya/kits" element={<SamkhyaKits />} />
               <Route path="/samkhya/kits/:slug" element={<SamkhyaKit />} />
               <Route path="/samkhya/todos" element={<SamkhyaTodos />} />
+              <Route path="/samkhya/categoria" element={<Navigate to="/samkhya" replace />} />
               <Route path="/samkhya/categoria/:slug" element={<SamkhyaCategoria />} />
               <Route path="/samkhya/obrigado" element={<SamkhyaObrigado />} />
               <Route path="/samkhya/pedido/:session_id" element={<SamkhyaPedido />} />
