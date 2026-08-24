@@ -12,12 +12,15 @@ interface BannerSlotProps {
   fallback?: React.ReactNode;
   /** Altura reservada (px) enquanto o banner carrega — evita pulo de layout (CLS). */
   minHeight?: number;
+  /** "diaria" (padrão): mesmo banner o dia todo. "pageview": sorteia a cada carregamento. */
+  rotacao?: "diaria" | "pageview";
 }
 
 /** Altura típica medida de cada slot em mobile. */
 const SLOT_MIN_HEIGHT: Record<string, number> = {
   biblioteca: 140,
   samkhya_home: 160,
+  samkhya_hero: 105,
   blog_fim: 140,
   video: 140,
   video_fim: 140,
@@ -27,6 +30,7 @@ const SLOT_MIN_HEIGHT: Record<string, number> = {
   home_meio: 150,
 };
 const DEFAULT_MIN_HEIGHT = 140;
+
 
 
 const PRIORIDADE: Record<string, number> = { Vata: 0, Pitta: 1, Kapha: 2 };
