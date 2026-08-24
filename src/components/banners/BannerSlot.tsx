@@ -108,6 +108,8 @@ const BannerSlot = ({ slot, className, fallback, minHeight, rotacao = "diaria" }
 
   const userTags = useMemo(() => {
     const set = new Set<string>();
+    // Sempre elegível
+    set.add("todos");
     // Acesso
     if (temAcessoRotina(profile)) set.add("tem_rotina");
     else set.add("sem_rotina");
@@ -138,12 +140,16 @@ const BannerSlot = ({ slot, className, fallback, minHeight, rotacao = "diaria" }
     });
     if (elegiveis.length === 0) return null;
     if (elegiveis.length === 1) return elegiveis[0];
+    if (rotacao === "pageview") {
+      return elegiveis[Math.floor(sorteioRef.current * elegiveis.length)];
+    }
     // Estável durante o dia, gira no dia seguinte: dia_do_ano % n
     const now = new Date();
     const start = new Date(now.getFullYear(), 0, 0);
     const dayOfYear = Math.floor((now.getTime() - start.getTime()) / 86400000);
     return elegiveis[dayOfYear % elegiveis.length];
-  }, [banners, userTags]);
+  }, [banners, userTags, rotacao]);
+
 
   const cleanHtml = useMemo(() => {
     if (!escolhido?.html) return "";
