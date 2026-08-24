@@ -2,6 +2,7 @@ import { ReactNode } from "react";
 import SamkhyaNavBar from "./SamkhyaNavBar";
 import HeroBanner from "./HeroBanner";
 import { samkhyaTokens } from "./tokens";
+import "./samkhya-fonts.css";
 
 interface SamkhyaLayoutProps {
   children: ReactNode;
