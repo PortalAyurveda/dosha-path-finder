@@ -685,6 +685,12 @@ async function main() {
 
   const template = readFileSync(templatePath, "utf8");
 
+  // O h1 por rota do item 7 só funciona enquanto o boot-shell tiver esta forma.
+  if (!/<div id="bs-main">\s*<h1>[\s\S]*?<\/h1>[\s\S]*?<p>/.test(template)) {
+    console.error(`\n[prerender] ❌ O boot-shell mudou de forma: o h1 por rota não vai ser aplicado e todas as páginas voltariam a ter o corpo da home. Ajuste as expressões em renderHtml.\n`);
+    process.exit(1);
+  }
+
   const dynamic = await dynamicRoutes();
   const all = [...staticRoutes, ...dynamic];
 
