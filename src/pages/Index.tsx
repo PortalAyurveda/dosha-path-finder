@@ -113,6 +113,21 @@ const FeedSocial = () => {
     [map]
   );
 
+  const prefersReducedMotion =
+    typeof window !== "undefined" &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  const [indiceAtual, setIndiceAtual] = useState(0);
+  useEffect(() => {
+    if (!prefersReducedMotion || items.length === 0) return;
+    const total = items.length + 1; // +1 pelo item de CTA que entra logo abaixo
+    const t = setInterval(() => {
+      setIndiceAtual((i) => (i + 1) % total);
+    }, 4000);
+    return () => clearInterval(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [items.length]);
+
   if (items.length === 0) return null;
   const ctaText = user ? "Ver meu mapa completo →" : "Descubra o seu: fazer o teste de dosha →";
   const ctaHref = user ? "/meu-dosha" : "/teste-de-dosha";
@@ -120,22 +135,8 @@ const FeedSocial = () => {
   const withCta = [...items, ctaItem];
   const loop = [...withCta, ...withCta];
 
-  const prefersReducedMotion =
-    typeof window !== "undefined" &&
-    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-  const [indiceAtual, setIndiceAtual] = useState(0);
-  useEffect(() => {
-    if (!prefersReducedMotion || withCta.length === 0) return;
-    const t = setInterval(() => {
-      setIndiceAtual((i) => (i + 1) % withCta.length);
-    }, 4000);
-    return () => clearInterval(t);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [withCta.length]);
-
   if (prefersReducedMotion) {
-    const it: any = withCta[indiceAtual];
+    const it: any = withCta[indiceAtual % withCta.length];
     return (
       <Link
         to="/metricas"
@@ -167,7 +168,6 @@ const FeedSocial = () => {
         borderBottom: `1px solid ${C.primary}1A`,
         ['--marquee-hover' as any]: `${C.primary}1F`,
       }}
-      
     >
       <div className="marquee-track flex gap-8 whitespace-nowrap">
         {loop.map((it: any, i) => {

@@ -57,12 +57,12 @@ const FundamentosAyurveda = () => {
 
         {artigoDoTema && (
           <Link
-            to={artigoDoTema.rota?.replace("/blog/", "/blog/") || "#"}
-            className="group block max-w-3xl mx-auto mb-8 bg-background border border-border overflow-hidden transition-all hover:-translate-y-1 hover:shadow-xl"
+            to={artigoDoTema.rota || "#"}
+            className="group flex items-center gap-3 max-w-3xl mx-auto mb-8 px-4 py-3 bg-background border border-border/60 transition-all hover:-translate-y-0.5 hover:shadow-md"
             style={{ borderRadius: LEAF }}
           >
             {artigoDoTema.imagem && (
-              <div className="w-full aspect-video overflow-hidden bg-muted">
+              <div className="flex-shrink-0 w-12 h-12 rounded-full overflow-hidden bg-muted">
                 <img
                   src={artigoDoTema.imagem}
                   alt={artigoDoTema.titulo}
@@ -72,20 +72,21 @@ const FundamentosAyurveda = () => {
                 />
               </div>
             )}
-            <div className="p-4 text-center">
+            <div className="flex-1 min-w-0">
               <span
-                className="text-xs uppercase tracking-wider font-semibold mb-1.5 inline-block"
+                className="text-[10px] uppercase tracking-wider font-semibold"
                 style={{ color: PRIMARY }}
               >
                 Vale a pena ler hoje
               </span>
               <h3
-                className="font-serif font-bold text-lg leading-snug line-clamp-2 group-hover:underline"
+                className="font-serif font-bold text-sm leading-snug line-clamp-1 group-hover:underline"
                 style={{ color: PRIMARY }}
               >
                 {artigoDoTema.titulo}
               </h3>
             </div>
+            <ArrowRight className="h-4 w-4 flex-shrink-0" style={{ color: PRIMARY }} />
           </Link>
         )}
 
