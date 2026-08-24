@@ -69,7 +69,11 @@ function agniTag(agni: string | null | undefined): string | null {
 
 const BannerSlot = ({ slot, className, fallback, minHeight }: BannerSlotProps) => {
   const { user, profile, doshaResult } = useUser();
+const BannerSlot = ({ slot, className, fallback, minHeight, rotacao = "diaria" }: BannerSlotProps) => {
+  const { user, profile, doshaResult } = useUser();
   const location = useLocation();
+  const sorteioRef = useRef(Math.random());
+
 
 
   // Fetch agniPrincipal apart (não está no DoshaResult padrão)
