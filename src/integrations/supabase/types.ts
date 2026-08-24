@@ -8021,6 +8021,23 @@ export type Database = {
         Returns: Json
       }
       evolucao_sincronizar: { Args: { p_user?: string }; Returns: number }
+      fila_destravar: { Args: never; Returns: number }
+      fila_fechar_aula: {
+        Args: { p_chunks?: number; p_erro?: string; p_video_id: string }
+        Returns: undefined
+      }
+      fila_proximas_aulas: {
+        Args: { qtd?: number }
+        Returns: {
+          aula_titulo: string
+          chars_limpos: number
+          cursos: string[]
+          modulo_titulo: string
+          tema: string
+          texto_limpo: string
+          video_id: string
+        }[]
+      }
       find_akasha_by_slug: {
         Args: { _slug: string }
         Returns: {
