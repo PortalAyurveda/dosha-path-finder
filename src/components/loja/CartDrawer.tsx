@@ -320,19 +320,20 @@ const CartDrawer = () => {
     setCupomErro(null);
   };
 
-  // Auto-aplica o cupom pessoal do usuário (uso único) quando o carrinho abre
-  // e ainda não há cupom aplicado. Roda apenas uma vez por código de cupom.
+  // Auto-aplica o cupom pessoal do usuário (uso único) ou o cupom de campanha
+  // quando o carrinho abre e ainda não há cupom aplicado. Roda apenas uma vez por código.
   useEffect(() => {
     if (!isOpen) return;
-    if (!cupomDoUsuario?.codigo) return;
     if (cupomAplicado) return;
     if (itens.length === 0) return;
-    if (autoAplicadoRef.current === cupomDoUsuario.codigo) return;
-    autoAplicadoRef.current = cupomDoUsuario.codigo;
-    setCupomCodigo(cupomDoUsuario.codigo);
-    void aplicarCupom(cupomDoUsuario.codigo, { silent: true });
+    const codigo = cupomDoUsuario?.codigo || freteConfig?.cupom_automatico || "";
+    if (!codigo) return;
+    if (autoAplicadoRef.current === codigo) return;
+    autoAplicadoRef.current = codigo;
+    setCupomCodigo(codigo);
+    void aplicarCupom(codigo, { silent: true });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isOpen, cupomDoUsuario?.codigo, itens.length]);
+  }, [isOpen, cupomDoUsuario?.codigo, freteConfig?.cupom_automatico, itens.length]);
 
 
   const handleCalcularFrete = async () => {
