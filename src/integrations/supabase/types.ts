@@ -6493,6 +6493,24 @@ export type Database = {
         }
         Relationships: []
       }
+      sintese_templates: {
+        Row: {
+          direcao: string
+          dosha_alvo: string
+          template: string
+        }
+        Insert: {
+          direcao: string
+          dosha_alvo: string
+          template: string
+        }
+        Update: {
+          direcao?: string
+          dosha_alvo?: string
+          template?: string
+        }
+        Relationships: []
+      }
       tags_alias: {
         Row: {
           alias: string
@@ -7703,6 +7721,7 @@ export type Database = {
         Args: { dosha: string; score: number }
         Returns: string
       }
+      calcular_sintese_texto: { Args: { p_email: string }; Returns: string }
       cancelar_assinaturas_pix_vencidas: { Args: never; Returns: undefined }
       cards_da_resposta: {
         Args: { p_texto: string }
