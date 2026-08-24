@@ -6493,6 +6493,30 @@ export type Database = {
         }
         Relationships: []
       }
+      seo_sentinela: {
+        Row: {
+          falhas: Json
+          id: number
+          medidas: Json
+          passou: boolean
+          rodado_em: string
+        }
+        Insert: {
+          falhas?: Json
+          id?: number
+          medidas?: Json
+          passou: boolean
+          rodado_em?: string
+        }
+        Update: {
+          falhas?: Json
+          id?: number
+          medidas?: Json
+          passou?: boolean
+          rodado_em?: string
+        }
+        Relationships: []
+      }
       sintese_templates: {
         Row: {
           direcao: string
@@ -6508,6 +6532,30 @@ export type Database = {
           direcao?: string
           dosha_alvo?: string
           template?: string
+        }
+        Relationships: []
+      }
+      sitemap_ultimo_bom: {
+        Row: {
+          contagens: Json
+          gravado_em: string
+          id: number
+          urls: number
+          xml: string
+        }
+        Insert: {
+          contagens?: Json
+          gravado_em?: string
+          id?: number
+          urls: number
+          xml: string
+        }
+        Update: {
+          contagens?: Json
+          gravado_em?: string
+          id?: number
+          urls?: number
+          xml?: string
         }
         Relationships: []
       }
