@@ -115,7 +115,7 @@ const Footer = () => {
             </h3>
             <ul className="space-y-2">
               {jornada.map((l) => (
-                <ColumnLink key={l.to} to={l.to} label={l.label} />
+                <ColumnLink key={l.to} to={l.to} label={l.label} rel={(l as { rel?: string }).rel} />
               ))}
             </ul>
           </div>
@@ -127,7 +127,7 @@ const Footer = () => {
             </h3>
             <ul className="space-y-2">
               {conteudo.map((l) => (
-                <ColumnLink key={l.to} to={l.to} label={l.label} />
+                <ColumnLink key={l.to} to={l.to} label={l.label} rel={(l as { rel?: string }).rel} />
               ))}
             </ul>
           </div>
@@ -139,7 +139,7 @@ const Footer = () => {
             </h3>
             <ul className="space-y-2">
               {portal.map((l) => (
-                <ColumnLink key={l.to} to={l.to} label={l.label} />
+                <ColumnLink key={l.to} to={l.to} label={l.label} rel={(l as { rel?: string }).rel} />
               ))}
             </ul>
           </div>
@@ -162,7 +162,7 @@ const Footer = () => {
               Termos de Uso
             </Link>
             <span style={{ color: "rgba(255,255,255,0.3)" }}>·</span>
-            <Link to="/devlog" className="hover:underline" style={mutedStyle}>
+            <Link to="/devlog" rel="nofollow" className="hover:underline" style={mutedStyle}>
               Devlog
             </Link>
           </div>
