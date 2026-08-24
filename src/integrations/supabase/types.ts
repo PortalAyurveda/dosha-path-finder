@@ -1683,6 +1683,63 @@ export type Database = {
           },
         ]
       }
+      curso_aulas_fila: {
+        Row: {
+          atualizado_em: string
+          aula_ordem: number | null
+          aula_titulo: string
+          chars_limpos: number | null
+          chunks_gerados: number
+          cursos: string[]
+          legenda_bruta: string | null
+          modulo_ordem: number | null
+          modulo_titulo: string | null
+          origem: string
+          status: string
+          tema: string | null
+          tentativas: number
+          ultimo_erro: string | null
+          video_id: string
+          youtube_url: string | null
+        }
+        Insert: {
+          atualizado_em?: string
+          aula_ordem?: number | null
+          aula_titulo: string
+          chars_limpos?: number | null
+          chunks_gerados?: number
+          cursos: string[]
+          legenda_bruta?: string | null
+          modulo_ordem?: number | null
+          modulo_titulo?: string | null
+          origem?: string
+          status?: string
+          tema?: string | null
+          tentativas?: number
+          ultimo_erro?: string | null
+          video_id: string
+          youtube_url?: string | null
+        }
+        Update: {
+          atualizado_em?: string
+          aula_ordem?: number | null
+          aula_titulo?: string
+          chars_limpos?: number | null
+          chunks_gerados?: number
+          cursos?: string[]
+          legenda_bruta?: string | null
+          modulo_ordem?: number | null
+          modulo_titulo?: string | null
+          origem?: string
+          status?: string
+          tema?: string | null
+          tentativas?: number
+          ultimo_erro?: string | null
+          video_id?: string
+          youtube_url?: string | null
+        }
+        Relationships: []
+      }
       curso_diplomas: {
         Row: {
           carga_horaria: string
@@ -1989,6 +2046,54 @@ export type Database = {
           embedding?: string | null
           id?: number
           metadata?: Json | null
+        }
+        Relationships: []
+      }
+      documents_cursos: {
+        Row: {
+          aula_titulo: string | null
+          content: string
+          criado_em: string
+          cursos: string[]
+          embedding: string | null
+          id: number
+          metadata: Json
+          minuto: number | null
+          modulo_titulo: string | null
+          nivel: string | null
+          tema: string | null
+          tipo: string | null
+          video_id: string
+        }
+        Insert: {
+          aula_titulo?: string | null
+          content: string
+          criado_em?: string
+          cursos: string[]
+          embedding?: string | null
+          id?: never
+          metadata?: Json
+          minuto?: number | null
+          modulo_titulo?: string | null
+          nivel?: string | null
+          tema?: string | null
+          tipo?: string | null
+          video_id: string
+        }
+        Update: {
+          aula_titulo?: string | null
+          content?: string
+          criado_em?: string
+          cursos?: string[]
+          embedding?: string | null
+          id?: never
+          metadata?: Json
+          minuto?: number | null
+          modulo_titulo?: string | null
+          nivel?: string | null
+          tema?: string | null
+          tipo?: string | null
+          video_id?: string
         }
         Relationships: []
       }
@@ -8173,6 +8278,25 @@ export type Database = {
           id: number
           metadata: Json
           similarity: number
+        }[]
+      }
+      match_documents_cursos: {
+        Args: {
+          match_count?: number
+          match_threshold?: number
+          p_curso: string
+          query_embedding: string
+        }
+        Returns: {
+          aula_titulo: string
+          content: string
+          id: number
+          minuto: number
+          modulo_titulo: string
+          nivel: string
+          similarity: number
+          tipo: string
+          video_id: string
         }[]
       }
       match_jornadaaliment: {
