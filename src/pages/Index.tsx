@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, Suspense, lazy } from "react";
+import { useEffect, useMemo, useRef, useState, Suspense, lazy } from "react";
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { useQuery } from "@tanstack/react-query";
@@ -119,6 +119,43 @@ const FeedSocial = () => {
   const ctaItem = { id: "__cta__", emoji: "✦", tone: C.primary, text: ctaText, href: ctaHref } as const;
   const withCta = [...items, ctaItem];
   const loop = [...withCta, ...withCta];
+
+  const prefersReducedMotion =
+    typeof window !== "undefined" &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  const [indiceAtual, setIndiceAtual] = useState(0);
+  useEffect(() => {
+    if (!prefersReducedMotion || withCta.length === 0) return;
+    const t = setInterval(() => {
+      setIndiceAtual((i) => (i + 1) % withCta.length);
+    }, 4000);
+    return () => clearInterval(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [withCta.length]);
+
+  if (prefersReducedMotion) {
+    const it: any = withCta[indiceAtual];
+    return (
+      <Link
+        to="/metricas"
+        className="sticky top-16 z-40 block py-3 min-h-[44px] group cursor-pointer transition-colors hover:bg-[color:var(--marquee-hover)] bg-background"
+        style={{
+          backgroundImage: `linear-gradient(${C.primary}14, ${C.primary}14)`,
+          borderTop: `1px solid ${C.primary}1A`,
+          borderBottom: `1px solid ${C.primary}1A`,
+          ['--marquee-hover' as any]: `${C.primary}1F`,
+        }}
+      >
+        <div className="flex items-center justify-center gap-2 text-center px-4">
+          <span aria-hidden="true" className="text-base">{it.emoji}</span>
+          <span className="text-sm font-sans font-semibold underline underline-offset-4" style={{ color: it.tone }}>
+            {it.text}
+          </span>
+        </div>
+      </Link>
+    );
+  }
 
   return (
     <Link

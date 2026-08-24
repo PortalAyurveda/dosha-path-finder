@@ -27,6 +27,7 @@ type HojePayload = {
   video_novo?: ItemBase | null;
   receita_do_dia?: ReceitaItem | null;
   rotina_do_dia?: RotinaItem | null;
+  giro?: { periodo: string; secao_em_foco: "video" | "receita" | "rotina" } | null;
 };
 
 // Tom coral-salmão, escurecido para passar contraste AA em texto (>=4.5:1 sobre branco/PAPEL).
@@ -193,6 +194,16 @@ export const HojeNoPortal = () => {
 
   if (!video && !receita && !rotina) return null;
 
+  const foco = data?.giro?.secao_em_foco ?? "video";
+  const cardsBase: { key: "video" | "receita" | "rotina"; node: React.ReactNode }[] = [
+    { key: "video", node: video && <VideoCard v={video} /> },
+    { key: "receita", node: receita && <ReceitaCard r={receita} /> },
+    { key: "rotina", node: rotina && <RotinaCard r={rotina} /> },
+  ];
+  const cardsOrdenados = [...cardsBase].sort((a, b) =>
+    a.key === foco ? -1 : b.key === foco ? 1 : 0
+  );
+
   return (
     <section className="w-full max-w-6xl mx-auto px-4 py-6">
       <div className="mb-3 flex items-baseline justify-center">
@@ -201,9 +212,7 @@ export const HojeNoPortal = () => {
         </h2>
       </div>
       <div className="flex sm:grid sm:grid-cols-3 gap-3 overflow-x-auto sm:overflow-visible snap-x snap-mandatory pb-2 sm:pb-0 -mx-4 px-4 sm:mx-0 sm:px-0 items-stretch">
-        {video && <VideoCard v={video} />}
-        {receita && <ReceitaCard r={receita} />}
-        {rotina && <RotinaCard r={rotina} />}
+        {cardsOrdenados.map((c) => c.node)}
       </div>
     </section>
   );

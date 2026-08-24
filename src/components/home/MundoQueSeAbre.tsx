@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -235,7 +236,8 @@ const MundoQueSeAbre = () => {
         </div>
       )}
 
-      <div
+      <Link
+        to="/akasha"
         className="flex items-start gap-2 px-3 pt-2 border-t"
         style={{ borderColor: C.border }}
       >
@@ -246,7 +248,7 @@ const MundoQueSeAbre = () => {
         >
           E a Akasha — a inteligência que estudou tudo isso e está pronta para te guiar durante toda a jornada.
         </p>
-      </div>
+      </Link>
     </div>
   );
 };
