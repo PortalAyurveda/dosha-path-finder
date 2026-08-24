@@ -323,10 +323,12 @@ const RoutedApp = () => {
 
               {/* Loja Samkhya */}
               <Route path="/samkhya" element={<Samkhya />} />
+              <Route path="/samkhya/produto" element={<Navigate to="/samkhya/todos" replace />} />
               <Route path="/samkhya/produto/:slug" element={<SamkhyaProduto />} />
               <Route path="/samkhya/kits" element={<SamkhyaKits />} />
               <Route path="/samkhya/kits/:slug" element={<SamkhyaKit />} />
               <Route path="/samkhya/todos" element={<SamkhyaTodos />} />
+              <Route path="/samkhya/categoria" element={<Navigate to="/samkhya" replace />} />
               <Route path="/samkhya/categoria/:slug" element={<SamkhyaCategoria />} />
               <Route path="/samkhya/obrigado" element={<SamkhyaObrigado />} />
               <Route path="/samkhya/pedido/:session_id" element={<SamkhyaPedido />} />
