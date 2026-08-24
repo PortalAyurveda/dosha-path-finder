@@ -224,7 +224,7 @@ const CursoEstudar = () => {
       </main>
     );
   }
-  if (notFound || !curso || !curso.ativo) {
+  if (notFound || !curso || (!curso.ativo && !temAcesso)) {
     return (
       <main className="max-w-3xl mx-auto px-4 py-16 text-center">
         <Helmet>
