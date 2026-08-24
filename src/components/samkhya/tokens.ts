@@ -20,9 +20,9 @@ export const samkhyaTokens = {
   rosa: "#B55474",
   rosaLight: "#F6E7EC",
   // Fundos
-  fundo: "#E0DCAF",
+  fundo: "#FAF8F5",
   cardBg: "#FFFFFF",
-  cardBorder: "#C9C494",
+  cardBorder: "#EDE4D3",
   // Texto
   texto: "#384026",
   textoSec: "#5F674E",
