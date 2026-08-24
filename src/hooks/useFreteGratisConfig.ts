@@ -34,7 +34,7 @@ export const useFreteGratisConfig = () => {
         promo_frete_ate: string | null;
       };
       const pct = Number(row.desconto_vitrine_pct) || 0;
-      const fim = row.promo_frete_ate ? new Date(row.promo_frete_ate) : null;
+      const fim = row.promo_frete_ate ? new Date(`${String(row.promo_frete_ate).slice(0, 10)}T23:59:59`) : null;
       const vencida = fim ? fim.getTime() < Date.now() : false;
       return {
         frete_gratis_ativo: !!row.frete_gratis_ativo,
