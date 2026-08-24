@@ -308,7 +308,6 @@ const Video = () => {
         <meta property="og:image" content={`https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`} />
         <meta property="og:type" content="video.other" />
         <meta name="twitter:card" content="summary_large_image" />
-        
         <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
       </Helmet>
 
