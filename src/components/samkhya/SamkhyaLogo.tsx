@@ -19,7 +19,7 @@ const SamkhyaLogo = ({ logoUrl, size = "md" }: SamkhyaLogoProps) => {
   return (
     <span
       className={`${sizeMap[size]} font-light lowercase tracking-wide`}
-      style={{ color: samkhyaTokens.roxo, fontFamily: "Georgia, 'Times New Roman', serif" }}
+      style={{ color: samkhyaTokens.roxo, fontFamily: samkhyaTokens.fonteTitulo }}
     >
       samkhya
     </span>

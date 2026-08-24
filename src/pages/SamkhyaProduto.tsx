@@ -139,7 +139,7 @@ const SamkhyaProduto = () => {
               <div className="flex flex-col gap-10">
                 <h1
                   className="text-2xl md:text-3xl leading-tight"
-                  style={{ color: samkhyaTokens.roxo, fontFamily: "Georgia, 'Times New Roman', serif" }}
+                  style={{ color: samkhyaTokens.roxo, fontFamily: samkhyaTokens.fonteTitulo }}
                 >
                   {produto.nome_display}
                 </h1>
@@ -216,7 +216,7 @@ const SamkhyaProduto = () => {
                     className="text-2xl md:text-3xl italic font-light tracking-wide"
                     style={{
                       color: samkhyaTokens.roxo,
-                      fontFamily: "Georgia, 'Times New Roman', serif",
+                      fontFamily: samkhyaTokens.fonteTitulo,
                     }}
                   >
                     ✦ Quem levou este também levou ✦
@@ -248,7 +248,7 @@ const SamkhyaProduto = () => {
                         className="mt-3"
                         style={{
                           color: samkhyaTokens.roxo,
-                          fontFamily: "Helvetica, 'Helvetica Neue', Arial, sans-serif",
+                          fontFamily: samkhyaTokens.fonteCorpo,
                           fontSize: "18px",
                           fontWeight: 600,
                         }}
@@ -259,7 +259,7 @@ const SamkhyaProduto = () => {
                         className="mt-1"
                         style={{
                           color: samkhyaTokens.roxo,
-                          fontFamily: "Helvetica, 'Helvetica Neue', Arial, sans-serif",
+                          fontFamily: samkhyaTokens.fonteCorpo,
                           fontSize: "15px",
                           fontWeight: 600,
                         }}
@@ -271,7 +271,7 @@ const SamkhyaProduto = () => {
                           className="mt-1 px-2 line-clamp-1"
                           style={{
                             color: samkhyaTokens.textoSec,
-                            fontFamily: "Helvetica, 'Helvetica Neue', Arial, sans-serif",
+                            fontFamily: samkhyaTokens.fonteCorpo,
                             fontSize: "13px",
                           }}
                         >
@@ -292,7 +292,7 @@ const SamkhyaProduto = () => {
                     className="text-2xl md:text-3xl italic font-light tracking-wide"
                     style={{
                       color: samkhyaTokens.roxo,
-                      fontFamily: "Georgia, 'Times New Roman', serif",
+                      fontFamily: samkhyaTokens.fonteTitulo,
                     }}
                   >
                     ✦ Você também pode gostar ✦

@@ -54,7 +54,7 @@ const KitCard = ({ kit }: KitCardProps) => {
         className="mt-3"
         style={{
           color: samkhyaTokens.roxo,
-          fontFamily: "Helvetica, 'Helvetica Neue', Arial, sans-serif",
+          fontFamily: samkhyaTokens.fonteCorpo,
           fontSize: "18px",
           fontWeight: 600,
           fontStyle: "normal",
@@ -67,7 +67,7 @@ const KitCard = ({ kit }: KitCardProps) => {
           className="mt-1 px-2 line-clamp-2"
           style={{
             color: samkhyaTokens.textoSec,
-            fontFamily: "Helvetica, 'Helvetica Neue', Arial, sans-serif",
+            fontFamily: samkhyaTokens.fonteCorpo,
             fontSize: "13px",
             lineHeight: 1.35,
           }}
@@ -79,7 +79,7 @@ const KitCard = ({ kit }: KitCardProps) => {
         className="mt-1"
         style={{
           color: samkhyaTokens.roxo,
-          fontFamily: "Helvetica, 'Helvetica Neue', Arial, sans-serif",
+          fontFamily: samkhyaTokens.fonteCorpo,
           fontSize: "15px",
           fontWeight: 600,
         }}

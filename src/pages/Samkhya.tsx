@@ -179,7 +179,7 @@ const Samkhya = () => {
                   className="text-2xl md:text-3xl italic font-light tracking-wide"
                   style={{
                     color: samkhyaTokens.roxo,
-                    fontFamily: "Georgia, 'Times New Roman', serif",
+                    fontFamily: samkhyaTokens.fonteTitulo,
                   }}
                 >
                   ✦ Kits & Combos ✦

@@ -62,7 +62,7 @@ const PedidoCard = ({ pedido }: { pedido: PedidoListItem }) => {
         <div>
           <div
             className="text-base font-semibold"
-            style={{ color: samkhyaTokens.roxo, fontFamily: "Georgia, serif" }}
+            style={{ color: samkhyaTokens.roxo, fontFamily: samkhyaTokens.fonteTitulo }}
           >
             {pedido.numero_pedido}
           </div>

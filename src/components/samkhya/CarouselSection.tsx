@@ -14,7 +14,7 @@ const CarouselSection = ({ title, to, children }: CarouselSectionProps) => {
       className="text-2xl md:text-3xl italic font-light tracking-wide hover:opacity-80 transition-opacity"
       style={{
         color: samkhyaTokens.roxo,
-        fontFamily: "Georgia, 'Times New Roman', serif",
+        fontFamily: samkhyaTokens.fonteTitulo,
       }}
     >
       ✦ {title} ✦

@@ -55,7 +55,7 @@ const ProdutoCard = ({ produto }: ProdutoCardProps) => {
           className="leading-snug"
           style={{
             color: samkhyaTokens.roxo,
-            fontFamily: "Helvetica, 'Helvetica Neue', Arial, sans-serif",
+            fontFamily: samkhyaTokens.fonteCorpo,
             fontSize: "18px",
             fontWeight: 600,
             fontStyle: "normal",

@@ -30,7 +30,7 @@ const SamkhyaObrigado = () => {
           <CheckCircle2 className="h-16 w-16" style={{ color: samkhyaTokens.ouro }} />
           <h1
             className="text-3xl md:text-4xl"
-            style={{ color: samkhyaTokens.roxo, fontFamily: "Georgia, 'Times New Roman', serif" }}
+            style={{ color: samkhyaTokens.roxo, fontFamily: samkhyaTokens.fonteTitulo }}
           >
             Obrigado pela sua compra
           </h1>
