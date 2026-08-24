@@ -73,7 +73,7 @@ const MinimalProductCard = ({ slug, nome, precoPix, imagemUrl, resumoCurto, to }
             fontSize: "12px",
           }}
         >
-          {formatBRL(precoExibido)}
+          {formatBRL(precoPix)}
         </p>
       )}
       <p
