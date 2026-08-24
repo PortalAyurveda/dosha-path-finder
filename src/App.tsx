@@ -19,6 +19,12 @@ const PostsRedirect = () => {
   return <Navigate to={`/blog/${slug ?? ""}`} replace />;
 };
 
+// Endereço longo do terapeuta → forma curta (a que está no sitemap e concentra os cliques)
+const TerapeutaRedirect = () => {
+  const { slug } = useParams<{ slug: string }>();
+  return <Navigate to={`/terapeutas/${slug}`} replace />;
+};
+
 import Index from "./pages/Index";
 const MinhaRotina = lazy(() => import("./pages/MinhaRotina"));
 const Imprimir = lazy(() => import("./pages/Imprimir"));
