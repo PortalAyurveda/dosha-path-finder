@@ -670,6 +670,29 @@ function renderHtml(template: string, route: Route): string {
   }
   html = html.replace(/<\/head>/, `${extras.join("\n")}\n  </head>`);
 
+  // O boot-shell é o único texto visível no HTML antes do JS rodar. Sem isto, todas as páginas
+  // entregam o h1 da home e ficam idênticas entre si para o rastreador.
+  // A home fica de fora: renderHtml também roda para a rota "/" (em main(), na linha
+  // writeFileSync(templatePath, renderHtml(template, home))), e o h1 dela é copy de venda,
+  // não título de SEO.
+  if (route.path !== "/") {
+    const tituloCurto = route.title
+      .replace(/\s*—\s*Portal Ayurveda\s*$/, "")
+      .replace(/\s*\|\s*Portal Ayurveda\s*$/, "")
+      .replace(/\s*—\s*Samkhya\s*$/, "")
+      .trim() || route.title;
+    // Substituição por função (não por string) para que um "$" no título não seja lido
+    // como referência de grupo pelo replace.
+    html = html.replace(
+      /(<div id="bs-main">\s*<h1>)[\s\S]*?(<\/h1>)/,
+      (_m, abre, fecha) => `${abre}${escapeHtml(tituloCurto)}${fecha}`
+    );
+    html = html.replace(
+      /(<div id="bs-main">[\s\S]*?<p>)[\s\S]*?(<\/p>)/,
+      (_m, abre, fecha) => `${abre}${escapeHtml(route.description.slice(0, 110))}${fecha}`
+    );
+  }
+
   return html;
 }
 
