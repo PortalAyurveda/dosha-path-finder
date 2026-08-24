@@ -730,13 +730,27 @@ async function main() {
     if (failed.length > 20) console.error(`  ... e mais ${failed.length - 20}`);
   }
 
-  // Verificação sanitária: confirma que /blog e /video têm arquivos no dist.
-  // Se algum ficou zero, grita bem alto — foi essa a regressão que passou
-  // silenciosa no build anterior e desindexou o site inteiro.
-  for (const fam of ["blog", "video"]) {
-    if ((writtenBy[fam] || 0) === 0) {
-      console.error(`\n[prerender] ⚠️  ATENÇÃO: 0 rotas /${fam}/{slug} escritas neste build. O SPA vai servir a home no lugar e o Google vai desindexar essas URLs.\n`);
-    }
+  // blog e video são o corpo do site: sair com zero aqui já desindexou o site uma vez.
+  // Os mínimos são baixos de propósito — servem para pegar "zero" e "quase zero",
+  // não para vigiar o número exato (isso é papel do vigia diário no Supabase).
+  const FAMILIAS_CRITICAS: Record<string, number> = { blog: 100, video: 150 };
+  const IGNORAR_MINIMO = process.env.PRERENDER_IGNORAR_MINIMO === "1";
+  const criticasFaltando: string[] = [];
+  for (const [fam, minimo] of Object.entries(FAMILIAS_CRITICAS)) {
+    const n = writtenBy[fam] || 0;
+    if (n < minimo) criticasFaltando.push(`${fam}: ${n} arquivos (mínimo ${minimo})`);
+  }
+  // terapeutas gera duas rotas por pessoa (a curta e a longa), então são duas chaves.
+  const nTerapeutas = (writtenBy["terapeutas"] || 0) + (writtenBy["terapeutas-do-brasil"] || 0);
+  if (nTerapeutas < 10) console.error(`\n[prerender] ⚠️  terapeutas: só ${nTerapeutas} arquivos. Confira a permissão da tabela.\n`);
+  if ((writtenBy["samkhya"] || 0) < 20) console.error(`\n[prerender] ⚠️  samkhya: só ${writtenBy["samkhya"] || 0} arquivos. Confira a permissão do schema loja.\n`);
+  if (criticasFaltando.length && IGNORAR_MINIMO) {
+    console.error(`\n[prerender] ⚠️  Mínimos abaixo do piso, mas PRERENDER_IGNORAR_MINIMO=1 — publicando assim mesmo.\n  ${criticasFaltando.join("\n  ")}\n`);
+  } else if (criticasFaltando.length) {
+    console.error(`\n[prerender] ❌ BUILD INTERROMPIDA — famílias essenciais abaixo do mínimo:\n  ${criticasFaltando.join("\n  ")}\n`);
+    console.error(`[prerender] Publicar assim faz o Google receber o HTML da home nessas URLs.\n`);
+    console.error(`[prerender] Para publicar mesmo assim (emergência), defina PRERENDER_IGNORAR_MINIMO=1.\n`);
+    process.exit(1);
   }
 }
 
