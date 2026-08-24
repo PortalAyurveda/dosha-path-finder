@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { samkhyaTokens } from "./tokens";
+import { useFreteGratisConfig } from "@/hooks/useFreteGratisConfig";
 import type { LojaKit } from "@/integrations/supabase/loja-client";
 
 interface KitCardProps {
@@ -19,6 +20,10 @@ const formatBRL = (v: number) =>
 
 const KitCard = ({ kit }: KitCardProps) => {
   const tipoLabel = kit.tipo_kit ? TIPO_LABEL[kit.tipo_kit] ?? kit.tipo_kit : null;
+  const { data: config } = useFreteGratisConfig();
+  const pct = config?.desconto_vitrine_pct ?? null;
+  const precoKit = Number(kit.preco_pix);
+  const precoExibido = pct != null ? Math.round(precoKit * (1 - pct / 100) * 100) / 100 : precoKit;
 
   return (
     <Link
@@ -75,8 +80,20 @@ const KitCard = ({ kit }: KitCardProps) => {
           {kit.descricao_curta}
         </p>
       )}
+      {pct != null && (
+        <p
+          className="mt-1 line-through"
+          style={{
+            color: samkhyaTokens.textoSec,
+            fontFamily: samkhyaTokens.fonteCorpo,
+            fontSize: "12px",
+          }}
+        >
+          {formatBRL(precoKit)}
+        </p>
+      )}
       <p
-        className="mt-1"
+        className={pct != null ? "" : "mt-1"}
         style={{
           color: samkhyaTokens.roxo,
           fontFamily: samkhyaTokens.fonteCorpo,
@@ -84,7 +101,7 @@ const KitCard = ({ kit }: KitCardProps) => {
           fontWeight: 600,
         }}
       >
-        {formatBRL(Number(kit.preco_pix))}
+        {formatBRL(precoExibido)}
       </p>
     </Link>
   );
