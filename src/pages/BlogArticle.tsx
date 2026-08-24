@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { getTransformedImageUrl } from "@/lib/imageTransform";
 import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
