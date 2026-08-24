@@ -174,6 +174,12 @@ async function fetchRest<T = any>(query: string, schema?: string): Promise<T[]> 
     }
     const data = (await res.json()) as T[];
     console.log(`[prerender] ✓ REST ${query.split("?")[0]}${schema ? ` (${schema})` : ""} → ${Array.isArray(data) ? data.length : "?"} itens`);
+    if (Array.isArray(data) && data.length === 0) {
+      console.error(
+        `\n[prerender] ⚠️  ZERO itens em ${query.split("?")[0]}${schema ? ` (schema ${schema})` : ""}. ` +
+        `Resposta foi 200, mas lista vazia — normalmente é permissão (RLS) bloqueando a chave anônima, não ausência de dado.\n`
+      );
+    }
     return data;
   } catch (err) {
     console.error(`[prerender] ✗ REST ${query} exceção`, err);
