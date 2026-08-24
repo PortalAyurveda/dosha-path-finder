@@ -178,6 +178,23 @@
         </div>
       </div>
     </div>
+    <script>
+      (function () {
+        try {
+          if (location.pathname !== "/") return;
+          var temSessao =
+            !!localStorage.getItem("activeDoshaId") ||
+            document.cookie.indexOf("sb-") !== -1 ||
+            Object.keys(localStorage).some(function (k) { return k.indexOf("sb-") === 0; });
+          if (temSessao) {
+            var h1 = document.querySelector("#bs-main h1");
+            var p = document.querySelector("#bs-main p");
+            if (h1) h1.textContent = "Bem-vindo de volta.";
+            if (p) p.textContent = "Carregando seu painel personalizado...";
+          }
+        } catch (e) {}
+      })();
+    </script>
     <div id="root"></div>
 
     <script type="module" src="/src/main.tsx"></script>
