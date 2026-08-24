@@ -129,14 +129,14 @@ export const LANDING_PALETTES: LandingPalette[] = [
     label: "Samkhya (Roxo/Laranja)",
     description: "Loja Samkhya, produtos físicos e kits.",
     theme: "warm",
-    swatch: ["#581C50", "#C75100", "#E0DCAF"],
+    swatch: ["#581C50", "#C75100", "#FAF8F5"],
     branding: {
       logo: PORTAL_LOGO,
       primaryColor: "#581C50",
       darkColor: "#3F1339",
       lightColor: "#F1E6EF",
       accentColor: "#C75100",
-      warmBg: "#E0DCAF",
+      warmBg: "#FAF8F5",
     },
   },
   {
