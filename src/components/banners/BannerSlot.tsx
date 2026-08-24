@@ -12,12 +12,15 @@ interface BannerSlotProps {
   fallback?: React.ReactNode;
   /** Altura reservada (px) enquanto o banner carrega — evita pulo de layout (CLS). */
   minHeight?: number;
+  /** "diaria" (padrão): mesmo banner o dia todo. "pageview": sorteia a cada carregamento. */
+  rotacao?: "diaria" | "pageview";
 }
 
 /** Altura típica medida de cada slot em mobile. */
 const SLOT_MIN_HEIGHT: Record<string, number> = {
   biblioteca: 140,
   samkhya_home: 160,
+  samkhya_hero: 105,
   blog_fim: 140,
   video: 140,
   video_fim: 140,
@@ -27,6 +30,7 @@ const SLOT_MIN_HEIGHT: Record<string, number> = {
   home_meio: 150,
 };
 const DEFAULT_MIN_HEIGHT = 140;
+
 
 
 const PRIORIDADE: Record<string, number> = { Vata: 0, Pitta: 1, Kapha: 2 };
@@ -63,9 +67,12 @@ function agniTag(agni: string | null | undefined): string | null {
   return null;
 }
 
-const BannerSlot = ({ slot, className, fallback, minHeight }: BannerSlotProps) => {
+const BannerSlot = ({ slot, className, fallback, minHeight, rotacao = "diaria" }: BannerSlotProps) => {
   const { user, profile, doshaResult } = useUser();
+
   const location = useLocation();
+  const sorteioRef = useRef(Math.random());
+
 
 
   // Fetch agniPrincipal apart (não está no DoshaResult padrão)
@@ -101,6 +108,8 @@ const BannerSlot = ({ slot, className, fallback, minHeight }: BannerSlotProps) =
 
   const userTags = useMemo(() => {
     const set = new Set<string>();
+    // Sempre elegível
+    set.add("todos");
     // Acesso
     if (temAcessoRotina(profile)) set.add("tem_rotina");
     else set.add("sem_rotina");
@@ -131,12 +140,16 @@ const BannerSlot = ({ slot, className, fallback, minHeight }: BannerSlotProps) =
     });
     if (elegiveis.length === 0) return null;
     if (elegiveis.length === 1) return elegiveis[0];
+    if (rotacao === "pageview") {
+      return elegiveis[Math.floor(sorteioRef.current * elegiveis.length)];
+    }
     // Estável durante o dia, gira no dia seguinte: dia_do_ano % n
     const now = new Date();
     const start = new Date(now.getFullYear(), 0, 0);
     const dayOfYear = Math.floor((now.getTime() - start.getTime()) / 86400000);
     return elegiveis[dayOfYear % elegiveis.length];
-  }, [banners, userTags]);
+  }, [banners, userTags, rotacao]);
+
 
   const cleanHtml = useMemo(() => {
     if (!escolhido?.html) return "";

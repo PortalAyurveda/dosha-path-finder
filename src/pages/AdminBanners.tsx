@@ -107,6 +107,7 @@ const ALL_TAGS = TAG_GROUPS.flatMap((g) => g.opcoes.map((o) => o.value));
 // Largura de moldura por slot (simula o tamanho real)
 const SLOT_FRAME_WIDTH: Record<string, number> = {
   loggedhero: 360,
+  samkhya_hero: 520,
 };
 const FRAME_DEFAULT = 360;
 
@@ -131,7 +132,11 @@ type Molde = {
   descricao: string | null;
   contrato: string | null;
   exemplo_html: string | null;
+  rotulo: string | null;
+  ordem: number | null;
 };
+
+type Modo = "imagem" | "html";
 
 type FormState = {
   id?: string;
@@ -142,6 +147,10 @@ type FormState = {
   tags: string[];
   ordem: number;
   ativo: boolean;
+  modo: Modo;
+  imgUrl: string;
+  imgDestino: string;
+  imgAlt: string;
 };
 
 const emptyForm = (slot = "loggedhero"): FormState => ({
@@ -152,7 +161,29 @@ const emptyForm = (slot = "loggedhero"): FormState => ({
   tags: [],
   ordem: 0,
   ativo: true,
+  modo: "imagem",
+  imgUrl: "",
+  imgDestino: "/samkhya",
+  imgAlt: "",
 });
+
+const montarHtmlImagem = (destino: string, url: string, alt: string) =>
+  `<a href="${destino}" aria-label="${alt}"><img src="${url}" alt="${alt}" loading="eager" decoding="async" style="display:block;width:100%;height:auto"></a>`;
+
+/** Detecta HTML no formato "link com uma única imagem" e extrai os campos. */
+const parseHtmlImagem = (
+  html: string,
+): { url: string; destino: string; alt: string } | null => {
+  const s = (html ?? "").trim();
+  const m = s.match(/^<a\s[^>]*href="([^"]*)"[^>]*>\s*<img\s[^>]*>\s*<\/a>$/i);
+  if (!m) return null;
+  const imgTag = s.match(/<img\s[^>]*>/i)?.[0] ?? "";
+  const url = imgTag.match(/\ssrc="([^"]*)"/i)?.[1];
+  if (!url) return null;
+  const alt = imgTag.match(/\salt="([^"]*)"/i)?.[1] ?? "";
+  return { url, destino: m[1], alt };
+};
+
 
 // =========================================================================
 // Preview seguro
@@ -188,7 +219,9 @@ const AdminBanners = () => {
       const { data, error } = await supabase
         .from("banners_molde")
         .select("*")
-        .order("slot");
+        .order("ordem", { ascending: true, nullsFirst: false })
+        .order("rotulo", { ascending: true, nullsFirst: false });
+
       if (error) throw error;
       return (data ?? []) as Molde[];
     },
@@ -212,10 +245,14 @@ const AdminBanners = () => {
   const banners = bannersQ.data ?? [];
 
   const slots = useMemo(() => {
-    const s = new Set<string>(moldes.map((m) => m.slot));
-    banners.forEach((b) => s.add(b.slot));
-    return Array.from(s).sort();
+    const ordenados = moldes.map((m) => m.slot);
+    const vistos = new Set(ordenados);
+    const extras = Array.from(
+      new Set(banners.map((b) => b.slot).filter((s) => !vistos.has(s))),
+    ).sort();
+    return [...ordenados, ...extras];
   }, [moldes, banners]);
+
 
   const moldeBySlot = useMemo(() => {
     const m: Record<string, Molde> = {};
@@ -307,6 +344,7 @@ const AdminBanners = () => {
     setFormOpen(true);
   };
   const openEdit = (b: Banner) => {
+    const img = parseHtmlImagem(b.html ?? "");
     setForm({
       id: b.id,
       slot: b.slot,
@@ -316,9 +354,14 @@ const AdminBanners = () => {
       tags: (b.tags ?? []).filter((t) => ALL_TAGS.includes(t)),
       ordem: b.ordem ?? 0,
       ativo: b.ativo,
+      modo: img ? "imagem" : "html",
+      imgUrl: img?.url ?? "",
+      imgDestino: img?.destino ?? "/samkhya",
+      imgAlt: img?.alt ?? "",
     });
     setFormOpen(true);
   };
+
 
   const toggleTag = (tag: string) => {
     setForm((f) => ({
@@ -373,16 +416,115 @@ const AdminBanners = () => {
             const list = bannersBySlot[slot] ?? [];
             const frameW = SLOT_FRAME_WIDTH[slot] ?? FRAME_DEFAULT;
             const scaled = !!scaledSlots[slot];
+            const molde = moldeBySlot[slot];
+            const disponiveis = list.filter((b) => !b.ativo);
+            const noAr = list.filter((b) => b.ativo);
+
+            const renderCard = (b: Banner) => (
+              <div
+                key={b.id}
+                className="border border-border rounded-xl p-3 space-y-3 bg-background/60"
+              >
+                <div
+                  className="flex justify-center overflow-hidden"
+                  style={{ minHeight: scaled ? 80 : 120 }}
+                >
+                  <div
+                    style={{
+                      transform: scaled ? "scale(0.7)" : "none",
+                      transformOrigin: "top center",
+                    }}
+                  >
+                    <SafePreview html={b.html} width={frameW} />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <div className="font-semibold text-sm truncate" title={b.titulo_admin ?? ""}>
+                    {b.titulo_admin || <span className="italic text-muted-foreground">(sem título)</span>}
+                  </div>
+
+                  {b.ativo && (
+                    <p className="text-xs text-muted-foreground">
+                      {noAr.length <= 1
+                        ? "Aparece sempre"
+                        : `Aparece em ${Math.round(100 / noAr.length)}% das visitas`}
+                    </p>
+                  )}
+
+                  <div className="flex flex-wrap gap-1">
+                    {b.campanha && (
+                      <Badge variant="secondary" className="text-[10px]">
+                        {b.campanha}
+                      </Badge>
+                    )}
+                    <Badge variant="outline" className="text-[10px]">
+                      ordem {b.ordem ?? 0}
+                    </Badge>
+                    {(b.tags ?? []).map((t) => (
+                      <Badge key={t} className="text-[10px]" variant="outline">
+                        {t}
+                      </Badge>
+                    ))}
+                  </div>
+
+                  <div>
+                    {b.ativo ? (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => toggleAtivoMut.mutate({ id: b.id, ativo: false })}
+                      >
+                        ← Tirar do ar
+                      </Button>
+                    ) : (
+                      <Button
+                        size="sm"
+                        onClick={() => toggleAtivoMut.mutate({ id: b.id, ativo: true })}
+                      >
+                        Publicar →
+                      </Button>
+                    )}
+                  </div>
+
+                  <div className="flex gap-2 pt-1 flex-wrap">
+                    <Button size="sm" variant="outline" className="gap-1.5" onClick={() => openEdit(b)}>
+                      <Pencil className="w-3.5 h-3.5" /> Editar
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="gap-1.5"
+                      onClick={() => duplicateMut.mutate(b)}
+                    >
+                      <Files className="w-3.5 h-3.5" /> Duplicar
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="gap-1.5 text-destructive hover:text-destructive"
+                      onClick={() => setConfirmDel(b)}
+                    >
+                      <Trash2 className="w-3.5 h-3.5" /> Deletar
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            );
+
             return (
               <section key={slot} className="bg-card border border-border rounded-2xl p-5 space-y-4">
                 <div className="flex items-center justify-between flex-wrap gap-3">
                   <div className="flex items-center gap-3">
-                    <h2
-                      className="text-lg font-bold"
-                      style={{ fontFamily: "'Roboto Serif', serif", color: "#352F54" }}
-                    >
-                      Slot · {slot}
-                    </h2>
+                    <div>
+                      <h2
+                        className="text-lg font-bold"
+                        style={{ fontFamily: "'Roboto Serif', serif", color: "#352F54" }}
+                      >
+                        {molde?.rotulo || slot}
+                      </h2>
+                      <p className="text-xs text-muted-foreground">{slot}</p>
+                    </div>
                     <Badge variant="outline">{list.length} banner(s)</Badge>
                   </div>
                   <div className="flex items-center gap-2">
@@ -412,84 +554,33 @@ const AdminBanners = () => {
                     Nenhum banner cadastrado neste slot.
                   </p>
                 ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {list.map((b) => (
-                      <div
-                        key={b.id}
-                        className="border border-border rounded-xl p-3 space-y-3 bg-background/60"
-                      >
-                        <div
-                          className="flex justify-center overflow-hidden"
-                          style={{ minHeight: scaled ? 80 : 120 }}
-                        >
-                          <div
-                            style={{
-                              transform: scaled ? "scale(0.7)" : "none",
-                              transformOrigin: "top center",
-                            }}
-                          >
-                            <SafePreview html={b.html} width={frameW} />
-                          </div>
-                        </div>
-
-                        <div className="space-y-2">
-                          <div className="flex items-center justify-between gap-2">
-                            <div className="font-semibold text-sm truncate" title={b.titulo_admin ?? ""}>
-                              {b.titulo_admin || <span className="italic text-muted-foreground">(sem título)</span>}
-                            </div>
-                            <Switch
-                              checked={b.ativo}
-                              onCheckedChange={(v) =>
-                                toggleAtivoMut.mutate({ id: b.id, ativo: !!v })
-                              }
-                            />
-                          </div>
-
-                          <div className="flex flex-wrap gap-1">
-                            {b.campanha && (
-                              <Badge variant="secondary" className="text-[10px]">
-                                {b.campanha}
-                              </Badge>
-                            )}
-                            <Badge variant="outline" className="text-[10px]">
-                              ordem {b.ordem ?? 0}
-                            </Badge>
-                            {(b.tags ?? []).map((t) => (
-                              <Badge key={t} className="text-[10px]" variant="outline">
-                                {t}
-                              </Badge>
-                            ))}
-                          </div>
-
-                          <div className="flex gap-2 pt-1">
-                            <Button size="sm" variant="outline" className="gap-1.5" onClick={() => openEdit(b)}>
-                              <Pencil className="w-3.5 h-3.5" /> Editar
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              className="gap-1.5"
-                              onClick={() => duplicateMut.mutate(b)}
-                            >
-                              <Files className="w-3.5 h-3.5" /> Duplicar
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              className="gap-1.5 text-destructive hover:text-destructive"
-                              onClick={() => setConfirmDel(b)}
-                            >
-                              <Trash2 className="w-3.5 h-3.5" /> Deletar
-                            </Button>
-                          </div>
-                        </div>
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                    <div className="space-y-3">
+                      <div className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                        Disponíveis · {disponiveis.length}
                       </div>
-                    ))}
+                      {disponiveis.length === 0 ? (
+                        <p className="text-sm text-muted-foreground italic">Nenhum banner disponível.</p>
+                      ) : (
+                        <div className="space-y-3">{disponiveis.map(renderCard)}</div>
+                      )}
+                    </div>
+                    <div className="space-y-3">
+                      <div className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                        No ar · {noAr.length}
+                      </div>
+                      {noAr.length === 0 ? (
+                        <p className="text-sm text-muted-foreground italic">Nenhum banner no ar.</p>
+                      ) : (
+                        <div className="space-y-3">{noAr.map(renderCard)}</div>
+                      )}
+                    </div>
                   </div>
                 )}
               </section>
             );
           })}
+
         </div>
 
         {/* ===================== Dialog: contrato do slot ===================== */}
@@ -653,15 +744,90 @@ const AdminBanners = () => {
                 </div>
 
                 <div>
-                  <Label>HTML</Label>
-                  <Textarea
-                    value={form.html}
-                    onChange={(e) => setForm((f) => ({ ...f, html: e.target.value }))}
-                    rows={16}
-                    className="font-mono text-xs"
-                    placeholder="<div class='...'>...</div>"
-                  />
+                  <Label>Tipo</Label>
+                  <Select
+                    value={form.modo}
+                    onValueChange={(v) =>
+                      setForm((f) => {
+                        const modo = v as Modo;
+                        if (modo === "imagem") {
+                          return {
+                            ...f,
+                            modo,
+                            html: f.imgUrl
+                              ? montarHtmlImagem(f.imgDestino, f.imgUrl, f.imgAlt)
+                              : f.html,
+                          };
+                        }
+                        return { ...f, modo };
+                      })
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="imagem">Imagem</SelectItem>
+                      <SelectItem value="html">HTML</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
+
+                {form.modo === "imagem" ? (
+                  <div className="space-y-3">
+                    <div>
+                      <Label>URL da imagem</Label>
+                      <Input
+                        value={form.imgUrl}
+                        onChange={(e) =>
+                          setForm((f) => {
+                            const imgUrl = e.target.value;
+                            return { ...f, imgUrl, html: montarHtmlImagem(f.imgDestino, imgUrl, f.imgAlt) };
+                          })
+                        }
+                        placeholder="https://…/banner.png"
+                      />
+                    </div>
+                    <div>
+                      <Label>Link de destino</Label>
+                      <Input
+                        value={form.imgDestino}
+                        onChange={(e) =>
+                          setForm((f) => {
+                            const imgDestino = e.target.value;
+                            return { ...f, imgDestino, html: montarHtmlImagem(imgDestino, f.imgUrl, f.imgAlt) };
+                          })
+                        }
+                        placeholder="/samkhya"
+                      />
+                    </div>
+                    <div>
+                      <Label>Texto alternativo</Label>
+                      <Input
+                        value={form.imgAlt}
+                        onChange={(e) =>
+                          setForm((f) => {
+                            const imgAlt = e.target.value;
+                            return { ...f, imgAlt, html: montarHtmlImagem(f.imgDestino, f.imgUrl, imgAlt) };
+                          })
+                        }
+                        placeholder="O que a arte diz"
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  <div>
+                    <Label>HTML</Label>
+                    <Textarea
+                      value={form.html}
+                      onChange={(e) => setForm((f) => ({ ...f, html: e.target.value }))}
+                      rows={16}
+                      className="font-mono text-xs"
+                      placeholder="<div class='...'>...</div>"
+                    />
+                  </div>
+                )}
+
 
                 <div className="flex items-center gap-3">
                   <Switch
@@ -692,7 +858,12 @@ const AdminBanners = () => {
               </Button>
               <Button
                 onClick={() => upsertMut.mutate(form)}
-                disabled={upsertMut.isPending || !form.slot || !form.html.trim()}
+                disabled={
+                  upsertMut.isPending ||
+                  !form.slot ||
+                  !form.html.trim() ||
+                  (form.modo === "imagem" && (!form.imgUrl.trim() || !form.imgAlt.trim()))
+                }
               >
                 {upsertMut.isPending ? "Salvando…" : "Salvar"}
               </Button>

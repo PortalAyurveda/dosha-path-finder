@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { samkhyaTokens } from "./tokens";
+import BannerSlot from "@/components/banners/BannerSlot";
 
 interface HeroBannerProps {
   bannerUrl?: string;
@@ -14,8 +14,8 @@ const DEFAULT_BANNER_MOBILE =
   "https://api.portalayurveda.com/storage/v1/object/public/portal_images/banner-principal-samkhya-2.gif";
 
 /**
- * Banner Hero da Loja Samkhya — elefante / frete grátis com texto sobreposto.
- * Renderizado entre o Header global e a SamkhyaNavBar.
+ * Banner Hero da Loja Samkhya — vem do CMS (slot `samkhya_hero`).
+ * A arte fixa antiga continua como conteúdo de reserva.
  */
 const HeroBanner = ({
   bannerUrl = DEFAULT_BANNER_DESKTOP,
@@ -23,7 +23,7 @@ const HeroBanner = ({
   bannerTitle = "FRETE GRÁTIS",
   bannerSubtitle = "em compras a partir de R$350,00",
 }: HeroBannerProps) => {
-  return (
+  const fallback = (
     <Link
       to="/samkhya"
       aria-label="Ir para a Loja Samkhya"
@@ -52,9 +52,20 @@ const HeroBanner = ({
           (e.currentTarget as HTMLImageElement).src = bannerUrl;
         }}
       />
-
     </Link>
+  );
+
+  return (
+    <div style={{ aspectRatio: "1600 / 459" }} className="w-full">
+      <BannerSlot
+        slot="samkhya_hero"
+        rotacao="pageview"
+        className="block w-full [&_img]:w-full [&_img]:h-auto [&_img]:block"
+        fallback={fallback}
+      />
+    </div>
   );
 };
 
 export default HeroBanner;
+
