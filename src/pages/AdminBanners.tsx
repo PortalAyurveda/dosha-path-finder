@@ -107,6 +107,7 @@ const ALL_TAGS = TAG_GROUPS.flatMap((g) => g.opcoes.map((o) => o.value));
 // Largura de moldura por slot (simula o tamanho real)
 const SLOT_FRAME_WIDTH: Record<string, number> = {
   loggedhero: 360,
+  samkhya_hero: 520,
 };
 const FRAME_DEFAULT = 360;
 
@@ -131,7 +132,11 @@ type Molde = {
   descricao: string | null;
   contrato: string | null;
   exemplo_html: string | null;
+  rotulo: string | null;
+  ordem: number | null;
 };
+
+type Modo = "imagem" | "html";
 
 type FormState = {
   id?: string;
@@ -142,6 +147,10 @@ type FormState = {
   tags: string[];
   ordem: number;
   ativo: boolean;
+  modo: Modo;
+  imgUrl: string;
+  imgDestino: string;
+  imgAlt: string;
 };
 
 const emptyForm = (slot = "loggedhero"): FormState => ({
@@ -152,7 +161,29 @@ const emptyForm = (slot = "loggedhero"): FormState => ({
   tags: [],
   ordem: 0,
   ativo: true,
+  modo: "imagem",
+  imgUrl: "",
+  imgDestino: "/samkhya",
+  imgAlt: "",
 });
+
+const montarHtmlImagem = (destino: string, url: string, alt: string) =>
+  `<a href="${destino}" aria-label="${alt}"><img src="${url}" alt="${alt}" loading="eager" decoding="async" style="display:block;width:100%;height:auto"></a>`;
+
+/** Detecta HTML no formato "link com uma única imagem" e extrai os campos. */
+const parseHtmlImagem = (
+  html: string,
+): { url: string; destino: string; alt: string } | null => {
+  const s = (html ?? "").trim();
+  const m = s.match(/^<a\s[^>]*href="([^"]*)"[^>]*>\s*<img\s[^>]*>\s*<\/a>$/i);
+  if (!m) return null;
+  const imgTag = s.match(/<img\s[^>]*>/i)?.[0] ?? "";
+  const url = imgTag.match(/\ssrc="([^"]*)"/i)?.[1];
+  if (!url) return null;
+  const alt = imgTag.match(/\salt="([^"]*)"/i)?.[1] ?? "";
+  return { url, destino: m[1], alt };
+};
+
 
 // =========================================================================
 // Preview seguro
