@@ -30,15 +30,15 @@ const Footer = () => {
 
   const jornada = [
     { label: "Teste de Dosha", to: "/teste-de-dosha" },
-    { label: "Meu Dosha", to: "/meu-dosha" },
-    { label: "Minha Rotina", to: "/minha-rotina" },
-    { label: "Revisão Mensal", to: "/revisao" },
+    { label: "Meu Dosha", to: "/meu-dosha", rel: "nofollow" },
+    { label: "Minha Rotina", to: "/minha-rotina", rel: "nofollow" },
+    { label: "Revisão Mensal", to: "/revisao", rel: "nofollow" },
   ];
   const conteudo = [
     { label: "Biblioteca", to: "/biblioteca" },
     { label: "Artigos", to: "/blog" },
     { label: "Cursos", to: "/cursos" },
-    { label: "Métricas do Portal", to: "/metricas" },
+    { label: "Métricas do Portal", to: "/metricas", rel: "nofollow" },
   ];
   const portal = [
     { label: "Loja Samkhya", to: "/samkhya" },
@@ -47,10 +47,11 @@ const Footer = () => {
     { label: "Política de Privacidade", to: "/politica-de-privacidade" },
   ];
 
-  const ColumnLink = ({ to, label }: { to: string; label: string }) => (
+  const ColumnLink = ({ to, label, rel }: { to: string; label: string; rel?: string }) => (
     <li>
       <Link
         to={to}
+        rel={rel}
         className="text-sm hover:underline transition-opacity hover:opacity-100"
         style={textStyle}
       >
