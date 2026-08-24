@@ -11,7 +11,7 @@ interface CarouselSectionProps {
 const CarouselSection = ({ title, to, children }: CarouselSectionProps) => {
   const titleNode = (
     <h2
-      className="text-2xl md:text-3xl italic font-light tracking-wide hover:opacity-80 transition-opacity"
+      className="text-2xl md:text-3xl font-light tracking-wide hover:opacity-80 transition-opacity"
       style={{
         color: samkhyaTokens.roxo,
         fontFamily: samkhyaTokens.fonteTitulo,

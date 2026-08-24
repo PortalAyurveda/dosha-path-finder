@@ -176,7 +176,7 @@ const Samkhya = () => {
             <section id="kits" className="py-5 md:py-7 scroll-mt-32">
               <div className="text-center mb-5">
                 <h2
-                  className="text-2xl md:text-3xl italic font-light tracking-wide"
+                  className="text-2xl md:text-3xl font-light tracking-wide"
                   style={{
                     color: samkhyaTokens.roxo,
                     fontFamily: samkhyaTokens.fonteTitulo,

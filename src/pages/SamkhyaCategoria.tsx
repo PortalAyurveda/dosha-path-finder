@@ -80,7 +80,7 @@ const SamkhyaCategoria = () => {
 
         <div className="text-center mb-10">
           <h1
-            className="text-3xl md:text-4xl italic font-light tracking-wide"
+            className="text-3xl md:text-4xl font-light tracking-wide"
             style={{
               color: samkhyaTokens.roxo,
               fontFamily: samkhyaTokens.fonteTitulo,
@@ -128,7 +128,7 @@ const SamkhyaCategoria = () => {
               <section className="mt-16">
                 <div className="text-center mb-8">
                   <h2
-                    className="text-2xl md:text-3xl italic font-light tracking-wide"
+                    className="text-2xl md:text-3xl font-light tracking-wide"
                     style={{
                       color: samkhyaTokens.roxo,
                       fontFamily: samkhyaTokens.fonteTitulo,

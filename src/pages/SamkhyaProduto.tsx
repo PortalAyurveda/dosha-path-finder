@@ -213,7 +213,7 @@ const SamkhyaProduto = () => {
                 <div className="text-center mb-8">
                   <h2
                     id="quem-levou"
-                    className="text-2xl md:text-3xl italic font-light tracking-wide"
+                    className="text-2xl md:text-3xl font-light tracking-wide"
                     style={{
                       color: samkhyaTokens.roxo,
                       fontFamily: samkhyaTokens.fonteTitulo,
@@ -289,7 +289,7 @@ const SamkhyaProduto = () => {
                 <div className="text-center mb-8">
                   <h2
                     id="relacionados"
-                    className="text-2xl md:text-3xl italic font-light tracking-wide"
+                    className="text-2xl md:text-3xl font-light tracking-wide"
                     style={{
                       color: samkhyaTokens.roxo,
                       fontFamily: samkhyaTokens.fonteTitulo,

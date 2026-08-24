@@ -64,7 +64,7 @@ const SamkhyaKits = () => {
 
         <div className="text-center mb-10">
           <h1
-            className="text-3xl md:text-4xl italic font-light tracking-wide"
+            className="text-3xl md:text-4xl font-light tracking-wide"
             style={{
               color: samkhyaTokens.roxo,
               fontFamily: samkhyaTokens.fonteTitulo,

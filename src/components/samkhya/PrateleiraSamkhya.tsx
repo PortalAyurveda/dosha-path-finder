@@ -73,7 +73,7 @@ const PrateleiraSamkhya = ({ doshaPrincipal, titulo }: PrateleiraSamkhyaProps) =
           </div>
           <div className="text-center">
             <h2
-              className="text-xl md:text-2xl italic font-light tracking-wide"
+              className="text-xl md:text-2xl font-light tracking-wide"
               style={{ color: samkhyaTokens.roxo, fontFamily: serif }}
             >
               {tituloFinal}
