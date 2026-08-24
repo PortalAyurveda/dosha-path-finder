@@ -197,16 +197,15 @@ const Header = () => {
         {/* LEFT — Hamburger (mobile) + Mobile search trigger + Desktop nav */}
         <div className="flex items-center gap-1.5 justify-self-start min-w-0 overflow-hidden">
 
-          {/* Mobile: search trigger (icon) on the LEFT — opens fixed overlay */}
+          {/* Mobile: search icon only */}
           <button
             type="button"
             onClick={() => setSearchOpen(true)}
             aria-label="Pesquisar"
             aria-expanded={searchOpen}
-            className="lg:hidden flex items-center justify-center gap-1.5 h-9 px-3 rounded-full bg-white hover:bg-white/90 transition-colors shadow-sm"
+            className="lg:hidden flex items-center justify-center w-9 h-9 rounded-full bg-white hover:bg-white/90 transition-colors shadow-sm"
           >
             <Search className="h-[18px] w-[18px] text-primary" strokeWidth={2.2} />
-            <span className="text-sm font-medium text-primary">Buscar</span>
           </button>
 
           <Sheet open={open} onOpenChange={setOpen}>
