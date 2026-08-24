@@ -1,3 +1,4 @@
+import "@/components/samkhya/samkhya-fonts.css";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Minus, Plus, Trash2, ShoppingBag, ChevronLeft } from "lucide-react";
