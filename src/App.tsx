@@ -216,7 +216,7 @@ const RoutedApp = () => {
               <Route path="/curso/rotinas" element={<CursoRotinas />} />
               <Route path="/terapeutas-do-brasil" element={<TerapeutasDoBrasil />} />
               <Route path="/terapeutas-do-brasil/cadastro" element={<TerapeutaCadastro />} />
-              <Route path="/terapeutas-do-brasil/:slug" element={<TerapeutaPerfil />} />
+              <Route path="/terapeutas-do-brasil/:slug" element={<TerapeutaRedirect />} />
               <Route path="/terapeutas/:slug" element={<TerapeutaPerfil />} />
               <Route path="/akasha" element={<Akasha />} />
               <Route path="/video/:slug" element={<Video />} />
@@ -224,6 +224,7 @@ const RoutedApp = () => {
               <Route path="/opiniao" element={<Opiniao />} />
               <Route path="/opiniao/:slug" element={<Opiniao />} />
               <Route path="/posts/:slug" element={<PostsRedirect />} />
+              <Route path="/artigos" element={<Navigate to="/blog" replace />} />
 
               {/* Vata */}
               <Route path="/biblioteca/vata" element={<DoshaVata />} />
