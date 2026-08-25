@@ -40,36 +40,40 @@ const PricingSection = ({ data, branding, bonus, onCtaClick }: PricingSectionPro
                   </li>
                 ))}
               </ul>
-              <h4 className="font-bold text-sm md:text-base mb-3 text-center uppercase tracking-wide" style={{ color: branding.darkColor }}>
-                Bônus exclusivos
-              </h4>
-              <div className="space-y-2.5">
-                {bonus.bonuses.map((b, i) => {
-                  const Icon = ICONS[b.iconName] ?? Sparkles;
-                  return (
-                    <div
-                      key={i}
-                      className="flex items-start gap-3 p-3 border border-gray-200 rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm"
-                      style={{ background: `${branding.primaryColor}40` }}
-                    >
-                      <span
-                        className="shrink-0 w-9 h-9 rounded-full flex items-center justify-center"
-                        style={{ background: `${branding.primaryColor}` }}
-                      >
-                        <Icon className="h-4 w-4" style={{ color: "#352F54" }} />
-                      </span>
-                      <div className="flex-1">
-                        <h5 className="font-bold text-sm md:text-base leading-snug" style={{ color: "#352F54" }}>
-                          {b.title}
-                        </h5>
-                        {b.description && (
-                          <p className="text-xs md:text-sm text-gray-700 mt-0.5 leading-relaxed">{b.description}</p>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
+              {bonus.bonuses.length > 0 && (
+                <>
+                  <h4 className="font-bold text-sm md:text-base mb-3 text-center uppercase tracking-wide" style={{ color: branding.darkColor }}>
+                    Bônus exclusivos
+                  </h4>
+                  <div className="space-y-2.5">
+                    {bonus.bonuses.map((b, i) => {
+                      const Icon = ICONS[b.iconName] ?? Sparkles;
+                      return (
+                        <div
+                          key={i}
+                          className="flex items-start gap-3 p-3 border border-gray-200 rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm"
+                          style={{ background: `${branding.primaryColor}40` }}
+                        >
+                          <span
+                            className="shrink-0 w-9 h-9 rounded-full flex items-center justify-center"
+                            style={{ background: `${branding.primaryColor}` }}
+                          >
+                            <Icon className="h-4 w-4" style={{ color: "#352F54" }} />
+                          </span>
+                          <div className="flex-1">
+                            <h5 className="font-bold text-sm md:text-base leading-snug" style={{ color: "#352F54" }}>
+                              {b.title}
+                            </h5>
+                            {b.description && (
+                              <p className="text-xs md:text-sm text-gray-700 mt-0.5 leading-relaxed">{b.description}</p>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </>
+              )}
             </div>
           )}
 
