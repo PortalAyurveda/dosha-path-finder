@@ -123,7 +123,8 @@ const FloatingAkasha = () => {
   const cacheKey = ["akasha-history", resolvedEmail] as const;
 
   const shouldHide = HIDDEN_PREFIXES.some((p) => location.pathname.startsWith(p))
-    || HIDDEN_INCLUDES.some((p) => location.pathname.includes(p));
+    || HIDDEN_INCLUDES.some((p) => location.pathname.includes(p))
+    || cartOpen;
 
 
   const scrollChatToBottom = useCallback(() => {
