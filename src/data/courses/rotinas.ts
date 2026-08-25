@@ -13,13 +13,13 @@ export const rotinasData: CourseData = {
     darkColor: "#352F54",
     lightColor: "#FFF7D6",
     accentColor: "#6A88FB",
-    warmBg: "#FFFBEF",
+    warmBg: "#FFF9E6",
   },
   hero: {
-    headline: "Seu corpo segue um relógio.\nNinguém te ensinou a lê-lo.",
+    headline: "Aprenda a cuidar do seu relógio biológico.\nO Ayurveda mede isso há 5.000 anos.",
     subheadline: "",
     description:
-      "Aprenda o relógio dos doshas: os melhores horários pro seu corpo, suas práticas e até seus remédios, com meditação, yoga e respiração certas pra você.",
+      "O caminho pra você acertar seus horários, entender como melhorar sua fome e aproveitar cada momento do dia. Seus primeiros passos entendendo como o Ayurveda equilibra o seu corpo, com meditação, yoga, respiração e automassagem certas pra você.",
     priceOld: "",
     priceNew: "R$ 97",
     accessYears: "Acesso vitalício",
@@ -44,6 +44,7 @@ export const rotinasData: CourseData = {
       "Dinacharya existe há 5.000 anos.\nQuase ninguém aprende isso pensando no SEU dosha.",
     paragraphs: [
       "Dinacharya é a rotina diária sagrada do Ayurveda - os horários, práticas e hábitos que mantêm corpo e mente em equilíbrio. Isso existe há milênios.",
+      "O que a ciência ocidental hoje chama de cronobiologia, o estudo de como o seu corpo reage diferente dependendo da hora do dia, o Ayurveda já estudava com precisão há milênios: qual é a melhor ação pra cada horário, do jeito de comer ao jeito de descansar.",
       "O que quase ninguém ensina é a parte que muda tudo: a prática certa muda de pessoa pra pessoa, dependendo do seu dosha. Meditação, respiração e yoga pra Vata não são as mesmas de Pitta ou Kapha.",
     ],
     highlight: "A maioria aprende uma rotina genérica. Você vai aprender a que é sua.",
@@ -76,46 +77,31 @@ export const rotinasData: CourseData = {
     modules: [
       {
         number: 1,
-        title: "Fundamentos do Ayurveda e Rotinas Diárias",
+        title: "Saúde Não É Ausência de Doença",
         description:
-          "Você começa entendendo por que a rotina diária importa pro seu corpo e sua mente, o que é saúde de verdade pra filosofia ayurvédica (não é só ausência de doença), e quais são as fontes naturais de restauração e os hábitos que sustentam equilíbrio e longevidade. É a base antes de entrar em qualquer prática.",
-        highlights: [
-          "Introdução à rotina diária: por que ela importa pro corpo e a mente",
-          "O conceito de saúde dentro do Ayurveda",
-          "Fontes de restauração e manutenção da saúde",
-        ],
+          "Você vai descobrir que, pro Ayurveda, saúde nunca foi apenas não estar doente. É um equilíbrio que se constrói todos os dias, sustentado por fontes naturais e hábitos simples que mantêm o corpo em harmonia e prolongam a vida. Esse é o Dinacharya, o nome ancestral para essas práticas diárias sagradas, e é a base teórica que dá sentido a cada passo do curso.",
       },
       {
         number: 2,
-        title: "Práticas Integrativas de Autocuidado",
+        title: "Onde Teoria e Prática se Encontram",
         description:
-          "Aqui você entra nas rotinas meditativas do dia a dia e conhece as diferentes abordagens do yoga no Ayurveda e como aplicá-las. O módulo fecha com a aula mais longa do curso, a Grande Síntese, que une teoria e prática num estilo de vida equilibrado.",
-        highlights: [
-          "Rotinas meditativas",
-          "Tipos de prática de yoga",
-          "A Grande Síntese da Rotina Diária (aula de fechamento)",
-        ],
+          "Aqui a teoria do módulo anterior vira prática de verdade, no momento em que tudo o que você aprendeu se une num estilo de vida equilibrado. Você descobre que não existe \"o\" yoga certo, existem tipos diferentes de prática, e o seu é aquele que serve pro seu corpo e pro seu momento. A meditação entra aqui como parte natural da sua rotina diária, não como mais um vídeo solto de bem-estar guardado no celular. A última aula desse módulo é a mais longa do curso inteiro, quase 26 minutos, porque é ali que tudo se amarra de verdade.",
       },
       {
         number: 3,
-        title: "Práticas Respiratórias e Meditativas",
+        title: "O Relógio Biológico do Seu Dosha",
         description:
-          "É o módulo mais forte do curso: 5 das 11 aulas, quase metade. Você começa com a base de pranayama e meditação, em duas partes, e depois tem uma aula inteira pra cada dosha - uma pra acalmar e equilibrar Vata, uma pra trazer calma e foco pro Pitta, e uma pra estimular e harmonizar Kapha. Não é técnica genérica: é a prática certa pro seu dosha.",
-        highlights: [
-          "Introdução às práticas respiratórias e meditativas (Partes I e II)",
-          "Prática específica para acalmar e equilibrar Vata",
-          "Prática específica para trazer calma e foco ao Pitta",
-          "Prática específica para estimular e harmonizar Kapha",
-        ],
+          "Aqui está a virada do curso. Depois de passar pelo fundamento da respiração e da meditação, você descobre que a prática certa depende do seu dosha: se você é Vata ela vem pra acalmar e equilibrar, se é Pitta ela traz calma e foco, se é Kapha ela vem pra estimular e harmonizar. No fim, você não sai com uma técnica genérica de respiração, sai sabendo ler o seu próprio relógio biológico e ajustar a prática ao momento certo do seu dia. Não é à toa que esse é o módulo mais robusto do curso: sozinho, ele reúne quase metade de toda a carga horária, porque é aqui que a personalização por dosha acontece de verdade.",
       },
     ],
   },
   bonus: {
     title: "O que está incluído",
     included: [
-      "Curso completo: 3 módulos, 11 aulas, cerca de 2h03 de vídeo",
+      "Curso completo: 3 módulos, 11 aulas, 2h de vídeo",
       "Módulo inteiro de práticas respiratórias e meditativas específicas pro seu dosha (Vata, Pitta e Kapha)",
       "Aula de fechamento que amarra toda a rotina, do fundamento à prática",
+      "Certificado de conclusão, com o texto: \"tendo aprendido o relógio ayurvédico dos Doshas e as práticas diárias de rotina, meditação e respiração para cada fase do dia, com base no Ayurveda\"",
     ],
     bonuses: [],
   },

@@ -5,7 +5,7 @@ export const dravyaGunaData: CourseData = {
     slug: "dravya-guna-remedios-caseiros",
     title: "Curso de Dravya Guna - Remédios Caseiros do Ayurveda | Portal Ayurveda",
     description:
-      "Aprenda a formular seus próprios remédios ayurvédicos com base na herbologia brasileira e indiana. Cerca de 40 ervas e óleos estudados um a um, 24 receitas prontas por dosha e bônus de Diagnóstico da Língua.",
+      "Aprenda a formular seus próprios remédios ayurvédicos com base na herbologia brasileira e indiana. 26 ervas e óleos estudados um a um, 26 aulas de receitas ayurvédicas passo a passo, certificado de 40h e bônus de Diagnóstico da Língua.",
   },
   branding: {
     logo: "https://api.portalayurveda.com/storage/v1/object/public/portal_images/logo-remedios-2.png",
@@ -70,7 +70,7 @@ export const dravyaGunaData: CourseData = {
       {
         iconName: "Sprout",
         title: "Herbologia brasileira e indiana lado a lado",
-        text: "Cerca de 40 ervas e óleos estudados um a um. Sempre com a pergunta que importa: nessa dose, é remédio ou é veneno?",
+        text: "26 ervas e óleos estudados um a um, brasileiros e indianos lado a lado. Sempre com a pergunta que importa: nessa dose, é remédio ou é veneno?",
       },
       {
         iconName: "Target",
@@ -84,120 +84,76 @@ export const dravyaGunaData: CourseData = {
     modules: [
       {
         number: 1,
-        title: "Material Didático",
-        description: "Sua apostila em PDF e o livro de receitas em PDF, pra você ter tudo impresso, grifado, ao seu alcance.",
-        highlights: ["Apostila completa em PDF", "Livro de receitas em PDF"],
+        title: "O Corpo Antes da Fórmula",
+        description:
+          "Toda fórmula que trata sintoma sem tocar a raiz é remendo temporário. Você vai entender o Agni, seu fogo digestivo, e como ele vira Ama, a toxina que se acumula quando esse fogo apaga, a origem real da maioria dos sintomas que você tentava resolver por fora. Também vai conhecer as energias sutis que sustentam seu corpo, Prana, Tejas e Ojas, e os sete Dhatus, os tecidos que formam sua estrutura física. Sem esse alicerce, qualquer receita vira decoreba, com ele você entende por que cada remédio funciona.",
       },
       {
         number: 2,
-        title: "Fundamentos do Ayurveda",
-        description: "A base filosófica antes de qualquer receita: os 3 gunas da mente (Satva, Rajas e Tamas), as energias sutis (Prana, Tejas e Ojas), os 3 doshas (Vata, Pitta e Kapha) e como o corpo muda em cada etapa da vida.",
-        highlights: [
-          "Introdução à filosofia ayurvédica",
-          "Satva, Rajas e Tamas",
-          "Prana, Tejas e Ojas",
-          "Vata, Pitta e Kapha",
-          "Etapas da vida",
-        ],
+        title: "A Alma da Planta",
+        description:
+          "Por que duas plantas com o mesmo sabor podem ter efeitos completamente opostos no corpo? Você vai aprender o Virya, o efeito que esquenta ou esfria, o Vipaka, o que a substância vira depois que o corpo termina de digeri-la, e o Prabhava, aquilo que os ayurvedas chamam de alma da planta, o efeito especial que nenhuma tabela explica. É o momento em que você para de repetir receita alheia e passa a entender por que ela funciona.",
       },
       {
         number: 3,
-        title: "Fisiologia Ayurvédica",
-        description: "Como o corpo processa o que recebe: os atributos da matéria, o processo digestivo, o Agni (fogo digestivo) e o Ama (as toxinas que se acumulam quando esse fogo apaga), e os 7 tecidos do corpo (Dathus).",
-        highlights: [
-          "Atributos da matéria",
-          "Processo digestivo",
-          "Agni e Ama",
-          "Os 7 tecidos do corpo (Dathus)",
-        ],
+        title: "Não Precisa Vir da Índia",
+        description:
+          "Neem e Guduchi são clássicos da tradição indiana, mas Aloe Vera e Jurubeba fazem o mesmo trabalho e crescem na sua horta ou na feira do bairro. Você vai estudar 26 plantas e óleos, indianos e brasileiros lado a lado, entendendo qual usar sem depender de importação cara. Também vai aprender o Anupana, o veículo que muda o efeito do remédio, leite, mel ou água morna, e a posologia certa para cada caso. No fim, você formula com o que tem acesso real, não com o que falta em algum site estrangeiro.",
       },
       {
         number: 4,
-        title: "As Prioridades dos Elementos",
-        description: "O núcleo técnico do curso: o próprio Dravya Guna, a alquimia da planta. Virya (o efeito dos elementos no Agni), Vipak (o efeito pós-digestivo) e Prabhava (o efeito especial, a alma de cada planta).",
-        highlights: [
-          "Dravya Guna: a alquimia da planta",
-          "Virya: o efeito no Agni",
-          "Vipak: o efeito pós-digestivo",
-          "Prabhava: a alma da planta",
-        ],
+        title: "Você Vira Formulador",
+        description:
+          "Existe um chá indicado especificamente para quem não consegue dormir, o Chai Sonífero, e você vai aprender a preparar fórmulas como essa do zero. O curso ensina óleos e ghee medicados, tinturas e emplastros, não como receitas isoladas, mas como técnicas que você aplica em qualquer erva nova que aparecer depois. A promessa de não depender mais de remédio importado ou pronto vira literal aqui: você deixa de tomar o que alguém formulou e passa a formular você mesmo.",
       },
       {
         number: 5,
-        title: "Uso de Ervas",
-        description: "Antes de formular, a base do uso correto: Anupana, o veículo certo pra tomar cada remédio (com mel, com leite quente, com água morna), e a posologia certa pra cada caso.",
-        highlights: [
-          "Base para o uso correto de ervas",
-          "Anupana: o veículo certo pra cada remédio",
-          "Posologia: a dose certa pra cada caso",
-        ],
+        title: "Pronto Pra Usar Amanhã",
+        description:
+          "Você sai com as 26 aulas de Receitas Ayurvédicas, passo a passo, algumas delas, como o óleo corporal medicado e o vinho medicado, já formuladas em três versões diferentes, uma para cada dosha, prontas pra aplicar sem adaptar nada. Vai reconhecer fórmulas clássicas como o Triphala Ghritá e o Trikatu, preparadas passo a passo. No dia seguinte ao curso, você já tem o que precisa pra começar a usar em casa ou com seus pacientes, não é só teoria guardada.",
       },
       {
         number: 6,
-        title: "Herbologia",
-        description: "Depois de aprender a reconhecer propriedades e o momento certo de colheita, você estuda cerca de 40 ervas e óleos, um a um, sempre a versão brasileira ao lado da indiana. De Aloe Vera e Centella Asiática a Guduchi e Neem, passando pelos óleos vegetais (gergelim, coco, rícino, copaíba, rosa mosqueta) e por mel, ghee e cera de abelha.",
-        highlights: [
-          "Cerca de 40 ervas e óleos, brasileiros e indianos, um a um",
-          "Propriedades da planta e o momento certo de colher",
-          "Óleos vegetais: gergelim, coco, rícino, copaíba, rosa mosqueta",
-          "Mel, ghee e cera de abelha: como usar cada um",
-        ],
-      },
-      {
-        number: 7,
-        title: "Remédios Ayurvédicos",
-        description: "As formas de preparo: óleos e ghee medicados, xaropes, pós de ervas, vinhos, digestivos, tinturas e pomadas. Você aprende a preparar cada remédio na forma certa, não só a indicar.",
-        highlights: [
-          "Óleos e ghee medicados",
-          "Xaropes, pós de ervas e tinturas",
-          "Vinhos e digestivos ayurvédicos",
-          "Leites vegetais como veículo (Anupana)",
-        ],
-      },
-      {
-        number: 8,
-        title: "Receitas Ayurvédicas",
-        description: "24 receitas prontas, passo a passo, várias delas já na versão certa pro seu dosha, Vata, Pitta ou Kapha.",
-        highlights: [
-          "24 receitas prontas, passo a passo",
-          "Óleo corporal medicado pra Vata, Pitta e Kapha",
-          "Mel medicado (Madhu) pra cada dosha",
-          "Ghee medicado com Triphala e com Vacha",
-          "Vinho medicado ayurvédico (Arishta) por dosha",
-        ],
-      },
-      {
-        number: 9,
-        title: "Aulas de Revisão",
-        description: "Um acervo de 22 encontros de revisão já gravados, por tema: sazonalidade, casos clínicos, sabores, fórmulas por estação e, em várias delas, uma leitura de tarô como parte da vivência do encontro ao vivo. Novos encontros ao vivo, mensais, seguem incluídos sem custo extra.",
-        highlights: [
-          "22 encontros por tema: outono/inverno, detox, sabores, estudos de caso",
-          "Fórmulas por estação e conceitos de Dravya Guna revisados na prática",
-          "Leitura de tarô em parte dos encontros, como vivência complementar",
-          "Aula de revisão mensal ao vivo, sempre inclusa",
-        ],
+        title: "O Curso Que Não Termina",
+        description:
+          "São 22 encontros ao vivo, não replay gravado, onde você discute casos reais e vê como o tratamento muda conforme a estação, o corpo reage diferente na virada de outono pra inverno, por exemplo. Os temas são clínicos e concretos, de como tratar diarreia até ervas emagrecedoras, sempre com gente de verdade trocando experiência. Você ainda ganha de graça a aula de revisão mensal ao vivo, então o aprendizado continua depois que o curso acaba.",
       },
     ],
   },
   bonus: {
     title: "Tudo que está incluído",
     included: [
+      "Certificado de conclusão de 40h, com as 112 aulas dos 11 módulos do curso",
       "Apostila completa em PDF",
       "Livro de receitas em PDF, pronto pra impressão",
-      "Cerca de 40 ervas e óleos estudados, brasileiros e indianos, um a um",
-      "24 receitas ayurvédicas prontas, por dosha",
+      "26 ervas e óleos estudados, brasileiros e indianos, um a um",
+      "26 aulas de Receitas Ayurvédicas, passo a passo, com versões por dosha pro óleo corporal e o vinho medicado",
       "Aula de revisão mensal ao vivo com o professor Edson Osorio, sem custo extra",
     ],
     bonuses: [
       {
+        iconName: "Award",
+        title: "Certificado de 40h",
+        description:
+          "Certificado oficial de 40h, cobrindo as 112 aulas dos 11 módulos do curso, reconhecendo que você desenvolveu autonomia pra preparar seus próprios remédios caseiros com base no Ayurveda.",
+      },
+      {
+        iconName: "Users",
+        title: "Grupo exclusivo de alunos no WhatsApp",
+        description:
+          "Grupo fechado só de quem está matriculado, direto com o professor Edson Osorio. O link de entrada chega pra você depois da compra, dentro da área do curso.",
+      },
+      {
         iconName: "Stethoscope",
         title: "Curso Complementar - Diagnóstico da Língua",
-        description: "3 aulas bônus. Aprenda a ler o que a língua conta sobre a digestão e o estado dos doshas.",
+        description:
+          "3 aulas bônus. Aprenda a ler o que a língua conta sobre a digestão e o estado dos doshas.",
       },
       {
         iconName: "Puzzle",
         title: "Bônus: Subdoshas",
-        description: "1 aula longa, quase 2 horas, pra refinar ainda mais a leitura do seu tipo, indo além dos 3 doshas principais.",
+        description:
+          "1 aula longa, quase 2 horas, pra refinar ainda mais a leitura do seu tipo, indo além dos 3 doshas principais.",
       },
     ],
   },
@@ -206,9 +162,11 @@ export const dravyaGunaData: CourseData = {
     priceNew: "R$ 697,00",
     installments: "12x de R$ 58,08",
     highlight: "Menos de R$ 60 por mês pra nunca mais depender de remédio pronto.",
-    context: "Garantia incondicional de 30 dias · Aula de revisão mensal ao vivo inclusa · Bônus de Diagnóstico da Língua",
+    context:
+      "Certificado de 40h · Garantia incondicional de 30 dias · Aula de revisão mensal ao vivo inclusa · Bônus de Diagnóstico da Língua",
     ctaText: "QUERO COMEÇAR A FORMULAR",
-    guarantee: "Garantia incondicional de 30 dias. Se não for o que você esperava, devolvemos 100% do valor, sem burocracia e sem pergunta.",
+    guarantee:
+      "Garantia incondicional de 30 dias. Se não for o que você esperava, devolvemos 100% do valor, sem burocracia e sem pergunta.",
   },
   testimonials: [],
   audience: {
@@ -217,28 +175,33 @@ export const dravyaGunaData: CourseData = {
       {
         iconName: "Sprout",
         title: "Para quem quer se tornar alquimista",
-        description: "Alquimista ou alquimista ayurvédica: quem quer aprender a criar remédio, não só aplicar receita pronta.",
+        description:
+          "Alquimista ou alquimista ayurvédica: quem quer aprender a criar remédio, não só aplicar receita pronta.",
       },
       {
         iconName: "Heart",
         title: "Para quem cuida da família",
-        description: "Quem quer ter seus próprios remédios em casa, prontos pros seus, sem depender de formulação externa.",
+        description:
+          "Quem quer ter seus próprios remédios em casa, prontos pros seus, sem depender de formulação externa.",
       },
       {
         iconName: "Stethoscope",
         title: "Para terapeutas e profissionais de saúde",
-        description: "Quem atende paciente e quer criar suas próprias fórmulas ayurvédicas, com responsabilidade e fundamento.",
+        description:
+          "Quem atende paciente e quer criar suas próprias fórmulas ayurvédicas, com responsabilidade e fundamento.",
       },
       {
         iconName: "Users",
         title: "Para quem já pensa em empreender",
-        description: "Muitas empresas nasceram de gente que fez esse curso e passou a formular os próprios produtos.",
+        description:
+          "Muitas empresas nasceram de gente que fez esse curso e passou a formular os próprios produtos.",
       },
     ],
   },
   professor: {
     name: "Edson Osorio",
-    photo: "https://api.portalayurveda.com/storage/v1/object/public/portal_images/b8f47f-5f003e6165b44645b7163ec3dd646d32mv2-1.jpg",
+    photo:
+      "https://api.portalayurveda.com/storage/v1/object/public/portal_images/b8f47f-5f003e6165b44645b7163ec3dd646d32mv2-1.jpg",
     bio: [
       "Responsável pela Samkhya, produtos ayurvédicos. Há mais de 10 anos formula remédios pra pacientes.",
       "O Ayurveda tem os melhores fundamentos de formulação e equilíbrio de fórmula que existem. E é isso que ele ensina nesse curso: os segredos por trás de cada planta.",
