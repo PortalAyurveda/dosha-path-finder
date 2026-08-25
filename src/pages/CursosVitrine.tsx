@@ -77,9 +77,15 @@ const CursosVitrine = () => {
     })();
   }, [user]);
 
+  const LANDING_PROPRIA: Record<string, string> = {
+    "rotinas-diarias": "/curso/rotinas",
+    "alimentacao-e-nutricao": "/curso/alimentacao",
+    "dravya-guna-remedios-caseiros": "/curso/dravya-guna",
+    "diagnostico-e-autocuidado": "/curso/diagnostico",
+  };
   const destinoLanding = (slug: string, paginaLancamentoUrl?: string | null) => {
     if (paginaLancamentoUrl) return paginaLancamentoUrl;
-    return slug === "rotinas-diarias" ? "/cursos/rotinas" : `/cursos/${slug}`;
+    return LANDING_PROPRIA[slug] ?? `/cursos/${slug}`;
   };
 
   const renderCapa = (c: Curso, classes?: string) => {
