@@ -463,32 +463,10 @@ const Lista = ({ onAbrir }: { onAbrir: (id: string) => void }) => {
 
                     <SaudeBloco row={r} />
 
-                    <div className="grid grid-cols-3 gap-2 pt-1 border-t border-border">
-                      <div className="pt-2">
-                        <div className="text-lg font-semibold text-foreground">
-                          {Number(r.envios_30d ?? 0)}
-                        </div>
-                        <div className="text-[11px] text-muted-foreground">
-                          envios (30d)
-                        </div>
-                      </div>
-                      <div className="pt-2">
-                        <div className="text-lg font-semibold text-foreground">
-                          {fmtPct(r.taxa_abertura_30d)}
-                        </div>
-                        <div className="text-[11px] text-muted-foreground">
-                          abertura
-                        </div>
-                      </div>
-                      <div className="pt-2">
-                        <div className="text-lg font-semibold text-foreground">
-                          {fmtPct(r.taxa_clique_30d)}
-                        </div>
-                        <div className="text-[11px] text-muted-foreground">
-                          clique
-                        </div>
-                      </div>
+                    <div className="pt-1 border-t border-border">
+                      <MiniTabela row={r} />
                     </div>
+
 
                     <div className="text-xs text-muted-foreground">
                       Último envio: {fmtData(r.ultimo_envio_em)}
