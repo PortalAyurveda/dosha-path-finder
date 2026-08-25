@@ -1,8 +1,7 @@
+import { useCallback, useEffect, useRef, useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
-import { Package, ShoppingBag } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { samkhyaTokens } from "./tokens";
-import { useCart } from "@/contexts/CartContext";
-import { useUser } from "@/contexts/UserContext";
 
 const ITEMS = [
   { slug: "vata", label: "Vata" },
@@ -16,9 +15,11 @@ const ITEMS = [
 ];
 
 const SamkhyaNavBar = () => {
-  const { totalItens, abrirCarrinho } = useCart();
-  const { user } = useUser();
   const location = useLocation();
+  const scrollRef = useRef<HTMLUListElement>(null);
+  const [podeEsq, setPodeEsq] = useState(false);
+  const [podeDir, setPodeDir] = useState(false);
+
   // Active state derived from URL: /samkhya/categoria/:slug or /samkhya/kits
   const match = location.pathname.match(/^\/samkhya\/categoria\/([^/]+)/);
   const isKitsPage = location.pathname === "/samkhya/kits";
@@ -29,14 +30,56 @@ const SamkhyaNavBar = () => {
     ? "todos"
     : match?.[1] ?? "";
 
+  const atualizarSetas = useCallback(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const max = el.scrollWidth - el.clientWidth;
+    setPodeEsq(el.scrollLeft > 4);
+    setPodeDir(max > 4 && el.scrollLeft < max - 4);
+  }, []);
+
+  useEffect(() => {
+    atualizarSetas();
+    const el = scrollRef.current;
+    if (!el) return;
+    el.addEventListener("scroll", atualizarSetas, { passive: true });
+    window.addEventListener("resize", atualizarSetas);
+    return () => {
+      el.removeEventListener("scroll", atualizarSetas);
+      window.removeEventListener("resize", atualizarSetas);
+    };
+  }, [atualizarSetas]);
+
+  const rolar = (dir: -1 | 1) => {
+    const el = scrollRef.current;
+    if (!el) return;
+    el.scrollBy({ left: dir * Math.max(160, el.clientWidth * 0.7), behavior: "smooth" });
+  };
+
+  const setaEstilo =
+    "shrink-0 p-1 text-white transition-opacity disabled:opacity-0 disabled:pointer-events-none hover:opacity-70";
+
   return (
     <nav
       className="w-full sticky top-16 z-40"
       style={{ background: samkhyaTokens.roxo }}
       aria-label="Categorias da Loja Samkhya"
     >
-      <div className="mx-auto max-w-6xl px-3 md:px-6 py-1 flex items-center gap-3">
-        <ul className="flex-1 flex justify-center gap-3 md:gap-5 overflow-x-auto scrollbar-none">
+      <div className="mx-auto max-w-6xl px-2 md:px-6 py-1 flex items-center gap-1">
+        <button
+          type="button"
+          onClick={() => rolar(-1)}
+          disabled={!podeEsq}
+          aria-label="Ver categorias anteriores"
+          className={setaEstilo}
+        >
+          <ChevronLeft className="h-5 w-5" />
+        </button>
+
+        <ul
+          ref={scrollRef}
+          className="flex-1 flex justify-start md:justify-center gap-3 md:gap-5 overflow-x-auto scrollbar-hide"
+        >
           {ITEMS.map((item) => {
             const to =
               item.slug === "kits"
@@ -49,7 +92,7 @@ const SamkhyaNavBar = () => {
               <li key={item.slug}>
                 <NavLink
                   to={to}
-                  className="block px-4 md:px-5 py-1.5 text-sm md:text-base whitespace-nowrap uppercase tracking-wider font-normal transition-opacity hover:opacity-70"
+                  className="block px-3 md:px-5 py-1.5 text-sm md:text-base whitespace-nowrap uppercase tracking-wider font-normal transition-opacity hover:opacity-70"
                   style={{
                     color: "#FFFFFF",
                     fontFamily: samkhyaTokens.fonteCorpo,
@@ -64,31 +107,15 @@ const SamkhyaNavBar = () => {
             );
           })}
         </ul>
-        {user && (
-          <NavLink
-            to="/samkhya/compras"
-            aria-label="Minhas compras"
-            title="Minhas compras"
-            className="shrink-0 p-2 text-white hover:opacity-80 transition-opacity"
-          >
-            <Package className="h-5 w-5" />
-          </NavLink>
-        )}
+
         <button
           type="button"
-          onClick={abrirCarrinho}
-          aria-label={`Abrir carrinho (${totalItens} itens)`}
-          className="relative shrink-0 p-2 text-white hover:opacity-80 transition-opacity"
+          onClick={() => rolar(1)}
+          disabled={!podeDir}
+          aria-label="Ver mais categorias"
+          className={setaEstilo}
         >
-          <ShoppingBag className="h-5 w-5" />
-          {totalItens > 0 && (
-            <span
-              className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] rounded-full text-[10px] font-bold flex items-center justify-center px-1"
-              style={{ background: samkhyaTokens.ouro, color: "#fff" }}
-            >
-              {totalItens}
-            </span>
-          )}
+          <ChevronRight className="h-5 w-5" />
         </button>
       </div>
     </nav>
