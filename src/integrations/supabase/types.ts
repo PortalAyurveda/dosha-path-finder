@@ -682,6 +682,45 @@ export type Database = {
         }
         Relationships: []
       }
+      auditoria_envios_log: {
+        Row: {
+          comunicacao_id: string
+          conteudo_chave: Json | null
+          criado_em: string
+          data_auditoria: string
+          edicao: string | null
+          email_amostra: string | null
+          id: string
+          problemas_achados: string | null
+          qtd_enviados_24h: number | null
+          veredito: string | null
+        }
+        Insert: {
+          comunicacao_id: string
+          conteudo_chave?: Json | null
+          criado_em?: string
+          data_auditoria?: string
+          edicao?: string | null
+          email_amostra?: string | null
+          id?: string
+          problemas_achados?: string | null
+          qtd_enviados_24h?: number | null
+          veredito?: string | null
+        }
+        Update: {
+          comunicacao_id?: string
+          conteudo_chave?: Json | null
+          criado_em?: string
+          data_auditoria?: string
+          edicao?: string | null
+          email_amostra?: string | null
+          id?: string
+          problemas_achados?: string | null
+          qtd_enviados_24h?: number | null
+          veredito?: string | null
+        }
+        Relationships: []
+      }
       auditoria_rag: {
         Row: {
           akasha_status: string | null
@@ -2094,6 +2133,7 @@ export type Database = {
           nivel: string | null
           tema: string | null
           tipo: string | null
+          trecho_origem: string | null
           versao: string
           video_id: string
         }
@@ -2111,6 +2151,7 @@ export type Database = {
           nivel?: string | null
           tema?: string | null
           tipo?: string | null
+          trecho_origem?: string | null
           versao?: string
           video_id: string
         }
@@ -2128,6 +2169,7 @@ export type Database = {
           nivel?: string | null
           tema?: string | null
           tipo?: string | null
+          trecho_origem?: string | null
           versao?: string
           video_id?: string
         }

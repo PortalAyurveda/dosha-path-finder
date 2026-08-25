@@ -137,10 +137,18 @@ const CursoLanding = () => {
     }
   };
 
-  // A landing de marketing do Rotinas Diárias ainda não foi construída — enquanto
-  // isso, quem cai aqui vai direto para o player (que trata acesso/gate).
-  if (slug === "rotinas-diarias") {
-    return <Navigate to="/cursos/rotinas" replace />;
+  // Estes 4 cursos já têm landing própria e mais completa. Quem cair aqui (link
+  // antigo, favorito, indexação do Google) é redirecionado na hora pra ela - esta
+  // página genérica nunca deve renderizar pra esses 4, só serve os cursos que
+  // ainda não têm landing própria.
+  const LANDING_PROPRIA: Record<string, string> = {
+    "rotinas-diarias": "/curso/rotinas",
+    "alimentacao-e-nutricao": "/curso/alimentacao",
+    "dravya-guna-remedios-caseiros": "/curso/dravya-guna",
+    "diagnostico-e-autocuidado": "/curso/diagnostico",
+  };
+  if (LANDING_PROPRIA[slug]) {
+    return <Navigate to={LANDING_PROPRIA[slug]} replace />;
   }
 
   if (loading) {
