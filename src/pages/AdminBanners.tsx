@@ -136,6 +136,15 @@ type Molde = {
   ordem: number | null;
 };
 
+type MetricRow = {
+  id: string;
+  impressoes_30d: number;
+  cliques_30d: number;
+  ctr_30d: number;
+  saude: string | null;
+  saude_motivo: string | null;
+};
+
 type BannerMetricas = {
   impressoes_30d: number;
   cliques_30d: number;
