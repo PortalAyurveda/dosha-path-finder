@@ -720,34 +720,14 @@ const Editor = ({ id, onVoltar }: { id: string; onVoltar: () => void }) => {
                 </div>
               )}
 
-            <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-6">
+            <MiniTabela row={metricas} />
+
+            <div className="grid gap-4 sm:grid-cols-3">
               <div>
                 <div className="text-lg font-semibold text-foreground">
                   {Number(metricas.envios_total ?? 0)}
                 </div>
                 <div className="text-xs text-muted-foreground">envios (total)</div>
-              </div>
-              <div>
-                <div className="text-lg font-semibold text-foreground">
-                  {Number(metricas.envios_30d ?? 0)}
-                </div>
-                <div className="text-xs text-muted-foreground">envios (30d)</div>
-              </div>
-              <div>
-                <div className="text-lg font-semibold text-foreground">
-                  {Number(metricas.aberturas_30d ?? 0)}
-                </div>
-                <div className="text-xs text-muted-foreground">
-                  aberturas (30d) · {fmtPct(metricas.taxa_abertura_30d)}
-                </div>
-              </div>
-              <div>
-                <div className="text-lg font-semibold text-foreground">
-                  {Number(metricas.cliques_30d ?? 0)}
-                </div>
-                <div className="text-xs text-muted-foreground">
-                  cliques (30d) · {fmtPct(metricas.taxa_clique_30d)}
-                </div>
               </div>
               <div>
                 <div className="text-lg font-semibold text-foreground">
@@ -768,6 +748,9 @@ const Editor = ({ id, onVoltar }: { id: string; onVoltar: () => void }) => {
           </div>
         </section>
       )}
+
+      <DetalheAnalytics id={id} />
+
 
       {/* A) Dados gerais */}
 
