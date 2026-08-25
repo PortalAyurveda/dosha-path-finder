@@ -313,6 +313,54 @@ const estiloSaude = (s: string | null) =>
 const fmtPct = (v: number | null | undefined) =>
   v === null || v === undefined ? "—" : `${Number(v).toFixed(1).replace(".", ",")}%`;
 
+const MiniTabela = ({ row }: { row: DashboardRow }) => (
+  <table className="w-full text-sm">
+    <thead>
+      <tr className="text-[11px] uppercase text-muted-foreground">
+        <th className="text-left font-medium py-1" />
+        <th className="text-right font-medium py-1">Hoje</th>
+        <th className="text-right font-medium py-1">7 dias</th>
+        <th className="text-right font-medium py-1">30 dias</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td className="py-1 text-xs text-muted-foreground">Envios</td>
+        <td className="py-1 text-right tabular-nums font-medium text-foreground">
+          {Number(row.envios_hoje ?? 0)}
+        </td>
+        <td className="py-1 text-right tabular-nums font-medium text-foreground">
+          {Number(row.envios_7d ?? 0)}
+        </td>
+        <td className="py-1 text-right tabular-nums font-medium text-foreground">
+          {Number(row.envios_30d ?? 0)}
+        </td>
+      </tr>
+      <tr>
+        <td className="py-1 text-xs text-muted-foreground">Abertura</td>
+        <td className="py-1 text-right text-muted-foreground">—</td>
+        <td className="py-1 text-right tabular-nums font-medium text-foreground">
+          {fmtPct(row.taxa_abertura_7d)}
+        </td>
+        <td className="py-1 text-right tabular-nums font-medium text-foreground">
+          {fmtPct(row.taxa_abertura_30d)}
+        </td>
+      </tr>
+      <tr>
+        <td className="py-1 text-xs text-muted-foreground">Clique</td>
+        <td className="py-1 text-right text-muted-foreground">—</td>
+        <td className="py-1 text-right tabular-nums font-medium text-foreground">
+          {fmtPct(row.taxa_clique_7d)}
+        </td>
+        <td className="py-1 text-right tabular-nums font-medium text-foreground">
+          {fmtPct(row.taxa_clique_30d)}
+        </td>
+      </tr>
+    </tbody>
+  </table>
+);
+
+
 const SaudeBloco = ({ row }: { row: DashboardRow }) => {
   const e = estiloSaude(row.saude);
   return (
