@@ -1651,6 +1651,36 @@ export type Database = {
         }
         Relationships: []
       }
+      corte_teste: {
+        Row: {
+          chars: number | null
+          conteudo: string | null
+          criado_em: string | null
+          id: number
+          indice: number | null
+          metodo: string | null
+          video_id: string | null
+        }
+        Insert: {
+          chars?: number | null
+          conteudo?: string | null
+          criado_em?: string | null
+          id?: never
+          indice?: number | null
+          metodo?: string | null
+          video_id?: string | null
+        }
+        Update: {
+          chars?: number | null
+          conteudo?: string | null
+          criado_em?: string | null
+          id?: never
+          indice?: number | null
+          metodo?: string | null
+          video_id?: string | null
+        }
+        Relationships: []
+      }
       crm_dominios: {
         Row: {
           aceita_email: boolean
@@ -2171,6 +2201,54 @@ export type Database = {
           tipo?: string | null
           trecho_origem?: string | null
           versao?: string
+          video_id?: string
+        }
+        Relationships: []
+      }
+      documents_cursos_puro: {
+        Row: {
+          aula_titulo: string | null
+          chars: number | null
+          content: string
+          criado_em: string
+          cursos: string[]
+          embedding: string | null
+          id: number
+          indice: number | null
+          minuto: number | null
+          modulo_titulo: string | null
+          tema: string | null
+          total: number | null
+          video_id: string
+        }
+        Insert: {
+          aula_titulo?: string | null
+          chars?: number | null
+          content: string
+          criado_em?: string
+          cursos: string[]
+          embedding?: string | null
+          id?: never
+          indice?: number | null
+          minuto?: number | null
+          modulo_titulo?: string | null
+          tema?: string | null
+          total?: number | null
+          video_id: string
+        }
+        Update: {
+          aula_titulo?: string | null
+          chars?: number | null
+          content?: string
+          criado_em?: string
+          cursos?: string[]
+          embedding?: string | null
+          id?: never
+          indice?: number | null
+          minuto?: number | null
+          modulo_titulo?: string | null
+          tema?: string | null
+          total?: number | null
           video_id?: string
         }
         Relationships: []
@@ -5997,6 +6075,27 @@ export type Database = {
         }
         Relationships: []
       }
+      prompt_extrator: {
+        Row: {
+          corpo: string
+          criado_em: string | null
+          nota: string | null
+          versao: string
+        }
+        Insert: {
+          corpo: string
+          criado_em?: string | null
+          nota?: string | null
+          versao: string
+        }
+        Update: {
+          corpo?: string
+          criado_em?: string | null
+          nota?: string | null
+          versao?: string
+        }
+        Relationships: []
+      }
       receita_ingredientes: {
         Row: {
           alternativas: string[]
@@ -6164,6 +6263,39 @@ export type Database = {
           id?: number
           message?: Json
           session_id?: string
+        }
+        Relationships: []
+      }
+      refino: {
+        Row: {
+          config: string | null
+          criado_em: string | null
+          entrou: string | null
+          id: number
+          pedaco: number | null
+          rodada: string | null
+          saiu: Json | null
+          total_pedacos: number | null
+        }
+        Insert: {
+          config?: string | null
+          criado_em?: string | null
+          entrou?: string | null
+          id?: never
+          pedaco?: number | null
+          rodada?: string | null
+          saiu?: Json | null
+          total_pedacos?: number | null
+        }
+        Update: {
+          config?: string | null
+          criado_em?: string | null
+          entrou?: string | null
+          id?: never
+          pedaco?: number | null
+          rodada?: string | null
+          saiu?: Json | null
+          total_pedacos?: number | null
         }
         Relationships: []
       }
@@ -6915,6 +7047,36 @@ export type Database = {
         }
         Relationships: []
       }
+      teste_chunk: {
+        Row: {
+          aula_titulo: string | null
+          config: string
+          conteudo: string
+          embedding: string | null
+          id: number
+          indice: number | null
+          video_id: string
+        }
+        Insert: {
+          aula_titulo?: string | null
+          config: string
+          conteudo: string
+          embedding?: string | null
+          id?: never
+          indice?: number | null
+          video_id: string
+        }
+        Update: {
+          aula_titulo?: string | null
+          config?: string
+          conteudo?: string
+          embedding?: string | null
+          id?: never
+          indice?: number | null
+          video_id?: string
+        }
+        Relationships: []
+      }
       teste_modelo: {
         Row: {
           chunk_id: number | null
@@ -6936,6 +7098,24 @@ export type Database = {
           id?: never
           modelo?: string | null
           saida?: string | null
+        }
+        Relationships: []
+      }
+      teste_pergunta: {
+        Row: {
+          embedding: string | null
+          id: number
+          texto: string | null
+        }
+        Insert: {
+          embedding?: string | null
+          id?: never
+          texto?: string | null
+        }
+        Update: {
+          embedding?: string | null
+          id?: never
+          texto?: string | null
         }
         Relationships: []
       }
@@ -8164,6 +8344,14 @@ export type Database = {
         Returns: Json
       }
       corrigir_grafia: { Args: { t: string }; Returns: string }
+      cortar_nas_ancoras: {
+        Args: { p_ancoras: string[]; p_texto: string }
+        Returns: {
+          achou: boolean
+          conteudo: string
+          indice: number
+        }[]
+      }
       criar_convite_avaliacao_produto: {
         Args: { p_pedido_id: string }
         Returns: string
@@ -8195,6 +8383,13 @@ export type Database = {
         Returns: Json
       }
       evolucao_sincronizar: { Args: { p_user?: string }; Returns: number }
+      fatiar_texto: {
+        Args: { p_sobra?: number; p_tam?: number; p_texto: string }
+        Returns: {
+          conteudo: string
+          indice: number
+        }[]
+      }
       fila_destravar: { Args: never; Returns: number }
       fila_estado: {
         Args: never
@@ -8707,6 +8902,17 @@ export type Database = {
           pittascore: number
           vatascore: number
         }[]
+      }
+      rodar_hipotese: {
+        Args: {
+          p_modelo: string
+          p_rodada: string
+          p_sobra: number
+          p_tam: number
+          p_versao: string
+          p_video: string
+        }
+        Returns: string
       }
       rotina_para_impressao: {
         Args: { p_teste_id: string }

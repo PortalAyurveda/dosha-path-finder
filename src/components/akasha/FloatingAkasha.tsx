@@ -3,6 +3,7 @@ import { useLocation } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/contexts/UserContext";
+import { useCart } from "@/contexts/CartContext";
 import { Send, Loader2, X } from "lucide-react";
 import AkashaMessageContent, { type AkashaRichCard } from "@/components/akasha/AkashaMessageContent";
 import MemoriaBadge from "@/components/akasha/MemoriaBadge";
@@ -71,6 +72,7 @@ const mapDbHistoryMessage = (row: any): ChatMessage | null => {
 const FloatingAkasha = () => {
   const location = useLocation();
   const { user, profile, doshaResult } = useUser();
+  const { isOpen: cartOpen } = useCart();
   const queryClient = useQueryClient();
 
   const [open, setOpen] = useState(false);
@@ -121,7 +123,8 @@ const FloatingAkasha = () => {
   const cacheKey = ["akasha-history", resolvedEmail] as const;
 
   const shouldHide = HIDDEN_PREFIXES.some((p) => location.pathname.startsWith(p))
-    || HIDDEN_INCLUDES.some((p) => location.pathname.includes(p));
+    || HIDDEN_INCLUDES.some((p) => location.pathname.includes(p))
+    || cartOpen;
 
 
   const scrollChatToBottom = useCallback(() => {
