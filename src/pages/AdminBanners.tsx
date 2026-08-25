@@ -493,6 +493,28 @@ const AdminBanners = () => {
                     </p>
                   )}
 
+                  {(() => {
+                    const m = metricasById[b.id];
+                    if (!m) return null;
+                    const temImpressoes = m.impressoes_30d > 0;
+                    return (
+                      <>
+                        <p className="text-xs text-muted-foreground">
+                          {temImpressoes
+                            ? `${m.impressoes_30d.toLocaleString("pt-BR")} impressões · ${m.cliques_30d.toLocaleString("pt-BR")} cliques · ${m.ctr_30d.toLocaleString("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 1 })}% de clique`
+                            : "Sem dado de visualização ainda"}
+                        </p>
+                        {m.saude === "critica" && m.saude_motivo && (
+                          <p className="text-xs text-red-600">{m.saude_motivo}</p>
+                        )}
+                        {m.saude === "atencao" && m.saude_motivo && (
+                          <p className="text-xs text-amber-600">{m.saude_motivo}</p>
+                        )}
+                      </>
+                    );
+                  })()}
+
+
                   <div className="flex flex-wrap gap-1">
                     {b.campanha && (
                       <Badge variant="secondary" className="text-[10px]">
