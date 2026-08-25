@@ -15,7 +15,7 @@ interface SamkhyaLayoutProps {
  */
 const SamkhyaLayout = ({ children, showHero = false }: SamkhyaLayoutProps) => {
   return (
-    <div style={{ background: samkhyaTokens.fundo, color: samkhyaTokens.texto, fontFamily: samkhyaTokens.fonteCorpo }}>
+    <div className="samkhya-scope" style={{ background: samkhyaTokens.fundo, color: samkhyaTokens.texto, fontFamily: samkhyaTokens.fonteCorpo }}>
       {showHero && <HeroBanner />}
       <SamkhyaNavBar />
       <main className="mx-auto max-w-6xl px-4 py-6 md:py-8">{children}</main>
