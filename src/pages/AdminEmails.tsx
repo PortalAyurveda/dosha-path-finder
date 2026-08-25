@@ -267,16 +267,25 @@ type DashboardRow = {
   cta_url: string | null;
   envios_total: number | null;
   envios_30d: number | null;
+  envios_7d: number | null;
+  envios_hoje: number | null;
   ultimo_envio_em: string | null;
   elegiveis_agora: number | null;
   aberturas_30d: number | null;
+  aberturas_7d: number | null;
+  aberturas_hoje: number | null;
   cliques_30d: number | null;
+  cliques_7d: number | null;
+  cliques_hoje: number | null;
   taxa_abertura_30d: number | null;
+  taxa_abertura_7d: number | null;
   taxa_clique_30d: number | null;
+  taxa_clique_7d: number | null;
   tokens_quebrados: string[] | null;
   saude: string | null;
   saude_motivo: string | null;
 };
+
 
 const useDashboard = () =>
   useQuery({
