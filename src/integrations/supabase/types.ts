@@ -2089,10 +2089,12 @@ export type Database = {
           id: number
           metadata: Json
           minuto: number | null
+          modelo: string | null
           modulo_titulo: string | null
           nivel: string | null
           tema: string | null
           tipo: string | null
+          versao: string
           video_id: string
         }
         Insert: {
@@ -2104,10 +2106,12 @@ export type Database = {
           id?: never
           metadata?: Json
           minuto?: number | null
+          modelo?: string | null
           modulo_titulo?: string | null
           nivel?: string | null
           tema?: string | null
           tipo?: string | null
+          versao?: string
           video_id: string
         }
         Update: {
@@ -2119,11 +2123,67 @@ export type Database = {
           id?: never
           metadata?: Json
           minuto?: number | null
+          modelo?: string | null
           modulo_titulo?: string | null
           nivel?: string | null
           tema?: string | null
           tipo?: string | null
+          versao?: string
           video_id?: string
+        }
+        Relationships: []
+      }
+      documents_cursos_v1: {
+        Row: {
+          aula_titulo: string | null
+          content: string | null
+          criado_em: string | null
+          cursos: string[] | null
+          embedding: string | null
+          id: number | null
+          metadata: Json | null
+          minuto: number | null
+          modelo: string | null
+          modulo_titulo: string | null
+          nivel: string | null
+          tema: string | null
+          tipo: string | null
+          versao: string | null
+          video_id: string | null
+        }
+        Insert: {
+          aula_titulo?: string | null
+          content?: string | null
+          criado_em?: string | null
+          cursos?: string[] | null
+          embedding?: string | null
+          id?: number | null
+          metadata?: Json | null
+          minuto?: number | null
+          modelo?: string | null
+          modulo_titulo?: string | null
+          nivel?: string | null
+          tema?: string | null
+          tipo?: string | null
+          versao?: string | null
+          video_id?: string | null
+        }
+        Update: {
+          aula_titulo?: string | null
+          content?: string | null
+          criado_em?: string | null
+          cursos?: string[] | null
+          embedding?: string | null
+          id?: number | null
+          metadata?: Json | null
+          minuto?: number | null
+          modelo?: string | null
+          modulo_titulo?: string | null
+          nivel?: string | null
+          tema?: string | null
+          tipo?: string | null
+          versao?: string | null
+          video_id?: string | null
         }
         Relationships: []
       }
