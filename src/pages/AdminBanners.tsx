@@ -249,6 +249,24 @@ const AdminBanners = () => {
     },
   });
 
+  const metricasQ = useQuery({
+    queryKey: ["admin", "banners_metricas"],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("admin_banners_dashboard");
+      if (error) throw error;
+      return (data ?? []) as (Banner & BannerMetricas & {
+        impressoes_total: number;
+        impressoes_hoje: number;
+        impressoes_7d: number;
+        cliques_total: number;
+        cliques_hoje: number;
+        cliques_7d: number;
+        ctr_7d: number;
+      })[];
+    },
+    retry: false,
+  });
+
   const moldes = moldesQ.data ?? [];
   const banners = bannersQ.data ?? [];
 
