@@ -211,6 +211,7 @@ const CursosVitrine = () => {
                 const badgeText = temData
                   ? formatarDataLancamento(c.data_lancamento!)
                   : "EM BREVE";
+                const isDetox = c.slug === "detox-da-primavera";
                 return (
                   <article
                     key={c.id}
@@ -225,13 +226,17 @@ const CursosVitrine = () => {
                           height={600}
                           loading="lazy"
                           decoding="async"
-                          className="w-full h-full object-cover grayscale-[70%] opacity-80"
+                          className={`w-full h-full object-cover ${
+                            isDetox ? "opacity-95" : "grayscale-[70%] opacity-80"
+                          }`}
                         />
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <div className="bg-black/40 backdrop-blur-sm rounded-full p-4">
-                            <Lock className="w-8 h-8 text-white" />
+                        {!isDetox && (
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <div className="bg-black/40 backdrop-blur-sm rounded-full p-4">
+                              <Lock className="w-8 h-8 text-white" />
+                            </div>
                           </div>
-                        </div>
+                        )}
                         <span className="absolute top-3 left-3 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full text-white shadow-md bg-slate-600">
                           {badgeText}
                         </span>
@@ -241,27 +246,37 @@ const CursosVitrine = () => {
                     )}
                     <div className="p-6 flex flex-col flex-1">
                       <h3
-                        className={`mb-2 ${tituloClass(c.titulo)} line-clamp-2 leading-tight text-muted-foreground`}
+                        className={`mb-2 ${tituloClass(c.titulo)} line-clamp-2 leading-tight ${isDetox ? "" : "text-muted-foreground"}`}
                         title={c.titulo}
                       >
                         {c.titulo}
                       </h3>
                       <p className="text-sm text-muted-foreground mb-5 line-clamp-3 flex-1">
                         {c.descricao_em_breve?.trim() ||
+                          c.descricao?.trim() ||
                           "Em breve disponível no Portal."}
                       </p>
                     </div>
                     <div className="px-6 pb-6 -mt-2">
-                      <Button
-                        disabled
-                        className="w-full cursor-not-allowed bg-muted text-muted-foreground hover:bg-muted"
-                      >
-                        Em breve
-                      </Button>
+                      {isDetox ? (
+                        <Button asChild className="w-full">
+                          <Link to="/aula/detox-primavera">
+                            Quero minha pré-inscrição
+                          </Link>
+                        </Button>
+                      ) : (
+                        <Button
+                          disabled
+                          className="w-full cursor-not-allowed bg-muted text-muted-foreground hover:bg-muted"
+                        >
+                          Em breve
+                        </Button>
+                      )}
                     </div>
                   </article>
                 );
               }
+
 
               // Estado 2: disponível
               const landing = destinoLanding(c.slug, c.pagina_lancamento_url);
