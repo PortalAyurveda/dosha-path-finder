@@ -345,12 +345,30 @@ const Lista = ({ onAbrir }: { onAbrir: (id: string) => void }) => {
         .eq("id", id);
       if (error) throw error;
     },
+    onMutate: async ({ id, ativo }: { id: string; ativo: boolean }) => {
+      await qc.cancelQueries({ queryKey: ["admin-agenda-dashboard"] });
+      const anterior = qc.getQueryData<DashboardRow[]>([
+        "admin-agenda-dashboard",
+      ]);
+      qc.setQueryData<DashboardRow[]>(["admin-agenda-dashboard"], (old) =>
+        (old ?? []).map((r) => (r.id === id ? { ...r, ativo } : r)),
+      );
+      return { anterior };
+    },
+    onError: (e: any, _vars, ctx: any) => {
+      if (ctx?.anterior) {
+        qc.setQueryData(["admin-agenda-dashboard"], ctx.anterior);
+      }
+      toast.error(e?.message ?? "Erro ao atualizar");
+    },
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["admin-agenda-dashboard"] });
       toast.success("Status atualizado");
     },
-    onError: (e: any) => toast.error(e?.message ?? "Erro ao atualizar"),
+    onSettled: () => {
+      qc.invalidateQueries({ queryKey: ["admin-agenda-dashboard"] });
+    },
   });
+
 
   const pesoSaude: Record<string, number> = {
     critica: 0,
