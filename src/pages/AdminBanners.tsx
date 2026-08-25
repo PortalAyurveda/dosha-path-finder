@@ -136,6 +136,23 @@ type Molde = {
   ordem: number | null;
 };
 
+type MetricRow = {
+  id: string;
+  impressoes_30d: number;
+  cliques_30d: number;
+  ctr_30d: number;
+  saude: string | null;
+  saude_motivo: string | null;
+};
+
+type BannerMetricas = {
+  impressoes_30d: number;
+  cliques_30d: number;
+  ctr_30d: number;
+  saude: string | null;
+  saude_motivo: string | null;
+};
+
 type Modo = "imagem" | "html";
 
 type FormState = {
@@ -241,6 +258,16 @@ const AdminBanners = () => {
     },
   });
 
+  const metricasQ = useQuery({
+    queryKey: ["admin", "banners_metricas"],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("admin_banners_dashboard");
+      if (error) throw error;
+      return (data ?? []) as unknown as MetricRow[];
+    },
+    retry: false,
+  });
+
   const moldes = moldesQ.data ?? [];
   const banners = bannersQ.data ?? [];
 
@@ -267,6 +294,20 @@ const AdminBanners = () => {
     });
     return m;
   }, [banners]);
+
+  const metricasById = useMemo(() => {
+    const m: Record<string, BannerMetricas> = {};
+    (metricasQ.data ?? []).forEach((x) => {
+      m[x.id] = {
+        impressoes_30d: Number(x.impressoes_30d) || 0,
+        cliques_30d: Number(x.cliques_30d) || 0,
+        ctr_30d: Number(x.ctr_30d) || 0,
+        saude: x.saude,
+        saude_motivo: x.saude_motivo,
+      };
+    });
+    return m;
+  }, [metricasQ.data]);
 
   // ---------- mutations ----------
   const upsertMut = useMutation({
@@ -451,6 +492,28 @@ const AdminBanners = () => {
                         : `Aparece em ${Math.round(100 / noAr.length)}% das visitas`}
                     </p>
                   )}
+
+                  {(() => {
+                    const m = metricasById[b.id];
+                    if (!m) return null;
+                    const temImpressoes = m.impressoes_30d > 0;
+                    return (
+                      <>
+                        <p className="text-xs text-muted-foreground">
+                          {temImpressoes
+                            ? `${m.impressoes_30d.toLocaleString("pt-BR")} impressões · ${m.cliques_30d.toLocaleString("pt-BR")} cliques · ${m.ctr_30d.toLocaleString("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 1 })}% de clique`
+                            : "Sem dado de visualização ainda"}
+                        </p>
+                        {m.saude === "critica" && m.saude_motivo && (
+                          <p className="text-xs text-red-600">{m.saude_motivo}</p>
+                        )}
+                        {m.saude === "atencao" && m.saude_motivo && (
+                          <p className="text-xs text-amber-600">{m.saude_motivo}</p>
+                        )}
+                      </>
+                    );
+                  })()}
+
 
                   <div className="flex flex-wrap gap-1">
                     {b.campanha && (

@@ -8133,6 +8133,30 @@ export type Database = {
           tipo: string
         }[]
       }
+      admin_banners_dashboard: {
+        Args: never
+        Returns: {
+          ativo: boolean
+          campanha: string
+          cliques_30d: number
+          cliques_7d: number
+          cliques_hoje: number
+          cliques_total: number
+          ctr_30d: number
+          ctr_7d: number
+          id: string
+          impressoes_30d: number
+          impressoes_7d: number
+          impressoes_hoje: number
+          impressoes_total: number
+          ordem: number
+          saude: string
+          saude_motivo: string
+          slot: string
+          titulo_admin: string
+          ultima_impressao_em: string
+        }[]
+      }
       admin_buscar_pessoa: {
         Args: { q: string }
         Returns: {
@@ -9001,6 +9025,20 @@ export type Database = {
       rodar_hipotese2: {
         Args: {
           p_ctx_saida?: boolean
+          p_modelo: string
+          p_rodada: string
+          p_sobra: number
+          p_tam: number
+          p_versao: string
+          p_video: string
+        }
+        Returns: string
+      }
+      rodar_hipotese3: {
+        Args: {
+          p_ate?: number
+          p_ctx_saida?: boolean
+          p_de?: number
           p_modelo: string
           p_rodada: string
           p_sobra: number
