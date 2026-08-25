@@ -406,6 +406,33 @@ export type Database = {
           },
         ]
       }
+      antiruido_trocas: {
+        Row: {
+          ativo: boolean
+          id: number
+          nota: string | null
+          ocorrencias: number | null
+          padrao: string
+          troca: string
+        }
+        Insert: {
+          ativo?: boolean
+          id?: never
+          nota?: string | null
+          ocorrencias?: number | null
+          padrao: string
+          troca: string
+        }
+        Update: {
+          ativo?: boolean
+          id?: never
+          nota?: string | null
+          ocorrencias?: number | null
+          padrao?: string
+          troca?: string
+        }
+        Relationships: []
+      }
       arquitetura_fluxos: {
         Row: {
           ativo: boolean | null
@@ -6786,6 +6813,30 @@ export type Database = {
         }
         Relationships: []
       }
+      teste_modelo: {
+        Row: {
+          chunk_id: number | null
+          criado_em: string | null
+          id: number
+          modelo: string | null
+          saida: string | null
+        }
+        Insert: {
+          chunk_id?: number | null
+          criado_em?: string | null
+          id?: never
+          modelo?: string | null
+          saida?: string | null
+        }
+        Update: {
+          chunk_id?: number | null
+          criado_em?: string | null
+          id?: never
+          modelo?: string | null
+          saida?: string | null
+        }
+        Relationships: []
+      }
       testededosha: {
         Row: {
           created_at: string | null
@@ -6825,6 +6876,27 @@ export type Database = {
           profundidade?: string | null
           qualidade_reteste?: string | null
           tag?: string | null
+        }
+        Relationships: []
+      }
+      tutor_chat_histories: {
+        Row: {
+          data_hora: string | null
+          id: number
+          message: Json | null
+          session_id: string | null
+        }
+        Insert: {
+          data_hora?: string | null
+          id?: never
+          message?: Json | null
+          session_id?: string | null
+        }
+        Update: {
+          data_hora?: string | null
+          id?: never
+          message?: Json | null
+          session_id?: string | null
         }
         Relationships: []
       }
@@ -8022,9 +8094,31 @@ export type Database = {
       }
       evolucao_sincronizar: { Args: { p_user?: string }; Returns: number }
       fila_destravar: { Args: never; Returns: number }
+      fila_estado: {
+        Args: never
+        Returns: {
+          com_vetor: number
+          erro: number
+          fichas: number
+          ok: number
+          pendente: number
+          processando: number
+        }[]
+      }
       fila_fechar_aula: {
         Args: { p_chunks?: number; p_erro?: string; p_video_id: string }
         Returns: undefined
+      }
+      fila_gravar_texto: {
+        Args: { p_texto: string; p_video_id: string }
+        Returns: number
+      }
+      fila_liberar_apenas: {
+        Args: { p_curso: string }
+        Returns: {
+          liberadas: number
+          pausadas: number
+        }[]
       }
       fila_proximas_aulas: {
         Args: { qtd?: number }
@@ -8302,22 +8396,12 @@ export type Database = {
         }[]
       }
       match_documents_cursos: {
-        Args: {
-          match_count?: number
-          match_threshold?: number
-          p_curso: string
-          query_embedding: string
-        }
+        Args: { filter?: Json; match_count?: number; query_embedding: string }
         Returns: {
-          aula_titulo: string
           content: string
           id: number
-          minuto: number
-          modulo_titulo: string
-          nivel: string
+          metadata: Json
           similarity: number
-          tipo: string
-          video_id: string
         }[]
       }
       match_jornadaaliment: {
@@ -8554,6 +8638,8 @@ export type Database = {
       seo_conteudo: { Args: { p_path: string }; Returns: Json }
       seo_meta: { Args: { p_path: string }; Returns: Json }
       seo_slug_video: { Args: { p_titulo: string }; Returns: string }
+      show_limit: { Args: never; Returns: number }
+      show_trgm: { Args: { "": string }; Returns: string[] }
       sou_aluno_escola: { Args: never; Returns: boolean }
       tag_normalizar: { Args: { p: string }; Returns: string }
       tem_acesso_curso: { Args: { p_curso_id: string }; Returns: boolean }
