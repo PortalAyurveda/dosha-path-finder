@@ -14,3 +14,11 @@
   font-style: normal;
   font-display: swap;
 }
+
+/* Sem itálico nos títulos da loja (o portal segue com serifa itálica). */
+.samkhya-scope h1,
+.samkhya-scope h2,
+.samkhya-scope h3,
+.samkhya-scope h4 {
+  font-style: normal;
+}

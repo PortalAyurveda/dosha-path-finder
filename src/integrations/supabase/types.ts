@@ -754,6 +754,39 @@ export type Database = {
         }
         Relationships: []
       }
+      auditoria_rag_cursos: {
+        Row: {
+          busca_tecnica: string | null
+          contexto_recuperado: string | null
+          curso: string | null
+          data_hora: string
+          email_aluno: string | null
+          id: number
+          pergunta_original: string | null
+          resposta_final: string | null
+        }
+        Insert: {
+          busca_tecnica?: string | null
+          contexto_recuperado?: string | null
+          curso?: string | null
+          data_hora?: string
+          email_aluno?: string | null
+          id?: never
+          pergunta_original?: string | null
+          resposta_final?: string | null
+        }
+        Update: {
+          busca_tecnica?: string | null
+          contexto_recuperado?: string | null
+          curso?: string | null
+          data_hora?: string
+          email_aluno?: string | null
+          id?: never
+          pergunta_original?: string | null
+          resposta_final?: string | null
+        }
+        Relationships: []
+      }
       aulas_ao_vivo: {
         Row: {
           button_delay_minutes: number
@@ -2159,17 +2192,13 @@ export type Database = {
           minuto: number | null
           modelo: string | null
           modulo_titulo: string | null
-          nivel: string | null
           pedaco: number | null
           prompt_versao: string | null
           slug_portal: string | null
-          tags: string[] | null
           tema: string | null
-          tipo: string | null
           titulo_no_curso: string | null
           titulo_no_youtube: string | null
           titulo_seo: string | null
-          topico: string | null
           total_pedacos: number | null
           trecho_origem: string | null
           url_youtube: string | null
@@ -2185,17 +2214,13 @@ export type Database = {
           minuto?: number | null
           modelo?: string | null
           modulo_titulo?: string | null
-          nivel?: string | null
           pedaco?: number | null
           prompt_versao?: string | null
           slug_portal?: string | null
-          tags?: string[] | null
           tema?: string | null
-          tipo?: string | null
           titulo_no_curso?: string | null
           titulo_no_youtube?: string | null
           titulo_seo?: string | null
-          topico?: string | null
           total_pedacos?: number | null
           trecho_origem?: string | null
           url_youtube?: string | null
@@ -2211,17 +2236,13 @@ export type Database = {
           minuto?: number | null
           modelo?: string | null
           modulo_titulo?: string | null
-          nivel?: string | null
           pedaco?: number | null
           prompt_versao?: string | null
           slug_portal?: string | null
-          tags?: string[] | null
           tema?: string | null
-          tipo?: string | null
           titulo_no_curso?: string | null
           titulo_no_youtube?: string | null
           titulo_seo?: string | null
-          topico?: string | null
           total_pedacos?: number | null
           trecho_origem?: string | null
           url_youtube?: string | null
@@ -6910,6 +6931,30 @@ export type Database = {
           },
         ]
       }
+      ruido_achado: {
+        Row: {
+          criado_em: string | null
+          id: number
+          palavra: string | null
+          sugestao: string | null
+          tema: string | null
+        }
+        Insert: {
+          criado_em?: string | null
+          id?: never
+          palavra?: string | null
+          sugestao?: string | null
+          tema?: string | null
+        }
+        Update: {
+          criado_em?: string | null
+          id?: never
+          palavra?: string | null
+          sugestao?: string | null
+          tema?: string | null
+        }
+        Relationships: []
+      }
       samkhya: {
         Row: {
           content: string | null
@@ -8525,6 +8570,7 @@ export type Database = {
           pausadas: number
         }[]
       }
+      fila_proxima_aula_fatiada: { Args: never; Returns: Json }
       fila_proximas_aulas: {
         Args: { qtd?: number }
         Returns: {
@@ -8721,6 +8767,10 @@ export type Database = {
       http_set_curlopt: {
         Args: { curlopt: string; value: string }
         Returns: boolean
+      }
+      ingerir_lote_cursos: {
+        Args: { p_ate: number; p_de: number; p_lote_embed?: number }
+        Returns: Json
       }
       is_admin: { Args: never; Returns: boolean }
       jiva_concluir: {
