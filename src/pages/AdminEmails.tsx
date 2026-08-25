@@ -17,6 +17,8 @@ import {
 } from "lucide-react";
 
 import AdminNav from "@/components/admin/AdminNav";
+import DetalheAnalytics from "@/components/admin/emails/DetalheAnalytics";
+
 import { supabase } from "@/integrations/supabase/client";
 import { lojaSupabase } from "@/integrations/supabase/loja-client";
 import { Button } from "@/components/ui/button";
