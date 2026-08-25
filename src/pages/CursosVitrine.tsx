@@ -51,6 +51,15 @@ const formatarDataLancamento = (dataStr: string): string => {
   return `LANÇA ${dia} DE ${mes}`;
 };
 
+const ORDEM_VITRINE = [
+  "detox-da-primavera",
+  "rotinas-diarias",
+  "alimentacao-e-nutricao",
+  "dravya-guna-remedios-caseiros",
+  "diagnostico-e-autocuidado",
+  "mentoria-para-terapeutas",
+];
+
 const CursosVitrine = () => {
   const { user } = useUser();
   const [cursos, setCursos] = useState<Curso[]>([]);
@@ -64,8 +73,11 @@ const CursosVitrine = () => {
         .select(
           "id,slug,titulo,descricao,descricao_em_breve,capa_url,ordem,preco,ativo,data_lancamento,pagina_lancamento_url"
         )
-        .order("ordem", { ascending: true });
-      setCursos((data as Curso[]) ?? []);
+        .in("slug", ORDEM_VITRINE);
+      const cursosOrdenados = ORDEM_VITRINE
+        .map((slug) => (data as Curso[] | null)?.find((c) => c.slug === slug))
+        .filter((c): c is Curso => !!c);
+      setCursos(cursosOrdenados);
       if (user) {
         const { data: mats } = await supabase
           .from("curso_matriculas")
@@ -76,6 +88,7 @@ const CursosVitrine = () => {
       setLoading(false);
     })();
   }, [user]);
+
 
   const LANDING_PROPRIA: Record<string, string> = {
     "rotinas-diarias": "/curso/rotinas",
