@@ -136,6 +136,14 @@ type Molde = {
   ordem: number | null;
 };
 
+type BannerMetricas = {
+  impressoes_30d: number;
+  cliques_30d: number;
+  ctr_30d: number;
+  saude: string | null;
+  saude_motivo: string | null;
+};
+
 type Modo = "imagem" | "html";
 
 type FormState = {
