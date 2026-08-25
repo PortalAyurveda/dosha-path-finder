@@ -3,6 +3,7 @@ import { useLocation } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/contexts/UserContext";
+import { useCart } from "@/contexts/CartContext";
 import { Send, Loader2, X } from "lucide-react";
 import AkashaMessageContent, { type AkashaRichCard } from "@/components/akasha/AkashaMessageContent";
 import MemoriaBadge from "@/components/akasha/MemoriaBadge";
