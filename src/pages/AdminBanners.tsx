@@ -295,6 +295,20 @@ const AdminBanners = () => {
     return m;
   }, [banners]);
 
+  const metricasById = useMemo(() => {
+    const m: Record<string, BannerMetricas> = {};
+    (metricasQ.data ?? []).forEach((x) => {
+      m[x.id] = {
+        impressoes_30d: Number(x.impressoes_30d) || 0,
+        cliques_30d: Number(x.cliques_30d) || 0,
+        ctr_30d: Number(x.ctr_30d) || 0,
+        saude: x.saude,
+        saude_motivo: x.saude_motivo,
+      };
+    });
+    return m;
+  }, [metricasQ.data]);
+
   // ---------- mutations ----------
   const upsertMut = useMutation({
     mutationFn: async (f: FormState) => {
