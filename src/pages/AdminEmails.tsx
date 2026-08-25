@@ -17,6 +17,8 @@ import {
 } from "lucide-react";
 
 import AdminNav from "@/components/admin/AdminNav";
+import DetalheAnalytics from "@/components/admin/emails/DetalheAnalytics";
+
 import { supabase } from "@/integrations/supabase/client";
 import { lojaSupabase } from "@/integrations/supabase/loja-client";
 import { Button } from "@/components/ui/button";
@@ -267,16 +269,25 @@ type DashboardRow = {
   cta_url: string | null;
   envios_total: number | null;
   envios_30d: number | null;
+  envios_7d: number | null;
+  envios_hoje: number | null;
   ultimo_envio_em: string | null;
   elegiveis_agora: number | null;
   aberturas_30d: number | null;
+  aberturas_7d: number | null;
+  aberturas_hoje: number | null;
   cliques_30d: number | null;
+  cliques_7d: number | null;
+  cliques_hoje: number | null;
   taxa_abertura_30d: number | null;
+  taxa_abertura_7d: number | null;
   taxa_clique_30d: number | null;
+  taxa_clique_7d: number | null;
   tokens_quebrados: string[] | null;
   saude: string | null;
   saude_motivo: string | null;
 };
+
 
 const useDashboard = () =>
   useQuery({
@@ -303,6 +314,54 @@ const estiloSaude = (s: string | null) =>
 
 const fmtPct = (v: number | null | undefined) =>
   v === null || v === undefined ? "—" : `${Number(v).toFixed(1).replace(".", ",")}%`;
+
+const MiniTabela = ({ row }: { row: DashboardRow }) => (
+  <table className="w-full text-sm">
+    <thead>
+      <tr className="text-[11px] uppercase text-muted-foreground">
+        <th className="text-left font-medium py-1" />
+        <th className="text-right font-medium py-1">Hoje</th>
+        <th className="text-right font-medium py-1">7 dias</th>
+        <th className="text-right font-medium py-1">30 dias</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td className="py-1 text-xs text-muted-foreground">Envios</td>
+        <td className="py-1 text-right tabular-nums font-medium text-foreground">
+          {Number(row.envios_hoje ?? 0)}
+        </td>
+        <td className="py-1 text-right tabular-nums font-medium text-foreground">
+          {Number(row.envios_7d ?? 0)}
+        </td>
+        <td className="py-1 text-right tabular-nums font-medium text-foreground">
+          {Number(row.envios_30d ?? 0)}
+        </td>
+      </tr>
+      <tr>
+        <td className="py-1 text-xs text-muted-foreground">Abertura</td>
+        <td className="py-1 text-right text-muted-foreground">—</td>
+        <td className="py-1 text-right tabular-nums font-medium text-foreground">
+          {fmtPct(row.taxa_abertura_7d)}
+        </td>
+        <td className="py-1 text-right tabular-nums font-medium text-foreground">
+          {fmtPct(row.taxa_abertura_30d)}
+        </td>
+      </tr>
+      <tr>
+        <td className="py-1 text-xs text-muted-foreground">Clique</td>
+        <td className="py-1 text-right text-muted-foreground">—</td>
+        <td className="py-1 text-right tabular-nums font-medium text-foreground">
+          {fmtPct(row.taxa_clique_7d)}
+        </td>
+        <td className="py-1 text-right tabular-nums font-medium text-foreground">
+          {fmtPct(row.taxa_clique_30d)}
+        </td>
+      </tr>
+    </tbody>
+  </table>
+);
+
 
 const SaudeBloco = ({ row }: { row: DashboardRow }) => {
   const e = estiloSaude(row.saude);
@@ -345,12 +404,30 @@ const Lista = ({ onAbrir }: { onAbrir: (id: string) => void }) => {
         .eq("id", id);
       if (error) throw error;
     },
+    onMutate: async ({ id, ativo }: { id: string; ativo: boolean }) => {
+      await qc.cancelQueries({ queryKey: ["admin-agenda-dashboard"] });
+      const anterior = qc.getQueryData<DashboardRow[]>([
+        "admin-agenda-dashboard",
+      ]);
+      qc.setQueryData<DashboardRow[]>(["admin-agenda-dashboard"], (old) =>
+        (old ?? []).map((r) => (r.id === id ? { ...r, ativo } : r)),
+      );
+      return { anterior };
+    },
+    onError: (e: any, _vars, ctx: any) => {
+      if (ctx?.anterior) {
+        qc.setQueryData(["admin-agenda-dashboard"], ctx.anterior);
+      }
+      toast.error(e?.message ?? "Erro ao atualizar");
+    },
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["admin-agenda-dashboard"] });
       toast.success("Status atualizado");
     },
-    onError: (e: any) => toast.error(e?.message ?? "Erro ao atualizar"),
+    onSettled: () => {
+      qc.invalidateQueries({ queryKey: ["admin-agenda-dashboard"] });
+    },
   });
+
 
   const pesoSaude: Record<string, number> = {
     critica: 0,
@@ -463,32 +540,10 @@ const Lista = ({ onAbrir }: { onAbrir: (id: string) => void }) => {
 
                     <SaudeBloco row={r} />
 
-                    <div className="grid grid-cols-3 gap-2 pt-1 border-t border-border">
-                      <div className="pt-2">
-                        <div className="text-lg font-semibold text-foreground">
-                          {Number(r.envios_30d ?? 0)}
-                        </div>
-                        <div className="text-[11px] text-muted-foreground">
-                          envios (30d)
-                        </div>
-                      </div>
-                      <div className="pt-2">
-                        <div className="text-lg font-semibold text-foreground">
-                          {fmtPct(r.taxa_abertura_30d)}
-                        </div>
-                        <div className="text-[11px] text-muted-foreground">
-                          abertura
-                        </div>
-                      </div>
-                      <div className="pt-2">
-                        <div className="text-lg font-semibold text-foreground">
-                          {fmtPct(r.taxa_clique_30d)}
-                        </div>
-                        <div className="text-[11px] text-muted-foreground">
-                          clique
-                        </div>
-                      </div>
+                    <div className="pt-1 border-t border-border">
+                      <MiniTabela row={r} />
                     </div>
+
 
                     <div className="text-xs text-muted-foreground">
                       Último envio: {fmtData(r.ultimo_envio_em)}
@@ -720,34 +775,14 @@ const Editor = ({ id, onVoltar }: { id: string; onVoltar: () => void }) => {
                 </div>
               )}
 
-            <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-6">
+            <MiniTabela row={metricas} />
+
+            <div className="grid gap-4 sm:grid-cols-3">
               <div>
                 <div className="text-lg font-semibold text-foreground">
                   {Number(metricas.envios_total ?? 0)}
                 </div>
                 <div className="text-xs text-muted-foreground">envios (total)</div>
-              </div>
-              <div>
-                <div className="text-lg font-semibold text-foreground">
-                  {Number(metricas.envios_30d ?? 0)}
-                </div>
-                <div className="text-xs text-muted-foreground">envios (30d)</div>
-              </div>
-              <div>
-                <div className="text-lg font-semibold text-foreground">
-                  {Number(metricas.aberturas_30d ?? 0)}
-                </div>
-                <div className="text-xs text-muted-foreground">
-                  aberturas (30d) · {fmtPct(metricas.taxa_abertura_30d)}
-                </div>
-              </div>
-              <div>
-                <div className="text-lg font-semibold text-foreground">
-                  {Number(metricas.cliques_30d ?? 0)}
-                </div>
-                <div className="text-xs text-muted-foreground">
-                  cliques (30d) · {fmtPct(metricas.taxa_clique_30d)}
-                </div>
               </div>
               <div>
                 <div className="text-lg font-semibold text-foreground">
@@ -768,6 +803,9 @@ const Editor = ({ id, onVoltar }: { id: string; onVoltar: () => void }) => {
           </div>
         </section>
       )}
+
+      <DetalheAnalytics id={id} />
+
 
       {/* A) Dados gerais */}
 

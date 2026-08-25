@@ -2150,57 +2150,81 @@ export type Database = {
       }
       documents_cursos: {
         Row: {
-          aula_titulo: string | null
+          chunk_config: string | null
           content: string
           criado_em: string
           cursos: string[]
           embedding: string | null
           id: number
-          metadata: Json
           minuto: number | null
           modelo: string | null
           modulo_titulo: string | null
           nivel: string | null
+          pedaco: number | null
+          prompt_versao: string | null
+          slug_portal: string | null
+          tags: string[] | null
           tema: string | null
           tipo: string | null
+          titulo_no_curso: string | null
+          titulo_no_youtube: string | null
+          titulo_seo: string | null
+          topico: string | null
+          total_pedacos: number | null
           trecho_origem: string | null
-          versao: string
+          url_youtube: string | null
           video_id: string
         }
         Insert: {
-          aula_titulo?: string | null
+          chunk_config?: string | null
           content: string
           criado_em?: string
           cursos: string[]
           embedding?: string | null
           id?: never
-          metadata?: Json
           minuto?: number | null
           modelo?: string | null
           modulo_titulo?: string | null
           nivel?: string | null
+          pedaco?: number | null
+          prompt_versao?: string | null
+          slug_portal?: string | null
+          tags?: string[] | null
           tema?: string | null
           tipo?: string | null
+          titulo_no_curso?: string | null
+          titulo_no_youtube?: string | null
+          titulo_seo?: string | null
+          topico?: string | null
+          total_pedacos?: number | null
           trecho_origem?: string | null
-          versao?: string
+          url_youtube?: string | null
           video_id: string
         }
         Update: {
-          aula_titulo?: string | null
+          chunk_config?: string | null
           content?: string
           criado_em?: string
           cursos?: string[]
           embedding?: string | null
           id?: never
-          metadata?: Json
           minuto?: number | null
           modelo?: string | null
           modulo_titulo?: string | null
           nivel?: string | null
+          pedaco?: number | null
+          prompt_versao?: string | null
+          slug_portal?: string | null
+          tags?: string[] | null
           tema?: string | null
           tipo?: string | null
+          titulo_no_curso?: string | null
+          titulo_no_youtube?: string | null
+          titulo_seo?: string | null
+          topico?: string | null
+          total_pedacos?: number | null
           trecho_origem?: string | null
-          versao?: string
+          url_youtube?: string | null
           video_id?: string
         }
         Relationships: []
@@ -7047,6 +7071,36 @@ export type Database = {
         }
         Relationships: []
       }
+      teste_busca: {
+        Row: {
+          config: string | null
+          detalhe: string | null
+          embedding: string | null
+          id: number
+          pedaco: number | null
+          texto: string | null
+          topico: string | null
+        }
+        Insert: {
+          config?: string | null
+          detalhe?: string | null
+          embedding?: string | null
+          id?: never
+          pedaco?: number | null
+          texto?: string | null
+          topico?: string | null
+        }
+        Update: {
+          config?: string | null
+          detalhe?: string | null
+          embedding?: string | null
+          id?: never
+          pedaco?: number | null
+          texto?: string | null
+          topico?: string | null
+        }
+        Relationships: []
+      }
       teste_chunk: {
         Row: {
           aula_titulo: string | null
@@ -7979,6 +8033,13 @@ export type Database = {
     }
     Functions: {
       acervo_stats: { Args: never; Returns: Json }
+      admin_agenda_cliques_por_link: {
+        Args: { p_comunicacao_id: string; p_dias?: number }
+        Returns: {
+          cliques: number
+          url: string
+        }[]
+      }
       admin_agenda_dashboard: {
         Args: never
         Returns: {
@@ -8010,6 +8071,29 @@ export type Database = {
           tipo: string
           tokens_quebrados: string[]
           ultimo_envio_em: string
+        }[]
+      }
+      admin_agenda_edicoes: {
+        Args: { p_comunicacao_id: string }
+        Returns: {
+          aberturas: number
+          bounces: number
+          cliques: number
+          descadastros: number
+          edicao: string
+          envios: number
+          primeiro_envio: string
+          taxa_abertura: number
+          taxa_clique: number
+        }[]
+      }
+      admin_agenda_tendencia: {
+        Args: { p_comunicacao_id: string; p_dias?: number }
+        Returns: {
+          aberturas: number
+          cliques: number
+          dia: string
+          envios: number
         }[]
       }
       admin_agenda_visao: {
@@ -8905,6 +8989,18 @@ export type Database = {
       }
       rodar_hipotese: {
         Args: {
+          p_modelo: string
+          p_rodada: string
+          p_sobra: number
+          p_tam: number
+          p_versao: string
+          p_video: string
+        }
+        Returns: string
+      }
+      rodar_hipotese2: {
+        Args: {
+          p_ctx_saida?: boolean
           p_modelo: string
           p_rodada: string
           p_sobra: number
