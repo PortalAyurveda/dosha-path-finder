@@ -316,6 +316,10 @@ const CursosVitrine = () => {
                             Incluso no Premium Anual
                           </span>
                         ) : null}
+                        <span className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/90 shadow-md flex items-center justify-center">
+                          <Lock className="w-4 h-4 text-muted-foreground" />
+                        </span>
+
                       </div>
                     ) : (
                       <div className="aspect-[4/3] w-full bg-gradient-to-br from-primary/20 to-secondary/20" />
