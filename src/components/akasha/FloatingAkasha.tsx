@@ -72,6 +72,7 @@ const mapDbHistoryMessage = (row: any): ChatMessage | null => {
 const FloatingAkasha = () => {
   const location = useLocation();
   const { user, profile, doshaResult } = useUser();
+  const { isOpen: cartOpen } = useCart();
   const queryClient = useQueryClient();
 
   const [open, setOpen] = useState(false);
