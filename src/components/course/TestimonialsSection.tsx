@@ -8,6 +8,8 @@ interface TestimonialsSectionProps {
 }
 
 const TestimonialsSection = ({ testimonials, branding }: TestimonialsSectionProps) => {
+  if (testimonials.length === 0) return null;
+
   return (
     <section className="py-10 md:py-14" style={{ background: "#FAF9F6" }}>
       <div className="max-w-5xl mx-auto px-6">
