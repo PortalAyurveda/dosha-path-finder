@@ -1595,6 +1595,44 @@ export type Database = {
         }
         Relationships: []
       }
+      comunicacao_envios_conteudo: {
+        Row: {
+          assunto: string | null
+          comunicacao_id: string
+          criado_em: string
+          edicao: string
+          email: string
+          html: string | null
+          id: number
+        }
+        Insert: {
+          assunto?: string | null
+          comunicacao_id: string
+          criado_em?: string
+          edicao?: string
+          email: string
+          html?: string | null
+          id?: never
+        }
+        Update: {
+          assunto?: string | null
+          comunicacao_id?: string
+          criado_em?: string
+          edicao?: string
+          email?: string
+          html?: string | null
+          id?: never
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comunicacao_envios_conteudo_comunicacao_id_fkey"
+            columns: ["comunicacao_id"]
+            isOneToOne: false
+            referencedRelation: "agenda_comunicacoes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       comunicacao_log: {
         Row: {
           comunicacao_id: string
@@ -1985,6 +2023,7 @@ export type Database = {
           curso_id: string
           expira_em: string | null
           id: string
+          mp_payment_id: string | null
           origem: string
           status: string
           stripe_session_id: string | null
@@ -1996,6 +2035,7 @@ export type Database = {
           curso_id: string
           expira_em?: string | null
           id?: string
+          mp_payment_id?: string | null
           origem?: string
           status?: string
           stripe_session_id?: string | null
@@ -2007,6 +2047,7 @@ export type Database = {
           curso_id?: string
           expira_em?: string | null
           id?: string
+          mp_payment_id?: string | null
           origem?: string
           status?: string
           stripe_session_id?: string | null
@@ -8390,6 +8431,7 @@ export type Database = {
         }
         Returns: Json
       }
+      auditoria_amostra_emails: { Args: { p_horas?: number }; Returns: Json }
       busca_global: {
         Args: { p_limite_por_tipo?: number; p_termo: string }
         Returns: {
@@ -8490,6 +8532,18 @@ export type Database = {
       }
       confirmar_cobranca_pix: {
         Args: { p_mp_payment_id: string }
+        Returns: Json
+      }
+      confirmar_pagamento_cartao_mp: {
+        Args: { p_external_reference: string; p_mp_payment_id: string }
+        Returns: Json
+      }
+      confirmar_pagamento_curso_mp: {
+        Args: {
+          p_external_reference: string
+          p_mp_payment_id: string
+          p_valor?: number
+        }
         Returns: Json
       }
       confirmar_pagamento_pix: {
