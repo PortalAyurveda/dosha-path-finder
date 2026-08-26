@@ -8366,6 +8366,7 @@ export type Database = {
           payload: Json
         }[]
       }
+      agenda_dia_ayurveda: { Args: { p_registro_id: string }; Returns: Json }
       agenda_dominical: {
         Args: { p_limite?: number }
         Returns: {
