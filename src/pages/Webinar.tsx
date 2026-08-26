@@ -205,7 +205,7 @@ const Webinar = ({ data }: { data: WebinarRow }) => {
                 type="submit"
                 disabled={submitting}
                 className="w-[62%] md:w-full font-sans font-bold text-sm md:text-base py-4 md:py-6 rounded-full border-0 tracking-wide"
-                style={{ background: greenDark, color: NAVY }}
+                style={{ background: "#E07B39", color: "#FFFFFF" }}
               >
                 {submitting ? (
                   <>
