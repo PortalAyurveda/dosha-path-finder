@@ -30,7 +30,7 @@ const DravyaGuna = () => {
         return;
       }
       try {
-        const { data: resp, error } = await supabase.functions.invoke("comprar-curso", {
+        const { data: resp, error } = await supabase.functions.invoke("create-cartao-curso", {
           body: { curso_slug: data.meta.slug },
         });
         if (error) throw error;
@@ -38,8 +38,8 @@ const DravyaGuna = () => {
           navigate("/escola");
           return;
         }
-        if (resp?.url) {
-          window.location.href = resp.url;
+        if (resp?.checkout_url) {
+          window.location.href = resp.checkout_url;
           return;
         }
         if (resp?.error) throw new Error(resp.error);
