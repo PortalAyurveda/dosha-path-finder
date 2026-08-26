@@ -633,7 +633,7 @@ export default function Imprimir() {
               </>
             )}
 
-            {/* COMPRAS */}
+{/* COMPRAS */}
             {querCompras && compras.length > 0 && (
               <section style={querReceitas || querSemana ? { breakBefore: "page", paddingTop: "6mm" } : undefined}>
                 <Cabecalho nome={nomeCompleto} dosha={dosha} />
@@ -642,49 +642,78 @@ export default function Imprimir() {
                 </h2>
                 <div style={{ marginLeft: "16mm" }}>
                   {setores.map(([setor, itens]) => (
-                    <div key={setor} style={{ marginBottom: "6mm", breakInside: "avoid" }}>
+                    <div key={setor} style={{ marginBottom: "4mm" }}>
                       <h3
                         style={{
                           fontSize: "13pt",
                           fontWeight: 700,
                           borderBottom: "1px solid #000",
                           paddingBottom: "1mm",
-                          margin: "0 0 3mm",
+                          margin: "0 0 2mm",
                           color: "#000",
+                          breakAfter: "avoid",
                         }}
                       >
                         {SETOR_NOME[setor] ?? setor}
                       </h3>
-                      {itens.map((c, i) => (
-                        <div key={`${c.ingrediente}-${i}`} style={{ marginBottom: "7mm" }}>
-                          <span style={{ display: "flex", alignItems: "flex-start", fontSize: "12pt" }}>
-                            <Quadradinho mm="5mm" />
-                            <span style={{ fontWeight: 700 }}>{textoItem(c)}</span>
-                          </span>
-                          {c.sugestao_troca && (
-                            <p style={{ fontSize: "10pt", margin: "1mm 0 0 6mm", color: "#000" }}>{c.sugestao_troca}</p>
-                          )}
-                        </div>
-                      ))}
+                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", columnGap: "8mm" }}>
+                        {itens.map((c, i) => (
+                          <div
+                            key={`${c.ingrediente}-${i}`}
+                            style={{
+                              marginBottom: "3mm",
+                              breakInside: "avoid",
+                              gridColumn: c.sugestao_troca ? "1 / -1" : undefined,
+                            }}
+                          >
+                            <span style={{ display: "flex", alignItems: "flex-start", fontSize: "11pt" }}>
+                              <Quadradinho mm="5mm" />
+                              <span style={{ fontWeight: 700 }}>{textoItem(c)}</span>
+                            </span>
+                            {c.sugestao_troca && (
+                              <p style={{ fontSize: "9.5pt", margin: "1mm 0 0 6mm", color: "#000" }}>{c.sugestao_troca}</p>
+                            )}
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   ))}
 
                   {comprasOpcionais.length > 0 && (
-                    <div style={{ marginBottom: "6mm" }}>
-                      <h3 style={{ fontSize: "13pt", fontWeight: 700, borderBottom: "1px solid #000", paddingBottom: "1mm", margin: "0 0 3mm", color: "#000" }}>
+                    <div style={{ marginBottom: "4mm" }}>
+                      <h3
+                        style={{
+                          fontSize: "13pt",
+                          fontWeight: 700,
+                          borderBottom: "1px solid #000",
+                          paddingBottom: "1mm",
+                          margin: "0 0 2mm",
+                          color: "#000",
+                          breakAfter: "avoid",
+                        }}
+                      >
                         Se você quiser
                       </h3>
-                      {comprasOpcionais.map((c, i) => (
-                        <div key={`${c.ingrediente}-op-${i}`} style={{ marginBottom: "7mm" }}>
-                          <span style={{ display: "flex", alignItems: "flex-start", fontSize: "12pt" }}>
-                            <Quadradinho mm="5mm" />
-                            <span style={{ fontWeight: 700 }}>{textoItem(c)}</span>
-                          </span>
-                          {c.sugestao_troca && (
-                            <p style={{ fontSize: "10pt", margin: "1mm 0 0 6mm", color: "#000" }}>{c.sugestao_troca}</p>
-                          )}
-                        </div>
-                      ))}
+                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", columnGap: "8mm" }}>
+                        {comprasOpcionais.map((c, i) => (
+                          <div
+                            key={`${c.ingrediente}-op-${i}`}
+                            style={{
+                              marginBottom: "3mm",
+                              breakInside: "avoid",
+                              gridColumn: c.sugestao_troca ? "1 / -1" : undefined,
+                            }}
+                          >
+                            <span style={{ display: "flex", alignItems: "flex-start", fontSize: "11pt" }}>
+                              <Quadradinho mm="5mm" />
+                              <span style={{ fontWeight: 700 }}>{textoItem(c)}</span>
+                            </span>
+                            {c.sugestao_troca && (
+                              <p style={{ fontSize: "9.5pt", margin: "1mm 0 0 6mm", color: "#000" }}>{c.sugestao_troca}</p>
+                            )}
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   )}
 
