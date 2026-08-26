@@ -41,7 +41,7 @@ const ProfessorSection = ({ data, branding }: ProfessorSectionProps) => {
             <p className="text-[11px] uppercase tracking-widest font-bold mb-2.5" style={{ color: branding.darkColor }}>
               Conheça seu professor
             </p>
-            <h2 className="font-serif italic font-bold text-2xl md:text-3xl mb-4" style={{ color: "#352F54" }}>
+            <h2 className="font-serif font-bold text-2xl md:text-3xl mb-4" style={{ color: "#352F54" }}>
               {data.name}
             </h2>
             <div className="space-y-2.5">

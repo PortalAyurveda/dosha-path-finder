@@ -71,7 +71,7 @@ const DoshaFoodContent = ({
       {/* Hero */}
       <section className="py-10 bg-surface-sun/50">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
-          <h2 className="text-2xl md:text-3xl font-serif font-bold italic text-primary mb-3">
+          <h2 className="text-2xl md:text-3xl font-serif font-bold text-primary mb-3">
             {heroTitle}
           </h2>
           <p className="text-foreground/70 leading-relaxed max-w-2xl mx-auto">
@@ -165,7 +165,7 @@ const DoshaFoodContent = ({
       <section className="py-10 bg-background">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 text-center">
           <div className={`rounded-2xl border ${doshaBorder[dosha]} ${doshaBg[dosha]} p-8`}>
-            <h3 className="text-xl font-serif font-bold italic text-primary mb-3">{ctaTitle}</h3>
+            <h3 className="text-xl font-serif font-bold text-primary mb-3">{ctaTitle}</h3>
             <p className="text-sm text-foreground/70 leading-relaxed mb-5">{ctaText}</p>
             <a
               href="/samkhya"

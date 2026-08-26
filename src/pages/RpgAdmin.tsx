@@ -34,7 +34,7 @@ type Section = "overview" | "world" | "monsters" | "bosses" | "items" | "npcs" |
 // ============================================================
 const Json = ({ value }: { value: unknown }) => {
   const [open, setOpen] = useState(false);
-  if (value == null) return <span className="text-zinc-600 italic">null</span>;
+  if (value == null) return <span className="text-zinc-600 ">null</span>;
   const str = JSON.stringify(value, null, 2);
   const short = str.length < 80;
   if (short) return <pre className="font-mono text-xs text-zinc-300 bg-zinc-950/60 px-2 py-1 rounded inline-block">{str}</pre>;
@@ -101,7 +101,7 @@ const DetailDrawer = ({ open, onClose, title, record }: { open: boolean; onClose
             Object.entries(record).map(([k, v]) => (
               <Field key={k} label={k}>
                 {v === null || v === undefined ? (
-                  <span className="text-zinc-600 italic">—</span>
+                  <span className="text-zinc-600 ">—</span>
                 ) : typeof v === "object" ? (
                   <Json value={v} />
                 ) : typeof v === "boolean" ? (
@@ -616,7 +616,7 @@ const DevlogSection = () => {
           </header>
           <h3 className="font-serif text-lg text-amber-200 mb-2">{d.titulo}</h3>
           {d.descricao && <p className="text-sm text-zinc-300 whitespace-pre-wrap mb-2">{d.descricao}</p>}
-          {d.hipotese && <div className="text-sm mb-2"><span className="text-zinc-500 text-xs uppercase font-mono">hipótese: </span><span className="text-zinc-300 italic">{d.hipotese}</span></div>}
+          {d.hipotese && <div className="text-sm mb-2"><span className="text-zinc-500 text-xs uppercase font-mono">hipótese: </span><span className="text-zinc-300 ">{d.hipotese}</span></div>}
           {d.proximos_passos && <div className="text-sm mb-2"><span className="text-zinc-500 text-xs uppercase font-mono">próximos passos: </span><span className="text-zinc-300">{d.proximos_passos}</span></div>}
           {Array.isArray(d.tags) && d.tags.length > 0 && (
             <div className="flex gap-1 flex-wrap mt-2">

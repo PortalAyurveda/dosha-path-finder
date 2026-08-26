@@ -172,14 +172,14 @@ const QuizAutoavaliacao = ({ moduloId, alunoId, theme }: Props) => {
   if (loading) return <Skeleton className="h-32 w-full" />;
   if (perguntasValidas.length === 0) {
     return (
-      <p className="text-sm text-muted-foreground italic">
+      <p className="text-sm text-muted-foreground ">
         Ainda não há questões de autoavaliação para este módulo.
       </p>
     );
   }
 
   const abertura = (
-    <p className="text-xs text-muted-foreground italic">
+    <p className="text-xs text-muted-foreground ">
       Esta é uma ferramenta de autodiagnóstico: sirva-se dela para perceber o que já domina e o que merece revisão. Não é prova nem avaliação — o gabarito aparece ao final.
     </p>
   );
@@ -273,7 +273,7 @@ const QuizAutoavaliacao = ({ moduloId, alunoId, theme }: Props) => {
                             )}
                           </p>
                           {a.explicacao && (isMarcada || isCorreta) && (
-                            <p className="mt-1 text-xs text-muted-foreground italic">
+                            <p className="mt-1 text-xs text-muted-foreground ">
                               {a.explicacao}
                             </p>
                           )}
@@ -285,7 +285,7 @@ const QuizAutoavaliacao = ({ moduloId, alunoId, theme }: Props) => {
               </ul>
               {p.explicacao_geral && (
                 <div
-                  className="text-xs italic p-2 rounded-md"
+                  className="text-xs p-2 rounded-md"
                   style={{ background: theme.warmBg, color: theme.darkColor }}
                 >
                   {p.explicacao_geral}

@@ -17,7 +17,7 @@ const SolucaoSection = ({ data, branding }: Props) => (
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-100px" }}
         transition={{ duration: 0.5 }}
-        className="font-serif italic font-bold text-2xl md:text-3xl mb-4 text-center"
+        className="font-serif font-bold text-2xl md:text-3xl mb-4 text-center"
         style={{ color: branding.darkColor }}
       >
         {data.title}
@@ -71,7 +71,7 @@ const SolucaoSection = ({ data, branding }: Props) => (
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-100px" }}
         transition={{ duration: 0.5 }}
-        className="border-t border-gray-200 pt-6 text-sm md:text-base text-gray-700 leading-relaxed whitespace-pre-line italic max-w-3xl mx-auto"
+        className="border-t border-gray-200 pt-6 text-sm md:text-base text-gray-700 leading-relaxed whitespace-pre-line max-w-3xl mx-auto"
       >
         {data.closing}
       </motion.div>

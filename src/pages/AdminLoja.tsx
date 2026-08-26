@@ -224,7 +224,7 @@ function ProdutoEditor({
             </div>
 
             {form.imagens.length === 0 ? (
-              <p className="text-xs text-muted-foreground italic">
+              <p className="text-xs text-muted-foreground ">
                 Nenhuma imagem. Faça upload acima.
               </p>
             ) : (

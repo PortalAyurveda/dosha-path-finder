@@ -147,7 +147,7 @@ const Pesquisa = () => {
               className="w-full flex items-center justify-center gap-2 px-5 py-4 rounded-2xl border border-akasha/30 bg-akasha/5 hover:bg-akasha/10 text-akasha font-medium transition-colors"
             >
               <Sparkles className="h-5 w-5" />
-              Perguntar à Akasha: <span className="italic">"{debounced}"</span>
+              Perguntar à Akasha: <span className="">"{debounced}"</span>
             </button>
 
             <BannerSlot slot="pesquisa_pos" className="[&:empty]:hidden" />

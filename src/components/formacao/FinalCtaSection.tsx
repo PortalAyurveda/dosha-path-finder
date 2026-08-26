@@ -31,7 +31,7 @@ const FinalCtaSection = ({ data, branding, onPrimary, onSecondary }: Props) => (
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-100px" }}
         transition={{ duration: 0.5 }}
-        className="font-serif italic font-bold text-3xl md:text-4xl mb-6 leading-tight"
+        className="font-serif font-bold text-3xl md:text-4xl mb-6 leading-tight"
       >
         {data.title}
       </motion.h2>

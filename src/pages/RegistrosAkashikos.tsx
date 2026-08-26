@@ -172,7 +172,7 @@ const RegistrosAkashikos = () => {
             />
             <div>
               <h1
-                className="font-serif italic font-bold text-3xl md:text-4xl leading-tight"
+                className="font-serif font-bold text-3xl md:text-4xl leading-tight"
                 style={{ color: PRIMARY }}
               >
                 Registros <span style={{ color: AKASHA }}>Akáshikos</span>

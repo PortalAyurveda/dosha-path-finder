@@ -60,7 +60,7 @@ const RegistrosAkashikos = () => {
         {/* Left: copy */}
         <div className="lg:col-span-5">
           <h2
-            className="font-serif italic font-bold text-3xl md:text-4xl mb-4 leading-tight flex items-start gap-3 flex-wrap"
+            className="font-serif font-bold text-3xl md:text-4xl mb-4 leading-tight flex items-start gap-3 flex-wrap"
             style={{ color: PRIMARY }}
           >
             <img
@@ -86,7 +86,7 @@ const RegistrosAkashikos = () => {
           </p>
           <p className="text-muted-foreground text-sm leading-relaxed">
             A Akasha aprende com cada conversa e guarda o essencial em forma de título e reflexão.
-            <span className="block mt-2 text-xs italic" style={{ color: AKASHA }}>
+            <span className="block mt-2 text-xs " style={{ color: AKASHA }}>
               Disponível após fazer o teste de dosha.
             </span>
           </p>

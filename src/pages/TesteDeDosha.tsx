@@ -455,7 +455,7 @@ const [step, setStep] = useState(0);
     return (
       <div key={q.id} className="space-y-3">
         <p className="font-serif font-semibold text-foreground text-base leading-snug">{q.text}</p>
-        <p className="text-[10px] text-muted-foreground/60 italic">Pode marcar mais de uma opção</p>
+        <p className="text-[10px] text-muted-foreground/60 ">Pode marcar mais de uma opção</p>
         <div className="space-y-2">
           {q.options.map((opt, idx) => (
             <button
@@ -831,7 +831,7 @@ const [step, setStep] = useState(0);
           <h2 className="font-serif text-2xl font-bold text-foreground">{currentStep.title}</h2>
           <p className="text-muted-foreground text-sm mt-1">{currentStep.subtitle}</p>
           {currentStep.part !== 'interests' && (
-            <p className="text-xs text-muted-foreground/70 mt-2 italic">💡Atenção! Se não se encontrar em alguma pergunta, pode deixar em branco ou se ficar na dúvida pode marcar mais de uma. O teste se balanceia.</p>
+            <p className="text-xs text-muted-foreground/70 mt-2 ">💡Atenção! Se não se encontrar em alguma pergunta, pode deixar em branco ou se ficar na dúvida pode marcar mais de uma. O teste se balanceia.</p>
           )}
         </div>
 

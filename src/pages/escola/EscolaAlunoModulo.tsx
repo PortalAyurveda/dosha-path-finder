@@ -145,7 +145,7 @@ const SectionTitle = ({
   theme: Theme;
 }) => (
   <h2
-    className="font-serif text-xl font-bold italic flex items-center gap-2"
+    className="font-serif text-xl font-bold flex items-center gap-2"
     style={{ color: theme.darkColor }}
   >
     <Icon className="w-5 h-5" style={{ color: theme.primaryColor }} />
@@ -218,7 +218,7 @@ const AulasBlock = ({ modulo, theme }: { modulo: Modulo; theme: Theme }) => {
 
   const hasAny = modulo.video_url || videosExtra.length > 0 || zoomsExtra.length > 0;
   if (!hasAny) {
-    return <p className="text-sm text-muted-foreground italic">Ainda não há aulas publicadas.</p>;
+    return <p className="text-sm text-muted-foreground ">Ainda não há aulas publicadas.</p>;
   }
 
   return (
@@ -378,7 +378,7 @@ const MaterialPrevioBlock = ({ modulo, theme }: { modulo: Modulo; theme: Theme }
   const hasAny = hasLinks || videos.length > 0;
 
   if (!hasAny) {
-    return <p className="text-sm text-muted-foreground italic">Ainda não há material prévio.</p>;
+    return <p className="text-sm text-muted-foreground ">Ainda não há material prévio.</p>;
   }
 
   return (
@@ -605,7 +605,7 @@ const DiarioBlock = ({
 
   return (
     <div className="space-y-3">
-      <p className="text-xs text-muted-foreground italic">
+      <p className="text-xs text-muted-foreground ">
         Registro pessoal da sua evolução neste módulo. Só você vê.
       </p>
       <Textarea
@@ -717,7 +717,7 @@ const MateriaisTurmaBlock = ({
         className="rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm border p-4 bg-white space-y-3"
         style={{ borderColor: `${theme.primaryColor}33` }}
       >
-        <p className="text-xs text-muted-foreground italic">
+        <p className="text-xs text-muted-foreground ">
           Envie um arquivo (até 50MB) para compartilhar com toda a turma.
         </p>
         <input
@@ -752,7 +752,7 @@ const MateriaisTurmaBlock = ({
       {loading ? (
         <Skeleton className="h-20 w-full" />
       ) : items.length === 0 ? (
-        <p className="text-sm text-muted-foreground italic">
+        <p className="text-sm text-muted-foreground ">
           Nenhum material da turma enviado ainda.
         </p>
       ) : (
@@ -947,7 +947,7 @@ const CardapioBlock = ({ slug, theme }: { slug: string; theme: Theme }) => {
 
   if (loading) return <Skeleton className="h-32 w-full" />;
   if (!rows || rows.length === 0) {
-    return <p className="text-sm text-muted-foreground italic">Cardápio ainda não publicado.</p>;
+    return <p className="text-sm text-muted-foreground ">Cardápio ainda não publicado.</p>;
   }
 
   return (
@@ -960,7 +960,7 @@ const CardapioBlock = ({ slug, theme }: { slug: string; theme: Theme }) => {
         return (
           <div key={d.key} className="space-y-3">
             <h3
-              className="font-serif font-bold italic text-lg pl-3 border-l-4"
+              className="font-serif font-bold text-lg pl-3 border-l-4"
               style={{ color: theme.darkColor, borderColor: theme.primaryColor }}
             >
               {d.label}
@@ -975,7 +975,7 @@ const CardapioBlock = ({ slug, theme }: { slug: string; theme: Theme }) => {
                     {REFEICAO_LABEL[refeicao.refeicao] ?? refeicao.refeicao}
                   </p>
                   {refeicao.nota && (
-                    <p className="text-xs italic text-muted-foreground">{refeicao.nota}</p>
+                    <p className="text-xs text-muted-foreground">{refeicao.nota}</p>
                   )}
                   {refeicao.nuggets && refeicao.nuggets.length > 0 ? (
                     <div className="grid gap-3 md:grid-cols-2">
@@ -984,7 +984,7 @@ const CardapioBlock = ({ slug, theme }: { slug: string; theme: Theme }) => {
                       ))}
                     </div>
                   ) : (
-                    <p className="text-xs italic text-muted-foreground">a definir</p>
+                    <p className="text-xs text-muted-foreground">a definir</p>
                   )}
                 </div>
               ))}
@@ -1105,7 +1105,7 @@ const Conteudo = ({ aluno }: { aluno: AlunoRow }) => {
                 Semestre {modulo.semestre} · Módulo {modulo.numero} de 15
               </p>
               <h1
-                className="font-serif text-2xl md:text-3xl font-bold italic leading-tight mt-1"
+                className="font-serif text-2xl md:text-3xl font-bold leading-tight mt-1"
                 style={{ color: theme.darkColor }}
               >
                 {modulo.titulo}
@@ -1142,7 +1142,7 @@ const Conteudo = ({ aluno }: { aluno: AlunoRow }) => {
           style={{ borderColor: `${theme.primaryColor}33` }}
         >
           <Lock className="w-8 h-8 mx-auto" style={{ color: theme.primaryColor }} />
-          <h2 className="font-serif text-xl italic font-bold" style={{ color: theme.darkColor }}>
+          <h2 className="font-serif text-xl font-bold" style={{ color: theme.darkColor }}>
             Este módulo ainda será liberado.
           </h2>
           <p className="text-sm text-muted-foreground">

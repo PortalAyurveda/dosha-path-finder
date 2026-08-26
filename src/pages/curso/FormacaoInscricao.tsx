@@ -188,7 +188,7 @@ const FormacaoInscricao = () => {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="font-serif italic font-bold text-[28px] md:text-[40px] leading-[1.15] mb-4"
+            className="font-serif font-bold text-[28px] md:text-[40px] leading-[1.15] mb-4"
             style={{ color: branding.darkColor }}
           >
             Formulário de Inscrição — Formação Ayurveda
@@ -207,7 +207,7 @@ const FormacaoInscricao = () => {
           >
             <CheckCircle2 className="w-14 h-14 mx-auto mb-4" style={{ color: ROXO }} />
             <h2
-              className="font-serif italic font-bold text-2xl md:text-3xl mb-3"
+              className="font-serif font-bold text-2xl md:text-3xl mb-3"
               style={{ color: branding.darkColor }}
             >
               Inscrição recebida com sucesso!

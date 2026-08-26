@@ -158,7 +158,7 @@ const TarefaCard = ({
         )}
 
         {tarefa.ultima_nota && (
-          <p className="text-xs italic text-muted-foreground truncate">
+          <p className="text-xs text-muted-foreground truncate">
             “{tarefa.ultima_nota}” {dataCurta(tarefa.ultima_nota_em)}
           </p>
         )}

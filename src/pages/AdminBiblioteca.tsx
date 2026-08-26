@@ -318,10 +318,10 @@ const VideosPanel = () => {
                       {r.video_id}
                     </td>
                     <td className="p-3 truncate max-w-[280px]" title={r.titulo_original ?? ""}>
-                      {r.titulo_original || <span className="text-muted-foreground italic">—</span>}
+                      {r.titulo_original || <span className="text-muted-foreground ">—</span>}
                     </td>
                     <td className="p-3 truncate max-w-[280px]" title={r.novo_titulo ?? ""}>
-                      {r.novo_titulo || <span className="text-muted-foreground italic">—</span>}
+                      {r.novo_titulo || <span className="text-muted-foreground ">—</span>}
                     </td>
                     <td className="p-3 text-right">
                       <div className="flex justify-end gap-1">

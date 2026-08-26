@@ -110,7 +110,7 @@ const WebinarConfirmado = () => {
       >
         <div className="px-6 md:px-8 pt-8 pb-8 text-center">
           <h1
-            className="font-serif italic font-bold text-[1.4rem] md:text-[1.7rem] leading-tight"
+            className="font-serif font-bold text-[1.4rem] md:text-[1.7rem] leading-tight"
             style={{ color: ink, letterSpacing: "0.05em" }}
           >
             {titulo}

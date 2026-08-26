@@ -46,7 +46,7 @@ const FormacaoProfessorSection = ({ data, branding }: Props) => (
             Sobre o Professor
           </p>
           <h2
-            className="font-serif italic font-bold text-2xl md:text-3xl mb-1"
+            className="font-serif font-bold text-2xl md:text-3xl mb-1"
             style={{ color: branding.darkColor }}
           >
             {data.name}
@@ -64,7 +64,7 @@ const FormacaoProfessorSection = ({ data, branding }: Props) => (
             ))}
           </ul>
 
-          <p className="text-sm md:text-base text-gray-700 leading-relaxed italic">
+          <p className="text-sm md:text-base text-gray-700 leading-relaxed ">
             {data.text}
           </p>
         </motion.div>

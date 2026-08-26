@@ -82,7 +82,7 @@ const PraVoceRail = ({ doshaPrincipal }: Props) => {
         </p>
         <h2
           id="pra-voce-titulo"
-          className="font-serif text-xl md:text-2xl text-primary italic leading-snug"
+          className="font-serif text-xl md:text-2xl text-primary leading-snug"
         >
           Pra você, colhido do acervo
         </h2>

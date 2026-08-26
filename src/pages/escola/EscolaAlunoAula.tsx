@@ -188,7 +188,7 @@ const Conteudo = ({ aluno }: { aluno: AlunoRow }) => {
               </p>
             )}
             <h1
-              className="font-serif text-2xl md:text-3xl font-bold italic leading-tight mt-1"
+              className="font-serif text-2xl md:text-3xl font-bold leading-tight mt-1"
               style={{ color: branding.darkColor }}
             >
               {aula.titulo}

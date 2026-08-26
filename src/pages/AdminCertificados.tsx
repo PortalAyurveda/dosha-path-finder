@@ -283,7 +283,7 @@ const AdminCertificados = () => {
                     <p
                       style={{
                         fontFamily: "'Roboto Serif', Georgia, serif",
-                        fontStyle: "italic",
+                        fontStyle: "",
                         fontWeight: 700,
                         fontSize: 30,
                         lineHeight: 1.1,
@@ -312,7 +312,7 @@ const AdminCertificados = () => {
                 <p
                   style={{
                     fontFamily: "'Roboto Serif', Georgia, serif",
-                    fontStyle: "italic",
+                    fontStyle: "",
                     fontWeight: 600,
                     fontSize: 42,
                     lineHeight: 1.2,
@@ -381,7 +381,7 @@ const AdminCertificados = () => {
                   <p
                     style={{
                       fontFamily: "'Roboto Serif', Georgia, serif",
-                      fontStyle: "italic",
+                      fontStyle: "",
                       fontWeight: 600,
                       fontSize: 22,
                       color: TINTA,

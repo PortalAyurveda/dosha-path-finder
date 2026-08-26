@@ -119,7 +119,7 @@ const TagListEditor = ({
             </div>
             <ScoreTagPicker value={t.scores} onChange={scores => onChange(items.map((x, i) => i === idx ? { ...x, scores } : x))} />
             {summarizeScores(t.scores) && (
-              <p className="text-[11px] text-muted-foreground italic">Pontuação: {summarizeScores(t.scores)}</p>
+              <p className="text-[11px] text-muted-foreground ">Pontuação: {summarizeScores(t.scores)}</p>
             )}
           </div>
         ))}

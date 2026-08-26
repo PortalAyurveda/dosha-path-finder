@@ -28,7 +28,7 @@ const ProgramaSection = ({ data, branding }: Props) => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.5 }}
-          className="font-serif italic font-bold text-2xl md:text-3xl mb-5 text-center"
+          className="font-serif font-bold text-2xl md:text-3xl mb-5 text-center"
           style={{ color: branding.darkColor }}
         >
           {data.title}
@@ -77,7 +77,7 @@ const ProgramaSection = ({ data, branding }: Props) => {
         </div>
 
         <p
-          className="font-serif italic text-base md:text-lg text-center mb-10 max-w-2xl mx-auto"
+          className="font-serif text-base md:text-lg text-center mb-10 max-w-2xl mx-auto"
           style={{ color: branding.darkColor }}
         >
           {data.bridge}
@@ -97,7 +97,7 @@ const ProgramaSection = ({ data, branding }: Props) => {
                 </span>
                 <div className="flex items-center gap-3 flex-1">
                   <h3
-                    className="font-serif italic font-bold text-lg md:text-xl whitespace-nowrap"
+                    className="font-serif font-bold text-lg md:text-xl whitespace-nowrap"
                     style={{ color: branding.darkColor }}
                   >
                     {phase.label}
@@ -272,7 +272,7 @@ const ProgramaSection = ({ data, branding }: Props) => {
           }}
         >
           <h3
-            className="font-serif italic font-bold text-xl md:text-2xl mb-3"
+            className="font-serif font-bold text-xl md:text-2xl mb-3"
             style={{ color: branding.darkColor }}
           >
             Quer o programa completo detalhado?
@@ -314,7 +314,7 @@ const ProgramaSection = ({ data, branding }: Props) => {
           }}
         >
           <h3
-            className="font-serif italic font-bold text-xl md:text-2xl mb-5"
+            className="font-serif font-bold text-xl md:text-2xl mb-5"
             style={{ color: branding.darkColor }}
           >
             {data.cargaTitle}
@@ -338,7 +338,7 @@ const ProgramaSection = ({ data, branding }: Props) => {
             style={{ borderColor: `${branding.darkColor}30` }}
           >
             <h4
-              className="font-serif italic font-bold text-base md:text-lg mb-2.5"
+              className="font-serif font-bold text-base md:text-lg mb-2.5"
               style={{ color: branding.darkColor }}
             >
               Por que as avaliações existem?
@@ -351,7 +351,7 @@ const ProgramaSection = ({ data, branding }: Props) => {
 
         {/* Extras */}
         <h3
-          className="font-serif italic font-bold text-xl md:text-2xl mb-5 text-center"
+          className="font-serif font-bold text-xl md:text-2xl mb-5 text-center"
           style={{ color: branding.darkColor }}
         >
           {data.extrasTitle}

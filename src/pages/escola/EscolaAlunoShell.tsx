@@ -42,7 +42,7 @@ const EscolaAlunoShell = ({ children }: ShellProps) => {
           </span>
           <div>
             <p
-              className="font-serif font-bold italic leading-tight text-base"
+              className="font-serif font-bold leading-tight text-base"
               style={{ color: branding.darkColor }}
             >
               Formação em Ayurveda
@@ -97,7 +97,7 @@ const DeniedCard = ({
     >
       <Lock className="w-5 h-5" />
     </span>
-    <h1 className="font-serif text-xl font-bold italic" style={{ color: branding.darkColor }}>
+    <h1 className="font-serif text-xl font-bold " style={{ color: branding.darkColor }}>
       {title}
     </h1>
     <p className="text-sm text-muted-foreground">{message}</p>

@@ -193,7 +193,7 @@ const GlobalSearch = ({ open: openProp, onOpenChange, layout = "popover" }: Glob
           >
             <Sparkles className="h-4 w-4 shrink-0" />
             <span className="truncate">
-              Perguntar à Akasha: <span className="italic">"{debounced}"</span>
+              Perguntar à Akasha: <span className="">"{debounced}"</span>
             </span>
           </button>
         </div>

@@ -225,7 +225,7 @@ const CursoLanding = () => {
           <div className="max-w-4xl mx-auto px-4 -mt-16 md:-mt-24 relative">
             <div className="bg-card border border-border rounded-2xl shadow-lg p-6 md:p-10">
               <h1 className="mb-4">{curso.titulo}</h1>
-              <p className="text-lg text-muted-foreground italic">
+              <p className="text-lg text-muted-foreground ">
                 Para quem quer entender o porquê de cada gesto — e nunca mais depender
                 de tabela pronta.
               </p>

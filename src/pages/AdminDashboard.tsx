@@ -345,7 +345,7 @@ const AdminDashboard = () => {
                     {resumo.ultimos.venda_loja.nome} · <span className="font-semibold" style={{ color: "#059669" }}>{fmtBRL(resumo.ultimos.venda_loja.valor)}</span> · {fmtDateShort(resumo.ultimos.venda_loja.quando)}
                   </div>
                 ) : (
-                  <div className="text-muted-foreground italic">Sem vendas ainda.</div>
+                  <div className="text-muted-foreground ">Sem vendas ainda.</div>
                 )}
                 {resumo.ultimos.assinatura ? (
                   <div className="text-muted-foreground">
@@ -353,7 +353,7 @@ const AdminDashboard = () => {
                     {resumo.ultimos.assinatura.plano} · <span className="font-semibold" style={{ color: "#D97706" }}>{fmtBRL(resumo.ultimos.assinatura.valor)}</span> · {fmtDateShort(resumo.ultimos.assinatura.quando)}
                   </div>
                 ) : (
-                  <div className="text-muted-foreground italic">Sem assinaturas recentes.</div>
+                  <div className="text-muted-foreground ">Sem assinaturas recentes.</div>
                 )}
               </div>
             </div>

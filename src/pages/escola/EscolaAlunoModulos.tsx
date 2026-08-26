@@ -58,7 +58,7 @@ function DocumentosSection({ aluno }: { aluno: AlunoRow }) {
   return (
     <section className="pt-6 border-t border-border">
       <h2
-        className="font-serif text-xl font-bold italic mb-3"
+        className="font-serif text-xl font-bold mb-3"
         style={{ color: branding.darkColor }}
       >
         Documentos
@@ -74,7 +74,7 @@ function DocumentosSection({ aluno }: { aluno: AlunoRow }) {
           <FileText className="w-5 h-5" />
         </div>
         <div className="flex-1 min-w-0">
-          <h3 className="font-serif font-bold italic text-base" style={{ color: branding.darkColor }}>
+          <h3 className="font-serif font-bold text-base" style={{ color: branding.darkColor }}>
             Contrato de Prestação de Serviços — Formação Ayurveda
           </h3>
           <p className="text-xs text-muted-foreground">Turma 2026/2027</p>
@@ -165,7 +165,7 @@ const Conteudo = ({ aluno }: { aluno: AlunoRow }) => {
           </Link>
         </Button>
         <h1
-          className="font-serif text-2xl md:text-3xl font-bold italic"
+          className="font-serif text-2xl md:text-3xl font-bold "
           style={{ color: branding.darkColor }}
         >
           Os 15 módulos
@@ -184,7 +184,7 @@ const Conteudo = ({ aluno }: { aluno: AlunoRow }) => {
           return (
             <section key={s.num} className="space-y-3">
               <div className="pl-3 border-l-4" style={{ borderColor: branding.primaryColor }}>
-                <h2 className="font-serif text-xl font-bold italic" style={{ color: branding.darkColor }}>
+                <h2 className="font-serif text-xl font-bold " style={{ color: branding.darkColor }}>
                   {s.titulo}
                 </h2>
                 <p className="text-sm text-muted-foreground">{s.subtitulo}</p>
@@ -211,7 +211,7 @@ const Conteudo = ({ aluno }: { aluno: AlunoRow }) => {
                       </span>
                       <div className="min-w-0 flex-1 relative z-10">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <h3 className="font-serif font-bold italic leading-snug text-base" style={{ color: activeTheme.darkColor }}>
+                          <h3 className="font-serif font-bold leading-snug text-base" style={{ color: activeTheme.darkColor }}>
                             {m.titulo}
                           </h3>
                           {locked && (
@@ -237,7 +237,7 @@ const Conteudo = ({ aluno }: { aluno: AlunoRow }) => {
                         <p className="text-sm text-foreground/80 mt-1">{formatModuloFimDeSemana(m.data_inicio)}</p>
                         <p className="text-xs text-muted-foreground">{formatModuloHorarios(m.tipo)}</p>
                         {locked && (
-                          <p className="text-[11px] italic text-muted-foreground mt-1">Este módulo ainda será liberado.</p>
+                          <p className="text-[11px] text-muted-foreground mt-1">Este módulo ainda será liberado.</p>
                         )}
                       </div>
                       {locked ? (

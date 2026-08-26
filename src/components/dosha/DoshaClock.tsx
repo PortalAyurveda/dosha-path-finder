@@ -161,7 +161,7 @@ const DoshaClock = ({
             <span className={`font-sans text-muted-foreground font-bold uppercase tracking-[0.2em] ${centerLabelTxt}`}>
               {centerLabel}
             </span>
-            <span className={`font-serif italic font-bold text-primary tracking-tighter ${centerValueTxt}`}>
+            <span className={`font-serif font-bold text-primary tracking-tighter ${centerValueTxt}`}>
               {centerValue}
             </span>
           </div>

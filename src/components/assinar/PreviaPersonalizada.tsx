@@ -217,7 +217,7 @@ const PreviaPersonalizada = ({ fallback }: Props) => {
       {/* Escolhido para o seu corpo */}
       {aberto && (
         <div className="max-w-[680px] mx-auto mt-6">
-          <h3 className="font-serif italic font-bold text-lg md:text-xl text-center mb-3" style={{ color: PRIMARY }}>
+          <h3 className="font-serif font-bold text-lg md:text-xl text-center mb-3" style={{ color: PRIMARY }}>
             Escolhido para o seu corpo
           </h3>
 
