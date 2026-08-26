@@ -24,7 +24,7 @@ export const dravyaGunaData: CourseData = {
     priceOld: "",
     priceNew: "R$ 697",
     accessYears: "Acesso liberado por um bom tempo (prazo exato a confirmar)",
-    installments: "12x de R$ 58,08",
+    installments: "Em até 5x sem juros de R$ 139,40",
     ctaText: "QUERO ME TORNAR ALQUIMISTA",
   },
   problem: {
@@ -160,7 +160,7 @@ export const dravyaGunaData: CourseData = {
   pricing: {
     priceOld: "",
     priceNew: "R$ 697,00",
-    installments: "12x de R$ 58,08",
+    installments: "Em até 5x sem juros de R$ 139,40",
     highlight: "Menos de R$ 60 por mês pra nunca mais depender de remédio pronto.",
     context:
       "Certificado de 40h · Garantia incondicional de 30 dias · Aula de revisão mensal ao vivo inclusa · Bônus de Diagnóstico da Língua",
@@ -212,7 +212,7 @@ export const dravyaGunaData: CourseData = {
     headline: "Você pode continuar dependendo de remédio pronto.\nOu pode aprender a formular o seu.",
     subheadline: "",
     priceNew: "R$ 697",
-    installments: "12x de R$ 58,08",
+    installments: "Em até 5x sem juros de R$ 139,40",
     highlight: "Garantia incondicional de 30 dias",
     ctaText: "QUERO ME TORNAR ALQUIMISTA",
     quote: "Não dependa mais de importar erva indiana. Aprenda a usar a erva brasileira.",
