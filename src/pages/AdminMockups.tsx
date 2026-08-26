@@ -469,7 +469,7 @@ function CardClima({ m, testesTotal, formato }: { m: any; testesTotal: number; f
                   fontSize: T[formato].titulo - 4,
                   lineHeight: 1.2,
                   marginTop: 6,
-                  fontStyle: "italic",
+                  fontStyle: "",
                   color: color,
                 }}
               >

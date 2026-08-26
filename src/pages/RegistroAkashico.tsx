@@ -179,7 +179,7 @@ const RegistroAkashico = () => {
                   </span>
                 </div>
                 <h1
-                  className="font-serif italic font-bold text-2xl md:text-3xl leading-tight mb-3"
+                  className="font-serif font-bold text-2xl md:text-3xl leading-tight mb-3"
                   style={{ color: PRIMARY }}
                 >
                   {data.titulo}
@@ -216,7 +216,7 @@ const RegistroAkashico = () => {
                 </div>
               )}
 
-              <div className="mt-10 text-center text-xs italic text-muted-foreground">
+              <div className="mt-10 text-center text-xs text-muted-foreground">
                 Pergunta original anônima. A Akasha guarda apenas o essencial em forma de
                 reflexão.
               </div>

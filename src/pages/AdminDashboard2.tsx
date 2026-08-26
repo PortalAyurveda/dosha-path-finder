@@ -188,7 +188,7 @@ function NotasSection({
       </div>
       <div className="space-y-3">
         {sorted.length === 0 && (
-          <p className="text-sm text-muted-foreground italic">Nenhuma nota ainda.</p>
+          <p className="text-sm text-muted-foreground ">Nenhuma nota ainda.</p>
         )}
         {sorted.map((n) => (
           <div
@@ -380,7 +380,7 @@ function RecepcionistaDev({
                           </div>
                           <div className="whitespace-pre-wrap text-sm">{p.proposta}</div>
                           {p.justificativa && (
-                            <div className="text-muted-foreground italic">{p.justificativa}</div>
+                            <div className="text-muted-foreground ">{p.justificativa}</div>
                           )}
                         </div>
                         <button
@@ -629,7 +629,7 @@ function InlineEdit({
     return (
       <div className="group flex items-start gap-2">
         <div className="flex-1 whitespace-pre-wrap text-sm">
-          {value || <span className="text-muted-foreground italic">— vazio —</span>}
+          {value || <span className="text-muted-foreground ">— vazio —</span>}
         </div>
         <button
           onClick={() => setEditing(true)}
@@ -1190,7 +1190,7 @@ export default function AdminDashboard2() {
                 <div className="overflow-y-auto flex-1">
                   {loading && <p className="p-4 text-sm text-muted-foreground">Carregando...</p>}
                   {!loading && entries.length > 0 && filtered.length === 0 && (
-                    <p className="p-4 text-xs text-muted-foreground italic">
+                    <p className="p-4 text-xs text-muted-foreground ">
                       Nenhum módulo corresponde aos filtros selecionados.
                     </p>
                   )}

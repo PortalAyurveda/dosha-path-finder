@@ -217,7 +217,7 @@ const MinhaCaminhadaSection = () => {
             <Plant stage={stage} />
           </div>
           <p className="font-serif text-lg md:text-xl text-primary leading-snug">
-            Você está no momento <span className="font-bold italic">{classe}</span> da sua caminhada
+            Você está no momento <span className="font-bold ">{classe}</span> da sua caminhada
           </p>
           <p className="text-sm text-foreground/75 leading-relaxed">{FRASES[classe]}</p>
           <div className="w-full mt-2 rounded-2xl bg-white/70 border border-kapha/20 p-3">
@@ -268,7 +268,7 @@ const MinhaCaminhadaSection = () => {
           </ul>
 
           <div className="pt-4 mt-2 border-t border-kapha/20">
-            <p className="text-sm text-foreground/85 leading-relaxed italic">
+            <p className="text-sm text-foreground/85 leading-relaxed ">
               {fecho.texto}{" "}
               {fecho.link.onClick ? (
                 <button

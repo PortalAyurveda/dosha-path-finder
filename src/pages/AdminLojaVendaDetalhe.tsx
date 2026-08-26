@@ -655,7 +655,7 @@ const AdminLojaVendaDetalhe = () => {
                 )}
               </div>
             ) : (
-              <p className="text-muted-foreground italic">NF-e não emitida</p>
+              <p className="text-muted-foreground ">NF-e não emitida</p>
             )}
           </CardContent>
         </Card>

@@ -88,7 +88,7 @@ const QuestionCard = ({ question, onChange, onRemove, onDuplicate }: Props) => {
                 onChange={scores => updateOption(idx, { scores })}
               />
               {summarizeScores(opt.scores) && (
-                <p className="text-xs text-muted-foreground italic">
+                <p className="text-xs text-muted-foreground ">
                   Pontuação: {summarizeScores(opt.scores)}
                 </p>
               )}

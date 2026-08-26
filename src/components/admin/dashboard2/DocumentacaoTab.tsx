@@ -164,7 +164,7 @@ export default function DocumentacaoTab({ entries }: { entries: DocEntry[] }) {
         >
           {abertura?.descricao && (
             <section>
-              <p className="text-lg italic text-muted-foreground whitespace-pre-wrap">{abertura.descricao}</p>
+              <p className="text-lg text-muted-foreground whitespace-pre-wrap">{abertura.descricao}</p>
             </section>
           )}
 
@@ -182,7 +182,7 @@ export default function DocumentacaoTab({ entries }: { entries: DocEntry[] }) {
                   <p className="whitespace-pre-wrap mb-4">{v.entry.descricao}</p>
                 )}
                 {v.entry.hipotese && (
-                  <blockquote className="border-l-4 border-primary bg-primary/5 px-4 py-3 italic mb-6">
+                  <blockquote className="border-l-4 border-primary bg-primary/5 px-4 py-3 mb-6">
                     <span className="font-semibold not-italic">A aposta:</span> {v.entry.hipotese}
                   </blockquote>
                 )}
@@ -223,18 +223,18 @@ export default function DocumentacaoTab({ entries }: { entries: DocEntry[] }) {
               Registro histórico do raciocínio do produto, mais recente primeiro.
             </p>
             {decisoes.length === 0 ? (
-              <p className="text-muted-foreground italic">Nenhuma decisão registrada.</p>
+              <p className="text-muted-foreground ">Nenhuma decisão registrada.</p>
             ) : (
               <ul className="space-y-5">
                 {decisoes.map((d, i) => (
                   <li key={i} className="border-l-2 border-border pl-4">
                     <div className="text-xs text-muted-foreground mb-1">
-                      {d.data || "sem data"} · <span className="italic">{d.origemTitulo}</span>
+                      {d.data || "sem data"} · <span className="">{d.origemTitulo}</span>
                     </div>
                     <div className="font-medium">{d.decisao}</div>
                     {d.porque && (
                       <div className="text-sm text-muted-foreground mt-1">
-                        <span className="italic">Porque:</span> {d.porque}
+                        <span className="">Porque:</span> {d.porque}
                       </div>
                     )}
                   </li>
@@ -266,7 +266,7 @@ function ModuloBloco({ m }: { m: DocEntry }) {
       </h3>
       {m.descricao && <p className="whitespace-pre-wrap mb-3">{m.descricao}</p>}
       {m.hipotese && (
-        <p className="text-muted-foreground italic mb-3">
+        <p className="text-muted-foreground mb-3">
           <span className="not-italic font-semibold">Hipótese:</span> {m.hipotese}
         </p>
       )}

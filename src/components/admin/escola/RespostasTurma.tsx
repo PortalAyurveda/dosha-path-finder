@@ -93,7 +93,7 @@ const RespostasTurma = ({ moduloId, turmaId }: Props) => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-lg font-heading italic flex items-center gap-2">
+        <CardTitle className="text-lg font-heading flex items-center gap-2">
           <Users className="w-4 h-4" /> Respostas da turma
         </CardTitle>
       </CardHeader>

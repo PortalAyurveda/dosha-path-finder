@@ -177,11 +177,11 @@ body {
   }
 
   h1 {
-    @apply font-serif text-4xl md:text-[60px] font-bold italic leading-tight text-primary;
+    @apply font-serif text-4xl md:text-[60px] font-bold leading-tight text-primary;
   }
 
   h2, h3 {
-    @apply font-serif text-xl md:text-[25px] font-bold italic leading-snug text-primary;
+    @apply font-serif text-xl md:text-[25px] font-bold leading-snug text-primary;
   }
 
   h4 {

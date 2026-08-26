@@ -85,7 +85,7 @@ const PricingSection = ({ data, branding, bonus, onCtaClick }: PricingSectionPro
           </span>
 
           {data.highlight && (
-            <p className="text-sm md:text-base font-serif italic mt-3 mb-1" style={{ color: "#352F54" }}>
+            <p className="text-sm md:text-base font-serif mt-3 mb-1" style={{ color: "#352F54" }}>
               {data.highlight}
             </p>
           )}

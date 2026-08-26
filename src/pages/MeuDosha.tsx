@@ -321,7 +321,7 @@ const FormacaoDestaqueCard = () => {
           <span>Formação em Ayurveda</span>
         </div>
         <h2
-          className="font-serif text-xl md:text-2xl font-bold italic leading-snug"
+          className="font-serif text-xl md:text-2xl font-bold leading-snug"
           style={{ color: theme.darkColor }}
         >
           Sua Formação em Ayurveda

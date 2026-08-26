@@ -359,7 +359,7 @@ const BibliotecaSection = () => {
     <section className="max-w-6xl mx-auto px-4 sm:px-6 py-8 md:py-10">
       <div className="flex flex-col items-center text-center gap-2 mb-10">
         <h2
-          className="font-serif italic font-bold text-3xl md:text-4xl"
+          className="font-serif font-bold text-3xl md:text-4xl"
           style={{ color: C.primary }}
         >
           Feed do dia
@@ -501,7 +501,7 @@ const SommelierArtigos = () => {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 md:py-10">
         <div className="text-center mb-8">
           <h2
-            className="font-serif italic font-bold text-3xl md:text-4xl mb-3"
+            className="font-serif font-bold text-3xl md:text-4xl mb-3"
             style={{ color: C.primary }}
           >
             Sommelier de Artigos

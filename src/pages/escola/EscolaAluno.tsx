@@ -115,7 +115,7 @@ const Conteudo = ({ aluno }: { aluno: AlunoRow }) => {
       {/* Saudação */}
       <div className="space-y-1">
         <h1
-          className="font-serif text-3xl md:text-4xl font-bold italic leading-tight"
+          className="font-serif text-3xl md:text-4xl font-bold leading-tight"
           style={{ color: branding.darkColor }}
         >
           Olá, {primeiroNome}.
@@ -151,7 +151,7 @@ const Conteudo = ({ aluno }: { aluno: AlunoRow }) => {
               </span>
               <div className="min-w-0 flex-1">
                 <h2
-                  className="font-serif text-xl md:text-2xl font-bold italic leading-snug"
+                  className="font-serif text-xl md:text-2xl font-bold leading-snug"
                   style={{ color: branding.darkColor }}
                 >
                   {atual.titulo}
@@ -194,7 +194,7 @@ const Conteudo = ({ aluno }: { aluno: AlunoRow }) => {
                   </a>
                 </Button>
               ) : (
-                <p className="text-sm text-muted-foreground italic">
+                <p className="text-sm text-muted-foreground ">
                   Link será disponibilizado em breve.
                 </p>
               )}
@@ -218,7 +218,7 @@ const Conteudo = ({ aluno }: { aluno: AlunoRow }) => {
         <div className="flex items-center gap-2">
           <Pin className="w-4 h-4" style={{ color: branding.primaryColor }} />
           <h2
-            className="font-serif text-xl font-bold italic"
+            className="font-serif text-xl font-bold "
             style={{ color: branding.darkColor }}
           >
             Recados do professor

@@ -482,7 +482,7 @@ const AdminBanners = () => {
 
                 <div className="space-y-2">
                   <div className="font-semibold text-sm truncate" title={b.titulo_admin ?? ""}>
-                    {b.titulo_admin || <span className="italic text-muted-foreground">(sem título)</span>}
+                    {b.titulo_admin || <span className=" text-muted-foreground">(sem título)</span>}
                   </div>
 
                   {b.ativo && (
@@ -613,7 +613,7 @@ const AdminBanners = () => {
                 </div>
 
                 {list.length === 0 ? (
-                  <p className="text-sm text-muted-foreground italic">
+                  <p className="text-sm text-muted-foreground ">
                     Nenhum banner cadastrado neste slot.
                   </p>
                 ) : (
@@ -623,7 +623,7 @@ const AdminBanners = () => {
                         Disponíveis · {disponiveis.length}
                       </div>
                       {disponiveis.length === 0 ? (
-                        <p className="text-sm text-muted-foreground italic">Nenhum banner disponível.</p>
+                        <p className="text-sm text-muted-foreground ">Nenhum banner disponível.</p>
                       ) : (
                         <div className="space-y-3">{disponiveis.map(renderCard)}</div>
                       )}
@@ -633,7 +633,7 @@ const AdminBanners = () => {
                         No ar · {noAr.length}
                       </div>
                       {noAr.length === 0 ? (
-                        <p className="text-sm text-muted-foreground italic">Nenhum banner no ar.</p>
+                        <p className="text-sm text-muted-foreground ">Nenhum banner no ar.</p>
                       ) : (
                         <div className="space-y-3">{noAr.map(renderCard)}</div>
                       )}
@@ -676,7 +676,7 @@ const AdminBanners = () => {
                   </div>
                 )}
                 {!moldeBySlot[contratoSlot] && (
-                  <p className="text-sm text-muted-foreground italic">
+                  <p className="text-sm text-muted-foreground ">
                     Nenhum molde cadastrado para este slot.
                   </p>
                 )}

@@ -17,7 +17,7 @@ const FinalCTASection = ({ data, branding, onCtaClick }: FinalCTASectionProps) =
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.5 }}
-          className="font-serif italic font-bold text-lg md:text-xl mb-6 leading-relaxed"
+          className="font-serif font-bold text-lg md:text-xl mb-6 leading-relaxed"
           style={{ color: "#352F54" }}
         >
           <p>{data.headline}</p>
@@ -76,7 +76,7 @@ const FinalCTASection = ({ data, branding, onCtaClick }: FinalCTASectionProps) =
             transition={{ duration: 0.5, delay: 0.4 }}
             className="mt-10"
           >
-            <p className="font-serif italic text-base md:text-lg whitespace-pre-line" style={{ color: "#352F54" }}>
+            <p className="font-serif text-base md:text-lg whitespace-pre-line" style={{ color: "#352F54" }}>
               "{data.quote}"
             </p>
             {data.quoteAuthor && (

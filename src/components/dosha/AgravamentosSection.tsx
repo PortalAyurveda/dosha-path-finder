@@ -28,7 +28,7 @@ const AgravamentosSection = ({ dosha, intro, items }: AgravamentosSectionProps) 
 
   return (
     <section id="agravamentos" className="max-w-4xl mx-auto px-4 sm:px-6 py-10 md:py-14">
-      <h2 className="font-serif text-2xl md:text-3xl font-bold italic text-primary mb-4">
+      <h2 className="font-serif text-2xl md:text-3xl font-bold text-primary mb-4">
         <AlertTriangle className="inline h-6 w-6 mr-2 text-pitta" />
         Principais Agravamentos e Manifestações Clínicas
       </h2>

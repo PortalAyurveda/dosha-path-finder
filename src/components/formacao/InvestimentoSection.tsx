@@ -19,7 +19,7 @@ const InvestimentoSection = ({ data, branding, onCtaClick, ctaText, ctaSubtext }
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-100px" }}
         transition={{ duration: 0.5 }}
-        className="font-serif italic font-bold text-2xl md:text-3xl mb-4 text-center"
+        className="font-serif font-bold text-2xl md:text-3xl mb-4 text-center"
         style={{ color: branding.darkColor }}
       >
         {data.title}
@@ -83,7 +83,7 @@ const InvestimentoSection = ({ data, branding, onCtaClick, ctaText, ctaSubtext }
           ))}
         </ul>
         <p
-          className="text-xs md:text-sm italic"
+          className="text-xs md:text-sm "
           style={{ color: branding.darkColor, opacity: 0.8 }}
         >
           {data.condicoesNote}
@@ -129,7 +129,7 @@ const InvestimentoSection = ({ data, branding, onCtaClick, ctaText, ctaSubtext }
         >
           {ctaText}
         </button>
-        <p className="text-xs md:text-sm text-gray-600 italic mt-3">{ctaSubtext}</p>
+        <p className="text-xs md:text-sm text-gray-600 mt-3">{ctaSubtext}</p>
       </div>
     </div>
   </section>

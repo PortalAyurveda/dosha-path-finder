@@ -50,7 +50,7 @@ const CourseHero = ({ data, branding, onCtaClick, logo, courseName = "Alimentaç
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="font-serif italic font-bold text-3xl md:text-4xl leading-tight mb-3 whitespace-pre-line"
+            className="font-serif font-bold text-3xl md:text-4xl leading-tight mb-3 whitespace-pre-line"
             style={{ color: "#352F54" }}
           >
             {data.headline}

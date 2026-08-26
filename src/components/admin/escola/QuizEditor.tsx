@@ -192,7 +192,7 @@ const QuizEditor = ({ moduloId, onChange }: Props) => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-lg font-heading italic flex items-center gap-2">
+        <CardTitle className="text-lg font-heading flex items-center gap-2">
           <FileText className="w-4 h-4" /> Autoavaliação (quiz)
         </CardTitle>
       </CardHeader>

@@ -31,7 +31,7 @@ const FormacaoHero = ({ data, branding, onCtaClick }: Props) => (
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="font-serif italic font-bold text-[28px] md:text-[44px] leading-[1.15] mb-5"
+        className="font-serif font-bold text-[28px] md:text-[44px] leading-[1.15] mb-5"
         style={{ color: branding.darkColor }}
       >
         {data.headline}
@@ -88,7 +88,7 @@ const FormacaoHero = ({ data, branding, onCtaClick }: Props) => (
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.6 }}
-        className="text-xs md:text-sm text-gray-600 italic mt-4"
+        className="text-xs md:text-sm text-gray-600 mt-4"
       >
         {data.ctaSubtext}
       </motion.p>

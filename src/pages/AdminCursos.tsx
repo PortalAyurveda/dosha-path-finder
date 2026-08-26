@@ -526,7 +526,7 @@ const EditarModulo = ({
             <ArrowLeft className="w-4 h-4" /> Voltar
           </Button>
           <div>
-            <h1 className="text-xl font-heading font-bold italic text-foreground flex items-center gap-2">
+            <h1 className="text-xl font-heading font-bold text-foreground flex items-center gap-2">
               <Layers className="w-5 h-5" /> Módulo: {modulo.titulo}
             </h1>
           </div>
@@ -534,7 +534,7 @@ const EditarModulo = ({
 
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg font-heading italic">Dados do módulo</CardTitle>
+            <CardTitle className="text-lg font-heading ">Dados do módulo</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             <div className="space-y-1">
@@ -564,7 +564,7 @@ const EditarModulo = ({
 
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg font-heading italic flex items-center gap-2">
+            <CardTitle className="text-lg font-heading flex items-center gap-2">
               <VideoIcon className="w-4 h-4" /> Aulas
             </CardTitle>
           </CardHeader>
@@ -743,14 +743,14 @@ const EditarCurso = ({
         <Button variant="outline" size="sm" onClick={onBack}>
           <ArrowLeft className="w-4 h-4" /> Voltar
         </Button>
-        <h1 className="text-xl font-heading font-bold italic text-foreground flex items-center gap-2">
+        <h1 className="text-xl font-heading font-bold text-foreground flex items-center gap-2">
           <BookOpen className="w-5 h-5" /> {curso.titulo}
         </h1>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg font-heading italic">Dados do curso</CardTitle>
+          <CardTitle className="text-lg font-heading ">Dados do curso</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
@@ -828,7 +828,7 @@ const EditarCurso = ({
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg font-heading italic flex items-center gap-2">
+          <CardTitle className="text-lg font-heading flex items-center gap-2">
             <Layers className="w-4 h-4" /> Módulos
           </CardTitle>
         </CardHeader>
@@ -980,7 +980,7 @@ const AdminCursos = () => {
           <>
             <div className="flex items-center gap-2">
               <BookOpen className="w-6 h-6 text-primary" />
-              <h1 className="text-2xl font-heading font-bold italic text-foreground">Cursos</h1>
+              <h1 className="text-2xl font-heading font-bold text-foreground">Cursos</h1>
             </div>
             <ListaCursos
               cursos={cursos}

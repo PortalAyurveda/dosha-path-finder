@@ -163,7 +163,7 @@ const Horarios = () => {
           <div className="grid md:grid-cols-2 gap-10 items-center">
             <div>
               <p className="text-sm font-semibold text-secondary uppercase tracking-wider mb-2">Compêndio Completo</p>
-              <h1 className="text-3xl md:text-5xl font-serif font-bold italic text-primary leading-tight mb-4">
+              <h1 className="text-3xl md:text-5xl font-serif font-bold text-primary leading-tight mb-4">
                 O Relógio dos Doshas & Dinacharya 🕰️
               </h1>
               <p className="text-foreground/80 text-base md:text-lg leading-relaxed mb-6">
@@ -195,7 +195,7 @@ const Horarios = () => {
       <section id="fisiologia" className="py-12 bg-surface-sun/50">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-8">
-            <h2 className="text-2xl md:text-3xl font-serif font-bold italic text-primary mb-2">
+            <h2 className="text-2xl md:text-3xl font-serif font-bold text-primary mb-2">
               Visão Geral: Sabedoria Fisiológica 🌐
             </h2>
             <p className="text-foreground/70 max-w-2xl mx-auto">
@@ -332,7 +332,7 @@ const Horarios = () => {
       <section id="dinacharya" className="py-12 bg-background">
         <div className="max-w-4xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-10">
-            <h2 className="text-2xl md:text-3xl font-serif font-bold italic text-primary mb-2">
+            <h2 className="text-2xl md:text-3xl font-serif font-bold text-primary mb-2">
               A Jornada do Dinacharya Padrão
             </h2>
             <p className="text-foreground/70 max-w-2xl mx-auto">
@@ -385,7 +385,7 @@ const Horarios = () => {
       {/* Clinical deepdive */}
       <section className="py-12 bg-surface-sky/50">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
-          <h2 className="text-2xl md:text-3xl font-serif font-bold italic text-primary mb-2 text-center">
+          <h2 className="text-2xl md:text-3xl font-serif font-bold text-primary mb-2 text-center">
             Aprofundamento Clínico: O Paradoxo da Alimentação Moderna 🧪
           </h2>
           <div className="mt-8">
@@ -414,7 +414,7 @@ const Horarios = () => {
       {/* Samkhya CTA */}
       <section className="py-12 bg-gradient-to-r from-primary to-primary/80 text-primary-foreground">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
-          <h2 className="text-2xl md:text-3xl font-serif font-bold italic mb-3">
+          <h2 className="text-2xl md:text-3xl font-serif font-bold mb-3">
             Potencialize sua Rotina com a Loja Samkhya
           </h2>
           <p className="text-white/80 max-w-xl mx-auto mb-6 text-sm md:text-base">

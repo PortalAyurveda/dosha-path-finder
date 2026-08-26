@@ -253,7 +253,7 @@ const CertificadoPrint = ({ cert }: { cert: CertificadoResp }) => (
         Certificado de Conclusão
       </p>
       <h1
-        className="font-serif italic text-4xl"
+        className="font-serif text-4xl"
         style={{ color: cert.cor_primaria || PRIMARY }}
       >
         {cert.nome_exibicao}
@@ -272,7 +272,7 @@ const CertificadoPrint = ({ cert }: { cert: CertificadoResp }) => (
         Certificamos que
       </p>
       <p
-        className="font-serif italic text-3xl my-3"
+        className="font-serif text-3xl my-3"
         style={{ color: cert.cor_primaria || PRIMARY }}
       >
         {cert.nome_aluno}
@@ -295,7 +295,7 @@ const CertificadoPrint = ({ cert }: { cert: CertificadoResp }) => (
       ].map((e, i) => (
         <div key={i} className="text-center">
           <p
-            className="font-serif italic text-2xl"
+            className="font-serif text-2xl"
             style={{ color: cert.cor_primaria || PRIMARY }}
           >
             {e.valor}
@@ -318,7 +318,7 @@ const CertificadoPrint = ({ cert }: { cert: CertificadoResp }) => (
         </div>
         <div className="text-center">
           <p
-            className="font-serif italic text-lg"
+            className="font-serif text-lg"
             style={{ color: cert.cor_primaria || PRIMARY }}
           >
             Edson Osorio
@@ -709,7 +709,7 @@ const CursoEstudar = () => {
             )}
             <div className="flex-1 min-w-0">
               <h1
-                className="font-serif italic font-bold text-2xl md:text-3xl leading-tight mb-2"
+                className="font-serif font-bold text-2xl md:text-3xl leading-tight mb-2"
                 style={{ color: PRIMARY }}
               >
                 {curso.titulo}

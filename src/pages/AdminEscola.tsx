@@ -142,7 +142,7 @@ const ListaModulos = ({
         return (
           <section key={s.num} className="space-y-3">
             <div>
-              <h2 className="text-xl font-heading font-bold italic text-foreground">{s.titulo}</h2>
+              <h2 className="text-xl font-heading font-bold text-foreground">{s.titulo}</h2>
               <p className="text-sm text-muted-foreground">{s.subtitulo}</p>
             </div>
             <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
@@ -299,7 +299,7 @@ const RecadosBlock = ({ turmaId }: { turmaId: string | null }) => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-lg font-heading italic flex items-center gap-2">
+        <CardTitle className="text-lg font-heading flex items-center gap-2">
           <Pin className="w-4 h-4" /> Recados da turma
         </CardTitle>
       </CardHeader>
@@ -535,7 +535,7 @@ const CardapioEditor = ({ moduloId }: { moduloId: string }) => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-lg font-heading italic flex items-center gap-2">
+        <CardTitle className="text-lg font-heading flex items-center gap-2">
           <Utensils className="w-4 h-4" /> Cardápio do fim de semana
         </CardTitle>
       </CardHeader>
@@ -573,7 +573,7 @@ const CardapioEditor = ({ moduloId }: { moduloId: string }) => {
                         <div className="space-y-2">
                           <Label className="text-xs text-muted-foreground">Receitas deste slot</Label>
                           {draft.nugget_ids.length === 0 ? (
-                            <p className="text-xs text-muted-foreground italic">Nenhuma receita anexada.</p>
+                            <p className="text-xs text-muted-foreground ">Nenhuma receita anexada.</p>
                           ) : (
                             <div className="space-y-2">
                               {draft.nugget_ids.map((nid, idx) => {
@@ -1215,7 +1215,7 @@ const EditarModulo = ({
             <ArrowLeft className="w-4 h-4" /> Voltar
           </Button>
           <div>
-            <h1 className="text-xl font-heading font-bold italic text-foreground flex items-center gap-2">
+            <h1 className="text-xl font-heading font-bold text-foreground flex items-center gap-2">
               <GraduationCap className="w-5 h-5" /> Módulo {modulo.numero}: {modulo.titulo}
             </h1>
             <p className="text-xs text-foreground/80">
@@ -1255,7 +1255,7 @@ const EditarModulo = ({
       {/* 1. Material */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg font-heading italic flex items-center gap-2">
+          <CardTitle className="text-lg font-heading flex items-center gap-2">
             <VideoIcon className="w-4 h-4" /> Material
           </CardTitle>
         </CardHeader>
@@ -1325,7 +1325,7 @@ const EditarModulo = ({
       {/* 2. Recursos do módulo */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg font-heading italic flex items-center gap-2">
+          <CardTitle className="text-lg font-heading flex items-center gap-2">
             <Sparkles className="w-4 h-4" /> Recursos do módulo
           </CardTitle>
         </CardHeader>
@@ -1478,7 +1478,7 @@ const AdminEscola = () => {
           <>
             <div className="flex items-center gap-2">
               <GraduationCap className="w-6 h-6 text-primary" />
-              <h1 className="text-2xl font-heading font-bold italic text-foreground">Escola</h1>
+              <h1 className="text-2xl font-heading font-bold text-foreground">Escola</h1>
             </div>
             <RecadosBlock turmaId={turmaAtivaId} />
             {loading ? (

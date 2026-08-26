@@ -128,7 +128,7 @@ const MuralTurma = ({ aluno }: { aluno: AlunoRow }) => {
       <div className="pl-3 border-l-4 flex items-center gap-2" style={{ borderColor: branding.primaryColor }}>
         <StickyNote className="w-5 h-5" style={{ color: branding.primaryColor }} />
         <div>
-          <h2 className="font-serif text-xl font-bold italic" style={{ color: branding.darkColor }}>
+          <h2 className="font-serif text-xl font-bold " style={{ color: branding.darkColor }}>
             Mural da turma
           </h2>
           <p className="text-sm text-muted-foreground">Post-its visíveis para todos da turma — leve e livre.</p>
@@ -161,7 +161,7 @@ const MuralTurma = ({ aluno }: { aluno: AlunoRow }) => {
       {loading ? (
         <Skeleton className="h-24 w-full" />
       ) : principais.length === 0 ? (
-        <p className="text-sm text-muted-foreground italic">Seja o primeiro a colar um post-it.</p>
+        <p className="text-sm text-muted-foreground ">Seja o primeiro a colar um post-it.</p>
       ) : (
         <div className="grid gap-4 md:grid-cols-2">
           {principais.map((p) => {
@@ -177,7 +177,7 @@ const MuralTurma = ({ aluno }: { aluno: AlunoRow }) => {
                     <span className="font-medium" style={{ color: branding.darkColor }}>{authorName(p)}</span>
                     <span>{formatRelative(p.created_at)}</span>
                   </div>
-                  <p className="text-sm whitespace-pre-wrap font-serif italic" style={{ color: branding.darkColor }}>
+                  <p className="text-sm whitespace-pre-wrap font-serif " style={{ color: branding.darkColor }}>
                     {p.conteudo}
                   </p>
                   <div className="flex gap-2 mt-3">

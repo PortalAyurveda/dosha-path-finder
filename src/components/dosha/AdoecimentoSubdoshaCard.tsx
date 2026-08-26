@@ -78,7 +78,7 @@ const AdoecimentoSubdoshaCard = ({ number, name, subtitle, tagline, description,
       </div>
 
       {tagline && (
-        <p className="text-sm font-semibold text-primary italic">{tagline}</p>
+        <p className="text-sm font-semibold text-primary ">{tagline}</p>
       )}
 
       <p className="text-sm text-foreground leading-relaxed">{description}</p>

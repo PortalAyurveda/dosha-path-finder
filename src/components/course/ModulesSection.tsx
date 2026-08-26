@@ -19,7 +19,7 @@ const ModulesSection = ({ data, branding }: ModulesSectionProps) => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.5 }}
-          className="font-serif italic font-bold text-2xl md:text-3xl mb-8 text-center"
+          className="font-serif font-bold text-2xl md:text-3xl mb-8 text-center"
           style={{ color: "#352F54" }}
         >
           {data.title}

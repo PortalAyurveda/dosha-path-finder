@@ -15,7 +15,7 @@ const ProblemSection = ({ data }: ProblemSectionProps) => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.5 }}
-          className="font-serif italic font-bold text-2xl md:text-3xl mb-5 text-center whitespace-pre-line"
+          className="font-serif font-bold text-2xl md:text-3xl mb-5 text-center whitespace-pre-line"
           style={{ color: "#352F54" }}
         >
           {data.title}
@@ -57,7 +57,7 @@ const ProblemSection = ({ data }: ProblemSectionProps) => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.5, delay: 0.2 }}
-          className="font-serif font-bold italic text-lg md:text-xl text-center leading-snug border-t border-gray-200 pt-7 whitespace-pre-line"
+          className="font-serif font-bold text-lg md:text-xl text-center leading-snug border-t border-gray-200 pt-7 whitespace-pre-line"
           style={{ color: "#352F54" }}
         >
           {data.closing}

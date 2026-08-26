@@ -796,7 +796,7 @@ const Assinar = () => {
               <PortalMark size={44} />
             </div>
             <h1
-              className="font-serif italic font-bold text-[30px] md:text-[38px] leading-tight mb-3"
+              className="font-serif font-bold text-[30px] md:text-[38px] leading-tight mb-3"
               style={{ color: PRIMARY }}
             >
               Seu Ayurveda, do seu jeito
@@ -823,7 +823,7 @@ const Assinar = () => {
         <section className="bg-background border-b border-border/40">
           <div className="max-w-[1040px] mx-auto px-4 sm:px-6 py-10 md:py-14">
             <h2
-              className="font-serif italic font-bold text-2xl md:text-[28px] text-center mb-2"
+              className="font-serif font-bold text-2xl md:text-[28px] text-center mb-2"
               style={{ color: PRIMARY }}
             >
               Sua jornada
@@ -928,7 +928,7 @@ const Assinar = () => {
         <section style={{ background: SURFACE }}>
           <div className="max-w-[1040px] mx-auto px-4 sm:px-6 py-6 md:py-8">
             <h2
-              className="font-serif italic font-bold text-2xl md:text-[28px] text-center mb-1.5"
+              className="font-serif font-bold text-2xl md:text-[28px] text-center mb-1.5"
               style={{ color: PRIMARY }}
             >
               Tudo começa pelo seu retrato
@@ -1058,7 +1058,7 @@ const Assinar = () => {
               Sua revisão mensal
             </p>
             <h2
-              className="font-serif italic font-bold text-2xl md:text-[28px] text-center mb-1.5"
+              className="font-serif font-bold text-2xl md:text-[28px] text-center mb-1.5"
               style={{ color: PRIMARY }}
             >
               Você vê seu corpo melhorar, mês a mês
@@ -1237,7 +1237,7 @@ const Assinar = () => {
         <section className="bg-background">
           <div className="max-w-[1040px] mx-auto px-4 sm:px-6 py-10 md:py-14">
             <h2
-              className="font-serif italic font-bold text-2xl md:text-[28px] text-center mb-2"
+              className="font-serif font-bold text-2xl md:text-[28px] text-center mb-2"
               style={{ color: PRIMARY }}
             >
               A Akasha te acompanha
@@ -1332,7 +1332,7 @@ const Assinar = () => {
         <section className="bg-background">
           <div className="max-w-[1040px] mx-auto px-4 sm:px-6 pb-10 md:pb-14">
             <h2
-              className="font-serif italic font-bold text-2xl md:text-[28px] text-center mb-2"
+              className="font-serif font-bold text-2xl md:text-[28px] text-center mb-2"
               style={{ color: PRIMARY }}
             >
               Quem já vive isso
@@ -1353,7 +1353,7 @@ const Assinar = () => {
                 >
                   <blockquote
                     className="flex-1 text-[14px] leading-relaxed"
-                    style={{ color: PRIMARY, fontFamily: "Georgia, serif", fontStyle: "italic" }}
+                    style={{ color: PRIMARY, fontFamily: "Georgia, serif", fontStyle: "" }}
                   >
                     {d.fala}
                   </blockquote>
@@ -1373,7 +1373,7 @@ const Assinar = () => {
         <section style={{ background: SURFACE }}>
           <div className="max-w-[1040px] mx-auto px-4 sm:px-6 py-10 md:py-14">
             <h2
-              className="font-serif italic font-bold text-2xl md:text-[28px] text-center mb-2"
+              className="font-serif font-bold text-2xl md:text-[28px] text-center mb-2"
               style={{ color: PRIMARY }}
             >
               Comida e conteúdo de verdade
@@ -1427,7 +1427,7 @@ const Assinar = () => {
               Tudo num só lugar
             </p>
             <h2
-              className="font-serif italic font-bold text-2xl md:text-[28px] text-center mb-8"
+              className="font-serif font-bold text-2xl md:text-[28px] text-center mb-8"
               style={{ color: PRIMARY }}
             >
               O acervo inteiro, organizado pra você
@@ -1550,7 +1550,7 @@ const Assinar = () => {
         <section id="planos" style={{ background: SURFACE }}>
           <div className="max-w-[1040px] mx-auto px-4 sm:px-6 py-12 md:py-16">
             <h2
-              className="font-serif italic font-bold text-2xl md:text-[28px] text-center mb-2"
+              className="font-serif font-bold text-2xl md:text-[28px] text-center mb-2"
               style={{ color: PRIMARY }}
             >
               Escolha seu plano
@@ -1748,7 +1748,7 @@ const Assinar = () => {
                 <p className="text-[11px] uppercase tracking-wider font-bold mb-1.5" style={{ color: SALMAO }}>
                   Quem te guia
                 </p>
-                <h2 className="font-serif italic font-bold text-2xl md:text-[28px] mb-2" style={{ color: PRIMARY }}>
+                <h2 className="font-serif font-bold text-2xl md:text-[28px] mb-2" style={{ color: PRIMARY }}>
                   Edson Osorio
                 </h2>
                 <p
@@ -1766,7 +1766,7 @@ const Assinar = () => {
         <section className="bg-background">
           <div className="max-w-[1040px] mx-auto px-4 sm:px-6 py-12 md:py-16">
             <h2
-              className="font-serif italic font-bold text-2xl md:text-[28px] text-center mb-8"
+              className="font-serif font-bold text-2xl md:text-[28px] text-center mb-8"
               style={{ color: PRIMARY }}
             >
               Perguntas comuns

@@ -48,7 +48,7 @@ const FundamentosAyurveda = () => {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-6 md:pt-8 pb-8 md:pb-10">
         <div className="text-center mb-6">
           <h2
-            className="font-serif italic font-bold text-3xl md:text-4xl"
+            className="font-serif font-bold text-3xl md:text-4xl"
             style={{ color: PRIMARY }}
           >
             Conheça Ayurveda por aqui

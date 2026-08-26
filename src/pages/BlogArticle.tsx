@@ -125,7 +125,7 @@ const BlogArticle = () => {
         </div>
 
         {article.meta_description && (
-          <p className="text-lg text-muted-foreground mb-6 italic">
+          <p className="text-lg text-muted-foreground mb-6 ">
             {article.meta_description}
           </p>
         )}

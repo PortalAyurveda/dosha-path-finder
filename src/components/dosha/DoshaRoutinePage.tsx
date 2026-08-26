@@ -118,7 +118,7 @@ const DoshaRoutinePage = ({
           <div className="grid md:grid-cols-2 gap-10 items-center">
             <div>
               <p className={`text-sm font-semibold uppercase tracking-wider mb-2 ${styles.accent}`}>Compêndio Específico</p>
-              <h1 className="text-3xl md:text-5xl font-serif font-bold italic text-primary leading-tight mb-4">
+              <h1 className="text-3xl md:text-5xl font-serif font-bold text-primary leading-tight mb-4">
                 {heroTitle} {emoji}
               </h1>
               <p className="text-foreground/80 text-base md:text-lg leading-relaxed mb-6">
@@ -166,7 +166,7 @@ const DoshaRoutinePage = ({
       <section className="py-12 bg-surface-sun/50">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-8">
-            <h2 className="text-2xl md:text-3xl font-serif font-bold italic text-primary mb-2">{principlesTitle}</h2>
+            <h2 className="text-2xl md:text-3xl font-serif font-bold text-primary mb-2">{principlesTitle}</h2>
             <p className="text-foreground/70 max-w-2xl mx-auto">{principlesSubtitle}</p>
           </div>
           <div className="grid sm:grid-cols-2 gap-4">
@@ -187,7 +187,7 @@ const DoshaRoutinePage = ({
       <section id="dinacharya" className="py-12 bg-background">
         <div className="max-w-4xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-10">
-            <h2 className="text-2xl md:text-3xl font-serif font-bold italic text-primary mb-2">{timelineTitle}</h2>
+            <h2 className="text-2xl md:text-3xl font-serif font-bold text-primary mb-2">{timelineTitle}</h2>
             <p className="text-foreground/70 max-w-2xl mx-auto">{timelineSubtitle}</p>
           </div>
           <div className="space-y-6">

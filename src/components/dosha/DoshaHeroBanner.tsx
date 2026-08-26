@@ -39,7 +39,7 @@ const DoshaHeroBanner = ({ dosha, emoji, title, elements, subtitle, description,
           <div className="text-left">
             <p className="text-sm font-medium text-muted-foreground mb-1">{elements}</p>
             <p className="text-xs text-muted-foreground mb-4">{subtitle}</p>
-            <h1 className="text-4xl md:text-6xl font-serif font-bold italic text-primary mb-2">
+            <h1 className="text-4xl md:text-6xl font-serif font-bold text-primary mb-2">
               {title} {emoji}
             </h1>
             <p className={`text-sm font-medium ${doshaSubtitle[dosha]} mb-6`}>

@@ -138,7 +138,7 @@ const Webinar = ({ data }: { data: WebinarRow }) => {
           </div>
 
           <h1
-            className="font-serif italic text-center text-[1.5rem] md:text-[1.75rem] font-bold leading-tight"
+            className="font-serif text-center text-[1.5rem] md:text-[1.75rem] font-bold leading-tight"
             style={{ color: ink }}
           >
             {data.subtitulo || data.titulo_evento}
@@ -161,7 +161,7 @@ const Webinar = ({ data }: { data: WebinarRow }) => {
           <div className="mt-3 md:pr-[300px]">
             {dataFmt && (
               <p
-                className="font-serif italic font-bold text-left mb-2"
+                className="font-serif font-bold text-left mb-2"
                 style={{ color: greenDark, letterSpacing: "0.18em", fontSize: "1.05rem" }}
               >
                 {dataFmt}
@@ -218,7 +218,7 @@ const Webinar = ({ data }: { data: WebinarRow }) => {
               </Button>
 
               <p
-                className="text-left md:text-center font-serif italic text-xs md:text-sm pt-1 w-[62%] md:w-full"
+                className="text-left md:text-center font-serif text-xs md:text-sm pt-1 w-[62%] md:w-full"
                 style={{ color: ink }}
               >
                 Evento online e gratuito.

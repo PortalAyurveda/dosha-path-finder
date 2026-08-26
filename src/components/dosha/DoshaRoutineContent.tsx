@@ -48,7 +48,7 @@ const DoshaRoutineContent = ({
       <section className="py-10 bg-surface-sun/50">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-8">
-            <h2 className="text-2xl md:text-3xl font-serif font-bold italic text-primary mb-2">
+            <h2 className="text-2xl md:text-3xl font-serif font-bold text-primary mb-2">
               {principlesTitle}
             </h2>
             <p className="text-foreground/70 max-w-2xl mx-auto">{principlesSubtitle}</p>
@@ -71,7 +71,7 @@ const DoshaRoutineContent = ({
       <section className="py-10 bg-background">
         <div className="max-w-4xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-10">
-            <h2 className="text-2xl md:text-3xl font-serif font-bold italic text-primary mb-2">{timelineTitle}</h2>
+            <h2 className="text-2xl md:text-3xl font-serif font-bold text-primary mb-2">{timelineTitle}</h2>
             <p className="text-foreground/70 max-w-2xl mx-auto">{timelineSubtitle}</p>
           </div>
           <div className="space-y-6">
