@@ -516,6 +516,18 @@ const CartDrawer = () => {
         return;
       }
 
+      if (metodoPagamento === "cartao") {
+        const { data, error } = await supabase.functions.invoke("create-cartao-pagamento", {
+          body: bodyBase,
+        });
+        if (error) throw new Error(await extrairMensagemErro(error, "Erro ao iniciar checkout"));
+        if (data?.error) throw new Error(String(data.error));
+        const url = data?.checkout_url;
+        if (!url) throw new Error("URL de checkout não recebida");
+        window.location.href = url;
+        return;
+      }
+
       const { data, error } = await supabase.functions.invoke("create-checkout", {
         body: bodyBase,
       });
@@ -970,7 +982,7 @@ const CartDrawer = () => {
                   >
                     {[
                       { id: "pix", nome: "Pix", desc: "Aprovação na hora" },
-                      { id: "cartao", nome: "Cartão de crédito", desc: "Em até 12x" },
+                      { id: "cartao", nome: "Cartão de crédito", desc: "Em até 3x sem juros" },
                       { id: "boleto", nome: "Boleto", desc: "Vence em 3 dias úteis" },
                     ].map((op) => (
                       <label
