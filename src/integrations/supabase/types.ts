@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.1"
+    PostgrestVersion: "14.17"
   }
   public: {
     Tables: {
@@ -2071,6 +2071,7 @@ export type Database = {
           descricao: string | null
           id: string
           ordem: number
+          tipo: string
           titulo: string
           updated_at: string
         }
@@ -2080,6 +2081,7 @@ export type Database = {
           descricao?: string | null
           id?: string
           ordem?: number
+          tipo?: string
           titulo: string
           updated_at?: string
         }
@@ -2089,6 +2091,7 @@ export type Database = {
           descricao?: string | null
           id?: string
           ordem?: number
+          tipo?: string
           titulo?: string
           updated_at?: string
         }
@@ -4223,6 +4226,27 @@ export type Database = {
           legenda?: string
           origem?: string | null
           video_id?: string
+        }
+        Relationships: []
+      }
+      jiva_receita_entrada: {
+        Row: {
+          created_at: string
+          entrada: Json
+          id: string
+          pasta_id: string
+        }
+        Insert: {
+          created_at?: string
+          entrada: Json
+          id?: string
+          pasta_id: string
+        }
+        Update: {
+          created_at?: string
+          entrada?: Json
+          id?: string
+          pasta_id?: string
         }
         Relationships: []
       }
@@ -8432,6 +8456,11 @@ export type Database = {
         Returns: Json
       }
       auditoria_amostra_emails: { Args: { p_horas?: number }; Returns: Json }
+      auditoria_relatorio_qualidade: {
+        Args: { p_horas?: number }
+        Returns: Json
+      }
+      auditoria_sugestao_conteudo: { Args: { p_email: string }; Returns: Json }
       busca_global: {
         Args: { p_limite_por_tipo?: number; p_termo: string }
         Returns: {
@@ -8960,6 +8989,7 @@ export type Database = {
         }[]
       }
       mockups_dados: { Args: never; Returns: Json }
+      obter_certificado_curso: { Args: { p_curso_id: string }; Returns: Json }
       owns_rotina: { Args: { p_test_id: string }; Returns: boolean }
       payload_pessoa_preview: {
         Args: { p_comunicacao_id: string; p_email: string }
