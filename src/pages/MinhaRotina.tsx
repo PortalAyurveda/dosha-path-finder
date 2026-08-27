@@ -562,10 +562,31 @@ const MinhaRotina = () => {
   }
 
 
+  // Semanas disponíveis: 1–4 fixas + semana 5 só se houver dados gravados
+  const semanasComDados = new Set((rotinaRows ?? []).map((r) => r.semana ?? 1));
+  const semanasDisponiveis = [1, 2, 3, 4].concat(semanasComDados.has(5) ? [5] : []);
+
+  // Dias da semana selecionada (semana 5 mostra só os dias que existem)
+  const diasDaSemana = (() => {
+    if (semanaSelecionada === 5) {
+      const existentes = new Set(
+        (rotinaRows ?? []).filter((r) => (r.semana ?? 1) === 5).map((r) => r.dia)
+      );
+      return ORDEM_DIAS.filter((d) => existentes.has(d));
+    }
+    return ORDEM_DIAS;
+  })();
+
+  // Só a semana e o dia de hoje permitem marcar progresso
+  const ehHoje = semanaSelecionada === semanaHoje && diaSelecionado === diaHoje;
+
   // Rotina filtrada do dia
-  const rowsDoDia = (rotinaRows ?? []).filter((r) => r.dia === diaSelecionado);
+  const rowsDoDia = (rotinaRows ?? []).filter(
+    (r) => r.dia === diaSelecionado && (r.semana ?? 1) === semanaSelecionada
+  );
   const rowBySlot = new Map<string, RotinaRow>();
   rowsDoDia.forEach((r) => rowBySlot.set(r.slot, r));
+
 
   // Cuidados do glossário em destaque (2-3)
   const habitosGloss = (glossario?.habitos_diarios ?? []).slice(0, 3);
