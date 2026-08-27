@@ -484,13 +484,45 @@ const MinhaRotina = () => {
     [favoritosRows, nuggetsById]
   );
 
+  const favoritosKey = ["minhas-favoritas", user?.id] as const;
+  const favoritosSet = useMemo(
+    () => new Set((favoritosRows ?? []).map((f) => f.nugget_id)),
+    [favoritosRows]
+  );
 
+  const toggleFavorito = async (nuggetId: string) => {
+    if (!user) return;
+    const jaTem = favoritosSet.has(nuggetId);
+    queryClient.setQueryData<{ nugget_id: string; created_at: string }[]>(
+      favoritosKey as any,
+      (prev) => {
+        const arr = prev ?? [];
+        return jaTem
+          ? arr.filter((f) => f.nugget_id !== nuggetId)
+          : [{ nugget_id: nuggetId, created_at: new Date().toISOString() }, ...arr];
+      }
+    );
+    try {
+      if (jaTem) {
+        const { error } = await (supabase.from("rotina_favoritos") as any)
+          .delete()
+          .eq("user_id", user.id)
+          .eq("nugget_id", nuggetId);
+        if (error) throw error;
+      } else {
+        const { error } = await (supabase.from("rotina_favoritos") as any).upsert(
+          { user_id: user.id, nugget_id: nuggetId },
+          { onConflict: "user_id,nugget_id", ignoreDuplicates: true }
+        );
+        if (error) throw error;
+      }
+    } catch {
+      toast({ title: "Não consegui salvar", variant: "destructive" });
+    } finally {
+      queryClient.invalidateQueries({ queryKey: ["minhas-favoritas", user.id] });
+    }
+  };
 
-  // A estrela grava em rotina_favoritos junto com os pontos: revalida a lista
-  useEffect(() => {
-    if (!user?.id) return;
-    queryClient.invalidateQueries({ queryKey: ["minhas-favoritas", user.id] });
-  }, [pontosHoje, user?.id, queryClient]);
 
   // Modal de impressão
 
