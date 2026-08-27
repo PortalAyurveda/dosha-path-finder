@@ -282,9 +282,19 @@ const MinhaRotina = () => {
     queryFn: async () => {
       const { data, error } = await supabase.rpc("minha_rotina_por_teste" as any, { p_teste_id: testeId! });
       if (error) throw error;
-      return (data ?? []) as RotinaRow[];
+      const base = (data ?? []) as RotinaRow[];
+      // A semana vive na tabela; a RPC ainda não devolve essa coluna.
+      const { data: semanas } = await (supabase.from("rotinas_usuario") as any)
+        .select("id, semana")
+        .eq("user_id", testeId!);
+      const mapa = new Map<string, number>();
+      ((semanas ?? []) as { id: string; semana: number | null }[]).forEach((s) =>
+        mapa.set(s.id, s.semana ?? 1)
+      );
+      return base.map((r) => ({ ...r, semana: mapa.get(r.id) ?? r.semana ?? 1 }));
     },
   });
+
 
   const { data: nuggets } = useQuery({
     queryKey: ["rotina-nuggets-all"],
