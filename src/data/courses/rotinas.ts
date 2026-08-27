@@ -108,7 +108,7 @@ export const rotinasData: CourseData = {
   pricing: {
     priceOld: "",
     priceNew: "R$ 97,00",
-    installments: "Pagamento único",
+    installments: "Em até 5x sem juros de R$ 19,40",
     highlight: "Menos de R$100 pra aprender o relógio do seu corpo.",
     context: "Já incluso pra quem assina o Plano Anual Premium",
     ctaText: "QUERO COMEÇAR AGORA",
