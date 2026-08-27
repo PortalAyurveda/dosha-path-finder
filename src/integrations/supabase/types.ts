@@ -2117,6 +2117,7 @@ export type Database = {
           card_cor_primaria: string | null
           card_cor_secundaria: string | null
           card_cta_texto: string | null
+          card_foto_posicao: string | null
           card_logo_url: string | null
           card_subtitulo: string | null
           created_at: string
@@ -2143,6 +2144,7 @@ export type Database = {
           card_cor_primaria?: string | null
           card_cor_secundaria?: string | null
           card_cta_texto?: string | null
+          card_foto_posicao?: string | null
           card_logo_url?: string | null
           card_subtitulo?: string | null
           created_at?: string
@@ -2169,6 +2171,7 @@ export type Database = {
           card_cor_primaria?: string | null
           card_cor_secundaria?: string | null
           card_cta_texto?: string | null
+          card_foto_posicao?: string | null
           card_logo_url?: string | null
           card_subtitulo?: string | null
           created_at?: string
