@@ -4507,6 +4507,81 @@ export type Database = {
         }
         Relationships: []
       }
+      kaviratna_raw_chunks: {
+        Row: {
+          chunk_index: number
+          created_at: string | null
+          end_line: number
+          id: number
+          processed: boolean
+          raw_text: string
+          start_line: number
+        }
+        Insert: {
+          chunk_index: number
+          created_at?: string | null
+          end_line: number
+          id?: never
+          processed?: boolean
+          raw_text: string
+          start_line: number
+        }
+        Update: {
+          chunk_index?: number
+          created_at?: string | null
+          end_line?: number
+          id?: never
+          processed?: boolean
+          raw_text?: string
+          start_line?: number
+        }
+        Relationships: []
+      }
+      kaviratna_sutrasthana_rows: {
+        Row: {
+          batch_end_line: number | null
+          batch_start_line: number | null
+          chunk_index: number
+          created_at: string | null
+          embedding: string | null
+          footnote_marker: string | null
+          footnote_text: string | null
+          id: number
+          para_num: string | null
+          suspected_ocr_corruption: boolean
+          translation_en: string
+          translation_pt: string | null
+        }
+        Insert: {
+          batch_end_line?: number | null
+          batch_start_line?: number | null
+          chunk_index: number
+          created_at?: string | null
+          embedding?: string | null
+          footnote_marker?: string | null
+          footnote_text?: string | null
+          id?: never
+          para_num?: string | null
+          suspected_ocr_corruption?: boolean
+          translation_en: string
+          translation_pt?: string | null
+        }
+        Update: {
+          batch_end_line?: number | null
+          batch_start_line?: number | null
+          chunk_index?: number
+          created_at?: string | null
+          embedding?: string | null
+          footnote_marker?: string | null
+          footnote_text?: string | null
+          id?: never
+          para_num?: string | null
+          suspected_ocr_corruption?: boolean
+          translation_en?: string
+          translation_pt?: string | null
+        }
+        Relationships: []
+      }
       kit_novato_curadoria: {
         Row: {
           artigo_imagem: string | null
