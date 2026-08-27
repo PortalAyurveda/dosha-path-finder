@@ -900,6 +900,135 @@ const EditarCurso = ({
       <Card>
         <CardHeader>
           <CardTitle className="text-lg font-heading flex items-center gap-2">
+            <LayoutGrid className="w-4 h-4" /> Card da vitrine (/cursos)
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-5">
+          <div className="space-y-2">
+            <Label>Logo do curso (fundo transparente, PNG ou SVG)</Label>
+            {cardLogoUrl ? (
+              <div className="flex items-center gap-3">
+                <img
+                  src={cardLogoUrl}
+                  alt="Logo do card"
+                  className="h-16 w-auto object-contain rounded border border-border bg-muted/30 p-2"
+                />
+                <Button variant="ghost" size="sm" onClick={() => setCardLogoUrl("")}>
+                  <Trash2 className="w-4 h-4" />
+                </Button>
+              </div>
+            ) : (
+              <p className="text-xs text-muted-foreground">
+                Nenhuma logo enviada — o card usa um ícone padrão.
+              </p>
+            )}
+            <label className="inline-flex">
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => {
+                  const f = e.target.files?.[0];
+                  if (f) handleUploadCardLogo(f);
+                  e.target.value = "";
+                }}
+              />
+              <span
+                className={`inline-flex items-center gap-2 text-sm px-3 h-9 rounded-md border border-input bg-background hover:bg-accent cursor-pointer ${uploadingLogo ? "opacity-60 pointer-events-none" : ""}`}
+              >
+                {uploadingLogo ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Upload className="w-4 h-4" />
+                )}
+                {cardLogoUrl ? "Substituir logo" : "Enviar logo"}
+              </span>
+            </label>
+          </div>
+
+          <div className="grid sm:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label>Cor principal</Label>
+              <div className="flex items-center gap-2">
+                <input
+                  type="color"
+                  value={cardCorPrimaria}
+                  onChange={(e) => setCardCorPrimaria(e.target.value)}
+                  className="h-9 w-12 rounded border border-input cursor-pointer"
+                />
+                <Input value={cardCorPrimaria} onChange={(e) => setCardCorPrimaria(e.target.value)} />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Cor secundária (mais escura — usada no degradê sobre a foto)</Label>
+              <div className="flex items-center gap-2">
+                <input
+                  type="color"
+                  value={cardCorSecundaria}
+                  onChange={(e) => setCardCorSecundaria(e.target.value)}
+                  className="h-9 w-12 rounded border border-input cursor-pointer"
+                />
+                <Input value={cardCorSecundaria} onChange={(e) => setCardCorSecundaria(e.target.value)} />
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label>Subtítulo (linha curta abaixo do título)</Label>
+            <Input
+              value={cardSubtitulo}
+              onChange={(e) => setCardSubtitulo(e.target.value)}
+              placeholder="Ex: Dinacharya — o relógio dos doshas"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label>Posição da foto de capa dentro do card (opcional)</Label>
+            <Input
+              value={cardFotoPosicao}
+              onChange={(e) => setCardFotoPosicao(e.target.value)}
+              placeholder='Ex: "center center", "right center", "45% center" — vazio = centralizado'
+            />
+            <p className="text-xs text-muted-foreground">
+              Útil quando a foto tem algo importante numa das pontas (a foto é sempre cortada nas laterais, nunca em cima/embaixo).
+            </p>
+          </div>
+
+          <div className="space-y-2">
+            <Label>As 5 linhas do card (só as preenchidas aparecem)</Label>
+            <Input value={cardBullet1} onChange={(e) => setCardBullet1(e.target.value)} placeholder="Linha 1" />
+            <Input value={cardBullet2} onChange={(e) => setCardBullet2(e.target.value)} placeholder="Linha 2" />
+            <Input value={cardBullet3} onChange={(e) => setCardBullet3(e.target.value)} placeholder="Linha 3" />
+            <Input value={cardBullet4} onChange={(e) => setCardBullet4(e.target.value)} placeholder="Linha 4" />
+            <Input value={cardBullet5} onChange={(e) => setCardBullet5(e.target.value)} placeholder="Linha 5" />
+          </div>
+
+          <div className="space-y-2">
+            <Label>Texto do botão (opcional — se vazio, usa o padrão de cada situação)</Label>
+            <Input
+              value={cardCtaTexto}
+              onChange={(e) => setCardCtaTexto(e.target.value)}
+              placeholder="Ex: Ver o curso"
+            />
+          </div>
+
+          <div className="flex justify-end">
+            <Button onClick={salvarCard} disabled={savingCard}>
+              {savingCard ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <Save className="w-4 h-4" />
+              )}
+              Salvar card
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg font-heading flex items-center gap-2">
             <Layers className="w-4 h-4" /> Módulos
           </CardTitle>
         </CardHeader>
