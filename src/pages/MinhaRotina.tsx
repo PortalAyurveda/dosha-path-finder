@@ -1080,50 +1080,56 @@ const MinhaRotina = () => {
 
         {/* ===== Suas receitas favoritas ===== */}
         <section>
-          <h2 className="font-serif" style={{ fontSize: 18, color: "#352F54", fontWeight: 600 }}>
-            Suas receitas favoritas
-          </h2>
-          {favoritas.length === 0 ? (
-            <p className="mt-2" style={{ fontSize: 16, color: "#3F3A52", lineHeight: 1.6 }}>
-              Você ainda não guardou nenhuma. Toque em <strong>Favoritar</strong> no card de uma
-              receita que você gostou: ela fica guardada aqui pra você imprimir depois.
-            </p>
-          ) : (
-            <>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mt-3">
-                {favoritas.map((n) => (
-                  <RotinaSlotCard
-                    key={`fav-${n.id}`}
-                    slotLabel=""
-                    semSlotLabel
-                    row={undefined}
-                    nugget={n}
-                    feito
-                    agniFracoOuIrregular={agniFracoOuIrregular}
-                    onToggleFeito={() => {}}
-                    compact
-                    mostrarLista
-                    naLista={selecionados.has(n.id)}
-                    onToggleLista={() => toggleSelecao(n.id)}
-                    erroLista={erroSelecao === n.id}
-                  />
-                ))}
-              </div>
+          <div className="flex items-center justify-between gap-3 flex-wrap">
+            <h2 className="font-serif" style={{ fontSize: 18, color: "#352F54", fontWeight: 600 }}>
+              Suas receitas favoritas
+            </h2>
+            {favoritas.length > 0 && (
               <button
                 onClick={() =>
                   navigate(
                     `/imprimir?pecas=receitas&ids=${favoritas.map((n) => n.id).join(",")}`
                   )
                 }
-                className="mt-4 inline-flex items-center gap-2 rounded-xl px-5 font-semibold text-white"
-                style={{ minHeight: 56, fontSize: 17, background: "#352F54" }}
+                className="inline-flex items-center gap-2 rounded-xl px-4 font-semibold text-white"
+                style={{ minHeight: 48, fontSize: 15, background: "#352F54" }}
               >
-                <Printer className="h-6 w-6" strokeWidth={2} />
-                Imprimir as favoritas
+                <Printer className="h-5 w-5" strokeWidth={2} />
+                Imprimir só as favoritas
               </button>
-            </>
+            )}
+          </div>
+          {favoritas.length === 0 ? (
+            <p className="mt-2" style={{ fontSize: 16, color: "#3F3A52", lineHeight: 1.6 }}>
+              Você ainda não guardou nenhuma. Toque na <strong>estrela</strong> no card de uma
+              receita que você gostou: ela fica guardada aqui pra você imprimir depois.
+            </p>
+          ) : (
+            <div className="mt-3 -mx-1 px-1 flex gap-3 overflow-x-auto snap-x pb-2">
+              {favoritas.map((n) => (
+                <div key={`fav-${n.id}`} className="shrink-0 w-[190px] snap-start">
+                  <RotinaSlotCard
+                    slotLabel=""
+                    semSlotLabel
+                    row={undefined}
+                    nugget={n}
+                    feito={false}
+                    agniFracoOuIrregular={agniFracoOuIrregular}
+                    onToggleFeito={() => {}}
+                    mini
+                    favorito={favoritosSet.has(n.id)}
+                    onToggleFavorito={() => toggleFavorito(n.id)}
+                    mostrarLista
+                    naLista={selecionados.has(n.id)}
+                    onToggleLista={() => toggleSelecao(n.id)}
+                    erroLista={erroSelecao === n.id}
+                  />
+                </div>
+              ))}
+            </div>
           )}
         </section>
+
 
 
         {/* ===== Sempre Faz Bem (suplementos personalizados) ===== */}
