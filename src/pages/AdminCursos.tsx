@@ -1,4 +1,4 @@
-import { createContext, useCallback, useEffect, useState } from "react";
+import { createContext, useCallback, useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import AdminNav from "@/components/admin/AdminNav";
 import Seo from "@/components/Seo";
@@ -31,6 +31,8 @@ import {
 import { toast } from "@/hooks/use-toast";
 import { slugify } from "@/lib/slugify";
 import { optimizeImageToWebP } from "@/lib/imageOptimize";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { LANDING_PALETTES } from "@/data/landingPalettes";
 
 const BUCKET_APOSTILA = "escola";
 const BUCKET_CAPA = "portal_images";
@@ -54,6 +56,10 @@ type Curso = {
   card_bullet_5: string | null;
   card_cta_texto: string | null;
   card_foto_posicao: string | null;
+  card_fosco_opacidade: number;
+  card_titulo_sobre_foto: boolean;
+  card_foto_zoom: number;
+  card_titulo_tamanho: number;
 };
 
 type Modulo = {
@@ -637,8 +643,13 @@ const EditarCurso = ({
   const [cardBullet5, setCardBullet5] = useState(curso.card_bullet_5 ?? "");
   const [cardCtaTexto, setCardCtaTexto] = useState(curso.card_cta_texto ?? "");
   const [cardFotoPosicao, setCardFotoPosicao] = useState(curso.card_foto_posicao ?? "");
+  const [cardFoscoOpacidade, setCardFoscoOpacidade] = useState(curso.card_fosco_opacidade ?? 75);
+  const [cardTituloSobreFoto, setCardTituloSobreFoto] = useState(curso.card_titulo_sobre_foto ?? true);
+  const [cardFotoZoom, setCardFotoZoom] = useState(curso.card_foto_zoom ?? 100);
+  const [cardTituloTamanho, setCardTituloTamanho] = useState(curso.card_titulo_tamanho ?? 100);
   const [savingCard, setSavingCard] = useState(false);
   const [uploadingLogo, setUploadingLogo] = useState(false);
+  const previewRef = useRef<HTMLDivElement>(null);
 
   const [modulos, setModulos] = useState<Modulo[]>([]);
   const [loading, setLoading] = useState(true);
