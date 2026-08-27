@@ -4639,6 +4639,72 @@ export type Database = {
         }
         Relationships: []
       }
+      madhava_nidana_verses: {
+        Row: {
+          atankadarpana_note: string | null
+          book: string
+          chapter_name: string | null
+          citation_key: string
+          continues_from_prev: boolean | null
+          continues_to_next: boolean | null
+          created_at: string | null
+          editorial_footnote: string | null
+          embedding: string | null
+          id: number
+          madhukosha_commentary: string | null
+          notes: string | null
+          page_line_ref: string | null
+          pdf_page: number | null
+          sequence_no: number
+          source_file: string
+          translation_pt: string | null
+          verse_no: string | null
+          verse_sanskrit: string | null
+        }
+        Insert: {
+          atankadarpana_note?: string | null
+          book?: string
+          chapter_name?: string | null
+          citation_key: string
+          continues_from_prev?: boolean | null
+          continues_to_next?: boolean | null
+          created_at?: string | null
+          editorial_footnote?: string | null
+          embedding?: string | null
+          id?: never
+          madhukosha_commentary?: string | null
+          notes?: string | null
+          page_line_ref?: string | null
+          pdf_page?: number | null
+          sequence_no: number
+          source_file: string
+          translation_pt?: string | null
+          verse_no?: string | null
+          verse_sanskrit?: string | null
+        }
+        Update: {
+          atankadarpana_note?: string | null
+          book?: string
+          chapter_name?: string | null
+          citation_key?: string
+          continues_from_prev?: boolean | null
+          continues_to_next?: boolean | null
+          created_at?: string | null
+          editorial_footnote?: string | null
+          embedding?: string | null
+          id?: never
+          madhukosha_commentary?: string | null
+          notes?: string | null
+          page_line_ref?: string | null
+          pdf_page?: number | null
+          sequence_no?: number
+          source_file?: string
+          translation_pt?: string | null
+          verse_no?: string | null
+          verse_sanskrit?: string | null
+        }
+        Relationships: []
+      }
       mensagens: {
         Row: {
           assunto: string
