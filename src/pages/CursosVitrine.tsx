@@ -30,6 +30,10 @@ interface Curso {
   card_bullet_5: string | null;
   card_cta_texto: string | null;
   card_foto_posicao: string | null;
+  card_fosco_opacidade: number;
+  card_titulo_sobre_foto: boolean;
+  card_foto_zoom: number;
+  card_titulo_tamanho: number;
 }
 
 const AZUL = "#6A88FB";
@@ -47,26 +51,12 @@ const bulletsDe = (c: Curso): string[] =>
     (b): b is string => !!b && b.trim().length > 0,
   );
 
-// Degradê padrão: transparente no topo, opaco na base, na cor secundária do curso.
-// Duas fotos de capa (Rotinas, Diagnóstico) são banners com metade da imagem sendo
-// logo/título gráfico de outra peça — pra essas, um tratamento mais forte/dividido
-// esconde a parte gráfica antiga e mostra só a parte fotográfica de verdade.
-const scrimDe = (c: Curso): string => {
-  const cor = c.card_cor_secundaria || COR_PADRAO;
-  if (c.slug === "rotinas-diarias") {
-    return `linear-gradient(to top, ${cor} 0%, ${cor}db 26%, ${cor}59 52%, ${cor}00 72%), linear-gradient(100deg, ${cor} 0%, ${cor} 44%, ${cor}8c 60%, ${cor}14 82%)`;
-  }
-  if (c.slug === "diagnostico-e-autocuidado") {
-    return `linear-gradient(180deg, ${cor}00 0%, ${cor}14 25%, ${cor}61 42%, ${cor}9e 57%, ${cor}d1 72%, ${cor}f5 100%)`;
-  }
-  return `linear-gradient(180deg, ${cor}00 0%, ${cor}14 28%, ${cor}8c 58%, ${cor}e0 82%, ${cor}f5 100%)`;
-};
-
-const posicaoFotoDe = (c: Curso): string => {
-  if (c.card_foto_posicao) return c.card_foto_posicao;
-  if (c.slug === "rotinas-diarias") return "right center";
-  if (c.slug === "diagnostico-e-autocuidado") return "100% center";
-  return "center center";
+const gradienteFosco = (cor: string, fosco: number): string | null => {
+  if (!fosco || fosco <= 0) return null;
+  const hex2 = (v: number) => Math.round(v).toString(16).padStart(2, "0");
+  const alphaFim = hex2((fosco / 100) * 255);
+  const alphaMeio = hex2((fosco / 100) * 0.35 * 255);
+  return `linear-gradient(180deg, ${cor}00 0%, ${cor}${alphaMeio} 45%, ${cor}${alphaFim} 100%)`;
 };
 
 const formatarDataLancamento = (dataStr: string): string => {
@@ -106,52 +96,88 @@ const CheckSvg = ({ color }: { color: string }) => (
   </svg>
 );
 
-const CardHeader = ({ c }: { c: Curso }) => (
-  <div className="relative aspect-[4/3] w-full overflow-hidden bg-muted">
-    {c.capa_url ? (
-      <img
-        src={getTransformedImageUrl(c.capa_url, 800)}
-        alt={c.titulo}
-        width={800}
-        height={600}
-        loading="lazy"
-        decoding="async"
-        className="absolute inset-0 w-full h-full object-cover"
-        style={{ objectPosition: posicaoFotoDe(c) }}
-      />
-    ) : (
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-secondary/20" />
-    )}
-    <div
-      className="absolute inset-0"
-      style={{ background: scrimDe(c) }}
-    />
-    <div className="absolute inset-x-0 bottom-0 p-5 flex flex-col justify-end">
-      <div className="mb-2">
-        {c.card_logo_url ? (
+const CardHeader = ({ c }: { c: Curso }) => {
+  const cor = c.card_cor_secundaria || COR_PADRAO;
+  const overlay = c.card_titulo_sobre_foto;
+  const gradiente = gradienteFosco(cor, c.card_fosco_opacidade ?? 75);
+  const posicao = c.card_foto_posicao || "center center";
+  const zoom = c.card_foto_zoom || 100;
+  const tituloPx = 19 * ((c.card_titulo_tamanho || 100) / 100);
+
+  return (
+    <>
+      <div className="relative aspect-[4/3] w-full overflow-hidden bg-muted">
+        {c.capa_url ? (
           <img
-            src={c.card_logo_url}
-            alt=""
-            className="h-10 w-auto object-contain drop-shadow-md"
+            src={getTransformedImageUrl(c.capa_url, 800)}
+            alt={c.titulo}
+            width={800}
+            height={600}
+            loading="lazy"
+            decoding="async"
+            className="absolute inset-0 w-full h-full object-cover"
+            style={{ objectPosition: posicao, transform: `scale(${zoom / 100})` }}
           />
         ) : (
-          <BookOpen className="w-8 h-8 text-white drop-shadow-md" />
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-secondary/20" />
+        )}
+        {gradiente && <div className="absolute inset-0" style={{ background: gradiente }} />}
+        {overlay && (
+          <div className="absolute inset-x-0 bottom-0 p-5 flex flex-col justify-end">
+            <div className="mb-2">
+              {c.card_logo_url ? (
+                <img
+                  src={c.card_logo_url}
+                  alt=""
+                  className="h-10 w-auto object-contain drop-shadow-md"
+                />
+              ) : (
+                <BookOpen className="w-8 h-8 text-white drop-shadow-md" />
+              )}
+            </div>
+            <h3
+              className="line-clamp-2 leading-tight text-white font-bold drop-shadow"
+              style={{ fontSize: `${tituloPx}px` }}
+              title={c.titulo}
+            >
+              {c.titulo}
+            </h3>
+            {c.card_subtitulo && (
+              <p className="mt-1 text-sm text-white/90 line-clamp-1 drop-shadow">
+                {c.card_subtitulo}
+              </p>
+            )}
+          </div>
         )}
       </div>
-      <h3
-        className={`${tituloClass(c.titulo)} line-clamp-2 leading-tight text-white font-bold drop-shadow`}
-        title={c.titulo}
-      >
-        {c.titulo}
-      </h3>
-      {c.card_subtitulo && (
-        <p className="mt-1 text-sm text-white/90 line-clamp-1 drop-shadow">
-          {c.card_subtitulo}
-        </p>
+      {!overlay && (
+        <div className="px-6 pt-5 pb-2 flex items-start gap-3">
+          {c.card_logo_url && (
+            <img
+              src={c.card_logo_url}
+              alt=""
+              className="h-9 w-auto object-contain shrink-0 mt-0.5"
+            />
+          )}
+          <div className="min-w-0">
+            <h3
+              className="line-clamp-2 leading-tight font-bold"
+              style={{ fontSize: `${tituloPx}px` }}
+              title={c.titulo}
+            >
+              {c.titulo}
+            </h3>
+            {c.card_subtitulo && (
+              <p className="mt-1 text-sm text-muted-foreground line-clamp-1">
+                {c.card_subtitulo}
+              </p>
+            )}
+          </div>
+        </div>
       )}
-    </div>
-  </div>
-);
+    </>
+  );
+};
 
 const CardBullets = ({ c }: { c: Curso }) => {
   const bullets = bulletsDe(c);
@@ -182,7 +208,7 @@ const CursosVitrine = () => {
       const { data } = await supabase
         .from("cursos")
         .select(
-          "id,slug,titulo,descricao,descricao_em_breve,capa_url,ordem,preco,ativo,data_lancamento,pagina_lancamento_url,card_logo_url,card_cor_primaria,card_cor_secundaria,card_subtitulo,card_bullet_1,card_bullet_2,card_bullet_3,card_bullet_4,card_bullet_5,card_cta_texto,card_foto_posicao"
+          "id,slug,titulo,descricao,descricao_em_breve,capa_url,ordem,preco,ativo,data_lancamento,pagina_lancamento_url,card_logo_url,card_cor_primaria,card_cor_secundaria,card_subtitulo,card_bullet_1,card_bullet_2,card_bullet_3,card_bullet_4,card_bullet_5,card_cta_texto,card_foto_posicao,card_fosco_opacidade,card_titulo_sobre_foto,card_foto_zoom,card_titulo_tamanho"
         )
         .in("slug", ORDEM_VITRINE);
       const cursosOrdenados = ORDEM_VITRINE
