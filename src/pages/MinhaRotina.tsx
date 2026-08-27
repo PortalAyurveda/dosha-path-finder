@@ -660,6 +660,7 @@ const MinhaRotina = () => {
   // Toggle de praticado (refeição/prática): grava em rotina_pontos com prefixo do dia
   const toggleFeito = async (row: RotinaRow) => {
     if (!user) return;
+    if (!ehHoje) return;
     const slot = row.slot;
     const ref = `dia${diaSelecionado}:${slot}`;
     const jaFeito = acertoRotinaSlots.has(slot);
@@ -717,6 +718,7 @@ const MinhaRotina = () => {
 
   const toggleHabito = async (habito: string) => {
     if (!user) return;
+    if (!ehHoje) return;
     const ref = `dia${diaSelecionado}:${habito}`;
     const jaFeito = acertoHabitos.has(habito);
     if (!jaFeito) {
@@ -742,6 +744,7 @@ const MinhaRotina = () => {
 
   const toggleAlerta = async (alerta: string) => {
     if (!user) return;
+    if (!ehHoje) return;
     const ref = `dia${diaSelecionado}:${alerta}`;
     const jaEscorregou = deslizes.has(alerta);
     if (!jaEscorregou) {
