@@ -38,6 +38,8 @@ interface UserContextType {
   doshaResult: DoshaResult | null;
   role: UserRole;
   loading: boolean;
+  /** true enquanto o perfil (plano/assinatura) ainda está sendo buscado */
+  profileLoading: boolean;
   roleLoading: boolean;
   signOut: () => Promise<void>;
   refreshProfile: () => Promise<void>;
