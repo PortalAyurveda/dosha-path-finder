@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   ArrowLeft,
   ChevronRight,
@@ -27,15 +28,16 @@ import {
   ArrowDown,
   Layers,
   LayoutGrid,
+  Lock,
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { slugify } from "@/lib/slugify";
 import { optimizeImageToWebP } from "@/lib/imageOptimize";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { LANDING_PALETTES } from "@/data/landingPalettes";
 
 const BUCKET_APOSTILA = "escola";
 const BUCKET_CAPA = "portal_images";
+const COR_PADRAO = "#352F54";
 
 type Curso = {
   id: string;
@@ -305,8 +307,6 @@ const AulaEditor = ({
     loadMaterial();
   };
 
-  // pega cursoId via lookup; vamos receber via callback do parent — mas pra simplificar usamos pasta com aula.id apenas
-  // (mantive a assinatura — quem chamar passa cursoId)
   const onPickFile = (e: React.ChangeEvent<HTMLInputElement>, cursoId: string) => {
     const f = e.target.files?.[0];
     if (f) handleUploadApostila(f, cursoId);
@@ -614,6 +614,156 @@ const EditarModulo = ({
   );
 };
 
+// ============= PREVIEW COMPLETO DO CARD (espelha CursosVitrine.tsx) =============
+
+const tituloClassPreview = (titulo: string) => {
+  const len = titulo.length;
+  if (len <= 30) return "text-xl";
+  if (len <= 55) return "text-lg";
+  return "text-base";
+};
+
+const gradienteFoscoPreview = (cor: string, fosco: number): string | null => {
+  if (!fosco || fosco <= 0) return null;
+  const hex2 = (v: number) => Math.round(v).toString(16).padStart(2, "0");
+  const alphaFim = hex2((fosco / 100) * 255);
+  const alphaMeio = hex2((fosco / 100) * 0.35 * 255);
+  return `linear-gradient(180deg, ${cor}00 0%, ${cor}${alphaMeio} 45%, ${cor}${alphaFim} 100%)`;
+};
+
+const CheckSvgPreview = ({ color }: { color: string }) => (
+  <svg viewBox="0 0 20 20" fill="none" className="h-4 w-4 shrink-0 mt-0.5">
+    <path d="M4 10.5l4 4L16 6" stroke={color} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
+interface CardPreviewProps {
+  titulo: string;
+  capaUrl: string;
+  logoUrl: string;
+  corPrimaria: string;
+  corSecundaria: string;
+  subtitulo: string;
+  bullets: string[];
+  ctaTexto: string;
+  fotoPosicao: string;
+  foscoOpacidade: number;
+  tituloSobreFoto: boolean;
+  fotoZoom: number;
+  tituloTamanho: number;
+  fotoRef?: React.RefObject<HTMLDivElement>;
+  onFotoClick?: (e: React.MouseEvent<HTMLDivElement>) => void;
+}
+
+const CardPreviewCompleto = ({
+  titulo,
+  capaUrl,
+  logoUrl,
+  corPrimaria,
+  corSecundaria,
+  subtitulo,
+  bullets,
+  ctaTexto,
+  fotoPosicao,
+  foscoOpacidade,
+  tituloSobreFoto,
+  fotoZoom,
+  tituloTamanho,
+  fotoRef,
+  onFotoClick,
+}: CardPreviewProps) => {
+  const cor = corSecundaria || COR_PADRAO;
+  const gradiente = gradienteFoscoPreview(cor, foscoOpacidade);
+  const bulletsPreenchidos = bullets.filter((b) => b.trim().length > 0);
+  const tituloPx = 19 * (tituloTamanho / 100);
+
+  return (
+    <div className="rounded-2xl border border-border bg-card overflow-hidden shadow-sm">
+      <div
+        ref={fotoRef}
+        onClick={onFotoClick}
+        className={`relative aspect-[4/3] w-full overflow-hidden ${onFotoClick ? "cursor-crosshair" : ""}`}
+        title={onFotoClick ? "Clique no ponto da foto que deve ficar visível no card" : undefined}
+      >
+        {capaUrl ? (
+          <div
+            className="absolute inset-0 bg-no-repeat"
+            style={{ backgroundImage: `url(${capaUrl})`, backgroundPosition: fotoPosicao || "center center", backgroundSize: `${fotoZoom}%` }}
+          />
+        ) : (
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
+            <ImageIcon className="w-8 h-8 text-muted-foreground" />
+          </div>
+        )}
+        {gradiente && <div className="absolute inset-0" style={{ backgroundImage: gradiente }} />}
+        {tituloSobreFoto && (
+          <div className="absolute inset-0 flex flex-col justify-end p-4 text-white">
+            <div className="w-[42px] h-[42px] rounded-xl bg-white/95 flex items-center justify-center mb-2.5 shadow-md overflow-hidden shrink-0">
+              {logoUrl ? (
+                <img src={logoUrl} alt="" className="w-6.5 h-6.5 object-contain" />
+              ) : (
+                <BookOpen className="w-5 h-5" style={{ color: cor }} />
+              )}
+            </div>
+            <h3
+              className="mb-1 font-serif italic font-bold leading-tight"
+              style={{ fontSize: `${tituloPx}px`, textShadow: "0 2px 8px rgba(0,0,0,.35)" }}
+            >
+              {titulo || "Título do curso"}
+            </h3>
+            {subtitulo && (
+              <p className="text-[11px] font-bold uppercase tracking-wider opacity-90" style={{ textShadow: "0 1px 6px rgba(0,0,0,.4)" }}>
+                {subtitulo}
+              </p>
+            )}
+          </div>
+        )}
+      </div>
+
+      {!tituloSobreFoto && (
+        <div className="px-6 pt-4 flex items-start gap-2.5">
+          {logoUrl && <img src={logoUrl} alt="" className="w-6 h-6 object-contain mt-0.5 shrink-0" />}
+          <div className="min-w-0">
+            <h3 className={`mb-0.5 font-serif italic font-bold leading-tight ${tituloClassPreview(titulo)}`} style={{ color: cor }}>
+              {titulo || "Título do curso"}
+            </h3>
+            {subtitulo && <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">{subtitulo}</p>}
+          </div>
+        </div>
+      )}
+
+      <div className="px-6 pt-4 pb-6">
+        {bulletsPreenchidos.length > 0 ? (
+          <ul className="mb-5">
+            {bulletsPreenchidos.map((b, i) => (
+              <li
+                key={i}
+                className={`flex items-start gap-2.5 py-2.5 text-[13.5px] leading-snug text-foreground ${
+                  i < bulletsPreenchidos.length - 1 ? "border-b border-border/70" : ""
+                }`}
+              >
+                <CheckSvgPreview color={cor} />
+                <span>{b}</span>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="text-xs text-muted-foreground italic mb-5">
+            Nenhuma linha preenchida ainda — elas aparecem aqui conforme você digita.
+          </p>
+        )}
+        <Button className="w-full text-white" style={{ backgroundColor: corPrimaria || COR_PADRAO }}>
+          {ctaTexto || "Ver o curso"}
+        </Button>
+      </div>
+
+      <div className="px-6 pb-4 flex items-center gap-1.5 text-[11px] text-muted-foreground">
+        <Lock className="w-3 h-3" /> Assim aparece pra quem ainda não tem o curso.
+      </div>
+    </div>
+  );
+};
+
 // ============= EDITAR CURSO =============
 const EditarCurso = ({
   curso,
@@ -632,6 +782,11 @@ const EditarCurso = ({
   const [uploadingCapa, setUploadingCapa] = useState(false);
   const [slugTouched, setSlugTouched] = useState(true);
 
+  const [modulos, setModulos] = useState<Modulo[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedMod, setSelectedMod] = useState<Modulo | null>(null);
+
+  // ---- Card da vitrine ----
   const [cardLogoUrl, setCardLogoUrl] = useState(curso.card_logo_url ?? "");
   const [cardCorPrimaria, setCardCorPrimaria] = useState(curso.card_cor_primaria ?? "#352F54");
   const [cardCorSecundaria, setCardCorSecundaria] = useState(curso.card_cor_secundaria ?? "#6A88FB");
@@ -650,10 +805,6 @@ const EditarCurso = ({
   const [savingCard, setSavingCard] = useState(false);
   const [uploadingLogo, setUploadingLogo] = useState(false);
   const previewRef = useRef<HTMLDivElement>(null);
-
-  const [modulos, setModulos] = useState<Modulo[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [selectedMod, setSelectedMod] = useState<Modulo | null>(null);
 
   const loadModulos = useCallback(async () => {
     setLoading(true);
@@ -849,418 +1000,362 @@ const EditarCurso = ({
         </h1>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg font-heading ">Dados do curso</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label>Capa</Label>
-            {capaUrl ? (
-              <img
-                src={capaUrl}
-                alt="Capa"
-                className="w-full max-w-md h-48 object-cover rounded-lg border border-border"
-              />
-            ) : (
-              <div className="w-full max-w-md h-48 rounded-lg border border-dashed border-border bg-muted/30 flex items-center justify-center">
-                <ImageIcon className="w-8 h-8 text-muted-foreground" />
-              </div>
-            )}
-            <label className="inline-flex">
-              <input
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={(e) => {
-                  const f = e.target.files?.[0];
-                  if (f) handleUploadCapa(f);
-                  e.target.value = "";
-                }}
-              />
-              <span
-                className={`inline-flex items-center gap-2 text-sm px-3 h-9 rounded-md border border-input bg-background hover:bg-accent cursor-pointer ${uploadingCapa ? "opacity-60 pointer-events-none" : ""}`}
-              >
-                {uploadingCapa ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
+      <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_380px] gap-6 items-start">
+        <div className="space-y-6 min-w-0">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg font-heading ">Dados do curso</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label>Capa</Label>
+                {capaUrl ? (
+                  <img
+                    src={capaUrl}
+                    alt="Capa"
+                    className="w-full max-w-md h-48 object-cover rounded-lg border border-border"
+                  />
                 ) : (
-                  <Upload className="w-4 h-4" />
-                )}
-                {capaUrl ? "Substituir capa" : "Enviar capa"}
-              </span>
-            </label>
-          </div>
-
-          <div className="space-y-1">
-            <Label>Título</Label>
-            <Input value={titulo} onChange={(e) => onTituloChange(e.target.value)} />
-          </div>
-          <div className="space-y-1">
-            <Label>Slug</Label>
-            <Input
-              value={slug}
-              onChange={(e) => {
-                setSlug(e.target.value);
-                setSlugTouched(true);
-              }}
-              placeholder="meu-curso"
-            />
-          </div>
-          <div className="space-y-1">
-            <Label>Descrição</Label>
-            <Textarea
-              value={descricao}
-              onChange={(e) => setDescricao(e.target.value)}
-              rows={4}
-            />
-          </div>
-          <div className="flex justify-end">
-            <Button onClick={salvarCurso} disabled={savingCurso}>
-              {savingCurso ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <Save className="w-4 h-4" />
-              )}
-              Salvar curso
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg font-heading flex items-center gap-2">
-            <LayoutGrid className="w-4 h-4" /> Card da vitrine (/cursos)
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-5">
-          <div className="space-y-2">
-            <Label>Preview ao vivo — clique na foto pra escolher o que aparece</Label>
-            <div
-              ref={previewRef}
-              onClick={handleClickPosicionarFoto}
-              className="relative aspect-[4/3] w-full max-w-md overflow-hidden rounded-lg border border-border bg-muted/30 cursor-crosshair"
-            >
-              {capaUrl ? (
-                <img
-                  src={capaUrl}
-                  alt="Preview da capa"
-                  className="absolute inset-0 w-full h-full object-cover"
-                  style={{
-                    objectPosition: cardFotoPosicao || "center center",
-                    transform: `scale(${cardFotoZoom / 100})`,
-                  }}
-                />
-              ) : (
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <ImageIcon className="w-8 h-8 text-muted-foreground" />
-                </div>
-              )}
-              {cardFoscoOpacidade > 0 && (
-                <div
-                  className="absolute inset-0 pointer-events-none"
-                  style={{
-                    background: `linear-gradient(180deg, ${cardCorSecundaria}00 0%, ${cardCorSecundaria}${Math.round((cardFoscoOpacidade / 100) * 0.35 * 255).toString(16).padStart(2, "0")} 45%, ${cardCorSecundaria}${Math.round((cardFoscoOpacidade / 100) * 255).toString(16).padStart(2, "0")} 100%)`,
-                  }}
-                />
-              )}
-              {cardTituloSobreFoto && (
-                <div className="absolute inset-x-0 bottom-0 p-5 flex flex-col justify-end pointer-events-none">
-                  <div className="mb-2">
-                    {cardLogoUrl ? (
-                      <img
-                        src={cardLogoUrl}
-                        alt=""
-                        className="h-10 w-auto object-contain drop-shadow-md"
-                      />
-                    ) : (
-                      <BookOpen className="w-8 h-8 text-white drop-shadow-md" />
-                    )}
+                  <div className="w-full max-w-md h-48 rounded-lg border border-dashed border-border bg-muted/30 flex items-center justify-center">
+                    <ImageIcon className="w-8 h-8 text-muted-foreground" />
                   </div>
-                  <h3
-                    className="line-clamp-2 leading-tight text-white font-bold drop-shadow"
-                    style={{ fontSize: `${19 * (cardTituloTamanho / 100)}px` }}
+                )}
+                <label className="inline-flex">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => {
+                      const f = e.target.files?.[0];
+                      if (f) handleUploadCapa(f);
+                      e.target.value = "";
+                    }}
+                  />
+                  <span
+                    className={`inline-flex items-center gap-2 text-sm px-3 h-9 rounded-md border border-input bg-background hover:bg-accent cursor-pointer ${uploadingCapa ? "opacity-60 pointer-events-none" : ""}`}
                   >
-                    {titulo || "Título do curso"}
-                  </h3>
-                  {cardSubtitulo && (
-                    <p className="mt-1 text-sm text-white/90 line-clamp-1 drop-shadow">
-                      {cardSubtitulo}
-                    </p>
-                  )}
-                </div>
-              )}
-            </div>
-            {!cardTituloSobreFoto && (
-              <p className="text-xs text-muted-foreground">
-                Título fica abaixo da foto (modo "imagem pura") — veja como fica no card real em /cursos.
-              </p>
-            )}
-          </div>
+                    {uploadingCapa ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <Upload className="w-4 h-4" />
+                    )}
+                    {capaUrl ? "Substituir capa" : "Enviar capa"}
+                  </span>
+                </label>
+              </div>
 
-          <div className="grid sm:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label>Fosco sobre a foto — {cardFoscoOpacidade}%</Label>
-              <input
-                type="range"
-                min={0}
-                max={100}
-                value={cardFoscoOpacidade}
-                onChange={(e) => setCardFoscoOpacidade(Number(e.target.value))}
-                className="w-full"
-              />
-              <p className="text-xs text-muted-foreground">0 = foto pura, sem degradê nenhum.</p>
-            </div>
-            <div className="space-y-2">
-              <Label>Zoom da foto — {cardFotoZoom}%</Label>
-              <input
-                type="range"
-                min={100}
-                max={200}
-                value={cardFotoZoom}
-                onChange={(e) => setCardFotoZoom(Number(e.target.value))}
-                className="w-full"
-              />
-            </div>
-          </div>
-
-          <div className="flex items-start justify-between gap-4">
-            <div className="space-y-1">
-              <Label htmlFor="titulo-sobre-foto">Título sobreposto na foto</Label>
-              <p className="text-xs text-muted-foreground">
-                Desligado = foto pura, título clássico abaixo dela (bom pra fotos que já têm o nome do curso desenhado dentro).
-              </p>
-            </div>
-            <Switch
-              id="titulo-sobre-foto"
-              checked={cardTituloSobreFoto}
-              onCheckedChange={setCardTituloSobreFoto}
-            />
-          </div>
-
-          {cardTituloSobreFoto && (
-            <div className="space-y-2">
-              <Label>Tamanho do título sobreposto — {cardTituloTamanho}%</Label>
-              <input
-                type="range"
-                min={60}
-                max={160}
-                value={cardTituloTamanho}
-                onChange={(e) => setCardTituloTamanho(Number(e.target.value))}
-                className="w-full"
-              />
-            </div>
-          )}
-
-          <div className="space-y-2">
-            <Label>Posição da foto (clique no preview acima, ou digite)</Label>
-            <Input
-              value={cardFotoPosicao}
-              onChange={(e) => setCardFotoPosicao(e.target.value)}
-              placeholder='Ex: "center center", "right center", "45% 30%"'
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label>Logo do curso (fundo transparente, PNG ou SVG)</Label>
-            {cardLogoUrl ? (
-              <div className="flex items-center gap-3">
-                <img
-                  src={cardLogoUrl}
-                  alt="Logo do card"
-                  className="h-16 w-auto object-contain rounded border border-border bg-muted/30 p-2"
+              <div className="space-y-1">
+                <Label>Título</Label>
+                <Input value={titulo} onChange={(e) => onTituloChange(e.target.value)} />
+              </div>
+              <div className="space-y-1">
+                <Label>Slug</Label>
+                <Input
+                  value={slug}
+                  onChange={(e) => {
+                    setSlug(e.target.value);
+                    setSlugTouched(true);
+                  }}
+                  placeholder="meu-curso"
                 />
-                <Button variant="ghost" size="sm" onClick={() => setCardLogoUrl("")}>
-                  <Trash2 className="w-4 h-4" />
+              </div>
+              <div className="space-y-1">
+                <Label>Descrição</Label>
+                <Textarea
+                  value={descricao}
+                  onChange={(e) => setDescricao(e.target.value)}
+                  rows={4}
+                />
+              </div>
+              <div className="flex justify-end">
+                <Button onClick={salvarCurso} disabled={savingCurso}>
+                  {savingCurso ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Save className="w-4 h-4" />
+                  )}
+                  Salvar curso
                 </Button>
               </div>
-            ) : (
-              <p className="text-xs text-muted-foreground">
-                Nenhuma logo enviada — o card usa um ícone padrão.
-              </p>
-            )}
-            <label className="inline-flex">
-              <input
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={(e) => {
-                  const f = e.target.files?.[0];
-                  if (f) handleUploadCardLogo(f);
-                  e.target.value = "";
-                }}
-              />
-              <span
-                className={`inline-flex items-center gap-2 text-sm px-3 h-9 rounded-md border border-input bg-background hover:bg-accent cursor-pointer ${uploadingLogo ? "opacity-60 pointer-events-none" : ""}`}
-              >
-                {uploadingLogo ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <Upload className="w-4 h-4" />
-                )}
-                {cardLogoUrl ? "Substituir logo" : "Enviar logo"}
-              </span>
-            </label>
-          </div>
+            </CardContent>
+          </Card>
 
-          <div className="space-y-2">
-            <Label>Preencher cores com uma paleta pronta (opcional)</Label>
-            <Select onValueChange={aplicarPaleta}>
-              <SelectTrigger>
-                <SelectValue placeholder="Escolher uma paleta…" />
-              </SelectTrigger>
-              <SelectContent>
-                {LANDING_PALETTES.map((p) => (
-                  <SelectItem key={p.key} value={p.key}>
-                    <span className="flex items-center gap-2">
-                      <span className="flex -space-x-1">
-                        {p.swatch.map((cor) => (
-                          <span
-                            key={cor}
-                            className="inline-block w-3 h-3 rounded-full border border-white/60"
-                            style={{ backgroundColor: cor }}
-                          />
-                        ))}
-                      </span>
-                      {p.label}
-                    </span>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <p className="text-xs text-muted-foreground">
-              Preenche os 2 campos de cor abaixo — você ainda pode ajustar na mão depois.
-            </p>
-          </div>
-
-          <div className="grid sm:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label>Cor principal</Label>
-              <div className="flex items-center gap-2">
-                <input
-                  type="color"
-                  value={cardCorPrimaria}
-                  onChange={(e) => setCardCorPrimaria(e.target.value)}
-                  className="h-9 w-12 rounded border border-input cursor-pointer"
-                />
-                <Input value={cardCorPrimaria} onChange={(e) => setCardCorPrimaria(e.target.value)} />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label>Cor secundária (do degradê e dos checks)</Label>
-              <div className="flex items-center gap-2">
-                <input
-                  type="color"
-                  value={cardCorSecundaria}
-                  onChange={(e) => setCardCorSecundaria(e.target.value)}
-                  className="h-9 w-12 rounded border border-input cursor-pointer"
-                />
-                <Input value={cardCorSecundaria} onChange={(e) => setCardCorSecundaria(e.target.value)} />
-              </div>
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label>Subtítulo (linha curta abaixo do título)</Label>
-            <Input
-              value={cardSubtitulo}
-              onChange={(e) => setCardSubtitulo(e.target.value)}
-              placeholder="Ex: Dinacharya — o relógio dos doshas"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label>As 5 linhas do card (só as preenchidas aparecem)</Label>
-            <Input value={cardBullet1} onChange={(e) => setCardBullet1(e.target.value)} placeholder="Linha 1" />
-            <Input value={cardBullet2} onChange={(e) => setCardBullet2(e.target.value)} placeholder="Linha 2" />
-            <Input value={cardBullet3} onChange={(e) => setCardBullet3(e.target.value)} placeholder="Linha 3" />
-            <Input value={cardBullet4} onChange={(e) => setCardBullet4(e.target.value)} placeholder="Linha 4" />
-            <Input value={cardBullet5} onChange={(e) => setCardBullet5(e.target.value)} placeholder="Linha 5" />
-          </div>
-
-          <div className="space-y-2">
-            <Label>Texto do botão (opcional — se vazio, usa o padrão de cada situação)</Label>
-            <Input
-              value={cardCtaTexto}
-              onChange={(e) => setCardCtaTexto(e.target.value)}
-              placeholder="Ex: Ver o curso"
-            />
-          </div>
-
-          <div className="flex justify-end">
-            <Button onClick={salvarCard} disabled={savingCard}>
-              {savingCard ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <Save className="w-4 h-4" />
-              )}
-              Salvar card
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg font-heading flex items-center gap-2">
-            <Layers className="w-4 h-4" /> Módulos
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          {loading ? (
-            <Skeleton className="h-24 w-full" />
-          ) : modulos.length === 0 ? (
-            <p className="text-sm text-muted-foreground">Nenhum módulo ainda.</p>
-          ) : (
-            <div className="space-y-2">
-              {modulos.map((m, idx) => (
-                <div
-                  key={m.id}
-                  className="rounded-lg border border-border p-3 bg-card flex items-center gap-2"
-                >
-                  <div className="flex items-center gap-1">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => moveModulo(idx, -1)}
-                      disabled={idx === 0}
-                    >
-                      <ArrowUp className="w-4 h-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => moveModulo(idx, 1)}
-                      disabled={idx === modulos.length - 1}
-                    >
-                      <ArrowDown className="w-4 h-4" />
-                    </Button>
-                  </div>
-                  <div
-                    className="flex-1 min-w-0 cursor-pointer"
-                    onClick={() => setSelectedMod(m)}
-                  >
-                    <p className="font-medium text-sm truncate">{m.titulo}</p>
-                    {m.descricao && (
-                      <p className="text-xs text-muted-foreground truncate">{m.descricao}</p>
-                    )}
-                  </div>
-                  <Button variant="ghost" size="sm" onClick={() => setSelectedMod(m)}>
-                    editar
-                  </Button>
-                  <Button variant="ghost" size="sm" onClick={() => removeModulo(m.id)}>
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg font-heading flex items-center gap-2">
+                <LayoutGrid className="w-4 h-4" /> Card da vitrine (/cursos)
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-5">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <Label>Fosco sobre a foto — {cardFoscoOpacidade}%</Label>
+                  <input
+                    type="range"
+                    min={0}
+                    max={100}
+                    value={cardFoscoOpacidade}
+                    onChange={(e) => setCardFoscoOpacidade(Number(e.target.value))}
+                    className="w-full"
+                  />
+                  <p className="text-xs text-muted-foreground">0 = foto pura, sem degradê nenhum.</p>
                 </div>
-              ))}
-            </div>
-          )}
-          <Button variant="outline" onClick={addModulo}>
-            <Plus className="w-4 h-4" /> Adicionar módulo
-          </Button>
-        </CardContent>
-      </Card>
+                <div className="space-y-1.5">
+                  <Label>Zoom da foto — {cardFotoZoom}%</Label>
+                  <input
+                    type="range"
+                    min={100}
+                    max={250}
+                    value={cardFotoZoom}
+                    onChange={(e) => setCardFotoZoom(Number(e.target.value))}
+                    className="w-full"
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between rounded-lg border border-border p-3">
+                <div>
+                  <Label className="cursor-pointer" htmlFor="titulo-sobre-foto">
+                    Título sobreposto na foto
+                  </Label>
+                  <p className="text-xs text-muted-foreground">
+                    Desligado = foto pura, título clássico abaixo dela (bom pra fotos que já têm o nome do curso desenhado dentro).
+                  </p>
+                </div>
+                <Switch id="titulo-sobre-foto" checked={cardTituloSobreFoto} onCheckedChange={setCardTituloSobreFoto} />
+              </div>
+
+              {cardTituloSobreFoto && (
+                <div className="space-y-1.5">
+                  <Label>Tamanho do título sobreposto — {cardTituloTamanho}%</Label>
+                  <input
+                    type="range"
+                    min={60}
+                    max={160}
+                    value={cardTituloTamanho}
+                    onChange={(e) => setCardTituloTamanho(Number(e.target.value))}
+                    className="w-full"
+                  />
+                </div>
+              )}
+
+              <div className="space-y-1.5">
+                <Label>Posição da foto (clique no preview à direita, ou digite)</Label>
+                <Input
+                  value={cardFotoPosicao}
+                  onChange={(e) => setCardFotoPosicao(e.target.value)}
+                  placeholder='Ex: "center center", "right center", "45% 30%"'
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label>Logo do curso (fundo transparente, PNG ou SVG)</Label>
+                {cardLogoUrl ? (
+                  <div className="w-full max-w-[200px] h-20 rounded-lg border border-border bg-muted/30 flex items-center justify-center p-2">
+                    <img src={cardLogoUrl} alt="Logo" className="max-w-full max-h-full object-contain" />
+                  </div>
+                ) : (
+                  <p className="text-xs text-muted-foreground">Nenhuma logo enviada — o card usa um ícone padrão.</p>
+                )}
+                <label className="inline-flex">
+                  <input
+                    type="file"
+                    accept="image/*,.svg"
+                    className="hidden"
+                    onChange={(e) => {
+                      const f = e.target.files?.[0];
+                      if (f) handleUploadCardLogo(f);
+                      e.target.value = "";
+                    }}
+                  />
+                  <span
+                    className={`inline-flex items-center gap-2 text-sm px-3 h-9 rounded-md border border-input bg-background hover:bg-accent cursor-pointer ${
+                      uploadingLogo ? "opacity-60 pointer-events-none" : ""
+                    }`}
+                  >
+                    {uploadingLogo ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <Upload className="w-4 h-4" />
+                    )}
+                    {cardLogoUrl ? "Substituir logo" : "Enviar logo"}
+                  </span>
+                </label>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label>Preencher cores com uma paleta pronta (opcional)</Label>
+                <Select onValueChange={aplicarPaleta}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Escolher paleta..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {LANDING_PALETTES.map((p) => (
+                      <SelectItem key={p.key} value={p.key}>
+                        <span className="inline-flex items-center gap-2">
+                          <span
+                            className="w-3 h-3 rounded-full inline-block"
+                            style={{ background: p.branding.primaryColor }}
+                          />
+                          {p.label}
+                        </span>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <p className="text-xs text-muted-foreground">
+                  Preenche os 2 campos de cor abaixo — você ainda pode ajustar na mão depois.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <Label>Cor principal</Label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="color"
+                      value={cardCorPrimaria}
+                      onChange={(e) => setCardCorPrimaria(e.target.value)}
+                      className="h-9 w-12 rounded border border-input cursor-pointer"
+                    />
+                    <Input value={cardCorPrimaria} onChange={(e) => setCardCorPrimaria(e.target.value)} />
+                  </div>
+                </div>
+                <div className="space-y-1">
+                  <Label>Cor secundária (do degradê e dos checks)</Label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="color"
+                      value={cardCorSecundaria}
+                      onChange={(e) => setCardCorSecundaria(e.target.value)}
+                      className="h-9 w-12 rounded border border-input cursor-pointer"
+                    />
+                    <Input value={cardCorSecundaria} onChange={(e) => setCardCorSecundaria(e.target.value)} />
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <Label>Subtítulo (linha curta abaixo do título)</Label>
+                <Input
+                  value={cardSubtitulo}
+                  onChange={(e) => setCardSubtitulo(e.target.value)}
+                  placeholder="Ex: Dinacharya — o relógio dos doshas"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label>As 5 linhas do card (só as preenchidas aparecem)</Label>
+                <Input value={cardBullet1} onChange={(e) => setCardBullet1(e.target.value)} placeholder="Linha 1" />
+                <Input value={cardBullet2} onChange={(e) => setCardBullet2(e.target.value)} placeholder="Linha 2" />
+                <Input value={cardBullet3} onChange={(e) => setCardBullet3(e.target.value)} placeholder="Linha 3" />
+                <Input value={cardBullet4} onChange={(e) => setCardBullet4(e.target.value)} placeholder="Linha 4" />
+                <Input value={cardBullet5} onChange={(e) => setCardBullet5(e.target.value)} placeholder="Linha 5" />
+              </div>
+
+              <div className="space-y-1">
+                <Label>Texto do botão (opcional — se vazio, usa o padrão de cada situação)</Label>
+                <Input
+                  value={cardCtaTexto}
+                  onChange={(e) => setCardCtaTexto(e.target.value)}
+                  placeholder="Ex: Ver o curso"
+                />
+              </div>
+
+              <div className="flex justify-end">
+                <Button onClick={salvarCard} disabled={savingCard}>
+                  {savingCard ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                  Salvar card
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg font-heading flex items-center gap-2">
+                <Layers className="w-4 h-4" /> Módulos
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {loading ? (
+                <Skeleton className="h-24 w-full" />
+              ) : modulos.length === 0 ? (
+                <p className="text-sm text-muted-foreground">Nenhum módulo ainda.</p>
+              ) : (
+                <div className="space-y-2">
+                  {modulos.map((m, idx) => (
+                    <div
+                      key={m.id}
+                      className="rounded-lg border border-border p-3 bg-card flex items-center gap-2"
+                    >
+                      <div className="flex items-center gap-1">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => moveModulo(idx, -1)}
+                          disabled={idx === 0}
+                        >
+                          <ArrowUp className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => moveModulo(idx, 1)}
+                          disabled={idx === modulos.length - 1}
+                        >
+                          <ArrowDown className="w-4 h-4" />
+                        </Button>
+                      </div>
+                      <div
+                        className="flex-1 min-w-0 cursor-pointer"
+                        onClick={() => setSelectedMod(m)}
+                      >
+                        <p className="font-medium text-sm truncate">{m.titulo}</p>
+                        {m.descricao && (
+                          <p className="text-xs text-muted-foreground truncate">{m.descricao}</p>
+                        )}
+                      </div>
+                      <Button variant="ghost" size="sm" onClick={() => setSelectedMod(m)}>
+                        editar
+                      </Button>
+                      <Button variant="ghost" size="sm" onClick={() => removeModulo(m.id)}>
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              )}
+              <Button variant="outline" onClick={addModulo}>
+                <Plus className="w-4 h-4" /> Adicionar módulo
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="lg:sticky lg:top-6 space-y-2">
+          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground px-1">
+            Preview ao vivo — clique na foto pra posicionar
+          </p>
+          <CardPreviewCompleto
+            titulo={titulo}
+            capaUrl={capaUrl}
+            logoUrl={cardLogoUrl}
+            corPrimaria={cardCorPrimaria}
+            corSecundaria={cardCorSecundaria}
+            subtitulo={cardSubtitulo}
+            bullets={[cardBullet1, cardBullet2, cardBullet3, cardBullet4, cardBullet5]}
+            ctaTexto={cardCtaTexto}
+            fotoPosicao={cardFotoPosicao}
+            foscoOpacidade={cardFoscoOpacidade}
+            tituloSobreFoto={cardTituloSobreFoto}
+            fotoZoom={cardFotoZoom}
+            tituloTamanho={cardTituloTamanho}
+            fotoRef={previewRef}
+            onFotoClick={handleClickPosicionarFoto}
+          />
+        </div>
+      </div>
     </div>
   );
 };
