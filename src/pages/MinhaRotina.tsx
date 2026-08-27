@@ -147,12 +147,46 @@ const parseTimestamp = (ts: string | null): number | undefined => {
   return undefined;
 };
 
+// ===== Semana + dia da semana =====
+// No banco: dia 1 = Segunda ... dia 7 = Domingo.
+// Na tela: ordem Dom → Sáb.
+const ORDEM_DIAS = [7, 1, 2, 3, 4, 5, 6];
+const NOME_DIA: Record<number, string> = {
+  1: "Seg", 2: "Ter", 3: "Qua", 4: "Qui", 5: "Sex", 6: "Sáb", 7: "Dom",
+};
+/** Segunda=1 ... Domingo=7 */
+const diaDoBanco = (d: Date) => ((d.getDay() + 6) % 7) + 1;
+/** Semana do mês: 1–4 fixas; dias 29+ caem na semana 5. */
+const semanaDoMes = (d: Date) => Math.min(5, Math.ceil(d.getDate() / 7));
+
 // ===== Page =====
 const MinhaRotina = () => {
   const { user, loading, doshaResult, profile, refreshProfile } = useUser();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
-  const [diaSelecionado, setDiaSelecionado] = useState<number>(1);
+
+  // Relógio real do dispositivo — vira sozinho à meia-noite
+  const [agora, setAgora] = useState<Date>(() => new Date());
+  useEffect(() => {
+    const id = setInterval(() => {
+      setAgora((prev) => {
+        const now = new Date();
+        return now.toDateString() === prev.toDateString() ? prev : now;
+      });
+    }, 30_000);
+    return () => clearInterval(id);
+  }, []);
+  const semanaHoje = semanaDoMes(agora);
+  const diaHoje = diaDoBanco(agora);
+
+  const [semanaSelecionada, setSemanaSelecionada] = useState<number>(semanaHoje);
+  const [diaSelecionado, setDiaSelecionado] = useState<number>(diaHoje);
+  // Ao virar o dia, a seleção acompanha
+  useEffect(() => {
+    setSemanaSelecionada(semanaHoje);
+    setDiaSelecionado(diaHoje);
+  }, [semanaHoje, diaHoje]);
+
 
   // ?item= : deep-link para abrir um nugget específico já expandido (reativo à URL)
   const [searchParams, setSearchParams] = useSearchParams();
