@@ -91,6 +91,7 @@ interface GlossarioRotina {
 interface RotinaRow {
   id: string;
   dia: number;
+  semana: number;
   slot: string;
   nugget_id: string | null;
   praticado: boolean | null;
@@ -146,12 +147,46 @@ const parseTimestamp = (ts: string | null): number | undefined => {
   return undefined;
 };
 
+// ===== Semana + dia da semana =====
+// No banco: dia 1 = Segunda ... dia 7 = Domingo.
+// Na tela: ordem Dom → Sáb.
+const ORDEM_DIAS = [7, 1, 2, 3, 4, 5, 6];
+const NOME_DIA: Record<number, string> = {
+  1: "Seg", 2: "Ter", 3: "Qua", 4: "Qui", 5: "Sex", 6: "Sáb", 7: "Dom",
+};
+/** Segunda=1 ... Domingo=7 */
+const diaDoBanco = (d: Date) => ((d.getDay() + 6) % 7) + 1;
+/** Semana do mês: 1–4 fixas; dias 29+ caem na semana 5. */
+const semanaDoMes = (d: Date) => Math.min(5, Math.ceil(d.getDate() / 7));
+
 // ===== Page =====
 const MinhaRotina = () => {
   const { user, loading, doshaResult, profile, refreshProfile } = useUser();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
-  const [diaSelecionado, setDiaSelecionado] = useState<number>(1);
+
+  // Relógio real do dispositivo — vira sozinho à meia-noite
+  const [agora, setAgora] = useState<Date>(() => new Date());
+  useEffect(() => {
+    const id = setInterval(() => {
+      setAgora((prev) => {
+        const now = new Date();
+        return now.toDateString() === prev.toDateString() ? prev : now;
+      });
+    }, 30_000);
+    return () => clearInterval(id);
+  }, []);
+  const semanaHoje = semanaDoMes(agora);
+  const diaHoje = diaDoBanco(agora);
+
+  const [semanaSelecionada, setSemanaSelecionada] = useState<number>(semanaHoje);
+  const [diaSelecionado, setDiaSelecionado] = useState<number>(diaHoje);
+  // Ao virar o dia, a seleção acompanha
+  useEffect(() => {
+    setSemanaSelecionada(semanaHoje);
+    setDiaSelecionado(diaHoje);
+  }, [semanaHoje, diaHoje]);
+
 
   // ?item= : deep-link para abrir um nugget específico já expandido (reativo à URL)
   const [searchParams, setSearchParams] = useSearchParams();
@@ -247,9 +282,19 @@ const MinhaRotina = () => {
     queryFn: async () => {
       const { data, error } = await supabase.rpc("minha_rotina_por_teste" as any, { p_teste_id: testeId! });
       if (error) throw error;
-      return (data ?? []) as RotinaRow[];
+      const base = (data ?? []) as RotinaRow[];
+      // A semana vive na tabela; a RPC ainda não devolve essa coluna.
+      const { data: semanas } = await (supabase.from("rotinas_usuario") as any)
+        .select("id, semana")
+        .eq("user_id", testeId!);
+      const mapa = new Map<string, number>();
+      ((semanas ?? []) as { id: string; semana: number | null }[]).forEach((s) =>
+        mapa.set(s.id, s.semana ?? 1)
+      );
+      return base.map((r) => ({ ...r, semana: mapa.get(r.id) ?? r.semana ?? 1 }));
     },
   });
+
 
   const { data: nuggets } = useQuery({
     queryKey: ["rotina-nuggets-all"],
@@ -280,6 +325,7 @@ const MinhaRotina = () => {
       setSearchParams(next, { replace: true });
       return;
     }
+    if (match.semana && match.semana !== semanaSelecionada) setSemanaSelecionada(match.semana);
     if (match.dia !== diaSelecionado) setDiaSelecionado(match.dia);
     setFocusHandled(true);
     // limpa da URL (mantém os outros params)
@@ -516,10 +562,31 @@ const MinhaRotina = () => {
   }
 
 
+  // Semanas disponíveis: 1–4 fixas + semana 5 só se houver dados gravados
+  const semanasComDados = new Set((rotinaRows ?? []).map((r) => r.semana ?? 1));
+  const semanasDisponiveis = [1, 2, 3, 4].concat(semanasComDados.has(5) ? [5] : []);
+
+  // Dias da semana selecionada (semana 5 mostra só os dias que existem)
+  const diasDaSemana = (() => {
+    if (semanaSelecionada === 5) {
+      const existentes = new Set(
+        (rotinaRows ?? []).filter((r) => (r.semana ?? 1) === 5).map((r) => r.dia)
+      );
+      return ORDEM_DIAS.filter((d) => existentes.has(d));
+    }
+    return ORDEM_DIAS;
+  })();
+
+  // Só a semana e o dia de hoje permitem marcar progresso
+  const ehHoje = semanaSelecionada === semanaHoje && diaSelecionado === diaHoje;
+
   // Rotina filtrada do dia
-  const rowsDoDia = (rotinaRows ?? []).filter((r) => r.dia === diaSelecionado);
+  const rowsDoDia = (rotinaRows ?? []).filter(
+    (r) => r.dia === diaSelecionado && (r.semana ?? 1) === semanaSelecionada
+  );
   const rowBySlot = new Map<string, RotinaRow>();
   rowsDoDia.forEach((r) => rowBySlot.set(r.slot, r));
+
 
   // Cuidados do glossário em destaque (2-3)
   const habitosGloss = (glossario?.habitos_diarios ?? []).slice(0, 3);
@@ -593,6 +660,7 @@ const MinhaRotina = () => {
   // Toggle de praticado (refeição/prática): grava em rotina_pontos com prefixo do dia
   const toggleFeito = async (row: RotinaRow) => {
     if (!user) return;
+    if (!ehHoje) return;
     const slot = row.slot;
     const ref = `dia${diaSelecionado}:${slot}`;
     const jaFeito = acertoRotinaSlots.has(slot);
@@ -650,6 +718,7 @@ const MinhaRotina = () => {
 
   const toggleHabito = async (habito: string) => {
     if (!user) return;
+    if (!ehHoje) return;
     const ref = `dia${diaSelecionado}:${habito}`;
     const jaFeito = acertoHabitos.has(habito);
     if (!jaFeito) {
@@ -675,6 +744,7 @@ const MinhaRotina = () => {
 
   const toggleAlerta = async (alerta: string) => {
     if (!user) return;
+    if (!ehHoje) return;
     const ref = `dia${diaSelecionado}:${alerta}`;
     const jaEscorregou = deslizes.has(alerta);
     if (!jaEscorregou) {
@@ -721,7 +791,7 @@ const MinhaRotina = () => {
               Sua rotina
             </h1>
             <p className="text-muted-foreground mt-1">
-              Dia {diaSelecionado} da sua semana
+              Semana {semanaSelecionada} · {NOME_DIA[diaSelecionado]}
             </p>
           </div>
           <button
@@ -809,9 +879,30 @@ const MinhaRotina = () => {
       </Dialog>
 
 
+      {/* Pílulas de semanas */}
+      <div className="flex gap-2 overflow-x-auto pb-2 -mx-1 px-1 mb-2">
+        {semanasDisponiveis.map((s) => {
+          const active = s === semanaSelecionada;
+          return (
+            <button
+              key={s}
+              onClick={() => setSemanaSelecionada(s)}
+              className={cn(
+                "shrink-0 rounded-full px-4 py-2 text-sm font-semibold transition-colors border",
+                active
+                  ? "bg-primary text-primary-foreground border-primary"
+                  : "bg-background text-muted-foreground border-border hover:bg-muted/60"
+              )}
+            >
+              Semana {s}
+            </button>
+          );
+        })}
+      </div>
+
       {/* Pílulas de dias */}
-      <div className="flex gap-2 overflow-x-auto pb-2 -mx-1 px-1 mb-5">
-        {Array.from({ length: 7 }, (_, i) => i + 1).map((d) => {
+      <div className="flex gap-2 overflow-x-auto pb-2 -mx-1 px-1 mb-3">
+        {diasDaSemana.map((d) => {
           const active = d === diaSelecionado;
           return (
             <button
@@ -824,11 +915,25 @@ const MinhaRotina = () => {
                   : "bg-muted text-muted-foreground border-transparent hover:bg-muted/80"
               )}
             >
-              Dia {d}
+              {NOME_DIA[d]}
             </button>
           );
         })}
       </div>
+
+      {!ehHoje && (
+        <div className="mb-5 rounded-xl border border-border bg-muted/50 px-4 py-3 text-sm text-muted-foreground">
+          Você está vendo a <span className="font-medium text-foreground">Semana {semanaSelecionada} · {NOME_DIA[diaSelecionado]}</span> em modo de consulta.
+          Marcar progresso só vale no dia de hoje.{" "}
+          <button
+            onClick={() => { setSemanaSelecionada(semanaHoje); setDiaSelecionado(diaHoje); }}
+            className="font-semibold text-primary underline underline-offset-2"
+          >
+            Voltar para hoje
+          </button>
+        </div>
+      )}
+
 
       {/* Indicadores do dia */}
       <div className="mb-6">
@@ -871,6 +976,7 @@ const MinhaRotina = () => {
                     feito={acertoRotinaSlots.has(s.slot)}
                     agniFracoOuIrregular={agniFracoOuIrregular}
                     onToggleFeito={() => row && toggleFeito(row)}
+                    somenteLeitura={!ehHoje}
                     focus={!!nugget && nugget.id === focusNuggetId}
                     compact
                     mostrarLista={!!nugget}
@@ -909,6 +1015,7 @@ const MinhaRotina = () => {
                   feito={acertoRotinaSlots.has(s.slot)}
                   agniFracoOuIrregular={agniFracoOuIrregular}
                   onToggleFeito={() => row && toggleFeito(row)}
+                  somenteLeitura={!ehHoje}
                   focus={!!nugget && nugget.id === focusNuggetId}
                 />
               );
@@ -920,6 +1027,7 @@ const MinhaRotina = () => {
                 periodo={h.periodo}
                 feito={acertoHabitos.has(h.habito)}
                 onToggle={() => toggleHabito(h.habito)}
+                somenteLeitura={!ehHoje}
               />
             ))}
           </div>
@@ -941,6 +1049,7 @@ const MinhaRotina = () => {
                   alerta={a}
                   escorregou={deslizes.has(a)}
                   onToggle={() => toggleAlerta(a)}
+                  somenteLeitura={!ehHoje}
                 />
               ))}
             </div>
@@ -1302,6 +1411,7 @@ interface SlotCardProps {
   feito: boolean;
   agniFracoOuIrregular: boolean;
   onToggleFeito: () => void;
+  somenteLeitura?: boolean;
   focus?: boolean;
   compact?: boolean;
   semSlotLabel?: boolean;
@@ -1318,6 +1428,7 @@ const RotinaSlotCard = ({
   feito,
   agniFracoOuIrregular,
   onToggleFeito,
+  somenteLeitura = false,
   focus = false,
   compact = false,
   semSlotLabel = false,
@@ -1423,6 +1534,7 @@ const RotinaSlotCard = ({
             variant={feito ? "default" : "outline"}
             size="sm"
             onClick={onToggleFeito}
+            disabled={somenteLeitura}
             className="gap-2"
           >
             <Star className={cn("h-4 w-4", feito && "fill-current")} />
@@ -1545,7 +1657,7 @@ const RotinaSlotCard = ({
         >
           <button
             onClick={onToggleFeito}
-            disabled={!row}
+            disabled={!row || somenteLeitura}
             className="absolute top-2 right-2 z-10 flex items-center gap-1.5 min-h-[48px] px-2.5 rounded-full bg-background/90 backdrop-blur hover:bg-muted disabled:opacity-40"
             aria-label="guardar esta receita nas favoritas"
           >
@@ -1663,7 +1775,7 @@ const RotinaSlotCard = ({
 
           <button
             onClick={onToggleFeito}
-            disabled={!row}
+            disabled={!row || somenteLeitura}
             className="flex items-center gap-2 min-h-[48px] px-3 rounded-lg hover:bg-muted disabled:opacity-40"
             aria-label="guardar esta receita nas favoritas"
           >
@@ -1704,8 +1816,9 @@ interface HabitoCardProps {
   periodo?: string;
   feito: boolean;
   onToggle: () => void;
+  somenteLeitura?: boolean;
 }
-const HabitoCard = ({ habito, periodo, feito, onToggle }: HabitoCardProps) => (
+const HabitoCard = ({ habito, periodo, feito, onToggle, somenteLeitura = false }: HabitoCardProps) => (
   <Card className="p-4 flex items-center gap-3">
     <div className="h-10 w-10 rounded-full bg-secondary/10 text-secondary flex items-center justify-center shrink-0">
       <Leaf className="h-5 w-5" />
@@ -1718,7 +1831,8 @@ const HabitoCard = ({ habito, periodo, feito, onToggle }: HabitoCardProps) => (
     </div>
     <button
       onClick={onToggle}
-      className="p-2 rounded-full hover:bg-muted"
+      disabled={somenteLeitura}
+      className="p-2 rounded-full hover:bg-muted disabled:opacity-40"
       aria-label="marcar como praticado"
     >
       <Star
@@ -1736,8 +1850,9 @@ interface AlertaCardProps {
   alerta: string;
   escorregou: boolean;
   onToggle: () => void;
+  somenteLeitura?: boolean;
 }
-const AlertaCard = ({ alerta, escorregou, onToggle }: AlertaCardProps) => (
+const AlertaCard = ({ alerta, escorregou, onToggle, somenteLeitura = false }: AlertaCardProps) => (
   <Card
     className={cn(
       "p-4 flex items-center gap-3 border-dashed transition-colors",
@@ -1760,6 +1875,7 @@ const AlertaCard = ({ alerta, escorregou, onToggle }: AlertaCardProps) => (
       size="sm"
       variant={escorregou ? "secondary" : "outline"}
       onClick={onToggle}
+      disabled={somenteLeitura}
       className="shrink-0 text-xs h-8"
     >
       {escorregou ? "anotado" : "registrar"}
