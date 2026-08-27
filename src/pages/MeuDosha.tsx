@@ -1089,41 +1089,27 @@ const MeuDosha = () => {
                           : (ultimaRevisao ?? createdAt);
                         const liberaEm = base ? new Date(base.getTime() + 30 * 24 * 3600 * 1000) : null;
                         const disponivel = liberaEm ? Date.now() >= liberaEm.getTime() : false;
-                        const liberaStr = liberaEm
-                          ? `${String(liberaEm.getDate()).padStart(2, '0')}/${String(liberaEm.getMonth() + 1).padStart(2, '0')}`
-                          : '';
                         const baseClass = "inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full border transition-colors";
-                        if (disponivel || ultimaRevisaoEm) {
-                          // Revisão concluída há menos de 30 dias → sem destaque, só "Ver revisão"
-                          const jaConcluiu = !!ultimaRevisaoEm && !disponivel;
 
-                          return (
-                            <button
-                              type="button"
-                              onClick={() => navigate(jaConcluiu ? "/revisao?ver=ultima" : "/revisao")}
-                              className={`${baseClass} border-akasha/60 bg-akasha/10 text-akasha hover:bg-akasha/20 ${jaConcluiu ? '' : 'animate-glow-pulse'}`}
-                              aria-label={jaConcluiu ? "Ver sua última revisão" : "Iniciar revisão — novidade"}
-                              title={jaConcluiu ? "Ver sua última revisão" : "Sua revisão está disponível"}
-                            >
-                              <RefreshCw className="w-3.5 h-3.5" />
-                              {jaConcluiu ? 'Ver revisão' : 'Revisão'}
-                              {!jaConcluiu && (
-                                <span className="ml-1 text-[9px] uppercase tracking-wider font-bold bg-akasha text-white px-1 py-0.5 rounded">novo</span>
-                              )}
-                            </button>
-                          );
+                        if (!disponivel) {
+                          // Revisão recente (< 30 dias) ou teste recente: nenhum destaque
+                          return null;
                         }
+
+                        const nuncaRevisou = !ultimaRevisaoEm;
                         return (
                           <button
                             type="button"
-                            disabled
-                            className={`${baseClass} border-border bg-muted/40 text-muted-foreground cursor-not-allowed opacity-70`}
-                            title={liberaStr ? `Sua revisão libera dia ${liberaStr}` : 'Sua revisão ainda não está disponível'}
-                            aria-label={liberaStr ? `Revisão libera em ${liberaStr}` : 'Revisão indisponível'}
+                            onClick={() => navigate("/revisao")}
+                            className={`${baseClass} border-akasha/60 bg-akasha/10 text-akasha hover:bg-akasha/20 animate-glow-pulse`}
+                            aria-label={nuncaRevisou ? "Iniciar revisão — novidade" : "Nova revisão disponível"}
+                            title={nuncaRevisou ? "Sua revisão está disponível" : "Nova revisão disponível"}
                           >
                             <RefreshCw className="w-3.5 h-3.5" />
                             Revisão
-                            <Lock className="w-3 h-3" />
+                            <span className="ml-1 text-[9px] uppercase tracking-wider font-bold bg-akasha text-white px-1 py-0.5 rounded">
+                              {nuncaRevisou ? 'novo' : 'nova'}
+                            </span>
                           </button>
                         );
                       })()}
