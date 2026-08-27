@@ -1682,7 +1682,148 @@ const RotinaSlotCard = ({
     </div>
   ) : null;
 
+  const estrelaFavorito = onToggleFavorito ? (
+    <button
+      type="button"
+      onClick={(e) => {
+        e.stopPropagation();
+        onToggleFavorito();
+      }}
+      disabled={!nugget}
+      className="shrink-0 inline-flex items-center justify-center h-11 w-11 rounded-full hover:bg-muted disabled:opacity-40"
+      aria-label={favorito ? "tirar dos favoritos" : "guardar nos favoritos"}
+      title={favorito ? "Tirar dos favoritos" : "Favoritar"}
+    >
+      <Star
+        className={cn("h-6 w-6", favorito ? "fill-[#F2CC03] text-[#F2CC03]" : "text-[#3F3A52]/50")}
+        strokeWidth={2}
+      />
+    </button>
+  ) : null;
+
+  const dialogDetalhe = (
+    <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogHeader>
+        {!semSlotLabel && (
+          <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
+            {slotLabel}
+          </div>
+        )}
+        <DialogTitle className="font-serif text-2xl leading-tight flex items-center gap-2">
+          {nugget?.titulo ?? "—"}
+          {mostrarChama && (
+            <Flame className="h-5 w-5 text-secondary shrink-0" aria-label="bom para o seu agni" />
+          )}
+        </DialogTitle>
+      </DialogHeader>
+      {detalhes}
+      {faixaLista}
+    </DialogContent>
+  );
+
+  if (linha) {
+    return (
+      <>
+        <Card
+          ref={cardRef}
+          className={cn(
+            "overflow-hidden transition-shadow duration-500 bg-background/80 backdrop-blur-[1px] border-border/60",
+            ringOn && "ring-2 ring-primary ring-offset-2 ring-offset-background"
+          )}
+        >
+          <div className="flex items-center gap-3 p-2.5">
+            <Dialog open={open} onOpenChange={setOpen}>
+              <DialogTrigger asChild>
+                <button className="flex items-center gap-3 text-left flex-1 min-w-0">
+                  <span className="h-14 w-14 sm:h-16 sm:w-16 shrink-0 rounded-lg overflow-hidden bg-muted flex items-center justify-center">
+                    {nugget?.imagem_url ? (
+                      <img
+                        src={nugget.imagem_url}
+                        alt={nugget.titulo}
+                        loading="lazy"
+                        decoding="async"
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      <IconCmp className="h-6 w-6 text-primary/60" />
+                    )}
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
+                      {slotLabel}
+                    </span>
+                    <span className="flex items-start gap-1.5">
+                      <span className="font-medium text-foreground text-sm leading-snug">
+                        {nugget?.titulo ?? "—"}
+                      </span>
+                      {mostrarChama && (
+                        <Flame className="h-3.5 w-3.5 text-secondary shrink-0 mt-0.5" aria-label="bom para o seu agni" />
+                      )}
+                    </span>
+                    {nugget?.nugget_json?.resumo && (
+                      <span className="mt-0.5 block text-xs text-muted-foreground leading-snug line-clamp-3">
+                        {nugget.nugget_json.resumo}
+                      </span>
+                    )}
+                  </span>
+                </button>
+              </DialogTrigger>
+              {dialogDetalhe}
+            </Dialog>
+            {estrelaFavorito}
+          </div>
+        </Card>
+        {videoDialog}
+      </>
+    );
+  }
+
+  if (mini) {
+    return (
+      <>
+        <Card
+          ref={cardRef}
+          className="h-full flex flex-col overflow-hidden relative"
+        >
+          <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>
+              <button className="w-full text-left">
+                <div className="aspect-[4/3] w-full bg-muted overflow-hidden">
+                  {nugget?.imagem_url ? (
+                    <img
+                      src={nugget.imagem_url}
+                      alt={nugget.titulo}
+                      loading="lazy"
+                      decoding="async"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-primary/5">
+                      <IconCmp className="h-8 w-8 text-primary/60" />
+                    </div>
+                  )}
+                </div>
+                <div className="p-2">
+                  <span className="block font-medium text-foreground text-sm leading-snug line-clamp-2">
+                    {nugget?.titulo ?? "—"}
+                  </span>
+                </div>
+              </button>
+            </DialogTrigger>
+            {dialogDetalhe}
+          </Dialog>
+          <div className="absolute top-1.5 right-1.5 rounded-full bg-background/90 backdrop-blur">
+            {estrelaFavorito}
+          </div>
+          <div className="mt-auto">{faixaLista}</div>
+        </Card>
+        {videoDialog}
+      </>
+    );
+  }
+
   if (compact) {
+
     return (
       <>
         <Card
