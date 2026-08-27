@@ -976,7 +976,6 @@ const MinhaRotina = () => {
                     feito={acertoRotinaSlots.has(s.slot)}
                     agniFracoOuIrregular={agniFracoOuIrregular}
                     onToggleFeito={() => row && toggleFeito(row)}
-                  somenteLeitura={!ehHoje}
                     somenteLeitura={!ehHoje}
                     focus={!!nugget && nugget.id === focusNuggetId}
                     compact
