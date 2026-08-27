@@ -712,6 +712,51 @@ const EditarCurso = ({
     }
   };
 
+  const handleUploadCardLogo = async (file: File) => {
+    setUploadingLogo(true);
+    const safeName = file.name.replace(/[^a-zA-Z0-9._-]+/g, "-");
+    const path = `cursos/${curso.id}/card-logo-${Date.now()}-${safeName}`;
+    const { error } = await supabase.storage.from(BUCKET_CAPA).upload(path, file, {
+      upsert: false,
+      contentType: file.type || "image/svg+xml",
+    });
+    if (error) {
+      toast({ title: "Erro no upload", description: error.message });
+      setUploadingLogo(false);
+      return;
+    }
+    const { data } = supabase.storage.from(BUCKET_CAPA).getPublicUrl(path);
+    setCardLogoUrl(data.publicUrl);
+    setUploadingLogo(false);
+    toast({ title: "Logo enviada — clique em Salvar card pra confirmar" });
+  };
+
+  const salvarCard = async () => {
+    setSavingCard(true);
+    const { error } = await supabase
+      .from("cursos")
+      .update({
+        card_logo_url: cardLogoUrl || null,
+        card_cor_primaria: cardCorPrimaria || null,
+        card_cor_secundaria: cardCorSecundaria || null,
+        card_subtitulo: cardSubtitulo.trim() || null,
+        card_bullet_1: cardBullet1.trim() || null,
+        card_bullet_2: cardBullet2.trim() || null,
+        card_bullet_3: cardBullet3.trim() || null,
+        card_bullet_4: cardBullet4.trim() || null,
+        card_bullet_5: cardBullet5.trim() || null,
+        card_cta_texto: cardCtaTexto.trim() || null,
+        card_foto_posicao: cardFotoPosicao.trim() || null,
+      })
+      .eq("id", curso.id);
+    setSavingCard(false);
+    if (error) toast({ title: "Erro ao salvar", description: error.message });
+    else {
+      toast({ title: "Card salvo" });
+      onChange();
+    }
+  };
+
   const addModulo = async () => {
     const { error } = await supabase.from("curso_modulos").insert({
       curso_id: curso.id,
