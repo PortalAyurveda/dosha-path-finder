@@ -7134,6 +7134,7 @@ export type Database = {
           id: string
           nugget_id: string | null
           praticado: boolean
+          semana: number
           slot: string
           status: string | null
           user_id: string | null
@@ -7144,6 +7145,7 @@ export type Database = {
           id?: string
           nugget_id?: string | null
           praticado?: boolean
+          semana?: number
           slot: string
           status?: string | null
           user_id?: string | null
@@ -7154,6 +7156,7 @@ export type Database = {
           id?: string
           nugget_id?: string | null
           praticado?: boolean
+          semana?: number
           slot?: string
           status?: string | null
           user_id?: string | null
@@ -8905,6 +8908,7 @@ export type Database = {
       get_meu_perfil_stats: { Args: never; Returns: Json }
       get_minha_evolucao: { Args: never; Returns: Json }
       get_minha_jornada: { Args: never; Returns: Json }
+      girar_rotinas_mensal: { Args: never; Returns: number }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
