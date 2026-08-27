@@ -91,6 +91,7 @@ interface GlossarioRotina {
 interface RotinaRow {
   id: string;
   dia: number;
+  semana: number;
   slot: string;
   nugget_id: string | null;
   praticado: boolean | null;
