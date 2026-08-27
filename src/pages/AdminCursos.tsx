@@ -26,6 +26,7 @@ import {
   ArrowUp,
   ArrowDown,
   Layers,
+  LayoutGrid,
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { slugify } from "@/lib/slugify";
@@ -42,6 +43,17 @@ type Curso = {
   capa_url: string | null;
   ordem: number;
   ativo: boolean;
+  card_logo_url: string | null;
+  card_cor_primaria: string | null;
+  card_cor_secundaria: string | null;
+  card_subtitulo: string | null;
+  card_bullet_1: string | null;
+  card_bullet_2: string | null;
+  card_bullet_3: string | null;
+  card_bullet_4: string | null;
+  card_bullet_5: string | null;
+  card_cta_texto: string | null;
+  card_foto_posicao: string | null;
 };
 
 type Modulo = {
@@ -614,6 +626,20 @@ const EditarCurso = ({
   const [uploadingCapa, setUploadingCapa] = useState(false);
   const [slugTouched, setSlugTouched] = useState(true);
 
+  const [cardLogoUrl, setCardLogoUrl] = useState(curso.card_logo_url ?? "");
+  const [cardCorPrimaria, setCardCorPrimaria] = useState(curso.card_cor_primaria ?? "#352F54");
+  const [cardCorSecundaria, setCardCorSecundaria] = useState(curso.card_cor_secundaria ?? "#6A88FB");
+  const [cardSubtitulo, setCardSubtitulo] = useState(curso.card_subtitulo ?? "");
+  const [cardBullet1, setCardBullet1] = useState(curso.card_bullet_1 ?? "");
+  const [cardBullet2, setCardBullet2] = useState(curso.card_bullet_2 ?? "");
+  const [cardBullet3, setCardBullet3] = useState(curso.card_bullet_3 ?? "");
+  const [cardBullet4, setCardBullet4] = useState(curso.card_bullet_4 ?? "");
+  const [cardBullet5, setCardBullet5] = useState(curso.card_bullet_5 ?? "");
+  const [cardCtaTexto, setCardCtaTexto] = useState(curso.card_cta_texto ?? "");
+  const [cardFotoPosicao, setCardFotoPosicao] = useState(curso.card_foto_posicao ?? "");
+  const [savingCard, setSavingCard] = useState(false);
+  const [uploadingLogo, setUploadingLogo] = useState(false);
+
   const [modulos, setModulos] = useState<Modulo[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedMod, setSelectedMod] = useState<Modulo | null>(null);
@@ -682,6 +708,51 @@ const EditarCurso = ({
     if (upErr) toast({ title: "Erro ao salvar capa", description: upErr.message });
     else {
       toast({ title: "Capa enviada" });
+      onChange();
+    }
+  };
+
+  const handleUploadCardLogo = async (file: File) => {
+    setUploadingLogo(true);
+    const safeName = file.name.replace(/[^a-zA-Z0-9._-]+/g, "-");
+    const path = `cursos/${curso.id}/card-logo-${Date.now()}-${safeName}`;
+    const { error } = await supabase.storage.from(BUCKET_CAPA).upload(path, file, {
+      upsert: false,
+      contentType: file.type || "image/svg+xml",
+    });
+    if (error) {
+      toast({ title: "Erro no upload", description: error.message });
+      setUploadingLogo(false);
+      return;
+    }
+    const { data } = supabase.storage.from(BUCKET_CAPA).getPublicUrl(path);
+    setCardLogoUrl(data.publicUrl);
+    setUploadingLogo(false);
+    toast({ title: "Logo enviada — clique em Salvar card pra confirmar" });
+  };
+
+  const salvarCard = async () => {
+    setSavingCard(true);
+    const { error } = await supabase
+      .from("cursos")
+      .update({
+        card_logo_url: cardLogoUrl || null,
+        card_cor_primaria: cardCorPrimaria || null,
+        card_cor_secundaria: cardCorSecundaria || null,
+        card_subtitulo: cardSubtitulo.trim() || null,
+        card_bullet_1: cardBullet1.trim() || null,
+        card_bullet_2: cardBullet2.trim() || null,
+        card_bullet_3: cardBullet3.trim() || null,
+        card_bullet_4: cardBullet4.trim() || null,
+        card_bullet_5: cardBullet5.trim() || null,
+        card_cta_texto: cardCtaTexto.trim() || null,
+        card_foto_posicao: cardFotoPosicao.trim() || null,
+      })
+      .eq("id", curso.id);
+    setSavingCard(false);
+    if (error) toast({ title: "Erro ao salvar", description: error.message });
+    else {
+      toast({ title: "Card salvo" });
       onChange();
     }
   };
@@ -821,6 +892,135 @@ const EditarCurso = ({
                 <Save className="w-4 h-4" />
               )}
               Salvar curso
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg font-heading flex items-center gap-2">
+            <LayoutGrid className="w-4 h-4" /> Card da vitrine (/cursos)
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-5">
+          <div className="space-y-2">
+            <Label>Logo do curso (fundo transparente, PNG ou SVG)</Label>
+            {cardLogoUrl ? (
+              <div className="flex items-center gap-3">
+                <img
+                  src={cardLogoUrl}
+                  alt="Logo do card"
+                  className="h-16 w-auto object-contain rounded border border-border bg-muted/30 p-2"
+                />
+                <Button variant="ghost" size="sm" onClick={() => setCardLogoUrl("")}>
+                  <Trash2 className="w-4 h-4" />
+                </Button>
+              </div>
+            ) : (
+              <p className="text-xs text-muted-foreground">
+                Nenhuma logo enviada — o card usa um ícone padrão.
+              </p>
+            )}
+            <label className="inline-flex">
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => {
+                  const f = e.target.files?.[0];
+                  if (f) handleUploadCardLogo(f);
+                  e.target.value = "";
+                }}
+              />
+              <span
+                className={`inline-flex items-center gap-2 text-sm px-3 h-9 rounded-md border border-input bg-background hover:bg-accent cursor-pointer ${uploadingLogo ? "opacity-60 pointer-events-none" : ""}`}
+              >
+                {uploadingLogo ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Upload className="w-4 h-4" />
+                )}
+                {cardLogoUrl ? "Substituir logo" : "Enviar logo"}
+              </span>
+            </label>
+          </div>
+
+          <div className="grid sm:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label>Cor principal</Label>
+              <div className="flex items-center gap-2">
+                <input
+                  type="color"
+                  value={cardCorPrimaria}
+                  onChange={(e) => setCardCorPrimaria(e.target.value)}
+                  className="h-9 w-12 rounded border border-input cursor-pointer"
+                />
+                <Input value={cardCorPrimaria} onChange={(e) => setCardCorPrimaria(e.target.value)} />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Cor secundária (mais escura — usada no degradê sobre a foto)</Label>
+              <div className="flex items-center gap-2">
+                <input
+                  type="color"
+                  value={cardCorSecundaria}
+                  onChange={(e) => setCardCorSecundaria(e.target.value)}
+                  className="h-9 w-12 rounded border border-input cursor-pointer"
+                />
+                <Input value={cardCorSecundaria} onChange={(e) => setCardCorSecundaria(e.target.value)} />
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label>Subtítulo (linha curta abaixo do título)</Label>
+            <Input
+              value={cardSubtitulo}
+              onChange={(e) => setCardSubtitulo(e.target.value)}
+              placeholder="Ex: Dinacharya — o relógio dos doshas"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label>Posição da foto de capa dentro do card (opcional)</Label>
+            <Input
+              value={cardFotoPosicao}
+              onChange={(e) => setCardFotoPosicao(e.target.value)}
+              placeholder='Ex: "center center", "right center", "45% center" — vazio = centralizado'
+            />
+            <p className="text-xs text-muted-foreground">
+              Útil quando a foto tem algo importante numa das pontas (a foto é sempre cortada nas laterais, nunca em cima/embaixo).
+            </p>
+          </div>
+
+          <div className="space-y-2">
+            <Label>As 5 linhas do card (só as preenchidas aparecem)</Label>
+            <Input value={cardBullet1} onChange={(e) => setCardBullet1(e.target.value)} placeholder="Linha 1" />
+            <Input value={cardBullet2} onChange={(e) => setCardBullet2(e.target.value)} placeholder="Linha 2" />
+            <Input value={cardBullet3} onChange={(e) => setCardBullet3(e.target.value)} placeholder="Linha 3" />
+            <Input value={cardBullet4} onChange={(e) => setCardBullet4(e.target.value)} placeholder="Linha 4" />
+            <Input value={cardBullet5} onChange={(e) => setCardBullet5(e.target.value)} placeholder="Linha 5" />
+          </div>
+
+          <div className="space-y-2">
+            <Label>Texto do botão (opcional — se vazio, usa o padrão de cada situação)</Label>
+            <Input
+              value={cardCtaTexto}
+              onChange={(e) => setCardCtaTexto(e.target.value)}
+              placeholder="Ex: Ver o curso"
+            />
+          </div>
+
+          <div className="flex justify-end">
+            <Button onClick={salvarCard} disabled={savingCard}>
+              {savingCard ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <Save className="w-4 h-4" />
+              )}
+              Salvar card
             </Button>
           </div>
         </CardContent>

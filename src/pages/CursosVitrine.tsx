@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { CheckCircle2, Lock } from "lucide-react";
+import { CheckCircle2, Lock, BookOpen } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/contexts/UserContext";
 import PageContainer from "@/components/PageContainer";
@@ -19,15 +19,54 @@ interface Curso {
   ativo: boolean;
   data_lancamento: string | null;
   pagina_lancamento_url: string | null;
+  card_logo_url: string | null;
+  card_cor_primaria: string | null;
+  card_cor_secundaria: string | null;
+  card_subtitulo: string | null;
+  card_bullet_1: string | null;
+  card_bullet_2: string | null;
+  card_bullet_3: string | null;
+  card_bullet_4: string | null;
+  card_bullet_5: string | null;
+  card_cta_texto: string | null;
+  card_foto_posicao: string | null;
 }
 
 const AZUL = "#6A88FB";
+const COR_PADRAO = "#352F54";
 
 const tituloClass = (titulo: string) => {
   const len = titulo.length;
-  if (len <= 30) return "text-2xl";
-  if (len <= 55) return "text-xl";
-  return "text-lg";
+  if (len <= 30) return "text-xl";
+  if (len <= 55) return "text-lg";
+  return "text-base";
+};
+
+const bulletsDe = (c: Curso): string[] =>
+  [c.card_bullet_1, c.card_bullet_2, c.card_bullet_3, c.card_bullet_4, c.card_bullet_5].filter(
+    (b): b is string => !!b && b.trim().length > 0,
+  );
+
+// Degradê padrão: transparente no topo, opaco na base, na cor secundária do curso.
+// Duas fotos de capa (Rotinas, Diagnóstico) são banners com metade da imagem sendo
+// logo/título gráfico de outra peça — pra essas, um tratamento mais forte/dividido
+// esconde a parte gráfica antiga e mostra só a parte fotográfica de verdade.
+const scrimDe = (c: Curso): string => {
+  const cor = c.card_cor_secundaria || COR_PADRAO;
+  if (c.slug === "rotinas-diarias") {
+    return `linear-gradient(to top, ${cor} 0%, ${cor}db 26%, ${cor}59 52%, ${cor}00 72%), linear-gradient(100deg, ${cor} 0%, ${cor} 44%, ${cor}8c 60%, ${cor}14 82%)`;
+  }
+  if (c.slug === "diagnostico-e-autocuidado") {
+    return `linear-gradient(180deg, ${cor}00 0%, ${cor}14 25%, ${cor}61 42%, ${cor}9e 57%, ${cor}d1 72%, ${cor}f5 100%)`;
+  }
+  return `linear-gradient(180deg, ${cor}00 0%, ${cor}14 28%, ${cor}8c 58%, ${cor}e0 82%, ${cor}f5 100%)`;
+};
+
+const posicaoFotoDe = (c: Curso): string => {
+  if (c.card_foto_posicao) return c.card_foto_posicao;
+  if (c.slug === "rotinas-diarias") return "right center";
+  if (c.slug === "diagnostico-e-autocuidado") return "100% center";
+  return "center center";
 };
 
 const formatarDataLancamento = (dataStr: string): string => {
@@ -60,6 +99,78 @@ const ORDEM_VITRINE = [
   "mentoria-para-terapeutas",
 ];
 
+const CheckSvg = ({ color }: { color: string }) => (
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="8" cy="8" r="8" fill={color} />
+    <path d="M5 8L7 10L11 6" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
+const CardHeader = ({ c }: { c: Curso }) => (
+  <div className="relative aspect-[4/3] w-full overflow-hidden bg-muted">
+    {c.capa_url ? (
+      <img
+        src={getTransformedImageUrl(c.capa_url, 800)}
+        alt={c.titulo}
+        width={800}
+        height={600}
+        loading="lazy"
+        decoding="async"
+        className="absolute inset-0 w-full h-full object-cover"
+        style={{ objectPosition: posicaoFotoDe(c) }}
+      />
+    ) : (
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-secondary/20" />
+    )}
+    <div
+      className="absolute inset-0"
+      style={{ background: scrimDe(c) }}
+    />
+    <div className="absolute inset-x-0 bottom-0 p-5 flex flex-col justify-end">
+      <div className="mb-2">
+        {c.card_logo_url ? (
+          <img
+            src={c.card_logo_url}
+            alt=""
+            className="h-10 w-auto object-contain drop-shadow-md"
+          />
+        ) : (
+          <BookOpen className="w-8 h-8 text-white drop-shadow-md" />
+        )}
+      </div>
+      <h3
+        className={`${tituloClass(c.titulo)} line-clamp-2 leading-tight text-white font-bold drop-shadow`}
+        title={c.titulo}
+      >
+        {c.titulo}
+      </h3>
+      {c.card_subtitulo && (
+        <p className="mt-1 text-sm text-white/90 line-clamp-1 drop-shadow">
+          {c.card_subtitulo}
+        </p>
+      )}
+    </div>
+  </div>
+);
+
+const CardBullets = ({ c }: { c: Curso }) => {
+  const bullets = bulletsDe(c);
+  const corCheck = c.card_cor_secundaria || c.card_cor_primaria || COR_PADRAO;
+  if (bullets.length === 0) return null;
+  return (
+    <div className="px-6 pb-4 space-y-2">
+      {bullets.map((b, i) => (
+        <div key={i} className="flex items-start gap-2 text-sm text-foreground">
+          <span className="mt-0.5 shrink-0">
+            <CheckSvg color={corCheck} />
+          </span>
+          {b}
+        </div>
+      ))}
+    </div>
+  );
+};
+
 const CursosVitrine = () => {
   const { user } = useUser();
   const [cursos, setCursos] = useState<Curso[]>([]);
@@ -71,7 +182,7 @@ const CursosVitrine = () => {
       const { data } = await supabase
         .from("cursos")
         .select(
-          "id,slug,titulo,descricao,descricao_em_breve,capa_url,ordem,preco,ativo,data_lancamento,pagina_lancamento_url"
+          "id,slug,titulo,descricao,descricao_em_breve,capa_url,ordem,preco,ativo,data_lancamento,pagina_lancamento_url,card_logo_url,card_cor_primaria,card_cor_secundaria,card_subtitulo,card_bullet_1,card_bullet_2,card_bullet_3,card_bullet_4,card_bullet_5,card_cta_texto,card_foto_posicao"
         )
         .in("slug", ORDEM_VITRINE);
       const cursosOrdenados = ORDEM_VITRINE
@@ -89,7 +200,6 @@ const CursosVitrine = () => {
     })();
   }, [user]);
 
-
   const LANDING_PROPRIA: Record<string, string> = {
     "rotinas-diarias": "/curso/rotinas",
     "alimentacao-e-nutricao": "/curso/alimentacao",
@@ -99,27 +209,6 @@ const CursosVitrine = () => {
   const destinoLanding = (slug: string, paginaLancamentoUrl?: string | null) => {
     if (paginaLancamentoUrl) return paginaLancamentoUrl;
     return LANDING_PROPRIA[slug] ?? `/cursos/${slug}`;
-  };
-
-  const renderCapa = (c: Curso, classes?: string) => {
-    if (!c.capa_url) {
-      return (
-        <div className="aspect-[4/3] w-full bg-gradient-to-br from-primary/20 to-secondary/20" />
-      );
-    }
-    return (
-      <div className="aspect-[4/3] w-full overflow-hidden bg-muted relative">
-        <img
-          src={getTransformedImageUrl(c.capa_url, 800)}
-          alt={c.titulo}
-          width={800}
-          height={600}
-          loading="lazy"
-          decoding="async"
-          className={`w-full h-full object-cover ${classes ?? ""}`}
-        />
-      </div>
-    );
   };
 
   return (
@@ -149,6 +238,7 @@ const CursosVitrine = () => {
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 items-stretch">
             {cursos.map((c) => {
               const isRotinas = c.slug === "rotinas-diarias";
+              const isDetox = c.slug === "detox-da-primavera";
               const jaTem = matriculadas.has(c.id);
               const disponivel = c.ativo;
 
@@ -161,8 +251,8 @@ const CursosVitrine = () => {
                     className="group bg-card border border-border rounded-2xl overflow-hidden ring-2 ring-amber-400 shadow-[0_0_30px_-5px_rgba(242,203,5,0.5)] hover:shadow-[0_0_40px_-5px_rgba(242,203,5,0.6)] transition-all flex flex-col h-full"
                   >
                     <Link to={acessar} className="flex flex-col flex-1">
-                      {c.capa_url ? (
-                        <div className="aspect-[4/3] w-full overflow-hidden bg-muted relative">
+                      <div className="relative aspect-[4/3] w-full overflow-hidden bg-muted">
+                        {c.capa_url ? (
                           <img
                             src={getTransformedImageUrl(c.capa_url, 800)}
                             alt={c.titulo}
@@ -172,14 +262,14 @@ const CursosVitrine = () => {
                             decoding="async"
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                           />
-                          <span className="absolute top-3 left-3 inline-flex items-center gap-1.5 text-sm font-bold px-3 py-1.5 rounded-full text-white shadow-md bg-gradient-to-r from-amber-400 to-amber-500">
-                            <CheckCircle2 className="w-4 h-4" />
-                            Seu Curso
-                          </span>
-                        </div>
-                      ) : (
-                        <div className="aspect-[4/3] w-full bg-gradient-to-br from-primary/20 to-secondary/20" />
-                      )}
+                        ) : (
+                          <div className="aspect-[4/3] w-full bg-gradient-to-br from-primary/20 to-secondary/20" />
+                        )}
+                        <span className="absolute top-3 left-3 inline-flex items-center gap-1.5 text-sm font-bold px-3 py-1.5 rounded-full text-white shadow-md bg-gradient-to-r from-amber-400 to-amber-500">
+                          <CheckCircle2 className="w-4 h-4" />
+                          Seu Curso
+                        </span>
+                      </div>
                       <div className="p-6 flex flex-col flex-1">
                         <h3
                           className={`mb-2 ${tituloClass(c.titulo)} line-clamp-2 leading-tight`}
@@ -196,7 +286,7 @@ const CursosVitrine = () => {
                     </Link>
                     <div className="px-6 pb-6 -mt-2">
                       <Button asChild className="w-full">
-                        <Link to={acessar}>Acessar curso</Link>
+                        <Link to={acessar}>{c.card_cta_texto || "Acessar curso"}</Link>
                       </Button>
                     </div>
                   </article>
@@ -211,57 +301,23 @@ const CursosVitrine = () => {
                 const badgeText = temData
                   ? formatarDataLancamento(c.data_lancamento!)
                   : "EM BREVE";
-                const isDetox = c.slug === "detox-da-primavera";
                 return (
                   <article
                     key={c.id}
                     className="bg-card border border-border rounded-2xl overflow-hidden flex flex-col h-full opacity-95"
                   >
-                    {c.capa_url ? (
-                      <div className="aspect-[4/3] w-full overflow-hidden bg-muted relative">
-                        <img
-                          src={getTransformedImageUrl(c.capa_url, 800)}
-                          alt={c.titulo}
-                          width={800}
-                          height={600}
-                          loading="lazy"
-                          decoding="async"
-                          className={`w-full h-full object-cover ${
-                            isDetox ? "opacity-95" : "grayscale-[70%] opacity-80"
-                          }`}
-                        />
-                        {!isDetox && (
-                          <div className="absolute inset-0 flex items-center justify-center">
-                            <div className="bg-black/40 backdrop-blur-sm rounded-full p-4">
-                              <Lock className="w-8 h-8 text-white" />
-                            </div>
-                          </div>
-                        )}
-                        <span className="absolute top-3 left-3 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full text-white shadow-md bg-slate-600">
-                          {badgeText}
-                        </span>
-                      </div>
-                    ) : (
-                      <div className="aspect-[4/3] w-full bg-gradient-to-br from-slate-700/40 to-slate-600/40" />
-                    )}
-                    <div className="p-6 flex flex-col flex-1">
-                      <h3
-                        className={`mb-2 ${tituloClass(c.titulo)} line-clamp-2 leading-tight ${isDetox ? "" : "text-muted-foreground"}`}
-                        title={c.titulo}
-                      >
-                        {c.titulo}
-                      </h3>
-                      <p className="text-sm text-muted-foreground mb-5 line-clamp-3 flex-1">
-                        {c.descricao_em_breve?.trim() ||
-                          c.descricao?.trim() ||
-                          "Em breve disponível no Portal."}
-                      </p>
+                    <div className="relative">
+                      <CardHeader c={c} />
+                      <span className="absolute top-3 left-3 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full text-white shadow-md bg-slate-600">
+                        {badgeText}
+                      </span>
                     </div>
-                    <div className="px-6 pb-6 -mt-2">
+                    <CardBullets c={c} />
+                    <div className="px-6 pb-6 -mt-2 mt-auto">
                       {isDetox ? (
                         <Button asChild className="w-full">
                           <Link to="/aula/detox-primavera">
-                            Quero minha pré-inscrição
+                            {c.card_cta_texto || "Quero minha pré-inscrição"}
                           </Link>
                         </Button>
                       ) : (
@@ -277,10 +333,8 @@ const CursosVitrine = () => {
                 );
               }
 
-
-              // Estado 2: disponível
+              // Estado 2: disponível, sem matrícula
               const landing = destinoLanding(c.slug, c.pagina_lancamento_url);
-              const acessar = `/cursos/${c.slug}/estudar`;
               const isExternal =
                 !!c.pagina_lancamento_url &&
                 /^(https?:\/\/)/i.test(c.pagina_lancamento_url);
@@ -297,59 +351,34 @@ const CursosVitrine = () => {
                       : {})}
                     className="flex flex-col flex-1"
                   >
-                    {c.capa_url ? (
-                      <div className="aspect-[4/3] w-full overflow-hidden bg-muted relative">
-                        <img
-                          src={getTransformedImageUrl(c.capa_url, 800)}
-                          alt={c.titulo}
-                          width={800}
-                          height={600}
-                          loading="lazy"
-                          decoding="async"
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                        />
-                        {isRotinas ? (
-                          <span
-                            className="absolute top-3 left-3 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full text-white shadow-md"
-                            style={{ backgroundColor: AZUL }}
-                          >
-                            Incluso no Premium Anual
-                          </span>
-                        ) : null}
-                        <span className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/90 shadow-md flex items-center justify-center">
-                          <Lock className="w-4 h-4 text-muted-foreground" />
+                    <div className="relative">
+                      <CardHeader c={c} />
+                      <span className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/90 shadow-md flex items-center justify-center">
+                        <Lock className="w-4 h-4 text-muted-foreground" />
+                      </span>
+                      {isRotinas && (
+                        <span
+                          className="absolute top-3 left-3 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full text-white shadow-md"
+                          style={{ backgroundColor: AZUL }}
+                        >
+                          Incluso no Premium Anual
                         </span>
-
-                      </div>
-                    ) : (
-                      <div className="aspect-[4/3] w-full bg-gradient-to-br from-primary/20 to-secondary/20" />
-                    )}
-                    <div className="p-6 flex flex-col flex-1">
-                      <h3
-                        className={`mb-2 ${tituloClass(c.titulo)} line-clamp-2 leading-tight`}
-                        title={c.titulo}
-                      >
-                        {c.titulo}
-                      </h3>
-                      {c.descricao && (
-                        <p className="text-sm text-muted-foreground mb-5 line-clamp-3 flex-1">
-                          {c.descricao}
-                        </p>
                       )}
                     </div>
+                    <CardBullets c={c} />
                   </Link>
-                  <div className="px-6 pb-6 -mt-2">
+                  <div className="px-6 pb-6 -mt-2 mt-auto">
                     {isRotinas ? (
                       <Button
                         asChild
                         className="w-full text-white hover:opacity-90"
                         style={{ backgroundColor: AZUL }}
                       >
-                        <Link to={landing}>Ver o curso</Link>
+                        <Link to={landing}>{c.card_cta_texto || "Ver o curso"}</Link>
                       </Button>
                     ) : (
                       <Button asChild className="w-full">
-                        <Link to={landing}>Ver o curso</Link>
+                        <Link to={landing}>{c.card_cta_texto || "Ver o curso"}</Link>
                       </Button>
                     )}
                   </div>
