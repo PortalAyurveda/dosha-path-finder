@@ -108,7 +108,7 @@ export const rotinasData: CourseData = {
   pricing: {
     priceOld: "",
     priceNew: "R$ 97,00",
-    installments: "Pagamento único",
+    installments: "Em até 5x sem juros de R$ 19,40",
     highlight: "Menos de R$100 pra aprender o relógio do seu corpo.",
     context: "Já incluso pra quem assina o Plano Anual Premium",
     ctaText: "QUERO COMEÇAR AGORA",
@@ -158,7 +158,7 @@ export const rotinasData: CourseData = {
       "Você pode continuar testando rotina de internet... Ou aprender de vez o relógio do seu próprio corpo.",
     subheadline: "",
     priceNew: "R$ 97",
-    installments: "Pagamento único",
+    installments: "Em até 5x sem juros de R$ 19,40",
     highlight: "Prática específica pra Vata, Pitta e Kapha",
     ctaText: "QUERO APRENDER MEU RELÓGIO",
     quote: "Ayurveda é para todo mundo.\nE todo mundo merece conhecer Ayurveda.",
