@@ -1574,7 +1574,7 @@ const RotinaSlotCard = ({
             disabled={somenteLeitura}
             className="gap-2"
           >
-            <Star className={cn("h-4 w-4", feito && "fill-current")} />
+            <Check className="h-4 w-4" />
             {feito ? "praticado hoje" : "marcar como praticado"}
           </Button>
         )}
