@@ -484,13 +484,45 @@ const MinhaRotina = () => {
     [favoritosRows, nuggetsById]
   );
 
+  const favoritosKey = ["minhas-favoritas", user?.id] as const;
+  const favoritosSet = useMemo(
+    () => new Set((favoritosRows ?? []).map((f) => f.nugget_id)),
+    [favoritosRows]
+  );
 
+  const toggleFavorito = async (nuggetId: string) => {
+    if (!user) return;
+    const jaTem = favoritosSet.has(nuggetId);
+    queryClient.setQueryData<{ nugget_id: string; created_at: string }[]>(
+      favoritosKey as any,
+      (prev) => {
+        const arr = prev ?? [];
+        return jaTem
+          ? arr.filter((f) => f.nugget_id !== nuggetId)
+          : [{ nugget_id: nuggetId, created_at: new Date().toISOString() }, ...arr];
+      }
+    );
+    try {
+      if (jaTem) {
+        const { error } = await (supabase.from("rotina_favoritos") as any)
+          .delete()
+          .eq("user_id", user.id)
+          .eq("nugget_id", nuggetId);
+        if (error) throw error;
+      } else {
+        const { error } = await (supabase.from("rotina_favoritos") as any).upsert(
+          { user_id: user.id, nugget_id: nuggetId },
+          { onConflict: "user_id,nugget_id", ignoreDuplicates: true }
+        );
+        if (error) throw error;
+      }
+    } catch {
+      toast({ title: "Não consegui salvar", variant: "destructive" });
+    } finally {
+      queryClient.invalidateQueries({ queryKey: ["minhas-favoritas", user.id] });
+    }
+  };
 
-  // A estrela grava em rotina_favoritos junto com os pontos: revalida a lista
-  useEffect(() => {
-    if (!user?.id) return;
-    queryClient.invalidateQueries({ queryKey: ["minhas-favoritas", user.id] });
-  }, [pontosHoje, user?.id, queryClient]);
 
   // Modal de impressão
 
@@ -683,12 +715,7 @@ const MinhaRotina = () => {
           nugget_id: row.nugget_id,
         });
         if (error && (error as any).code !== "23505") throw error;
-        if (row.nugget_id) {
-          await (supabase.from("rotina_favoritos") as any).upsert(
-            { user_id: user.id, nugget_id: row.nugget_id },
-            { onConflict: "user_id,nugget_id", ignoreDuplicates: true }
-          );
-        }
+
       } catch {
         revertPontos();
         toast({ title: "Não consegui salvar", variant: "destructive" });
@@ -703,12 +730,7 @@ const MinhaRotina = () => {
           .eq("tipo", "acerto_rotina")
           .eq("referencia", ref);
         if (error) throw error;
-        if (row.nugget_id) {
-          await (supabase.from("rotina_favoritos") as any)
-            .delete()
-            .eq("user_id", user.id)
-            .eq("nugget_id", row.nugget_id);
-        }
+
       } catch {
         revertPontos();
         toast({ title: "Não consegui salvar", variant: "destructive" });
@@ -962,39 +984,39 @@ const MinhaRotina = () => {
           <h2 className="text-xs uppercase tracking-wider text-muted-foreground font-semibold mb-2">
             Sua rotina
           </h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-            {MEAL_SLOTS.map((s, idx) => {
+          <div
+            className="rounded-2xl p-2 sm:p-3 space-y-2"
+            style={{
+              backgroundImage:
+                "linear-gradient(to bottom, rgba(242,204,3,0.22), rgba(242,204,3,0.06) 40%, rgba(54,47,86,0.10) 72%, rgba(54,47,86,0.26))",
+            }}
+          >
+            {MEAL_SLOTS.map((s) => {
               const row = rowBySlot.get(s.slot);
               const nugget = row?.nugget_id ? nuggetsById.get(row.nugget_id) : undefined;
-              const isLast = idx === MEAL_SLOTS.length - 1;
               return (
-                <div key={s.slot} className="relative">
-                  <RotinaSlotCard
-                    slotLabel={s.label}
-                    row={row}
-                    nugget={nugget}
-                    feito={acertoRotinaSlots.has(s.slot)}
-                    agniFracoOuIrregular={agniFracoOuIrregular}
-                    onToggleFeito={() => row && toggleFeito(row)}
-                    somenteLeitura={!ehHoje}
-                    focus={!!nugget && nugget.id === focusNuggetId}
-                    compact
-                    mostrarLista={!!nugget}
-                    naLista={!!nugget && selecionados.has(nugget.id)}
-                    onToggleLista={() => nugget && toggleSelecao(nugget.id)}
-                    erroLista={!!nugget && erroSelecao === nugget.id}
-
-                  />
-                  {!isLast && (
-                    <ArrowRight
-                      aria-hidden
-                      className="pointer-events-none absolute top-1/2 -right-3 -translate-y-1/2 h-5 w-5 text-primary/40 z-10"
-                    />
-                  )}
-                </div>
+                <RotinaSlotCard
+                  key={s.slot}
+                  slotLabel={s.label}
+                  row={row}
+                  nugget={nugget}
+                  feito={acertoRotinaSlots.has(s.slot)}
+                  agniFracoOuIrregular={agniFracoOuIrregular}
+                  onToggleFeito={() => row && toggleFeito(row)}
+                  somenteLeitura={!ehHoje}
+                  focus={!!nugget && nugget.id === focusNuggetId}
+                  linha
+                  favorito={!!nugget && favoritosSet.has(nugget.id)}
+                  onToggleFavorito={() => nugget && toggleFavorito(nugget.id)}
+                  mostrarLista={!!nugget}
+                  naLista={!!nugget && selecionados.has(nugget.id)}
+                  onToggleLista={() => nugget && toggleSelecao(nugget.id)}
+                  erroLista={!!nugget && erroSelecao === nugget.id}
+                />
               );
             })}
           </div>
+
         </section>
 
         {/* ===== Seus cuidados de hoje (práticas + hábitos do glossário) ===== */}
@@ -1058,50 +1080,56 @@ const MinhaRotina = () => {
 
         {/* ===== Suas receitas favoritas ===== */}
         <section>
-          <h2 className="font-serif" style={{ fontSize: 18, color: "#352F54", fontWeight: 600 }}>
-            Suas receitas favoritas
-          </h2>
-          {favoritas.length === 0 ? (
-            <p className="mt-2" style={{ fontSize: 16, color: "#3F3A52", lineHeight: 1.6 }}>
-              Você ainda não guardou nenhuma. Toque em <strong>Favoritar</strong> no card de uma
-              receita que você gostou: ela fica guardada aqui pra você imprimir depois.
-            </p>
-          ) : (
-            <>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mt-3">
-                {favoritas.map((n) => (
-                  <RotinaSlotCard
-                    key={`fav-${n.id}`}
-                    slotLabel=""
-                    semSlotLabel
-                    row={undefined}
-                    nugget={n}
-                    feito
-                    agniFracoOuIrregular={agniFracoOuIrregular}
-                    onToggleFeito={() => {}}
-                    compact
-                    mostrarLista
-                    naLista={selecionados.has(n.id)}
-                    onToggleLista={() => toggleSelecao(n.id)}
-                    erroLista={erroSelecao === n.id}
-                  />
-                ))}
-              </div>
+          <div className="flex items-center justify-between gap-3 flex-wrap">
+            <h2 className="font-serif" style={{ fontSize: 18, color: "#352F54", fontWeight: 600 }}>
+              Suas receitas favoritas
+            </h2>
+            {favoritas.length > 0 && (
               <button
                 onClick={() =>
                   navigate(
                     `/imprimir?pecas=receitas&ids=${favoritas.map((n) => n.id).join(",")}`
                   )
                 }
-                className="mt-4 inline-flex items-center gap-2 rounded-xl px-5 font-semibold text-white"
-                style={{ minHeight: 56, fontSize: 17, background: "#352F54" }}
+                className="inline-flex items-center gap-2 rounded-xl px-4 font-semibold text-white"
+                style={{ minHeight: 48, fontSize: 15, background: "#352F54" }}
               >
-                <Printer className="h-6 w-6" strokeWidth={2} />
-                Imprimir as favoritas
+                <Printer className="h-5 w-5" strokeWidth={2} />
+                Imprimir só as favoritas
               </button>
-            </>
+            )}
+          </div>
+          {favoritas.length === 0 ? (
+            <p className="mt-2" style={{ fontSize: 16, color: "#3F3A52", lineHeight: 1.6 }}>
+              Você ainda não guardou nenhuma. Toque na <strong>estrela</strong> no card de uma
+              receita que você gostou: ela fica guardada aqui pra você imprimir depois.
+            </p>
+          ) : (
+            <div className="mt-3 -mx-1 px-1 flex gap-3 overflow-x-auto snap-x pb-2">
+              {favoritas.map((n) => (
+                <div key={`fav-${n.id}`} className="shrink-0 w-[190px] snap-start">
+                  <RotinaSlotCard
+                    slotLabel=""
+                    semSlotLabel
+                    row={undefined}
+                    nugget={n}
+                    feito={false}
+                    agniFracoOuIrregular={agniFracoOuIrregular}
+                    onToggleFeito={() => {}}
+                    mini
+                    favorito={favoritosSet.has(n.id)}
+                    onToggleFavorito={() => toggleFavorito(n.id)}
+                    mostrarLista
+                    naLista={selecionados.has(n.id)}
+                    onToggleLista={() => toggleSelecao(n.id)}
+                    erroLista={erroSelecao === n.id}
+                  />
+                </div>
+              ))}
+            </div>
           )}
         </section>
+
 
 
         {/* ===== Sempre Faz Bem (suplementos personalizados) ===== */}
@@ -1414,6 +1442,10 @@ interface SlotCardProps {
   somenteLeitura?: boolean;
   focus?: boolean;
   compact?: boolean;
+  linha?: boolean;
+  mini?: boolean;
+  favorito?: boolean;
+  onToggleFavorito?: () => void;
   semSlotLabel?: boolean;
   mostrarLista?: boolean;
   naLista?: boolean;
@@ -1431,12 +1463,17 @@ const RotinaSlotCard = ({
   somenteLeitura = false,
   focus = false,
   compact = false,
+  linha = false,
+  mini = false,
+  favorito = false,
+  onToggleFavorito,
   semSlotLabel = false,
   mostrarLista = false,
   naLista = false,
   onToggleLista,
   erroLista = false,
 }: SlotCardProps) => {
+
 
   const [open, setOpen] = useState(false);
   const [porqueOpen, setPorqueOpen] = useState(false);
@@ -1537,7 +1574,7 @@ const RotinaSlotCard = ({
             disabled={somenteLeitura}
             className="gap-2"
           >
-            <Star className={cn("h-4 w-4", feito && "fill-current")} />
+            <Check className="h-4 w-4" />
             {feito ? "praticado hoje" : "marcar como praticado"}
           </Button>
         )}
@@ -1645,7 +1682,148 @@ const RotinaSlotCard = ({
     </div>
   ) : null;
 
+  const estrelaFavorito = onToggleFavorito ? (
+    <button
+      type="button"
+      onClick={(e) => {
+        e.stopPropagation();
+        onToggleFavorito();
+      }}
+      disabled={!nugget}
+      className="shrink-0 inline-flex items-center justify-center h-11 w-11 rounded-full hover:bg-muted disabled:opacity-40"
+      aria-label={favorito ? "tirar dos favoritos" : "guardar nos favoritos"}
+      title={favorito ? "Tirar dos favoritos" : "Favoritar"}
+    >
+      <Star
+        className={cn("h-6 w-6", favorito ? "fill-[#F2CC03] text-[#F2CC03]" : "text-[#3F3A52]/50")}
+        strokeWidth={2}
+      />
+    </button>
+  ) : null;
+
+  const dialogDetalhe = (
+    <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogHeader>
+        {!semSlotLabel && (
+          <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
+            {slotLabel}
+          </div>
+        )}
+        <DialogTitle className="font-serif text-2xl leading-tight flex items-center gap-2">
+          {nugget?.titulo ?? "—"}
+          {mostrarChama && (
+            <Flame className="h-5 w-5 text-secondary shrink-0" aria-label="bom para o seu agni" />
+          )}
+        </DialogTitle>
+      </DialogHeader>
+      {detalhes}
+      {faixaLista}
+    </DialogContent>
+  );
+
+  if (linha) {
+    return (
+      <>
+        <Card
+          ref={cardRef}
+          className={cn(
+            "overflow-hidden transition-shadow duration-500 bg-background/80 backdrop-blur-[1px] border-border/60",
+            ringOn && "ring-2 ring-primary ring-offset-2 ring-offset-background"
+          )}
+        >
+          <div className="flex items-center gap-3 p-2.5">
+            <Dialog open={open} onOpenChange={setOpen}>
+              <DialogTrigger asChild>
+                <button className="flex items-center gap-3 text-left flex-1 min-w-0">
+                  <span className="h-14 w-14 sm:h-16 sm:w-16 shrink-0 rounded-lg overflow-hidden bg-muted flex items-center justify-center">
+                    {nugget?.imagem_url ? (
+                      <img
+                        src={nugget.imagem_url}
+                        alt={nugget.titulo}
+                        loading="lazy"
+                        decoding="async"
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      <IconCmp className="h-6 w-6 text-primary/60" />
+                    )}
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
+                      {slotLabel}
+                    </span>
+                    <span className="flex items-start gap-1.5">
+                      <span className="font-medium text-foreground text-sm leading-snug">
+                        {nugget?.titulo ?? "—"}
+                      </span>
+                      {mostrarChama && (
+                        <Flame className="h-3.5 w-3.5 text-secondary shrink-0 mt-0.5" aria-label="bom para o seu agni" />
+                      )}
+                    </span>
+                    {nugget?.nugget_json?.resumo && (
+                      <span className="mt-0.5 block text-xs text-muted-foreground leading-snug line-clamp-3">
+                        {nugget.nugget_json.resumo}
+                      </span>
+                    )}
+                  </span>
+                </button>
+              </DialogTrigger>
+              {dialogDetalhe}
+            </Dialog>
+            {estrelaFavorito}
+          </div>
+        </Card>
+        {videoDialog}
+      </>
+    );
+  }
+
+  if (mini) {
+    return (
+      <>
+        <Card
+          ref={cardRef}
+          className="h-full flex flex-col overflow-hidden relative"
+        >
+          <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>
+              <button className="w-full text-left">
+                <div className="aspect-[4/3] w-full bg-muted overflow-hidden">
+                  {nugget?.imagem_url ? (
+                    <img
+                      src={nugget.imagem_url}
+                      alt={nugget.titulo}
+                      loading="lazy"
+                      decoding="async"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-primary/5">
+                      <IconCmp className="h-8 w-8 text-primary/60" />
+                    </div>
+                  )}
+                </div>
+                <div className="p-2">
+                  <span className="block font-medium text-foreground text-sm leading-snug line-clamp-2">
+                    {nugget?.titulo ?? "—"}
+                  </span>
+                </div>
+              </button>
+            </DialogTrigger>
+            {dialogDetalhe}
+          </Dialog>
+          <div className="absolute top-1.5 right-1.5 rounded-full bg-background/90 backdrop-blur">
+            {estrelaFavorito}
+          </div>
+          <div className="mt-auto">{faixaLista}</div>
+        </Card>
+        {videoDialog}
+      </>
+    );
+  }
+
   if (compact) {
+
     return (
       <>
         <Card
@@ -1659,21 +1837,19 @@ const RotinaSlotCard = ({
             onClick={onToggleFeito}
             disabled={!row || somenteLeitura}
             className="absolute top-2 right-2 z-10 flex items-center gap-1.5 min-h-[48px] px-2.5 rounded-full bg-background/90 backdrop-blur hover:bg-muted disabled:opacity-40"
-            aria-label="guardar esta receita nas favoritas"
+            aria-label="marcar como praticado"
           >
-            <Star
-              className={cn(
-                "h-6 w-6",
-                feito ? "fill-secondary text-secondary" : "text-[#3F3A52]"
-              )}
-              strokeWidth={2}
+            <Check
+              className={cn("h-6 w-6", feito ? "text-[#352F54]" : "text-[#3F3A52]")}
+              strokeWidth={2.5}
             />
             <span
               className="text-base font-medium"
               style={{ color: feito ? "#352F54" : "#3F3A52" }}
             >
-              {feito ? "Favorita" : "Favoritar"}
+              {feito ? "Praticado" : "Marcar"}
             </span>
+
           </button>
 
           <Dialog open={open} onOpenChange={setOpen}>
@@ -1777,18 +1953,19 @@ const RotinaSlotCard = ({
             onClick={onToggleFeito}
             disabled={!row || somenteLeitura}
             className="flex items-center gap-2 min-h-[48px] px-3 rounded-lg hover:bg-muted disabled:opacity-40"
-            aria-label="guardar esta receita nas favoritas"
+            aria-label="marcar como praticado"
           >
-            <Star
-              className={cn("h-6 w-6", feito ? "fill-secondary text-secondary" : "text-[#3F3A52]")}
-              strokeWidth={2}
+            <Check
+              className={cn("h-6 w-6", feito ? "text-[#352F54]" : "text-[#3F3A52]")}
+              strokeWidth={2.5}
             />
             <span
               className="text-base font-medium"
               style={{ color: feito ? "#352F54" : "#3F3A52" }}
             >
-              {feito ? "Favorita" : "Favoritar"}
+              {feito ? "Praticado" : "Marcar"}
             </span>
+
           </button>
 
         </div>
