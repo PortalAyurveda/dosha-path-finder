@@ -2117,9 +2117,13 @@ export type Database = {
           card_cor_primaria: string | null
           card_cor_secundaria: string | null
           card_cta_texto: string | null
+          card_fosco_opacidade: number
           card_foto_posicao: string | null
+          card_foto_zoom: number
           card_logo_url: string | null
           card_subtitulo: string | null
+          card_titulo_sobre_foto: boolean
+          card_titulo_tamanho: number
           created_at: string
           data_lancamento: string | null
           descricao: string | null
@@ -2144,9 +2148,13 @@ export type Database = {
           card_cor_primaria?: string | null
           card_cor_secundaria?: string | null
           card_cta_texto?: string | null
+          card_fosco_opacidade?: number
           card_foto_posicao?: string | null
+          card_foto_zoom?: number
           card_logo_url?: string | null
           card_subtitulo?: string | null
+          card_titulo_sobre_foto?: boolean
+          card_titulo_tamanho?: number
           created_at?: string
           data_lancamento?: string | null
           descricao?: string | null
@@ -2171,9 +2179,13 @@ export type Database = {
           card_cor_primaria?: string | null
           card_cor_secundaria?: string | null
           card_cta_texto?: string | null
+          card_fosco_opacidade?: number
           card_foto_posicao?: string | null
+          card_foto_zoom?: number
           card_logo_url?: string | null
           card_subtitulo?: string | null
+          card_titulo_sobre_foto?: boolean
+          card_titulo_tamanho?: number
           created_at?: string
           data_lancamento?: string | null
           descricao?: string | null

@@ -1,4 +1,4 @@
-import { createContext, useCallback, useEffect, useState } from "react";
+import { createContext, useCallback, useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import AdminNav from "@/components/admin/AdminNav";
 import Seo from "@/components/Seo";
@@ -31,6 +31,8 @@ import {
 import { toast } from "@/hooks/use-toast";
 import { slugify } from "@/lib/slugify";
 import { optimizeImageToWebP } from "@/lib/imageOptimize";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { LANDING_PALETTES } from "@/data/landingPalettes";
 
 const BUCKET_APOSTILA = "escola";
 const BUCKET_CAPA = "portal_images";
@@ -54,6 +56,10 @@ type Curso = {
   card_bullet_5: string | null;
   card_cta_texto: string | null;
   card_foto_posicao: string | null;
+  card_fosco_opacidade: number;
+  card_titulo_sobre_foto: boolean;
+  card_foto_zoom: number;
+  card_titulo_tamanho: number;
 };
 
 type Modulo = {
@@ -637,8 +643,13 @@ const EditarCurso = ({
   const [cardBullet5, setCardBullet5] = useState(curso.card_bullet_5 ?? "");
   const [cardCtaTexto, setCardCtaTexto] = useState(curso.card_cta_texto ?? "");
   const [cardFotoPosicao, setCardFotoPosicao] = useState(curso.card_foto_posicao ?? "");
+  const [cardFoscoOpacidade, setCardFoscoOpacidade] = useState(curso.card_fosco_opacidade ?? 75);
+  const [cardTituloSobreFoto, setCardTituloSobreFoto] = useState(curso.card_titulo_sobre_foto ?? true);
+  const [cardFotoZoom, setCardFotoZoom] = useState(curso.card_foto_zoom ?? 100);
+  const [cardTituloTamanho, setCardTituloTamanho] = useState(curso.card_titulo_tamanho ?? 100);
   const [savingCard, setSavingCard] = useState(false);
   const [uploadingLogo, setUploadingLogo] = useState(false);
+  const previewRef = useRef<HTMLDivElement>(null);
 
   const [modulos, setModulos] = useState<Modulo[]>([]);
   const [loading, setLoading] = useState(true);
@@ -731,6 +742,21 @@ const EditarCurso = ({
     toast({ title: "Logo enviada — clique em Salvar card pra confirmar" });
   };
 
+  const handleClickPosicionarFoto = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = previewRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    const x = Math.round(((e.clientX - rect.left) / rect.width) * 100);
+    const y = Math.round(((e.clientY - rect.top) / rect.height) * 100);
+    setCardFotoPosicao(`${Math.max(0, Math.min(100, x))}% ${Math.max(0, Math.min(100, y))}%`);
+  };
+
+  const aplicarPaleta = (key: string) => {
+    const paleta = LANDING_PALETTES.find((p) => p.key === key);
+    if (!paleta) return;
+    setCardCorPrimaria(paleta.branding.primaryColor);
+    setCardCorSecundaria(paleta.branding.darkColor);
+  };
+
   const salvarCard = async () => {
     setSavingCard(true);
     const { error } = await supabase
@@ -747,6 +773,10 @@ const EditarCurso = ({
         card_bullet_5: cardBullet5.trim() || null,
         card_cta_texto: cardCtaTexto.trim() || null,
         card_foto_posicao: cardFotoPosicao.trim() || null,
+        card_fosco_opacidade: cardFoscoOpacidade,
+        card_titulo_sobre_foto: cardTituloSobreFoto,
+        card_foto_zoom: cardFotoZoom,
+        card_titulo_tamanho: cardTituloTamanho,
       })
       .eq("id", curso.id);
     setSavingCard(false);
@@ -905,6 +935,133 @@ const EditarCurso = ({
         </CardHeader>
         <CardContent className="space-y-5">
           <div className="space-y-2">
+            <Label>Preview ao vivo — clique na foto pra escolher o que aparece</Label>
+            <div
+              ref={previewRef}
+              onClick={handleClickPosicionarFoto}
+              className="relative aspect-[4/3] w-full max-w-md overflow-hidden rounded-lg border border-border bg-muted/30 cursor-crosshair"
+            >
+              {capaUrl ? (
+                <img
+                  src={capaUrl}
+                  alt="Preview da capa"
+                  className="absolute inset-0 w-full h-full object-cover"
+                  style={{
+                    objectPosition: cardFotoPosicao || "center center",
+                    transform: `scale(${cardFotoZoom / 100})`,
+                  }}
+                />
+              ) : (
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <ImageIcon className="w-8 h-8 text-muted-foreground" />
+                </div>
+              )}
+              {cardFoscoOpacidade > 0 && (
+                <div
+                  className="absolute inset-0 pointer-events-none"
+                  style={{
+                    background: `linear-gradient(180deg, ${cardCorSecundaria}00 0%, ${cardCorSecundaria}${Math.round((cardFoscoOpacidade / 100) * 0.35 * 255).toString(16).padStart(2, "0")} 45%, ${cardCorSecundaria}${Math.round((cardFoscoOpacidade / 100) * 255).toString(16).padStart(2, "0")} 100%)`,
+                  }}
+                />
+              )}
+              {cardTituloSobreFoto && (
+                <div className="absolute inset-x-0 bottom-0 p-5 flex flex-col justify-end pointer-events-none">
+                  <div className="mb-2">
+                    {cardLogoUrl ? (
+                      <img
+                        src={cardLogoUrl}
+                        alt=""
+                        className="h-10 w-auto object-contain drop-shadow-md"
+                      />
+                    ) : (
+                      <BookOpen className="w-8 h-8 text-white drop-shadow-md" />
+                    )}
+                  </div>
+                  <h3
+                    className="line-clamp-2 leading-tight text-white font-bold drop-shadow"
+                    style={{ fontSize: `${19 * (cardTituloTamanho / 100)}px` }}
+                  >
+                    {titulo || "Título do curso"}
+                  </h3>
+                  {cardSubtitulo && (
+                    <p className="mt-1 text-sm text-white/90 line-clamp-1 drop-shadow">
+                      {cardSubtitulo}
+                    </p>
+                  )}
+                </div>
+              )}
+            </div>
+            {!cardTituloSobreFoto && (
+              <p className="text-xs text-muted-foreground">
+                Título fica abaixo da foto (modo "imagem pura") — veja como fica no card real em /cursos.
+              </p>
+            )}
+          </div>
+
+          <div className="grid sm:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label>Fosco sobre a foto — {cardFoscoOpacidade}%</Label>
+              <input
+                type="range"
+                min={0}
+                max={100}
+                value={cardFoscoOpacidade}
+                onChange={(e) => setCardFoscoOpacidade(Number(e.target.value))}
+                className="w-full"
+              />
+              <p className="text-xs text-muted-foreground">0 = foto pura, sem degradê nenhum.</p>
+            </div>
+            <div className="space-y-2">
+              <Label>Zoom da foto — {cardFotoZoom}%</Label>
+              <input
+                type="range"
+                min={100}
+                max={200}
+                value={cardFotoZoom}
+                onChange={(e) => setCardFotoZoom(Number(e.target.value))}
+                className="w-full"
+              />
+            </div>
+          </div>
+
+          <div className="flex items-start justify-between gap-4">
+            <div className="space-y-1">
+              <Label htmlFor="titulo-sobre-foto">Título sobreposto na foto</Label>
+              <p className="text-xs text-muted-foreground">
+                Desligado = foto pura, título clássico abaixo dela (bom pra fotos que já têm o nome do curso desenhado dentro).
+              </p>
+            </div>
+            <Switch
+              id="titulo-sobre-foto"
+              checked={cardTituloSobreFoto}
+              onCheckedChange={setCardTituloSobreFoto}
+            />
+          </div>
+
+          {cardTituloSobreFoto && (
+            <div className="space-y-2">
+              <Label>Tamanho do título sobreposto — {cardTituloTamanho}%</Label>
+              <input
+                type="range"
+                min={60}
+                max={160}
+                value={cardTituloTamanho}
+                onChange={(e) => setCardTituloTamanho(Number(e.target.value))}
+                className="w-full"
+              />
+            </div>
+          )}
+
+          <div className="space-y-2">
+            <Label>Posição da foto (clique no preview acima, ou digite)</Label>
+            <Input
+              value={cardFotoPosicao}
+              onChange={(e) => setCardFotoPosicao(e.target.value)}
+              placeholder='Ex: "center center", "right center", "45% 30%"'
+            />
+          </div>
+
+          <div className="space-y-2">
             <Label>Logo do curso (fundo transparente, PNG ou SVG)</Label>
             {cardLogoUrl ? (
               <div className="flex items-center gap-3">
@@ -946,6 +1103,36 @@ const EditarCurso = ({
             </label>
           </div>
 
+          <div className="space-y-2">
+            <Label>Preencher cores com uma paleta pronta (opcional)</Label>
+            <Select onValueChange={aplicarPaleta}>
+              <SelectTrigger>
+                <SelectValue placeholder="Escolher uma paleta…" />
+              </SelectTrigger>
+              <SelectContent>
+                {LANDING_PALETTES.map((p) => (
+                  <SelectItem key={p.key} value={p.key}>
+                    <span className="flex items-center gap-2">
+                      <span className="flex -space-x-1">
+                        {p.swatch.map((cor) => (
+                          <span
+                            key={cor}
+                            className="inline-block w-3 h-3 rounded-full border border-white/60"
+                            style={{ backgroundColor: cor }}
+                          />
+                        ))}
+                      </span>
+                      {p.label}
+                    </span>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <p className="text-xs text-muted-foreground">
+              Preenche os 2 campos de cor abaixo — você ainda pode ajustar na mão depois.
+            </p>
+          </div>
+
           <div className="grid sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label>Cor principal</Label>
@@ -961,7 +1148,7 @@ const EditarCurso = ({
             </div>
 
             <div className="space-y-2">
-              <Label>Cor secundária (mais escura — usada no degradê sobre a foto)</Label>
+              <Label>Cor secundária (do degradê e dos checks)</Label>
               <div className="flex items-center gap-2">
                 <input
                   type="color"
@@ -981,18 +1168,6 @@ const EditarCurso = ({
               onChange={(e) => setCardSubtitulo(e.target.value)}
               placeholder="Ex: Dinacharya — o relógio dos doshas"
             />
-          </div>
-
-          <div className="space-y-2">
-            <Label>Posição da foto de capa dentro do card (opcional)</Label>
-            <Input
-              value={cardFotoPosicao}
-              onChange={(e) => setCardFotoPosicao(e.target.value)}
-              placeholder='Ex: "center center", "right center", "45% center" — vazio = centralizado'
-            />
-            <p className="text-xs text-muted-foreground">
-              Útil quando a foto tem algo importante numa das pontas (a foto é sempre cortada nas laterais, nunca em cima/embaixo).
-            </p>
           </div>
 
           <div className="space-y-2">
