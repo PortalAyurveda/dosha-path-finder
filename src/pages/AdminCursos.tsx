@@ -43,6 +43,17 @@ type Curso = {
   capa_url: string | null;
   ordem: number;
   ativo: boolean;
+  card_logo_url: string | null;
+  card_cor_primaria: string | null;
+  card_cor_secundaria: string | null;
+  card_subtitulo: string | null;
+  card_bullet_1: string | null;
+  card_bullet_2: string | null;
+  card_bullet_3: string | null;
+  card_bullet_4: string | null;
+  card_bullet_5: string | null;
+  card_cta_texto: string | null;
+  card_foto_posicao: string | null;
 };
 
 type Modulo = {
