@@ -984,39 +984,39 @@ const MinhaRotina = () => {
           <h2 className="text-xs uppercase tracking-wider text-muted-foreground font-semibold mb-2">
             Sua rotina
           </h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-            {MEAL_SLOTS.map((s, idx) => {
+          <div
+            className="rounded-2xl p-2 sm:p-3 space-y-2"
+            style={{
+              backgroundImage:
+                "linear-gradient(to bottom, rgba(242,204,3,0.22), rgba(242,204,3,0.06) 40%, rgba(54,47,86,0.10) 72%, rgba(54,47,86,0.26))",
+            }}
+          >
+            {MEAL_SLOTS.map((s) => {
               const row = rowBySlot.get(s.slot);
               const nugget = row?.nugget_id ? nuggetsById.get(row.nugget_id) : undefined;
-              const isLast = idx === MEAL_SLOTS.length - 1;
               return (
-                <div key={s.slot} className="relative">
-                  <RotinaSlotCard
-                    slotLabel={s.label}
-                    row={row}
-                    nugget={nugget}
-                    feito={acertoRotinaSlots.has(s.slot)}
-                    agniFracoOuIrregular={agniFracoOuIrregular}
-                    onToggleFeito={() => row && toggleFeito(row)}
-                    somenteLeitura={!ehHoje}
-                    focus={!!nugget && nugget.id === focusNuggetId}
-                    compact
-                    mostrarLista={!!nugget}
-                    naLista={!!nugget && selecionados.has(nugget.id)}
-                    onToggleLista={() => nugget && toggleSelecao(nugget.id)}
-                    erroLista={!!nugget && erroSelecao === nugget.id}
-
-                  />
-                  {!isLast && (
-                    <ArrowRight
-                      aria-hidden
-                      className="pointer-events-none absolute top-1/2 -right-3 -translate-y-1/2 h-5 w-5 text-primary/40 z-10"
-                    />
-                  )}
-                </div>
+                <RotinaSlotCard
+                  key={s.slot}
+                  slotLabel={s.label}
+                  row={row}
+                  nugget={nugget}
+                  feito={acertoRotinaSlots.has(s.slot)}
+                  agniFracoOuIrregular={agniFracoOuIrregular}
+                  onToggleFeito={() => row && toggleFeito(row)}
+                  somenteLeitura={!ehHoje}
+                  focus={!!nugget && nugget.id === focusNuggetId}
+                  linha
+                  favorito={!!nugget && favoritosSet.has(nugget.id)}
+                  onToggleFavorito={() => nugget && toggleFavorito(nugget.id)}
+                  mostrarLista={!!nugget}
+                  naLista={!!nugget && selecionados.has(nugget.id)}
+                  onToggleLista={() => nugget && toggleSelecao(nugget.id)}
+                  erroLista={!!nugget && erroSelecao === nugget.id}
+                />
               );
             })}
           </div>
+
         </section>
 
         {/* ===== Seus cuidados de hoje (práticas + hábitos do glossário) ===== */}
