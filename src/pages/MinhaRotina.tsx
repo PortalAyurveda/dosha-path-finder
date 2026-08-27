@@ -161,7 +161,7 @@ const semanaDoMes = (d: Date) => Math.min(5, Math.ceil(d.getDate() / 7));
 
 // ===== Page =====
 const MinhaRotina = () => {
-  const { user, loading, doshaResult, profile, refreshProfile } = useUser();
+  const { user, loading, profileLoading, doshaResult, profile, refreshProfile } = useUser();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
