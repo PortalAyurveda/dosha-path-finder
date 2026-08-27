@@ -287,7 +287,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
   return (
     <UserContext.Provider
-      value={{ user, isAnonymous: (user as any)?.is_anonymous === true, session, profile, doshaResult, role, loading, roleLoading, signOut, refreshProfile, claimTest, setDoshaResultFromId }}
+      value={{ user, isAnonymous: (user as any)?.is_anonymous === true, session, profile, doshaResult, role, loading, profileLoading, roleLoading, signOut, refreshProfile, claimTest, setDoshaResultFromId }}
     >
       {children}
     </UserContext.Provider>
