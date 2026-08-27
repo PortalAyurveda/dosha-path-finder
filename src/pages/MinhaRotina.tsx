@@ -879,9 +879,30 @@ const MinhaRotina = () => {
       </Dialog>
 
 
+      {/* Pílulas de semanas */}
+      <div className="flex gap-2 overflow-x-auto pb-2 -mx-1 px-1 mb-2">
+        {semanasDisponiveis.map((s) => {
+          const active = s === semanaSelecionada;
+          return (
+            <button
+              key={s}
+              onClick={() => setSemanaSelecionada(s)}
+              className={cn(
+                "shrink-0 rounded-full px-4 py-2 text-sm font-semibold transition-colors border",
+                active
+                  ? "bg-primary text-primary-foreground border-primary"
+                  : "bg-background text-muted-foreground border-border hover:bg-muted/60"
+              )}
+            >
+              Semana {s}
+            </button>
+          );
+        })}
+      </div>
+
       {/* Pílulas de dias */}
-      <div className="flex gap-2 overflow-x-auto pb-2 -mx-1 px-1 mb-5">
-        {Array.from({ length: 7 }, (_, i) => i + 1).map((d) => {
+      <div className="flex gap-2 overflow-x-auto pb-2 -mx-1 px-1 mb-3">
+        {diasDaSemana.map((d) => {
           const active = d === diaSelecionado;
           return (
             <button
@@ -894,11 +915,25 @@ const MinhaRotina = () => {
                   : "bg-muted text-muted-foreground border-transparent hover:bg-muted/80"
               )}
             >
-              Dia {d}
+              {NOME_DIA[d]}
             </button>
           );
         })}
       </div>
+
+      {!ehHoje && (
+        <div className="mb-5 rounded-xl border border-border bg-muted/50 px-4 py-3 text-sm text-muted-foreground">
+          Você está vendo a <span className="font-medium text-foreground">Semana {semanaSelecionada} · {NOME_DIA[diaSelecionado]}</span> em modo de consulta.
+          Marcar progresso só vale no dia de hoje.{" "}
+          <button
+            onClick={() => { setSemanaSelecionada(semanaHoje); setDiaSelecionado(diaHoje); }}
+            className="font-semibold text-primary underline underline-offset-2"
+          >
+            Voltar para hoje
+          </button>
+        </div>
+      )}
+
 
       {/* Indicadores do dia */}
       <div className="mb-6">
