@@ -742,6 +742,21 @@ const EditarCurso = ({
     toast({ title: "Logo enviada — clique em Salvar card pra confirmar" });
   };
 
+  const handleClickPosicionarFoto = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = previewRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    const x = Math.round(((e.clientX - rect.left) / rect.width) * 100);
+    const y = Math.round(((e.clientY - rect.top) / rect.height) * 100);
+    setCardFotoPosicao(`${Math.max(0, Math.min(100, x))}% ${Math.max(0, Math.min(100, y))}%`);
+  };
+
+  const aplicarPaleta = (key: string) => {
+    const paleta = LANDING_PALETTES.find((p) => p.key === key);
+    if (!paleta) return;
+    setCardCorPrimaria(paleta.branding.primaryColor);
+    setCardCorSecundaria(paleta.branding.darkColor);
+  };
+
   const salvarCard = async () => {
     setSavingCard(true);
     const { error } = await supabase
@@ -758,6 +773,10 @@ const EditarCurso = ({
         card_bullet_5: cardBullet5.trim() || null,
         card_cta_texto: cardCtaTexto.trim() || null,
         card_foto_posicao: cardFotoPosicao.trim() || null,
+        card_fosco_opacidade: cardFoscoOpacidade,
+        card_titulo_sobre_foto: cardTituloSobreFoto,
+        card_foto_zoom: cardFotoZoom,
+        card_titulo_tamanho: cardTituloTamanho,
       })
       .eq("id", curso.id);
     setSavingCard(false);
