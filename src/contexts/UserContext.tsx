@@ -235,6 +235,9 @@ export function UserProvider({ children }: { children: ReactNode }) {
       setUser(newSession?.user ?? null);
 
       if (newSession?.user) {
+        // Marca imediatamente que o perfil está em busca, evitando a janela
+        // em que loading=false e profile=null (falso "sem plano").
+        setProfileLoading(true);
         hydrateAuthenticatedUser(newSession.user);
 
         if (event === "SIGNED_IN") {
