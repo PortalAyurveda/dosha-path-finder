@@ -626,6 +626,20 @@ const EditarCurso = ({
   const [uploadingCapa, setUploadingCapa] = useState(false);
   const [slugTouched, setSlugTouched] = useState(true);
 
+  const [cardLogoUrl, setCardLogoUrl] = useState(curso.card_logo_url ?? "");
+  const [cardCorPrimaria, setCardCorPrimaria] = useState(curso.card_cor_primaria ?? "#352F54");
+  const [cardCorSecundaria, setCardCorSecundaria] = useState(curso.card_cor_secundaria ?? "#6A88FB");
+  const [cardSubtitulo, setCardSubtitulo] = useState(curso.card_subtitulo ?? "");
+  const [cardBullet1, setCardBullet1] = useState(curso.card_bullet_1 ?? "");
+  const [cardBullet2, setCardBullet2] = useState(curso.card_bullet_2 ?? "");
+  const [cardBullet3, setCardBullet3] = useState(curso.card_bullet_3 ?? "");
+  const [cardBullet4, setCardBullet4] = useState(curso.card_bullet_4 ?? "");
+  const [cardBullet5, setCardBullet5] = useState(curso.card_bullet_5 ?? "");
+  const [cardCtaTexto, setCardCtaTexto] = useState(curso.card_cta_texto ?? "");
+  const [cardFotoPosicao, setCardFotoPosicao] = useState(curso.card_foto_posicao ?? "");
+  const [savingCard, setSavingCard] = useState(false);
+  const [uploadingLogo, setUploadingLogo] = useState(false);
+
   const [modulos, setModulos] = useState<Modulo[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedMod, setSelectedMod] = useState<Modulo | null>(null);
