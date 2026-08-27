@@ -715,12 +715,7 @@ const MinhaRotina = () => {
           nugget_id: row.nugget_id,
         });
         if (error && (error as any).code !== "23505") throw error;
-        if (row.nugget_id) {
-          await (supabase.from("rotina_favoritos") as any).upsert(
-            { user_id: user.id, nugget_id: row.nugget_id },
-            { onConflict: "user_id,nugget_id", ignoreDuplicates: true }
-          );
-        }
+
       } catch {
         revertPontos();
         toast({ title: "Não consegui salvar", variant: "destructive" });
