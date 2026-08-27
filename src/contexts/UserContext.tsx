@@ -266,6 +266,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
         // não há sessão (sessão inicial resolvida sem usuário, ou signOut
         // explícito). Evita falso "deslogado" durante eventos intermediários.
         setProfile(null);
+        setProfileLoading(false);
         setRole(null);
         setRoleLoading(false);
         localStorage.removeItem("activeDoshaId");
