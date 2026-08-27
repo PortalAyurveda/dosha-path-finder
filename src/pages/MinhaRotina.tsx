@@ -537,7 +537,7 @@ const MinhaRotina = () => {
 
   // Gate de login — espera também o perfil (plano/assinatura) chegar,
   // senão o assinante cairia no paywall por corrida de carregamento.
-  if (loading || (user && (profileLoading || !profile))) {
+  if (loading || (user && profileLoading)) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
         <div className="h-8 w-8 rounded-full border-2 border-primary border-t-transparent animate-spin" />
