@@ -325,6 +325,7 @@ const MinhaRotina = () => {
       setSearchParams(next, { replace: true });
       return;
     }
+    if (match.semana && match.semana !== semanaSelecionada) setSemanaSelecionada(match.semana);
     if (match.dia !== diaSelecionado) setDiaSelecionado(match.dia);
     setFocusHandled(true);
     // limpa da URL (mantém os outros params)
