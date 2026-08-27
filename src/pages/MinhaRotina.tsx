@@ -1442,6 +1442,10 @@ interface SlotCardProps {
   somenteLeitura?: boolean;
   focus?: boolean;
   compact?: boolean;
+  linha?: boolean;
+  mini?: boolean;
+  favorito?: boolean;
+  onToggleFavorito?: () => void;
   semSlotLabel?: boolean;
   mostrarLista?: boolean;
   naLista?: boolean;
@@ -1459,12 +1463,17 @@ const RotinaSlotCard = ({
   somenteLeitura = false,
   focus = false,
   compact = false,
+  linha = false,
+  mini = false,
+  favorito = false,
+  onToggleFavorito,
   semSlotLabel = false,
   mostrarLista = false,
   naLista = false,
   onToggleLista,
   erroLista = false,
 }: SlotCardProps) => {
+
 
   const [open, setOpen] = useState(false);
   const [porqueOpen, setPorqueOpen] = useState(false);
