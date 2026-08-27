@@ -306,10 +306,12 @@ const CursosVitrine = () => {
                     key={c.id}
                     className="bg-card border border-border rounded-2xl overflow-hidden flex flex-col h-full opacity-95"
                   >
-                    <CardHeader c={c} />
-                    <span className="absolute top-3 left-3 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full text-white shadow-md bg-slate-600">
-                      {badgeText}
-                    </span>
+                    <div className="relative">
+                      <CardHeader c={c} />
+                      <span className="absolute top-3 left-3 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full text-white shadow-md bg-slate-600">
+                        {badgeText}
+                      </span>
+                    </div>
                     <CardBullets c={c} />
                     <div className="px-6 pb-6 -mt-2 mt-auto">
                       {isDetox ? (
