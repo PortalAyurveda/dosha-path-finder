@@ -38,6 +38,8 @@ interface UserContextType {
   doshaResult: DoshaResult | null;
   role: UserRole;
   loading: boolean;
+  /** true enquanto o perfil (plano/assinatura) ainda está sendo buscado */
+  profileLoading: boolean;
   roleLoading: boolean;
   signOut: () => Promise<void>;
   refreshProfile: () => Promise<void>;
@@ -55,18 +57,25 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const [role, setRole] = useState<UserRole>(null);
   const [loading, setLoading] = useState(true);
   const [roleLoading, setRoleLoading] = useState(true);
+  const [profileLoading, setProfileLoading] = useState(true);
 
   const fetchProfile = async (userId: string) => {
-    const { data, error } = await supabase
-      .from("user_profiles")
-      .select("*")
-      .eq("id", userId)
-      .single();
+    setProfileLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from("user_profiles")
+        .select("*")
+        .eq("id", userId)
+        .single();
 
-    if (!error && data) {
-      setProfile(data as UserProfile);
+      if (!error && data) {
+        setProfile(data as UserProfile);
+      }
+    } finally {
+      setProfileLoading(false);
     }
   };
+
 
   const fetchRole = async (userId: string) => {
     // Só ativa loading na primeira busca (quando ainda não temos role).
@@ -226,6 +235,9 @@ export function UserProvider({ children }: { children: ReactNode }) {
       setUser(newSession?.user ?? null);
 
       if (newSession?.user) {
+        // Marca imediatamente que o perfil está em busca, evitando a janela
+        // em que loading=false e profile=null (falso "sem plano").
+        setProfileLoading(true);
         hydrateAuthenticatedUser(newSession.user);
 
         if (event === "SIGNED_IN") {
@@ -254,6 +266,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
         // não há sessão (sessão inicial resolvida sem usuário, ou signOut
         // explícito). Evita falso "deslogado" durante eventos intermediários.
         setProfile(null);
+        setProfileLoading(false);
         setRole(null);
         setRoleLoading(false);
         localStorage.removeItem("activeDoshaId");
@@ -274,7 +287,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
   return (
     <UserContext.Provider
-      value={{ user, isAnonymous: (user as any)?.is_anonymous === true, session, profile, doshaResult, role, loading, roleLoading, signOut, refreshProfile, claimTest, setDoshaResultFromId }}
+      value={{ user, isAnonymous: (user as any)?.is_anonymous === true, session, profile, doshaResult, role, loading, profileLoading, roleLoading, signOut, refreshProfile, claimTest, setDoshaResultFromId }}
     >
       {children}
     </UserContext.Provider>
