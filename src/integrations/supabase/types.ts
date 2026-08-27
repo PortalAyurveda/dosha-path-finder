@@ -2109,6 +2109,16 @@ export type Database = {
         Row: {
           ativo: boolean
           capa_url: string | null
+          card_bullet_1: string | null
+          card_bullet_2: string | null
+          card_bullet_3: string | null
+          card_bullet_4: string | null
+          card_bullet_5: string | null
+          card_cor_primaria: string | null
+          card_cor_secundaria: string | null
+          card_cta_texto: string | null
+          card_logo_url: string | null
+          card_subtitulo: string | null
           created_at: string
           data_lancamento: string | null
           descricao: string | null
@@ -2125,6 +2135,16 @@ export type Database = {
         Insert: {
           ativo?: boolean
           capa_url?: string | null
+          card_bullet_1?: string | null
+          card_bullet_2?: string | null
+          card_bullet_3?: string | null
+          card_bullet_4?: string | null
+          card_bullet_5?: string | null
+          card_cor_primaria?: string | null
+          card_cor_secundaria?: string | null
+          card_cta_texto?: string | null
+          card_logo_url?: string | null
+          card_subtitulo?: string | null
           created_at?: string
           data_lancamento?: string | null
           descricao?: string | null
@@ -2141,6 +2161,16 @@ export type Database = {
         Update: {
           ativo?: boolean
           capa_url?: string | null
+          card_bullet_1?: string | null
+          card_bullet_2?: string | null
+          card_bullet_3?: string | null
+          card_bullet_4?: string | null
+          card_bullet_5?: string | null
+          card_cor_primaria?: string | null
+          card_cor_secundaria?: string | null
+          card_cta_texto?: string | null
+          card_logo_url?: string | null
+          card_subtitulo?: string | null
           created_at?: string
           data_lancamento?: string | null
           descricao?: string | null
