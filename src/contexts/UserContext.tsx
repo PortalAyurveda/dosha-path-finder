@@ -57,18 +57,25 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const [role, setRole] = useState<UserRole>(null);
   const [loading, setLoading] = useState(true);
   const [roleLoading, setRoleLoading] = useState(true);
+  const [profileLoading, setProfileLoading] = useState(true);
 
   const fetchProfile = async (userId: string) => {
-    const { data, error } = await supabase
-      .from("user_profiles")
-      .select("*")
-      .eq("id", userId)
-      .single();
+    setProfileLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from("user_profiles")
+        .select("*")
+        .eq("id", userId)
+        .single();
 
-    if (!error && data) {
-      setProfile(data as UserProfile);
+      if (!error && data) {
+        setProfile(data as UserProfile);
+      }
+    } finally {
+      setProfileLoading(false);
     }
   };
+
 
   const fetchRole = async (userId: string) => {
     // Só ativa loading na primeira busca (quando ainda não temos role).
