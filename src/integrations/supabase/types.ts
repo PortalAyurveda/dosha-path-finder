@@ -541,6 +541,30 @@ export type Database = {
         }
         Relationships: []
       }
+      ashtanga_hridaya_pt_pages: {
+        Row: {
+          created_at: string | null
+          id: number
+          pdf_page: number
+          raw_transcription: string
+          volume: number
+        }
+        Insert: {
+          created_at?: string | null
+          id?: never
+          pdf_page: number
+          raw_transcription: string
+          volume: number
+        }
+        Update: {
+          created_at?: string | null
+          id?: never
+          pdf_page?: number
+          raw_transcription?: string
+          volume?: number
+        }
+        Relationships: []
+      }
       assinatura_cobrancas: {
         Row: {
           billing_reason: string | null
@@ -8908,6 +8932,7 @@ export type Database = {
       get_meu_perfil_stats: { Args: never; Returns: Json }
       get_minha_evolucao: { Args: never; Returns: Json }
       get_minha_jornada: { Args: never; Returns: Json }
+      girar_rotinas_lote: { Args: { p_tamanho?: number }; Returns: number }
       girar_rotinas_mensal: { Args: never; Returns: number }
       has_role: {
         Args: {
@@ -9176,6 +9201,7 @@ export type Database = {
           id: string
           nugget_id: string
           praticado: boolean
+          semana: number
           slot: string
         }[]
       }
