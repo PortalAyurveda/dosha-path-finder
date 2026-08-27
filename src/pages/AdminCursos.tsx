@@ -26,6 +26,7 @@ import {
   ArrowUp,
   ArrowDown,
   Layers,
+  LayoutGrid,
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { slugify } from "@/lib/slugify";
