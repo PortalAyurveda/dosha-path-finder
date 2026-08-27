@@ -1837,21 +1837,19 @@ const RotinaSlotCard = ({
             onClick={onToggleFeito}
             disabled={!row || somenteLeitura}
             className="absolute top-2 right-2 z-10 flex items-center gap-1.5 min-h-[48px] px-2.5 rounded-full bg-background/90 backdrop-blur hover:bg-muted disabled:opacity-40"
-            aria-label="guardar esta receita nas favoritas"
+            aria-label="marcar como praticado"
           >
-            <Star
-              className={cn(
-                "h-6 w-6",
-                feito ? "fill-secondary text-secondary" : "text-[#3F3A52]"
-              )}
-              strokeWidth={2}
+            <Check
+              className={cn("h-6 w-6", feito ? "text-[#352F54]" : "text-[#3F3A52]")}
+              strokeWidth={2.5}
             />
             <span
               className="text-base font-medium"
               style={{ color: feito ? "#352F54" : "#3F3A52" }}
             >
-              {feito ? "Favorita" : "Favoritar"}
+              {feito ? "Praticado" : "Marcar"}
             </span>
+
           </button>
 
           <Dialog open={open} onOpenChange={setOpen}>
