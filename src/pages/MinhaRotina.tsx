@@ -735,12 +735,7 @@ const MinhaRotina = () => {
           .eq("tipo", "acerto_rotina")
           .eq("referencia", ref);
         if (error) throw error;
-        if (row.nugget_id) {
-          await (supabase.from("rotina_favoritos") as any)
-            .delete()
-            .eq("user_id", user.id)
-            .eq("nugget_id", row.nugget_id);
-        }
+
       } catch {
         revertPontos();
         toast({ title: "Não consegui salvar", variant: "destructive" });
