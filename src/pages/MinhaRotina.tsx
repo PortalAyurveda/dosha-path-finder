@@ -791,7 +791,7 @@ const MinhaRotina = () => {
               Sua rotina
             </h1>
             <p className="text-muted-foreground mt-1">
-              Dia {diaSelecionado} da sua semana
+              Semana {semanaSelecionada} · {NOME_DIA[diaSelecionado]}
             </p>
           </div>
           <button
@@ -976,6 +976,8 @@ const MinhaRotina = () => {
                     feito={acertoRotinaSlots.has(s.slot)}
                     agniFracoOuIrregular={agniFracoOuIrregular}
                     onToggleFeito={() => row && toggleFeito(row)}
+                  somenteLeitura={!ehHoje}
+                    somenteLeitura={!ehHoje}
                     focus={!!nugget && nugget.id === focusNuggetId}
                     compact
                     mostrarLista={!!nugget}
@@ -1014,6 +1016,7 @@ const MinhaRotina = () => {
                   feito={acertoRotinaSlots.has(s.slot)}
                   agniFracoOuIrregular={agniFracoOuIrregular}
                   onToggleFeito={() => row && toggleFeito(row)}
+                  somenteLeitura={!ehHoje}
                   focus={!!nugget && nugget.id === focusNuggetId}
                 />
               );
@@ -1025,6 +1028,7 @@ const MinhaRotina = () => {
                 periodo={h.periodo}
                 feito={acertoHabitos.has(h.habito)}
                 onToggle={() => toggleHabito(h.habito)}
+                somenteLeitura={!ehHoje}
               />
             ))}
           </div>
@@ -1046,6 +1050,7 @@ const MinhaRotina = () => {
                   alerta={a}
                   escorregou={deslizes.has(a)}
                   onToggle={() => toggleAlerta(a)}
+                  somenteLeitura={!ehHoje}
                 />
               ))}
             </div>
@@ -1407,6 +1412,7 @@ interface SlotCardProps {
   feito: boolean;
   agniFracoOuIrregular: boolean;
   onToggleFeito: () => void;
+  somenteLeitura?: boolean;
   focus?: boolean;
   compact?: boolean;
   semSlotLabel?: boolean;
@@ -1423,6 +1429,7 @@ const RotinaSlotCard = ({
   feito,
   agniFracoOuIrregular,
   onToggleFeito,
+  somenteLeitura = false,
   focus = false,
   compact = false,
   semSlotLabel = false,
@@ -1528,6 +1535,7 @@ const RotinaSlotCard = ({
             variant={feito ? "default" : "outline"}
             size="sm"
             onClick={onToggleFeito}
+            disabled={somenteLeitura}
             className="gap-2"
           >
             <Star className={cn("h-4 w-4", feito && "fill-current")} />
@@ -1650,7 +1658,7 @@ const RotinaSlotCard = ({
         >
           <button
             onClick={onToggleFeito}
-            disabled={!row}
+            disabled={!row || somenteLeitura}
             className="absolute top-2 right-2 z-10 flex items-center gap-1.5 min-h-[48px] px-2.5 rounded-full bg-background/90 backdrop-blur hover:bg-muted disabled:opacity-40"
             aria-label="guardar esta receita nas favoritas"
           >
@@ -1768,7 +1776,7 @@ const RotinaSlotCard = ({
 
           <button
             onClick={onToggleFeito}
-            disabled={!row}
+            disabled={!row || somenteLeitura}
             className="flex items-center gap-2 min-h-[48px] px-3 rounded-lg hover:bg-muted disabled:opacity-40"
             aria-label="guardar esta receita nas favoritas"
           >
@@ -1809,8 +1817,9 @@ interface HabitoCardProps {
   periodo?: string;
   feito: boolean;
   onToggle: () => void;
+  somenteLeitura?: boolean;
 }
-const HabitoCard = ({ habito, periodo, feito, onToggle }: HabitoCardProps) => (
+const HabitoCard = ({ habito, periodo, feito, onToggle, somenteLeitura = false }: HabitoCardProps) => (
   <Card className="p-4 flex items-center gap-3">
     <div className="h-10 w-10 rounded-full bg-secondary/10 text-secondary flex items-center justify-center shrink-0">
       <Leaf className="h-5 w-5" />
@@ -1823,7 +1832,8 @@ const HabitoCard = ({ habito, periodo, feito, onToggle }: HabitoCardProps) => (
     </div>
     <button
       onClick={onToggle}
-      className="p-2 rounded-full hover:bg-muted"
+      disabled={somenteLeitura}
+      className="p-2 rounded-full hover:bg-muted disabled:opacity-40"
       aria-label="marcar como praticado"
     >
       <Star
@@ -1841,8 +1851,9 @@ interface AlertaCardProps {
   alerta: string;
   escorregou: boolean;
   onToggle: () => void;
+  somenteLeitura?: boolean;
 }
-const AlertaCard = ({ alerta, escorregou, onToggle }: AlertaCardProps) => (
+const AlertaCard = ({ alerta, escorregou, onToggle, somenteLeitura = false }: AlertaCardProps) => (
   <Card
     className={cn(
       "p-4 flex items-center gap-3 border-dashed transition-colors",
@@ -1865,6 +1876,7 @@ const AlertaCard = ({ alerta, escorregou, onToggle }: AlertaCardProps) => (
       size="sm"
       variant={escorregou ? "secondary" : "outline"}
       onClick={onToggle}
+      disabled={somenteLeitura}
       className="shrink-0 text-xs h-8"
     >
       {escorregou ? "anotado" : "registrar"}
