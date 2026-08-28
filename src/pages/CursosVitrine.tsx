@@ -351,13 +351,21 @@ const CursosVitrine = () => {
                     <CursoCardTituloAbaixo cfg={cfg} />
                     <CardBullets c={c} />
                     <div className="px-6 pb-6 pt-3 mt-auto">
-                      {isDetox ? (
+                      {c.pagina_lancamento_url || isDetox ? (
                         <Button
                           asChild
                           className="w-full text-white hover:opacity-90"
                           style={{ backgroundColor: corCta }}
                         >
-                          <Link to="/aula/detox-primavera">
+                          <Link
+                            to={
+                              c.pagina_lancamento_url ??
+                              (isDetox ? "/aula/detox-primavera" : `/cursos/${c.slug}`)
+                            }
+                            {...(c.pagina_lancamento_url && /^(https?:\/\/)/i.test(c.pagina_lancamento_url)
+                              ? { target: "_blank", rel: "noopener noreferrer" }
+                              : {})}
+                          >
                             {c.card_cta_texto || "Quero minha pré-inscrição"}
                           </Link>
                         </Button>

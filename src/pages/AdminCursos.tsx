@@ -86,6 +86,7 @@ type Curso = {
   card_lancamento_data: string | null;
   card_estado_frase: string | null;
   card_mostrar_cadeado: boolean;
+  pagina_lancamento_url: string | null;
 };
 
 
@@ -828,6 +829,8 @@ const EditarCurso = ({
   const [cardLancamentoData, setCardLancamentoData] = useState(curso.card_lancamento_data ?? "");
   const [cardEstadoFrase, setCardEstadoFrase] = useState(curso.card_estado_frase ?? "");
   const [cardMostrarCadeado, setCardMostrarCadeado] = useState(curso.card_mostrar_cadeado ?? false);
+  const [paginaLancamentoUrl, setPaginaLancamentoUrl] = useState(curso.pagina_lancamento_url ?? "");
+
 
   const [savingCard, setSavingCard] = useState(false);
   const [uploadingLogo, setUploadingLogo] = useState(false);
@@ -985,6 +988,8 @@ const EditarCurso = ({
         card_lancamento_data: cardLancamentoData || null,
         card_estado_frase: cardEstadoFrase.trim() || null,
         card_mostrar_cadeado: cardMostrarCadeado,
+        pagina_lancamento_url: paginaLancamentoUrl.trim() || null,
+
 
 
       })
@@ -1401,6 +1406,18 @@ const EditarCurso = ({
                     onChange={(e) => setCardCtaTexto(e.target.value)}
                     placeholder="Ex: Ver o curso"
                   />
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label>Link da landing page (opcional)</Label>
+                  <Input
+                    value={paginaLancamentoUrl}
+                    onChange={(e) => setPaginaLancamentoUrl(e.target.value)}
+                    placeholder="Ex: /curso/rotinas ou https://…"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Pra onde o card manda quem clicar. Vazio = página padrão do curso.
+                  </p>
                 </div>
               </section>
 
