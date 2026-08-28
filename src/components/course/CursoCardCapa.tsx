@@ -101,7 +101,7 @@ export const CursoCardCapa = ({ cfg, fotoRef, onFotoClick, eager }: Props) => {
     >
       {cfg.capaUrl ? (
         <div
-          className="absolute inset-0 bg-no-repeat transition-transform duration-500 group-hover:scale-[1.03]"
+          className="absolute inset-0 bg-no-repeat"
           style={{
             backgroundImage: `url(${getTransformedImageUrl(cfg.capaUrl, 800)})`,
             backgroundPosition: cfg.fotoPosicao || "center center",
