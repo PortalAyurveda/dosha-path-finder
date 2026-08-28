@@ -58,7 +58,7 @@ const AdminNav = () => {
         </Button>
 
         {!aberto && (
-          <div className="flex-1 min-w-0 overflow-x-auto scrollbar-none flex gap-1.5 py-0.5">
+          <div className="flex-1 min-w-0 overflow-x-auto scrollbar-hide flex gap-1.5 py-0.5">
             {links.map(({ to, label, icon: Icon }) => {
               const active = pathname === to;
               return (
