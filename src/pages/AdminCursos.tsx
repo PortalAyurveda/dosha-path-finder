@@ -82,6 +82,10 @@ type Curso = {
   card_overlay_pos: string;
   card_logo_tamanho: number;
   card_texto_cor: string;
+  card_estado: string;
+  card_lancamento_data: string | null;
+  card_estado_frase: string | null;
+  card_mostrar_cadeado: boolean;
 };
 
 
