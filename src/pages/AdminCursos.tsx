@@ -947,6 +947,13 @@ const EditarCurso = ({
         card_titulo_sobre_foto: cardTituloSobreFoto,
         card_foto_zoom: cardFotoZoom,
         card_titulo_tamanho: cardTituloTamanho,
+        card_mostrar_titulo: cardMostrarTitulo,
+        card_mostrar_subtitulo: cardMostrarSubtitulo,
+        card_mostrar_logo: cardMostrarLogo,
+        card_overlay_pos: cardOverlayPos,
+        card_logo_tamanho: cardLogoTamanho,
+        card_texto_cor: cardTextoCor || "#FFFFFF",
+
       })
       .eq("id", curso.id);
     setSavingCard(false);
