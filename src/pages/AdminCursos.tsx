@@ -824,6 +824,10 @@ const EditarCurso = ({
   const [cardOverlayPos, setCardOverlayPos] = useState(curso.card_overlay_pos || "bottom-left");
   const [cardLogoTamanho, setCardLogoTamanho] = useState(curso.card_logo_tamanho ?? 100);
   const [cardTextoCor, setCardTextoCor] = useState(curso.card_texto_cor || "#FFFFFF");
+  const [cardEstado, setCardEstado] = useState(curso.card_estado || "auto");
+  const [cardLancamentoData, setCardLancamentoData] = useState(curso.card_lancamento_data ?? "");
+  const [cardEstadoFrase, setCardEstadoFrase] = useState(curso.card_estado_frase ?? "");
+  const [cardMostrarCadeado, setCardMostrarCadeado] = useState(curso.card_mostrar_cadeado ?? false);
 
   const [savingCard, setSavingCard] = useState(false);
   const [uploadingLogo, setUploadingLogo] = useState(false);
