@@ -1404,6 +1404,72 @@ const EditarCurso = ({
                 </div>
               </section>
 
+              {/* 5 — DISPONIBILIDADE */}
+              <section className="space-y-4 border-t border-border pt-5">
+                <SecaoTitulo
+                  icone={Lock}
+                  titulo="5. Disponibilidade do card"
+                  descricao="O curso continua aparecendo na vitrine, mas com selo e botão bloqueado."
+                />
+                <div className="space-y-1.5">
+                  <Label>Situação</Label>
+                  <Select value={cardEstado} onValueChange={setCardEstado}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="auto">Automático (segue o curso ativo/inativo)</SelectItem>
+                      <SelectItem value="lancamento">Lançamento em uma data</SelectItem>
+                      <SelectItem value="indisponivel">Curso indisponível</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {cardEstado === "lancamento" && (
+                  <div className="space-y-1.5">
+                    <Label>Data do lançamento</Label>
+                    <Input
+                      type="date"
+                      value={cardLancamentoData}
+                      onChange={(e) => setCardLancamentoData(e.target.value)}
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      Aparece como "Lança 12 de setembro" no selo do card.
+                    </p>
+                  </div>
+                )}
+
+                {cardEstado !== "auto" && (
+                  <>
+                    <div className="space-y-1.5">
+                      <Label>Frase abaixo do selo (opcional)</Label>
+                      <Input
+                        value={cardEstadoFrase}
+                        onChange={(e) => setCardEstadoFrase(e.target.value)}
+                        placeholder="Ex: Curso em andamento — turma fechada"
+                      />
+                    </div>
+                    <div className="flex items-center justify-between gap-3 rounded-lg border border-border p-3">
+                      <div>
+                        <Label className="cursor-pointer" htmlFor="mostrar-cadeado">
+                          Mostrar cadeado no card
+                        </Label>
+                        <p className="text-xs text-muted-foreground">
+                          Ícone de cadeado no canto da capa.
+                        </p>
+                      </div>
+                      <Switch
+                        id="mostrar-cadeado"
+                        checked={cardMostrarCadeado}
+                        onCheckedChange={setCardMostrarCadeado}
+                      />
+                    </div>
+                  </>
+                )}
+              </section>
+
+
+
               <div className="flex justify-end border-t border-border pt-4">
                 <Button onClick={salvarCard} disabled={savingCard}>
                   {savingCard ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
