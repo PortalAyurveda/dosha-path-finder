@@ -132,7 +132,7 @@ const StatusBadge = ({ status }: { status: PedidoStatus }) => {
 
 export const MELHORENVIO_URL = "https://melhorenvio.com.br/carrinho";
 
-export type SituacaoME = "postado" | "carrinho" | "fora" | "na";
+export type SituacaoME = "postado" | "carrinho" | "fora" | "na" | "sem_transportadora";
 
 export const situacaoMelhorEnvio = (p: {
   frete_melhorenvio_order_id?: string | null;
