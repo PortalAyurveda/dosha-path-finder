@@ -623,114 +623,110 @@ const tituloClassPreview = (titulo: string) => {
   return "text-base";
 };
 
-const gradienteFoscoPreview = (cor: string, fosco: number): string | null => {
-  if (!fosco || fosco <= 0) return null;
-  const hex2 = (v: number) => Math.round(v).toString(16).padStart(2, "0");
-  const alphaFim = hex2((fosco / 100) * 255);
-  const alphaMeio = hex2((fosco / 100) * 0.35 * 255);
-  return `linear-gradient(180deg, ${cor}00 0%, ${cor}${alphaMeio} 45%, ${cor}${alphaFim} 100%)`;
-};
-
 const CheckSvgPreview = ({ color }: { color: string }) => (
   <svg viewBox="0 0 20 20" fill="none" className="h-4 w-4 shrink-0 mt-0.5">
     <path d="M4 10.5l4 4L16 6" stroke={color} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
 );
 
-interface CardPreviewProps {
+const SecaoTitulo = ({
+  icone: Icone,
+  titulo,
+  descricao,
+}: {
+  icone: LucideIcon;
   titulo: string;
-  capaUrl: string;
-  logoUrl: string;
+  descricao?: string;
+}) => (
+  <div className="flex items-start gap-2">
+    <Icone className="w-4 h-4 mt-0.5 text-muted-foreground shrink-0" />
+    <div>
+      <p className="text-sm font-semibold leading-tight">{titulo}</p>
+      {descricao && <p className="text-xs text-muted-foreground mt-0.5">{descricao}</p>}
+    </div>
+  </div>
+);
+
+const SliderCampo = ({
+  label,
+  valor,
+  min,
+  max,
+  onChange,
+  dica,
+}: {
+  label: string;
+  valor: number;
+  min: number;
+  max: number;
+  onChange: (v: number) => void;
+  dica?: string;
+}) => (
+  <div className="space-y-1.5">
+    <Label className="flex items-center justify-between">
+      <span>{label}</span>
+      <span className="text-xs font-normal text-muted-foreground">{valor}%</span>
+    </Label>
+    <input
+      type="range"
+      min={min}
+      max={max}
+      value={valor}
+      onChange={(e) => onChange(Number(e.target.value))}
+      className="w-full accent-primary"
+    />
+    {dica && <p className="text-xs text-muted-foreground">{dica}</p>}
+  </div>
+);
+
+const ToggleChip = ({
+  label,
+  ativo,
+  onToggle,
+}: {
+  label: string;
+  ativo: boolean;
+  onToggle: (v: boolean) => void;
+}) => (
+  <button
+    type="button"
+    onClick={() => onToggle(!ativo)}
+    aria-pressed={ativo}
+    className={`flex items-center justify-center gap-1.5 h-9 rounded-md border text-sm transition-colors ${
+      ativo
+        ? "border-primary bg-primary/10 text-foreground font-medium"
+        : "border-input bg-background text-muted-foreground"
+    }`}
+  >
+    {ativo ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
+    {label}
+  </button>
+);
+
+interface CardPreviewProps {
+  cfg: CursoCardConfig;
   corPrimaria: string;
-  corSecundaria: string;
-  subtitulo: string;
   bullets: string[];
   ctaTexto: string;
-  fotoPosicao: string;
-  foscoOpacidade: number;
-  tituloSobreFoto: boolean;
-  fotoZoom: number;
-  tituloTamanho: number;
   fotoRef?: React.RefObject<HTMLDivElement>;
   onFotoClick?: (e: React.MouseEvent<HTMLDivElement>) => void;
 }
 
 const CardPreviewCompleto = ({
-  titulo,
-  capaUrl,
-  logoUrl,
+  cfg,
   corPrimaria,
-  corSecundaria,
-  subtitulo,
   bullets,
   ctaTexto,
-  fotoPosicao,
-  foscoOpacidade,
-  tituloSobreFoto,
-  fotoZoom,
-  tituloTamanho,
   fotoRef,
   onFotoClick,
 }: CardPreviewProps) => {
-  const cor = corSecundaria || COR_PADRAO;
-  const gradiente = gradienteFoscoPreview(cor, foscoOpacidade);
+  const cor = cfg.corSecundaria || COR_PADRAO;
   const bulletsPreenchidos = bullets.filter((b) => b.trim().length > 0);
-  const tituloPx = 19 * (tituloTamanho / 100);
 
   return (
     <div className="rounded-2xl border border-border bg-card overflow-hidden shadow-sm">
-      <div
-        ref={fotoRef}
-        onClick={onFotoClick}
-        className={`relative aspect-[4/3] w-full overflow-hidden ${onFotoClick ? "cursor-crosshair" : ""}`}
-        title={onFotoClick ? "Clique no ponto da foto que deve ficar visível no card" : undefined}
-      >
-        {capaUrl ? (
-          <div
-            className="absolute inset-0 bg-no-repeat"
-            style={{ backgroundImage: `url(${capaUrl})`, backgroundPosition: fotoPosicao || "center center", backgroundSize: `${fotoZoom}%` }}
-          />
-        ) : (
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
-            <ImageIcon className="w-8 h-8 text-muted-foreground" />
-          </div>
-        )}
-        {gradiente && <div className="absolute inset-0" style={{ backgroundImage: gradiente }} />}
-        {tituloSobreFoto && (
-          <div className="absolute inset-0 flex flex-col justify-end p-4 text-white">
-            <div className="w-[42px] h-[42px] rounded-xl bg-white/95 flex items-center justify-center mb-2.5 shadow-md overflow-hidden shrink-0">
-              {logoUrl ? (
-                <img src={logoUrl} alt="" className="w-6.5 h-6.5 object-contain" />
-              ) : (
-                <BookOpen className="w-5 h-5" style={{ color: cor }} />
-              )}
-            </div>
-            <h3
-              className="mb-1 font-serif italic font-bold leading-tight"
-              style={{ fontSize: `${tituloPx}px`, textShadow: "0 2px 8px rgba(0,0,0,.35)" }}
-            >
-              {titulo || "Título do curso"}
-            </h3>
-            {subtitulo && (
-              <p className="text-[11px] font-bold uppercase tracking-wider opacity-90" style={{ textShadow: "0 1px 6px rgba(0,0,0,.4)" }}>
-                {subtitulo}
-              </p>
-            )}
-          </div>
-        )}
-      </div>
-
-      {!tituloSobreFoto && (
-        <div className="px-6 pt-4 flex items-start gap-2.5">
-          {logoUrl && <img src={logoUrl} alt="" className="w-6 h-6 object-contain mt-0.5 shrink-0" />}
-          <div className="min-w-0">
-            <h3 className={`mb-0.5 font-serif italic font-bold leading-tight ${tituloClassPreview(titulo)}`} style={{ color: cor }}>
-              {titulo || "Título do curso"}
-            </h3>
-            {subtitulo && <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">{subtitulo}</p>}
-          </div>
-        </div>
-      )}
+      <CursoCardCapa cfg={cfg} fotoRef={fotoRef} onFotoClick={onFotoClick} />
+      <CursoCardTituloAbaixo cfg={cfg} />
 
       <div className="px-6 pt-4 pb-6">
         {bulletsPreenchidos.length > 0 ? (
@@ -748,7 +744,7 @@ const CardPreviewCompleto = ({
             ))}
           </ul>
         ) : (
-          <p className="text-xs text-muted-foreground italic mb-5">
+          <p className="text-xs text-muted-foreground mb-5">
             Nenhuma linha preenchida ainda — elas aparecem aqui conforme você digita.
           </p>
         )}
@@ -763,6 +759,7 @@ const CardPreviewCompleto = ({
     </div>
   );
 };
+
 
 // ============= EDITAR CURSO =============
 const EditarCurso = ({
