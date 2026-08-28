@@ -278,7 +278,57 @@ const CursosVitrine = () => {
                 );
               }
 
+              // Estado 2b: bloqueado pelo CMS (lançamento marcado ou indisponível)
+              const estadoCms = c.card_estado || "auto";
+              if (estadoCms === "lancamento" || estadoCms === "indisponivel") {
+                const seloTexto =
+                  estadoCms === "lancamento"
+                    ? c.card_lancamento_data
+                      ? formatarDataLancamento(c.card_lancamento_data)
+                      : "Em breve"
+                    : "Indisponível";
+                return (
+                  <article
+                    key={c.id}
+                    className="group bg-card border border-border rounded-2xl overflow-hidden flex flex-col h-full shadow-sm"
+                  >
+                    <div className="relative">
+                      <CursoCardCapa cfg={cfg} />
+                      <div className="absolute top-3 left-3">
+                        <Selo cor={estadoCms === "lancamento" ? corCta : "#4B5563"}>
+                          {estadoCms === "lancamento" ? (
+                            <Clock3 className="w-3.5 h-3.5" />
+                          ) : (
+                            <Lock className="w-3.5 h-3.5" />
+                          )}{" "}
+                          {seloTexto}
+                        </Selo>
+                      </div>
+                      {c.card_mostrar_cadeado && (
+                        <span className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/90 shadow-md flex items-center justify-center">
+                          <Lock className="w-4 h-4 text-muted-foreground" />
+                        </span>
+                      )}
+                    </div>
+                    <CursoCardTituloAbaixo cfg={cfg} />
+                    {c.card_estado_frase && (
+                      <p className="px-6 pt-3 text-sm text-muted-foreground">{c.card_estado_frase}</p>
+                    )}
+                    <CardBullets c={c} />
+                    <div className="px-6 pb-6 pt-3 mt-auto">
+                      <Button
+                        disabled
+                        className="w-full cursor-not-allowed bg-muted text-muted-foreground hover:bg-muted"
+                      >
+                        {estadoCms === "lancamento" ? seloTexto : "Indisponível"}
+                      </Button>
+                    </div>
+                  </article>
+                );
+              }
+
               // Estado 3: em breve
+
               if (!c.ativo) {
                 const temData =
                   !!c.data_lancamento && new Date(c.data_lancamento + "T12:00:00") > new Date();
