@@ -825,6 +825,26 @@ const EditarCurso = ({
   const [uploadingLogo, setUploadingLogo] = useState(false);
   const previewRef = useRef<HTMLDivElement>(null);
 
+  const cardCfg: CursoCardConfig = {
+    titulo,
+    capaUrl,
+    logoUrl: cardLogoUrl,
+    subtitulo: cardSubtitulo,
+    corSecundaria: cardCorSecundaria,
+    fotoPosicao: cardFotoPosicao,
+    fotoZoom: cardFotoZoom,
+    foscoOpacidade: cardFoscoOpacidade,
+    tituloSobreFoto: cardTituloSobreFoto,
+    tituloTamanho: cardTituloTamanho,
+    mostrarTitulo: cardMostrarTitulo,
+    mostrarSubtitulo: cardMostrarSubtitulo,
+    mostrarLogo: cardMostrarLogo,
+    overlayPos: cardOverlayPos as OverlayPos,
+    logoTamanho: cardLogoTamanho,
+    textoCor: cardTextoCor,
+  };
+
+
   const loadModulos = useCallback(async () => {
     setLoading(true);
     const { data } = await supabase
