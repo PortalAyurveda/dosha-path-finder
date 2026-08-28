@@ -202,7 +202,7 @@ const CursosVitrine = () => {
           <h1 className="mb-4">Cursos do Portal</h1>
           <div className="h-px w-16 mx-auto mb-4 bg-gradient-to-r from-transparent via-primary/60 to-transparent" />
           <p className="text-muted-foreground">
-            No seu ritmo, com acesso permanente. Escolha por onde começar.
+            {"\n"}
           </p>
         </header>
 
