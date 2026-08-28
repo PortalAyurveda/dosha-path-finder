@@ -76,7 +76,14 @@ type Curso = {
   card_titulo_sobre_foto: boolean;
   card_foto_zoom: number;
   card_titulo_tamanho: number;
+  card_mostrar_titulo: boolean;
+  card_mostrar_subtitulo: boolean;
+  card_mostrar_logo: boolean;
+  card_overlay_pos: string;
+  card_logo_tamanho: number;
+  card_texto_cor: string;
 };
+
 
 type Modulo = {
   id: string;
