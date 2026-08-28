@@ -981,6 +981,11 @@ const EditarCurso = ({
         card_overlay_pos: cardOverlayPos,
         card_logo_tamanho: cardLogoTamanho,
         card_texto_cor: cardTextoCor || "#FFFFFF",
+        card_estado: cardEstado,
+        card_lancamento_data: cardLancamentoData || null,
+        card_estado_frase: cardEstadoFrase.trim() || null,
+        card_mostrar_cadeado: cardMostrarCadeado,
+
 
       })
       .eq("id", curso.id);
