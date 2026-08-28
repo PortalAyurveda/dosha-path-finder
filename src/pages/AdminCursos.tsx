@@ -1333,28 +1333,20 @@ const EditarCurso = ({
           </Card>
         </div>
 
-        <div className="lg:sticky lg:top-6 space-y-2">
+        <div className="lg:sticky lg:top-20 space-y-2 self-start">
           <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground px-1">
             Preview ao vivo — clique na foto pra posicionar
           </p>
           <CardPreviewCompleto
-            titulo={titulo}
-            capaUrl={capaUrl}
-            logoUrl={cardLogoUrl}
+            cfg={cardCfg}
             corPrimaria={cardCorPrimaria}
-            corSecundaria={cardCorSecundaria}
-            subtitulo={cardSubtitulo}
             bullets={[cardBullet1, cardBullet2, cardBullet3, cardBullet4, cardBullet5]}
             ctaTexto={cardCtaTexto}
-            fotoPosicao={cardFotoPosicao}
-            foscoOpacidade={cardFoscoOpacidade}
-            tituloSobreFoto={cardTituloSobreFoto}
-            fotoZoom={cardFotoZoom}
-            tituloTamanho={cardTituloTamanho}
             fotoRef={previewRef}
             onFotoClick={handleClickPosicionarFoto}
           />
         </div>
+
       </div>
     </div>
   );
