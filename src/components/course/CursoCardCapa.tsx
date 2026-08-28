@@ -105,8 +105,10 @@ export const CursoCardCapa = ({ cfg, fotoRef, onFotoClick, eager }: Props) => {
           style={{
             backgroundImage: `url(${getTransformedImageUrl(cfg.capaUrl, 800)})`,
             backgroundPosition: cfg.fotoPosicao || "center center",
-            backgroundSize: `${cfg.fotoZoom || 100}%`,
+            backgroundSize: "cover",
+            transform: `scale(${(cfg.fotoZoom || 100) / 100})`,
           }}
+
           role="img"
           aria-label={cfg.titulo}
         />
