@@ -29,11 +29,25 @@ import {
   Layers,
   LayoutGrid,
   Lock,
+  Eye,
+  EyeOff,
+  Type,
+  Palette,
+  ListChecks,
+  type LucideIcon,
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { slugify } from "@/lib/slugify";
 import { optimizeImageToWebP } from "@/lib/imageOptimize";
 import { LANDING_PALETTES } from "@/data/landingPalettes";
+import {
+  CursoCardCapa,
+  CursoCardTituloAbaixo,
+  OVERLAY_POS_OPCOES,
+  type CursoCardConfig,
+  type OverlayPos,
+} from "@/components/course/CursoCardCapa";
+
 
 const BUCKET_APOSTILA = "escola";
 const BUCKET_CAPA = "portal_images";
