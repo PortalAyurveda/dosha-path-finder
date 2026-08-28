@@ -616,12 +616,6 @@ const EditarModulo = ({
 
 // ============= PREVIEW COMPLETO DO CARD (espelha CursosVitrine.tsx) =============
 
-const tituloClassPreview = (titulo: string) => {
-  const len = titulo.length;
-  if (len <= 30) return "text-xl";
-  if (len <= 55) return "text-lg";
-  return "text-base";
-};
 
 const CheckSvgPreview = ({ color }: { color: string }) => (
   <svg viewBox="0 0 20 20" fill="none" className="h-4 w-4 shrink-0 mt-0.5">
