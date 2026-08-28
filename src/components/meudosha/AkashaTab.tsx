@@ -361,7 +361,7 @@ const AkashaTab = ({
               </button>
             </div>
             <p className="text-xs text-muted-foreground text-center px-2">
-              Escreva <span className="font-medium">Portal</span> para ajuda com o site • escreva <span className="font-medium">Akasha</span> para voltar
+              {"\n"}
             </p>
           </div>
 
