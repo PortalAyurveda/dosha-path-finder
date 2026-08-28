@@ -132,17 +132,20 @@ const StatusBadge = ({ status }: { status: PedidoStatus }) => {
 
 export const MELHORENVIO_URL = "https://melhorenvio.com.br/carrinho";
 
-export type SituacaoME = "postado" | "carrinho" | "fora" | "na";
+export type SituacaoME = "postado" | "carrinho" | "fora" | "na" | "sem_transportadora";
 
 export const situacaoMelhorEnvio = (p: {
   frete_melhorenvio_order_id?: string | null;
   frete_codigo_rastreio?: string | null;
   status_pagamento?: string | null;
+  frete_servico_id?: number | null;
 }): SituacaoME => {
   if (p.frete_melhorenvio_order_id) {
     return p.frete_codigo_rastreio ? "postado" : "carrinho";
   }
-  return p.status_pagamento === "paid" ? "fora" : "na";
+  if (p.status_pagamento !== "paid") return "na";
+  if (p.frete_servico_id == null) return "sem_transportadora";
+  return "fora";
 };
 
 export const MelhorEnvioBadge = ({
@@ -152,10 +155,18 @@ export const MelhorEnvioBadge = ({
     frete_melhorenvio_order_id?: string | null;
     frete_codigo_rastreio?: string | null;
     status_pagamento?: string | null;
+    frete_servico_id?: number | null;
   };
 }) => {
   const sit = situacaoMelhorEnvio(pedido);
   if (sit === "na") return <span className="text-xs text-muted-foreground">—</span>;
+  if (sit === "sem_transportadora") {
+    return (
+      <span className="inline-block px-2 py-0.5 rounded-full text-xs font-medium border bg-gray-100 text-gray-600 border-gray-300">
+        Sem transportadora
+      </span>
+    );
+  }
   const meta =
     sit === "postado"
       ? { label: "Postado", cls: "bg-green-100 text-green-800 border-green-300" }
@@ -218,7 +229,10 @@ const AdminLojaVendas = () => {
   }, []);
 
   const podeSelecionar = (p: Pedido) =>
-    p.status_pagamento === "paid" && !p.frete_melhorenvio_order_id && p.status !== "cancelado";
+    p.status_pagamento === "paid" &&
+    !p.frete_melhorenvio_order_id &&
+    p.status !== "cancelado" &&
+    p.frete_servico_id != null;
 
   const filtrados = useMemo(() => {
     const q = busca.trim().toLowerCase();
