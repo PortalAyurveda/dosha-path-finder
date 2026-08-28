@@ -47,12 +47,16 @@ interface Curso {
   card_overlay_pos: string;
   card_logo_tamanho: number;
   card_texto_cor: string;
+  card_estado: string | null;
+  card_lancamento_data: string | null;
+  card_estado_frase: string | null;
+  card_mostrar_cadeado: boolean | null;
 }
 
 const AZUL = "#6A88FB";
 
 const CAMPOS =
-  "id,slug,titulo,descricao,descricao_em_breve,capa_url,ordem,preco,ativo,data_lancamento,pagina_lancamento_url,card_logo_url,card_cor_primaria,card_cor_secundaria,card_subtitulo,card_bullet_1,card_bullet_2,card_bullet_3,card_bullet_4,card_bullet_5,card_cta_texto,card_foto_posicao,card_fosco_opacidade,card_titulo_sobre_foto,card_foto_zoom,card_titulo_tamanho,card_mostrar_titulo,card_mostrar_subtitulo,card_mostrar_logo,card_overlay_pos,card_logo_tamanho,card_texto_cor";
+  "id,slug,titulo,descricao,descricao_em_breve,capa_url,ordem,preco,ativo,data_lancamento,pagina_lancamento_url,card_logo_url,card_cor_primaria,card_cor_secundaria,card_subtitulo,card_bullet_1,card_bullet_2,card_bullet_3,card_bullet_4,card_bullet_5,card_cta_texto,card_foto_posicao,card_fosco_opacidade,card_titulo_sobre_foto,card_foto_zoom,card_titulo_tamanho,card_mostrar_titulo,card_mostrar_subtitulo,card_mostrar_logo,card_overlay_pos,card_logo_tamanho,card_texto_cor,card_estado,card_lancamento_data,card_estado_frase,card_mostrar_cadeado";
 
 export const cursoParaCardConfig = (c: Curso): CursoCardConfig => ({
   titulo: c.titulo,
