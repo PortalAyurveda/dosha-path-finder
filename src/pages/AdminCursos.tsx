@@ -814,6 +814,13 @@ const EditarCurso = ({
   const [cardTituloSobreFoto, setCardTituloSobreFoto] = useState(curso.card_titulo_sobre_foto ?? true);
   const [cardFotoZoom, setCardFotoZoom] = useState(curso.card_foto_zoom ?? 100);
   const [cardTituloTamanho, setCardTituloTamanho] = useState(curso.card_titulo_tamanho ?? 100);
+  const [cardMostrarTitulo, setCardMostrarTitulo] = useState(curso.card_mostrar_titulo ?? true);
+  const [cardMostrarSubtitulo, setCardMostrarSubtitulo] = useState(curso.card_mostrar_subtitulo ?? true);
+  const [cardMostrarLogo, setCardMostrarLogo] = useState(curso.card_mostrar_logo ?? true);
+  const [cardOverlayPos, setCardOverlayPos] = useState(curso.card_overlay_pos || "bottom-left");
+  const [cardLogoTamanho, setCardLogoTamanho] = useState(curso.card_logo_tamanho ?? 100);
+  const [cardTextoCor, setCardTextoCor] = useState(curso.card_texto_cor || "#FFFFFF");
+
   const [savingCard, setSavingCard] = useState(false);
   const [uploadingLogo, setUploadingLogo] = useState(false);
   const previewRef = useRef<HTMLDivElement>(null);
