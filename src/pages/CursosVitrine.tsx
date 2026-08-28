@@ -47,12 +47,16 @@ interface Curso {
   card_overlay_pos: string;
   card_logo_tamanho: number;
   card_texto_cor: string;
+  card_estado: string | null;
+  card_lancamento_data: string | null;
+  card_estado_frase: string | null;
+  card_mostrar_cadeado: boolean | null;
 }
 
 const AZUL = "#6A88FB";
 
 const CAMPOS =
-  "id,slug,titulo,descricao,descricao_em_breve,capa_url,ordem,preco,ativo,data_lancamento,pagina_lancamento_url,card_logo_url,card_cor_primaria,card_cor_secundaria,card_subtitulo,card_bullet_1,card_bullet_2,card_bullet_3,card_bullet_4,card_bullet_5,card_cta_texto,card_foto_posicao,card_fosco_opacidade,card_titulo_sobre_foto,card_foto_zoom,card_titulo_tamanho,card_mostrar_titulo,card_mostrar_subtitulo,card_mostrar_logo,card_overlay_pos,card_logo_tamanho,card_texto_cor";
+  "id,slug,titulo,descricao,descricao_em_breve,capa_url,ordem,preco,ativo,data_lancamento,pagina_lancamento_url,card_logo_url,card_cor_primaria,card_cor_secundaria,card_subtitulo,card_bullet_1,card_bullet_2,card_bullet_3,card_bullet_4,card_bullet_5,card_cta_texto,card_foto_posicao,card_fosco_opacidade,card_titulo_sobre_foto,card_foto_zoom,card_titulo_tamanho,card_mostrar_titulo,card_mostrar_subtitulo,card_mostrar_logo,card_overlay_pos,card_logo_tamanho,card_texto_cor,card_estado,card_lancamento_data,card_estado_frase,card_mostrar_cadeado";
 
 export const cursoParaCardConfig = (c: Curso): CursoCardConfig => ({
   titulo: c.titulo,
@@ -274,7 +278,57 @@ const CursosVitrine = () => {
                 );
               }
 
+              // Estado 2b: bloqueado pelo CMS (lançamento marcado ou indisponível)
+              const estadoCms = c.card_estado || "auto";
+              if (estadoCms === "lancamento" || estadoCms === "indisponivel") {
+                const seloTexto =
+                  estadoCms === "lancamento"
+                    ? c.card_lancamento_data
+                      ? formatarDataLancamento(c.card_lancamento_data)
+                      : "Em breve"
+                    : "Indisponível";
+                return (
+                  <article
+                    key={c.id}
+                    className="group bg-card border border-border rounded-2xl overflow-hidden flex flex-col h-full shadow-sm"
+                  >
+                    <div className="relative">
+                      <CursoCardCapa cfg={cfg} />
+                      <div className="absolute top-3 left-3">
+                        <Selo cor={estadoCms === "lancamento" ? corCta : "#4B5563"}>
+                          {estadoCms === "lancamento" ? (
+                            <Clock3 className="w-3.5 h-3.5" />
+                          ) : (
+                            <Lock className="w-3.5 h-3.5" />
+                          )}{" "}
+                          {seloTexto}
+                        </Selo>
+                      </div>
+                      {c.card_mostrar_cadeado && (
+                        <span className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/90 shadow-md flex items-center justify-center">
+                          <Lock className="w-4 h-4 text-muted-foreground" />
+                        </span>
+                      )}
+                    </div>
+                    <CursoCardTituloAbaixo cfg={cfg} />
+                    {c.card_estado_frase && (
+                      <p className="px-6 pt-3 text-sm text-muted-foreground">{c.card_estado_frase}</p>
+                    )}
+                    <CardBullets c={c} />
+                    <div className="px-6 pb-6 pt-3 mt-auto">
+                      <Button
+                        disabled
+                        className="w-full cursor-not-allowed bg-muted text-muted-foreground hover:bg-muted"
+                      >
+                        {estadoCms === "lancamento" ? seloTexto : "Indisponível"}
+                      </Button>
+                    </div>
+                  </article>
+                );
+              }
+
               // Estado 3: em breve
+
               if (!c.ativo) {
                 const temData =
                   !!c.data_lancamento && new Date(c.data_lancamento + "T12:00:00") > new Date();

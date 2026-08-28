@@ -82,6 +82,10 @@ type Curso = {
   card_overlay_pos: string;
   card_logo_tamanho: number;
   card_texto_cor: string;
+  card_estado: string;
+  card_lancamento_data: string | null;
+  card_estado_frase: string | null;
+  card_mostrar_cadeado: boolean;
 };
 
 
@@ -820,6 +824,10 @@ const EditarCurso = ({
   const [cardOverlayPos, setCardOverlayPos] = useState(curso.card_overlay_pos || "bottom-left");
   const [cardLogoTamanho, setCardLogoTamanho] = useState(curso.card_logo_tamanho ?? 100);
   const [cardTextoCor, setCardTextoCor] = useState(curso.card_texto_cor || "#FFFFFF");
+  const [cardEstado, setCardEstado] = useState(curso.card_estado || "auto");
+  const [cardLancamentoData, setCardLancamentoData] = useState(curso.card_lancamento_data ?? "");
+  const [cardEstadoFrase, setCardEstadoFrase] = useState(curso.card_estado_frase ?? "");
+  const [cardMostrarCadeado, setCardMostrarCadeado] = useState(curso.card_mostrar_cadeado ?? false);
 
   const [savingCard, setSavingCard] = useState(false);
   const [uploadingLogo, setUploadingLogo] = useState(false);
@@ -973,6 +981,11 @@ const EditarCurso = ({
         card_overlay_pos: cardOverlayPos,
         card_logo_tamanho: cardLogoTamanho,
         card_texto_cor: cardTextoCor || "#FFFFFF",
+        card_estado: cardEstado,
+        card_lancamento_data: cardLancamentoData || null,
+        card_estado_frase: cardEstadoFrase.trim() || null,
+        card_mostrar_cadeado: cardMostrarCadeado,
+
 
       })
       .eq("id", curso.id);
@@ -1390,6 +1403,72 @@ const EditarCurso = ({
                   />
                 </div>
               </section>
+
+              {/* 5 — DISPONIBILIDADE */}
+              <section className="space-y-4 border-t border-border pt-5">
+                <SecaoTitulo
+                  icone={Lock}
+                  titulo="5. Disponibilidade do card"
+                  descricao="O curso continua aparecendo na vitrine, mas com selo e botão bloqueado."
+                />
+                <div className="space-y-1.5">
+                  <Label>Situação</Label>
+                  <Select value={cardEstado} onValueChange={setCardEstado}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="auto">Automático (segue o curso ativo/inativo)</SelectItem>
+                      <SelectItem value="lancamento">Lançamento em uma data</SelectItem>
+                      <SelectItem value="indisponivel">Curso indisponível</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {cardEstado === "lancamento" && (
+                  <div className="space-y-1.5">
+                    <Label>Data do lançamento</Label>
+                    <Input
+                      type="date"
+                      value={cardLancamentoData}
+                      onChange={(e) => setCardLancamentoData(e.target.value)}
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      Aparece como "Lança 12 de setembro" no selo do card.
+                    </p>
+                  </div>
+                )}
+
+                {cardEstado !== "auto" && (
+                  <>
+                    <div className="space-y-1.5">
+                      <Label>Frase abaixo do selo (opcional)</Label>
+                      <Input
+                        value={cardEstadoFrase}
+                        onChange={(e) => setCardEstadoFrase(e.target.value)}
+                        placeholder="Ex: Curso em andamento — turma fechada"
+                      />
+                    </div>
+                    <div className="flex items-center justify-between gap-3 rounded-lg border border-border p-3">
+                      <div>
+                        <Label className="cursor-pointer" htmlFor="mostrar-cadeado">
+                          Mostrar cadeado no card
+                        </Label>
+                        <p className="text-xs text-muted-foreground">
+                          Ícone de cadeado no canto da capa.
+                        </p>
+                      </div>
+                      <Switch
+                        id="mostrar-cadeado"
+                        checked={cardMostrarCadeado}
+                        onCheckedChange={setCardMostrarCadeado}
+                      />
+                    </div>
+                  </>
+                )}
+              </section>
+
+
 
               <div className="flex justify-end border-t border-border pt-4">
                 <Button onClick={salvarCard} disabled={savingCard}>

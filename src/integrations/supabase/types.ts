@@ -2141,11 +2141,15 @@ export type Database = {
           card_cor_primaria: string | null
           card_cor_secundaria: string | null
           card_cta_texto: string | null
+          card_estado: string
+          card_estado_frase: string | null
           card_fosco_opacidade: number
           card_foto_posicao: string | null
           card_foto_zoom: number
+          card_lancamento_data: string | null
           card_logo_tamanho: number
           card_logo_url: string | null
+          card_mostrar_cadeado: boolean
           card_mostrar_logo: boolean
           card_mostrar_subtitulo: boolean
           card_mostrar_titulo: boolean
@@ -2178,11 +2182,15 @@ export type Database = {
           card_cor_primaria?: string | null
           card_cor_secundaria?: string | null
           card_cta_texto?: string | null
+          card_estado?: string
+          card_estado_frase?: string | null
           card_fosco_opacidade?: number
           card_foto_posicao?: string | null
           card_foto_zoom?: number
+          card_lancamento_data?: string | null
           card_logo_tamanho?: number
           card_logo_url?: string | null
+          card_mostrar_cadeado?: boolean
           card_mostrar_logo?: boolean
           card_mostrar_subtitulo?: boolean
           card_mostrar_titulo?: boolean
@@ -2215,11 +2223,15 @@ export type Database = {
           card_cor_primaria?: string | null
           card_cor_secundaria?: string | null
           card_cta_texto?: string | null
+          card_estado?: string
+          card_estado_frase?: string | null
           card_fosco_opacidade?: number
           card_foto_posicao?: string | null
           card_foto_zoom?: number
+          card_lancamento_data?: string | null
           card_logo_tamanho?: number
           card_logo_url?: string | null
+          card_mostrar_cadeado?: boolean
           card_mostrar_logo?: boolean
           card_mostrar_subtitulo?: boolean
           card_mostrar_titulo?: boolean
