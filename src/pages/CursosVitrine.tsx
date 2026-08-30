@@ -421,7 +421,7 @@ const CursosVitrine = () => {
                         to={landing}
                         {...(isExternal ? { target: "_blank", rel: "noopener noreferrer" } : {})}
                       >
-                        {c.card_cta_texto || "Ver o curso"}
+                        {c.card_cta_texto || "Inscrever-se para Aula"}
                       </Link>
                     </Button>
                   </div>
