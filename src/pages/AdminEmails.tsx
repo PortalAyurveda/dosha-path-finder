@@ -1195,22 +1195,34 @@ const AdminEmails = () => {
             }
           />
         ) : (
-          <Lista
-            onAbrir={(v) =>
-              setParams(
-                (atual) => {
-                  const next = new URLSearchParams(atual);
-                  next.set("id", v);
-                  return next;
-                },
-                { replace: true },
-              )
-            }
-          />
+          <Tabs defaultValue="comunicacoes" className="space-y-6">
+            <TabsList>
+              <TabsTrigger value="comunicacoes">Comunicações</TabsTrigger>
+              <TabsTrigger value="envios">Envios</TabsTrigger>
+            </TabsList>
+            <TabsContent value="comunicacoes">
+              <Lista
+                onAbrir={(v) =>
+                  setParams(
+                    (atual) => {
+                      const next = new URLSearchParams(atual);
+                      next.set("id", v);
+                      return next;
+                    },
+                    { replace: true },
+                  )
+                }
+              />
+            </TabsContent>
+            <TabsContent value="envios">
+              <EnviosAvulsos />
+            </TabsContent>
+          </Tabs>
         )}
       </main>
     </div>
   );
+
 };
 
 export default AdminEmails;
