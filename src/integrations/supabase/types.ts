@@ -3045,6 +3045,60 @@ export type Database = {
         }
         Relationships: []
       }
+      envios_avulsos: {
+        Row: {
+          assunto: string
+          corpo_html: string
+          criado_em: string
+          criado_por: string | null
+          cta_texto: string | null
+          cta_url: string | null
+          destinatarios: Json
+          enviado_em: string | null
+          h1: string
+          h1sub: string | null
+          id: string
+          label: string
+          status: string
+          total_destinatarios: number
+          total_enviados: number
+        }
+        Insert: {
+          assunto: string
+          corpo_html: string
+          criado_em?: string
+          criado_por?: string | null
+          cta_texto?: string | null
+          cta_url?: string | null
+          destinatarios?: Json
+          enviado_em?: string | null
+          h1: string
+          h1sub?: string | null
+          id?: string
+          label?: string
+          status?: string
+          total_destinatarios?: number
+          total_enviados?: number
+        }
+        Update: {
+          assunto?: string
+          corpo_html?: string
+          criado_em?: string
+          criado_por?: string | null
+          cta_texto?: string | null
+          cta_url?: string | null
+          destinatarios?: Json
+          enviado_em?: string | null
+          h1?: string
+          h1sub?: string | null
+          id?: string
+          label?: string
+          status?: string
+          total_destinatarios?: number
+          total_enviados?: number
+        }
+        Relationships: []
+      }
       error_logs: {
         Row: {
           contexto: Json | null
