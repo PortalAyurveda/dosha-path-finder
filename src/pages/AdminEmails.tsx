@@ -18,6 +18,9 @@ import {
 
 import AdminNav from "@/components/admin/AdminNav";
 import DetalheAnalytics from "@/components/admin/emails/DetalheAnalytics";
+import EnviosAvulsos from "@/components/admin/emails/EnviosAvulsos";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
 
 import { supabase } from "@/integrations/supabase/client";
 import { lojaSupabase } from "@/integrations/supabase/loja-client";
