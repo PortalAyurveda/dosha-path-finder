@@ -565,6 +565,69 @@ export type Database = {
         }
         Relationships: []
       }
+      ashtanga_sangraha_verses: {
+        Row: {
+          book: string
+          chapter_name: string | null
+          chapter_no: string | null
+          continues_from_prev: boolean | null
+          continues_to_next: boolean | null
+          created_at: string | null
+          embedding: string | null
+          has_lacuna: boolean | null
+          id: number
+          indu_commentary: string | null
+          lacuna_note: string | null
+          notes: string | null
+          pdf_page: number | null
+          source_file: string | null
+          sthana: string | null
+          translation_pt: string | null
+          verse_no: string | null
+          verse_sanskrit: string | null
+        }
+        Insert: {
+          book?: string
+          chapter_name?: string | null
+          chapter_no?: string | null
+          continues_from_prev?: boolean | null
+          continues_to_next?: boolean | null
+          created_at?: string | null
+          embedding?: string | null
+          has_lacuna?: boolean | null
+          id?: never
+          indu_commentary?: string | null
+          lacuna_note?: string | null
+          notes?: string | null
+          pdf_page?: number | null
+          source_file?: string | null
+          sthana?: string | null
+          translation_pt?: string | null
+          verse_no?: string | null
+          verse_sanskrit?: string | null
+        }
+        Update: {
+          book?: string
+          chapter_name?: string | null
+          chapter_no?: string | null
+          continues_from_prev?: boolean | null
+          continues_to_next?: boolean | null
+          created_at?: string | null
+          embedding?: string | null
+          has_lacuna?: boolean | null
+          id?: never
+          indu_commentary?: string | null
+          lacuna_note?: string | null
+          notes?: string | null
+          pdf_page?: number | null
+          source_file?: string | null
+          sthana?: string | null
+          translation_pt?: string | null
+          verse_no?: string | null
+          verse_sanskrit?: string | null
+        }
+        Relationships: []
+      }
       assinatura_cobrancas: {
         Row: {
           billing_reason: string | null
@@ -1131,6 +1194,66 @@ export type Database = {
         }
         Relationships: []
       }
+      bhavaprakasha_verses: {
+        Row: {
+          book: string
+          chapter_name: string | null
+          chapter_no: string | null
+          continues_from_prev: boolean | null
+          continues_to_next: boolean | null
+          created_at: string | null
+          embedding: string | null
+          has_lacuna: boolean | null
+          hindi_bhavartha: string | null
+          id: number
+          lacuna_note: string | null
+          notes: string | null
+          pdf_page: number | null
+          source_file: string | null
+          translation_pt: string | null
+          verse_no: string | null
+          verse_sanskrit: string | null
+        }
+        Insert: {
+          book?: string
+          chapter_name?: string | null
+          chapter_no?: string | null
+          continues_from_prev?: boolean | null
+          continues_to_next?: boolean | null
+          created_at?: string | null
+          embedding?: string | null
+          has_lacuna?: boolean | null
+          hindi_bhavartha?: string | null
+          id?: never
+          lacuna_note?: string | null
+          notes?: string | null
+          pdf_page?: number | null
+          source_file?: string | null
+          translation_pt?: string | null
+          verse_no?: string | null
+          verse_sanskrit?: string | null
+        }
+        Update: {
+          book?: string
+          chapter_name?: string | null
+          chapter_no?: string | null
+          continues_from_prev?: boolean | null
+          continues_to_next?: boolean | null
+          created_at?: string | null
+          embedding?: string | null
+          has_lacuna?: boolean | null
+          hindi_bhavartha?: string | null
+          id?: never
+          lacuna_note?: string | null
+          notes?: string | null
+          pdf_page?: number | null
+          source_file?: string | null
+          translation_pt?: string | null
+          verse_no?: string | null
+          verse_sanskrit?: string | null
+        }
+        Relationships: []
+      }
       bkp: {
         Row: {
           agniforte: number | null
@@ -1375,6 +1498,69 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      charaka_verses: {
+        Row: {
+          book: string
+          chakrapani_commentary: string | null
+          chapter_name: string | null
+          chapter_no: string | null
+          continues_from_prev: boolean | null
+          continues_to_next: boolean | null
+          created_at: string | null
+          editorial_footnote_skt: string | null
+          embedding: string | null
+          has_lacuna: boolean | null
+          id: number
+          lacuna_note: string | null
+          notes: string | null
+          pdf_page: number | null
+          source_file: string | null
+          translation_pt: string | null
+          verse_no: string | null
+          verse_sanskrit: string | null
+        }
+        Insert: {
+          book?: string
+          chakrapani_commentary?: string | null
+          chapter_name?: string | null
+          chapter_no?: string | null
+          continues_from_prev?: boolean | null
+          continues_to_next?: boolean | null
+          created_at?: string | null
+          editorial_footnote_skt?: string | null
+          embedding?: string | null
+          has_lacuna?: boolean | null
+          id?: never
+          lacuna_note?: string | null
+          notes?: string | null
+          pdf_page?: number | null
+          source_file?: string | null
+          translation_pt?: string | null
+          verse_no?: string | null
+          verse_sanskrit?: string | null
+        }
+        Update: {
+          book?: string
+          chakrapani_commentary?: string | null
+          chapter_name?: string | null
+          chapter_no?: string | null
+          continues_from_prev?: boolean | null
+          continues_to_next?: boolean | null
+          created_at?: string | null
+          editorial_footnote_skt?: string | null
+          embedding?: string | null
+          has_lacuna?: boolean | null
+          id?: never
+          lacuna_note?: string | null
+          notes?: string | null
+          pdf_page?: number | null
+          source_file?: string | null
+          translation_pt?: string | null
+          verse_no?: string | null
+          verse_sanskrit?: string | null
+        }
+        Relationships: []
       }
       chat_aula: {
         Row: {
@@ -7428,6 +7614,66 @@ export type Database = {
           id?: number
           urls?: number
           xml?: string
+        }
+        Relationships: []
+      }
+      sushruta_verses: {
+        Row: {
+          book: string
+          chapter_name: string | null
+          chapter_no: string | null
+          continues_from_prev: boolean | null
+          continues_to_next: boolean | null
+          created_at: string | null
+          editorial_footnote_skt: string | null
+          embedding: string | null
+          has_lacuna: boolean | null
+          id: number
+          lacuna_note: string | null
+          notes: string | null
+          pdf_page: number | null
+          source_file: string | null
+          translation_pt: string | null
+          verse_no: string | null
+          verse_sanskrit: string | null
+        }
+        Insert: {
+          book?: string
+          chapter_name?: string | null
+          chapter_no?: string | null
+          continues_from_prev?: boolean | null
+          continues_to_next?: boolean | null
+          created_at?: string | null
+          editorial_footnote_skt?: string | null
+          embedding?: string | null
+          has_lacuna?: boolean | null
+          id?: never
+          lacuna_note?: string | null
+          notes?: string | null
+          pdf_page?: number | null
+          source_file?: string | null
+          translation_pt?: string | null
+          verse_no?: string | null
+          verse_sanskrit?: string | null
+        }
+        Update: {
+          book?: string
+          chapter_name?: string | null
+          chapter_no?: string | null
+          continues_from_prev?: boolean | null
+          continues_to_next?: boolean | null
+          created_at?: string | null
+          editorial_footnote_skt?: string | null
+          embedding?: string | null
+          has_lacuna?: boolean | null
+          id?: never
+          lacuna_note?: string | null
+          notes?: string | null
+          pdf_page?: number | null
+          source_file?: string | null
+          translation_pt?: string | null
+          verse_no?: string | null
+          verse_sanskrit?: string | null
         }
         Relationships: []
       }
