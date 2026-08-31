@@ -17,6 +17,7 @@ import { useEscolaAluno } from "@/hooks/useEscolaAluno";
 import { samkhyaTokens } from "@/components/samkhya/tokens";
 import samkhyaLogo from "@/assets/samkhya-logo-cropped.png";
 import GlobalSearch from "@/components/GlobalSearch";
+import { RedeemCourseDialog } from "@/components/RedeemCourseDialog";
 
 
 const PIE_COLORS: Record<string, string> = {
