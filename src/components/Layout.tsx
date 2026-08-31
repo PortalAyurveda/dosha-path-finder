@@ -8,6 +8,7 @@ import { ImmersiveProvider, useImmersive } from "@/contexts/ImmersiveContext";
 import { useUser } from "@/contexts/UserContext";
 
 const FloatingAkasha = lazy(() => import("./akasha/FloatingAkasha"));
+const FloatingTutorCurso = lazy(() => import("./tutor/FloatingTutorCurso"));
 
 // Rotas de conversão (funil final) onde o widget da Akasha nunca aparece
 const AKASHA_BLOCKED_PREFIXES = ["/assinar", "/teste-de-dosha", "/auth"];
@@ -17,20 +18,30 @@ const LayoutInner = ({ children }: { children: ReactNode }) => {
   const { user } = useUser();
   const location = useLocation();
   const akashaBlocked = AKASHA_BLOCKED_PREFIXES.some((p) => location.pathname.startsWith(p));
+  const isSalaCurso = /^\/cursos\/[^/]+\/estudar\/?$/.test(location.pathname);
   return (
     <div className="flex min-h-screen flex-col">
       <ScrollToTop />
       <Header />
       <div className="flex-1 min-h-screen">{children}</div>
       {!immersive && <Footer />}
-      {!immersive && !akashaBlocked && user && (
-        <Suspense fallback={null}>
-          <FloatingAkasha />
-        </Suspense>
+      {isSalaCurso ? (
+        user && (
+          <Suspense fallback={null}>
+            <FloatingTutorCurso />
+          </Suspense>
+        )
+      ) : (
+        !immersive && !akashaBlocked && user && (
+          <Suspense fallback={null}>
+            <FloatingAkasha />
+          </Suspense>
+        )
       )}
     </div>
   );
 };
+
 
 const Layout = ({ children }: { children: ReactNode }) => {
   return (
