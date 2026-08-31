@@ -31,8 +31,10 @@ export function RedeemCourseDialog({ open, onOpenChange }: { open: boolean; onOp
     const { data, error } = await supabase.rpc("resgatar_codigo_migracao", { p_codigo: codigo.trim() });
     setLoading(false);
 
-    if (error || !data?.ok) {
-      const erro = (data as any)?.erro as string | undefined;
+    const result = data as { ok?: boolean; erro?: string; ja_matriculado?: boolean } | null;
+
+    if (error || !result?.ok) {
+      const erro = result?.erro;
       toast({
         title: "Não foi possível resgatar",
         description: erro && ERROS[erro] ? ERROS[erro] : "Tente novamente em alguns instantes.",
@@ -42,7 +44,7 @@ export function RedeemCourseDialog({ open, onOpenChange }: { open: boolean; onOp
     }
 
     toast({
-      title: (data as any).ja_matriculado ? "Você já tinha acesso a este curso" : "Curso liberado!",
+      title: result.ja_matriculado ? "Você já tinha acesso a este curso" : "Curso liberado!",
       description: "Atualize a página pra ver o curso na sua área de cursos.",
     });
     setCodigo("");
