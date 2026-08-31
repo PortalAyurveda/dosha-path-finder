@@ -18,7 +18,9 @@ import {
   Printer,
   Sparkles,
   ChevronLeft,
+  Bot,
 } from "lucide-react";
+import TutorChatBody, { type TutorCurso } from "@/components/tutor/TutorChatBody";
 import samkhyaLogo from "@/assets/samkhya-logo-cropped.png";
 
 const PORTAL_LOGO =
@@ -31,6 +33,9 @@ interface Curso {
   descricao: string | null;
   capa_url: string | null;
   ativo: boolean;
+  card_logo_url: string | null;
+  card_cor_primaria: string | null;
+  card_cor_secundaria: string | null;
 }
 interface Modulo {
   id: string;
@@ -115,6 +120,7 @@ const CURSO_TABS = [
   { id: "aulas", label: "Aulas", icon: PlayCircle },
   { id: "material", label: "Material", icon: FileText },
   { id: "whatsapp", label: "WhatsApp", icon: MessageCircle },
+  { id: "tutor", label: "Tutor", icon: Bot },
   { id: "certificado", label: "Certificado", icon: Award },
 ] as const;
 type CursoTabId = (typeof CURSO_TABS)[number]["id"];
@@ -468,7 +474,7 @@ const CursoEstudar = () => {
       setLoading(true);
       const { data: c } = await supabase
         .from("cursos")
-        .select("id,slug,titulo,descricao,capa_url,ativo")
+        .select("id,slug,titulo,descricao,capa_url,ativo,card_logo_url,card_cor_primaria,card_cor_secundaria")
         .eq("slug", slug)
         .maybeSingle();
       if (!c) {
@@ -985,6 +991,14 @@ const CursoEstudar = () => {
                     })}
                   </div>
                 </aside>
+              </div>
+            )}
+
+            {abaAtiva === "tutor" && curso && (
+              <div className="max-w-2xl mx-auto">
+                <div className="rounded-2xl border border-border bg-background overflow-hidden h-[70vh] flex flex-col">
+                  <TutorChatBody curso={curso as unknown as TutorCurso} className="flex-1" />
+                </div>
               </div>
             )}
 
