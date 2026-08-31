@@ -82,6 +82,7 @@ const HeaderDoshaPie = ({ vata, pitta, kapha, size = 22 }: { vata: number; pitta
 const Header = () => {
   const [open, setOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [redeemDialogOpen, setRedeemDialogOpen] = useState(false);
 
 
   const location = useLocation();
@@ -311,6 +312,14 @@ const Header = () => {
                 {user && (
                   <>
                     <div className="border-t border-white/20 my-1" />
+                    {!isAnonymous && (
+                      <button
+                        onClick={() => { setOpen(false); setRedeemDialogOpen(true); }}
+                        className="px-4 py-3 rounded-xl text-base font-medium text-white/90 hover:text-white hover:bg-white/10 transition-colors text-left"
+                      >
+                        Resgatar curso
+                      </button>
+                    )}
                     {isAnonymous ? (
                       <Link
                         to={salvarContaHref}
@@ -536,6 +545,11 @@ const Header = () => {
 
                   <Link to="/meu-perfil">Minha conta</Link>
                 </DropdownMenuItem>
+                {!isAnonymous && (
+                  <DropdownMenuItem onClick={() => setRedeemDialogOpen(true)}>
+                    Resgatar curso
+                  </DropdownMenuItem>
+                )}
                 {isAnonymous ? (
                   <DropdownMenuItem asChild>
                     <Link to={salvarContaHref}>Salvar minha conta</Link>
@@ -573,6 +587,7 @@ const Header = () => {
         </div>
       )}
 
+      <RedeemCourseDialog open={redeemDialogOpen} onOpenChange={setRedeemDialogOpen} />
     </header>
   );
 };
