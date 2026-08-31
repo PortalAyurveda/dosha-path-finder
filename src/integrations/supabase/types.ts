@@ -580,6 +580,7 @@ export type Database = {
           lacuna_note: string | null
           notes: string | null
           pdf_page: number | null
+          sequence_no: number | null
           source_file: string | null
           sthana: string | null
           translation_pt: string | null
@@ -600,6 +601,7 @@ export type Database = {
           lacuna_note?: string | null
           notes?: string | null
           pdf_page?: number | null
+          sequence_no?: number | null
           source_file?: string | null
           sthana?: string | null
           translation_pt?: string | null
@@ -620,6 +622,7 @@ export type Database = {
           lacuna_note?: string | null
           notes?: string | null
           pdf_page?: number | null
+          sequence_no?: number | null
           source_file?: string | null
           sthana?: string | null
           translation_pt?: string | null
@@ -1209,6 +1212,7 @@ export type Database = {
           lacuna_note: string | null
           notes: string | null
           pdf_page: number | null
+          sequence_no: number | null
           source_file: string | null
           translation_pt: string | null
           verse_no: string | null
@@ -1228,6 +1232,7 @@ export type Database = {
           lacuna_note?: string | null
           notes?: string | null
           pdf_page?: number | null
+          sequence_no?: number | null
           source_file?: string | null
           translation_pt?: string | null
           verse_no?: string | null
@@ -1247,6 +1252,7 @@ export type Database = {
           lacuna_note?: string | null
           notes?: string | null
           pdf_page?: number | null
+          sequence_no?: number | null
           source_file?: string | null
           translation_pt?: string | null
           verse_no?: string | null
@@ -1515,6 +1521,7 @@ export type Database = {
           lacuna_note: string | null
           notes: string | null
           pdf_page: number | null
+          sequence_no: number | null
           source_file: string | null
           translation_pt: string | null
           verse_no: string | null
@@ -1535,6 +1542,7 @@ export type Database = {
           lacuna_note?: string | null
           notes?: string | null
           pdf_page?: number | null
+          sequence_no?: number | null
           source_file?: string | null
           translation_pt?: string | null
           verse_no?: string | null
@@ -1555,6 +1563,7 @@ export type Database = {
           lacuna_note?: string | null
           notes?: string | null
           pdf_page?: number | null
+          sequence_no?: number | null
           source_file?: string | null
           translation_pt?: string | null
           verse_no?: string | null
@@ -7632,6 +7641,7 @@ export type Database = {
           lacuna_note: string | null
           notes: string | null
           pdf_page: number | null
+          sequence_no: number | null
           source_file: string | null
           translation_pt: string | null
           verse_no: string | null
@@ -7651,6 +7661,7 @@ export type Database = {
           lacuna_note?: string | null
           notes?: string | null
           pdf_page?: number | null
+          sequence_no?: number | null
           source_file?: string | null
           translation_pt?: string | null
           verse_no?: string | null
@@ -7670,6 +7681,7 @@ export type Database = {
           lacuna_note?: string | null
           notes?: string | null
           pdf_page?: number | null
+          sequence_no?: number | null
           source_file?: string | null
           translation_pt?: string | null
           verse_no?: string | null
