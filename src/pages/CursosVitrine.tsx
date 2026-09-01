@@ -155,15 +155,7 @@ const CardBullets = ({ c }: { c: Curso }) => {
           className="h-auto px-0 pt-2 text-xs"
         >
           <span
-            role="button"
-            tabIndex={0}
             onClick={(event) => {
-              event.preventDefault();
-              event.stopPropagation();
-              setExpandido(true);
-            }}
-            onKeyDown={(event) => {
-              if (event.key !== "Enter" && event.key !== " ") return;
               event.preventDefault();
               event.stopPropagation();
               setExpandido(true);
