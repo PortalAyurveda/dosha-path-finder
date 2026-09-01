@@ -82,7 +82,7 @@ interface Props {
 export const CursoCardCapa = ({ cfg, fotoRef, onFotoClick, eager }: Props) => {
   const cor = cfg.corSecundaria || COR_CARD_PADRAO;
   const gradiente = gradienteFosco(cor, cfg.foscoOpacidade, cfg.overlayPos);
-  const tituloPx = 17 * ((cfg.tituloTamanho || 100) / 100);
+  const tituloPx = 19 * ((cfg.tituloTamanho || 100) / 100);
   const logoPx = 42 * ((cfg.logoTamanho || 100) / 100);
   const texto = cfg.textoCor || "#FFFFFF";
 
@@ -168,7 +168,7 @@ export const CursoCardCapa = ({ cfg, fotoRef, onFotoClick, eager }: Props) => {
 export const CursoCardTituloAbaixo = ({ cfg }: { cfg: CursoCardConfig }) => {
   if (cfg.tituloSobreFoto) return null;
   const cor = cfg.corSecundaria || COR_CARD_PADRAO;
-  const tituloPx = 19 * ((cfg.tituloTamanho || 100) / 100);
+  const tituloPx = 17 * ((cfg.tituloTamanho || 100) / 100);
   const logoPx = 36 * ((cfg.logoTamanho || 100) / 100);
   if (!cfg.mostrarLogo && !cfg.mostrarTitulo && !cfg.mostrarSubtitulo) return null;
 

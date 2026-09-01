@@ -149,16 +149,28 @@ const CardBullets = ({ c }: { c: Curso }) => {
       </ul>
       {restantes > 0 && !expandido && (
         <Button
+          asChild
           type="button"
           variant="link"
           className="h-auto px-0 pt-2 text-xs"
-          onClick={(event) => {
-            event.preventDefault();
-            event.stopPropagation();
-            setExpandido(true);
-          }}
         >
-          +{restantes} mais
+          <span
+            role="button"
+            tabIndex={0}
+            onClick={(event) => {
+              event.preventDefault();
+              event.stopPropagation();
+              setExpandido(true);
+            }}
+            onKeyDown={(event) => {
+              if (event.key !== "Enter" && event.key !== " ") return;
+              event.preventDefault();
+              event.stopPropagation();
+              setExpandido(true);
+            }}
+          >
+            +{restantes} mais
+          </span>
         </Button>
       )}
     </div>
