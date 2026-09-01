@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { CheckCircle2, Lock, Clock3 } from "lucide-react";
+import { BookOpen, CheckCircle2, Lock, Clock3 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/contexts/UserContext";
 import PageContainer from "@/components/PageContainer";
@@ -54,6 +54,9 @@ interface Curso {
 }
 
 const AZUL = "#6A88FB";
+const DOURADO = "#B8892E";
+const DOURADO_BG = "#FBF3DE";
+const DOURADO_DARK = "#8C641C";
 
 const CAMPOS =
   "id,slug,titulo,descricao,descricao_em_breve,capa_url,ordem,preco,ativo,data_lancamento,pagina_lancamento_url,card_logo_url,card_cor_primaria,card_cor_secundaria,card_subtitulo,card_bullet_1,card_bullet_2,card_bullet_3,card_bullet_4,card_bullet_5,card_cta_texto,card_foto_posicao,card_fosco_opacidade,card_titulo_sobre_foto,card_foto_zoom,card_titulo_tamanho,card_mostrar_titulo,card_mostrar_subtitulo,card_mostrar_logo,card_overlay_pos,card_logo_tamanho,card_texto_cor,card_estado,card_lancamento_data,card_estado_frase,card_mostrar_cadeado";
@@ -123,25 +126,84 @@ const CheckSvg = ({ color }: { color: string }) => (
 );
 
 const CardBullets = ({ c }: { c: Curso }) => {
+  const [expandido, setExpandido] = useState(false);
   const bullets = bulletsDe(c);
   const cor = c.card_cor_secundaria || c.card_cor_primaria || COR_CARD_PADRAO;
   if (bullets.length === 0) return null;
+  const bulletsVisiveis = expandido ? bullets : bullets.slice(0, 3);
+  const restantes = bullets.length - 3;
   return (
-    <ul className="px-6 pt-4 pb-2">
-      {bullets.map((b, i) => (
-        <li
-          key={i}
-          className={`flex items-start gap-2.5 py-2.5 text-[13.5px] leading-snug text-foreground ${
-            i < bullets.length - 1 ? "border-b border-border/60" : ""
-          }`}
+    <div className="px-6 pt-4 pb-2">
+      <ul>
+        {bulletsVisiveis.map((b, i) => (
+          <li
+            key={i}
+            className={`flex items-start gap-2.5 py-1.5 text-[12.5px] leading-snug text-foreground ${
+              i < bulletsVisiveis.length - 1 ? "border-b border-border/60" : ""
+            }`}
+          >
+            <CheckSvg color={cor} />
+            <span>{b}</span>
+          </li>
+        ))}
+      </ul>
+      {restantes > 0 && !expandido && (
+        <Button
+          asChild
+          type="button"
+          variant="link"
+          className="h-auto px-0 pt-2 text-xs"
         >
-          <CheckSvg color={cor} />
-          <span>{b}</span>
-        </li>
-      ))}
-    </ul>
+          <span
+            onClick={(event) => {
+              event.preventDefault();
+              event.stopPropagation();
+              setExpandido(true);
+            }}
+          >
+            +{restantes} mais
+          </span>
+        </Button>
+      )}
+    </div>
   );
 };
+
+const RotinasPremiumMiniCard = ({ c }: { c: Curso }) => (
+  <div
+    className="mx-6 mt-3 rounded-xl border-2 p-3.5 flex items-start gap-3"
+    style={{ background: DOURADO_BG, borderColor: DOURADO }}
+  >
+    {c.capa_url ? (
+      <img
+        src={getTransformedImageUrl(c.capa_url, 128)}
+        alt=""
+        aria-hidden
+        width={64}
+        height={64}
+        loading="lazy"
+        decoding="async"
+        className="w-16 h-16 object-cover rounded-lg shrink-0"
+      />
+    ) : (
+      <div className="w-16 h-16 rounded-lg shrink-0 flex items-center justify-center bg-background">
+        <BookOpen className="w-6 h-6" style={{ color: DOURADO }} aria-hidden />
+      </div>
+    )}
+    <div className="min-w-0">
+      <p
+        className="text-[9px] uppercase tracking-wider font-bold mb-0.5"
+        style={{ color: DOURADO_DARK }}
+      >
+        Incluso no Premium Anual
+      </p>
+      <p className="font-serif font-bold text-sm leading-tight mb-1 text-primary">{c.titulo}</p>
+      <p className="text-xs leading-snug text-primary/80">
+        Videoaulas e práticas para organizar sua rotina pelo relógio dos doshas.
+      </p>
+    </div>
+  </div>
+);
 
 const Selo = ({
   children,
@@ -258,16 +320,8 @@ const CursosVitrine = () => {
                           </Selo>
                         </div>
                       </div>
-                      <div className="p-6 flex flex-col flex-1">
-                        <h3 className="mb-2 text-lg line-clamp-2 leading-tight" title={c.titulo}>
-                          {c.titulo}
-                        </h3>
-                        {c.descricao && (
-                          <p className="text-sm text-muted-foreground line-clamp-3 flex-1">
-                            {c.descricao}
-                          </p>
-                        )}
-                      </div>
+                      <CursoCardTituloAbaixo cfg={cfg} />
+                      <CardBullets c={c} />
                     </Link>
                     <div className="px-6 pb-6">
                       <Button asChild className="w-full">
@@ -402,14 +456,10 @@ const CursosVitrine = () => {
                       <span className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/90 shadow-md flex items-center justify-center">
                         <Lock className="w-4 h-4 text-muted-foreground" />
                       </span>
-                      {isRotinas && (
-                        <div className="absolute top-3 left-3">
-                          <Selo cor={AZUL}>Incluso no Premium Anual</Selo>
-                        </div>
-                      )}
                     </div>
                     <CursoCardTituloAbaixo cfg={cfg} />
                     <CardBullets c={c} />
+                    {isRotinas && <RotinasPremiumMiniCard c={c} />}
                   </Link>
                   <div className="px-6 pb-6 pt-3 mt-auto">
                     <Button

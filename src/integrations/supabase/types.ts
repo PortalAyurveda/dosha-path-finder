@@ -541,6 +541,36 @@ export type Database = {
         }
         Relationships: []
       }
+      ashtanga_hridaya_pilot_gpt54: {
+        Row: {
+          commentary_pt: string | null
+          created_at: string | null
+          id: number
+          pdf_page: number | null
+          translation_pt: string | null
+          verse_no: string | null
+          verse_sanskrit: string | null
+        }
+        Insert: {
+          commentary_pt?: string | null
+          created_at?: string | null
+          id?: number
+          pdf_page?: number | null
+          translation_pt?: string | null
+          verse_no?: string | null
+          verse_sanskrit?: string | null
+        }
+        Update: {
+          commentary_pt?: string | null
+          created_at?: string | null
+          id?: number
+          pdf_page?: number | null
+          translation_pt?: string | null
+          verse_no?: string | null
+          verse_sanskrit?: string | null
+        }
+        Relationships: []
+      }
       ashtanga_hridaya_pt_pages: {
         Row: {
           created_at: string | null
@@ -8057,6 +8087,30 @@ export type Database = {
           nome?: string
           ordem?: number
           slug?: string
+        }
+        Relationships: []
+      }
+      test_gpt54_vision: {
+        Row: {
+          created_at: string | null
+          id: number
+          model: string | null
+          pdf_page: number | null
+          raw_response: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: number
+          model?: string | null
+          pdf_page?: number | null
+          raw_response?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: number
+          model?: string | null
+          pdf_page?: number | null
+          raw_response?: string | null
         }
         Relationships: []
       }

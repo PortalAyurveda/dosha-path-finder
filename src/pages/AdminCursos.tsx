@@ -95,6 +95,7 @@ type Modulo = {
   curso_id: string;
   titulo: string;
   descricao: string | null;
+  tipo: "conteudo" | "whatsapp" | "material";
   ordem: number;
 };
 
@@ -489,6 +490,7 @@ const EditarModulo = ({
 }) => {
   const [titulo, setTitulo] = useState(modulo.titulo);
   const [descricao, setDescricao] = useState(modulo.descricao ?? "");
+  const [tipo, setTipo] = useState<Modulo["tipo"]>(modulo.tipo ?? "conteudo");
   const [savingMod, setSavingMod] = useState(false);
 
   const [aulas, setAulas] = useState<Aula[]>([]);
@@ -516,6 +518,7 @@ const EditarModulo = ({
       .update({
         titulo: titulo.trim() || "Sem título",
         descricao: descricao.trim() || null,
+        tipo,
       })
       .eq("id", modulo.id);
     setSavingMod(false);
@@ -586,10 +589,24 @@ const EditarModulo = ({
               <Input value={titulo} onChange={(e) => setTitulo(e.target.value)} />
             </div>
             <div className="space-y-1">
-              <Label>Descrição</Label>
+              <Label>Tipo</Label>
+              <Select value={tipo} onValueChange={(value) => setTipo(value as Modulo["tipo"])}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="conteudo">Conteúdo</SelectItem>
+                  <SelectItem value="whatsapp">WhatsApp</SelectItem>
+                  <SelectItem value="material">Material</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1">
+              <Label>{tipo === "whatsapp" ? "Link do grupo do WhatsApp" : "Descrição"}</Label>
               <Textarea
                 value={descricao}
                 onChange={(e) => setDescricao(e.target.value)}
+                placeholder={tipo === "whatsapp" ? "https://chat.whatsapp.com/..." : undefined}
                 rows={3}
               />
             </div>
@@ -1006,6 +1023,7 @@ const EditarCurso = ({
     const { error } = await supabase.from("curso_modulos").insert({
       curso_id: curso.id,
       titulo: "Novo módulo",
+      tipo: "conteudo",
       ordem: modulos.length,
     });
     if (error) toast({ title: "Erro", description: error.message });
