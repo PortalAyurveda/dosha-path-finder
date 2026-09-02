@@ -151,7 +151,7 @@ const NumberBlock = ({
   );
 };
 
-const MundoQueSeAbre = () => {
+const MundoQueSeAbreFallback = () => {
   const { data, isLoading, error } = useQuery({
     queryKey: ["acervo-stats"],
     queryFn: async () => {
