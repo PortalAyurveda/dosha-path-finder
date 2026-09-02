@@ -195,6 +195,7 @@ const BannerSlot = ({ slot, className, fallback, minHeight, rotacao = "diaria", 
 
   // Enquanto o banner não chega, o espaço já fica reservado (evita CLS).
   if (bannersLoading) {
+    if (fallbackWhileLoading) return <>{fallback ?? null}</>;
     return (
       <div className={className} aria-hidden="true">
         {/* filho vazio garante que o `[&:empty]:hidden` dos slots não esconda a reserva */}
