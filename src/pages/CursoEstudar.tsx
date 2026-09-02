@@ -119,7 +119,6 @@ const TINTA = "#3D2233";
 const CURSO_TABS = [
   { id: "aulas", label: "Aulas", icon: PlayCircle },
   { id: "material", label: "Material", icon: FileText },
-  { id: "whatsapp", label: "WhatsApp", icon: MessageCircle },
   { id: "tutor", label: "Tutor", icon: Bot },
   { id: "certificado", label: "Certificado", icon: Award },
 ] as const;
@@ -579,10 +578,9 @@ const CursoEstudar = () => {
     () =>
       CURSO_TABS.filter((t) => {
         if (t.id === "material") return materiais.length > 0;
-        if (t.id === "whatsapp") return !!whatsappLink;
         return true;
       }),
-    [materiais, whatsappLink],
+    [materiais],
   );
   const abaAtiva: CursoTabId =
     (abasVisiveis.find((t) => t.id === searchParams.get("tab"))?.id as CursoTabId) ?? "aulas";
@@ -714,6 +712,18 @@ const CursoEstudar = () => {
               />
             )}
             <div className="flex-1 min-w-0">
+              {whatsappLink && (
+                <a
+                  href={whatsappLink}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full border mb-3"
+                  style={{ borderColor: "#25D36655", background: "#25D36615", color: "#1c7d4d" }}
+                >
+                  <MessageCircle className="w-3.5 h-3.5" style={{ color: "#25D366" }} />
+                  Grupo da turma no WhatsApp
+                </a>
+              )}
               <h1
                 className="font-serif font-bold text-2xl md:text-3xl leading-tight mb-2"
                 style={{ color: PRIMARY }}
@@ -1010,25 +1020,6 @@ const CursoEstudar = () => {
               </div>
             )}
 
-            {abaAtiva === "whatsapp" && whatsappLink && (
-              <div
-                className="rounded-2xl border-2 p-8 md:p-10 text-center max-w-xl mx-auto"
-                style={{ borderColor: "#25D36655", background: "#25D36610" }}
-              >
-                <MessageCircle className="w-10 h-10 mx-auto mb-3" style={{ color: "#25D366" }} />
-                <h2 className="font-serif font-bold text-xl mb-2" style={{ color: PRIMARY }}>
-                  Grupo de trocas no WhatsApp
-                </h2>
-                <p className="text-sm mb-5" style={{ color: PRIMARY, opacity: 0.75 }}>
-                  Converse com outros alunos e tire dúvidas direto com a turma.
-                </p>
-                <Button asChild size="lg" className="rounded-full" style={{ backgroundColor: "#25D366" }}>
-                  <a href={whatsappLink} target="_blank" rel="noreferrer">
-                    Entrar no grupo
-                  </a>
-                </Button>
-              </div>
-            )}
 
             {abaAtiva === "certificado" && (
               <CertificadoTab certificado={certificado} onIrParaAulas={() => setAba("aulas")} />
