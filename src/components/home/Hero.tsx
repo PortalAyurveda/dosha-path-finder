@@ -162,9 +162,16 @@ const Hero = () => {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-stretch">
           {/* Left: Preview teaser + banner abaixo, alinhado pelo topo com a coluna da direita */}
           <div className="hidden lg:flex lg:col-span-7 flex-col items-center justify-start gap-4 h-full">
-            <div className="bg-card/80 backdrop-blur-sm rounded-3xl px-8 py-10 xl:px-10 xl:py-12 border border-border shadow-lg w-full max-w-xl mx-auto">
-              <DoshaPreview />
-            </div>
+            <BannerSlot
+              slot="hero_mockup"
+              className="w-full max-w-xl mx-auto"
+              fallbackWhileLoading
+              fallback={
+                <div className="bg-card/80 backdrop-blur-sm rounded-3xl px-8 py-10 xl:px-10 xl:py-12 border border-border shadow-lg w-full max-w-xl mx-auto">
+                  <DoshaPreview />
+                </div>
+              }
+            />
             <MundoQueSeAbre />
 
           </div>
