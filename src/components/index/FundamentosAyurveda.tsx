@@ -14,17 +14,6 @@ type Row = {
 };
 
 const FundamentosAyurveda = () => {
-  const { data: hojeNoPortalData } = useQuery({
-    queryKey: ["hoje-no-portal"],
-    queryFn: async () => {
-      const { data } = await (supabase.rpc as any)("hoje_no_portal");
-      const row = Array.isArray(data) ? data[0] : data;
-      return row ?? null;
-    },
-    staleTime: 30 * 60 * 1000,
-  });
-  const artigoDoTema = hojeNoPortalData?.giro?.artigo_da_tag ?? null;
-
   const { data, isLoading } = useQuery({
     queryKey: ["index_fundamentos_ayurveda"],
     queryFn: async () => {
@@ -55,40 +44,39 @@ const FundamentosAyurveda = () => {
           </h2>
         </div>
 
-        {artigoDoTema && (
-          <Link
-            to={artigoDoTema.rota || "#"}
-            className="group flex items-center gap-3 max-w-3xl mx-auto mb-8 px-4 py-3 bg-background border border-border/60 transition-all hover:-translate-y-0.5 hover:shadow-md"
-            style={{ borderRadius: LEAF }}
+        <Link
+          to="/assinar"
+          className="group flex items-center gap-3 max-w-3xl mx-auto mb-8 px-4 py-3 bg-background border border-border/60 transition-all hover:-translate-y-0.5 hover:shadow-md"
+          style={{ borderRadius: LEAF }}
+        >
+          <div
+            className="flex-shrink-0 w-12 h-12 rounded-full overflow-hidden flex items-center justify-center"
+            style={{ backgroundColor: "#9B74AC1F" }}
           >
-            {artigoDoTema.imagem && (
-              <div className="flex-shrink-0 w-12 h-12 rounded-full overflow-hidden bg-muted">
-                <img
-                  src={artigoDoTema.imagem}
-                  alt={artigoDoTema.titulo}
-                  loading="lazy"
-                  decoding="async"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-              </div>
-            )}
-            <div className="flex-1 min-w-0">
-              <span
-                className="text-[10px] uppercase tracking-wider font-semibold"
-                style={{ color: PRIMARY }}
-              >
-                Vale a pena ler hoje
-              </span>
-              <h3
-                className="font-serif font-bold text-sm leading-snug line-clamp-1 group-hover:underline"
-                style={{ color: PRIMARY }}
-              >
-                {artigoDoTema.titulo}
-              </h3>
-            </div>
-            <ArrowRight className="h-4 w-4 flex-shrink-0" style={{ color: PRIMARY }} />
-          </Link>
-        )}
+            <img
+              src="https://api.portalayurveda.com/storage/v1/object/public/portal_images/logo-akasha.png"
+              alt="Akasha"
+              loading="lazy"
+              decoding="async"
+              className="w-7 h-7 object-contain"
+            />
+          </div>
+          <div className="flex-1 min-w-0">
+            <span
+              className="text-[10px] uppercase tracking-wider font-semibold"
+              style={{ color: "#9B74AC" }}
+            >
+              Com a Akasha
+            </span>
+            <h3
+              className="font-serif font-bold text-sm leading-snug line-clamp-1 group-hover:underline"
+              style={{ color: "#9B74AC" }}
+            >
+              A inteligência que te guia por toda a jornada, inclusa na assinatura
+            </h3>
+          </div>
+          <ArrowRight className="h-4 w-4 flex-shrink-0" style={{ color: "#9B74AC" }} />
+        </Link>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {isLoading
