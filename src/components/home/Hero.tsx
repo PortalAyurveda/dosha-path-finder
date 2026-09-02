@@ -178,6 +178,11 @@ const Hero = () => {
 
           {/* Right: Heading + Form */}
           <div className="lg:col-span-5 flex flex-col">
+            <BannerSlot
+              slot="hero_convite"
+              className="lg:h-full"
+              fallbackWhileLoading
+              fallback={
             <div
               className="animate-fade-in bg-card/80 backdrop-blur-sm rounded-3xl p-6 xl:p-7 border border-border shadow-lg flex flex-col justify-between space-y-4 lg:h-full"
               style={{ animationDelay: "0.25s" }}
