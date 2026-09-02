@@ -14,6 +14,8 @@ interface BannerSlotProps {
   minHeight?: number;
   /** "diaria" (padrão): mesmo banner o dia todo. "pageview": sorteia a cada carregamento. */
   rotacao?: "diaria" | "pageview";
+  /** Renderiza o fallback enquanto carrega (em vez de reservar espaço vazio). */
+  fallbackWhileLoading?: boolean;
 }
 
 /** Altura típica medida de cada slot em mobile. */
