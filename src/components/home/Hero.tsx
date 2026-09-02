@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { ensureAnonSession, setSessionNome } from "@/lib/anonSession";
 import MundoQueSeAbre from "./MundoQueSeAbre";
+import BannerSlot from "@/components/banners/BannerSlot";
 
 const DoshaPreview = () => (
   <div className="relative select-none pointer-events-none">
@@ -162,15 +163,27 @@ const Hero = () => {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-stretch">
           {/* Left: Preview teaser + banner abaixo, alinhado pelo topo com a coluna da direita */}
           <div className="hidden lg:flex lg:col-span-7 flex-col items-center justify-start gap-4 h-full">
-            <div className="bg-card/80 backdrop-blur-sm rounded-3xl px-8 py-10 xl:px-10 xl:py-12 border border-border shadow-lg w-full max-w-xl mx-auto">
-              <DoshaPreview />
-            </div>
+            <BannerSlot
+              slot="hero_mockup"
+              className="w-full max-w-xl mx-auto"
+              fallbackWhileLoading
+              fallback={
+                <div className="bg-card/80 backdrop-blur-sm rounded-3xl px-8 py-10 xl:px-10 xl:py-12 border border-border shadow-lg w-full max-w-xl mx-auto">
+                  <DoshaPreview />
+                </div>
+              }
+            />
             <MundoQueSeAbre />
 
           </div>
 
           {/* Right: Heading + Form */}
           <div className="lg:col-span-5 flex flex-col">
+            <BannerSlot
+              slot="hero_convite"
+              className="lg:h-full"
+              fallbackWhileLoading
+              fallback={
             <div
               className="animate-fade-in bg-card/80 backdrop-blur-sm rounded-3xl p-6 xl:p-7 border border-border shadow-lg flex flex-col justify-between space-y-4 lg:h-full"
               style={{ animationDelay: "0.25s" }}
@@ -251,6 +264,8 @@ const Hero = () => {
                 Começar <ArrowRight className="ml-2 h-6 w-6 md:h-7 md:w-7" />
               </Button>
             </div>
+              }
+            />
           </div>
         </div>
 

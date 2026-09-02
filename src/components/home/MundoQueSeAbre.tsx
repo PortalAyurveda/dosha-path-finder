@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Sparkles } from "lucide-react";
+import BannerSlot from "@/components/banners/BannerSlot";
 
 const C = {
   primary: "#352F54",
@@ -151,7 +152,7 @@ const NumberBlock = ({
   );
 };
 
-const MundoQueSeAbre = () => {
+const MundoQueSeAbreFallback = () => {
   const { data, isLoading, error } = useQuery({
     queryKey: ["acervo-stats"],
     queryFn: async () => {
@@ -253,5 +254,14 @@ const MundoQueSeAbre = () => {
   );
 };
 
+
+const MundoQueSeAbre = () => (
+  <BannerSlot
+    slot="hero_atualidades"
+    className="w-full max-w-xl mx-auto"
+    fallbackWhileLoading
+    fallback={<MundoQueSeAbreFallback />}
+  />
+);
 
 export default MundoQueSeAbre;

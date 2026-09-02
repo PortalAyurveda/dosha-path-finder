@@ -14,6 +14,8 @@ interface BannerSlotProps {
   minHeight?: number;
   /** "diaria" (padrão): mesmo banner o dia todo. "pageview": sorteia a cada carregamento. */
   rotacao?: "diaria" | "pageview";
+  /** Renderiza o fallback enquanto carrega (em vez de reservar espaço vazio). */
+  fallbackWhileLoading?: boolean;
 }
 
 /** Altura típica medida de cada slot em mobile. */
@@ -67,7 +69,7 @@ function agniTag(agni: string | null | undefined): string | null {
   return null;
 }
 
-const BannerSlot = ({ slot, className, fallback, minHeight, rotacao = "diaria" }: BannerSlotProps) => {
+const BannerSlot = ({ slot, className, fallback, minHeight, rotacao = "diaria", fallbackWhileLoading }: BannerSlotProps) => {
   const { user, profile, doshaResult } = useUser();
 
   const location = useLocation();
@@ -193,6 +195,7 @@ const BannerSlot = ({ slot, className, fallback, minHeight, rotacao = "diaria" }
 
   // Enquanto o banner não chega, o espaço já fica reservado (evita CLS).
   if (bannersLoading) {
+    if (fallbackWhileLoading) return <>{fallback ?? null}</>;
     return (
       <div className={className} aria-hidden="true">
         {/* filho vazio garante que o `[&:empty]:hidden` dos slots não esconda a reserva */}
