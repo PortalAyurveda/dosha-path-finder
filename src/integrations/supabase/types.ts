@@ -595,6 +595,72 @@ export type Database = {
         }
         Relationships: []
       }
+      ashtanga_hridaya_verses: {
+        Row: {
+          book: string
+          chapter_name: string | null
+          chapter_no: string | null
+          commentary_pt: string | null
+          continues_from_prev: boolean | null
+          continues_to_next: boolean | null
+          created_at: string | null
+          embedding: string | null
+          has_lacuna: boolean | null
+          id: number
+          lacuna_note: string | null
+          notes: string | null
+          pdf_page: number | null
+          sequence_no: number | null
+          source_file: string | null
+          sthana: string | null
+          translation_pt: string | null
+          verse_no: string | null
+          verse_sanskrit: string | null
+        }
+        Insert: {
+          book?: string
+          chapter_name?: string | null
+          chapter_no?: string | null
+          commentary_pt?: string | null
+          continues_from_prev?: boolean | null
+          continues_to_next?: boolean | null
+          created_at?: string | null
+          embedding?: string | null
+          has_lacuna?: boolean | null
+          id?: never
+          lacuna_note?: string | null
+          notes?: string | null
+          pdf_page?: number | null
+          sequence_no?: number | null
+          source_file?: string | null
+          sthana?: string | null
+          translation_pt?: string | null
+          verse_no?: string | null
+          verse_sanskrit?: string | null
+        }
+        Update: {
+          book?: string
+          chapter_name?: string | null
+          chapter_no?: string | null
+          commentary_pt?: string | null
+          continues_from_prev?: boolean | null
+          continues_to_next?: boolean | null
+          created_at?: string | null
+          embedding?: string | null
+          has_lacuna?: boolean | null
+          id?: never
+          lacuna_note?: string | null
+          notes?: string | null
+          pdf_page?: number | null
+          sequence_no?: number | null
+          source_file?: string | null
+          sthana?: string | null
+          translation_pt?: string | null
+          verse_no?: string | null
+          verse_sanskrit?: string | null
+        }
+        Relationships: []
+      }
       ashtanga_sangraha_verses: {
         Row: {
           book: string
