@@ -12,17 +12,6 @@ type Row = {
 };
 
 const FundamentosAyurveda = () => {
-  const { data: hojeNoPortalData } = useQuery({
-    queryKey: ["hoje-no-portal"],
-    queryFn: async () => {
-      const { data } = await (supabase.rpc as any)("hoje_no_portal");
-      const row = Array.isArray(data) ? data[0] : data;
-      return row ?? null;
-    },
-    staleTime: 30 * 60 * 1000,
-  });
-  const artigoDoTema = hojeNoPortalData?.giro?.artigo_da_tag ?? null;
-
   const { data, isLoading } = useQuery({
     queryKey: ["index_fundamentos_ayurveda"],
     queryFn: async () => {
