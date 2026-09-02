@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { ensureAnonSession, setSessionNome } from "@/lib/anonSession";
 import MundoQueSeAbre from "./MundoQueSeAbre";
+import BannerSlot from "@/components/banners/BannerSlot";
 
 const DoshaPreview = () => (
   <div className="relative select-none pointer-events-none">
