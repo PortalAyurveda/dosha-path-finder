@@ -69,7 +69,7 @@ function agniTag(agni: string | null | undefined): string | null {
   return null;
 }
 
-const BannerSlot = ({ slot, className, fallback, minHeight, rotacao = "diaria" }: BannerSlotProps) => {
+const BannerSlot = ({ slot, className, fallback, minHeight, rotacao = "diaria", fallbackWhileLoading }: BannerSlotProps) => {
   const { user, profile, doshaResult } = useUser();
 
   const location = useLocation();
