@@ -254,4 +254,13 @@ const MundoQueSeAbreFallback = () => {
 };
 
 
+const MundoQueSeAbre = () => (
+  <BannerSlot
+    slot="hero_atualidades"
+    className="w-full max-w-xl mx-auto"
+    fallbackWhileLoading
+    fallback={<MundoQueSeAbreFallback />}
+  />
+);
+
 export default MundoQueSeAbre;
