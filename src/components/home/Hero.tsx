@@ -258,6 +258,8 @@ const Hero = () => {
                 Começar <ArrowRight className="ml-2 h-6 w-6 md:h-7 md:w-7" />
               </Button>
             </div>
+              }
+            />
           </div>
         </div>
 
