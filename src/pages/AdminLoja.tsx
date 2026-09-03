@@ -161,8 +161,26 @@ function ProdutoEditor({
             )}
           </div>
           <div className="flex-1 min-w-0">
-            <CardTitle className="text-base truncate">{form.nome_display || "(sem nome)"}</CardTitle>
+            <CardTitle className={`text-base truncate ${ativo ? "" : "opacity-50"}`}>
+              {form.nome_display || "(sem nome)"}
+            </CardTitle>
             <p className="text-xs text-muted-foreground truncate">/{form.slug}</p>
+          </div>
+          <div
+            className="flex items-center gap-2 shrink-0"
+            onClick={(e) => e.stopPropagation()}
+            title={ativo ? "Ativo na vitrine" : "Oculto da vitrine"}
+          >
+            {toggling && <Loader2 className="w-3.5 h-3.5 animate-spin text-muted-foreground" />}
+            <span className="text-xs text-muted-foreground hidden sm:inline">
+              {ativo ? "Ativo" : "Inativo"}
+            </span>
+            <Switch
+              checked={ativo}
+              onCheckedChange={handleToggleAtivo}
+              disabled={toggling}
+              aria-label={`Ativar ou desativar ${form.nome_display || produto.slug}`}
+            />
           </div>
           <div className="text-sm text-right shrink-0">
             <p className="font-semibold">R$ {Number(form.preco_pix || 0).toFixed(2)}</p>
