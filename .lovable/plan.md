@@ -18,10 +18,8 @@ Os 3 slots do hero deslogado já existem no front (`hero_mockup`, `hero_atualida
 
 3. **Resultado**: /admin/banners passa a listar os 3 na seção "Home deslogada", editáveis; se alguém apagar/desativar, o fallback do código assume automaticamente.
 
-## Decisão pendente: o formulário do teste
-O `hero_convite` é um formulário funcional. Opções:
-- **A) Banner com CTA simples** — HTML leva para /teste-de-dosha via link; o formulário original continua como fallback (recomendado, mais seguro).
-- **B) Não cadastrar hero_convite** — manter o formulário só no código; cadastrar apenas mockup e atualidades.
+## Decisão: hero_convite vira CTA simples
+O banner cadastrado em `hero_convite` será um convite visual com `<a href="/teste-de-dosha">`; se desativado/apagado no CMS, o formulário funcional original volta automaticamente como fallback.
 
 ## Fora de escopo
 Nenhuma mudança visual, nenhum novo mecanismo além do BannerSlot/banners existente.
