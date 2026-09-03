@@ -16,6 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 // =====================================================
@@ -56,8 +57,28 @@ function ProdutoEditor({
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [open, setOpen] = useState(false);
+  const [ativo, setAtivo] = useState(produto.ativo !== false);
+  const [toggling, setToggling] = useState(false);
 
   const dirty = JSON.stringify(form) !== JSON.stringify(initial);
+
+  const handleToggleAtivo = async (novo: boolean) => {
+    const anterior = ativo;
+    setAtivo(novo); // otimista
+    setToggling(true);
+    const { error } = await lojaSupabase
+      .from("produtos")
+      .update({ ativo: novo })
+      .eq("id", produto.id);
+    setToggling(false);
+    if (error) {
+      setAtivo(anterior);
+      toast.error("Erro ao alterar status: " + error.message);
+      return;
+    }
+    toast.success(novo ? "Produto ativado" : "Produto desativado");
+    onSaved({ ...produto, ativo: novo } as LojaProduto);
+  };
 
   const handleFiles = async (files: FileList | null) => {
     if (!files || files.length === 0) return;
@@ -140,8 +161,26 @@ function ProdutoEditor({
             )}
           </div>
           <div className="flex-1 min-w-0">
-            <CardTitle className="text-base truncate">{form.nome_display || "(sem nome)"}</CardTitle>
+            <CardTitle className={`text-base truncate ${ativo ? "" : "opacity-50"}`}>
+              {form.nome_display || "(sem nome)"}
+            </CardTitle>
             <p className="text-xs text-muted-foreground truncate">/{form.slug}</p>
+          </div>
+          <div
+            className="flex items-center gap-2 shrink-0"
+            onClick={(e) => e.stopPropagation()}
+            title={ativo ? "Ativo na vitrine" : "Oculto da vitrine"}
+          >
+            {toggling && <Loader2 className="w-3.5 h-3.5 animate-spin text-muted-foreground" />}
+            <span className="text-xs text-muted-foreground hidden sm:inline">
+              {ativo ? "Ativo" : "Inativo"}
+            </span>
+            <Switch
+              checked={ativo}
+              onCheckedChange={handleToggleAtivo}
+              disabled={toggling}
+              aria-label={`Ativar ou desativar ${form.nome_display || produto.slug}`}
+            />
           </div>
           <div className="text-sm text-right shrink-0">
             <p className="font-semibold">R$ {Number(form.preco_pix || 0).toFixed(2)}</p>
