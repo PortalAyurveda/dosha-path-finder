@@ -8172,6 +8172,69 @@ export type Database = {
         }
         Relationships: []
       }
+      sushruta_verses_old_trikamji_v1: {
+        Row: {
+          book: string
+          chapter_name: string | null
+          chapter_no: string | null
+          continues_from_prev: boolean | null
+          continues_to_next: boolean | null
+          created_at: string | null
+          editorial_footnote_skt: string | null
+          embedding: string | null
+          has_lacuna: boolean | null
+          id: number
+          lacuna_note: string | null
+          notes: string | null
+          pdf_page: number | null
+          sequence_no: number | null
+          source_file: string | null
+          translation_pt: string | null
+          verse_no: string | null
+          verse_sanskrit: string | null
+        }
+        Insert: {
+          book?: string
+          chapter_name?: string | null
+          chapter_no?: string | null
+          continues_from_prev?: boolean | null
+          continues_to_next?: boolean | null
+          created_at?: string | null
+          editorial_footnote_skt?: string | null
+          embedding?: string | null
+          has_lacuna?: boolean | null
+          id?: never
+          lacuna_note?: string | null
+          notes?: string | null
+          pdf_page?: number | null
+          sequence_no?: number | null
+          source_file?: string | null
+          translation_pt?: string | null
+          verse_no?: string | null
+          verse_sanskrit?: string | null
+        }
+        Update: {
+          book?: string
+          chapter_name?: string | null
+          chapter_no?: string | null
+          continues_from_prev?: boolean | null
+          continues_to_next?: boolean | null
+          created_at?: string | null
+          editorial_footnote_skt?: string | null
+          embedding?: string | null
+          has_lacuna?: boolean | null
+          id?: never
+          lacuna_note?: string | null
+          notes?: string | null
+          pdf_page?: number | null
+          sequence_no?: number | null
+          source_file?: string | null
+          translation_pt?: string | null
+          verse_no?: string | null
+          verse_sanskrit?: string | null
+        }
+        Relationships: []
+      }
       tags_alias: {
         Row: {
           alias: string
