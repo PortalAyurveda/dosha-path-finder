@@ -82,6 +82,7 @@ const AdminDevlog = lazy(() => import("./pages/AdminDevlog"));
 const AdminRotinas = lazy(() => import("./pages/AdminRotinas"));
 const AdminEstoque = lazy(() => import("./pages/AdminEstoque"));
 const AdminTags = lazy(() => import("./pages/AdminTags"));
+const AdminRedirecionamentos = lazy(() => import("./pages/AdminRedirecionamentos"));
 const AdminCupons = lazy(() => import("./pages/AdminCupons"));
 const AdminCobranca = lazy(() => import("./pages/AdminCobranca"));
 const AdminCertificados = lazy(() => import("./pages/AdminCertificados"));
@@ -302,6 +303,7 @@ const RoutedApp = () => {
               <Route path="/admin/rotinas" element={<AdminRoute><AdminRotinas /></AdminRoute>} />
               <Route path="/admin/estoque" element={<AdminRoute><AdminEstoque /></AdminRoute>} />
               <Route path="/admin/tags" element={<AdminRoute><AdminTags /></AdminRoute>} />
+              <Route path="/admin/redirecionamentos" element={<AdminRoute><AdminRedirecionamentos /></AdminRoute>} />
               <Route path="/admin/cupons" element={<AdminRoute><AdminCupons /></AdminRoute>} />
               <Route path="/admin/cobranca" element={<AdminRoute><AdminCobranca /></AdminRoute>} />
               <Route path="/admin/certificados" element={<AdminRoute><AdminCertificados /></AdminRoute>} />

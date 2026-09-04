@@ -1,12 +1,28 @@
 import { useLocation } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
+import { aplicarRedirecionamento, buscarRedirecionamento } from "@/lib/redirecionamentos";
 
 const NotFound = () => {
   const location = useLocation();
+  const [verificando, setVerificando] = useState(true);
 
   useEffect(() => {
-    console.error("404 Error: User attempted to access non-existent route:", location.pathname);
+    let cancelado = false;
+    setVerificando(true);
+    (async () => {
+      const destino = await buscarRedirecionamento(location.pathname);
+      if (cancelado) return;
+      if (destino) {
+        aplicarRedirecionamento(destino);
+        return;
+      }
+      setVerificando(false);
+      console.error("404 Error: User attempted to access non-existent route:", location.pathname);
+    })();
+    return () => {
+      cancelado = true;
+    };
   }, [location.pathname]);
 
   // O canonical é escrito por DOM pelo hook global useCanonical (em RoutedApp, o pai
@@ -19,6 +35,9 @@ const NotFound = () => {
     const t = window.setTimeout(remover, 0);
     return () => window.clearTimeout(t);
   }, []);
+
+  if (verificando) return <div className="min-h-screen bg-muted" />;
+
 
   return (
     <>
