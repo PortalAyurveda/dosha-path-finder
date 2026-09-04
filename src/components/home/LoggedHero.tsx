@@ -628,12 +628,22 @@ const LoggedHero = () => {
                   to={receitaSlugPath}
                   className="group bg-card rounded-2xl p-4 md:p-5 border border-border shadow-sm flex gap-4 items-center transition-all hover:-translate-y-0.5 hover:shadow-md"
                 >
-                  <div
-                    className="shrink-0 w-14 h-14 rounded-xl flex items-center justify-center"
-                    style={{ background: `${C.pitta}22` }}
-                  >
-                    <ChefHat className="h-7 w-7" style={{ color: C.pitta }} />
-                  </div>
+                  {receitaVideoId ? (
+                    <img
+                      src={`https://img.youtube.com/vi/${receitaVideoId}/mqdefault.jpg`}
+                      alt={receitaTitulo}
+                      loading="lazy"
+                      decoding="async"
+                      className="shrink-0 w-14 h-14 rounded-xl object-cover"
+                    />
+                  ) : (
+                    <div
+                      className="shrink-0 w-14 h-14 rounded-xl flex items-center justify-center"
+                      style={{ background: `${C.pitta}22` }}
+                    >
+                      <ChefHat className="h-7 w-7" style={{ color: C.pitta }} />
+                    </div>
+                  )}
                   <div className="min-w-0 flex-1">
                     <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
                       Receita do dia
