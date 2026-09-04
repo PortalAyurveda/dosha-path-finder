@@ -9,6 +9,7 @@ import { ExternalLink, MessageCircle, Link2, Check } from "lucide-react";
 
 import LiveChat from "@/components/aula/LiveChat";
 import { toast } from "sonner";
+import { aplicarRedirecionamento, buscarRedirecionamento } from "@/lib/redirecionamentos";
 
 interface Aula {
   id: string;
@@ -121,8 +122,16 @@ const Aula = () => {
         .eq("slug", slug)
         .eq("is_active", true)
         .maybeSingle();
-      if (error || !data) setNotFound(true);
-      else setAula(data as Aula);
+      if (error || !data) {
+        const destino = await buscarRedirecionamento(`/aula/${slug}`);
+        if (destino) {
+          aplicarRedirecionamento(destino);
+          return;
+        }
+        setNotFound(true);
+      } else {
+        setAula(data as Aula);
+      }
       setLoading(false);
     })();
   }, [slug]);
