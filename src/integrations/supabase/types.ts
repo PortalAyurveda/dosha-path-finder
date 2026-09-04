@@ -7222,6 +7222,36 @@ export type Database = {
         }
         Relationships: []
       }
+      redirecionamentos: {
+        Row: {
+          ativo: boolean
+          created_at: string
+          de_path: string
+          id: string
+          nota: string | null
+          para_path: string
+          updated_at: string
+        }
+        Insert: {
+          ativo?: boolean
+          created_at?: string
+          de_path: string
+          id?: string
+          nota?: string | null
+          para_path: string
+          updated_at?: string
+        }
+        Update: {
+          ativo?: boolean
+          created_at?: string
+          de_path?: string
+          id?: string
+          nota?: string | null
+          para_path?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       refino: {
         Row: {
           config: string | null
