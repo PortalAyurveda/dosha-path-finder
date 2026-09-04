@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowRight } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import BannerSlot from "@/components/banners/BannerSlot";
 
 const PRIMARY = "#352F54";
 const LEAF = "4px 20px 4px 20px";
