@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowRight } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import BannerSlot from "@/components/banners/BannerSlot";
 
 const PRIMARY = "#352F54";
 const LEAF = "4px 20px 4px 20px";
@@ -55,40 +56,45 @@ const FundamentosAyurveda = () => {
           </h2>
         </div>
 
-        {artigoDoTema && (
-          <Link
-            to={artigoDoTema.rota || "#"}
-            className="group flex items-center gap-3 max-w-3xl mx-auto mb-8 px-4 py-3 bg-background border border-border/60 transition-all hover:-translate-y-0.5 hover:shadow-md"
-            style={{ borderRadius: LEAF }}
-          >
-            {artigoDoTema.imagem && (
-              <div className="flex-shrink-0 w-12 h-12 rounded-full overflow-hidden bg-muted">
-                <img
-                  src={artigoDoTema.imagem}
-                  alt={artigoDoTema.titulo}
-                  loading="lazy"
-                  decoding="async"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-              </div>
-            )}
-            <div className="flex-1 min-w-0">
-              <span
-                className="text-[10px] uppercase tracking-wider font-semibold"
-                style={{ color: PRIMARY }}
+        <BannerSlot
+          slot="index_destaque"
+          fallback={
+            artigoDoTema && (
+              <Link
+                to={artigoDoTema.rota || "#"}
+                className="group flex items-center gap-3 max-w-3xl mx-auto mb-8 px-4 py-3 bg-background border border-border/60 transition-all hover:-translate-y-0.5 hover:shadow-md"
+                style={{ borderRadius: LEAF }}
               >
-                Vale a pena ler hoje
-              </span>
-              <h3
-                className="font-serif font-bold text-sm leading-snug line-clamp-1 group-hover:underline"
-                style={{ color: PRIMARY }}
-              >
-                {artigoDoTema.titulo}
-              </h3>
-            </div>
-            <ArrowRight className="h-4 w-4 flex-shrink-0" style={{ color: PRIMARY }} />
-          </Link>
-        )}
+                {artigoDoTema.imagem && (
+                  <div className="flex-shrink-0 w-12 h-12 rounded-full overflow-hidden bg-muted">
+                    <img
+                      src={artigoDoTema.imagem}
+                      alt={artigoDoTema.titulo}
+                      loading="lazy"
+                      decoding="async"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                  </div>
+                )}
+                <div className="flex-1 min-w-0">
+                  <span
+                    className="text-[10px] uppercase tracking-wider font-semibold"
+                    style={{ color: PRIMARY }}
+                  >
+                    Vale a pena ler hoje
+                  </span>
+                  <h3
+                    className="font-serif font-bold text-sm leading-snug line-clamp-1 group-hover:underline"
+                    style={{ color: PRIMARY }}
+                  >
+                    {artigoDoTema.titulo}
+                  </h3>
+                </div>
+                <ArrowRight className="h-4 w-4 flex-shrink-0" style={{ color: PRIMARY }} />
+              </Link>
+            )
+          }
+        />
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {isLoading
