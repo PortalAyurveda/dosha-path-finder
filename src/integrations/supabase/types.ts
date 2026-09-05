@@ -6752,6 +6752,57 @@ export type Database = {
         }
         Relationships: []
       }
+      portal_manual: {
+        Row: {
+          atualizado_em: string
+          categoria: string
+          criado_em: string
+          cuidados: string | null
+          id: string
+          modulos_devlog: string[] | null
+          o_que_e: string | null
+          ordem: number | null
+          passo_a_passo: string | null
+          rota_admin: string | null
+          status: string
+          tabelas_relacionadas: string[] | null
+          titulo: string
+          ultima_verificacao: string | null
+        }
+        Insert: {
+          atualizado_em?: string
+          categoria: string
+          criado_em?: string
+          cuidados?: string | null
+          id?: string
+          modulos_devlog?: string[] | null
+          o_que_e?: string | null
+          ordem?: number | null
+          passo_a_passo?: string | null
+          rota_admin?: string | null
+          status?: string
+          tabelas_relacionadas?: string[] | null
+          titulo: string
+          ultima_verificacao?: string | null
+        }
+        Update: {
+          atualizado_em?: string
+          categoria?: string
+          criado_em?: string
+          cuidados?: string | null
+          id?: string
+          modulos_devlog?: string[] | null
+          o_que_e?: string | null
+          ordem?: number | null
+          passo_a_passo?: string | null
+          rota_admin?: string | null
+          status?: string
+          tabelas_relacionadas?: string[] | null
+          titulo?: string
+          ultima_verificacao?: string | null
+        }
+        Relationships: []
+      }
       portal_oficial: {
         Row: {
           criado_em: string | null
@@ -9617,6 +9668,10 @@ export type Database = {
         Returns: Json
       }
       auditoria_sugestao_conteudo: { Args: { p_email: string }; Returns: Json }
+      bulk_merge_verse_sanskrit: {
+        Args: { items: Json; target_table: string }
+        Returns: number
+      }
       bulk_update_translation: {
         Args: { items: Json; target_table: string }
         Returns: number

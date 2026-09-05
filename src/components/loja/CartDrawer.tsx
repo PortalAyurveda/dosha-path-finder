@@ -118,6 +118,9 @@ const CartDrawer = () => {
     estado: "",
   });
   const [enviando, setEnviando] = useState(false);
+  const [cepErro, setCepErro] = useState<string | null>(null);
+  const [errosEndereco, setErrosEndereco] = useState<string[]>([]);
+
 
   // Cupom de desconto
   type CupomAplicado = {
@@ -398,16 +401,26 @@ const CartDrawer = () => {
     }
   };
 
-  // Auto-fill via ViaCEP quando CEP do checkout muda
+  // Auto-fill via ViaCEP quando o CEP muda (carrinho ou checkout)
   useEffect(() => {
     const cepLimpo = onlyDigits(cep);
-    if (cepLimpo.length !== 8 || step !== "checkout") return;
+    if (cepLimpo.length !== 8 || step === "pix") {
+      setCepErro(null);
+      return;
+    }
     let cancelled = false;
     (async () => {
       try {
         const r = await fetch(`https://viacep.com.br/ws/${cepLimpo}/json/`);
         const d = await r.json();
-        if (cancelled || d.erro) return;
+        if (cancelled) return;
+        if (d.erro) {
+          setCepErro(
+            "Não conseguimos encontrar esse CEP automaticamente. Preencha rua, bairro, cidade e estado manualmente.",
+          );
+          return;
+        }
+        setCepErro(null);
         setForm((prev) => ({
           ...prev,
           logradouro: prev.logradouro || d.logradouro || "",
@@ -416,7 +429,10 @@ const CartDrawer = () => {
           estado: d.uf || prev.estado,
         }));
       } catch {
-        /* ignore */
+        if (!cancelled)
+          setCepErro(
+            "Não conseguimos encontrar esse CEP automaticamente. Preencha rua, bairro, cidade e estado manualmente.",
+          );
       }
     })();
     return () => {
@@ -424,15 +440,30 @@ const CartDrawer = () => {
     };
   }, [cep, step]);
 
+  /** Campos de endereço obrigatórios que estão vazios. */
+  const enderecoIncompleto = (): string[] => {
+    const faltando: string[] = [];
+    if (!form.logradouro.trim()) faltando.push("logradouro");
+    if (!form.numero.trim()) faltando.push("numero");
+    if (!form.bairro.trim()) faltando.push("bairro");
+    if (!form.cidade.trim()) faltando.push("cidade");
+    if (!form.estado.trim()) faltando.push("estado");
+    return faltando;
+  };
+
   const handleFinalizar = async () => {
     // validações
     if (!form.nome.trim()) return toast.error("Informe seu nome");
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) return toast.error("Email inválido");
     if (onlyDigits(form.telefone).length < 10) return toast.error("Telefone inválido");
     if (!validateCPF(form.cpf)) return toast.error("CPF inválido");
-    if (!form.logradouro.trim() || !form.numero.trim() || !form.bairro.trim() || !form.cidade || !form.estado) {
+    const faltandoEndereco = enderecoIncompleto();
+    if (faltandoEndereco.length > 0) {
+      setErrosEndereco(faltandoEndereco);
       return toast.error("Preencha o endereço completo");
     }
+    setErrosEndereco([]);
+
     if (!freteSelecionado) return toast.error("Selecione uma opção de frete");
 
     trackPixel("InitiateCheckout", { content_type: "product" });
@@ -769,6 +800,12 @@ const CartDrawer = () => {
                   </Button>
                 </div>
 
+                {cepErro && (
+                  <p className="text-xs mt-2 text-red-600">{cepErro}</p>
+                )}
+
+
+
                 {opcoesFrete.some((o) => String(o.id) === "gratis" || o.frete_gratis) && (
                   <div
                     className="mt-3 p-2 rounded text-sm font-medium text-center"
@@ -840,14 +877,19 @@ const CartDrawer = () => {
                     <Input id="cpf" value={form.cpf} onChange={(e) => setForm({ ...form, cpf: maskCPF(e.target.value) })} inputMode="numeric" />
                   </div>
                 </div>
+                {errosEndereco.length > 0 && (
+                  <p className="text-xs text-red-600">
+                    Preencha o endereço completo para continuar.
+                  </p>
+                )}
                 <div>
                   <Label htmlFor="log">Logradouro</Label>
-                  <Input id="log" value={form.logradouro} onChange={(e) => setForm({ ...form, logradouro: e.target.value })} />
+                  <Input id="log" value={form.logradouro} onChange={(e) => setForm({ ...form, logradouro: e.target.value })} className={errosEndereco.includes("logradouro") ? "border-red-500" : undefined} />
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <Label htmlFor="num">Número</Label>
-                    <Input id="num" value={form.numero} onChange={(e) => setForm({ ...form, numero: e.target.value })} />
+                    <Input id="num" value={form.numero} onChange={(e) => setForm({ ...form, numero: e.target.value })} className={errosEndereco.includes("numero") ? "border-red-500" : undefined} />
                   </div>
                   <div>
                     <Label htmlFor="comp">Complemento</Label>
@@ -856,18 +898,19 @@ const CartDrawer = () => {
                 </div>
                 <div>
                   <Label htmlFor="bairro">Bairro</Label>
-                  <Input id="bairro" value={form.bairro} onChange={(e) => setForm({ ...form, bairro: e.target.value })} />
+                  <Input id="bairro" value={form.bairro} onChange={(e) => setForm({ ...form, bairro: e.target.value })} className={errosEndereco.includes("bairro") ? "border-red-500" : undefined} />
                 </div>
                 <div className="grid grid-cols-[1fr_80px] gap-3">
                   <div>
                     <Label htmlFor="cid">Cidade</Label>
-                    <Input id="cid" value={form.cidade} onChange={(e) => setForm({ ...form, cidade: e.target.value })} />
+                    <Input id="cid" value={form.cidade} onChange={(e) => setForm({ ...form, cidade: e.target.value })} className={errosEndereco.includes("cidade") ? "border-red-500" : undefined} />
                   </div>
                   <div>
                     <Label htmlFor="uf">UF</Label>
-                    <Input id="uf" value={form.estado} onChange={(e) => setForm({ ...form, estado: e.target.value })} maxLength={2} />
+                    <Input id="uf" value={form.estado} onChange={(e) => setForm({ ...form, estado: e.target.value })} maxLength={2} className={errosEndereco.includes("estado") ? "border-red-500" : undefined} />
                   </div>
                 </div>
+
               </div>
             </div>
           )}
@@ -946,9 +989,15 @@ const CartDrawer = () => {
                 <Button
                   onClick={async () => {
                     if (freteSelecionado) {
+                      const faltando = enderecoIncompleto();
+                      setErrosEndereco(faltando);
                       setStep("checkout");
+                      if (faltando.length > 0) {
+                        toast.error("Complete o endereço de entrega abaixo para continuar.");
+                      }
                       return;
                     }
+
                     if (onlyDigits(cep).length === 8 && opcoesFrete.length === 0 && !calculandoFrete) {
                       await handleCalcularFrete();
                       toast.info("Escolha a opção de frete e toque em Continuar novamente.");
