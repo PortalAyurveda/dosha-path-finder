@@ -877,14 +877,19 @@ const CartDrawer = () => {
                     <Input id="cpf" value={form.cpf} onChange={(e) => setForm({ ...form, cpf: maskCPF(e.target.value) })} inputMode="numeric" />
                   </div>
                 </div>
+                {errosEndereco.length > 0 && (
+                  <p className="text-xs text-red-600">
+                    Preencha o endereço completo para continuar.
+                  </p>
+                )}
                 <div>
                   <Label htmlFor="log">Logradouro</Label>
-                  <Input id="log" value={form.logradouro} onChange={(e) => setForm({ ...form, logradouro: e.target.value })} />
+                  <Input id="log" value={form.logradouro} onChange={(e) => setForm({ ...form, logradouro: e.target.value })} className={errosEndereco.includes("logradouro") ? "border-red-500" : undefined} />
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <Label htmlFor="num">Número</Label>
-                    <Input id="num" value={form.numero} onChange={(e) => setForm({ ...form, numero: e.target.value })} />
+                    <Input id="num" value={form.numero} onChange={(e) => setForm({ ...form, numero: e.target.value })} className={errosEndereco.includes("numero") ? "border-red-500" : undefined} />
                   </div>
                   <div>
                     <Label htmlFor="comp">Complemento</Label>
@@ -893,18 +898,19 @@ const CartDrawer = () => {
                 </div>
                 <div>
                   <Label htmlFor="bairro">Bairro</Label>
-                  <Input id="bairro" value={form.bairro} onChange={(e) => setForm({ ...form, bairro: e.target.value })} />
+                  <Input id="bairro" value={form.bairro} onChange={(e) => setForm({ ...form, bairro: e.target.value })} className={errosEndereco.includes("bairro") ? "border-red-500" : undefined} />
                 </div>
                 <div className="grid grid-cols-[1fr_80px] gap-3">
                   <div>
                     <Label htmlFor="cid">Cidade</Label>
-                    <Input id="cid" value={form.cidade} onChange={(e) => setForm({ ...form, cidade: e.target.value })} />
+                    <Input id="cid" value={form.cidade} onChange={(e) => setForm({ ...form, cidade: e.target.value })} className={errosEndereco.includes("cidade") ? "border-red-500" : undefined} />
                   </div>
                   <div>
                     <Label htmlFor="uf">UF</Label>
-                    <Input id="uf" value={form.estado} onChange={(e) => setForm({ ...form, estado: e.target.value })} maxLength={2} />
+                    <Input id="uf" value={form.estado} onChange={(e) => setForm({ ...form, estado: e.target.value })} maxLength={2} className={errosEndereco.includes("estado") ? "border-red-500" : undefined} />
                   </div>
                 </div>
+
               </div>
             </div>
           )}
