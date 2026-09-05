@@ -800,6 +800,12 @@ const CartDrawer = () => {
                   </Button>
                 </div>
 
+                {cepErro && (
+                  <p className="text-xs mt-2 text-red-600">{cepErro}</p>
+                )}
+
+
+
                 {opcoesFrete.some((o) => String(o.id) === "gratis" || o.frete_gratis) && (
                   <div
                     className="mt-3 p-2 rounded text-sm font-medium text-center"
