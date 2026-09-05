@@ -401,16 +401,26 @@ const CartDrawer = () => {
     }
   };
 
-  // Auto-fill via ViaCEP quando CEP do checkout muda
+  // Auto-fill via ViaCEP quando o CEP muda (carrinho ou checkout)
   useEffect(() => {
     const cepLimpo = onlyDigits(cep);
-    if (cepLimpo.length !== 8 || step !== "checkout") return;
+    if (cepLimpo.length !== 8 || step === "pix") {
+      setCepErro(null);
+      return;
+    }
     let cancelled = false;
     (async () => {
       try {
         const r = await fetch(`https://viacep.com.br/ws/${cepLimpo}/json/`);
         const d = await r.json();
-        if (cancelled || d.erro) return;
+        if (cancelled) return;
+        if (d.erro) {
+          setCepErro(
+            "Não conseguimos encontrar esse CEP automaticamente. Preencha rua, bairro, cidade e estado manualmente.",
+          );
+          return;
+        }
+        setCepErro(null);
         setForm((prev) => ({
           ...prev,
           logradouro: prev.logradouro || d.logradouro || "",
@@ -419,7 +429,10 @@ const CartDrawer = () => {
           estado: d.uf || prev.estado,
         }));
       } catch {
-        /* ignore */
+        if (!cancelled)
+          setCepErro(
+            "Não conseguimos encontrar esse CEP automaticamente. Preencha rua, bairro, cidade e estado manualmente.",
+          );
       }
     })();
     return () => {
@@ -427,15 +440,30 @@ const CartDrawer = () => {
     };
   }, [cep, step]);
 
+  /** Campos de endereço obrigatórios que estão vazios. */
+  const enderecoIncompleto = (): string[] => {
+    const faltando: string[] = [];
+    if (!form.logradouro.trim()) faltando.push("logradouro");
+    if (!form.numero.trim()) faltando.push("numero");
+    if (!form.bairro.trim()) faltando.push("bairro");
+    if (!form.cidade.trim()) faltando.push("cidade");
+    if (!form.estado.trim()) faltando.push("estado");
+    return faltando;
+  };
+
   const handleFinalizar = async () => {
     // validações
     if (!form.nome.trim()) return toast.error("Informe seu nome");
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) return toast.error("Email inválido");
     if (onlyDigits(form.telefone).length < 10) return toast.error("Telefone inválido");
     if (!validateCPF(form.cpf)) return toast.error("CPF inválido");
-    if (!form.logradouro.trim() || !form.numero.trim() || !form.bairro.trim() || !form.cidade || !form.estado) {
+    const faltandoEndereco = enderecoIncompleto();
+    if (faltandoEndereco.length > 0) {
+      setErrosEndereco(faltandoEndereco);
       return toast.error("Preencha o endereço completo");
     }
+    setErrosEndereco([]);
+
     if (!freteSelecionado) return toast.error("Selecione uma opção de frete");
 
     trackPixel("InitiateCheckout", { content_type: "product" });
