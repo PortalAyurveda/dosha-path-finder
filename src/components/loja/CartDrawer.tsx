@@ -118,6 +118,9 @@ const CartDrawer = () => {
     estado: "",
   });
   const [enviando, setEnviando] = useState(false);
+  const [cepErro, setCepErro] = useState<string | null>(null);
+  const [errosEndereco, setErrosEndereco] = useState<string[]>([]);
+
 
   // Cupom de desconto
   type CupomAplicado = {
