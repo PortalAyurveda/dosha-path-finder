@@ -977,9 +977,15 @@ const CartDrawer = () => {
                 <Button
                   onClick={async () => {
                     if (freteSelecionado) {
+                      const faltando = enderecoIncompleto();
+                      setErrosEndereco(faltando);
                       setStep("checkout");
+                      if (faltando.length > 0) {
+                        toast.error("Complete o endereço de entrega abaixo para continuar.");
+                      }
                       return;
                     }
+
                     if (onlyDigits(cep).length === 8 && opcoesFrete.length === 0 && !calculandoFrete) {
                       await handleCalcularFrete();
                       toast.info("Escolha a opção de frete e toque em Continuar novamente.");
