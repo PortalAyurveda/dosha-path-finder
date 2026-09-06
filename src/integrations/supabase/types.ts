@@ -5443,6 +5443,7 @@ export type Database = {
       mensagens: {
         Row: {
           assunto: string
+          canal: string
           created_at: string
           email: string
           enviado_em: string | null
@@ -5453,12 +5454,14 @@ export type Database = {
           resposta_admin: string | null
           resposta_enviada: string | null
           status: string
+          thread_message_id: string | null
           tipo: string
           updated_at: string
           user_id: string | null
         }
         Insert: {
           assunto: string
+          canal?: string
           created_at?: string
           email: string
           enviado_em?: string | null
@@ -5469,12 +5472,14 @@ export type Database = {
           resposta_admin?: string | null
           resposta_enviada?: string | null
           status?: string
+          thread_message_id?: string | null
           tipo?: string
           updated_at?: string
           user_id?: string | null
         }
         Update: {
           assunto?: string
+          canal?: string
           created_at?: string
           email?: string
           enviado_em?: string | null
@@ -5485,11 +5490,65 @@ export type Database = {
           resposta_admin?: string | null
           resposta_enviada?: string | null
           status?: string
+          thread_message_id?: string | null
           tipo?: string
           updated_at?: string
           user_id?: string | null
         }
         Relationships: []
+      }
+      mensagens_itens: {
+        Row: {
+          anexos: Json
+          corpo_html: string | null
+          corpo_texto: string | null
+          criado_em: string
+          destinatario_email: string | null
+          direcao: string
+          id: string
+          in_reply_to: string | null
+          mensagem_id: string
+          message_id: string | null
+          remetente_email: string | null
+          remetente_nome: string | null
+        }
+        Insert: {
+          anexos?: Json
+          corpo_html?: string | null
+          corpo_texto?: string | null
+          criado_em?: string
+          destinatario_email?: string | null
+          direcao: string
+          id?: string
+          in_reply_to?: string | null
+          mensagem_id: string
+          message_id?: string | null
+          remetente_email?: string | null
+          remetente_nome?: string | null
+        }
+        Update: {
+          anexos?: Json
+          corpo_html?: string | null
+          corpo_texto?: string | null
+          criado_em?: string
+          destinatario_email?: string | null
+          direcao?: string
+          id?: string
+          in_reply_to?: string | null
+          mensagem_id?: string
+          message_id?: string | null
+          remetente_email?: string | null
+          remetente_nome?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mensagens_itens_mensagem_id_fkey"
+            columns: ["mensagem_id"]
+            isOneToOne: false
+            referencedRelation: "mensagens"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       metricas_index: {
         Row: {
