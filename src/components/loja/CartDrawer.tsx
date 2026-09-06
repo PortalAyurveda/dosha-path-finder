@@ -83,7 +83,7 @@ const CartDrawer = () => {
     subtotal,
   } = useCart();
 
-  const [step, setStep] = useState<"cart" | "checkout" | "pix">("cart");
+  const [step, setStep] = useState<"cart" | "endereco" | "pagamento" | "pix">("cart");
   const [metodoPagamento, setMetodoPagamento] = useState<"pix" | "cartao" | "boleto">("pix");
   type PixData = {
     pedido_id: string;
@@ -451,6 +451,22 @@ const CartDrawer = () => {
     return faltando;
   };
 
+  /** Valida todos os campos obrigatórios da etapa de endereço (dados pessoais + endereço). */
+  const validarEtapaEndereco = (): boolean => {
+    const faltando: string[] = [];
+    if (!form.nome.trim()) faltando.push("nome");
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) faltando.push("email");
+    if (onlyDigits(form.telefone).length < 10) faltando.push("telefone");
+    if (!validateCPF(form.cpf)) faltando.push("cpf");
+    faltando.push(...enderecoIncompleto());
+    setErrosEndereco(faltando);
+    if (faltando.length > 0) {
+      toast.error("Preencha os campos destacados para continuar.");
+      return false;
+    }
+    return true;
+  };
+
   const handleFinalizar = async () => {
     // validações
     if (!form.nome.trim()) return toast.error("Informe seu nome");
@@ -588,13 +604,24 @@ const CartDrawer = () => {
             className="text-lg flex items-center gap-2"
             style={{ color: samkhyaTokens.roxo, fontFamily: samkhyaTokens.fonteTitulo }}
           >
-            {step === "checkout" && (
+            {step === "endereco" && (
               <button onClick={() => setStep("cart")} aria-label="Voltar">
                 <ChevronLeft className="h-5 w-5" />
               </button>
             )}
+            {step === "pagamento" && (
+              <button onClick={() => setStep("endereco")} aria-label="Voltar">
+                <ChevronLeft className="h-5 w-5" />
+              </button>
+            )}
             <ShoppingBag className="h-5 w-5" />
-            {step === "cart" ? "Seu carrinho" : step === "pix" ? "Pagamento via Pix" : "Dados de entrega"}
+            {step === "cart"
+              ? "Seu carrinho"
+              : step === "pix"
+                ? "Pagamento via Pix"
+                : step === "pagamento"
+                  ? "Forma de pagamento"
+                  : "Dados de entrega"}
           </SheetTitle>
         </SheetHeader>
 
