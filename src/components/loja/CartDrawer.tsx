@@ -1039,7 +1039,7 @@ const CartDrawer = () => {
           )}
         </div>
 
-        {itens.length > 0 && step !== "pix" && (
+        {itens.length > 0 && step === "cart" && (
           <div className="border-t px-5 py-4 space-y-3" style={{ borderColor: samkhyaTokens.cardBorder, background: samkhyaTokens.cardBg }}>
             <div className="flex justify-between text-sm">
               <span style={{ color: samkhyaTokens.textoSec }}>Subtotal</span>
@@ -1107,83 +1107,31 @@ const CartDrawer = () => {
               <span style={{ color: samkhyaTokens.ouroDark }}>{formatBRL(total)}</span>
             </div>
 
-            {step === "cart" ? (
-              <>
-                <Button
-                  onClick={async () => {
-                    if (freteSelecionado) {
-                      const faltando = enderecoIncompleto();
-                      setErrosEndereco(faltando);
-                      setStep("checkout");
-                      if (faltando.length > 0) {
-                        toast.error("Complete o endereço de entrega abaixo para continuar.");
-                      }
-                      return;
-                    }
+            <Button
+              onClick={async () => {
+                if (freteSelecionado) {
+                  setStep("endereco");
+                  return;
+                }
 
-                    if (onlyDigits(cep).length === 8 && opcoesFrete.length === 0 && !calculandoFrete) {
-                      await handleCalcularFrete();
-                      toast.info("Escolha a opção de frete e toque em Continuar novamente.");
-                    } else if (onlyDigits(cep).length !== 8) {
-                      toast.error("Digite seu CEP e toque em Calcular para ver o frete.");
-                    } else {
-                      toast.error("Escolha uma opção de frete para continuar.");
-                    }
-                  }}
-                  className="w-full"
-                  style={{ background: samkhyaTokens.ouro, color: "#fff" }}
-                >
-                  Continuar
-                </Button>
-                {!freteSelecionado && (
-                  <p className="text-xs text-center" style={{ color: samkhyaTokens.textoSec }}>
-                    Calcule o frete acima para continuar.
-                  </p>
-                )}
-              </>
-            ) : (
-              <>
-                <div className="pt-1">
-                  <Label className="text-sm" style={{ color: samkhyaTokens.texto }}>
-                    Forma de pagamento
-                  </Label>
-                  <RadioGroup
-                    value={metodoPagamento}
-                    onValueChange={(v) => setMetodoPagamento(v as "pix" | "cartao" | "boleto")}
-                    className="mt-2 space-y-2"
-                  >
-                    {[
-                      { id: "pix", nome: "Pix", desc: "Aprovação na hora" },
-                      { id: "cartao", nome: "Cartão de crédito", desc: "Em até 3x sem juros" },
-                      { id: "boleto", nome: "Boleto", desc: "Vence em 3 dias úteis" },
-                    ].map((op) => (
-                      <label
-                        key={op.id}
-                        className="flex items-center gap-3 p-2 rounded cursor-pointer"
-                        style={{ background: "#fff", border: `1px solid ${samkhyaTokens.cardBorder}` }}
-                      >
-                        <RadioGroupItem value={op.id} id={`pag-${op.id}`} />
-                        <div className="flex-1">
-                          <p className="text-sm" style={{ color: samkhyaTokens.texto }}>{op.nome}</p>
-                          <p className="text-xs" style={{ color: samkhyaTokens.textoSec }}>{op.desc}</p>
-                        </div>
-                      </label>
-                    ))}
-                  </RadioGroup>
-                </div>
-                <Button
-                  onClick={handleFinalizar}
-                  disabled={enviando}
-                  className="w-full"
-                  style={{ background: samkhyaTokens.ouro, color: "#fff" }}
-                >
-                  {enviando
-                    ? "Processando..."
-                    : metodoPagamento === "pix"
-                      ? "Pagar com Pix"
-                      : "Ir para o pagamento"}
-                </Button>
-              </>
+                if (onlyDigits(cep).length === 8 && opcoesFrete.length === 0 && !calculandoFrete) {
+                  await handleCalcularFrete();
+                  toast.info("Escolha a opção de frete e toque em Continuar novamente.");
+                } else if (onlyDigits(cep).length !== 8) {
+                  toast.error("Digite seu CEP e toque em Calcular para ver o frete.");
+                } else {
+                  toast.error("Escolha uma opção de frete para continuar.");
+                }
+              }}
+              className="w-full"
+              style={{ background: samkhyaTokens.ouro, color: "#fff" }}
+            >
+              Continuar
+            </Button>
+            {!freteSelecionado && (
+              <p className="text-xs text-center" style={{ color: samkhyaTokens.textoSec }}>
+                Calcule o frete acima para continuar.
+              </p>
             )}
           </div>
         )}
