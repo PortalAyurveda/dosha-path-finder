@@ -867,7 +867,7 @@ const CartDrawer = () => {
                 )}
               </div>
             </div>
-          ) : (
+          ) : step === "endereco" ? (
             <div className="space-y-3">
               {/* CEP resumo — já preenchido na etapa anterior */}
               <div className="flex items-center justify-between p-3 rounded-md" style={{ background: samkhyaTokens.cardBg, border: `1px solid ${samkhyaTokens.cardBorder}` }}>
@@ -884,29 +884,32 @@ const CartDrawer = () => {
                   Alterar
                 </button>
               </div>
+              {cepErro && (
+                <p className="text-xs text-red-600">{cepErro}</p>
+              )}
 
               <div className="grid grid-cols-1 gap-3">
                 <div>
                   <Label htmlFor="nome">Nome completo</Label>
-                  <Input id="nome" value={form.nome} onChange={(e) => setForm({ ...form, nome: e.target.value })} />
+                  <Input id="nome" value={form.nome} onChange={(e) => setForm({ ...form, nome: e.target.value })} className={errosEndereco.includes("nome") ? "border-red-500" : undefined} />
                 </div>
                 <div>
                   <Label htmlFor="email">Email</Label>
-                  <Input id="email" type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
+                  <Input id="email" type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className={errosEndereco.includes("email") ? "border-red-500" : undefined} />
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <Label htmlFor="tel">Telefone</Label>
-                    <Input id="tel" value={form.telefone} onChange={(e) => setForm({ ...form, telefone: maskTel(e.target.value) })} inputMode="numeric" />
+                    <Input id="tel" value={form.telefone} onChange={(e) => setForm({ ...form, telefone: maskTel(e.target.value) })} inputMode="numeric" className={errosEndereco.includes("telefone") ? "border-red-500" : undefined} />
                   </div>
                   <div>
                     <Label htmlFor="cpf">CPF</Label>
-                    <Input id="cpf" value={form.cpf} onChange={(e) => setForm({ ...form, cpf: maskCPF(e.target.value) })} inputMode="numeric" />
+                    <Input id="cpf" value={form.cpf} onChange={(e) => setForm({ ...form, cpf: maskCPF(e.target.value) })} inputMode="numeric" className={errosEndereco.includes("cpf") ? "border-red-500" : undefined} />
                   </div>
                 </div>
                 {errosEndereco.length > 0 && (
                   <p className="text-xs text-red-600">
-                    Preencha o endereço completo para continuar.
+                    Preencha os campos destacados para continuar.
                   </p>
                 )}
                 <div>
@@ -939,6 +942,99 @@ const CartDrawer = () => {
                 </div>
 
               </div>
+
+              <Button
+                onClick={() => {
+                  if (validarEtapaEndereco()) {
+                    setErrosEndereco([]);
+                    setStep("pagamento");
+                  }
+                }}
+                className="w-full"
+                style={{ background: samkhyaTokens.ouro, color: "#fff" }}
+              >
+                Continuar
+              </Button>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {/* Resumo do pedido */}
+              <div className="space-y-2 p-3 rounded-md" style={{ background: samkhyaTokens.cardBg, border: `1px solid ${samkhyaTokens.cardBorder}` }}>
+                <div className="flex justify-between text-sm">
+                  <span style={{ color: samkhyaTokens.textoSec }}>Subtotal</span>
+                  <span style={{ color: samkhyaTokens.texto }}>{formatBRL(subtotal)}</span>
+                </div>
+                {freteSelecionado && (
+                  <div className="flex justify-between text-sm">
+                    <span style={{ color: samkhyaTokens.textoSec }}>Frete</span>
+                    <span style={{ color: freteSelecionado.preco === 0 ? "#2E7D32" : samkhyaTokens.texto, fontWeight: freteSelecionado.preco === 0 ? 600 : 400 }}>
+                      {freteSelecionado.preco === 0 ? "Grátis" : formatBRL(freteSelecionado.preco)}
+                    </span>
+                  </div>
+                )}
+                {cupomAplicado && descontoCupom > 0 && (
+                  <div className="flex justify-between text-sm">
+                    <span className="text-emerald-700">Cupom {cupomAplicado.codigo}</span>
+                    <span className="text-emerald-700">−{formatBRL(descontoCupom)}</span>
+                  </div>
+                )}
+                <div className="flex justify-between text-base font-medium pt-2 border-t" style={{ borderColor: samkhyaTokens.cardBorder }}>
+                  <span style={{ color: samkhyaTokens.texto }}>Total</span>
+                  <span style={{ color: samkhyaTokens.ouroDark }}>{formatBRL(total)}</span>
+                </div>
+              </div>
+
+              {/* Forma de pagamento */}
+              <div className="pt-1">
+                <Label className="text-sm" style={{ color: samkhyaTokens.texto }}>
+                  Forma de pagamento
+                </Label>
+                <RadioGroup
+                  value={metodoPagamento}
+                  onValueChange={(v) => setMetodoPagamento(v as "pix" | "cartao" | "boleto")}
+                  className="mt-2 space-y-2"
+                >
+                  {[
+                    { id: "pix", nome: "Pix", desc: "Aprovação na hora" },
+                    { id: "cartao", nome: "Cartão de crédito", desc: "Em até 3x sem juros" },
+                    { id: "boleto", nome: "Boleto", desc: "Vence em 3 dias úteis" },
+                  ].map((op) => (
+                    <label
+                      key={op.id}
+                      className="flex items-center gap-3 p-2 rounded cursor-pointer"
+                      style={{ background: "#fff", border: `1px solid ${samkhyaTokens.cardBorder}` }}
+                    >
+                      <RadioGroupItem value={op.id} id={`pag-${op.id}`} />
+                      <div className="flex-1">
+                        <p className="text-sm" style={{ color: samkhyaTokens.texto }}>{op.nome}</p>
+                        <p className="text-xs" style={{ color: samkhyaTokens.textoSec }}>{op.desc}</p>
+                      </div>
+                    </label>
+                  ))}
+                </RadioGroup>
+              </div>
+
+              <Button
+                onClick={handleFinalizar}
+                disabled={enviando}
+                className="w-full"
+                style={{ background: samkhyaTokens.ouro, color: "#fff" }}
+              >
+                {enviando
+                  ? "Processando..."
+                  : metodoPagamento === "pix"
+                    ? "Pagar com Pix"
+                    : "Ir para o pagamento"}
+              </Button>
+
+              <button
+                type="button"
+                onClick={() => setStep("endereco")}
+                className="text-xs underline flex items-center gap-1 mx-auto"
+                style={{ color: samkhyaTokens.roxo }}
+              >
+                <ChevronLeft className="h-3 w-3" /> Voltar e revisar o endereço
+              </button>
             </div>
           )}
         </div>
