@@ -301,31 +301,49 @@ export type Database = {
       }
       akasha_memory: {
         Row: {
+          agni_nivel: number | null
+          agni_tipo: string | null
           data_postagem: string | null
           email: string | null
           id: number
+          kapha_score: number | null
+          pitta_score: number | null
           tags: string | null
           texto_inicio: string | null
           texto_resumo: string | null
           titulo: string | null
+          user_id: string | null
+          vata_score: number | null
         }
         Insert: {
+          agni_nivel?: number | null
+          agni_tipo?: string | null
           data_postagem?: string | null
           email?: string | null
           id?: number
+          kapha_score?: number | null
+          pitta_score?: number | null
           tags?: string | null
           texto_inicio?: string | null
           texto_resumo?: string | null
           titulo?: string | null
+          user_id?: string | null
+          vata_score?: number | null
         }
         Update: {
+          agni_nivel?: number | null
+          agni_tipo?: string | null
           data_postagem?: string | null
           email?: string | null
           id?: number
+          kapha_score?: number | null
+          pitta_score?: number | null
           tags?: string | null
           texto_inicio?: string | null
           texto_resumo?: string | null
           titulo?: string | null
+          user_id?: string | null
+          vata_score?: number | null
         }
         Relationships: []
       }
@@ -2648,6 +2666,7 @@ export type Database = {
           id: number
           lacuna_note: string | null
           notes: string | null
+          obra_real: string
           pdf_page: number | null
           sequence_no: number
           source_file: string | null
@@ -2667,6 +2686,7 @@ export type Database = {
           id?: never
           lacuna_note?: string | null
           notes?: string | null
+          obra_real: string
           pdf_page?: number | null
           sequence_no: number
           source_file?: string | null
@@ -2686,6 +2706,7 @@ export type Database = {
           id?: never
           lacuna_note?: string | null
           notes?: string | null
+          obra_real?: string
           pdf_page?: number | null
           sequence_no?: number
           source_file?: string | null
@@ -5511,6 +5532,7 @@ export type Database = {
           message_id: string | null
           remetente_email: string | null
           remetente_nome: string | null
+          status: string
         }
         Insert: {
           anexos?: Json
@@ -5525,6 +5547,7 @@ export type Database = {
           message_id?: string | null
           remetente_email?: string | null
           remetente_nome?: string | null
+          status?: string
         }
         Update: {
           anexos?: Json
@@ -5539,6 +5562,7 @@ export type Database = {
           message_id?: string | null
           remetente_email?: string | null
           remetente_nome?: string | null
+          status?: string
         }
         Relationships: [
           {
@@ -8144,6 +8168,48 @@ export type Database = {
         }
         Relationships: []
       }
+      seu_hoje_config: {
+        Row: {
+          id: number
+          titulo: string
+          updated_at: string | null
+        }
+        Insert: {
+          id?: number
+          titulo?: string
+          updated_at?: string | null
+        }
+        Update: {
+          id?: number
+          titulo?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      seu_hoje_modulos: {
+        Row: {
+          ativo: boolean
+          chave: string
+          created_at: string | null
+          id: string
+          ordem: number
+        }
+        Insert: {
+          ativo?: boolean
+          chave: string
+          created_at?: string | null
+          id?: string
+          ordem?: number
+        }
+        Update: {
+          ativo?: boolean
+          chave?: string
+          created_at?: string | null
+          id?: string
+          ordem?: number
+        }
+        Relationships: []
+      }
       sharangadhara_verses: {
         Row: {
           adhyaya_no: string | null
@@ -9232,28 +9298,43 @@ export type Database = {
       }
       registros_akashikos_publicos: {
         Row: {
+          agni_nivel: number | null
+          agni_tipo: string | null
           data_postagem: string | null
           id: number | null
+          kapha_score: number | null
+          pitta_score: number | null
           tags: string | null
           texto_inicio: string | null
           texto_resumo: string | null
           titulo: string | null
+          vata_score: number | null
         }
         Insert: {
+          agni_nivel?: number | null
+          agni_tipo?: string | null
           data_postagem?: string | null
           id?: number | null
+          kapha_score?: number | null
+          pitta_score?: number | null
           tags?: string | null
           texto_inicio?: string | null
           texto_resumo?: string | null
           titulo?: string | null
+          vata_score?: number | null
         }
         Update: {
+          agni_nivel?: number | null
+          agni_tipo?: string | null
           data_postagem?: string | null
           id?: number | null
+          kapha_score?: number | null
+          pitta_score?: number | null
           tags?: string | null
           texto_inicio?: string | null
           texto_resumo?: string | null
           titulo?: string | null
+          vata_score?: number | null
         }
         Relationships: []
       }
