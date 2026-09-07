@@ -377,6 +377,58 @@ const LoggedHero = () => {
     staleTime: 30 * 60 * 1000,
   });
 
+  // Título configurável do card "Seu Hoje"
+  const { data: seuHojeConfig } = useQuery({
+    queryKey: ["seu-hoje-config"],
+    queryFn: async () => {
+      const { data } = await (supabase.from("seu_hoje_config" as any) as any)
+        .select("titulo")
+        .eq("id", 1)
+        .maybeSingle();
+      return (data ?? null) as { titulo?: string | null } | null;
+    },
+    staleTime: 30 * 60 * 1000,
+  });
+
+  // Módulos rotativos ativos
+  const { data: seuHojeModulos } = useQuery({
+    queryKey: ["seu-hoje-modulos"],
+    queryFn: async () => {
+      const { data } = await (supabase.from("seu_hoje_modulos" as any) as any)
+        .select("chave, ordem")
+        .eq("ativo", true)
+        .order("ordem", { ascending: true });
+      return ((data ?? []) as { chave: string; ordem: number }[]);
+    },
+    staleTime: 30 * 60 * 1000,
+  });
+
+  // Live personalizada por dosha
+  const { data: live } = useQuery({
+    queryKey: ["seu-hoje-live", primaryDosha],
+    queryFn: async () => {
+      const base = () =>
+        (supabase.from("videos_canonicos" as any) as any)
+          .select("video_id, slug, novo_titulo, titulo_original, tags, is_live, criado_em");
+      const { data } = await base()
+        .eq("is_live", true)
+        .ilike("tags", `%${primaryDosha}%`)
+        .order("criado_em", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (data) return data;
+      const { data: fb } = await base()
+        .ilike("tags", `%${primaryDosha}%`)
+        .order("criado_em", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      return fb ?? null;
+    },
+    enabled: !!primaryDosha,
+    staleTime: 30 * 60 * 1000,
+  });
+
+
   // Preview da rotina de hoje (só quando o usuário tem acesso)
   const { data: testeId } = useQuery({
     queryKey: ["logged-hero-teste-id", doshaResult?.idPublico],
