@@ -782,61 +782,38 @@ const LoggedHero = () => {
                 </div>
               </div>
 
-              {/* Classe + progresso */}
-              <div className="mt-3 pt-3 border-t border-border">
-                <div className="flex items-baseline justify-between">
-                  <p className="font-serif font-bold text-base" style={{ color: C.primary }}>
-                    {classe}
-                  </p>
-                  <p className="text-xs text-muted-foreground">{pontos} pts</p>
-                </div>
-                <div className="mt-1.5 h-1.5 rounded-full overflow-hidden" style={{ background: `${C.primary}14` }}>
-                  <div
-                    className="h-full transition-all"
-                    style={{ width: `${progressoPct}%`, background: C.primary }}
-                  />
-                </div>
-                <p className="text-[10px] text-muted-foreground mt-1">
-                  {proximaClasse
-                    ? `${pluralPts(pontosParaProxima)} para ${proximaClasse}`
-                    : "classe máxima"}
-                </p>
-              </div>
-
-              {/* Constância */}
-              <div className="mt-3 flex items-center justify-between">
-                <div className="flex items-center gap-1.5">
-                  <Flame className="h-4 w-4" style={{ color: C.pitta }} />
-                  <span className="text-sm font-semibold" style={{ color: C.primary }}>
-                    {streak > 0 ? `Constância: ${streak} ${streak === 1 ? "dia" : "dias"}` : "Sua constância começa hoje"}
-                  </span>
-                </div>
-                {streakRecorde > 0 && (
-                  <span className="text-[10px] text-muted-foreground">recorde {streakRecorde}</span>
-                )}
-              </div>
-
-              {/* Seu cuidado de hoje */}
-              <div className="mt-3 pt-3 border-t border-border">
-                {retornoFeitoHoje ? (
-                  <div
-                    className="flex items-center gap-1.5 text-xs font-semibold"
-                    style={{ color: "hsl(var(--kapha))" }}
-                  >
-                    <Check className="h-4 w-4" /> Você já se cuidou hoje
-                  </div>
-                ) : artigo?.link_do_artigo ? (
+              {/* Módulo rotativo do dia */}
+              <div className="mt-3 pt-3 border-t border-border flex-1 flex flex-col justify-center">
+                {moduloDoDia ? (
                   <Link
-                    to={`/blog/${artigo.link_do_artigo}`}
+                    to={moduloDoDia.href}
                     onClick={(e) => e.stopPropagation()}
-                    className="flex items-start justify-between gap-2 text-xs font-semibold group"
-                    style={{ color: C.primary }}
+                    className="flex items-center gap-3 group"
                   >
-                    <span className="line-clamp-2">
-                      <span className="text-muted-foreground font-normal">Seu cuidado de hoje: </span>
-                      {artigo.title}
+                    {moduloDoDia.imagem && (
+                      <img
+                        src={moduloDoDia.imagem}
+                        alt={moduloDoDia.titulo}
+                        loading="lazy"
+                        decoding="async"
+                        className="shrink-0 w-12 h-12 rounded-xl object-cover"
+                      />
+                    )}
+                    <span className="min-w-0 flex-1">
+                      <span className="block text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                        {moduloDoDia.rotulo}
+                      </span>
+                      <span
+                        className="block text-xs font-semibold line-clamp-2"
+                        style={{ color: C.primary }}
+                      >
+                        {moduloDoDia.titulo}
+                      </span>
                     </span>
-                    <ArrowRight className="h-4 w-4 shrink-0 mt-0.5 group-hover:translate-x-0.5 transition-transform" />
+                    <ArrowRight
+                      className="h-4 w-4 shrink-0 group-hover:translate-x-0.5 transition-transform"
+                      style={{ color: C.primary }}
+                    />
                   </Link>
                 ) : (
                   <Link
@@ -849,8 +826,8 @@ const LoggedHero = () => {
                     <ArrowRight className="h-4 w-4 shrink-0 group-hover:translate-x-0.5 transition-transform" />
                   </Link>
                 )}
-
               </div>
+
 
             </div>
           </div>
