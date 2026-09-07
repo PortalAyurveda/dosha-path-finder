@@ -418,7 +418,6 @@ const Horarios = () => {
         slot="horarios_rodape"
         className="[&:empty]:hidden"
         fallback={
-          {/* Samkhya CTA */}
           <section className="py-12 bg-gradient-to-r from-primary to-primary/80 text-primary-foreground">
             <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
               <h2 className="text-2xl md:text-3xl font-serif font-bold mb-3">
@@ -436,9 +435,9 @@ const Horarios = () => {
               </a>
             </div>
           </section>
-        </>
         }
       />
+    </>
   );
 };
 

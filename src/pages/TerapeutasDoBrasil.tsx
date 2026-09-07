@@ -183,7 +183,6 @@ const TerapeutasDoBrasil = () => {
         slot="terapeutas_rodape"
         className="[&:empty]:hidden"
         fallback={
-          {/* CTA: cadastre seu perfil */}
           <section className="mt-16 mb-4 flex flex-col items-center text-center gap-3 border-t border-border pt-12">
             <h2 className="text-xl md:text-2xl font-serif font-bold text-foreground">
               É terapeuta ayurvédico?
@@ -201,9 +200,9 @@ const TerapeutasDoBrasil = () => {
               </button>
             </Link>
           </section>
-        </PageContainer>
         }
       />
+    </PageContainer>
     </>
   );
 };
