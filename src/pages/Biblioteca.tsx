@@ -172,6 +172,8 @@ const Biblioteca = () => {
             Ver terapeutas
           </Link>
         </section>
+
+        <BannerSlot slot="biblioteca_rodape" className="my-4 [&:empty]:hidden" />
       </PageContainer>
     </>
   );

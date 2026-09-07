@@ -377,6 +377,58 @@ const LoggedHero = () => {
     staleTime: 30 * 60 * 1000,
   });
 
+  // Título configurável do card "Seu Hoje"
+  const { data: seuHojeConfig } = useQuery({
+    queryKey: ["seu-hoje-config"],
+    queryFn: async () => {
+      const { data } = await (supabase.from("seu_hoje_config" as any) as any)
+        .select("titulo")
+        .eq("id", 1)
+        .maybeSingle();
+      return (data ?? null) as { titulo?: string | null } | null;
+    },
+    staleTime: 30 * 60 * 1000,
+  });
+
+  // Módulos rotativos ativos
+  const { data: seuHojeModulos } = useQuery({
+    queryKey: ["seu-hoje-modulos"],
+    queryFn: async () => {
+      const { data } = await (supabase.from("seu_hoje_modulos" as any) as any)
+        .select("chave, ordem")
+        .eq("ativo", true)
+        .order("ordem", { ascending: true });
+      return ((data ?? []) as { chave: string; ordem: number }[]);
+    },
+    staleTime: 30 * 60 * 1000,
+  });
+
+  // Live personalizada por dosha
+  const { data: live } = useQuery({
+    queryKey: ["seu-hoje-live", primaryDosha],
+    queryFn: async () => {
+      const base = () =>
+        (supabase.from("videos_canonicos" as any) as any)
+          .select("video_id, slug, novo_titulo, titulo_original, tags, is_live, criado_em");
+      const { data } = await base()
+        .eq("is_live", true)
+        .ilike("tags", `%${primaryDosha}%`)
+        .order("criado_em", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (data) return data;
+      const { data: fb } = await base()
+        .ilike("tags", `%${primaryDosha}%`)
+        .order("criado_em", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      return fb ?? null;
+    },
+    enabled: !!primaryDosha,
+    staleTime: 30 * 60 * 1000,
+  });
+
+
   // Preview da rotina de hoje (só quando o usuário tem acesso)
   const { data: testeId } = useQuery({
     queryKey: ["logged-hero-teste-id", doshaResult?.idPublico],
@@ -474,6 +526,40 @@ const LoggedHero = () => {
 
   const pluralPts = (n: number | null | undefined) =>
     n === 1 ? "falta 1 pt" : `faltam ${n ?? 0} pts`;
+
+  // Módulos elegíveis do card "Seu Hoje" (1 por dia, igual aos banners)
+  const moduloDoDia = (() => {
+    const liveAny = live as any;
+    const candidatos = (seuHojeModulos ?? [])
+      .map((m) => {
+        if (m.chave === "artigo" && artigo?.link_do_artigo) {
+          return {
+            rotulo: "Seu cuidado de hoje",
+            titulo: artigo.title as string,
+            href: `/blog/${artigo.link_do_artigo}`,
+            imagem: (artigo as any).image_url ?? null,
+          };
+        }
+        if (m.chave === "live" && liveAny?.slug) {
+          return {
+            rotulo: "Live pra você",
+            titulo: (liveAny.novo_titulo ?? liveAny.titulo_original ?? "Assista agora") as string,
+            href: `/video/${liveAny.slug}`,
+            imagem: liveAny.video_id
+              ? `https://img.youtube.com/vi/${liveAny.video_id}/mqdefault.jpg`
+              : null,
+          };
+        }
+        return null;
+      })
+      .filter(Boolean) as { rotulo: string; titulo: string; href: string; imagem: string | null }[];
+    if (candidatos.length === 0) return null;
+    const now = new Date();
+    const start = new Date(now.getFullYear(), 0, 0);
+    const dayOfYear = Math.floor((now.getTime() - start.getTime()) / 86400000);
+    return candidatos[dayOfYear % candidatos.length];
+  })();
+
 
 
   return (
@@ -679,7 +765,7 @@ const LoggedHero = () => {
                   navigate(meuDoshaBase);
                 }
               }}
-              className="bg-card border border-border shadow-md p-4 md:p-5 h-full cursor-pointer transition-all hover:-translate-y-0.5 hover:shadow-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+              className="bg-card border border-border shadow-md p-4 md:p-5 h-full flex flex-col cursor-pointer transition-all hover:-translate-y-0.5 hover:shadow-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
               style={{
                 borderTopLeftRadius: "1.5rem",
                 borderBottomRightRadius: "1.5rem",
@@ -689,7 +775,8 @@ const LoggedHero = () => {
             >
 
               <div className="flex items-center justify-between mb-2">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Seu Hoje</p>
+                <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">{seuHojeConfig?.titulo ?? "Seu Hoje"}</p>
+
                 {seloTerapeuta && (
                   <span
                     className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full"
@@ -730,61 +817,38 @@ const LoggedHero = () => {
                 </div>
               </div>
 
-              {/* Classe + progresso */}
-              <div className="mt-3 pt-3 border-t border-border">
-                <div className="flex items-baseline justify-between">
-                  <p className="font-serif font-bold text-base" style={{ color: C.primary }}>
-                    {classe}
-                  </p>
-                  <p className="text-xs text-muted-foreground">{pontos} pts</p>
-                </div>
-                <div className="mt-1.5 h-1.5 rounded-full overflow-hidden" style={{ background: `${C.primary}14` }}>
-                  <div
-                    className="h-full transition-all"
-                    style={{ width: `${progressoPct}%`, background: C.primary }}
-                  />
-                </div>
-                <p className="text-[10px] text-muted-foreground mt-1">
-                  {proximaClasse
-                    ? `${pluralPts(pontosParaProxima)} para ${proximaClasse}`
-                    : "classe máxima"}
-                </p>
-              </div>
-
-              {/* Constância */}
-              <div className="mt-3 flex items-center justify-between">
-                <div className="flex items-center gap-1.5">
-                  <Flame className="h-4 w-4" style={{ color: C.pitta }} />
-                  <span className="text-sm font-semibold" style={{ color: C.primary }}>
-                    {streak > 0 ? `Constância: ${streak} ${streak === 1 ? "dia" : "dias"}` : "Sua constância começa hoje"}
-                  </span>
-                </div>
-                {streakRecorde > 0 && (
-                  <span className="text-[10px] text-muted-foreground">recorde {streakRecorde}</span>
-                )}
-              </div>
-
-              {/* Seu cuidado de hoje */}
-              <div className="mt-3 pt-3 border-t border-border">
-                {retornoFeitoHoje ? (
-                  <div
-                    className="flex items-center gap-1.5 text-xs font-semibold"
-                    style={{ color: "hsl(var(--kapha))" }}
-                  >
-                    <Check className="h-4 w-4" /> Você já se cuidou hoje
-                  </div>
-                ) : artigo?.link_do_artigo ? (
+              {/* Módulo rotativo do dia */}
+              <div className="mt-3 pt-3 border-t border-border flex-1 flex flex-col justify-center">
+                {moduloDoDia ? (
                   <Link
-                    to={`/blog/${artigo.link_do_artigo}`}
+                    to={moduloDoDia.href}
                     onClick={(e) => e.stopPropagation()}
-                    className="flex items-start justify-between gap-2 text-xs font-semibold group"
-                    style={{ color: C.primary }}
+                    className="flex items-center gap-3 group"
                   >
-                    <span className="line-clamp-2">
-                      <span className="text-muted-foreground font-normal">Seu cuidado de hoje: </span>
-                      {artigo.title}
+                    {moduloDoDia.imagem && (
+                      <img
+                        src={moduloDoDia.imagem}
+                        alt={moduloDoDia.titulo}
+                        loading="lazy"
+                        decoding="async"
+                        className="shrink-0 w-12 h-12 rounded-xl object-cover"
+                      />
+                    )}
+                    <span className="min-w-0 flex-1">
+                      <span className="block text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                        {moduloDoDia.rotulo}
+                      </span>
+                      <span
+                        className="block text-xs font-semibold line-clamp-2"
+                        style={{ color: C.primary }}
+                      >
+                        {moduloDoDia.titulo}
+                      </span>
                     </span>
-                    <ArrowRight className="h-4 w-4 shrink-0 mt-0.5 group-hover:translate-x-0.5 transition-transform" />
+                    <ArrowRight
+                      className="h-4 w-4 shrink-0 group-hover:translate-x-0.5 transition-transform"
+                      style={{ color: C.primary }}
+                    />
                   </Link>
                 ) : (
                   <Link
@@ -797,8 +861,8 @@ const LoggedHero = () => {
                     <ArrowRight className="h-4 w-4 shrink-0 group-hover:translate-x-0.5 transition-transform" />
                   </Link>
                 )}
-
               </div>
+
 
             </div>
           </div>

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import DoshaHeroBanner from "@/components/dosha/DoshaHeroBanner";
+import BannerSlot from "@/components/banners/BannerSlot";
 import DoshaSelector from "@/components/dosha/DoshaSelector";
 import AgravamentosSection from "@/components/dosha/AgravamentosSection";
 import DoshaSection from "@/components/dosha/DoshaSection";
@@ -54,6 +55,8 @@ const DoshaVata = ({ defaultTab = "principal" }: DoshaVataProps) => {
         activeTab={activeTab}
         onTabChange={setActiveTab}
       />
+
+      <BannerSlot slot="dosha_vata_topo" className="max-w-4xl mx-auto px-4 my-4 [&:empty]:hidden" />
 
       <div id="dosha-content" />
       {activeTab === "alimentacao" ? (
@@ -227,6 +230,7 @@ const DoshaVata = ({ defaultTab = "principal" }: DoshaVataProps) => {
           </DoshaSection>
         </>
       )}
+      <BannerSlot slot="dosha_vata_rodape" className="max-w-4xl mx-auto px-4 my-8 [&:empty]:hidden" />
     </>
   );
 };

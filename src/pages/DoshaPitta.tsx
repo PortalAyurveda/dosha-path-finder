@@ -10,6 +10,7 @@ import { pittaFoodData } from "@/data/foodData";
 import { pittaRemediesData } from "@/data/remediesData";
 import { type DoshaTab } from "@/components/dosha/DoshaNavPills";
 import DoshaHeroBanner from "@/components/dosha/DoshaHeroBanner";
+import BannerSlot from "@/components/banners/BannerSlot";
 import DoshaSelector from "@/components/dosha/DoshaSelector";
 import AgravamentosSection from "@/components/dosha/AgravamentosSection";
 import DoshaSection from "@/components/dosha/DoshaSection";
@@ -54,6 +55,8 @@ const DoshaPitta = ({ defaultTab = "principal" }: DoshaPittaProps) => {
         activeTab={activeTab}
         onTabChange={setActiveTab}
       />
+
+      <BannerSlot slot="dosha_pitta_topo" className="max-w-4xl mx-auto px-4 my-4 [&:empty]:hidden" />
 
       <div id="dosha-content" />
       {activeTab === "alimentacao" ? (
@@ -225,6 +228,7 @@ const DoshaPitta = ({ defaultTab = "principal" }: DoshaPittaProps) => {
           </DoshaSection>
         </>
       )}
+      <BannerSlot slot="dosha_pitta_rodape" className="max-w-4xl mx-auto px-4 my-8 [&:empty]:hidden" />
     </>
   );
 };

@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/contexts/UserContext";
 import PageContainer from "@/components/PageContainer";
+import BannerSlot from "@/components/banners/BannerSlot";
 import { Button } from "@/components/ui/button";
 import { getTransformedImageUrl } from "@/lib/imageTransform";
 import { Clock, PlayCircle, ShieldCheck } from "lucide-react";
@@ -233,6 +234,8 @@ const CursoLanding = () => {
           </div>
         </section>
 
+        <BannerSlot slot="curso_topo" className="max-w-3xl mx-auto px-4 my-8 [&:empty]:hidden" />
+
         {/* PROMESSA */}
         <section className="max-w-3xl mx-auto px-4 py-12 md:py-16 text-center">
           <h2 className="mb-4">A promessa</h2>
@@ -298,6 +301,8 @@ const CursoLanding = () => {
             Ayurveda aplicado ao Brasil.
           </p>
         </section>
+
+        <BannerSlot slot="curso_rodape" className="max-w-3xl mx-auto px-4 my-8 [&:empty]:hidden" />
 
         {/* INVESTIMENTO */}
         <section className="bg-muted/30 py-12 md:py-16">
