@@ -731,7 +731,7 @@ const LoggedHero = () => {
                   navigate(meuDoshaBase);
                 }
               }}
-              className="bg-card border border-border shadow-md p-4 md:p-5 h-full cursor-pointer transition-all hover:-translate-y-0.5 hover:shadow-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+              className="bg-card border border-border shadow-md p-4 md:p-5 h-full flex flex-col cursor-pointer transition-all hover:-translate-y-0.5 hover:shadow-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
               style={{
                 borderTopLeftRadius: "1.5rem",
                 borderBottomRightRadius: "1.5rem",
@@ -741,7 +741,8 @@ const LoggedHero = () => {
             >
 
               <div className="flex items-center justify-between mb-2">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Seu Hoje</p>
+                <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">{seuHojeConfig?.titulo ?? "Seu Hoje"}</p>
+
                 {seloTerapeuta && (
                   <span
                     className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full"
