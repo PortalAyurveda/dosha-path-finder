@@ -4,6 +4,7 @@ import { ExternalLink } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import DoshaSelector from "@/components/dosha/DoshaSelector";
 import DoshaClock from "@/components/dosha/DoshaClock";
+import BannerSlot from "@/components/banners/BannerSlot";
 
 const wisdomCards = [
   {
@@ -190,6 +191,8 @@ const Horarios = () => {
           </div>
         </div>
       </section>
+
+      <BannerSlot slot="horarios_topo" className="max-w-6xl mx-auto px-4 sm:px-6 my-6 [&:empty]:hidden" />
 
       {/* Wisdom cards */}
       <section id="fisiologia" className="py-12 bg-surface-sun/50">
@@ -411,25 +414,31 @@ const Horarios = () => {
         </div>
       </section>
 
-      {/* Samkhya CTA */}
-      <section className="py-12 bg-gradient-to-r from-primary to-primary/80 text-primary-foreground">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
-          <h2 className="text-2xl md:text-3xl font-serif font-bold mb-3">
-            Potencialize sua Rotina com a Loja Samkhya
-          </h2>
-          <p className="text-white/80 max-w-xl mx-auto mb-6 text-sm md:text-base">
-            Acesse formulações autênticas desenvolvidas clinicamente. De especiarias a composições como o Madhu Anti-Kapha, Anti-Pitta e Anti-Vata, encontre o veículo perfeito para tratar a raiz do seu desequilíbrio metabólico.
-          </p>
-          <a
-            href="/samkhya"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-secondary text-secondary-foreground font-bold text-sm hover:opacity-90 transition-opacity"
-          >
-            <ExternalLink className="h-4 w-4" />
-            Acessar a Loja Oficial
-          </a>
-        </div>
-      </section>
-    </>
+      <BannerSlot
+        slot="horarios_rodape"
+        className="[&:empty]:hidden"
+        fallback={
+          {/* Samkhya CTA */}
+          <section className="py-12 bg-gradient-to-r from-primary to-primary/80 text-primary-foreground">
+            <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
+              <h2 className="text-2xl md:text-3xl font-serif font-bold mb-3">
+                Potencialize sua Rotina com a Loja Samkhya
+              </h2>
+              <p className="text-white/80 max-w-xl mx-auto mb-6 text-sm md:text-base">
+                Acesse formulações autênticas desenvolvidas clinicamente. De especiarias a composições como o Madhu Anti-Kapha, Anti-Pitta e Anti-Vata, encontre o veículo perfeito para tratar a raiz do seu desequilíbrio metabólico.
+              </p>
+              <a
+                href="/samkhya"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-secondary text-secondary-foreground font-bold text-sm hover:opacity-90 transition-opacity"
+              >
+                <ExternalLink className="h-4 w-4" />
+                Acessar a Loja Oficial
+              </a>
+            </div>
+          </section>
+        </>
+        }
+      />
   );
 };
 

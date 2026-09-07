@@ -191,6 +191,8 @@ const Samkhya = () => {
                 ))}
               </div>
             </section>
+
+            <BannerSlot slot="samkhya_kits_rodape" className="my-10 [&:empty]:hidden" />
           </>
         )}
       </SamkhyaLayout>

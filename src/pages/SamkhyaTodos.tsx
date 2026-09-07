@@ -5,6 +5,7 @@ import { ChevronLeft } from "lucide-react";
 import { lojaSupabase, type LojaProduto } from "@/integrations/supabase/loja-client";
 import SamkhyaLayout from "@/components/samkhya/SamkhyaLayout";
 import MinimalProductCard from "@/components/samkhya/MinimalProductCard";
+import BannerSlot from "@/components/banners/BannerSlot";
 import { samkhyaTokens } from "@/components/samkhya/tokens";
 
 const SamkhyaTodos = () => {
@@ -64,6 +65,8 @@ const SamkhyaTodos = () => {
           </p>
         </div>
 
+        <BannerSlot slot="samkhya_todos_topo" className="mb-8 [&:empty]:hidden" />
+
         {loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-10">
             {Array.from({ length: 6 }).map((_, i) => (
@@ -88,6 +91,8 @@ const SamkhyaTodos = () => {
             ))}
           </div>
         )}
+
+        <BannerSlot slot="samkhya_todos_rodape" className="mt-12 [&:empty]:hidden" />
       </SamkhyaLayout>
     </>
   );

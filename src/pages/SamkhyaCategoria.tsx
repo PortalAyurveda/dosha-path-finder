@@ -11,6 +11,7 @@ import {
 import SamkhyaLayout from "@/components/samkhya/SamkhyaLayout";
 import MinimalProductCard from "@/components/samkhya/MinimalProductCard";
 import KitCard from "@/components/samkhya/KitCard";
+import BannerSlot from "@/components/banners/BannerSlot";
 import { samkhyaTokens } from "@/components/samkhya/tokens";
 
 const DOSHA_SLUGS = new Set(["vata", "pitta", "kapha"]);
@@ -95,6 +96,8 @@ const SamkhyaCategoria = () => {
           )}
         </div>
 
+        <BannerSlot slot="samkhya_categoria_topo" className="mb-8 [&:empty]:hidden" />
+
         {loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-10">
             {Array.from({ length: 6 }).map((_, i) => (
@@ -146,6 +149,8 @@ const SamkhyaCategoria = () => {
             )}
           </>
         )}
+
+        <BannerSlot slot="samkhya_categoria_rodape" className="mt-12 [&:empty]:hidden" />
       </SamkhyaLayout>
     </>
   );

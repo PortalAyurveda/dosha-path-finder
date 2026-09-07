@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import Seo from "@/components/Seo";
+import BannerSlot from "@/components/banners/BannerSlot";
 
 const TerapeutasDoBrasil = () => {
   const [search, setSearch] = useState("");
@@ -91,6 +92,8 @@ const TerapeutasDoBrasil = () => {
       >
         Terapeutas do Brasil
       </SectionTitle>
+
+      <BannerSlot slot="terapeutas_topo" className="my-6 [&:empty]:hidden" />
 
       {/* Search & Filters */}
       <div className="mb-8 space-y-3">
@@ -176,25 +179,31 @@ const TerapeutasDoBrasil = () => {
         </div>
       )}
 
-      {/* CTA: cadastre seu perfil */}
-      <section className="mt-16 mb-4 flex flex-col items-center text-center gap-3 border-t border-border pt-12">
-        <h2 className="text-xl md:text-2xl font-serif font-bold text-foreground">
-          É terapeuta ayurvédico?
-        </h2>
-        <p className="text-sm text-muted-foreground max-w-md">
-          Cadastre seu perfil gratuitamente e seja encontrado por pessoas em busca dos seus serviços.
-        </p>
-        <Link to="/terapeutas-do-brasil/cadastro">
-          <button
-            className="inline-flex items-center justify-center gap-2 font-bold text-sm uppercase tracking-wide px-8 py-4 mt-2 shadow-md hover:shadow-xl transition-all hover:scale-[1.03] rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm text-white"
-            style={{ background: "#FF7676" }}
-          >
-            <UserPlus className="h-4 w-4" />
-            Cadastre seu perfil
-          </button>
-        </Link>
-      </section>
-    </PageContainer>
+      <BannerSlot
+        slot="terapeutas_rodape"
+        className="[&:empty]:hidden"
+        fallback={
+          {/* CTA: cadastre seu perfil */}
+          <section className="mt-16 mb-4 flex flex-col items-center text-center gap-3 border-t border-border pt-12">
+            <h2 className="text-xl md:text-2xl font-serif font-bold text-foreground">
+              É terapeuta ayurvédico?
+            </h2>
+            <p className="text-sm text-muted-foreground max-w-md">
+              Cadastre seu perfil gratuitamente e seja encontrado por pessoas em busca dos seus serviços.
+            </p>
+            <Link to="/terapeutas-do-brasil/cadastro">
+              <button
+                className="inline-flex items-center justify-center gap-2 font-bold text-sm uppercase tracking-wide px-8 py-4 mt-2 shadow-md hover:shadow-xl transition-all hover:scale-[1.03] rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm text-white"
+                style={{ background: "#FF7676" }}
+              >
+                <UserPlus className="h-4 w-4" />
+                Cadastre seu perfil
+              </button>
+            </Link>
+          </section>
+        </PageContainer>
+        }
+      />
     </>
   );
 };
