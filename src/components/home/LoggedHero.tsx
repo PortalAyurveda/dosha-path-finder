@@ -527,6 +527,40 @@ const LoggedHero = () => {
   const pluralPts = (n: number | null | undefined) =>
     n === 1 ? "falta 1 pt" : `faltam ${n ?? 0} pts`;
 
+  // Módulos elegíveis do card "Seu Hoje" (1 por dia, igual aos banners)
+  const moduloDoDia = (() => {
+    const liveAny = live as any;
+    const candidatos = (seuHojeModulos ?? [])
+      .map((m) => {
+        if (m.chave === "artigo" && artigo?.link_do_artigo) {
+          return {
+            rotulo: "Seu cuidado de hoje",
+            titulo: artigo.title as string,
+            href: `/blog/${artigo.link_do_artigo}`,
+            imagem: (artigo as any).image_url ?? null,
+          };
+        }
+        if (m.chave === "live" && liveAny?.slug) {
+          return {
+            rotulo: "Live pra você",
+            titulo: (liveAny.novo_titulo ?? liveAny.titulo_original ?? "Assista agora") as string,
+            href: `/video/${liveAny.slug}`,
+            imagem: liveAny.video_id
+              ? `https://img.youtube.com/vi/${liveAny.video_id}/mqdefault.jpg`
+              : null,
+          };
+        }
+        return null;
+      })
+      .filter(Boolean) as { rotulo: string; titulo: string; href: string; imagem: string | null }[];
+    if (candidatos.length === 0) return null;
+    const now = new Date();
+    const start = new Date(now.getFullYear(), 0, 0);
+    const dayOfYear = Math.floor((now.getTime() - start.getTime()) / 86400000);
+    return candidatos[dayOfYear % candidatos.length];
+  })();
+
+
 
   return (
     <section
