@@ -527,14 +527,15 @@ const LoggedHero = () => {
   const pluralPts = (n: number | null | undefined) =>
     n === 1 ? "falta 1 pt" : `faltam ${n ?? 0} pts`;
 
-  // Módulos elegíveis do card "Seu Hoje" (1 por dia, igual aos banners)
-  const moduloDoDia = (() => {
+  // Módulos elegíveis do card "Seu Hoje" (lista completa)
+  const modulosDoDia = (() => {
     const liveAny = live as any;
     const artigoAny = artigo as any;
-    const candidatos = (seuHojeModulos ?? [])
+    return (seuHojeModulos ?? [])
       .map((m) => {
         if (m.chave === "artigo" && artigo?.link_do_artigo) {
           return {
+            chave: "artigo",
             rotulo: "Seu cuidado de hoje",
             titulo: artigo.title as string,
             resumo: (artigoAny?.meta_description as string | null) ?? null,
@@ -544,6 +545,7 @@ const LoggedHero = () => {
         }
         if (m.chave === "live" && liveAny?.slug) {
           return {
+            chave: "live",
             rotulo: "Live pra você",
             titulo: (liveAny.novo_titulo ?? liveAny.titulo_original ?? "Assista agora") as string,
             resumo: (liveAny.mini_resumo as string | null) ?? null,
@@ -555,12 +557,7 @@ const LoggedHero = () => {
         }
         return null;
       })
-      .filter(Boolean) as { rotulo: string; titulo: string; resumo: string | null; href: string; imagem: string | null }[];
-    if (candidatos.length === 0) return null;
-    const now = new Date();
-    const start = new Date(now.getFullYear(), 0, 0);
-    const dayOfYear = Math.floor((now.getTime() - start.getTime()) / 86400000);
-    return candidatos[dayOfYear % candidatos.length];
+      .filter(Boolean) as { chave: string; rotulo: string; titulo: string; resumo: string | null; href: string; imagem: string | null }[];
   })();
 
 
@@ -820,51 +817,38 @@ const LoggedHero = () => {
                 </div>
               </div>
 
-              {/* Módulo rotativo do dia */}
-              <div className="mt-3 pt-3 border-t border-border flex-1 flex flex-col justify-center">
-                {moduloDoDia ? (
-                  <Link
-                    to={moduloDoDia.href}
-                    onClick={(e) => e.stopPropagation()}
-                    className="flex items-center gap-3 group"
-                  >
-                    {moduloDoDia.imagem && (
-                      <img
-                        src={moduloDoDia.imagem}
-                        alt={moduloDoDia.titulo}
-                        loading="lazy"
-                        decoding="async"
-                        className="shrink-0 w-20 h-20 rounded-xl object-cover"
-                      />
-                    )}
-                    <span className="min-w-0 flex-1">
-                      <span className="block text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-                        {moduloDoDia.rotulo}
-                      </span>
-                      <span
-                        className="block text-xs font-semibold line-clamp-2"
-                        style={{ color: C.primary }}
-                      >
-                        {moduloDoDia.titulo}
-                      </span>
-                      {moduloDoDia.resumo && (
-                        <span className="block text-[11px] text-muted-foreground line-clamp-2 mt-0.5">
-                          {moduloDoDia.resumo}
-                        </span>
+              {/* Módulos do card "Seu Hoje" */}
+              <div className="mt-3 pt-3 border-t border-border flex-1 flex flex-col justify-center gap-2.5">
+                {modulosDoDia.length > 0 ? (
+                  modulosDoDia.map((mod) => (
+                    <Link
+                      key={mod.chave}
+                      to={mod.href}
+                      onClick={(e) => e.stopPropagation()}
+                      className="flex items-center gap-3 group rounded-xl p-2.5"
+                      style={{ background: `${C.primary}08` }}
+                    >
+                      {mod.imagem && (
+                        <img
+                          src={mod.imagem}
+                          alt={mod.titulo}
+                          loading="lazy"
+                          decoding="async"
+                          className="shrink-0 w-14 h-14 rounded-lg object-cover"
+                        />
                       )}
-                    </span>
-                    <ArrowRight
-                      className="h-4 w-4 shrink-0 group-hover:translate-x-0.5 transition-transform"
-                      style={{ color: C.primary }}
-                    />
-                  </Link>
+                      <span className="min-w-0 flex-1">
+                        <span className="block text-[10px] font-bold uppercase tracking-wider text-muted-foreground">{mod.rotulo}</span>
+                        <span className="block text-xs font-semibold line-clamp-1" style={{ color: C.primary }}>{mod.titulo}</span>
+                        {mod.resumo && (
+                          <span className="block text-[11px] text-muted-foreground line-clamp-1 mt-0.5">{mod.resumo}</span>
+                        )}
+                      </span>
+                      <ArrowRight className="h-4 w-4 shrink-0 group-hover:translate-x-0.5 transition-transform" style={{ color: C.primary }} />
+                    </Link>
+                  ))
                 ) : (
-                  <Link
-                    to="/blog"
-                    onClick={(e) => e.stopPropagation()}
-                    className="flex items-center justify-between gap-2 text-xs font-semibold group"
-                    style={{ color: C.primary }}
-                  >
+                  <Link to="/blog" onClick={(e) => e.stopPropagation()} className="flex items-center justify-between gap-2 text-xs font-semibold group" style={{ color: C.primary }}>
                     <span>Seu cuidado de hoje</span>
                     <ArrowRight className="h-4 w-4 shrink-0 group-hover:translate-x-0.5 transition-transform" />
                   </Link>
