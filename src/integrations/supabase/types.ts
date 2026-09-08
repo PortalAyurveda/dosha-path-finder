@@ -8193,6 +8193,7 @@ export type Database = {
           created_at: string | null
           id: string
           ordem: number
+          rotulo: string | null
         }
         Insert: {
           ativo?: boolean
@@ -8200,6 +8201,7 @@ export type Database = {
           created_at?: string | null
           id?: string
           ordem?: number
+          rotulo?: string | null
         }
         Update: {
           ativo?: boolean
@@ -8207,6 +8209,7 @@ export type Database = {
           created_at?: string | null
           id?: string
           ordem?: number
+          rotulo?: string | null
         }
         Relationships: []
       }
