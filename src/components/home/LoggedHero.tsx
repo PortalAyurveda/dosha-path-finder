@@ -359,7 +359,7 @@ const LoggedHero = () => {
     queryFn: async () => {
       const { data } = await supabase
         .from("portal_conteudo")
-        .select("id, title, link_do_artigo, image_url, tags")
+        .select("id, title, link_do_artigo, image_url, tags, meta_description")
         .ilike("tags", `%${primaryDosha}%`)
         .order("created_at", { ascending: false })
         .limit(1)
@@ -367,7 +367,7 @@ const LoggedHero = () => {
       if (data) return data;
       const { data: fb } = await supabase
         .from("portal_conteudo")
-        .select("id, title, link_do_artigo, image_url, tags")
+        .select("id, title, link_do_artigo, image_url, tags, meta_description")
         .order("created_at", { ascending: false })
         .limit(1)
         .maybeSingle();
@@ -409,7 +409,7 @@ const LoggedHero = () => {
     queryFn: async () => {
       const base = () =>
         (supabase.from("videos_canonicos" as any) as any)
-          .select("video_id, slug, novo_titulo, titulo_original, tags, is_live, criado_em");
+          .select("video_id, slug, novo_titulo, titulo_original, tags, is_live, criado_em, mini_resumo");
       const { data } = await base()
         .eq("is_live", true)
         .ilike("tags", `%${primaryDosha}%`)
@@ -530,20 +530,23 @@ const LoggedHero = () => {
   // Módulos elegíveis do card "Seu Hoje" (1 por dia, igual aos banners)
   const moduloDoDia = (() => {
     const liveAny = live as any;
+    const artigoAny = artigo as any;
     const candidatos = (seuHojeModulos ?? [])
       .map((m) => {
         if (m.chave === "artigo" && artigo?.link_do_artigo) {
           return {
             rotulo: "Seu cuidado de hoje",
             titulo: artigo.title as string,
+            resumo: (artigoAny?.meta_description as string | null) ?? null,
             href: `/blog/${artigo.link_do_artigo}`,
-            imagem: (artigo as any).image_url ?? null,
+            imagem: (artigoAny?.image_url as string | null) ?? null,
           };
         }
         if (m.chave === "live" && liveAny?.slug) {
           return {
             rotulo: "Live pra você",
             titulo: (liveAny.novo_titulo ?? liveAny.titulo_original ?? "Assista agora") as string,
+            resumo: (liveAny.mini_resumo as string | null) ?? null,
             href: `/video/${liveAny.slug}`,
             imagem: liveAny.video_id
               ? `https://img.youtube.com/vi/${liveAny.video_id}/mqdefault.jpg`
@@ -552,7 +555,7 @@ const LoggedHero = () => {
         }
         return null;
       })
-      .filter(Boolean) as { rotulo: string; titulo: string; href: string; imagem: string | null }[];
+      .filter(Boolean) as { rotulo: string; titulo: string; resumo: string | null; href: string; imagem: string | null }[];
     if (candidatos.length === 0) return null;
     const now = new Date();
     const start = new Date(now.getFullYear(), 0, 0);
@@ -831,7 +834,7 @@ const LoggedHero = () => {
                         alt={moduloDoDia.titulo}
                         loading="lazy"
                         decoding="async"
-                        className="shrink-0 w-12 h-12 rounded-xl object-cover"
+                        className="shrink-0 w-20 h-20 rounded-xl object-cover"
                       />
                     )}
                     <span className="min-w-0 flex-1">
@@ -844,6 +847,11 @@ const LoggedHero = () => {
                       >
                         {moduloDoDia.titulo}
                       </span>
+                      {moduloDoDia.resumo && (
+                        <span className="block text-[11px] text-muted-foreground line-clamp-2 mt-0.5">
+                          {moduloDoDia.resumo}
+                        </span>
+                      )}
                     </span>
                     <ArrowRight
                       className="h-4 w-4 shrink-0 group-hover:translate-x-0.5 transition-transform"
