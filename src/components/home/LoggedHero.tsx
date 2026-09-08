@@ -527,14 +527,15 @@ const LoggedHero = () => {
   const pluralPts = (n: number | null | undefined) =>
     n === 1 ? "falta 1 pt" : `faltam ${n ?? 0} pts`;
 
-  // Módulos elegíveis do card "Seu Hoje" (1 por dia, igual aos banners)
-  const moduloDoDia = (() => {
+  // Módulos elegíveis do card "Seu Hoje" (lista completa)
+  const modulosDoDia = (() => {
     const liveAny = live as any;
     const artigoAny = artigo as any;
-    const candidatos = (seuHojeModulos ?? [])
+    return (seuHojeModulos ?? [])
       .map((m) => {
         if (m.chave === "artigo" && artigo?.link_do_artigo) {
           return {
+            chave: "artigo",
             rotulo: "Seu cuidado de hoje",
             titulo: artigo.title as string,
             resumo: (artigoAny?.meta_description as string | null) ?? null,
@@ -544,6 +545,7 @@ const LoggedHero = () => {
         }
         if (m.chave === "live" && liveAny?.slug) {
           return {
+            chave: "live",
             rotulo: "Live pra você",
             titulo: (liveAny.novo_titulo ?? liveAny.titulo_original ?? "Assista agora") as string,
             resumo: (liveAny.mini_resumo as string | null) ?? null,
@@ -555,12 +557,7 @@ const LoggedHero = () => {
         }
         return null;
       })
-      .filter(Boolean) as { rotulo: string; titulo: string; resumo: string | null; href: string; imagem: string | null }[];
-    if (candidatos.length === 0) return null;
-    const now = new Date();
-    const start = new Date(now.getFullYear(), 0, 0);
-    const dayOfYear = Math.floor((now.getTime() - start.getTime()) / 86400000);
-    return candidatos[dayOfYear % candidatos.length];
+      .filter(Boolean) as { chave: string; rotulo: string; titulo: string; resumo: string | null; href: string; imagem: string | null }[];
   })();
 
 
