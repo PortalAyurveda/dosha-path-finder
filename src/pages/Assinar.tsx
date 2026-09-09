@@ -550,13 +550,15 @@ const Assinar = () => {
           >
             {loadingPlan === plano ? "Redirecionando…" : label}
           </button>
-          <button
-            onClick={() => abrirPix(plano)}
-            className="mt-2 w-full text-[12px] underline underline-offset-4"
-            style={{ color: PRIMARY, fontFamily: "'DM Sans', sans-serif" }}
-          >
-            ou pague com Pix
-          </button>
+          {plano === "anual" && (
+            <button
+              onClick={() => abrirPix(plano)}
+              className="mt-2 w-full text-[12px] underline underline-offset-4"
+              style={{ color: PRIMARY, fontFamily: "'DM Sans', sans-serif" }}
+            >
+              ou pague com Pix
+            </button>
+          )}
         </div>
       );
     }
