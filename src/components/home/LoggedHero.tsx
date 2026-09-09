@@ -481,37 +481,23 @@ const LoggedHero = () => {
   const pluralPts = (n: number | null | undefined) =>
     n === 1 ? "falta 1 pt" : `faltam ${n ?? 0} pts`;
 
-  // Módulos elegíveis do card "Seu Hoje" (lista completa)
+  // Módulos elegíveis do card "Seu Hoje" — HTML livre, igual aos banners
   const modulosDoDia = (() => {
-    const liveAny = live as any;
-    const artigoAny = artigo as any;
+    const doshaAtual = primaryDosha.toLowerCase();
     return (seuHojeModulos ?? [])
-      .map((m) => {
-        if (m.chave === "artigo" && artigo?.link_do_artigo) {
-          return {
-            chave: "artigo",
-            rotulo: "Seu cuidado de hoje",
-            titulo: artigo.title as string,
-            resumo: (artigoAny?.meta_description as string | null) ?? null,
-            href: `/blog/${artigo.link_do_artigo}`,
-            imagem: (artigoAny?.image_url as string | null) ?? null,
-          };
-        }
-        if (m.chave === "live" && liveAny?.slug) {
-          return {
-            chave: "live",
-            rotulo: "Live pra você",
-            titulo: (liveAny.novo_titulo ?? liveAny.titulo_original ?? "Assista agora") as string,
-            resumo: (liveAny.mini_resumo as string | null) ?? null,
-            href: `/video/${liveAny.slug}`,
-            imagem: liveAny.video_id
-              ? `https://img.youtube.com/vi/${liveAny.video_id}/mqdefault.jpg`
-              : null,
-          };
-        }
-        return null;
+      .filter((m) => {
+        const tags = m.tags ?? [];
+        if (tags.length === 0) return true;
+        return tags.some((t) => t.toLowerCase() === "todos" || t.toLowerCase() === doshaAtual);
       })
-      .filter(Boolean) as { chave: string; rotulo: string; titulo: string; resumo: string | null; href: string; imagem: string | null }[];
+      .filter((m) => !!m.html)
+      .map((m) => ({
+        chave: m.chave,
+        cleanHtml: DOMPurify.sanitize(m.html as string, {
+          ADD_ATTR: ["target", "class"],
+          ADD_TAGS: ["svg", "path", "circle", "rect", "g", "line", "polyline", "polygon", "defs", "use"],
+        }),
+      }));
   })();
 
 
