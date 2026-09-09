@@ -1700,6 +1700,7 @@ export type Database = {
           pdf_page: number | null
           sequence_no: number | null
           source_file: string | null
+          sthana: string | null
           translation_pt: string | null
           verse_no: string | null
           verse_sanskrit: string | null
@@ -1721,6 +1722,7 @@ export type Database = {
           pdf_page?: number | null
           sequence_no?: number | null
           source_file?: string | null
+          sthana?: string | null
           translation_pt?: string | null
           verse_no?: string | null
           verse_sanskrit?: string | null
@@ -1742,6 +1744,7 @@ export type Database = {
           pdf_page?: number | null
           sequence_no?: number | null
           source_file?: string | null
+          sthana?: string | null
           translation_pt?: string | null
           verse_no?: string | null
           verse_sanskrit?: string | null
@@ -5134,6 +5137,7 @@ export type Database = {
           pdf_page: number | null
           sequence_no: number | null
           source_file: string | null
+          sthana: string | null
           translation_pt: string | null
           verse_no: string | null
           verse_sanskrit: string
@@ -5158,6 +5162,7 @@ export type Database = {
           pdf_page?: number | null
           sequence_no?: number | null
           source_file?: string | null
+          sthana?: string | null
           translation_pt?: string | null
           verse_no?: string | null
           verse_sanskrit: string
@@ -5182,6 +5187,7 @@ export type Database = {
           pdf_page?: number | null
           sequence_no?: number | null
           source_file?: string | null
+          sthana?: string | null
           translation_pt?: string | null
           verse_no?: string | null
           verse_sanskrit?: string
@@ -8191,25 +8197,43 @@ export type Database = {
           ativo: boolean
           chave: string
           created_at: string | null
+          href: string | null
+          html: string | null
           id: string
+          imagem: string | null
           ordem: number
+          resumo: string | null
           rotulo: string | null
+          tags: string[]
+          titulo: string | null
         }
         Insert: {
           ativo?: boolean
           chave: string
           created_at?: string | null
+          href?: string | null
+          html?: string | null
           id?: string
+          imagem?: string | null
           ordem?: number
+          resumo?: string | null
           rotulo?: string | null
+          tags?: string[]
+          titulo?: string | null
         }
         Update: {
           ativo?: boolean
           chave?: string
           created_at?: string | null
+          href?: string | null
+          html?: string | null
           id?: string
+          imagem?: string | null
           ordem?: number
+          resumo?: string | null
           rotulo?: string | null
+          tags?: string[]
+          titulo?: string | null
         }
         Relationships: []
       }
@@ -8335,6 +8359,7 @@ export type Database = {
           pdf_page: number | null
           sequence_no: number | null
           source_file: string | null
+          sthana: string | null
           translation_pt: string | null
           verse_no: string | null
           verse_sanskrit: string | null
@@ -8355,6 +8380,7 @@ export type Database = {
           pdf_page?: number | null
           sequence_no?: number | null
           source_file?: string | null
+          sthana?: string | null
           translation_pt?: string | null
           verse_no?: string | null
           verse_sanskrit?: string | null
@@ -8375,6 +8401,7 @@ export type Database = {
           pdf_page?: number | null
           sequence_no?: number | null
           source_file?: string | null
+          sthana?: string | null
           translation_pt?: string | null
           verse_no?: string | null
           verse_sanskrit?: string | null
@@ -8869,6 +8896,78 @@ export type Database = {
           tipo?: string
           titulo?: string | null
           user_id?: string
+        }
+        Relationships: []
+      }
+      versos_curadoria: {
+        Row: {
+          autonomia: number | null
+          book: string
+          chapter_name: string | null
+          clareza_publica: number | null
+          created_at: string | null
+          curador_agente: string | null
+          dosha_relacao: string[] | null
+          especificidade_clinica: number | null
+          id: number
+          importancia_canonica: number | null
+          nivel: string
+          pergunta_reflexiva: string | null
+          resumo_pt: string
+          sinal_externo: string | null
+          sthana: string | null
+          temas: string[] | null
+          valor_reflexivo: number | null
+          verse_id: number
+          verse_no: string | null
+          verse_sanskrit_preview: string | null
+          why_selected: string
+        }
+        Insert: {
+          autonomia?: number | null
+          book: string
+          chapter_name?: string | null
+          clareza_publica?: number | null
+          created_at?: string | null
+          curador_agente?: string | null
+          dosha_relacao?: string[] | null
+          especificidade_clinica?: number | null
+          id?: never
+          importancia_canonica?: number | null
+          nivel: string
+          pergunta_reflexiva?: string | null
+          resumo_pt: string
+          sinal_externo?: string | null
+          sthana?: string | null
+          temas?: string[] | null
+          valor_reflexivo?: number | null
+          verse_id: number
+          verse_no?: string | null
+          verse_sanskrit_preview?: string | null
+          why_selected: string
+        }
+        Update: {
+          autonomia?: number | null
+          book?: string
+          chapter_name?: string | null
+          clareza_publica?: number | null
+          created_at?: string | null
+          curador_agente?: string | null
+          dosha_relacao?: string[] | null
+          especificidade_clinica?: number | null
+          id?: never
+          importancia_canonica?: number | null
+          nivel?: string
+          pergunta_reflexiva?: string | null
+          resumo_pt?: string
+          sinal_externo?: string | null
+          sthana?: string | null
+          temas?: string[] | null
+          valor_reflexivo?: number | null
+          verse_id?: number
+          verse_no?: string | null
+          verse_sanskrit_preview?: string | null
+          why_selected?: string
         }
         Relationships: []
       }
@@ -9702,6 +9801,13 @@ export type Database = {
         Returns: string[]
       }
       agenda_destinatarios: {
+        Args: { p_comunicacao_id: string }
+        Returns: {
+          email: string
+          payload: Json
+        }[]
+      }
+      agenda_destinatarios_alunos: {
         Args: { p_comunicacao_id: string }
         Returns: {
           email: string
