@@ -354,29 +354,6 @@ const LoggedHero = () => {
     staleTime: 60 * 60 * 1000,
   });
 
-  // Artigo & vídeo personalizado (mantidos)
-  const { data: artigo } = useQuery({
-    queryKey: ["logged-hero-artigo", primaryDosha],
-    queryFn: async () => {
-      const { data } = await supabase
-        .from("portal_conteudo")
-        .select("id, title, link_do_artigo, image_url, tags, meta_description")
-        .ilike("tags", `%${primaryDosha}%`)
-        .order("created_at", { ascending: false })
-        .limit(1)
-        .maybeSingle();
-      if (data) return data;
-      const { data: fb } = await supabase
-        .from("portal_conteudo")
-        .select("id, title, link_do_artigo, image_url, tags, meta_description")
-        .order("created_at", { ascending: false })
-        .limit(1)
-        .maybeSingle();
-      return fb;
-    },
-    enabled: !!primaryDosha,
-    staleTime: 30 * 60 * 1000,
-  });
 
   // Título configurável do card "Seu Hoje"
   const { data: seuHojeConfig } = useQuery({
