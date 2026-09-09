@@ -2,6 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { Flame, Award, ChefHat, ArrowRight, Check, Leaf } from "lucide-react";
 import { getIconeLucide } from "@/lib/iconesLucide";
+import DOMPurify from "dompurify";
 import { lazy, Suspense } from "react";
 
 const DoshaPieChart = lazy(() => import("@/components/charts/DoshaPieChart"));
@@ -353,29 +354,6 @@ const LoggedHero = () => {
     staleTime: 60 * 60 * 1000,
   });
 
-  // Artigo & vídeo personalizado (mantidos)
-  const { data: artigo } = useQuery({
-    queryKey: ["logged-hero-artigo", primaryDosha],
-    queryFn: async () => {
-      const { data } = await supabase
-        .from("portal_conteudo")
-        .select("id, title, link_do_artigo, image_url, tags, meta_description")
-        .ilike("tags", `%${primaryDosha}%`)
-        .order("created_at", { ascending: false })
-        .limit(1)
-        .maybeSingle();
-      if (data) return data;
-      const { data: fb } = await supabase
-        .from("portal_conteudo")
-        .select("id, title, link_do_artigo, image_url, tags, meta_description")
-        .order("created_at", { ascending: false })
-        .limit(1)
-        .maybeSingle();
-      return fb;
-    },
-    enabled: !!primaryDosha,
-    staleTime: 30 * 60 * 1000,
-  });
 
   // Título configurável do card "Seu Hoje"
   const { data: seuHojeConfig } = useQuery({
@@ -395,38 +373,14 @@ const LoggedHero = () => {
     queryKey: ["seu-hoje-modulos"],
     queryFn: async () => {
       const { data } = await (supabase.from("seu_hoje_modulos" as any) as any)
-        .select("chave, ordem")
+        .select("chave, ordem, html, tags")
         .eq("ativo", true)
         .order("ordem", { ascending: true });
-      return ((data ?? []) as { chave: string; ordem: number }[]);
+      return ((data ?? []) as { chave: string; ordem: number; html: string | null; tags: string[] | null }[]);
     },
     staleTime: 30 * 60 * 1000,
   });
 
-  // Live personalizada por dosha
-  const { data: live } = useQuery({
-    queryKey: ["seu-hoje-live", primaryDosha],
-    queryFn: async () => {
-      const base = () =>
-        (supabase.from("videos_canonicos" as any) as any)
-          .select("video_id, slug, novo_titulo, titulo_original, tags, is_live, criado_em, mini_resumo");
-      const { data } = await base()
-        .eq("is_live", true)
-        .ilike("tags", `%${primaryDosha}%`)
-        .order("criado_em", { ascending: false })
-        .limit(1)
-        .maybeSingle();
-      if (data) return data;
-      const { data: fb } = await base()
-        .ilike("tags", `%${primaryDosha}%`)
-        .order("criado_em", { ascending: false })
-        .limit(1)
-        .maybeSingle();
-      return fb ?? null;
-    },
-    enabled: !!primaryDosha,
-    staleTime: 30 * 60 * 1000,
-  });
 
 
   // Preview da rotina de hoje (só quando o usuário tem acesso)
@@ -527,37 +481,23 @@ const LoggedHero = () => {
   const pluralPts = (n: number | null | undefined) =>
     n === 1 ? "falta 1 pt" : `faltam ${n ?? 0} pts`;
 
-  // Módulos elegíveis do card "Seu Hoje" (lista completa)
+  // Módulos elegíveis do card "Seu Hoje" — HTML livre, igual aos banners
   const modulosDoDia = (() => {
-    const liveAny = live as any;
-    const artigoAny = artigo as any;
+    const doshaAtual = primaryDosha.toLowerCase();
     return (seuHojeModulos ?? [])
-      .map((m) => {
-        if (m.chave === "artigo" && artigo?.link_do_artigo) {
-          return {
-            chave: "artigo",
-            rotulo: "Seu cuidado de hoje",
-            titulo: artigo.title as string,
-            resumo: (artigoAny?.meta_description as string | null) ?? null,
-            href: `/blog/${artigo.link_do_artigo}`,
-            imagem: (artigoAny?.image_url as string | null) ?? null,
-          };
-        }
-        if (m.chave === "live" && liveAny?.slug) {
-          return {
-            chave: "live",
-            rotulo: "Live pra você",
-            titulo: (liveAny.novo_titulo ?? liveAny.titulo_original ?? "Assista agora") as string,
-            resumo: (liveAny.mini_resumo as string | null) ?? null,
-            href: `/video/${liveAny.slug}`,
-            imagem: liveAny.video_id
-              ? `https://img.youtube.com/vi/${liveAny.video_id}/mqdefault.jpg`
-              : null,
-          };
-        }
-        return null;
+      .filter((m) => {
+        const tags = m.tags ?? [];
+        if (tags.length === 0) return true;
+        return tags.some((t) => t.toLowerCase() === "todos" || t.toLowerCase() === doshaAtual);
       })
-      .filter(Boolean) as { chave: string; rotulo: string; titulo: string; resumo: string | null; href: string; imagem: string | null }[];
+      .filter((m) => !!m.html)
+      .map((m) => ({
+        chave: m.chave,
+        cleanHtml: DOMPurify.sanitize(m.html as string, {
+          ADD_ATTR: ["target", "class"],
+          ADD_TAGS: ["svg", "path", "circle", "rect", "g", "line", "polyline", "polygon", "defs", "use"],
+        }),
+      }));
   })();
 
 
@@ -821,31 +761,11 @@ const LoggedHero = () => {
               <div className="mt-3 pt-3 border-t border-border flex-1 flex flex-col justify-center gap-2.5">
                 {modulosDoDia.length > 0 ? (
                   modulosDoDia.map((mod) => (
-                    <Link
+                    <div
                       key={mod.chave}
-                      to={mod.href}
                       onClick={(e) => e.stopPropagation()}
-                      className="flex items-center gap-3 group rounded-xl p-2.5"
-                      style={{ background: `${C.primary}08` }}
-                    >
-                      {mod.imagem && (
-                        <img
-                          src={mod.imagem}
-                          alt={mod.titulo}
-                          loading="lazy"
-                          decoding="async"
-                          className="shrink-0 w-14 h-14 rounded-lg object-cover"
-                        />
-                      )}
-                      <span className="min-w-0 flex-1">
-                        <span className="block text-[10px] font-bold uppercase tracking-wider text-muted-foreground">{mod.rotulo}</span>
-                        <span className="block text-xs font-semibold line-clamp-1" style={{ color: C.primary }}>{mod.titulo}</span>
-                        {mod.resumo && (
-                          <span className="block text-[11px] text-muted-foreground line-clamp-1 mt-0.5">{mod.resumo}</span>
-                        )}
-                      </span>
-                      <ArrowRight className="h-4 w-4 shrink-0 group-hover:translate-x-0.5 transition-transform" style={{ color: C.primary }} />
-                    </Link>
+                      dangerouslySetInnerHTML={{ __html: mod.cleanHtml }}
+                    />
                   ))
                 ) : (
                   <Link to="/blog" onClick={(e) => e.stopPropagation()} className="flex items-center justify-between gap-2 text-xs font-semibold group" style={{ color: C.primary }}>
