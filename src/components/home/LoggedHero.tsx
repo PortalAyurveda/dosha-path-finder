@@ -373,10 +373,10 @@ const LoggedHero = () => {
     queryKey: ["seu-hoje-modulos"],
     queryFn: async () => {
       const { data } = await (supabase.from("seu_hoje_modulos" as any) as any)
-        .select("chave, ordem")
+        .select("chave, ordem, html, tags")
         .eq("ativo", true)
         .order("ordem", { ascending: true });
-      return ((data ?? []) as { chave: string; ordem: number }[]);
+      return ((data ?? []) as { chave: string; ordem: number; html: string | null; tags: string[] | null }[]);
     },
     staleTime: 30 * 60 * 1000,
   });
