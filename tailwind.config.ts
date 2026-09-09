@@ -88,6 +88,10 @@ export default {
         akasha: {
           DEFAULT: "hsl(var(--akasha))",
         },
+        classics: {
+          DEFAULT: "hsl(var(--classics))",
+          soft: "hsl(var(--classics-soft))",
+        },
         therapist: {
           DEFAULT: "hsl(var(--therapist-accent) / <alpha-value>)",
           foreground: "hsl(var(--therapist-accent-foreground) / <alpha-value>)",

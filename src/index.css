@@ -62,6 +62,10 @@ body {
     --kapha: 105 50% 70%;
     --akasha: 280 30% 56%;
 
+    /* Textos Clássicos */
+    --classics: 32 85% 42%;
+    --classics-soft: 34 90% 95%;
+
     /* Surface colors */
     --bg-soft: 210 17% 98%;
     --surface-sun: 33 100% 97%;
