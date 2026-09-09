@@ -381,30 +381,6 @@ const LoggedHero = () => {
     staleTime: 30 * 60 * 1000,
   });
 
-  // Live personalizada por dosha
-  const { data: live } = useQuery({
-    queryKey: ["seu-hoje-live", primaryDosha],
-    queryFn: async () => {
-      const base = () =>
-        (supabase.from("videos_canonicos" as any) as any)
-          .select("video_id, slug, novo_titulo, titulo_original, tags, is_live, criado_em, mini_resumo");
-      const { data } = await base()
-        .eq("is_live", true)
-        .ilike("tags", `%${primaryDosha}%`)
-        .order("criado_em", { ascending: false })
-        .limit(1)
-        .maybeSingle();
-      if (data) return data;
-      const { data: fb } = await base()
-        .ilike("tags", `%${primaryDosha}%`)
-        .order("criado_em", { ascending: false })
-        .limit(1)
-        .maybeSingle();
-      return fb ?? null;
-    },
-    enabled: !!primaryDosha,
-    staleTime: 30 * 60 * 1000,
-  });
 
 
   // Preview da rotina de hoje (só quando o usuário tem acesso)
