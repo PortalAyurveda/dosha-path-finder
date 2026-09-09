@@ -5412,7 +5412,9 @@ export type Database = {
           created_at: string | null
           editorial_footnote: string | null
           embedding: string | null
+          has_lacuna: boolean
           id: number
+          lacuna_note: string | null
           madhukosha_commentary: string | null
           notes: string | null
           page_line_ref: string | null
@@ -5433,7 +5435,9 @@ export type Database = {
           created_at?: string | null
           editorial_footnote?: string | null
           embedding?: string | null
+          has_lacuna?: boolean
           id?: never
+          lacuna_note?: string | null
           madhukosha_commentary?: string | null
           notes?: string | null
           page_line_ref?: string | null
@@ -5454,7 +5458,9 @@ export type Database = {
           created_at?: string | null
           editorial_footnote?: string | null
           embedding?: string | null
+          has_lacuna?: boolean
           id?: never
+          lacuna_note?: string | null
           madhukosha_commentary?: string | null
           notes?: string | null
           page_line_ref?: string | null
@@ -8248,8 +8254,10 @@ export type Database = {
           editorial_footnote: string | null
           embedding: string | null
           gudhartha_dipika_commentary: string | null
+          has_lacuna: boolean
           id: number
           khanda_name: string | null
+          lacuna_note: string | null
           notes: string | null
           pdf_page: number | null
           sequence_no: number | null
@@ -8268,8 +8276,10 @@ export type Database = {
           editorial_footnote?: string | null
           embedding?: string | null
           gudhartha_dipika_commentary?: string | null
+          has_lacuna?: boolean
           id?: never
           khanda_name?: string | null
+          lacuna_note?: string | null
           notes?: string | null
           pdf_page?: number | null
           sequence_no?: number | null
@@ -8288,8 +8298,10 @@ export type Database = {
           editorial_footnote?: string | null
           embedding?: string | null
           gudhartha_dipika_commentary?: string | null
+          has_lacuna?: boolean
           id?: never
           khanda_name?: string | null
+          lacuna_note?: string | null
           notes?: string | null
           pdf_page?: number | null
           sequence_no?: number | null
@@ -8341,6 +8353,134 @@ export type Database = {
           xml?: string
         }
         Relationships: []
+      }
+      study_collections: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: number
+          is_published: boolean
+          level: string | null
+          order_index: number
+          slug: string
+          source_note: string | null
+          title: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: never
+          is_published?: boolean
+          level?: string | null
+          order_index?: number
+          slug: string
+          source_note?: string | null
+          title: string
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: never
+          is_published?: boolean
+          level?: string | null
+          order_index?: number
+          slug?: string
+          source_note?: string | null
+          title?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      study_items: {
+        Row: {
+          collection_id: number
+          created_at: string
+          curator_note: string | null
+          id: number
+          is_featured: boolean
+          module_id: number | null
+          order_index: number
+          source_id: number
+          source_table: string
+        }
+        Insert: {
+          collection_id: number
+          created_at?: string
+          curator_note?: string | null
+          id?: never
+          is_featured?: boolean
+          module_id?: number | null
+          order_index?: number
+          source_id: number
+          source_table: string
+        }
+        Update: {
+          collection_id?: number
+          created_at?: string
+          curator_note?: string | null
+          id?: never
+          is_featured?: boolean
+          module_id?: number | null
+          order_index?: number
+          source_id?: number
+          source_table?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "study_items_collection_id_fkey"
+            columns: ["collection_id"]
+            isOneToOne: false
+            referencedRelation: "study_collections"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "study_items_module_id_fkey"
+            columns: ["module_id"]
+            isOneToOne: false
+            referencedRelation: "study_modules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      study_modules: {
+        Row: {
+          collection_id: number
+          created_at: string
+          description: string | null
+          id: number
+          order_index: number
+          title: string
+        }
+        Insert: {
+          collection_id: number
+          created_at?: string
+          description?: string | null
+          id?: never
+          order_index: number
+          title: string
+        }
+        Update: {
+          collection_id?: number
+          created_at?: string
+          description?: string | null
+          id?: never
+          order_index?: number
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "study_modules_collection_id_fkey"
+            columns: ["collection_id"]
+            isOneToOne: false
+            referencedRelation: "study_collections"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       sushruta_verses: {
         Row: {
@@ -8899,6 +9039,42 @@ export type Database = {
         }
         Relationships: []
       }
+      verses_search_index: {
+        Row: {
+          id: number
+          livro: string
+          location_label: string | null
+          pdf_page: number | null
+          source_id: number
+          source_table: string
+          translation_pt: string | null
+          verse_no: string | null
+          verse_sanskrit: string | null
+        }
+        Insert: {
+          id?: never
+          livro: string
+          location_label?: string | null
+          pdf_page?: number | null
+          source_id: number
+          source_table: string
+          translation_pt?: string | null
+          verse_no?: string | null
+          verse_sanskrit?: string | null
+        }
+        Update: {
+          id?: never
+          livro?: string
+          location_label?: string | null
+          pdf_page?: number | null
+          source_id?: number
+          source_table?: string
+          translation_pt?: string | null
+          verse_no?: string | null
+          verse_sanskrit?: string | null
+        }
+        Relationships: []
+      }
       versos_curadoria: {
         Row: {
           autonomia: number | null
@@ -9445,6 +9621,24 @@ export type Database = {
           lastmod: string | null
           prio: number | null
           rota: string | null
+        }
+        Relationships: []
+      }
+      study_program_export: {
+        Row: {
+          chapter_name: string | null
+          chapter_no: string | null
+          collection_id: number | null
+          item_order: number | null
+          livro: string | null
+          module_desc: string | null
+          module_id: number | null
+          module_order: number | null
+          module_title: string | null
+          sthana: string | null
+          translation_pt: string | null
+          verse_no: string | null
+          verse_sanskrit: string | null
         }
         Relationships: []
       }
@@ -10526,6 +10720,16 @@ export type Database = {
           slug: string
         }[]
       }
+      random_curated_verse: {
+        Args: { collection_slug?: string }
+        Returns: {
+          livro: string
+          location_label: string
+          translation_pt: string
+          verse_no: string
+          verse_sanskrit: string
+        }[]
+      }
       receita_do_dia: {
         Args: never
         Returns: {
@@ -10674,6 +10878,17 @@ export type Database = {
       rpg_admin_select: { Args: { _table: string }; Returns: Json }
       rpg_play: { Args: { _args?: Json; _fn: string }; Returns: Json }
       rpg_rpc: { Args: { _args?: Json; _fn: string }; Returns: Json }
+      search_classical_verses: {
+        Args: { lim?: number; off?: number; q: string }
+        Returns: {
+          livro: string
+          location_label: string
+          total_count: number
+          translation_pt: string
+          verse_no: string
+          verse_sanskrit: string
+        }[]
+      }
       sede_predominante_dosha: {
         Args: { p_dosha: string; p_tags: string }
         Returns: string
@@ -10703,6 +10918,16 @@ export type Database = {
               error: true
             } & "Could not choose the best candidate function between: public.urlencode(string => bytea), public.urlencode(string => varchar). Try renaming the parameters or the function itself in the database so function overloading can be resolved"
           }
+      verse_of_the_day: {
+        Args: { collection_slug?: string }
+        Returns: {
+          livro: string
+          location_label: string
+          translation_pt: string
+          verse_no: string
+          verse_sanskrit: string
+        }[]
+      }
       video_slug_sitemap: { Args: { p_titulo: string }; Returns: string }
       videos_seo2_sincronizar: { Args: never; Returns: number }
       videos_slugify: { Args: { p_titulo: string }; Returns: string }
