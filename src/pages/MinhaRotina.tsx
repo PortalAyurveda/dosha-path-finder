@@ -54,7 +54,11 @@ import { premiumSupabase, type ObjetivoTratamento } from "@/integrations/supabas
 import { cn } from "@/lib/utils";
 import { normalizarDosha } from "@/lib/dosha";
 import { toast } from "@/hooks/use-toast";
-import VideoPlayerDialog from "@/components/biblioteca/VideoPlayerDialog";
+import NuggetDetalhe, { type Nugget } from "@/components/rotina/NuggetDetalhe";
+
+import NuggetIscaDialog from "@/components/rotina/NuggetIscaDialog";
+const AssinarPage = lazy(() => import("@/pages/Assinar"));
+
 
 // ===== Slots =====
 type SlotKey =
@@ -97,55 +101,8 @@ interface RotinaRow {
   praticado: boolean | null;
 }
 
-interface NuggetJson {
-  resumo?: string;
-  ingredientes?: { qtd?: string; item?: string }[];
-  modo_preparo?: string[];
-  dicas?: string;
-  efeito_esperado?: string;
-  bom_para_agni?: boolean;
-  tags?: string[];
-  dravya_guna?: {
-    rasa?: string[];
-    virya?: string;
-    gunas?: string[];
-    karma?: string[];
-    efeito_tecidos?: string;
-  };
-}
+// Tipos e helpers do nugget vivem no componente de detalhe compartilhado.
 
-interface Nugget {
-  id: string;
-  titulo: string;
-  icone_lucide: string | null;
-  imagem_url: string | null;
-  video_id: string | null;
-  video_timestamp: string | null;
-  vata: number | null;
-  pitta: number | null;
-  kapha: number | null;
-  nugget_json: NuggetJson | null;
-}
-
-// ===== Helpers =====
-const formatScore = (n: number | null | undefined) => {
-  if (n === null || n === undefined) return "0";
-  if (n > 0) return `+${n}`;
-  if (n < 0) return `−${Math.abs(n)}`;
-  return "0";
-};
-
-const parseTimestamp = (ts: string | null): number | undefined => {
-  if (!ts) return undefined;
-  const n = Number(ts);
-  if (!Number.isNaN(n)) return n;
-  // formato HH:MM:SS ou MM:SS
-  const parts = ts.split(":").map(Number);
-  if (parts.some(Number.isNaN)) return undefined;
-  if (parts.length === 3) return parts[0] * 3600 + parts[1] * 60 + parts[2];
-  if (parts.length === 2) return parts[0] * 60 + parts[1];
-  return undefined;
-};
 
 // ===== Semana + dia da semana =====
 // No banco: dia 1 = Segunda ... dia 7 = Domingo.
@@ -303,36 +260,52 @@ const MinhaRotina = () => {
       const { data, error } = await supabase
         .from("rotina_nuggets")
         .select(
-          "id, titulo, icone_lucide, imagem_url, video_id, video_timestamp, vata, pitta, kapha, nugget_json"
+          "id, slug, titulo, icone_lucide, imagem_url, video_id, video_timestamp, vata, pitta, kapha, nugget_json"
         );
       if (error) throw error;
       return (data ?? []) as Nugget[];
     },
   });
 
+  // Resolve o ?item= (id OU slug) para o nugget correspondente
+  const nuggetAlvo = useMemo(() => {
+    if (!itemParam || !nuggets) return null;
+    return (
+      nuggets.find((n) => n.id === itemParam || (n.slug ?? "") === itemParam) ?? null
+    );
+  }, [itemParam, nuggets]);
+
+  // Card completo por link, quando a receita não está na semana atual
+  const [iscaOpen, setIscaOpen] = useState(false);
+  useEffect(() => {
+    if (!itemParam) setIscaOpen(false);
+  }, [itemParam]);
+
   // Deep-link ?item= : ao carregar rotinaRows, pular pro dia do nugget-alvo
   useEffect(() => {
-    if (!focusNuggetId || focusHandled || !rotinaRows) return;
-    const match = rotinaRows.find((r) => r.nugget_id === focusNuggetId);
-    if (!match) {
-      toast({
-        title: "Essa receita não está na sua rotina atual",
-        variant: "destructive",
-      });
+    if (!itemParam || focusHandled) return;
+    if (!nuggets) return;
+    if (!nuggetAlvo) {
       setFocusHandled(true);
-      const next = new URLSearchParams(searchParams);
-      next.delete("item");
-      setSearchParams(next, { replace: true });
       return;
     }
+    if (!rotinaRows) return;
+    const match = rotinaRows.find((r) => r.nugget_id === nuggetAlvo.id);
+    setFocusHandled(true);
+    if (!match) {
+      // Não está na rotina gerada: mostra o card completo por cima da tela normal
+      setIscaOpen(true);
+      return;
+    }
+    setFocusNuggetId(nuggetAlvo.id);
     if (match.semana && match.semana !== semanaSelecionada) setSemanaSelecionada(match.semana);
     if (match.dia !== diaSelecionado) setDiaSelecionado(match.dia);
-    setFocusHandled(true);
     // limpa da URL (mantém os outros params)
     const next = new URLSearchParams(searchParams);
     next.delete("item");
     setSearchParams(next, { replace: true });
-  }, [focusNuggetId, focusHandled, rotinaRows, diaSelecionado, searchParams, setSearchParams]);
+  }, [itemParam, nuggetAlvo, nuggets, focusHandled, rotinaRows, diaSelecionado, semanaSelecionada, searchParams, setSearchParams]);
+
 
 
 

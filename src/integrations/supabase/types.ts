@@ -5721,6 +5721,78 @@ export type Database = {
         }
         Relationships: []
       }
+      mockups_personalizados: {
+        Row: {
+          ativo: boolean
+          bullets: Json
+          cor_hex: string
+          created_at: string
+          cta_texto: string
+          descricao: string | null
+          id: string
+          imagem_url: string | null
+          link_destino: string
+          mostrar_play: boolean
+          ordem: number
+          preco: string | null
+          preco_nota: string | null
+          preco_riscado: string | null
+          preco_sufixo: string | null
+          prova_social: string | null
+          selo: string
+          tags: string | null
+          tipo: string
+          titulo: string
+          updated_at: string
+        }
+        Insert: {
+          ativo?: boolean
+          bullets?: Json
+          cor_hex?: string
+          created_at?: string
+          cta_texto?: string
+          descricao?: string | null
+          id?: string
+          imagem_url?: string | null
+          link_destino?: string
+          mostrar_play?: boolean
+          ordem?: number
+          preco?: string | null
+          preco_nota?: string | null
+          preco_riscado?: string | null
+          preco_sufixo?: string | null
+          prova_social?: string | null
+          selo?: string
+          tags?: string | null
+          tipo: string
+          titulo?: string
+          updated_at?: string
+        }
+        Update: {
+          ativo?: boolean
+          bullets?: Json
+          cor_hex?: string
+          created_at?: string
+          cta_texto?: string
+          descricao?: string | null
+          id?: string
+          imagem_url?: string | null
+          link_destino?: string
+          mostrar_play?: boolean
+          ordem?: number
+          preco?: string | null
+          preco_nota?: string | null
+          preco_riscado?: string | null
+          preco_sufixo?: string | null
+          prova_social?: string | null
+          selo?: string
+          tags?: string | null
+          tipo?: string
+          titulo?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       n8n_backups: {
         Row: {
           arquivo_nome: string
