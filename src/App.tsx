@@ -34,6 +34,7 @@ const TesteDeDosha = lazy(() => import("./pages/TesteDeDosha"));
 const MeuDosha = lazy(() => import("./pages/MeuDosha"));
 const MeuPerfil = lazy(() => import("./pages/MeuPerfil"));
 const Biblioteca = lazy(() => import("./pages/Biblioteca"));
+const TextosClassicos = lazy(() => import("./pages/TextosClassicos"));
 const CursosVitrine = lazy(() => import("./pages/CursosVitrine"));
 const CursoLanding = lazy(() => import("./pages/CursoLanding"));
 const CursoEstudar = lazy(() => import("./pages/CursoEstudar"));
@@ -212,6 +213,7 @@ const RoutedApp = () => {
               <Route path="/minha-rotina" element={<MinhaRotina />} />
               <Route path="/imprimir" element={<Imprimir />} />
               <Route path="/biblioteca" element={<Biblioteca />} />
+              <Route path="/textos-classicos" element={<TextosClassicos />} />
               <Route path="/cursos" element={<CursosVitrine />} />
               <Route path="/cursos/:slug" element={<CursoLanding />} />
               <Route path="/cursos/:slug/estudar" element={<CursoEstudar />} />

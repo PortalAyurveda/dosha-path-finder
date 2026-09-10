@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { ChevronDown, Loader2, Search, Shuffle } from "lucide-react";
 import Seo from "@/components/Seo";
-import PageContainer from "@/components/PageContainer";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
@@ -332,16 +332,16 @@ export default function TextosClassicos() {
       </Helmet>
 
       <div className="bg-classics-soft">
-        <PageContainer className="py-10 md:py-14">
+        <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 py-10 md:py-14">
           <p className="text-xs font-bold uppercase tracking-[0.18em] text-classics">
             <span aria-hidden className="mr-2">॥</span>
             Biblioteca Clássica de Ayurveda
           </p>
           <h1 className="mt-2">Textos Clássicos</h1>
-        </PageContainer>
+        </div>
       </div>
 
-      <PageContainer className="py-8 md:py-10">
+      <main className="w-full max-w-6xl mx-auto px-4 sm:px-6 py-8 md:py-10">
         <div
           role="tablist"
           aria-label="Seções dos textos clássicos"
@@ -372,7 +372,7 @@ export default function TextosClassicos() {
         {aba === "verso" && <AbaVersoDoDia />}
         {aba === "roteiro" && <AbaRoteiro />}
         {aba === "pesquisar" && <AbaPesquisar />}
-      </PageContainer>
+      </main>
     </>
   );
 }
