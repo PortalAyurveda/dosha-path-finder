@@ -260,36 +260,52 @@ const MinhaRotina = () => {
       const { data, error } = await supabase
         .from("rotina_nuggets")
         .select(
-          "id, titulo, icone_lucide, imagem_url, video_id, video_timestamp, vata, pitta, kapha, nugget_json"
+          "id, slug, titulo, icone_lucide, imagem_url, video_id, video_timestamp, vata, pitta, kapha, nugget_json"
         );
       if (error) throw error;
       return (data ?? []) as Nugget[];
     },
   });
 
+  // Resolve o ?item= (id OU slug) para o nugget correspondente
+  const nuggetAlvo = useMemo(() => {
+    if (!itemParam || !nuggets) return null;
+    return (
+      nuggets.find((n) => n.id === itemParam || (n.slug ?? "") === itemParam) ?? null
+    );
+  }, [itemParam, nuggets]);
+
+  // Card completo por link, quando a receita não está na semana atual
+  const [iscaOpen, setIscaOpen] = useState(false);
+  useEffect(() => {
+    if (!itemParam) setIscaOpen(false);
+  }, [itemParam]);
+
   // Deep-link ?item= : ao carregar rotinaRows, pular pro dia do nugget-alvo
   useEffect(() => {
-    if (!focusNuggetId || focusHandled || !rotinaRows) return;
-    const match = rotinaRows.find((r) => r.nugget_id === focusNuggetId);
-    if (!match) {
-      toast({
-        title: "Essa receita não está na sua rotina atual",
-        variant: "destructive",
-      });
+    if (!itemParam || focusHandled) return;
+    if (!nuggets) return;
+    if (!nuggetAlvo) {
       setFocusHandled(true);
-      const next = new URLSearchParams(searchParams);
-      next.delete("item");
-      setSearchParams(next, { replace: true });
       return;
     }
+    if (!rotinaRows) return;
+    const match = rotinaRows.find((r) => r.nugget_id === nuggetAlvo.id);
+    setFocusHandled(true);
+    if (!match) {
+      // Não está na rotina gerada: mostra o card completo por cima da tela normal
+      setIscaOpen(true);
+      return;
+    }
+    setFocusNuggetId(nuggetAlvo.id);
     if (match.semana && match.semana !== semanaSelecionada) setSemanaSelecionada(match.semana);
     if (match.dia !== diaSelecionado) setDiaSelecionado(match.dia);
-    setFocusHandled(true);
     // limpa da URL (mantém os outros params)
     const next = new URLSearchParams(searchParams);
     next.delete("item");
     setSearchParams(next, { replace: true });
-  }, [focusNuggetId, focusHandled, rotinaRows, diaSelecionado, searchParams, setSearchParams]);
+  }, [itemParam, nuggetAlvo, nuggets, focusHandled, rotinaRows, diaSelecionado, semanaSelecionada, searchParams, setSearchParams]);
+
 
 
 
