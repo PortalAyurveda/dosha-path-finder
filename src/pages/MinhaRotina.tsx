@@ -97,55 +97,8 @@ interface RotinaRow {
   praticado: boolean | null;
 }
 
-interface NuggetJson {
-  resumo?: string;
-  ingredientes?: { qtd?: string; item?: string }[];
-  modo_preparo?: string[];
-  dicas?: string;
-  efeito_esperado?: string;
-  bom_para_agni?: boolean;
-  tags?: string[];
-  dravya_guna?: {
-    rasa?: string[];
-    virya?: string;
-    gunas?: string[];
-    karma?: string[];
-    efeito_tecidos?: string;
-  };
-}
+// Tipos e helpers do nugget vivem no componente de detalhe compartilhado.
 
-interface Nugget {
-  id: string;
-  titulo: string;
-  icone_lucide: string | null;
-  imagem_url: string | null;
-  video_id: string | null;
-  video_timestamp: string | null;
-  vata: number | null;
-  pitta: number | null;
-  kapha: number | null;
-  nugget_json: NuggetJson | null;
-}
-
-// ===== Helpers =====
-const formatScore = (n: number | null | undefined) => {
-  if (n === null || n === undefined) return "0";
-  if (n > 0) return `+${n}`;
-  if (n < 0) return `−${Math.abs(n)}`;
-  return "0";
-};
-
-const parseTimestamp = (ts: string | null): number | undefined => {
-  if (!ts) return undefined;
-  const n = Number(ts);
-  if (!Number.isNaN(n)) return n;
-  // formato HH:MM:SS ou MM:SS
-  const parts = ts.split(":").map(Number);
-  if (parts.some(Number.isNaN)) return undefined;
-  if (parts.length === 3) return parts[0] * 3600 + parts[1] * 60 + parts[2];
-  if (parts.length === 2) return parts[0] * 60 + parts[1];
-  return undefined;
-};
 
 // ===== Semana + dia da semana =====
 // No banco: dia 1 = Segunda ... dia 7 = Domingo.
