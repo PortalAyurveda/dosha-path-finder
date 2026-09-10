@@ -8358,41 +8358,68 @@ export type Database = {
         Row: {
           created_at: string
           description: string | null
+          evaluation: Json | null
           id: number
+          institution: string | null
+          institution_country: string | null
           is_published: boolean
           level: string | null
+          methodology: Json | null
           order_index: number
+          pitfalls: Json | null
+          program_group: string | null
+          program_group_order: number | null
           slug: string
           source_note: string | null
+          source_url: string | null
           title: string
           type: string
           updated_at: string
+          verified_at: string | null
         }
         Insert: {
           created_at?: string
           description?: string | null
+          evaluation?: Json | null
           id?: never
+          institution?: string | null
+          institution_country?: string | null
           is_published?: boolean
           level?: string | null
+          methodology?: Json | null
           order_index?: number
+          pitfalls?: Json | null
+          program_group?: string | null
+          program_group_order?: number | null
           slug: string
           source_note?: string | null
+          source_url?: string | null
           title: string
           type: string
           updated_at?: string
+          verified_at?: string | null
         }
         Update: {
           created_at?: string
           description?: string | null
+          evaluation?: Json | null
           id?: never
+          institution?: string | null
+          institution_country?: string | null
           is_published?: boolean
           level?: string | null
+          methodology?: Json | null
           order_index?: number
+          pitfalls?: Json | null
+          program_group?: string | null
+          program_group_order?: number | null
           slug?: string
           source_note?: string | null
+          source_url?: string | null
           title?: string
           type?: string
           updated_at?: string
+          verified_at?: string | null
         }
         Relationships: []
       }
@@ -8454,6 +8481,7 @@ export type Database = {
           description: string | null
           id: number
           order_index: number
+          rationale: string | null
           title: string
         }
         Insert: {
@@ -8462,6 +8490,7 @@ export type Database = {
           description?: string | null
           id?: never
           order_index: number
+          rationale?: string | null
           title: string
         }
         Update: {
@@ -8470,6 +8499,7 @@ export type Database = {
           description?: string | null
           id?: never
           order_index?: number
+          rationale?: string | null
           title?: string
         }
         Relationships: [
@@ -9036,6 +9066,39 @@ export type Database = {
           tipo?: string
           titulo?: string | null
           user_id?: string
+        }
+        Relationships: []
+      }
+      verse_clusters: {
+        Row: {
+          cluster_key: string
+          cluster_theme: string | null
+          created_at: string | null
+          id: number
+          note: string | null
+          role: string | null
+          source_id: number
+          source_table: string
+        }
+        Insert: {
+          cluster_key: string
+          cluster_theme?: string | null
+          created_at?: string | null
+          id?: never
+          note?: string | null
+          role?: string | null
+          source_id: number
+          source_table: string
+        }
+        Update: {
+          cluster_key?: string
+          cluster_theme?: string | null
+          created_at?: string | null
+          id?: never
+          note?: string | null
+          role?: string | null
+          source_id?: number
+          source_table?: string
         }
         Relationships: []
       }
@@ -10376,6 +10439,20 @@ export type Database = {
       get_meu_perfil_stats: { Args: never; Returns: Json }
       get_minha_evolucao: { Args: never; Returns: Json }
       get_minha_jornada: { Args: never; Returns: Json }
+      get_verse_cluster_siblings: {
+        Args: { p_source_id: number; p_source_table: string }
+        Returns: {
+          cluster_key: string
+          cluster_theme: string
+          livro: string
+          location_label: string
+          sibling_note: string
+          sibling_source_id: number
+          sibling_source_table: string
+          translation_pt: string
+          verse_no: string
+        }[]
+      }
       girar_rotinas_lote: { Args: { p_tamanho?: number }; Returns: number }
       girar_rotinas_mensal: { Args: never; Returns: number }
       has_role: {
@@ -10511,6 +10588,7 @@ export type Database = {
         Args: { curlopt: string; value: string }
         Returns: boolean
       }
+      immutable_unaccent: { Args: { "": string }; Returns: string }
       ingerir_lote_cursos: {
         Args: { p_ate: number; p_de: number; p_lote_embed?: number }
         Returns: Json
