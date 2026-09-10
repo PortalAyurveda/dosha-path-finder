@@ -54,7 +54,13 @@ import { premiumSupabase, type ObjetivoTratamento } from "@/integrations/supabas
 import { cn } from "@/lib/utils";
 import { normalizarDosha } from "@/lib/dosha";
 import { toast } from "@/hooks/use-toast";
-import VideoPlayerDialog from "@/components/biblioteca/VideoPlayerDialog";
+import NuggetDetalhe, {
+  formatScore,
+  type Nugget,
+} from "@/components/rotina/NuggetDetalhe";
+import NuggetIscaDialog from "@/components/rotina/NuggetIscaDialog";
+const AssinarPage = lazy(() => import("@/pages/Assinar"));
+
 
 // ===== Slots =====
 type SlotKey =
