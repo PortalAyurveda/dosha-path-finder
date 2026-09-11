@@ -816,6 +816,24 @@ const MinhaRotina = () => {
         </div>
       </header>
 
+      {/* Link de isca: receita fora da semana atual — card completo por cima da tela */}
+      {nuggetAlvo && (
+        <NuggetIscaDialog
+          nugget={nuggetAlvo}
+          open={iscaOpen}
+          onOpenChange={(v) => {
+            setIscaOpen(v);
+            if (!v) {
+              const next = new URLSearchParams(searchParams);
+              next.delete("item");
+              setSearchParams(next, { replace: true });
+            }
+          }}
+        />
+      )}
+
+
+
       <Dialog open={imprimirOpen} onOpenChange={setImprimirOpen}>
         <DialogContent className="max-w-md">
           <DialogHeader>
