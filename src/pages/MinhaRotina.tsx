@@ -148,7 +148,7 @@ const MinhaRotina = () => {
   // ?item= : deep-link para abrir um nugget específico já expandido (reativo à URL)
   const [searchParams, setSearchParams] = useSearchParams();
   const itemParam = searchParams.get("item");
-  const [focusNuggetId, setFocusNuggetId] = useState<string | null>(itemParam);
+  const [focusNuggetId, setFocusNuggetId] = useState<string | null>(null);
   const [focusHandled, setFocusHandled] = useState<boolean>(false);
   useEffect(() => {
     setFocusNuggetId(itemParam);
