@@ -534,25 +534,9 @@ const MinhaRotina = () => {
     // Link de isca (?item=): a pessoa fica aqui e vê a receita completa por cima
     // da vitrine de planos, mesmo sem assinatura.
     if (itemParam) {
-      return (
-        <div className="relative">
-          <div aria-hidden className="pointer-events-none select-none blur-sm opacity-40">
-            <Suspense
-              fallback={<div className="min-h-[80vh]" />}
-            >
-              <AssinarPage />
-            </Suspense>
-          </div>
-          {nuggetAlvo ? (
-            <IscaReceita nugget={nuggetAlvo} />
-          ) : (
-            <div className="absolute inset-x-0 top-24 flex justify-center px-4">
-              <div className="h-8 w-8 rounded-full border-2 border-primary border-t-transparent animate-spin" />
-            </div>
-          )}
-        </div>
-      );
+      return <IscaComPlanos nugget={nuggetAlvo} />;
     }
+
     const params = new URLSearchParams({
       utm_source: "site",
       utm_medium: "minha_rotina",
