@@ -148,12 +148,13 @@ const MinhaRotina = () => {
   // ?item= : deep-link para abrir um nugget específico já expandido (reativo à URL)
   const [searchParams, setSearchParams] = useSearchParams();
   const itemParam = searchParams.get("item");
-  const [focusNuggetId, setFocusNuggetId] = useState<string | null>(itemParam);
+  const [focusNuggetId, setFocusNuggetId] = useState<string | null>(null);
   const [focusHandled, setFocusHandled] = useState<boolean>(false);
   useEffect(() => {
-    setFocusNuggetId(itemParam);
+    setFocusNuggetId(null);
     setFocusHandled(false);
   }, [itemParam]);
+
 
   // Retorno do Stripe: /minha-rotina?assinatura=ok — polling do perfil até 30s
   const [confirmandoPagamento, setConfirmandoPagamento] = useState<boolean>(() => {
@@ -530,14 +531,20 @@ const MinhaRotina = () => {
   })();
 
   if (!user || !temAcessoRotina) {
+    // Link de isca (?item=): a pessoa fica aqui e vê a receita completa por cima
+    // da vitrine de planos, mesmo sem assinatura.
+    if (itemParam) {
+      return <IscaComPlanos nugget={nuggetAlvo} />;
+    }
+
     const params = new URLSearchParams({
       utm_source: "site",
       utm_medium: "minha_rotina",
       utm_campaign: "paywall_rotina",
     });
-    if (itemParam) params.set("item", itemParam);
     return <Navigate to={`/assinar?${params.toString()}`} replace />;
   }
+
 
   // Se o polling do pagamento chegou aqui com acesso liberado, encerre-o e limpe a URL.
   if (confirmandoPagamento) {
@@ -808,6 +815,24 @@ const MinhaRotina = () => {
           </span>
         </div>
       </header>
+
+      {/* Link de isca: receita fora da semana atual — card completo por cima da tela */}
+      {nuggetAlvo && (
+        <NuggetIscaDialog
+          nugget={nuggetAlvo}
+          open={iscaOpen}
+          onOpenChange={(v) => {
+            setIscaOpen(v);
+            if (!v) {
+              const next = new URLSearchParams(searchParams);
+              next.delete("item");
+              setSearchParams(next, { replace: true });
+            }
+          }}
+        />
+      )}
+
+
 
       <Dialog open={imprimirOpen} onOpenChange={setImprimirOpen}>
         <DialogContent className="max-w-md">
@@ -1450,8 +1475,8 @@ const RotinaSlotCard = ({
 
 
   const [open, setOpen] = useState(false);
-  const [porqueOpen, setPorqueOpen] = useState(false);
-  const [videoOpen, setVideoOpen] = useState(false);
+  
+
   const cardRef = useRef<HTMLDivElement | null>(null);
   const [ringOn, setRingOn] = useState(false);
 
@@ -1472,159 +1497,19 @@ const RotinaSlotCard = ({
     !!nugget?.nugget_json?.bom_para_agni && agniFracoOuIrregular;
 
   const nj = nugget?.nugget_json ?? {};
-  const dg = nj.dravya_guna ?? {};
-  const tsSec = parseTimestamp(nugget?.video_timestamp ?? null);
 
   const detalhes = nugget ? (
-    <div className="space-y-4 text-sm text-foreground">
-      {nugget.imagem_url && (
-        <img
-          src={nugget.imagem_url}
-          alt={nugget.titulo}
-          loading="lazy"
-              decoding="async"
-          className="float-right ml-4 mb-2 w-32 sm:w-40 aspect-square object-cover rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm shadow-sm"
-        />
-      )}
-      {nj.resumo && (
-        <p className="text-muted-foreground leading-relaxed">{nj.resumo}</p>
-      )}
-
-      {nj.ingredientes && nj.ingredientes.length > 0 && (
-        <div>
-          <h4 className="font-semibold mb-1">Ingredientes</h4>
-          <ul className="list-disc pl-5 space-y-0.5 text-muted-foreground">
-            {nj.ingredientes.map((i, idx) => (
-              <li key={idx}>{[i.qtd, i.item].filter(Boolean).join(" ")}</li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      {nj.modo_preparo && nj.modo_preparo.length > 0 && (
-        <div>
-          <h4 className="font-semibold mb-1">Modo de preparo</h4>
-          <ol className="list-decimal pl-5 space-y-1 text-muted-foreground">
-            {nj.modo_preparo.map((p, idx) => (
-              <li key={idx}>{p}</li>
-            ))}
-          </ol>
-        </div>
-      )}
-
-      {nj.dicas && (
-        <div>
-          <h4 className="font-semibold mb-1">Dicas</h4>
-          <p className="text-muted-foreground">{nj.dicas}</p>
-        </div>
-      )}
-
-      {nj.efeito_esperado && (
-        <div>
-          <h4 className="font-semibold mb-1">Efeito esperado</h4>
-          <p className="text-muted-foreground">{nj.efeito_esperado}</p>
-        </div>
-      )}
-
-      <div className="clear-both flex flex-wrap items-center gap-2">
-        {nugget.video_id && (
-          <Button
-            type="button"
-            variant="secondary"
-            size="sm"
-            onClick={() => setVideoOpen(true)}
-            className="gap-2"
-          >
-            <Play className="h-4 w-4" />
-            ver o prof. ensinar
-          </Button>
-        )}
-        {row && (
-          <Button
-            type="button"
-            variant={feito ? "default" : "outline"}
-            size="sm"
-            onClick={onToggleFeito}
-            disabled={somenteLeitura}
-            className="gap-2"
-          >
-            <Check className="h-4 w-4" />
-            {feito ? "praticado hoje" : "marcar como praticado"}
-          </Button>
-        )}
-      </div>
-
-      {/* Camada 2 */}
-      <Collapsible open={porqueOpen} onOpenChange={setPorqueOpen}>
-        <CollapsibleTrigger asChild>
-          <button className="flex items-center gap-1.5 text-sm font-medium text-primary hover:underline">
-            por que funciona
-            <ChevronDown
-              className={cn(
-                "h-4 w-4 transition-transform",
-                porqueOpen && "rotate-180"
-              )}
-            />
-          </button>
-        </CollapsibleTrigger>
-        <CollapsibleContent className="pt-3 space-y-2 text-sm text-muted-foreground">
-          {dg.rasa && dg.rasa.length > 0 && (
-            <p>
-              <span className="font-medium text-foreground">Sabores:</span>{" "}
-              {dg.rasa.join(", ")}
-            </p>
-          )}
-          <p className="leading-relaxed">
-            {dg.virya && (
-              <>
-                <span className="font-medium text-foreground">Potência:</span>{" "}
-                {dg.virya}
-                {" · "}
-              </>
-            )}
-            {dg.gunas && dg.gunas.length > 0 && (
-              <>
-                <span className="font-medium text-foreground">Qualidades:</span>{" "}
-                {dg.gunas.join("/")}
-                {" · "}
-              </>
-            )}
-            {dg.karma && dg.karma.length > 0 && (
-              <>
-                <span className="font-medium text-foreground">Ações:</span>{" "}
-                {dg.karma.join("/")}
-                {" · "}
-              </>
-            )}
-            {dg.efeito_tecidos && (
-              <>
-                <span className="font-medium text-foreground">
-                  Efeito nos tecidos:
-                </span>{" "}
-                {dg.efeito_tecidos}
-              </>
-            )}
-          </p>
-          <p>
-            <span className="font-medium text-foreground">Efeito nos doshas:</span>{" "}
-            Vata {formatScore(nugget.vata)} · Pitta {formatScore(nugget.pitta)} ·
-            Kapha {formatScore(nugget.kapha)}
-          </p>
-        </CollapsibleContent>
-      </Collapsible>
-    </div>
-  ) : null;
-
-  const videoDialog = nugget?.video_id ? (
-    <VideoPlayerDialog
-      open={videoOpen}
-      onOpenChange={setVideoOpen}
-      videoId={nugget.video_id}
-      title={nugget.titulo}
-      description={nj.resumo ?? ""}
-      initialSeconds={tsSec}
+    <NuggetDetalhe
+      nugget={nugget}
+      podeMarcar={!!row}
+      feito={feito}
+      onToggleFeito={onToggleFeito}
+      somenteLeitura={somenteLeitura}
     />
   ) : null;
+
+  const videoDialog = null;
+
 
   const faixaLista = mostrarLista ? (
     <div
@@ -2216,3 +2101,34 @@ const SuplementosSection = ({ vata, pitta, kapha }: SuplementosSectionProps) => 
 
 export default MinhaRotina;
 
+
+// ===== Isca por link para quem não tem assinatura ativa =====
+// A pessoa continua em /minha-rotina: vê a receita completa por cima da
+// vitrine de planos (a mesma da página /assinar), que fica ao fundo.
+const IscaComPlanos = ({ nugget }: { nugget: Nugget | null }) => {
+  const [open, setOpen] = useState(true);
+
+  return (
+    <div className="relative">
+      <div
+        aria-hidden={open}
+        className={cn(
+          "transition-all duration-300",
+          open && "pointer-events-none select-none blur-sm opacity-40"
+        )}
+      >
+        <Suspense fallback={<div className="min-h-[80vh]" />}>
+          <AssinarPage />
+        </Suspense>
+      </div>
+
+      {nugget ? (
+        <NuggetIscaDialog nugget={nugget} open={open} onOpenChange={setOpen} />
+      ) : (
+        <div className="absolute inset-x-0 top-24 flex justify-center">
+          <div className="h-8 w-8 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+        </div>
+      )}
+    </div>
+  );
+};
