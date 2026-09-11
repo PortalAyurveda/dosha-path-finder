@@ -151,9 +151,10 @@ const MinhaRotina = () => {
   const [focusNuggetId, setFocusNuggetId] = useState<string | null>(null);
   const [focusHandled, setFocusHandled] = useState<boolean>(false);
   useEffect(() => {
-    setFocusNuggetId(itemParam);
+    setFocusNuggetId(null);
     setFocusHandled(false);
   }, [itemParam]);
+
 
   // Retorno do Stripe: /minha-rotina?assinatura=ok — polling do perfil até 30s
   const [confirmandoPagamento, setConfirmandoPagamento] = useState<boolean>(() => {
