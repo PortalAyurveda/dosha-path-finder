@@ -1475,7 +1475,7 @@ const RotinaSlotCard = ({
 
 
   const [open, setOpen] = useState(false);
-  const cardRef2Unused = null;
+  
 
   const cardRef = useRef<HTMLDivElement | null>(null);
   const [ringOn, setRingOn] = useState(false);
