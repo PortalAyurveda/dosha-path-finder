@@ -9624,6 +9624,39 @@ export type Database = {
         }
         Relationships: []
       }
+      yoga_sutras_verses: {
+        Row: {
+          created_at: string | null
+          id: number
+          pada_name: string | null
+          pada_no: number
+          sanskrit_text: string | null
+          source_note: string | null
+          sutra_no: number
+          translation_pt: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: never
+          pada_name?: string | null
+          pada_no: number
+          sanskrit_text?: string | null
+          source_note?: string | null
+          sutra_no: number
+          translation_pt?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: never
+          pada_name?: string | null
+          pada_no?: number
+          sanskrit_text?: string | null
+          source_note?: string | null
+          sutra_no?: number
+          translation_pt?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       admin_tarefas_visao: {
