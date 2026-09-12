@@ -1581,6 +1581,72 @@ export type Database = {
         }
         Relationships: []
       }
+      brahma_sutras_verses: {
+        Row: {
+          adhyaya_no: number
+          created_at: string | null
+          id: number
+          pada_no: number
+          sankara_commentary_pt: string | null
+          sanskrit_text: string | null
+          source_note: string | null
+          sutra_no: number
+          translation_pt: string | null
+        }
+        Insert: {
+          adhyaya_no: number
+          created_at?: string | null
+          id?: never
+          pada_no: number
+          sankara_commentary_pt?: string | null
+          sanskrit_text?: string | null
+          source_note?: string | null
+          sutra_no: number
+          translation_pt?: string | null
+        }
+        Update: {
+          adhyaya_no?: number
+          created_at?: string | null
+          id?: never
+          pada_no?: number
+          sankara_commentary_pt?: string | null
+          sanskrit_text?: string | null
+          source_note?: string | null
+          sutra_no?: number
+          translation_pt?: string | null
+        }
+        Relationships: []
+      }
+      brihat_samhita_verses: {
+        Row: {
+          chapter_name: string | null
+          chapter_no: number
+          created_at: string | null
+          id: number
+          source_note: string | null
+          translation_pt: string | null
+          verse_no: string | null
+        }
+        Insert: {
+          chapter_name?: string | null
+          chapter_no: number
+          created_at?: string | null
+          id?: never
+          source_note?: string | null
+          translation_pt?: string | null
+          verse_no?: string | null
+        }
+        Update: {
+          chapter_name?: string | null
+          chapter_no?: number
+          created_at?: string | null
+          id?: never
+          source_note?: string | null
+          translation_pt?: string | null
+          verse_no?: string | null
+        }
+        Relationships: []
+      }
       calculos: {
         Row: {
           GRUPO: string | null
@@ -4441,6 +4507,36 @@ export type Database = {
         }
         Relationships: []
       }
+      garuda_purana_verses: {
+        Row: {
+          chapter_name: string | null
+          chapter_no: number
+          created_at: string | null
+          id: number
+          source_note: string | null
+          translation_pt: string | null
+          verse_no: string | null
+        }
+        Insert: {
+          chapter_name?: string | null
+          chapter_no: number
+          created_at?: string | null
+          id?: never
+          source_note?: string | null
+          translation_pt?: string | null
+          verse_no?: string | null
+        }
+        Update: {
+          chapter_name?: string | null
+          chapter_no?: number
+          created_at?: string | null
+          id?: never
+          source_note?: string | null
+          translation_pt?: string | null
+          verse_no?: string | null
+        }
+        Relationships: []
+      }
       glossario_doshas: {
         Row: {
           alimentosEvitar: string | null
@@ -5721,6 +5817,39 @@ export type Database = {
         }
         Relationships: []
       }
+      mimamsa_sutras_verses: {
+        Row: {
+          adhyaya_no: number
+          created_at: string | null
+          id: number
+          pada_no: number
+          sanskrit_text: string | null
+          source_note: string | null
+          sutra_no: number
+          translation_pt: string | null
+        }
+        Insert: {
+          adhyaya_no: number
+          created_at?: string | null
+          id?: never
+          pada_no: number
+          sanskrit_text?: string | null
+          source_note?: string | null
+          sutra_no: number
+          translation_pt?: string | null
+        }
+        Update: {
+          adhyaya_no?: number
+          created_at?: string | null
+          id?: never
+          pada_no?: number
+          sanskrit_text?: string | null
+          source_note?: string | null
+          sutra_no?: number
+          translation_pt?: string | null
+        }
+        Relationships: []
+      }
       mockups_personalizados: {
         Row: {
           ativo: boolean
@@ -6123,6 +6252,39 @@ export type Database = {
           marco?: string
           nome?: string
           tier?: number
+        }
+        Relationships: []
+      }
+      nyaya_sutras_verses: {
+        Row: {
+          adhyaya_no: number
+          ahnika_no: number
+          created_at: string | null
+          id: number
+          sanskrit_text: string | null
+          source_note: string | null
+          sutra_no: number
+          translation_pt: string | null
+        }
+        Insert: {
+          adhyaya_no: number
+          ahnika_no: number
+          created_at?: string | null
+          id?: never
+          sanskrit_text?: string | null
+          source_note?: string | null
+          sutra_no: number
+          translation_pt?: string | null
+        }
+        Update: {
+          adhyaya_no?: number
+          ahnika_no?: number
+          created_at?: string | null
+          id?: never
+          sanskrit_text?: string | null
+          source_note?: string | null
+          sutra_no?: number
+          translation_pt?: string | null
         }
         Relationships: []
       }
@@ -9138,6 +9300,39 @@ export type Database = {
           tipo?: string
           titulo?: string | null
           user_id?: string
+        }
+        Relationships: []
+      }
+      vaisheshika_sutras_verses: {
+        Row: {
+          adhyaya_no: number
+          ahnika_no: number
+          created_at: string | null
+          id: number
+          sanskrit_text: string | null
+          source_note: string | null
+          sutra_no: number
+          translation_pt: string | null
+        }
+        Insert: {
+          adhyaya_no: number
+          ahnika_no: number
+          created_at?: string | null
+          id?: never
+          sanskrit_text?: string | null
+          source_note?: string | null
+          sutra_no: number
+          translation_pt?: string | null
+        }
+        Update: {
+          adhyaya_no?: number
+          ahnika_no?: number
+          created_at?: string | null
+          id?: never
+          sanskrit_text?: string | null
+          source_note?: string | null
+          sutra_no?: number
+          translation_pt?: string | null
         }
         Relationships: []
       }
