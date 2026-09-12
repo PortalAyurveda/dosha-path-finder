@@ -344,7 +344,7 @@ const AkashaTab = ({
                   // Garante que o input não fique escondido atrás do teclado no mobile
                   setTimeout(() => e.currentTarget?.scrollIntoView({ block: "nearest", behavior: "smooth" }), 200);
                 }}
-                placeholder="Pergunte sobre Ayurveda… ou escreva Portal para ajuda com links e acesso"
+                placeholder="Pergunte o que quiser de Ayurveda para Akasha IA"
                 disabled={sending}
                 enterKeyHint="send"
                 autoComplete="off"
