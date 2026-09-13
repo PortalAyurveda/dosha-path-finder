@@ -2,7 +2,6 @@ import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowRight } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import BannerSlot from "@/components/banners/BannerSlot";
 
 const PRIMARY = "#352F54";
 const LEAF = "4px 20px 4px 20px";
@@ -49,17 +48,14 @@ const FundamentosAyurveda = () => {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-6 md:pt-8 pb-8 md:pb-10">
         <div className="text-center mb-6">
           <h2
-            className="font-serif font-bold text-3xl md:text-4xl"
+            className="font-serif font-bold text-[19px] md:text-[22px]"
             style={{ color: PRIMARY }}
           >
             Conheça Ayurveda por aqui
           </h2>
         </div>
 
-        <BannerSlot
-          slot="index_destaque"
-          fallback={
-            artigoDoTema && (
+        {artigoDoTema && (
               <Link
                 to={artigoDoTema.rota || "#"}
                 className="group flex items-center gap-3 max-w-3xl mx-auto mb-8 px-4 py-3 bg-background border border-border/60 transition-all hover:-translate-y-0.5 hover:shadow-md"
@@ -92,9 +88,7 @@ const FundamentosAyurveda = () => {
                 </div>
                 <ArrowRight className="h-4 w-4 flex-shrink-0" style={{ color: PRIMARY }} />
               </Link>
-            )
-          }
-        />
+        )}
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {isLoading

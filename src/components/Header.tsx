@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { ArrowLeft, Menu, LogIn, LogOut, ShoppingBag, ShoppingCart, Home, CalendarHeart, ChevronDown, Search } from "lucide-react";
+import { ArrowLeft, Menu, LogIn, LogOut, ShoppingBag, ShoppingCart, Home, CalendarHeart, ChevronDown, Search, Sparkles } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
@@ -13,7 +13,6 @@ import {
 import { useUser } from "@/contexts/UserContext";
 import { useCart } from "@/contexts/CartContext";
 import { useImmersive } from "@/contexts/ImmersiveContext";
-import { useEscolaAluno } from "@/hooks/useEscolaAluno";
 import { samkhyaTokens } from "@/components/samkhya/tokens";
 import samkhyaLogo from "@/assets/samkhya-logo-cropped.png";
 import GlobalSearch from "@/components/GlobalSearch";
@@ -90,7 +89,6 @@ const Header = () => {
   const { user, isAnonymous, doshaResult, profile, signOut } = useUser();
   const { totalItens, abrirCarrinho } = useCart();
   const { immersive } = useImmersive();
-  const { aluno: escolaAluno } = useEscolaAluno();
 
 
 
@@ -125,7 +123,6 @@ const Header = () => {
     { label: "Meu Dosha", to: profileLink },
     { label: "Minha Rotina", to: "/minha-rotina" },
     { label: "Revisão Mensal", to: "/revisao" },
-    { label: "Perguntar à Akasha", to: "/akasha" },
   ];
   const aprenderLinks = [
     { label: "Biblioteca", to: "/biblioteca" },
@@ -238,6 +235,14 @@ const Header = () => {
                   </Link>
                 )}
 
+                <Link
+                  to="/akasha"
+                  onClick={() => setOpen(false)}
+                  className="px-4 py-3 rounded-xl text-base font-bold bg-white/10 border border-white/20 text-white hover:bg-white/20 transition-colors flex items-center gap-2"
+                >
+                  <Sparkles className="h-5 w-5 text-[#E4C8F0]" />
+                  Akasha
+                </Link>
                 {user && (
                   <div className="flex flex-col gap-1">
                     <div className="px-2 pb-1 text-[11px] font-semibold uppercase tracking-wider text-white/50">Minha Jornada</div>
@@ -291,15 +296,6 @@ const Header = () => {
                   })}
                 </div>
 
-                {escolaAluno && (
-                  <Link
-                    to="/escola/aluno"
-                    onClick={() => setOpen(false)}
-                    className="px-4 py-3 rounded-xl text-base font-semibold bg-[#FACC15] text-[#352F54] hover:bg-[#EAB308] transition-colors text-center"
-                  >
-                    Escola
-                  </Link>
-                )}
 
                 <Link
                   to="/assinar"
@@ -369,6 +365,13 @@ const Header = () => {
                 Teste de Dosha
               </Link>
             )}
+            <Link
+              to="/akasha"
+              className={`px-2.5 py-2 rounded-lg text-sm font-bold transition-colors whitespace-nowrap inline-flex items-center gap-1.5 ${isActive("/akasha") ? "bg-white/20 text-white" : "text-white hover:bg-white/10"}`}
+            >
+              <Sparkles className="h-4 w-4 text-[#E4C8F0]" />
+              Akasha
+            </Link>
             {aprenderLinks.map((link) => {
               const active = isActive(link.to);
               return (
@@ -389,14 +392,6 @@ const Header = () => {
             >
               Loja
             </Link>
-            {escolaAluno && (
-              <Link
-                to="/escola/aluno"
-                className={`px-2 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${isActive("/escola/aluno") ? "bg-white/20 text-white" : "text-white/85 hover:text-white hover:bg-white/10"}`}
-              >
-                Escola
-              </Link>
-            )}
 
           </nav>
         </div>

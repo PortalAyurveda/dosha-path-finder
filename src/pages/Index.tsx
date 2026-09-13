@@ -26,8 +26,12 @@ import { slugify } from "@/lib/slugify";
 import Hero from "@/components/home/Hero";
 import LoggedHero from "@/components/home/LoggedHero";
 import HojeNoPortal from "@/components/home/HojeNoPortal";
+import BannerSlot from "@/components/banners/BannerSlot";
 
 // Seções abaixo da dobra — chunks separados, com altura reservada no fallback.
+const SommelierIndex = lazy(() => import("@/components/index/SommelierIndex"));
+const VersoERegistros = lazy(() => import("@/components/index/VersoERegistros"));
+const PortasDosha = lazy(() => import("@/components/index/PortasDosha"));
 const FundamentosAyurveda = lazy(() => import("@/components/index/FundamentosAyurveda"));
 const PrateleiraSamkhya = lazy(() => import("@/components/samkhya/PrateleiraSamkhya"));
 
@@ -682,12 +686,22 @@ const Index = () => {
           <Hero />
         )}
         <HojeNoPortal />
+        <Suspense fallback={<div className="min-h-[260px]" aria-hidden />}>
+          <PortasDosha />
+        </Suspense>
         <FeedSocial />
+        <BannerSlot slot="index_destaque" className="mx-auto max-w-6xl px-4 sm:px-6" />
         <Suspense fallback={<div className="min-h-[520px]" aria-hidden />}>
           <FundamentosAyurveda />
         </Suspense>
         <Suspense fallback={<div className="min-h-[420px]" aria-hidden />}>
           <PrateleiraSamkhya doshaPrincipal={doshaResult?.doshaprincipal ?? null} />
+        </Suspense>
+        <Suspense fallback={<div className="min-h-[260px]" aria-hidden />}>
+          <SommelierIndex />
+        </Suspense>
+        <Suspense fallback={<div className="min-h-[360px]" aria-hidden />}>
+          <VersoERegistros />
         </Suspense>
       </main>
     </>
