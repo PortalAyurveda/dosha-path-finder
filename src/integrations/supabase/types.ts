@@ -1617,6 +1617,42 @@ export type Database = {
         }
         Relationships: []
       }
+      brahmanda_purana_verses: {
+        Row: {
+          book_no: number
+          chapter_no: number
+          chapter_theme: string | null
+          created_at: string | null
+          id: number
+          sanskrit_text: string | null
+          source_note: string | null
+          translation_pt: string | null
+          verse_no: string
+        }
+        Insert: {
+          book_no: number
+          chapter_no: number
+          chapter_theme?: string | null
+          created_at?: string | null
+          id?: never
+          sanskrit_text?: string | null
+          source_note?: string | null
+          translation_pt?: string | null
+          verse_no: string
+        }
+        Update: {
+          book_no?: number
+          chapter_no?: number
+          chapter_theme?: string | null
+          created_at?: string | null
+          id?: never
+          sanskrit_text?: string | null
+          source_note?: string | null
+          translation_pt?: string | null
+          verse_no?: string
+        }
+        Relationships: []
+      }
       brihat_samhita_verses: {
         Row: {
           chapter_name: string | null
@@ -4537,6 +4573,39 @@ export type Database = {
         }
         Relationships: []
       }
+      gheranda_samhita_verses: {
+        Row: {
+          chapter_name: string | null
+          chapter_no: number
+          created_at: string | null
+          id: number
+          sanskrit_text: string | null
+          source_note: string | null
+          translation_pt: string | null
+          verse_no: number
+        }
+        Insert: {
+          chapter_name?: string | null
+          chapter_no: number
+          created_at?: string | null
+          id?: never
+          sanskrit_text?: string | null
+          source_note?: string | null
+          translation_pt?: string | null
+          verse_no: number
+        }
+        Update: {
+          chapter_name?: string | null
+          chapter_no?: number
+          created_at?: string | null
+          id?: never
+          sanskrit_text?: string | null
+          source_note?: string | null
+          translation_pt?: string | null
+          verse_no?: number
+        }
+        Relationships: []
+      }
       glossario_doshas: {
         Row: {
           alimentosEvitar: string | null
@@ -4675,6 +4744,39 @@ export type Database = {
           remediosAyurvedicos?: string | null
           rotinasequilibrar?: string | null
           rotinasinadequadas?: string | null
+        }
+        Relationships: []
+      }
+      hatha_yoga_pradipika_verses: {
+        Row: {
+          chapter_name: string | null
+          chapter_no: number
+          created_at: string | null
+          id: number
+          sanskrit_text: string | null
+          source_note: string | null
+          translation_pt: string | null
+          verse_no: number
+        }
+        Insert: {
+          chapter_name?: string | null
+          chapter_no: number
+          created_at?: string | null
+          id?: never
+          sanskrit_text?: string | null
+          source_note?: string | null
+          translation_pt?: string | null
+          verse_no: number
+        }
+        Update: {
+          chapter_name?: string | null
+          chapter_no?: number
+          created_at?: string | null
+          id?: never
+          sanskrit_text?: string | null
+          source_note?: string | null
+          translation_pt?: string | null
+          verse_no?: number
         }
         Relationships: []
       }
@@ -5320,51 +5422,6 @@ export type Database = {
         }
         Relationships: []
       }
-      kaviratna_sutrasthana_rows: {
-        Row: {
-          batch_end_line: number | null
-          batch_start_line: number | null
-          chunk_index: number
-          created_at: string | null
-          embedding: string | null
-          footnote_marker: string | null
-          footnote_text: string | null
-          id: number
-          para_num: string | null
-          suspected_ocr_corruption: boolean
-          translation_en: string
-          translation_pt: string | null
-        }
-        Insert: {
-          batch_end_line?: number | null
-          batch_start_line?: number | null
-          chunk_index: number
-          created_at?: string | null
-          embedding?: string | null
-          footnote_marker?: string | null
-          footnote_text?: string | null
-          id?: never
-          para_num?: string | null
-          suspected_ocr_corruption?: boolean
-          translation_en: string
-          translation_pt?: string | null
-        }
-        Update: {
-          batch_end_line?: number | null
-          batch_start_line?: number | null
-          chunk_index?: number
-          created_at?: string | null
-          embedding?: string | null
-          footnote_marker?: string | null
-          footnote_text?: string | null
-          id?: never
-          para_num?: string | null
-          suspected_ocr_corruption?: boolean
-          translation_en?: string
-          translation_pt?: string | null
-        }
-        Relationships: []
-      }
       kit_novato_curadoria: {
         Row: {
           artigo_imagem: string | null
@@ -5395,6 +5452,39 @@ export type Database = {
           video_imagem?: string | null
           video_rota?: string | null
           video_titulo?: string | null
+        }
+        Relationships: []
+      }
+      kularnava_tantra_verses: {
+        Row: {
+          created_at: string | null
+          id: number
+          sanskrit_text: string | null
+          source_note: string | null
+          translation_pt: string | null
+          ullasa_name: string | null
+          ullasa_no: number
+          verse_no: number
+        }
+        Insert: {
+          created_at?: string | null
+          id?: never
+          sanskrit_text?: string | null
+          source_note?: string | null
+          translation_pt?: string | null
+          ullasa_name?: string | null
+          ullasa_no: number
+          verse_no: number
+        }
+        Update: {
+          created_at?: string | null
+          id?: never
+          sanskrit_text?: string | null
+          source_note?: string | null
+          translation_pt?: string | null
+          ullasa_name?: string | null
+          ullasa_no?: number
+          verse_no?: number
         }
         Relationships: []
       }
@@ -5566,6 +5656,72 @@ export type Database = {
           translation_pt?: string | null
           verse_no?: string | null
           verse_sanskrit?: string | null
+        }
+        Relationships: []
+      }
+      mahanirvana_tantra_verses: {
+        Row: {
+          chapter_name: string | null
+          chapter_no: number
+          created_at: string | null
+          id: number
+          sanskrit_text: string | null
+          source_note: string | null
+          translation_pt: string | null
+          verse_no: number
+        }
+        Insert: {
+          chapter_name?: string | null
+          chapter_no: number
+          created_at?: string | null
+          id?: never
+          sanskrit_text?: string | null
+          source_note?: string | null
+          translation_pt?: string | null
+          verse_no: number
+        }
+        Update: {
+          chapter_name?: string | null
+          chapter_no?: number
+          created_at?: string | null
+          id?: never
+          sanskrit_text?: string | null
+          source_note?: string | null
+          translation_pt?: string | null
+          verse_no?: number
+        }
+        Relationships: []
+      }
+      matsya_purana_verses: {
+        Row: {
+          chapter_no: number
+          chapter_theme: string | null
+          created_at: string | null
+          id: number
+          sanskrit_text: string | null
+          source_note: string | null
+          translation_pt: string | null
+          verse_no: string
+        }
+        Insert: {
+          chapter_no: number
+          chapter_theme?: string | null
+          created_at?: string | null
+          id?: never
+          sanskrit_text?: string | null
+          source_note?: string | null
+          translation_pt?: string | null
+          verse_no: string
+        }
+        Update: {
+          chapter_no?: number
+          chapter_theme?: string | null
+          created_at?: string | null
+          id?: never
+          sanskrit_text?: string | null
+          source_note?: string | null
+          translation_pt?: string | null
+          verse_no?: string
         }
         Relationships: []
       }
@@ -7432,6 +7588,39 @@ export type Database = {
         }
         Relationships: []
       }
+      rasaratna_samuccaya_verses: {
+        Row: {
+          adhyaya_name: string | null
+          adhyaya_no: number
+          created_at: string | null
+          id: number
+          sanskrit_text: string | null
+          source_note: string | null
+          translation_pt: string | null
+          verse_no: string
+        }
+        Insert: {
+          adhyaya_name?: string | null
+          adhyaya_no: number
+          created_at?: string | null
+          id?: never
+          sanskrit_text?: string | null
+          source_note?: string | null
+          translation_pt?: string | null
+          verse_no: string
+        }
+        Update: {
+          adhyaya_name?: string | null
+          adhyaya_no?: number
+          created_at?: string | null
+          id?: never
+          sanskrit_text?: string | null
+          source_note?: string | null
+          translation_pt?: string | null
+          verse_no?: string
+        }
+        Relationships: []
+      }
       receita_ingredientes: {
         Row: {
           alternativas: string[]
@@ -8812,69 +9001,6 @@ export type Database = {
         }
         Relationships: []
       }
-      sushruta_verses_old_trikamji_v1: {
-        Row: {
-          book: string
-          chapter_name: string | null
-          chapter_no: string | null
-          continues_from_prev: boolean | null
-          continues_to_next: boolean | null
-          created_at: string | null
-          editorial_footnote_skt: string | null
-          embedding: string | null
-          has_lacuna: boolean | null
-          id: number
-          lacuna_note: string | null
-          notes: string | null
-          pdf_page: number | null
-          sequence_no: number | null
-          source_file: string | null
-          translation_pt: string | null
-          verse_no: string | null
-          verse_sanskrit: string | null
-        }
-        Insert: {
-          book?: string
-          chapter_name?: string | null
-          chapter_no?: string | null
-          continues_from_prev?: boolean | null
-          continues_to_next?: boolean | null
-          created_at?: string | null
-          editorial_footnote_skt?: string | null
-          embedding?: string | null
-          has_lacuna?: boolean | null
-          id?: never
-          lacuna_note?: string | null
-          notes?: string | null
-          pdf_page?: number | null
-          sequence_no?: number | null
-          source_file?: string | null
-          translation_pt?: string | null
-          verse_no?: string | null
-          verse_sanskrit?: string | null
-        }
-        Update: {
-          book?: string
-          chapter_name?: string | null
-          chapter_no?: string | null
-          continues_from_prev?: boolean | null
-          continues_to_next?: boolean | null
-          created_at?: string | null
-          editorial_footnote_skt?: string | null
-          embedding?: string | null
-          has_lacuna?: boolean | null
-          id?: never
-          lacuna_note?: string | null
-          notes?: string | null
-          pdf_page?: number | null
-          sequence_no?: number | null
-          source_file?: string | null
-          translation_pt?: string | null
-          verse_no?: string | null
-          verse_sanskrit?: string | null
-        }
-        Relationships: []
-      }
       tags_alias: {
         Row: {
           alias: string
@@ -9333,6 +9459,42 @@ export type Database = {
           source_note?: string | null
           sutra_no?: number
           translation_pt?: string | null
+        }
+        Relationships: []
+      }
+      vayu_purana_verses: {
+        Row: {
+          chapter_no: number
+          chapter_theme: string | null
+          created_at: string | null
+          id: number
+          pada_name: string | null
+          sanskrit_text: string | null
+          source_note: string | null
+          translation_pt: string | null
+          verse_no: string
+        }
+        Insert: {
+          chapter_no: number
+          chapter_theme?: string | null
+          created_at?: string | null
+          id?: never
+          pada_name?: string | null
+          sanskrit_text?: string | null
+          source_note?: string | null
+          translation_pt?: string | null
+          verse_no: string
+        }
+        Update: {
+          chapter_no?: number
+          chapter_theme?: string | null
+          created_at?: string | null
+          id?: never
+          pada_name?: string | null
+          sanskrit_text?: string | null
+          source_note?: string | null
+          translation_pt?: string | null
+          verse_no?: string
         }
         Relationships: []
       }
