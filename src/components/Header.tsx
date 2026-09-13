@@ -13,7 +13,6 @@ import {
 import { useUser } from "@/contexts/UserContext";
 import { useCart } from "@/contexts/CartContext";
 import { useImmersive } from "@/contexts/ImmersiveContext";
-import { useEscolaAluno } from "@/hooks/useEscolaAluno";
 import { samkhyaTokens } from "@/components/samkhya/tokens";
 import samkhyaLogo from "@/assets/samkhya-logo-cropped.png";
 import GlobalSearch from "@/components/GlobalSearch";
@@ -90,7 +89,6 @@ const Header = () => {
   const { user, isAnonymous, doshaResult, profile, signOut } = useUser();
   const { totalItens, abrirCarrinho } = useCart();
   const { immersive } = useImmersive();
-  const { aluno: escolaAluno } = useEscolaAluno();
 
 
 
