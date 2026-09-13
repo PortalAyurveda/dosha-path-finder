@@ -291,7 +291,10 @@ const CursosVitrine = () => {
 
               // Estado 1: matriculado
               if (jaTem) {
-                const acessar = `/cursos/${c.slug}/estudar`;
+                const acessar =
+                  c.slug === "mentoria-para-terapeutas"
+                    ? "/escola/aluno"
+                    : `/cursos/${c.slug}/estudar`;
                 return (
                   <article
                     key={c.id}

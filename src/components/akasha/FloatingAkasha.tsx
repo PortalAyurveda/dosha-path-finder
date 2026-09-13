@@ -433,7 +433,7 @@ const FloatingAkasha = () => {
       {/* Botão flutuante */}
       <button
         onClick={() => { markEngaged(); setOpen((o) => !o); }}
-        className={`fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-[60] w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-white border border-akasha/20 ring-2 ring-akasha/10 flex items-center justify-center text-akasha hover:scale-105 transition-all overflow-hidden ${
+        className={`fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-[60] h-12 sm:h-14 rounded-full bg-white border border-akasha/20 ring-2 ring-akasha/10 flex items-center gap-2 pl-1.5 pr-4 text-akasha hover:scale-105 transition-all ${
           !open && !engaged
             ? "akasha-call ring-akasha/40"
             : "shadow-[0_0_22px_-4px_hsl(var(--akasha)/0.45)] hover:shadow-[0_0_30px_-2px_hsl(var(--akasha)/0.6)]"
@@ -441,9 +441,12 @@ const FloatingAkasha = () => {
         aria-label={open ? "Fechar Akasha" : "Abrir Akasha"}
       >
         {open ? (
-          <X className="w-6 h-6" />
+          <X className="w-6 h-6 mx-2" />
         ) : (
-          <img src={AKASHA_FLOATING_LOGO} alt="Akasha" className="w-full h-full object-cover rounded-full"  loading="lazy" decoding="async" />
+          <>
+            <img src={AKASHA_FLOATING_LOGO} alt="" className="w-9 h-9 sm:w-11 sm:h-11 object-cover rounded-full shrink-0" loading="lazy" decoding="async" />
+            <span className="text-sm font-bold">Akasha</span>
+          </>
         )}
       </button>
     </>

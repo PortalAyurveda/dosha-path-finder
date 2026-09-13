@@ -9,6 +9,7 @@ type ItemBase = {
   titulo?: string | null;
   imagem?: string | null;
   rota?: string | null;
+  selo?: string | null;
 };
 
 type ReceitaItem = ItemBase & {
@@ -136,7 +137,7 @@ const Body = ({
 const VideoCard = ({ v }: { v: ItemBase }) => (
   <CardShell to={v.rota || "/biblioteca"}>
     <Media imagem={v.imagem} titulo={v.titulo} FallbackIcon={Play} />
-    <Body selo="Vídeo novo" titulo={v.titulo ?? "Novo vídeo"} />
+    <Body selo={v.selo ?? "Vídeo novo"} titulo={v.titulo ?? "Novo vídeo"} />
   </CardShell>
 );
 
@@ -207,7 +208,7 @@ export const HojeNoPortal = () => {
   return (
     <section className="w-full max-w-6xl mx-auto px-4 py-6">
       <div className="mb-3 flex items-baseline justify-center">
-        <h2 className="font-serif text-lg md:text-xl text-center" style={{ color: NAVY }}>
+        <h2 className="font-serif font-bold text-[19px] md:text-[22px] text-center" style={{ color: NAVY }}>
           Hoje no portal
         </h2>
       </div>
