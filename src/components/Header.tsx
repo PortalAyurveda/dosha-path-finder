@@ -211,6 +211,7 @@ const Header = () => {
             <SheetTrigger asChild>
               <Button
                 size="sm"
+                aria-label="Abrir menu"
                 className="lg:hidden w-9 h-9 p-0 rounded-full bg-white font-semibold hover:bg-white/90"
                 style={buttonTextColor ? { color: buttonTextColor } : undefined}
               >
