@@ -1311,6 +1311,39 @@ export type Database = {
         }
         Relationships: []
       }
+      bhagavad_gita_verses: {
+        Row: {
+          chapter_name: string | null
+          chapter_no: number
+          created_at: string | null
+          id: number
+          sanskrit_text: string | null
+          source_note: string | null
+          translation_pt: string | null
+          verse_no: number
+        }
+        Insert: {
+          chapter_name?: string | null
+          chapter_no: number
+          created_at?: string | null
+          id?: never
+          sanskrit_text?: string | null
+          source_note?: string | null
+          translation_pt?: string | null
+          verse_no: number
+        }
+        Update: {
+          chapter_name?: string | null
+          chapter_no?: number
+          created_at?: string | null
+          id?: never
+          sanskrit_text?: string | null
+          source_note?: string | null
+          translation_pt?: string | null
+          verse_no?: number
+        }
+        Relationships: []
+      }
       bhavaprakasha_nighantu_verses: {
         Row: {
           book: string
@@ -9267,6 +9300,39 @@ export type Database = {
           rotulo_singular?: string
           somavel?: boolean
           unidade?: string
+        }
+        Relationships: []
+      }
+      upanishads_verses: {
+        Row: {
+          created_at: string | null
+          id: number
+          sanskrit_text: string | null
+          section_no: string | null
+          source_note: string | null
+          translation_pt: string | null
+          upanishad_name: string
+          verse_no: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: never
+          sanskrit_text?: string | null
+          section_no?: string | null
+          source_note?: string | null
+          translation_pt?: string | null
+          upanishad_name: string
+          verse_no: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: never
+          sanskrit_text?: string | null
+          section_no?: string | null
+          source_note?: string | null
+          translation_pt?: string | null
+          upanishad_name?: string
+          verse_no?: string
         }
         Relationships: []
       }
