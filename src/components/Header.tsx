@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { ArrowLeft, Menu, LogIn, LogOut, ShoppingBag, ShoppingCart, Home, CalendarHeart, ChevronDown, Search, Sparkles } from "lucide-react";
+import { ArrowLeft, Menu, LogIn, LogOut, ShoppingBag, ShoppingCart, Home, CalendarHeart, ChevronDown, Search } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
@@ -241,8 +241,7 @@ const Header = () => {
                   onClick={() => setOpen(false)}
                   className="px-4 py-3 rounded-xl text-base font-bold bg-white/10 border border-white/20 text-white hover:bg-white/20 transition-colors flex items-center gap-2"
                 >
-                  <Sparkles className="h-5 w-5 text-[#E4C8F0]" />
-                  Akasha
+                  Akasha I.A.
                 </Link>
                 {user && (
                   <div className="flex flex-col gap-1">
@@ -370,8 +369,7 @@ const Header = () => {
               to="/akasha"
               className={`px-2.5 py-2 rounded-lg text-sm font-bold transition-colors whitespace-nowrap inline-flex items-center gap-1.5 ${isActive("/akasha") ? "bg-white/20 text-white" : "text-white hover:bg-white/10"}`}
             >
-              <Sparkles className="h-4 w-4 text-[#E4C8F0]" />
-              Akasha
+              Akasha I.A.
             </Link>
             {aprenderLinks.map((link) => {
               const active = isActive(link.to);

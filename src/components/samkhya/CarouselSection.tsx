@@ -17,8 +17,7 @@ const CarouselSection = ({ title, to, children }: CarouselSectionProps) => {
         fontFamily: samkhyaTokens.fonteTitulo,
       }}
     >
-      ✦ {title} ✦
-    </h2>
+      {title} </h2>
   );
 
   return (

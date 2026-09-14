@@ -1141,7 +1141,7 @@ const MinhaRotina = () => {
       <div className="mt-8" style={{ paddingBottom: selecionados.size > 0 ? 104 : undefined }}>
         <PrateleiraSamkhya
           doshaPrincipal={doshaResult?.doshaprincipal ?? null}
-          titulo="✦ Os ingredientes do seu ritual ✦"
+          titulo="Os ingredientes do seu ritual "
         />
       </div>
 

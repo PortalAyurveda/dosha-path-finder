@@ -58,8 +58,7 @@ const SamkhyaTodos = () => {
               fontFamily: samkhyaTokens.fonteTitulo,
             }}
           >
-            ✦ Todos os Produtos ✦
-          </h1>
+            Todos os Produtos </h1>
           <p className="mt-3 text-base" style={{ color: samkhyaTokens.textoSec }}>
             Catálogo completo — explore toda a linha Samkhya.
           </p>

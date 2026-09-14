@@ -87,8 +87,7 @@ const SamkhyaCategoria = () => {
               fontFamily: samkhyaTokens.fonteTitulo,
             }}
           >
-            ✦ {titulo} ✦
-          </h1>
+            {titulo} </h1>
           {categoria?.descricao && (
             <p className="mt-3 text-base" style={{ color: samkhyaTokens.textoSec }}>
               {categoria.descricao}
@@ -137,8 +136,7 @@ const SamkhyaCategoria = () => {
                       fontFamily: samkhyaTokens.fonteTitulo,
                     }}
                   >
-                    ✦ Kits {cap(slug ?? "")} ✦
-                  </h2>
+                    Kits {cap(slug ?? "")} </h2>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
                   {kits.map((k) => (

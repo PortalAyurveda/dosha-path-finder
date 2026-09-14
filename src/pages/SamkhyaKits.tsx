@@ -70,8 +70,7 @@ const SamkhyaKits = () => {
               fontFamily: samkhyaTokens.fonteTitulo,
             }}
           >
-            ✦ Kits & Combos ✦
-          </h1>
+            Kits & Combos </h1>
           <p className="mt-3 text-base" style={{ color: samkhyaTokens.textoSec }}>
             Combinações pensadas para potencializar resultados — economize comprando em conjunto.
           </p>
