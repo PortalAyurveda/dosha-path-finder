@@ -45,11 +45,7 @@ const PrateleiraSamkhya = ({ doshaPrincipal, titulo }: PrateleiraSamkhyaProps) =
 
   if (!itens || itens.length === 0) return null;
 
-  const tituloFinal =
-    titulo ??
-    (primaryDosha
-      ? `✦ O ritual do seu ${primaryDosha} ✦`
-      : "Fórmulas da Samkhya ");
+  const tituloFinal = titulo ?? "Cuidados para você";
 
   return (
     <section
@@ -67,7 +63,7 @@ const PrateleiraSamkhya = ({ doshaPrincipal, titulo }: PrateleiraSamkhyaProps) =
             <img
               src={samkhyaLogo}
               alt="Samkhya"
-              style={{ height: 30 }}
+              style={{ height: 39 }}
               className="w-auto"
              loading="lazy" decoding="async" />
           </div>
@@ -82,14 +78,18 @@ const PrateleiraSamkhya = ({ doshaPrincipal, titulo }: PrateleiraSamkhyaProps) =
               className="mt-1 text-xs md:text-sm"
               style={{ color: samkhyaTokens.textoSec }}
             >
-              feitas à mão, a partir dos textos clássicos do Ayurveda
+              A Samkhya produz fórmulas ayurvédicas com ervas nacionais desde 2014
             </p>
           </div>
           <div className="flex justify-end">
             <Link
               to="/samkhya"
-              className="text-sm font-medium hover:opacity-80 transition-opacity whitespace-nowrap"
-              style={{ color: samkhyaTokens.roxo }}
+              className="inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-base font-semibold whitespace-nowrap transition-opacity hover:opacity-90"
+              style={{
+                backgroundColor: samkhyaTokens.roxoLight,
+                border: `1px solid ${samkhyaTokens.roxo}`,
+                color: samkhyaTokens.roxo,
+              }}
             >
               ver a loja →
             </Link>
