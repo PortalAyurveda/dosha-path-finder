@@ -49,7 +49,7 @@ const PrateleiraSamkhya = ({ doshaPrincipal, titulo }: PrateleiraSamkhyaProps) =
     titulo ??
     (primaryDosha
       ? `✦ O ritual do seu ${primaryDosha} ✦`
-      : "✦ As fórmulas da Samkhya ✦");
+      : "Fórmulas da Samkhya ");
 
   return (
     <section
