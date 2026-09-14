@@ -93,15 +93,14 @@ const PortasDosha = () => (
               </div>
             ) : null}
 
-            <div className="relative flex items-center gap-2">
-              <span className={`flex h-10 w-10 items-center justify-center rounded-full bg-card ${texto}`} aria-hidden="true">
-                <Icon className="h-5 w-5" />
-              </span>
-              <span className="text-lg" aria-hidden="true">{emoji}</span>
-            </div>
+            <span className={`relative flex h-10 w-10 items-center justify-center rounded-full bg-card ${texto}`} aria-hidden="true">
+              <Icon className="h-5 w-5" />
+            </span>
 
             <p className="relative mt-3 text-[11px] font-medium text-muted-foreground">{elementos}</p>
-            <h3 className="relative font-serif font-bold text-base leading-tight text-primary">{titulo}</h3>
+            <h3 className="relative font-serif font-bold text-base leading-tight text-primary">
+              {titulo} <span aria-hidden="true">{emoji}</span>
+            </h3>
             <p className="relative mt-1 text-xs leading-snug text-foreground/80">{descricao}</p>
             <span className={`relative mt-auto inline-flex items-center gap-1 pt-4 text-xs font-bold ${texto}`}>
               {cta} <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
