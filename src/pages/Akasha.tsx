@@ -45,7 +45,7 @@ const Akasha = () => {
 
   // Sem sessão, ou sem nada que identifique a pessoa: manda fazer o teste.
   if (!user || (!user.email && !doshaResult?.idPublico)) {
-    return <Navigate to="/teste-de-dosha" replace />;
+    return <Navigate to="/teste-de-dosha?motivo=akasha" replace />;
   }
 
   return (

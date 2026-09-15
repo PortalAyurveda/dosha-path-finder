@@ -238,6 +238,18 @@ const Auth = () => {
       <Helmet>
         <meta name="robots" content="noindex, nofollow" />
       </Helmet>
+      {(() => {
+        if (user && !isAnonymous) return null;
+        const r = searchParams.get("redirect") ?? "";
+        const texto = r.startsWith("/curso")
+          ? "Para comprar este curso, faça login ou crie sua conta."
+          : r.startsWith("/assinar")
+            ? "Para assinar um plano, faça login ou crie sua conta."
+            : r.startsWith("/revisao")
+              ? "Para ver sua Revisão Mensal, faça login."
+              : null;
+        return texto ? <FaixaAviso texto={texto} /> : null;
+      })()}
       <PageContainer title="Entrar" description="Acesse sua conta no Portal Ayurveda para acompanhar seus doshas e evolução.">
       <div className="flex items-center justify-center min-h-[70vh]">
         <div className="w-full max-w-md space-y-6">
