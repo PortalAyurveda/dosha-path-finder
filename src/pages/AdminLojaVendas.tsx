@@ -486,8 +486,13 @@ const AdminLojaVendas = () => {
 
               <TableBody>
                 {filtrados.map((p) => (
-                  <TableRow key={p.id} data-state={selecionados.has(p.id) ? "selected" : undefined}>
-                    <TableCell>
+                  <TableRow
+                    key={p.id}
+                    data-state={selecionados.has(p.id) ? "selected" : undefined}
+                    className="cursor-pointer hover:bg-muted/50"
+                    onClick={() => navigate(`/admin/loja/vendas/${p.id}`)}
+                  >
+                    <TableCell onClick={(e) => e.stopPropagation()}>
                       {podeSelecionar(p) ? (
                         <Checkbox
                           checked={selecionados.has(p.id)}
@@ -505,7 +510,7 @@ const AdminLojaVendas = () => {
                       <div className="text-sm font-medium">{p.comprador_nome}</div>
                       <div className="text-xs text-muted-foreground">{p.comprador_email}</div>
                     </TableCell>
-                    <TableCell>
+                    <TableCell onClick={(e) => e.stopPropagation()}>
                       {p.comprador_telefone ? (
                         <a
                           href={whatsappLink(p.comprador_telefone)}
@@ -527,13 +532,6 @@ const AdminLojaVendas = () => {
                     <TableCell>
                       <MelhorEnvioBadge pedido={p} />
                     </TableCell>
-                    <TableCell className="text-right">
-
-                      <Button asChild size="sm" variant="outline">
-                        <Link to={`/admin/loja/vendas/${p.id}`}>Ver detalhes</Link>
-                      </Button>
-                    </TableCell>
-
                   </TableRow>
                 ))}
               </TableBody>
