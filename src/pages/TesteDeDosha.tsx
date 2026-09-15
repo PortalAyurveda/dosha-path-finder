@@ -28,6 +28,11 @@ const INTERESSE_OPTIONS = [
 
 const TesteDeDosha = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const mostrarFaixaAkasha = searchParams.get("motivo") === "akasha" && !user?.email;
+  const faixaAkasha = mostrarFaixaAkasha ? (
+    <FaixaAviso texto="Para falar com a Akasha, faça seu teste de dosha grátis primeiro." />
+  ) : null;
   const { toast } = useToast();
   const { setDoshaResultFromId, user, profile } = useUser();
   const { content: doshaContent, loading: contentLoading } = useDoshaTestContent();
