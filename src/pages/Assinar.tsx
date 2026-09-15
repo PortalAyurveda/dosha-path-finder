@@ -35,6 +35,7 @@ import DoshaPieChart from "@/components/charts/DoshaPieChart";
 import DoshaClock from "@/components/dosha/DoshaClock";
 import PreviaPersonalizada from "@/components/assinar/PreviaPersonalizada";
 import PixAssinaturaDialog from "@/components/assinar/PixAssinaturaDialog";
+import FaixaAviso from "@/components/FaixaAviso";
 
 import {
   AlertDialog,
@@ -648,6 +649,10 @@ const Assinar = () => {
           content="Descubra seu dosha e receba o Portal inteiro moldado a você. Três planos — Minha Rotina, Premium mensal e Premium anual."
         />
       </Helmet>
+
+      {searchParams.get("utm_campaign") === "paywall_rotina" && !isAssinante && (
+        <FaixaAviso texto="Para ver sua Rotina, assine um plano." />
+      )}
 
       <main>
         {cardReceita && receitaModalOpen ? (() => {
