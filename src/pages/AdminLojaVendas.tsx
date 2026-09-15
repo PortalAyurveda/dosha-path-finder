@@ -481,7 +481,6 @@ const AdminLojaVendas = () => {
                   <TableHead>Pagamento</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Melhor Envio</TableHead>
-                  <TableHead></TableHead>
                 </TableRow>
               </TableHeader>
 
