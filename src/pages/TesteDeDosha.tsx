@@ -726,6 +726,7 @@ const [step, setStep] = useState(0);
           <meta name="description" content="Descubra seu Dosha e cuide da sua saúde de forma individual. Crie sua dieta e rotina com o resultado imediato gerado para você." />
           <link rel="canonical" href="https://portalayurveda.com/teste-de-dosha" />
         </Helmet>
+        {faixaAkasha}
         <section
           className="relative overflow-hidden min-h-[80vh]"
           style={{ background: "linear-gradient(100deg, hsl(228 70% 96%) 0%, hsl(0 70% 97%) 50%, hsl(48 80% 95%) 100%)" }}
@@ -821,6 +822,7 @@ const [step, setStep] = useState(0);
         <meta property="og:url" content="https://portalayurveda.com/teste-de-dosha" />
         <meta property="og:image" content="https://api.portalayurveda.com/storage/v1/object/public/portal_images/logo-positivo.png" />
       </Helmet>
+      {faixaAkasha}
       <PageContainer title="Teste de Dosha" description="Descubra seu dosha predominante com nosso teste personalizado baseado no Ayurveda.">
       <div className="max-w-2xl mx-auto">
         {/* Progress */}

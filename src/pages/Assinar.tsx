@@ -649,6 +649,10 @@ const Assinar = () => {
         />
       </Helmet>
 
+      {searchParams.get("utm_campaign") === "paywall_rotina" && !isAssinante && (
+        <FaixaAviso texto="Para ver sua Rotina, assine um plano." />
+      )}
+
       <main>
         {cardReceita && receitaModalOpen ? (() => {
           const nj: any = (cardReceita as any)?.nugget_json ?? {};
