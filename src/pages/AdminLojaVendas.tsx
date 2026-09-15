@@ -190,6 +190,7 @@ export const MelhorEnvioBadge = ({
 
 
 const AdminLojaVendas = () => {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [pedidos, setPedidos] = useState<Pedido[]>([]);
   const [busca, setBusca] = useState("");
