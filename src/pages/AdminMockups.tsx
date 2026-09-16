@@ -974,7 +974,7 @@ function CardConviteTerapeutas({ formato }: { formato: Formato }) {
 }
 
 // ---------- cards de oferta (levam para /assinar) ----------
-const VERDE = "#57BE86";
+
 
 const IMG_RECEITA =
   "https://api.portalayurveda.com/storage/v1/object/public/portal_images/receita-kitchari-com-salsa-e-oleo-vegetal.webp";
