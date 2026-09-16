@@ -1095,6 +1095,193 @@ function CardOferta({ o, formato }: { o: Oferta; formato: Formato }) {
   );
 }
 
+// ---------- cards de busca ----------
+function CardVerso({ it, formato }: { it: ItemBusca; formato: Formato }) {
+  const t = T[formato];
+  const tema = useTema();
+  const story = formato === "story";
+  const texto = it.titulo || "";
+  const len = texto.length;
+  const size = len <= 140 ? t.titulo + (story ? 2 : 0) : len <= 280 ? t.titulo - 5 : t.corpo + 1;
+  const sanskrit = it.extra?.sanskrit as string | undefined;
+  const mostrarSanskrit = !!sanskrit && (story || len <= 280);
+  const ref =
+    [it.extra?.livro, it.extra?.referencia].filter(Boolean).join(" · ") +
+    (it.extra?.verso_no ? ` · v. ${it.extra.verso_no}` : "");
+
+  return (
+    <Card formato={formato}>
+      <SafeArea formato={formato}>
+        <Selo formato={formato} color={tema.escuro ? DOURADO : TINTA}>
+          Textos Clássicos
+        </Selo>
+        <div className="flex-1 flex flex-col justify-center" style={{ gap: story ? 18 : 14 }}>
+          {mostrarSanskrit ? (
+            <div style={{ ...Serif, fontSize: t.corpo, lineHeight: 1.5, opacity: 0.6 }}>
+              {truncar(sanskrit, 160)}
+            </div>
+          ) : null}
+          <div style={{ ...Serif, fontSize: size, lineHeight: 1.3, fontWeight: 600 }}>{texto}</div>
+          {ref ? (
+            <div
+              style={{
+                fontSize: t.rotulo,
+                letterSpacing: 1,
+                textTransform: "uppercase",
+                opacity: 0.65,
+                fontWeight: 600,
+              }}
+            >
+              {ref}
+            </div>
+          ) : null}
+        </div>
+        <Rodape formato={formato} />
+      </SafeArea>
+    </Card>
+  );
+}
+
+function CardProduto({ it, formato }: { it: ItemBusca; formato: Formato }) {
+  const t = T[formato];
+  const tema = useTema();
+  const story = formato === "story";
+  const larguraUtil = RENDER_W - SAFE[formato].x * 2;
+  const preco = Number(it.extra?.preco);
+  const tSize = tituloSize(it.titulo, t) + (story ? 4 : 0);
+
+  return (
+    <Card formato={formato}>
+      <SafeArea formato={formato}>
+        <Selo formato={formato} color={SAMKHYA}>
+          {it.tipo === "kit" ? "Kit Samkhya" : "Samkhya"}
+        </Selo>
+        <div
+          style={{
+            marginTop: 16,
+            width: "100%",
+            borderRadius: 18,
+            background: `#fff url(${it.imagem}) center/contain no-repeat`,
+            ...(story ? { flexGrow: 1, minHeight: "40%" } : { height: "42%", flexShrink: 0 }),
+          }}
+        />
+        <div style={{ ...Serif, fontSize: tSize, lineHeight: 1.12, fontWeight: 600, marginTop: 16 }}>
+          {truncar(it.titulo, 70)}
+        </div>
+        {it.resumo ? (
+          <div style={{ fontSize: t.corpo, lineHeight: 1.5, opacity: 0.85, marginTop: 8 }}>
+            {truncar(it.resumo, limiteLinhas(t.corpo, larguraUtil, story ? 4 : 2))}
+          </div>
+        ) : null}
+        {preco > 0 ? (
+          <div
+            style={{
+              ...Serif,
+              fontSize: story ? 34 : 28,
+              fontWeight: 700,
+              color: acento(tema, SAMKHYA),
+              marginTop: 12,
+            }}
+          >
+            {preco.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+          </div>
+        ) : null}
+        <Rodape formato={formato} />
+      </SafeArea>
+    </Card>
+  );
+}
+
+function CardItem({ it, formato }: { it: ItemBusca; formato: Formato }) {
+  const t = T[formato];
+  const larguraUtil = RENDER_W - SAFE[formato].x * 2;
+  const tags = normalizarTags(it.tags);
+
+  switch (it.tipo) {
+    case "receita":
+      return (
+        <CardConteudo
+          formato={formato}
+          selo="Receita do Portal"
+          cor={DOURADO}
+          titulo={it.titulo}
+          descricao={it.resumo || it.extra?.efeito}
+          tags={tags}
+          imagem={it.imagem}
+          cta="receba a receita"
+          extra={
+            formato === "feed" && it.extra?.ingredientes ? (
+              <div style={{ marginTop: 10 }}>
+                <Eyebrow formato={formato}>ingredientes</Eyebrow>
+                <div style={{ fontSize: t.corpo - 1, lineHeight: 1.4, opacity: 0.8, marginTop: 4 }}>
+                  {truncar(it.extra.ingredientes, limiteLinhas(t.corpo - 1, larguraUtil, 2))}
+                </div>
+              </div>
+            ) : null
+          }
+        />
+      );
+    case "pratica":
+      return (
+        <CardConteudo
+          formato={formato}
+          selo="Prática"
+          cor={VERDE}
+          titulo={it.titulo}
+          descricao={it.resumo || it.extra?.efeito}
+          tags={tags}
+          imagem={it.imagem}
+          cta="veja no portal"
+        />
+      );
+    case "video":
+      return (
+        <CardConteudo
+          formato={formato}
+          selo="Vídeo"
+          cor={CORAL}
+          titulo={it.titulo}
+          descricao={it.resumo}
+          tags={tags}
+          imagem={it.imagem}
+          imagemReserva={it.extra?.imagem_reserva}
+          play
+          fallbackBg="#333"
+          cta="assista no portal"
+        />
+      );
+    case "artigo":
+      return (
+        <CardConteudo
+          formato={formato}
+          selo="Artigo"
+          cor={AZUL}
+          titulo={it.titulo}
+          descricao={it.resumo}
+          tags={tags}
+          imagem={it.imagem}
+          fallbackBg="#ccc"
+          cta="leia no portal"
+        />
+      );
+    case "curso":
+      return (
+        <CardCurso
+          c={{ titulo: it.titulo, capa: it.imagem || "", slug: it.id, aulas: Number(it.extra?.aulas) || 0 }}
+          formato={formato}
+        />
+      );
+    case "verso":
+      return <CardVerso it={it} formato={formato} />;
+    case "produto":
+    case "kit":
+      return <CardProduto it={it} formato={formato} />;
+    default:
+      return null;
+  }
+}
+
+
 // ---------- card exportável ----------
 function CardExport({
   item,
