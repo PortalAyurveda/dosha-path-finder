@@ -1609,11 +1609,27 @@ const AdminMockups = () => {
             <input
               value={busca}
               onChange={(e) => setBusca(e.target.value)}
-              placeholder="Buscar por título, texto ou tag…"
+              placeholder="Buscar receitas, vídeos, artigos, versos, produtos…"
               className="ml-auto h-9 w-full sm:w-72 rounded-md border border-border bg-background px-3 text-sm"
             />
           </div>
+          <div className="max-w-6xl mx-auto px-4 pb-3 flex flex-wrap items-center gap-2">
+            {TIPOS_BUSCA.map((tb) => (
+              <Button
+                key={tb.key}
+                size="sm"
+                variant={tipoBusca === tb.key ? "default" : "outline"}
+                onClick={() => setTipoBusca(tb.key)}
+              >
+                {tb.label}
+              </Button>
+            ))}
+            <span className="text-xs text-muted-foreground ml-auto">
+              {buscando ? "Buscando…" : `${totalBusca} ${totalBusca === 1 ? "resultado" : "resultados"}`}
+            </span>
+          </div>
         </div>
+
 
         <main className="max-w-6xl mx-auto px-4 py-6">
           {!loading && erro && (
