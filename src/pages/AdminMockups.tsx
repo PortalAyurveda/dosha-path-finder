@@ -1427,6 +1427,48 @@ function Grupo({
   );
 }
 
+// ---------- grade de resultados de busca ----------
+function GradeBusca({ itens, formato }: { itens: ItemBusca[]; formato: Formato }) {
+  const [copiado, setCopiado] = useState<string | null>(null);
+  const copiarUrl = async (key: string, url: string) => {
+    try {
+      await navigator.clipboard.writeText(url);
+    } catch {
+      const ta = document.createElement("textarea");
+      ta.value = url;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      ta.remove();
+    }
+    setCopiado(key);
+    toast({ title: "Link copiado", description: url });
+    setTimeout(() => setCopiado((k) => (k === key ? null : k)), 2000);
+  };
+
+  return (
+    <div className="flex flex-wrap gap-6">
+      {itens.map((it) => {
+        const key = `${it.tipo}-${it.id}`;
+        return (
+          <CardExport
+            key={key}
+            item={{
+              key,
+              filename: `${it.tipo}-${slugArquivo(it.titulo)}-${formato}.png`,
+              node: <CardItem it={it} formato={formato} />,
+            }}
+            formato={formato}
+            copiado={copiado === key}
+            onCopiar={() => copiarUrl(key, `${SITE}${it.rota}`)}
+          />
+        );
+      })}
+    </div>
+  );
+}
+
+
 // ---------- página ----------
 const AdminMockups = () => {
   const [formato, setFormato] = useState<Formato>("story");
