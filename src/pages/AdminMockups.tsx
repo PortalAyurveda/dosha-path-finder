@@ -667,6 +667,7 @@ function CardConteudo({
   extra,
   tags,
   imagem,
+  imagemReserva,
   play,
   cta,
   fallbackBg = "#ddd",
@@ -679,6 +680,7 @@ function CardConteudo({
   extra?: React.ReactNode;
   tags: string[];
   imagem?: string | null;
+  imagemReserva?: string | null;
   play?: boolean;
   cta: string;
   fallbackBg?: string;
