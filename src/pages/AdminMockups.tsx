@@ -1565,49 +1565,6 @@ const AdminMockups = () => {
           node: <CardConversa p={c.pergunta} r={c.resposta} formato={formato} />,
         })),
       },
-      {
-        titulo: "Receitas",
-        itens: (dados.receitas || []).map((r, i) => ({
-          key: `rec-${i}`,
-          filename: `receita-${i + 1}-${formato}.png`,
-          texto: `${r.titulo} ${r.resumo || ""} ${(r.tags || []).join(" ")}`,
-          url: r.video_slug
-            ? `${SITE}/video/${r.video_slug}`
-            : r.slug
-              ? `${SITE}/minha-rotina?item=${r.slug}`
-              : SITE,
-          node: <CardReceita r={r} formato={formato} />,
-        })),
-      },
-      {
-        titulo: "Vídeos",
-        itens: (dados.videos || []).map((v, i) => ({
-          key: `vid-${i}`,
-          filename: `video-${i + 1}-${formato}.png`,
-          texto: `${v.titulo} ${v.resumo || ""} ${v.tags || ""}`,
-          url: `${SITE}/video/${v.slug}`,
-          node: <CardVideo v={v} formato={formato} />,
-        })),
-      },
-      {
-        titulo: "Artigos",
-        itens: (dados.artigos || []).map((a, i) => ({
-          key: `art-${i}`,
-          filename: `artigo-${i + 1}-${formato}.png`,
-          texto: `${a.titulo} ${a.resumo || ""} ${a.tags || ""}`,
-          url: `${SITE}/blog/${a.slug}`,
-          node: <CardArtigo a={a} formato={formato} />,
-        })),
-      },
-      {
-        titulo: "Cursos",
-        itens: (dados.cursos || []).map((c, i) => ({
-          key: `cur-${i}`,
-          filename: `curso-${i + 1}-${formato}.png`,
-          url: `${SITE}/cursos/${c.slug}`,
-          node: <CardCurso c={c} formato={formato} />,
-        })),
-      },
     ];
   }, [dados, formato]);
 
