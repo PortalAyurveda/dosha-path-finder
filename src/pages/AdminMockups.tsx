@@ -737,7 +737,7 @@ function CardConteudo({
               width: "100%",
               borderRadius: 18,
               overflow: "hidden",
-              background: `url(${imagem}) center/cover no-repeat, ${fallbackBg}`,
+              background: `url(${imagem}) center/cover no-repeat, ${imagemReserva ? `url(${imagemReserva}) center/cover no-repeat, ` : ""}${fallbackBg}`,
               ...(story
                 ? { marginTop: 22, flexGrow: 1, flexShrink: 1, minHeight: "42%" }
                 : { marginTop: "auto", height: "34%", flexShrink: 0 }),
