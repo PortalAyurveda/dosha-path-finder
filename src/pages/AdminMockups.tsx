@@ -25,6 +25,52 @@ const TINTA = "#352F54";
 const CORAL = "#FF7676";
 const DOURADO = "#E0A020";
 const AZUL = "#6A88FB";
+const VERDE = "#57BE86";
+const SAMKHYA = "#7B4963";
+
+type TipoBusca =
+  | "receita"
+  | "pratica"
+  | "video"
+  | "artigo"
+  | "verso"
+  | "produto"
+  | "kit"
+  | "curso";
+
+type ItemBusca = {
+  tipo: TipoBusca;
+  id: string;
+  titulo: string;
+  resumo: string | null;
+  imagem: string | null;
+  tags: string[] | null;
+  rota: string;
+  data: string | null;
+  extra: Record<string, any> | null;
+};
+
+const TIPOS_BUSCA: { key: "tudo" | TipoBusca; label: string }[] = [
+  { key: "tudo", label: "Tudo" },
+  { key: "receita", label: "Receitas" },
+  { key: "pratica", label: "Práticas" },
+  { key: "video", label: "Vídeos" },
+  { key: "artigo", label: "Artigos" },
+  { key: "verso", label: "Versos" },
+  { key: "produto", label: "Produtos" },
+  { key: "kit", label: "Kits" },
+  { key: "curso", label: "Cursos" },
+];
+
+function slugArquivo(s: string) {
+  return (s || "item")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 40);
+}
 
 // ---------- temas de fundo (variação de cor entre cards) ----------
 type Tema = {
@@ -621,6 +667,7 @@ function CardConteudo({
   extra,
   tags,
   imagem,
+  imagemReserva,
   play,
   cta,
   fallbackBg = "#ddd",
@@ -633,6 +680,7 @@ function CardConteudo({
   extra?: React.ReactNode;
   tags: string[];
   imagem?: string | null;
+  imagemReserva?: string | null;
   play?: boolean;
   cta: string;
   fallbackBg?: string;
@@ -689,7 +737,7 @@ function CardConteudo({
               width: "100%",
               borderRadius: 18,
               overflow: "hidden",
-              background: `url(${imagem}) center/cover no-repeat, ${fallbackBg}`,
+              background: `url(${imagem}) center/cover no-repeat, ${imagemReserva ? `url(${imagemReserva}) center/cover no-repeat, ` : ""}${fallbackBg}`,
               ...(story
                 ? { marginTop: 22, flexGrow: 1, flexShrink: 1, minHeight: "42%" }
                 : { marginTop: "auto", height: "34%", flexShrink: 0 }),
@@ -720,72 +768,6 @@ function CardConteudo({
   );
 }
 
-function CardReceita({ r, formato }: { r: Dados["receitas"][number]; formato: Formato }) {
-  const t = T[formato];
-  const larguraUtil = RENDER_W - SAFE[formato].x * 2;
-  return (
-    <CardConteudo
-      formato={formato}
-      selo="Receita do Portal"
-      cor={DOURADO}
-      titulo={r.titulo}
-      descricao={r.resumo || r.efeito}
-      tags={normalizarTags(r.tags)}
-      imagem={r.imagem}
-      cta="receba a receita"
-      extra={
-        formato === "feed" && r.ingredientes ? (
-          <div style={{ marginTop: 10 }}>
-            <Eyebrow formato={formato}>ingredientes</Eyebrow>
-            <div
-              style={{
-                fontSize: t.corpo - 1,
-                lineHeight: 1.4,
-                opacity: 0.8,
-                marginTop: 4,
-              }}
-            >
-              {truncar(r.ingredientes, limiteLinhas(t.corpo - 1, larguraUtil, 2))}
-            </div>
-          </div>
-        ) : null
-      }
-    />
-  );
-}
-
-function CardVideo({ v, formato }: { v: Dados["videos"][number]; formato: Formato }) {
-  return (
-    <CardConteudo
-      formato={formato}
-      selo="Vídeo"
-      cor={CORAL}
-      titulo={v.titulo}
-      descricao={v.resumo}
-      tags={normalizarTags(v.tags)}
-      imagem={v.thumb}
-      play
-      fallbackBg="#333"
-      cta="assista no portal"
-    />
-  );
-}
-
-function CardArtigo({ a, formato }: { a: Dados["artigos"][number]; formato: Formato }) {
-  return (
-    <CardConteudo
-      formato={formato}
-      selo="Artigo"
-      cor={AZUL}
-      titulo={a.titulo}
-      descricao={a.resumo}
-      tags={normalizarTags(a.tags)}
-      imagem={a.imagem}
-      fallbackBg="#ccc"
-      cta="leia no portal"
-    />
-  );
-}
 
 
 function CardCurso({ c, formato }: { c: Dados["cursos"][number]; formato: Formato }) {
@@ -926,7 +908,7 @@ function CardConviteTerapeutas({ formato }: { formato: Formato }) {
 }
 
 // ---------- cards de oferta (levam para /assinar) ----------
-const VERDE = "#57BE86";
+
 
 const IMG_RECEITA =
   "https://api.portalayurveda.com/storage/v1/object/public/portal_images/receita-kitchari-com-salsa-e-oleo-vegetal.webp";
@@ -1113,6 +1095,193 @@ function CardOferta({ o, formato }: { o: Oferta; formato: Formato }) {
   );
 }
 
+// ---------- cards de busca ----------
+function CardVerso({ it, formato }: { it: ItemBusca; formato: Formato }) {
+  const t = T[formato];
+  const tema = useTema();
+  const story = formato === "story";
+  const texto = it.titulo || "";
+  const len = texto.length;
+  const size = len <= 140 ? t.titulo + (story ? 2 : 0) : len <= 280 ? t.titulo - 5 : t.corpo + 1;
+  const sanskrit = it.extra?.sanskrit as string | undefined;
+  const mostrarSanskrit = !!sanskrit && (story || len <= 280);
+  const ref =
+    [it.extra?.livro, it.extra?.referencia].filter(Boolean).join(" · ") +
+    (it.extra?.verso_no ? ` · v. ${it.extra.verso_no}` : "");
+
+  return (
+    <Card formato={formato}>
+      <SafeArea formato={formato}>
+        <Selo formato={formato} color={tema.escuro ? DOURADO : TINTA}>
+          Textos Clássicos
+        </Selo>
+        <div className="flex-1 flex flex-col justify-center" style={{ gap: story ? 18 : 14 }}>
+          {mostrarSanskrit ? (
+            <div style={{ ...Serif, fontSize: t.corpo, lineHeight: 1.5, opacity: 0.6 }}>
+              {truncar(sanskrit, 160)}
+            </div>
+          ) : null}
+          <div style={{ ...Serif, fontSize: size, lineHeight: 1.3, fontWeight: 600 }}>{texto}</div>
+          {ref ? (
+            <div
+              style={{
+                fontSize: t.rotulo,
+                letterSpacing: 1,
+                textTransform: "uppercase",
+                opacity: 0.65,
+                fontWeight: 600,
+              }}
+            >
+              {ref}
+            </div>
+          ) : null}
+        </div>
+        <Rodape formato={formato} />
+      </SafeArea>
+    </Card>
+  );
+}
+
+function CardProduto({ it, formato }: { it: ItemBusca; formato: Formato }) {
+  const t = T[formato];
+  const tema = useTema();
+  const story = formato === "story";
+  const larguraUtil = RENDER_W - SAFE[formato].x * 2;
+  const preco = Number(it.extra?.preco);
+  const tSize = tituloSize(it.titulo, t) + (story ? 4 : 0);
+
+  return (
+    <Card formato={formato}>
+      <SafeArea formato={formato}>
+        <Selo formato={formato} color={SAMKHYA}>
+          {it.tipo === "kit" ? "Kit Samkhya" : "Samkhya"}
+        </Selo>
+        <div
+          style={{
+            marginTop: 16,
+            width: "100%",
+            borderRadius: 18,
+            background: `#fff url(${it.imagem}) center/contain no-repeat`,
+            ...(story ? { flexGrow: 1, minHeight: "40%" } : { height: "42%", flexShrink: 0 }),
+          }}
+        />
+        <div style={{ ...Serif, fontSize: tSize, lineHeight: 1.12, fontWeight: 600, marginTop: 16 }}>
+          {truncar(it.titulo, 70)}
+        </div>
+        {it.resumo ? (
+          <div style={{ fontSize: t.corpo, lineHeight: 1.5, opacity: 0.85, marginTop: 8 }}>
+            {truncar(it.resumo, limiteLinhas(t.corpo, larguraUtil, story ? 4 : 2))}
+          </div>
+        ) : null}
+        {preco > 0 ? (
+          <div
+            style={{
+              ...Serif,
+              fontSize: story ? 34 : 28,
+              fontWeight: 700,
+              color: acento(tema, SAMKHYA),
+              marginTop: 12,
+            }}
+          >
+            {preco.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+          </div>
+        ) : null}
+        <Rodape formato={formato} />
+      </SafeArea>
+    </Card>
+  );
+}
+
+function CardItem({ it, formato }: { it: ItemBusca; formato: Formato }) {
+  const t = T[formato];
+  const larguraUtil = RENDER_W - SAFE[formato].x * 2;
+  const tags = normalizarTags(it.tags);
+
+  switch (it.tipo) {
+    case "receita":
+      return (
+        <CardConteudo
+          formato={formato}
+          selo="Receita do Portal"
+          cor={DOURADO}
+          titulo={it.titulo}
+          descricao={it.resumo || it.extra?.efeito}
+          tags={tags}
+          imagem={it.imagem}
+          cta="receba a receita"
+          extra={
+            formato === "feed" && it.extra?.ingredientes ? (
+              <div style={{ marginTop: 10 }}>
+                <Eyebrow formato={formato}>ingredientes</Eyebrow>
+                <div style={{ fontSize: t.corpo - 1, lineHeight: 1.4, opacity: 0.8, marginTop: 4 }}>
+                  {truncar(it.extra.ingredientes, limiteLinhas(t.corpo - 1, larguraUtil, 2))}
+                </div>
+              </div>
+            ) : null
+          }
+        />
+      );
+    case "pratica":
+      return (
+        <CardConteudo
+          formato={formato}
+          selo="Prática"
+          cor={VERDE}
+          titulo={it.titulo}
+          descricao={it.resumo || it.extra?.efeito}
+          tags={tags}
+          imagem={it.imagem}
+          cta="veja no portal"
+        />
+      );
+    case "video":
+      return (
+        <CardConteudo
+          formato={formato}
+          selo="Vídeo"
+          cor={CORAL}
+          titulo={it.titulo}
+          descricao={it.resumo}
+          tags={tags}
+          imagem={it.imagem}
+          imagemReserva={it.extra?.imagem_reserva}
+          play
+          fallbackBg="#333"
+          cta="assista no portal"
+        />
+      );
+    case "artigo":
+      return (
+        <CardConteudo
+          formato={formato}
+          selo="Artigo"
+          cor={AZUL}
+          titulo={it.titulo}
+          descricao={it.resumo}
+          tags={tags}
+          imagem={it.imagem}
+          fallbackBg="#ccc"
+          cta="leia no portal"
+        />
+      );
+    case "curso":
+      return (
+        <CardCurso
+          c={{ titulo: it.titulo, capa: it.imagem || "", slug: it.id, aulas: Number(it.extra?.aulas) || 0 }}
+          formato={formato}
+        />
+      );
+    case "verso":
+      return <CardVerso it={it} formato={formato} />;
+    case "produto":
+    case "kit":
+      return <CardProduto it={it} formato={formato} />;
+    default:
+      return null;
+  }
+}
+
+
 // ---------- card exportável ----------
 function CardExport({
   item,
@@ -1258,6 +1427,48 @@ function Grupo({
   );
 }
 
+// ---------- grade de resultados de busca ----------
+function GradeBusca({ itens, formato }: { itens: ItemBusca[]; formato: Formato }) {
+  const [copiado, setCopiado] = useState<string | null>(null);
+  const copiarUrl = async (key: string, url: string) => {
+    try {
+      await navigator.clipboard.writeText(url);
+    } catch {
+      const ta = document.createElement("textarea");
+      ta.value = url;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      ta.remove();
+    }
+    setCopiado(key);
+    toast({ title: "Link copiado", description: url });
+    setTimeout(() => setCopiado((k) => (k === key ? null : k)), 2000);
+  };
+
+  return (
+    <div className="flex flex-wrap gap-6">
+      {itens.map((it) => {
+        const key = `${it.tipo}-${it.id}`;
+        return (
+          <CardExport
+            key={key}
+            item={{
+              key,
+              filename: `${it.tipo}-${slugArquivo(it.titulo)}-${formato}.png`,
+              node: <CardItem it={it} formato={formato} />,
+            }}
+            formato={formato}
+            copiado={copiado === key}
+            onCopiar={() => copiarUrl(key, `${SITE}${it.rota}`)}
+          />
+        );
+      })}
+    </div>
+  );
+}
+
+
 // ---------- página ----------
 const AdminMockups = () => {
   const [formato, setFormato] = useState<Formato>("story");
@@ -1269,6 +1480,48 @@ const AdminMockups = () => {
   const [restrito, setRestrito] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+
+  const [tipoBusca, setTipoBusca] = useState<"tudo" | TipoBusca>("tudo");
+  const [termo, setTermo] = useState("");
+  const [itensBusca, setItensBusca] = useState<ItemBusca[]>([]);
+  const [totalBusca, setTotalBusca] = useState(0);
+  const [buscando, setBuscando] = useState(true);
+  const [carregandoMais, setCarregandoMais] = useState(false);
+  const reqBusca = useRef(0);
+
+  useEffect(() => {
+    const id = setTimeout(() => setTermo(busca.trim()), 350);
+    return () => clearTimeout(id);
+  }, [busca]);
+
+  const rodarBusca = async (offset: number) => {
+    const minha = ++reqBusca.current;
+    if (offset === 0) setBuscando(true);
+    else setCarregandoMais(true);
+    const { data, error } = await supabase.rpc("mockups_buscar" as any, {
+      p_termo: termo || null,
+      p_tipo: tipoBusca,
+      p_limite: 80,
+      p_offset: offset,
+    });
+    if (minha !== reqBusca.current) return;
+    if (error) {
+      console.error("[AdminMockups] erro em mockups_buscar:", error);
+      toast({ title: "Não consegui buscar", description: error.message, variant: "destructive" });
+    } else if (data) {
+      const r = data as unknown as { total: number; itens: ItemBusca[] };
+      setTotalBusca(r.total || 0);
+      setItensBusca((prev) => (offset === 0 ? r.itens || [] : [...prev, ...(r.itens || [])]));
+    }
+    setBuscando(false);
+    setCarregandoMais(false);
+  };
+
+  useEffect(() => {
+    rodarBusca(0);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [termo, tipoBusca]);
+
 
   useEffect(() => {
     let cancelado = false;
@@ -1354,49 +1607,6 @@ const AdminMockups = () => {
           node: <CardConversa p={c.pergunta} r={c.resposta} formato={formato} />,
         })),
       },
-      {
-        titulo: "Receitas",
-        itens: (dados.receitas || []).map((r, i) => ({
-          key: `rec-${i}`,
-          filename: `receita-${i + 1}-${formato}.png`,
-          texto: `${r.titulo} ${r.resumo || ""} ${(r.tags || []).join(" ")}`,
-          url: r.video_slug
-            ? `${SITE}/video/${r.video_slug}`
-            : r.slug
-              ? `${SITE}/minha-rotina?item=${r.slug}`
-              : SITE,
-          node: <CardReceita r={r} formato={formato} />,
-        })),
-      },
-      {
-        titulo: "Vídeos",
-        itens: (dados.videos || []).map((v, i) => ({
-          key: `vid-${i}`,
-          filename: `video-${i + 1}-${formato}.png`,
-          texto: `${v.titulo} ${v.resumo || ""} ${v.tags || ""}`,
-          url: `${SITE}/video/${v.slug}`,
-          node: <CardVideo v={v} formato={formato} />,
-        })),
-      },
-      {
-        titulo: "Artigos",
-        itens: (dados.artigos || []).map((a, i) => ({
-          key: `art-${i}`,
-          filename: `artigo-${i + 1}-${formato}.png`,
-          texto: `${a.titulo} ${a.resumo || ""} ${a.tags || ""}`,
-          url: `${SITE}/blog/${a.slug}`,
-          node: <CardArtigo a={a} formato={formato} />,
-        })),
-      },
-      {
-        titulo: "Cursos",
-        itens: (dados.cursos || []).map((c, i) => ({
-          key: `cur-${i}`,
-          filename: `curso-${i + 1}-${formato}.png`,
-          url: `${SITE}/cursos/${c.slug}`,
-          node: <CardCurso c={c} formato={formato} />,
-        })),
-      },
     ];
   }, [dados, formato]);
 
@@ -1441,11 +1651,27 @@ const AdminMockups = () => {
             <input
               value={busca}
               onChange={(e) => setBusca(e.target.value)}
-              placeholder="Buscar por título, texto ou tag…"
+              placeholder="Buscar receitas, vídeos, artigos, versos, produtos…"
               className="ml-auto h-9 w-full sm:w-72 rounded-md border border-border bg-background px-3 text-sm"
             />
           </div>
+          <div className="max-w-6xl mx-auto px-4 pb-3 flex flex-wrap items-center gap-2">
+            {TIPOS_BUSCA.map((tb) => (
+              <Button
+                key={tb.key}
+                size="sm"
+                variant={tipoBusca === tb.key ? "default" : "outline"}
+                onClick={() => setTipoBusca(tb.key)}
+              >
+                {tb.label}
+              </Button>
+            ))}
+            <span className="text-xs text-muted-foreground ml-auto">
+              {buscando ? "Buscando…" : `${totalBusca} ${totalBusca === 1 ? "resultado" : "resultados"}`}
+            </span>
+          </div>
         </div>
+
 
         <main className="max-w-6xl mx-auto px-4 py-6">
           {!loading && erro && (
@@ -1453,6 +1679,61 @@ const AdminMockups = () => {
           )}
           {!loading && !erro && restrito && (
             <div className="text-center text-muted-foreground py-20">Página restrita.</div>
+          )}
+          {!erro && !restrito && (
+            <section className="mb-12">
+              <h2 className="text-lg font-heading font-bold text-foreground mb-4">Conteúdo do Portal</h2>
+              {buscando ? (
+                <div className="flex flex-wrap gap-6">
+                  {Array.from({ length: 6 }).map((_, i) => (
+                    <Skeleton
+                      key={i}
+                      style={{ width: RENDER_W, height: RENDER_W * (FORMATOS[formato].h / FORMATOS[formato].w) }}
+                    />
+                  ))}
+                </div>
+              ) : itensBusca.length === 0 ? (
+                <div className="text-center text-muted-foreground py-12">
+                  {termo ? `Nada encontrado para “${termo}”.` : "Nada encontrado."}
+                </div>
+              ) : !termo && tipoBusca === "tudo" ? (
+                TIPOS_BUSCA.filter((tb) => tb.key !== "tudo").map((tb) => {
+                  const doTipo = itensBusca.filter((it) => it.tipo === tb.key);
+                  if (!doTipo.length) return null;
+                  return (
+                    <div key={tb.key} className="mb-10">
+                      <div className="flex items-baseline gap-3 mb-4">
+                        <h3 className="text-base font-heading font-bold text-foreground">{tb.label}</h3>
+                        <button
+                          type="button"
+                          className="text-sm text-primary hover:underline"
+                          onClick={() => setTipoBusca(tb.key)}
+                        >
+                          ver todos →
+                        </button>
+                      </div>
+                      <GradeBusca itens={doTipo} formato={formato} />
+                    </div>
+                  );
+                })
+              ) : (
+                <>
+                  <GradeBusca itens={itensBusca} formato={formato} />
+                  {itensBusca.length < totalBusca ? (
+                    <div className="flex justify-center mt-8">
+                      <Button
+                        variant="outline"
+                        onClick={() => rodarBusca(itensBusca.length)}
+                        disabled={carregandoMais}
+                      >
+                        {carregandoMais ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+                        Carregar mais
+                      </Button>
+                    </div>
+                  ) : null}
+                </>
+              )}
+            </section>
           )}
           {loading && (
             <div className="flex flex-wrap gap-6">
@@ -1469,7 +1750,7 @@ const AdminMockups = () => {
             !erro &&
             dados &&
             grupos.map((g) => (
-              <Grupo key={g.titulo} titulo={g.titulo} formato={formato} itens={g.itens} busca={busca} />
+              <Grupo key={g.titulo} titulo={g.titulo} formato={formato} itens={g.itens} />
             ))}
         </main>
       </div>

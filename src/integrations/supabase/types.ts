@@ -9705,6 +9705,48 @@ export type Database = {
         }
         Relationships: []
       }
+      versos_destaque: {
+        Row: {
+          ativo: boolean
+          created_at: string
+          fontes: Json
+          id: number
+          livro: string
+          nota_curadoria: string | null
+          referencia: string
+          tema: string
+          texto_pt: string
+          verso_no: string | null
+          verso_sanskrit: string | null
+        }
+        Insert: {
+          ativo?: boolean
+          created_at?: string
+          fontes?: Json
+          id?: never
+          livro: string
+          nota_curadoria?: string | null
+          referencia: string
+          tema: string
+          texto_pt: string
+          verso_no?: string | null
+          verso_sanskrit?: string | null
+        }
+        Update: {
+          ativo?: boolean
+          created_at?: string
+          fontes?: Json
+          id?: never
+          livro?: string
+          nota_curadoria?: string | null
+          referencia?: string
+          tema?: string
+          texto_pt?: string
+          verso_no?: string | null
+          verso_sanskrit?: string | null
+        }
+        Relationships: []
+      }
       videos_seo: {
         Row: {
           criado_em: string | null
@@ -10792,7 +10834,7 @@ export type Database = {
       calcular_sintese_texto: { Args: { p_email: string }; Returns: string }
       cancelar_assinaturas_pix_vencidas: { Args: never; Returns: undefined }
       cards_da_resposta: {
-        Args: { p_texto: string }
+        Args: { p_dosha?: string; p_texto: string }
         Returns: {
           hits: number
           imagem: string
@@ -11255,6 +11297,15 @@ export type Database = {
           slot: string
         }[]
       }
+      mockups_buscar: {
+        Args: {
+          p_limite?: number
+          p_offset?: number
+          p_termo?: string
+          p_tipo?: string
+        }
+        Returns: Json
+      }
       mockups_dados: { Args: never; Returns: Json }
       obter_certificado_curso: { Args: { p_curso_id: string }; Returns: Json }
       owns_rotina: { Args: { p_test_id: string }; Returns: boolean }
@@ -11383,6 +11434,7 @@ export type Database = {
       }
       recompute_user_level: { Args: { p_user: string }; Returns: undefined }
       registrar_evento_email: { Args: { p: Json }; Returns: number }
+      registrar_evento_email_ses: { Args: { p: Json }; Returns: number }
       relatorio_dossie: { Args: { p_horas?: number }; Returns: Json }
       renderizar_secoes_email: {
         Args: { p_comunicacao_id: string }
