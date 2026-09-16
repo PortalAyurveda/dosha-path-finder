@@ -1638,6 +1638,61 @@ const AdminMockups = () => {
           {!loading && !erro && restrito && (
             <div className="text-center text-muted-foreground py-20">Página restrita.</div>
           )}
+          {!erro && !restrito && (
+            <section className="mb-12">
+              <h2 className="text-lg font-heading font-bold text-foreground mb-4">Conteúdo do Portal</h2>
+              {buscando ? (
+                <div className="flex flex-wrap gap-6">
+                  {Array.from({ length: 6 }).map((_, i) => (
+                    <Skeleton
+                      key={i}
+                      style={{ width: RENDER_W, height: RENDER_W * (FORMATOS[formato].h / FORMATOS[formato].w) }}
+                    />
+                  ))}
+                </div>
+              ) : itensBusca.length === 0 ? (
+                <div className="text-center text-muted-foreground py-12">
+                  {termo ? `Nada encontrado para “${termo}”.` : "Nada encontrado."}
+                </div>
+              ) : !termo && tipoBusca === "tudo" ? (
+                TIPOS_BUSCA.filter((tb) => tb.key !== "tudo").map((tb) => {
+                  const doTipo = itensBusca.filter((it) => it.tipo === tb.key);
+                  if (!doTipo.length) return null;
+                  return (
+                    <div key={tb.key} className="mb-10">
+                      <div className="flex items-baseline gap-3 mb-4">
+                        <h3 className="text-base font-heading font-bold text-foreground">{tb.label}</h3>
+                        <button
+                          type="button"
+                          className="text-sm text-primary hover:underline"
+                          onClick={() => setTipoBusca(tb.key)}
+                        >
+                          ver todos →
+                        </button>
+                      </div>
+                      <GradeBusca itens={doTipo} formato={formato} />
+                    </div>
+                  );
+                })
+              ) : (
+                <>
+                  <GradeBusca itens={itensBusca} formato={formato} />
+                  {itensBusca.length < totalBusca ? (
+                    <div className="flex justify-center mt-8">
+                      <Button
+                        variant="outline"
+                        onClick={() => rodarBusca(itensBusca.length)}
+                        disabled={carregandoMais}
+                      >
+                        {carregandoMais ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+                        Carregar mais
+                      </Button>
+                    </div>
+                  ) : null}
+                </>
+              )}
+            </section>
+          )}
           {loading && (
             <div className="flex flex-wrap gap-6">
               {Array.from({ length: 6 }).map((_, i) => (
@@ -1653,7 +1708,7 @@ const AdminMockups = () => {
             !erro &&
             dados &&
             grupos.map((g) => (
-              <Grupo key={g.titulo} titulo={g.titulo} formato={formato} itens={g.itens} busca={busca} />
+              <Grupo key={g.titulo} titulo={g.titulo} formato={formato} itens={g.itens} />
             ))}
         </main>
       </div>
