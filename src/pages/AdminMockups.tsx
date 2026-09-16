@@ -25,6 +25,52 @@ const TINTA = "#352F54";
 const CORAL = "#FF7676";
 const DOURADO = "#E0A020";
 const AZUL = "#6A88FB";
+const VERDE = "#57BE86";
+const SAMKHYA = "#7B4963";
+
+type TipoBusca =
+  | "receita"
+  | "pratica"
+  | "video"
+  | "artigo"
+  | "verso"
+  | "produto"
+  | "kit"
+  | "curso";
+
+type ItemBusca = {
+  tipo: TipoBusca;
+  id: string;
+  titulo: string;
+  resumo: string | null;
+  imagem: string | null;
+  tags: string[] | null;
+  rota: string;
+  data: string | null;
+  extra: Record<string, any> | null;
+};
+
+const TIPOS_BUSCA: { key: "tudo" | TipoBusca; label: string }[] = [
+  { key: "tudo", label: "Tudo" },
+  { key: "receita", label: "Receitas" },
+  { key: "pratica", label: "Práticas" },
+  { key: "video", label: "Vídeos" },
+  { key: "artigo", label: "Artigos" },
+  { key: "verso", label: "Versos" },
+  { key: "produto", label: "Produtos" },
+  { key: "kit", label: "Kits" },
+  { key: "curso", label: "Cursos" },
+];
+
+function slugArquivo(s: string) {
+  return (s || "item")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 40);
+}
 
 // ---------- temas de fundo (variação de cor entre cards) ----------
 type Tema = {
