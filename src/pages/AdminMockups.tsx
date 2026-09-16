@@ -1481,6 +1481,48 @@ const AdminMockups = () => {
   const [erro, setErro] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const [tipoBusca, setTipoBusca] = useState<"tudo" | TipoBusca>("tudo");
+  const [termo, setTermo] = useState("");
+  const [itensBusca, setItensBusca] = useState<ItemBusca[]>([]);
+  const [totalBusca, setTotalBusca] = useState(0);
+  const [buscando, setBuscando] = useState(true);
+  const [carregandoMais, setCarregandoMais] = useState(false);
+  const reqBusca = useRef(0);
+
+  useEffect(() => {
+    const id = setTimeout(() => setTermo(busca.trim()), 350);
+    return () => clearTimeout(id);
+  }, [busca]);
+
+  const rodarBusca = async (offset: number) => {
+    const minha = ++reqBusca.current;
+    if (offset === 0) setBuscando(true);
+    else setCarregandoMais(true);
+    const { data, error } = await supabase.rpc("mockups_buscar" as any, {
+      p_termo: termo || null,
+      p_tipo: tipoBusca,
+      p_limite: 80,
+      p_offset: offset,
+    });
+    if (minha !== reqBusca.current) return;
+    if (error) {
+      console.error("[AdminMockups] erro em mockups_buscar:", error);
+      toast({ title: "Não consegui buscar", description: error.message, variant: "destructive" });
+    } else if (data) {
+      const r = data as unknown as { total: number; itens: ItemBusca[] };
+      setTotalBusca(r.total || 0);
+      setItensBusca((prev) => (offset === 0 ? r.itens || [] : [...prev, ...(r.itens || [])]));
+    }
+    setBuscando(false);
+    setCarregandoMais(false);
+  };
+
+  useEffect(() => {
+    rodarBusca(0);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [termo, tipoBusca]);
+
+
   useEffect(() => {
     let cancelado = false;
     (async () => {
