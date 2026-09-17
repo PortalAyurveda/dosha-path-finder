@@ -183,9 +183,9 @@ const PortasDosha = () => {
               <div className="w-40 md:w-48">
                 <DoshaClock
                   variant="neutral"
-                  hideCenter
                   compact
                   insetMarkers
+                  hiddenMarkers={["12h", "00h"]}
                 />
               </div>
             </div>
