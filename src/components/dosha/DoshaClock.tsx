@@ -98,15 +98,19 @@ const DoshaClock = ({
   hideCenter = false,
   hiddenMarkers = [],
   compact = false,
+  insetMarkers = false,
 }: DoshaClockProps) => {
   const highlighted = highlightedMarkers[variant];
   const highlightedDoshas = highlightedLabels[variant];
 
   const markerTxt = compact ? "text-[9px] px-1.5 py-0" : "text-xs px-2 py-0.5";
+  const markerInsetTxt = "text-[7px] px-1 py-0";
   const doshaHighlightTxt = compact ? "text-white text-[11px] drop-shadow-md" : "text-white text-base drop-shadow-md";
   const doshaDimTxt = compact ? "text-white/60 text-[9px]" : "text-white/60 text-xs";
   const centerLabelTxt = compact ? "text-[8px] mb-0.5" : "text-[10px] mb-1";
   const centerValueTxt = compact ? "text-xl" : "text-4xl";
+
+  const insetRadius = 44; // % of the circle radius, keeps pills inside the rim
 
   return (
     <div className="relative w-full max-w-[440px] aspect-square mx-auto">
@@ -114,10 +118,22 @@ const DoshaClock = ({
       {markers.map((m) => {
         if (hiddenMarkers.includes(m.label)) return null;
         const isHighlighted = variant === "neutral" || highlighted.includes(m.label);
+        const insetStyle = insetMarkers
+          ? (() => {
+              const rad = (m.angle * Math.PI) / 180;
+              return {
+                left: `${50 + insetRadius * Math.sin(rad)}%`,
+                top: `${50 - insetRadius * Math.cos(rad)}%`,
+              };
+            })()
+          : undefined;
         return (
           <div
             key={m.label}
-            className={`absolute font-sans font-bold text-primary bg-white rounded-md z-20 shadow-sm ${markerTxt} ${m.className} ${
+            style={insetStyle}
+            className={`absolute font-sans font-bold text-primary bg-white rounded-full z-20 shadow-sm ${
+              insetMarkers ? markerInsetTxt : markerTxt
+            } ${insetMarkers ? "-translate-x-1/2 -translate-y-1/2" : m.className} ${
               isHighlighted
                 ? (variant !== "neutral" ? markerHighlightBorder[variant] : "")
                 : "opacity-40 grayscale"

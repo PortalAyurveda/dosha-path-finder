@@ -78,8 +78,6 @@ const GUIAS: Guia[] = [
   },
 ];
 
-const MARCADORES_OCULTOS = ["12h", "14h", "18h", "22h", "00h", "02h", "06h", "10h"];
-
 const PortasDosha = () => {
   return (
     <section className="bg-background">
@@ -182,12 +180,12 @@ const PortasDosha = () => {
             </p>
 
             <div className="relative mt-auto flex flex-1 items-center justify-center pt-3 pb-8">
-              <div className="w-36 md:w-40">
+              <div className="w-40 md:w-48">
                 <DoshaClock
                   variant="neutral"
                   hideCenter
                   compact
-                  hiddenMarkers={MARCADORES_OCULTOS}
+                  insetMarkers
                 />
               </div>
             </div>
