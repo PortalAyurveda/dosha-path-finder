@@ -1108,6 +1108,10 @@ const AssinaturaCard = ({
               .
             </p>
           )}
+          <Button variant="outline" onClick={trocarCartao} disabled={working} className="rounded-full">
+            {working ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <CreditCard className="h-4 w-4 mr-2" />}
+            Trocar cartão
+          </Button>
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <button className="text-sm text-muted-foreground hover:text-foreground underline underline-offset-4">
