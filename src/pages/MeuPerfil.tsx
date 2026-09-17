@@ -1008,6 +1008,26 @@ const AssinaturaCard = ({
     }
   };
 
+  const trocarCartao = async () => {
+    setWorking(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("gerenciar-assinatura", {
+        body: { action: "trocar_cartao" },
+      });
+      if (error) throw error;
+      const url = (data as any)?.url;
+      if (url) {
+        window.location.href = url;
+        return;
+      }
+      toast.error((data as any)?.erro || "Não conseguimos abrir a troca de cartão agora.");
+    } catch (e) {
+      console.error(e);
+      toast.error("Não conseguimos abrir a troca de cartão agora.");
+    }
+    setWorking(false);
+  };
+
   const reativar = async () => {
     setWorking(true);
     try {
