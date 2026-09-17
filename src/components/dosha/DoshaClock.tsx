@@ -5,6 +5,8 @@ interface DoshaClockProps {
   hideCenter?: boolean;
   hiddenMarkers?: string[];
   compact?: boolean;
+  /** Renders hour markers as small pills hugging the inside edge of the circle. */
+  insetMarkers?: boolean;
 }
 
 
@@ -64,14 +66,14 @@ const highlightedLabels: Record<string, string[]> = {
 };
 
 const markers = [
-  { label: "12h", className: "top-[-10px] left-1/2 -translate-x-1/2" },
-  { label: "14h", className: "top-[7%] right-[22%] translate-x-1/2 -translate-y-1/2" },
-  { label: "18h", className: "top-1/2 right-[-25px] -translate-y-1/2" },
-  { label: "22h", className: "bottom-[7%] right-[22%] translate-x-1/2 translate-y-1/2" },
-  { label: "00h", className: "bottom-[-10px] left-1/2 -translate-x-1/2" },
-  { label: "02h", className: "bottom-[7%] left-[22%] -translate-x-1/2 translate-y-1/2" },
-  { label: "06h", className: "top-1/2 left-[-25px] -translate-y-1/2" },
-  { label: "10h", className: "top-[7%] left-[22%] -translate-x-1/2 -translate-y-1/2" },
+  { label: "12h", className: "top-[-10px] left-1/2 -translate-x-1/2", angle: 0 },
+  { label: "14h", className: "top-[7%] right-[22%] translate-x-1/2 -translate-y-1/2", angle: 45 },
+  { label: "18h", className: "top-1/2 right-[-25px] -translate-y-1/2", angle: 90 },
+  { label: "22h", className: "bottom-[7%] right-[22%] translate-x-1/2 translate-y-1/2", angle: 135 },
+  { label: "00h", className: "bottom-[-10px] left-1/2 -translate-x-1/2", angle: 180 },
+  { label: "02h", className: "bottom-[7%] left-[22%] -translate-x-1/2 translate-y-1/2", angle: 225 },
+  { label: "06h", className: "top-1/2 left-[-25px] -translate-y-1/2", angle: 270 },
+  { label: "10h", className: "top-[7%] left-[22%] -translate-x-1/2 -translate-y-1/2", angle: 315 },
 ];
 
 const doshaLabels = [
