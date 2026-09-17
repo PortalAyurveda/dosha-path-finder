@@ -104,7 +104,7 @@ const DoshaClock = ({
   const highlightedDoshas = highlightedLabels[variant];
 
   const markerTxt = compact ? "text-[9px] px-1.5 py-0" : "text-xs px-2 py-0.5";
-  const markerInsetTxt = "text-[7px] px-1 py-0";
+  const markerInsetTxt = "text-[8px] px-1.5 py-px";
   const doshaHighlightTxt = compact ? "text-white text-[11px] drop-shadow-md" : "text-white text-base drop-shadow-md";
   const doshaDimTxt = compact ? "text-white/60 text-[9px]" : "text-white/60 text-xs";
   const centerLabelTxt = compact ? "text-[8px] mb-0.5" : "text-[10px] mb-1";
