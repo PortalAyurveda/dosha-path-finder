@@ -116,7 +116,7 @@ const PortasDosha = () => {
                   aria-hidden="true"
                 >
                   <ChevronRight className="h-4 w-4" />
-                </div>
+                </span>
               </div>
 
               <p className="relative mt-2 text-[11px] leading-snug text-foreground/70">{g.qualidades}</p>
@@ -171,7 +171,7 @@ const PortasDosha = () => {
                   <span className="flex h-6 w-6 items-center justify-center rounded-full bg-accent/20 text-primary">
                     <Clock className="h-3.5 w-3.5" aria-hidden="true" />
                   </span>
-                </span>
+                </div>
               </div>
               <span
                 className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-md transition-transform group-hover:translate-x-0.5"
