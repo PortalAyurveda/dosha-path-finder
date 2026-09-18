@@ -528,31 +528,30 @@ const MinhaRotina = () => {
       </div>
     );
   }
-  // Visitante (deslogado) vê a página de venda completa — no clique é levado ao login
-  // Gate de assinatura (para logados sem plano) usa o mesmo paywall
-  const temAcessoRotina = (() => {
-    if (!user || !profile) return false;
-    if (profile.is_premium === true) return true;
-    const planosValidos = ["rotina", "mensal", "anual"];
-    const ativo = profile.subscription_status === "active";
-    const planoOk = !!profile.plano && planosValidos.includes(profile.plano);
-    const dataOk = !profile.premium_until || new Date(profile.premium_until) > new Date();
-    return ativo && planoOk && dataOk;
-  })();
-
-  if (!user || !temAcessoRotina) {
-    // Link de isca (?item=): a pessoa fica aqui e vê a receita completa por cima
-    // da vitrine de planos, mesmo sem assinatura.
-    if (itemParam) {
-      return <IscaComPlanos nugget={nuggetAlvo} />;
-    }
-
+  if (!user) {
     const params = new URLSearchParams({
       utm_source: "site",
       utm_medium: "minha_rotina",
       utm_campaign: "paywall_rotina",
     });
+    if (itemParam) params.set("item", itemParam);
     return <Navigate to={`/assinar?${params.toString()}`} replace />;
+  }
+
+  if (!temAcessoRotina) {
+    const linhasHoje = rotinaRows
+      ? rotinaRows.filter((r) => r.dia === diaHoje && (r.semana ?? 1) === semanaHoje)
+      : undefined;
+    return (
+      <PreviaRotina
+        linhas={linhasHoje}
+        temTeste={!!doshaResult?.idPublico}
+        nuggetAlvo={nuggetAlvo}
+        abrirItem={!!itemParam}
+        dataLabel={agora.toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" })}
+        doshaNome={doshaResult?.doshaprincipal ?? null}
+      />
+    );
   }
 
 
