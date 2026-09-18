@@ -94,7 +94,7 @@ const PortasDosha = () => {
             <Link
               key={g.id}
               to={g.to}
-              className={`group relative flex h-full flex-col overflow-hidden border bg-card p-3.5 shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg sm:p-4 xl:aspect-[4/5] ${CANTOS} ${g.borda}`}
+              className={`group relative flex h-full flex-col overflow-hidden border bg-card p-3.5 shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg sm:p-4 xl:aspect-square ${CANTOS} ${g.borda}`}
             >
               <div
                 aria-hidden="true"
@@ -119,30 +119,30 @@ const PortasDosha = () => {
                 </span>
               </div>
 
-              <p className="relative mt-2 text-[11px] leading-snug text-foreground/70">{g.qualidades}</p>
+              <p className="relative mt-1.5 text-[11px] leading-snug text-foreground/70">{g.qualidades}</p>
 
-              <p className={`relative mt-2.5 text-[10px] font-bold uppercase tracking-wider ${g.texto}`}>
+              <p className={`relative mt-2 text-[10px] font-bold uppercase tracking-wider ${g.texto}`}>
                 Em equilíbrio
               </p>
-              <div className="relative mt-1.5 flex flex-wrap gap-1">
+              <div className="relative mt-1 flex flex-wrap gap-1">
                 {g.equilibrio.map((s) => (
                   <span
                     key={s}
-                    className={`rounded-full px-2 py-0.5 text-[10px] leading-tight font-medium ${g.fill}`}
+                    className={`rounded-full px-1.5 py-0 text-[10px] leading-tight font-medium ${g.fill}`}
                   >
                     {s}
                   </span>
                 ))}
               </div>
 
-              <p className={`relative mt-2.5 text-[10px] font-bold uppercase tracking-wider ${g.texto}`}>
+              <p className={`relative mt-2 text-[10px] font-bold uppercase tracking-wider ${g.texto}`}>
                 Sinais de excesso
               </p>
-              <div className="relative mt-1.5 flex flex-wrap gap-1">
+              <div className="relative mt-1 flex flex-wrap gap-1">
                 {g.excesso.map((s) => (
                   <span
                     key={s}
-                    className={`rounded-full border bg-card px-2 py-0.5 text-[10px] leading-tight ${g.outline}`}
+                    className={`rounded-full border bg-card px-1.5 py-0 text-[10px] leading-tight ${g.outline}`}
                   >
                     {s}
                   </span>
@@ -154,7 +154,7 @@ const PortasDosha = () => {
 
           <Link
             to="/biblioteca/horarios"
-            className={`group relative flex h-full flex-col overflow-hidden border border-accent/50 bg-card p-3.5 shadow-sm transition-all hover:-translate-y-1 hover:border-accent hover:shadow-lg sm:p-4 xl:aspect-[4/5] ${CANTOS}`}
+            className={`group relative flex h-full flex-col overflow-hidden border border-accent/50 bg-card p-3.5 shadow-sm transition-all hover:-translate-y-1 hover:border-accent hover:shadow-lg sm:p-4 xl:aspect-square ${CANTOS}`}
           >
             <div
               aria-hidden="true"
@@ -185,8 +185,8 @@ const PortasDosha = () => {
               A hora certa de cada coisa no dia.
             </p>
 
-            <div className="relative flex flex-1 items-center justify-center py-2">
-              <div className="w-36 sm:w-40 xl:w-44">
+            <div className="relative flex flex-1 items-center justify-center py-1">
+              <div className="w-32 sm:w-36 xl:w-40">
                 <DoshaClock
                   variant="neutral"
                   compact
