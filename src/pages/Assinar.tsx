@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -309,7 +309,7 @@ const PortalMark = ({ size = 28 }: { size?: number }) => (
 );
 
 const Assinar = () => {
-  const { user, isAnonymous, profile, refreshProfile, doshaResult } = useUser();
+  const { user, isAnonymous, profile, profileLoading, refreshProfile, doshaResult } = useUser();
   const [searchParams] = useSearchParams();
   const itemParam = searchParams.get("item");
   const navigate = useNavigate();
@@ -388,7 +388,7 @@ const Assinar = () => {
   const abrirPix = (plano: Plano) => {
     if (!user || isAnonymous) {
       const claim = doshaResult?.idPublico || localStorage.getItem("activeDoshaId");
-      navigate(`/entrar?${claim ? `claim=${claim}&` : ""}redirect=/assinar`);
+      navigate(`/entrar?${claim ? `claim=${claim}&` : ""}redirect=${encodeURIComponent(`/assinar?plano=${plano}`)}`);
       return;
     }
     setPixPlano(plano);
@@ -397,10 +397,12 @@ const Assinar = () => {
 
   const handleClickPlano = async (plano: Plano) => {
     if (!user || isAnonymous) {
+      registrarEventoAssinar("login", plano);
       const claim = doshaResult?.idPublico || localStorage.getItem("activeDoshaId");
-      navigate(`/entrar?${claim ? `claim=${claim}&` : ""}redirect=/assinar`);
+      navigate(`/entrar?${claim ? `claim=${claim}&` : ""}redirect=${encodeURIComponent(`/assinar?plano=${plano}`)}`);
       return;
     }
+    registrarEventoAssinar("clique_plano", plano);
     trackPixel("InitiateCheckout", { content_type: "subscription", plano });
     setLoadingPlan(plano);
     try {
@@ -415,6 +417,7 @@ const Assinar = () => {
         return;
       }
       if (data?.url) {
+        registrarEventoAssinar("checkout", plano);
         window.location.href = data.url;
         return;
       }
@@ -461,6 +464,42 @@ const Assinar = () => {
   const scrollToPlanos = () => {
     document.getElementById("planos")?.scrollIntoView({ behavior: "smooth" });
   };
+
+  function registrarEventoAssinar(evento: string, plano?: string | null) {
+    void (supabase.from("assinar_eventos" as any) as any)
+      .insert({
+        evento,
+        plano: plano ?? null,
+        user_id: user?.id ?? null,
+        origem: searchParams.get("utm_campaign") ?? searchParams.get("origem") ?? null,
+        pagina: window.location.pathname + window.location.search,
+      })
+      .then(undefined, () => {});
+  }
+
+  const planoParam = searchParams.get("plano");
+  const autoCheckoutRef = useRef(false);
+
+  useEffect(() => {
+    registrarEventoAssinar("visita");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (planoParam || searchParams.get("ir") === "planos") {
+      const t = setTimeout(scrollToPlanos, 400);
+      return () => clearTimeout(t);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [planoParam]);
+
+  useEffect(() => {
+    if (!planoParam || !["rotina", "mensal", "anual"].includes(planoParam)) return;
+    if (!user || isAnonymous || profileLoading || isAssinante || autoCheckoutRef.current) return;
+    autoCheckoutRef.current = true;
+    void handleClickPlano(planoParam as Plano);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [planoParam, user, isAnonymous, profileLoading, isAssinante]);
 
   const exemploScores = [
     { name: "Vata", score: 42 },
@@ -778,7 +817,7 @@ const Assinar = () => {
                     </p>
                     <button
                       type="button"
-                      onClick={() => setReceitaModalOpen(false)}
+                      onClick={() => { setReceitaModalOpen(false); scrollToPlanos(); }}
                       className="w-full inline-flex items-center justify-center px-6 py-3 rounded-full text-white font-semibold text-base shadow-lg transition-colors"
                       style={{ backgroundColor: SALMAO }}
                       onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = SALMAO_HOVER)}

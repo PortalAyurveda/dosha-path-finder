@@ -108,9 +108,15 @@ const Auth = () => {
   const handleGoogleLogin = async () => {
     setGoogleLoading(true);
     const storedDoshaId = localStorage.getItem("activeDoshaId");
-    const redirectUrl = storedDoshaId
-      ? `${window.location.origin}/meu-dosha?id=${storedDoshaId}`
-      : window.location.origin;
+    const redirectParam =
+      sanitizeRedirect(searchParams.get("redirect")) ||
+      sanitizeRedirect(localStorage.getItem(REDIRECT_STORAGE_KEY));
+    const claimId = searchParams.get("claim") || storedDoshaId;
+    const redirectUrl = redirectParam
+      ? `${window.location.origin}/entrar?${claimId ? `claim=${claimId}&` : ""}redirect=${encodeURIComponent(redirectParam)}`
+      : storedDoshaId
+        ? `${window.location.origin}/meu-dosha?id=${storedDoshaId}`
+        : window.location.origin;
 
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",

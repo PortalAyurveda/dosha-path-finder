@@ -57,7 +57,7 @@ import { toast } from "@/hooks/use-toast";
 import NuggetDetalhe, { type Nugget } from "@/components/rotina/NuggetDetalhe";
 
 import NuggetIscaDialog from "@/components/rotina/NuggetIscaDialog";
-const AssinarPage = lazy(() => import("@/pages/Assinar"));
+import PreviaRotina from "@/components/rotina/PreviaRotina";
 
 
 // ===== Slots =====
@@ -119,6 +119,15 @@ const semanaDoMes = (d: Date) => Math.min(5, Math.ceil(d.getDate() / 7));
 // ===== Page =====
 const MinhaRotina = () => {
   const { user, loading, profileLoading, doshaResult, profile, refreshProfile } = useUser();
+  const temAcessoRotina = (() => {
+    if (!user || !profile) return false;
+    if (profile.is_premium === true) return true;
+    const planosValidos = ["rotina", "mensal", "anual"];
+    const ativo = profile.subscription_status === "active";
+    const planoOk = !!profile.plano && planosValidos.includes(profile.plano);
+    const dataOk = !profile.premium_until || new Date(profile.premium_until) > new Date();
+    return ativo && planoOk && dataOk;
+  })();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
@@ -257,6 +266,7 @@ const MinhaRotina = () => {
   const { data: nuggets } = useQuery({
     queryKey: ["rotina-nuggets-all"],
     staleTime: 30 * 60 * 1000,
+    enabled: temAcessoRotina || !!itemParam,
     queryFn: async () => {
       const { data, error } = await supabase
         .from("rotina_nuggets")
@@ -518,31 +528,30 @@ const MinhaRotina = () => {
       </div>
     );
   }
-  // Visitante (deslogado) vê a página de venda completa — no clique é levado ao login
-  // Gate de assinatura (para logados sem plano) usa o mesmo paywall
-  const temAcessoRotina = (() => {
-    if (!user || !profile) return false;
-    if (profile.is_premium === true) return true;
-    const planosValidos = ["rotina", "mensal", "anual"];
-    const ativo = profile.subscription_status === "active";
-    const planoOk = !!profile.plano && planosValidos.includes(profile.plano);
-    const dataOk = !profile.premium_until || new Date(profile.premium_until) > new Date();
-    return ativo && planoOk && dataOk;
-  })();
-
-  if (!user || !temAcessoRotina) {
-    // Link de isca (?item=): a pessoa fica aqui e vê a receita completa por cima
-    // da vitrine de planos, mesmo sem assinatura.
-    if (itemParam) {
-      return <IscaComPlanos nugget={nuggetAlvo} />;
-    }
-
+  if (!user) {
     const params = new URLSearchParams({
       utm_source: "site",
       utm_medium: "minha_rotina",
       utm_campaign: "paywall_rotina",
     });
+    if (itemParam) params.set("item", itemParam);
     return <Navigate to={`/assinar?${params.toString()}`} replace />;
+  }
+
+  if (!temAcessoRotina) {
+    const linhasHoje = rotinaRows
+      ? rotinaRows.filter((r) => r.dia === diaHoje && (r.semana ?? 1) === semanaHoje)
+      : undefined;
+    return (
+      <PreviaRotina
+        linhas={linhasHoje}
+        temTeste={!!doshaResult?.idPublico}
+        nuggetAlvo={nuggetAlvo}
+        abrirItem={!!itemParam}
+        dataLabel={agora.toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" })}
+        doshaNome={doshaResult?.doshaprincipal ?? null}
+      />
+    );
   }
 
 
@@ -2101,34 +2110,3 @@ const SuplementosSection = ({ vata, pitta, kapha }: SuplementosSectionProps) => 
 
 export default MinhaRotina;
 
-
-// ===== Isca por link para quem não tem assinatura ativa =====
-// A pessoa continua em /minha-rotina: vê a receita completa por cima da
-// vitrine de planos (a mesma da página /assinar), que fica ao fundo.
-const IscaComPlanos = ({ nugget }: { nugget: Nugget | null }) => {
-  const [open, setOpen] = useState(true);
-
-  return (
-    <div className="relative">
-      <div
-        aria-hidden={open}
-        className={cn(
-          "transition-all duration-300",
-          open && "pointer-events-none select-none blur-sm opacity-40"
-        )}
-      >
-        <Suspense fallback={<div className="min-h-[80vh]" />}>
-          <AssinarPage />
-        </Suspense>
-      </div>
-
-      {nugget ? (
-        <NuggetIscaDialog nugget={nugget} open={open} onOpenChange={setOpen} />
-      ) : (
-        <div className="absolute inset-x-0 top-24 flex justify-center">
-          <div className="h-8 w-8 rounded-full border-2 border-primary border-t-transparent animate-spin" />
-        </div>
-      )}
-    </div>
-  );
-};
