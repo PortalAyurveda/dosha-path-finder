@@ -745,6 +745,36 @@ export type Database = {
         }
         Relationships: []
       }
+      assinar_eventos: {
+        Row: {
+          criado_em: string
+          evento: string
+          id: number
+          origem: string | null
+          pagina: string | null
+          plano: string | null
+          user_id: string | null
+        }
+        Insert: {
+          criado_em?: string
+          evento: string
+          id?: number
+          origem?: string | null
+          pagina?: string | null
+          plano?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          criado_em?: string
+          evento?: string
+          id?: number
+          origem?: string | null
+          pagina?: string | null
+          plano?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       assinatura_cobrancas: {
         Row: {
           billing_reason: string | null
