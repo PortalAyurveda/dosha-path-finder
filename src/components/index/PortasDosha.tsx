@@ -94,7 +94,7 @@ const PortasDosha = () => {
             <Link
               key={g.id}
               to={g.to}
-              className={`group relative flex h-full flex-col overflow-hidden border bg-card p-3.5 shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg sm:p-4 xl:aspect-square ${CANTOS} ${g.borda}`}
+              className={`group relative flex h-full flex-col overflow-hidden border bg-card p-3.5 shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg sm:p-4 xl:aspect-[4/5] ${CANTOS} ${g.borda}`}
             >
               <div
                 aria-hidden="true"
@@ -154,7 +154,7 @@ const PortasDosha = () => {
 
           <Link
             to="/biblioteca/horarios"
-            className={`group relative flex h-full flex-col overflow-hidden border border-accent/50 bg-card p-3.5 shadow-sm transition-all hover:-translate-y-1 hover:border-accent hover:shadow-lg sm:p-4 xl:aspect-square ${CANTOS}`}
+            className={`group relative flex h-full flex-col overflow-hidden border border-accent/50 bg-card p-3.5 shadow-sm transition-all hover:-translate-y-1 hover:border-accent hover:shadow-lg sm:p-4 xl:aspect-[4/5] ${CANTOS}`}
           >
             <div
               aria-hidden="true"
