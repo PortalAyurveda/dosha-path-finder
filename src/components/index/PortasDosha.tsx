@@ -116,7 +116,7 @@ const PortasDosha = () => {
                   aria-hidden="true"
                 >
                   <ChevronRight className="h-4 w-4" />
-                </span>
+                </div>
               </div>
 
               <p className="relative mt-2 text-[11px] leading-snug text-foreground/70">{g.qualidades}</p>
