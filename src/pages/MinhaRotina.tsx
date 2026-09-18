@@ -2110,34 +2110,3 @@ const SuplementosSection = ({ vata, pitta, kapha }: SuplementosSectionProps) => 
 
 export default MinhaRotina;
 
-
-// ===== Isca por link para quem não tem assinatura ativa =====
-// A pessoa continua em /minha-rotina: vê a receita completa por cima da
-// vitrine de planos (a mesma da página /assinar), que fica ao fundo.
-const IscaComPlanos = ({ nugget }: { nugget: Nugget | null }) => {
-  const [open, setOpen] = useState(true);
-
-  return (
-    <div className="relative">
-      <div
-        aria-hidden={open}
-        className={cn(
-          "transition-all duration-300",
-          open && "pointer-events-none select-none blur-sm opacity-40"
-        )}
-      >
-        <Suspense fallback={<div className="min-h-[80vh]" />}>
-          <AssinarPage />
-        </Suspense>
-      </div>
-
-      {nugget ? (
-        <NuggetIscaDialog nugget={nugget} open={open} onOpenChange={setOpen} />
-      ) : (
-        <div className="absolute inset-x-0 top-24 flex justify-center">
-          <div className="h-8 w-8 rounded-full border-2 border-primary border-t-transparent animate-spin" />
-        </div>
-      )}
-    </div>
-  );
-};
