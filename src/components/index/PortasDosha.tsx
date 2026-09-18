@@ -22,7 +22,7 @@ type Guia = {
   seta: string;
 };
 
-const CANTOS = "rounded-tl-3xl rounded-br-3xl rounded-tr-md rounded-bl-md";
+const CANTOS = "rounded-tl-2xl rounded-br-2xl rounded-tr-md rounded-bl-md";
 
 const GUIAS: Guia[] = [
   {
@@ -89,12 +89,12 @@ const PortasDosha = () => {
           Cada guia tem alimentação, horários, herbologia e videoaulas.
         </p>
 
-        <div className="mt-5 grid grid-cols-2 gap-3 md:grid-cols-4 items-stretch">
+        <div className="mt-5 grid grid-cols-2 items-stretch gap-3 md:grid-cols-4">
           {GUIAS.map((g) => (
             <Link
               key={g.id}
               to={g.to}
-              className={`group relative flex h-full flex-col overflow-hidden border bg-card p-4 shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg ${CANTOS} ${g.borda}`}
+              className={`group relative flex h-full flex-col overflow-hidden border bg-card p-3.5 shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg sm:p-4 xl:aspect-[4/5] ${CANTOS} ${g.borda}`}
             >
               <div
                 aria-hidden="true"
@@ -102,20 +102,26 @@ const PortasDosha = () => {
               />
 
               <div className="relative flex items-start justify-between gap-2">
-                <h3 className={`font-serif font-bold text-lg leading-tight ${g.texto}`}>{g.titulo}</h3>
-                <div className="flex shrink-0 items-center gap-1.5">
-                  <span className={`hidden sm:block text-[11px] font-medium ${g.texto} opacity-80`}>
-                    {g.elementos}
-                  </span>
-                  <span className={`flex h-8 w-8 items-center justify-center rounded-full ${g.disco}`}>
-                    <g.Icon className={`h-4 w-4 ${g.texto}`} aria-hidden="true" />
-                  </span>
+                <div className="min-w-0">
+                  <h3 className={`font-serif font-bold text-lg leading-tight ${g.texto}`}>{g.titulo}</h3>
+                  <div className={`mt-1 flex items-center gap-1.5 text-[10px] font-medium ${g.texto}`}>
+                    <span className="hidden sm:inline opacity-80">{g.elementos}</span>
+                    <span className={`flex h-6 w-6 items-center justify-center rounded-full ${g.disco}`}>
+                      <g.Icon className="h-3.5 w-3.5" aria-hidden="true" />
+                    </span>
+                  </div>
                 </div>
+                <span
+                  className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-white shadow-md transition-transform group-hover:translate-x-0.5 ${g.seta}`}
+                  aria-hidden="true"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </span>
               </div>
 
-              <p className="relative mt-1.5 text-[11px] leading-snug text-foreground/70">{g.qualidades}</p>
+              <p className="relative mt-2 text-[11px] leading-snug text-foreground/70">{g.qualidades}</p>
 
-              <p className={`relative mt-3 text-[10px] font-bold uppercase tracking-wider ${g.texto}`}>
+              <p className={`relative mt-2.5 text-[10px] font-bold uppercase tracking-wider ${g.texto}`}>
                 Em equilíbrio
               </p>
               <div className="relative mt-1.5 flex flex-wrap gap-1">
@@ -129,10 +135,10 @@ const PortasDosha = () => {
                 ))}
               </div>
 
-              <p className={`relative mt-3 text-[10px] font-bold uppercase tracking-wider ${g.texto}`}>
+              <p className={`relative mt-2.5 text-[10px] font-bold uppercase tracking-wider ${g.texto}`}>
                 Sinais de excesso
               </p>
-              <div className="relative mt-1.5 flex flex-wrap gap-1 pb-8 pr-6">
+              <div className="relative mt-1.5 flex flex-wrap gap-1">
                 {g.excesso.map((s) => (
                   <span
                     key={s}
@@ -143,18 +149,12 @@ const PortasDosha = () => {
                 ))}
               </div>
 
-              <span
-                className={`absolute bottom-3 right-3 flex h-8 w-8 items-center justify-center rounded-full text-white shadow-md transition-transform group-hover:translate-x-1 ${g.seta}`}
-                aria-hidden="true"
-              >
-                <ChevronRight className="h-4 w-4" />
-              </span>
             </Link>
           ))}
 
           <Link
             to="/biblioteca/horarios"
-            className={`group relative flex h-full flex-col overflow-hidden border border-accent/50 bg-card p-4 shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg hover:border-accent ${CANTOS}`}
+            className={`group relative flex h-full flex-col overflow-hidden border border-accent/50 bg-card p-3.5 shadow-sm transition-all hover:-translate-y-1 hover:border-accent hover:shadow-lg sm:p-4 xl:aspect-[4/5] ${CANTOS}`}
           >
             <div
               aria-hidden="true"
@@ -162,25 +162,31 @@ const PortasDosha = () => {
             />
 
             <div className="relative flex items-start justify-between gap-2">
-              <h3 className="font-serif font-bold text-lg leading-tight text-primary">
-                Relógio dos Doshas
-              </h3>
-              <div className="flex shrink-0 items-center gap-1.5">
-                <span className="hidden sm:block text-[11px] font-medium text-muted-foreground">
-                  Dinacharya
-                </span>
-                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-accent/20 text-primary">
-                  <Clock className="h-4 w-4" aria-hidden="true" />
-                </span>
+              <div className="min-w-0">
+                <h3 className="font-serif font-bold text-lg leading-tight text-primary">
+                  Relógio dos Doshas
+                </h3>
+                <div className="mt-1 flex items-center gap-1.5 text-[10px] font-medium text-muted-foreground">
+                  <span className="hidden sm:inline">Dinacharya</span>
+                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-accent/20 text-primary">
+                    <Clock className="h-3.5 w-3.5" aria-hidden="true" />
+                  </span>
+                </div>
               </div>
+              <span
+                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-md transition-transform group-hover:translate-x-0.5"
+                aria-hidden="true"
+              >
+                <ChevronRight className="h-4 w-4" />
+              </span>
             </div>
 
             <p className="relative mt-1.5 text-[11px] leading-snug text-foreground/70">
               A hora certa de cada coisa no dia.
             </p>
 
-            <div className="relative mt-auto flex flex-1 items-center justify-center pt-3 pb-8">
-              <div className="w-40 md:w-48">
+            <div className="relative flex flex-1 items-center justify-center py-2">
+              <div className="w-36 sm:w-40 xl:w-44">
                 <DoshaClock
                   variant="neutral"
                   compact
@@ -190,12 +196,6 @@ const PortasDosha = () => {
               </div>
             </div>
 
-            <span
-              className="absolute bottom-3 right-3 flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-md transition-transform group-hover:translate-x-1"
-              aria-hidden="true"
-            >
-              <ChevronRight className="h-4 w-4" />
-            </span>
           </Link>
         </div>
       </div>
