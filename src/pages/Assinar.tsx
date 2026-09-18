@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -309,7 +309,7 @@ const PortalMark = ({ size = 28 }: { size?: number }) => (
 );
 
 const Assinar = () => {
-  const { user, isAnonymous, profile, refreshProfile, doshaResult } = useUser();
+  const { user, isAnonymous, profile, profileLoading, refreshProfile, doshaResult } = useUser();
   const [searchParams] = useSearchParams();
   const itemParam = searchParams.get("item");
   const navigate = useNavigate();
@@ -388,7 +388,7 @@ const Assinar = () => {
   const abrirPix = (plano: Plano) => {
     if (!user || isAnonymous) {
       const claim = doshaResult?.idPublico || localStorage.getItem("activeDoshaId");
-      navigate(`/entrar?${claim ? `claim=${claim}&` : ""}redirect=/assinar`);
+      navigate(`/entrar?${claim ? `claim=${claim}&` : ""}redirect=${encodeURIComponent(`/assinar?plano=${plano}`)}`);
       return;
     }
     setPixPlano(plano);
@@ -397,10 +397,12 @@ const Assinar = () => {
 
   const handleClickPlano = async (plano: Plano) => {
     if (!user || isAnonymous) {
+      registrarEventoAssinar("login", plano);
       const claim = doshaResult?.idPublico || localStorage.getItem("activeDoshaId");
-      navigate(`/entrar?${claim ? `claim=${claim}&` : ""}redirect=/assinar`);
+      navigate(`/entrar?${claim ? `claim=${claim}&` : ""}redirect=${encodeURIComponent(`/assinar?plano=${plano}`)}`);
       return;
     }
+    registrarEventoAssinar("clique_plano", plano);
     trackPixel("InitiateCheckout", { content_type: "subscription", plano });
     setLoadingPlan(plano);
     try {
