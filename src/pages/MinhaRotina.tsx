@@ -57,7 +57,7 @@ import { toast } from "@/hooks/use-toast";
 import NuggetDetalhe, { type Nugget } from "@/components/rotina/NuggetDetalhe";
 
 import NuggetIscaDialog from "@/components/rotina/NuggetIscaDialog";
-const AssinarPage = lazy(() => import("@/pages/Assinar"));
+import PreviaRotina from "@/components/rotina/PreviaRotina";
 
 
 // ===== Slots =====
@@ -119,6 +119,15 @@ const semanaDoMes = (d: Date) => Math.min(5, Math.ceil(d.getDate() / 7));
 // ===== Page =====
 const MinhaRotina = () => {
   const { user, loading, profileLoading, doshaResult, profile, refreshProfile } = useUser();
+  const temAcessoRotina = (() => {
+    if (!user || !profile) return false;
+    if (profile.is_premium === true) return true;
+    const planosValidos = ["rotina", "mensal", "anual"];
+    const ativo = profile.subscription_status === "active";
+    const planoOk = !!profile.plano && planosValidos.includes(profile.plano);
+    const dataOk = !profile.premium_until || new Date(profile.premium_until) > new Date();
+    return ativo && planoOk && dataOk;
+  })();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
@@ -257,6 +266,7 @@ const MinhaRotina = () => {
   const { data: nuggets } = useQuery({
     queryKey: ["rotina-nuggets-all"],
     staleTime: 30 * 60 * 1000,
+    enabled: temAcessoRotina || !!itemParam,
     queryFn: async () => {
       const { data, error } = await supabase
         .from("rotina_nuggets")
