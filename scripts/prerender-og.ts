@@ -15,6 +15,7 @@
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from "fs";
 import { resolve } from "path";
 import { limparDescricaoVideo } from "../src/lib/videoDescricao";
+import { corpoArtigo, corpoVideo, corpoReceita, corpoTerapeuta, blocoCorpo } from "./seo/corpos";
 import { lerFontes, BASE_URL, DEFAULT_OG, SITEMAP_SOURCE, AUTOR_NOME, type LinhaVideo } from "./seo/fontes";
 
 interface Route {
@@ -26,6 +27,8 @@ interface Route {
   jsonld?: Record<string, any>;
   /** Quando a URL canônica é outra (endereço antigo). */
   canonicalPath?: string;
+  /** Texto da página no HTML (só nas páginas que têm o próprio conteúdo). */
+  corpo?: string;
 }
 
 const editora = {
@@ -216,6 +219,7 @@ async function dynamicRoutes(): Promise<{ routes: Route[]; counts: Contagens }> 
       description: desc,
       image,
       type: "article",
+      corpo: corpoArtigo(p),
       jsonld: {
         "@context": "https://schema.org",
         "@type": "Article",
@@ -253,6 +257,7 @@ async function dynamicRoutes(): Promise<{ routes: Route[]; counts: Contagens }> 
       description: desc,
       image: thumb,
       type: "video.other",
+      corpo: corpoVideo(v),
       jsonld: {
         "@context": "https://schema.org",
         "@type": "VideoObject",
@@ -301,6 +306,7 @@ async function dynamicRoutes(): Promise<{ routes: Route[]; counts: Contagens }> 
       description: desc,
       image,
       type: "article",
+      corpo: corpoReceita(r),
       jsonld: {
         "@context": "https://schema.org",
         "@type": "Recipe",
@@ -336,6 +342,7 @@ async function dynamicRoutes(): Promise<{ routes: Route[]; counts: Contagens }> 
       description: desc.slice(0, 200),
       image: imagem,
       type: "profile",
+      corpo: corpoTerapeuta(t),
       jsonld: {
         "@context": "https://schema.org",
         "@type": "Person",
@@ -436,6 +443,13 @@ function renderHtml(template: string, route: Route, faltando: Set<string>): stri
   const extras: string[] = [`    <link rel="canonical" href="${canonical}" data-rota="${route.path}" />`];
   if (route.jsonld) extras.push(`    <script type="application/ld+json">${jsonParaScript(route.jsonld)}</script>`);
   html = html.replace(/<\/head>/, () => `${extras.join("\n")}\n  </head>`);
+
+  // Texto da página logo depois do div root (fora dele: o React monta ali dentro).
+  if (route.corpo) {
+    const antes = html;
+    html = html.replace(/(\u003cdiv id="root">\u003c\/div>)/, (_m, a) => `${a}${blocoCorpo(route.path, route.corpo!)}`);
+    if (html === antes) faltando.add("div root (texto da página)");
+  }
 
   // O boot-shell é a cortina de carregamento. Sem trocar o texto dele, o HTML de todas as
   // rotas mostraria o h1 da home. A home fica de fora.
