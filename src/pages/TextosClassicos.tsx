@@ -5,6 +5,7 @@ import Seo from "@/components/Seo";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import AbaMelhoresVersos from "@/components/textos/AbaMelhoresVersos";
 import { supabase } from "@/integrations/supabase/client";
 
 type Verso = {
@@ -19,6 +20,7 @@ const ABAS = [
   { id: "verso", sanskrit: "श्लोकः", label: "Verso do Dia" },
   { id: "roteiro", sanskrit: "अध्ययन", label: "Roteiro de Estudo" },
   { id: "pesquisar", sanskrit: "अन्वेषण", label: "Pesquisar" },
+  { id: "melhores", sanskrit: "सुभाषित", label: "Melhores Versos" },
 ] as const;
 
 type AbaId = (typeof ABAS)[number]["id"];
@@ -372,6 +374,7 @@ export default function TextosClassicos() {
         {aba === "verso" && <AbaVersoDoDia />}
         {aba === "roteiro" && <AbaRoteiro />}
         {aba === "pesquisar" && <AbaPesquisar />}
+        {aba === "melhores" && <AbaMelhoresVersos />}
       </main>
     </>
   );
