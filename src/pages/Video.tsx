@@ -301,7 +301,7 @@ const Video = () => {
   return (
     <>
       <Helmet>
-        <title>{title} — Sommelier Ayurveda</title>
+        <title>{title} — Portal Ayurveda</title>
         <meta name="description" content={description.slice(0, 160)} />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description.slice(0, 160)} />
