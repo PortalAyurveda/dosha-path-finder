@@ -1,22 +1,21 @@
-// Pós-build: gera HTML estático por rota com OG/title/description corretos.
-// Crawlers (WhatsApp, Facebook, LinkedIn, Slack, Telegram, X) não executam JS,
-// então recebem o HTML cru. Sem isto, todos os links compartilhados mostram
-// o mesmo título/descrição genérico do index.html.
+// Pós-build: escreve o HTML de cada rota com título, descrição, OG, canonical e JSON-LD.
+// Roda como `postbuild` no package.json.
 //
-// Roda como `postbuild` em package.json. Para cada rota listada (estática ou
-// dinâmica via Supabase), escreve dist/<rota>/index.html com tags substituídas.
-// Usuários reais continuam recebendo o SPA normalmente.
+// REGRA DE URL (vale também para a edge function `sitemap`)
+// Uma URL só existe para o Google se tiver linha no banco (ou for rota fixa de src/App.tsx)
+// E este script escrever dist/<rota>/index.html para ela. Toda rota nova entra em
+// `staticRoutes` AQUI e em `staticEntries` na função `sitemap` no MESMO patch. No fim da
+// build, `conferirSitemap()` derruba a build se sobrar URL do sitemap sem arquivo.
+//
+// ENDEREÇO DE VÍDEO: existe UM só, o slug longo de `videos_canonicos`. Os endereços antigos
+// (slug curto e id do YouTube) continuam existindo, com canonical apontando para o longo.
+// O canonical gravado aqui leva data-rota; src/hooks/useCanonical.ts respeita esse valor
+// quando a rota carimbada é a URL aberta.
 
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from "fs";
-import { resolve, dirname } from "path";
+import { resolve } from "path";
 import { limparDescricaoVideo } from "../src/lib/videoDescricao";
-
-const BASE_URL = "https://portalayurveda.com";
-const DEFAULT_OG = `${BASE_URL}/og-image.jpg`;
-const SUPABASE_URL = "https://api.portalayurveda.com";
-const SITEMAP_SOURCE = `${SUPABASE_URL}/functions/v1/sitemap`;
-const SUPABASE_ANON =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3ZXprYXNqZmd1YXJqbWp4aWZoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjgyNDI3MjEsImV4cCI6MjA4MzgxODcyMX0.sceKx2-SX8HZT_UaI2cHPnqkFZUmVPXaZwI9051Mzms";
+import { lerFontes, BASE_URL, DEFAULT_OG, SITEMAP_SOURCE, AUTOR_NOME, type LinhaVideo } from "./seo/fontes";
 
 interface Route {
   path: string;
@@ -24,8 +23,49 @@ interface Route {
   description: string;
   image?: string;
   type?: "website" | "article" | "profile" | "product" | "video.other";
-  jsonld?: Record<string, any> | Record<string, any>[];
-  noindex?: boolean;
+  jsonld?: Record<string, any>;
+  /** Quando a URL canônica é outra (endereço antigo). */
+  canonicalPath?: string;
+}
+
+const editora = {
+  "@type": "Organization",
+  name: "Portal Ayurveda",
+  logo: { "@type": "ImageObject", url: `${BASE_URL}/og-image.jpg` },
+};
+
+function escapeHtml(s: string): string {
+  return s.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+function clean(text: unknown, max = 200): string {
+  if (!text || typeof text !== "string") return "";
+  return text.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim().slice(0, max);
+}
+
+function jsonParaScript(obj: unknown): string {
+  // "</script>" dentro do JSON fecharia a tag cedo. Escapar "<" resolve.
+  return JSON.stringify(obj).replace(/</g, "\\u003c");
+}
+
+/** ingredientes e modo_preparo são jsonb: aceita lista de texto, lista de objeto ou texto. */
+function listaDeJson(valor: unknown): string[] {
+  if (!valor) return [];
+  if (typeof valor === "string") return valor.split(/\n+/).map((s) => s.trim()).filter(Boolean);
+  if (!Array.isArray(valor)) return [];
+  return valor
+    .map((item) => {
+      if (typeof item === "string") return item.trim();
+      if (item && typeof item === "object") {
+        const o = item as Record<string, unknown>;
+        const partes = ["quantidade", "qtd", "medida", "nome", "item", "ingrediente", "texto", "passo", "descricao"]
+          .map((k) => (typeof o[k] === "string" ? (o[k] as string).trim() : ""))
+          .filter(Boolean);
+        return partes.length ? [...new Set(partes)].join(" ") : Object.values(o).filter((x) => typeof x === "string").join(" ").trim();
+      }
+      return "";
+    })
+    .filter(Boolean);
 }
 
 // FAQ da página /assinar — precisa ficar sincronizado com src/pages/Assinar.tsx
@@ -51,6 +91,8 @@ const ASSINAR_FAQ_JSONLD = {
   })),
 };
 
+// -------------------------------------------------------------- rotas fixas
+// Os títulos das páginas que já estão certas no ar ficam iguais, letra por letra.
 
 const staticRoutes: Route[] = [
   {
@@ -77,230 +119,99 @@ const staticRoutes: Route[] = [
   {
     path: "/blog",
     title: "Blog — Portal Ayurveda",
-    description:
-      "Artigos sobre Ayurveda em português: doshas, alimentação, rotinas, plantas, terapias e filosofia. Atualizado semanalmente.",
+    description: "Artigos sobre Ayurveda em português: doshas, alimentação, rotinas, plantas, terapias e filosofia. Atualizado semanalmente.",
   },
-  {
-    path: "/contato",
-    title: "Contato — Portal Ayurveda",
-    description:
-      "Entre em contato com o Portal Ayurveda. Tire dúvidas, envie sugestões ou fale sobre parcerias.",
-  },
+  { path: "/contato", title: "Contato — Portal Ayurveda", description: "Entre em contato com o Portal Ayurveda. Tire dúvidas, envie sugestões ou fale sobre parcerias." },
   {
     path: "/assinar",
     title: "Akasha Premium — Portal Ayurveda",
-    description:
-      "Assine o Akasha Premium e tenha acesso ilimitado à biblioteca, rotinas personalizadas e à inteligência Akasha do Portal Ayurveda.",
+    description: "Assine o Akasha Premium e tenha acesso ilimitado à biblioteca, rotinas personalizadas e à inteligência Akasha do Portal Ayurveda.",
     jsonld: ASSINAR_FAQ_JSONLD,
   },
-
-  {
-    path: "/curso/alimentacao",
-    title: "Curso de Alimentação Ayurvédica — Portal Ayurveda",
-    description:
-      "Aprenda a base da alimentação ayurvédica: rasas, qualidades, como cozinhar para seu dosha e equilibrar agni.",
-  },
-  {
-    path: "/curso/formacao",
-    title: "Formação em Ayurveda — Portal Ayurveda",
-    description:
-      "Conheça a formação completa em Ayurveda do Portal: estrutura, módulos, certificação e próximos passos.",
-  },
-  {
-    path: "/curso/rotinas",
-    title: "Rotinas Ayurvédicas (Dinacharya) — Portal Ayurveda",
-    description:
-      "Construa sua rotina diária ayurvédica passo a passo: despertar, higiene, alimentação, trabalho, sono.",
-  },
-  {
-    path: "/terapeutas-do-brasil",
-    title: "Terapeutas do Brasil — Portal Ayurveda",
-    description:
-      "Encontre terapeutas ayurvédicos no Brasil. Filtre por estado, cidade e especialidade.",
-  },
-  {
-    path: "/samkhya",
-    title: "Samkhya — Loja do Portal Ayurveda",
-    description:
-      "Produtos selecionados de Ayurveda: óleos, ervas, kits e ferramentas para sua prática diária.",
-  },
+  { path: "/curso/alimentacao", title: "Curso de Alimentação Ayurvédica — Portal Ayurveda", description: "Aprenda a base da alimentação ayurvédica: rasas, qualidades, como cozinhar para seu dosha e equilibrar agni." },
+  { path: "/curso/formacao", title: "Formação em Ayurveda — Portal Ayurveda", description: "Conheça a formação completa em Ayurveda do Portal: estrutura, módulos, certificação e próximos passos." },
+  { path: "/curso/rotinas", title: "Rotinas Ayurvédicas (Dinacharya) — Portal Ayurveda", description: "Construa sua rotina diária ayurvédica passo a passo: despertar, higiene, alimentação, trabalho, sono." },
+  { path: "/terapeutas-do-brasil", title: "Terapeutas do Brasil — Portal Ayurveda", description: "Encontre terapeutas ayurvédicos no Brasil. Filtre por estado, cidade e especialidade." },
+  { path: "/samkhya", title: "Samkhya — Loja do Portal Ayurveda", description: "Produtos selecionados de Ayurveda: óleos, ervas, kits e ferramentas para sua prática diária." },
   { path: "/samkhya/kits", title: "Kits Samkhya — Portal Ayurveda", description: "Kits ayurvédicos curados para começar sua prática." },
   { path: "/samkhya/todos", title: "Todos os produtos — Samkhya", description: "Catálogo completo de produtos ayurvédicos da loja Samkhya." },
   { path: "/politica-de-privacidade", title: "Política de Privacidade — Portal Ayurveda", description: "Como o Portal Ayurveda coleta, usa e protege seus dados pessoais." },
   { path: "/termos-de-uso", title: "Termos de Uso — Portal Ayurveda", description: "Termos e condições de uso do Portal Ayurveda." },
+  { path: "/cursos", title: "Cursos de Ayurveda — Portal Ayurveda", description: "Todos os cursos do Portal Ayurveda: formação, alimentação, rotinas e trilhas curtas para você aprofundar sua prática." },
+
+  // Páginas que hoje entregam o HTML da home. Título e descrição são os que a própria
+  // página declara no Helmet.
   {
-    path: "/cursos",
-    title: "Cursos de Ayurveda — Portal Ayurveda",
-    description:
-      "Todos os cursos do Portal Ayurveda: formação, alimentação, rotinas e trilhas curtas para você aprofundar sua prática.",
+    path: "/biblioteca/horarios",
+    title: "Relógio dos Doshas & Dinacharya — Portal Ayurveda",
+    description: "Guia profundo e completo sobre o ciclo natural de 24 horas dos Doshas, englobando sono, rotinas, alimentação e fisiologia clínica.",
+  },
+  {
+    path: "/textos-classicos",
+    title: "Textos Clássicos — Portal Ayurveda",
+    description: "Biblioteca clássica de Ayurveda: verso do dia, roteiro de estudo e pesquisa nos tratados sânscritos com tradução em português.",
+  },
+  {
+    path: "/curso/diagnostico",
+    title: "Diagnóstico e Autocuidado Ayurveda | Portal Ayurveda",
+    description: "Quantas consultas até alguém te ensinar a olhar pra você mesmo? Aprenda Pareeksha, o método ayurvédico de diagnóstico por observação (língua, unhas, olhos, pulso), e o curso de Autocuidado, juntos num só programa. 40h de curso, 2 anos de acesso.",
+  },
+  {
+    path: "/curso/dravya-guna",
+    title: "Curso de Dravya Guna - Remédios Caseiros do Ayurveda | Portal Ayurveda",
+    description: "Aprenda a formular seus próprios remédios ayurvédicos com base na herbologia brasileira e indiana. 26 ervas e óleos estudados um a um, 26 aulas de receitas ayurvédicas passo a passo, certificado de 40h e bônus de Diagnóstico da Língua.",
   },
 ];
 
-// Rotas privadas: entregam o SPA fallback, mas devem sinalizar noindex ao Google
-// e nunca ter canonical apontando para a home. A safeguard em index.html cuida
-// do canonical; aqui listamos os prefixos para o script client-side aplicar noindex.
-const PRIVATE_ROUTE_PREFIXES = [
-  "/minha-rotina",
-  "/meu-dosha",
-  "/entrar",
-  "/admin",
-  "/metricas",
-  "/registros",
-  "/samkhya/obrigado",
-  "/samkhya/pedido",
-  "/samkhya/compras",
-  "/samkhya/carrinho",
-  "/aovivo",
-  "/preview-loading",
-];
-
-
-
-async function fetchRest<T = any>(query: string, schema?: string): Promise<T[]> {
-  try {
-    const headers: Record<string, string> = {
-      apikey: SUPABASE_ANON,
-      Authorization: `Bearer ${SUPABASE_ANON}`,
-    };
-    if (schema) headers["Accept-Profile"] = schema;
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/${query}`, { headers });
-    if (!res.ok) {
-      const body = await res.text().catch(() => "");
-      // Ruidoso de propósito: silêncio antes deixou o blog inteiro sem prerender.
-      console.error(
-        `\n[prerender] ✗ REST ${res.status} em ${query}${schema ? ` (schema ${schema})` : ""}\n         corpo: ${body.slice(0, 300)}\n`
-      );
-      return [];
-    }
-    const data = (await res.json()) as T[];
-    console.log(`[prerender] ✓ REST ${query.split("?")[0]}${schema ? ` (${schema})` : ""} → ${Array.isArray(data) ? data.length : "?"} itens`);
-    if (Array.isArray(data) && data.length === 0) {
-      console.error(
-        `\n[prerender] ⚠️  ZERO itens em ${query.split("?")[0]}${schema ? ` (schema ${schema})` : ""}. ` +
-        `Resposta foi 200, mas lista vazia — normalmente é permissão (RLS) bloqueando a chave anônima, não ausência de dado.\n`
-      );
-    }
-    return data;
-  } catch (err) {
-    console.error(`[prerender] ✗ REST ${query} exceção`, err);
-    return [];
+// As 9 abas dos guias, com o título e a descrição que DoshaVata/Pitta/Kapha declaram no Helmet.
+// A aba de remédios responde em /remedios e /alquimia; o canônico é /remedios.
+const GUIAS: Record<string, { title: string; description: string }> = {
+  vata: {
+    title: "Guia do Dosha Vata — Portal Ayurveda",
+    description: "Tudo sobre o dosha Vata: corpo físico, órgãos sede, os 5 ventos (Vayus), sabores, nutrição e hábitos de ouro para equilibrar Ar e Éter.",
+  },
+  pitta: {
+    title: "Guia do Dosha Pitta — Portal Ayurveda",
+    description: "Tudo sobre o dosha Pitta: corpo físico, órgãos sede, os 5 fogos, sabores, nutrição e hábitos de ouro para equilibrar Fogo e Água.",
+  },
+  kapha: {
+    title: "Guia do Dosha Kapha — Portal Ayurveda",
+    description: "Tudo sobre o dosha Kapha: corpo físico, órgãos sede, as 5 mucosas do corpo, sabores, nutrição e hábitos de ouro para equilibrar Terra e Água.",
+  },
+};
+for (const [dosha, meta] of Object.entries(GUIAS)) {
+  for (const aba of ["horarios", "alimentacao", "remedios"]) {
+    staticRoutes.push({ path: `/biblioteca/${dosha}/${aba}`, title: meta.title, description: meta.description });
   }
+  staticRoutes.push({ path: `/biblioteca/${dosha}/alquimia`, title: meta.title, description: meta.description, canonicalPath: `/biblioteca/${dosha}/remedios` });
 }
 
-// Baixa o sitemap e extrai o conjunto de slugs presentes em cada família de URL.
-// Usado para limitar o volume de arquivos gerados (evita escrever 929 vídeos
-// quando o sitemap só lista 433) e para nunca gerar rota que já não é indexável.
-async function fetchSitemapSlugs(): Promise<{
-  video: Set<string>;
-  blog: Set<string>;
-  terapeuta: Set<string>;
-  produto: Set<string>;
-  kit: Set<string>;
-  categoria: Set<string>;
-  all: Set<string>;
-}> {
-  const empty = {
-    video: new Set<string>(),
-    blog: new Set<string>(),
-    terapeuta: new Set<string>(),
-    produto: new Set<string>(),
-    kit: new Set<string>(),
-    categoria: new Set<string>(),
-    all: new Set<string>(),
-  };
-  try {
-    const res = await fetch(SITEMAP_SOURCE, { headers: { Accept: "application/xml,*/*" } });
-    if (!res.ok) {
-      console.warn(`[prerender] sitemap fetch ${res.status}; sem filtro por slug`);
-      return empty;
-    }
-    const xml = await res.text();
-    const out = { ...empty };
-    const re = /<loc>\s*https?:\/\/[^/<]+(\/[^<\s]*)\s*<\/loc>/gi;
-    let m: RegExpExecArray | null;
-    while ((m = re.exec(xml)) !== null) {
-      const path = m[1].replace(/\/$/, "");
-      out.all.add(path);
-      const parts = path.split("/").filter(Boolean);
-      if (parts[0] === "video" && parts[1]) out.video.add(parts[1]);
-      else if (parts[0] === "blog" && parts[1]) out.blog.add(parts[1]);
-      else if (parts[0] === "terapeutas" && parts[1]) out.terapeuta.add(parts[1]);
-      else if (parts[0] === "terapeutas-do-brasil" && parts[1] && parts[1] !== "cadastro") out.terapeuta.add(parts[1]);
-      else if (parts[0] === "samkhya" && parts[1] === "produto" && parts[2]) out.produto.add(parts[2]);
-      else if (parts[0] === "samkhya" && parts[1] === "kits" && parts[2]) out.kit.add(parts[2]);
-      else if (parts[0] === "samkhya" && parts[1] === "categoria" && parts[2]) out.categoria.add(parts[2]);
-    }
-    console.log(
-      `[prerender] sitemap: ${out.all.size} URLs (video=${out.video.size} blog=${out.blog.size} terapeuta=${out.terapeuta.size} produto=${out.produto.size} kit=${out.kit.size} categoria=${out.categoria.size})`
-    );
-    return out;
-  } catch (err) {
-    console.warn("[prerender] sitemap fetch falhou:", err);
-    return empty;
-  }
-}
+// ----------------------------------------------------------- rotas dinâmicas
 
+type Contagens = Record<string, number>;
 
-function clean(text: unknown, max = 200): string {
-  if (!text || typeof text !== "string") return "";
-  return text
-    .replace(/<[^>]+>/g, " ")
-    .replace(/\s+/g, " ")
-    .trim()
-    .slice(0, max);
-}
-
-// Slug dos registros akáshicos — precisa bater com src/lib/akashaSlug.ts:
-// sem acento, só [a-z0-9-], pontuação vira hífen.
-function akashaSlugify(titulo: string | null | undefined): string {
-  if (!titulo) return "";
-  return titulo
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .replace(/[^a-z0-9\s-]/g, " ")
-    .trim()
-    .replace(/\s+/g, "-")
-    .replace(/-+/g, "-")
-    .replace(/^-|-$/g, "");
-}
-
-function escapeHtml(s: string): string {
-  return s
-    .replace(/&/g, "&amp;")
-    .replace(/"/g, "&quot;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
-}
-
-async function dynamicRoutes(): Promise<Route[]> {
+async function dynamicRoutes(): Promise<{ routes: Route[]; counts: Contagens }> {
   const routes: Route[] = [];
-  const counts: Record<string, number> = {};
+  const counts: Contagens = {};
   const bump = (k: string) => (counts[k] = (counts[k] || 0) + 1);
 
-  const sitemap = await fetchSitemapSlugs();
+  const { artigos, videos, curtos, receitas, terapeutas, produtos, kits, categorias } = await lerFontes();
 
-  // Artigos publicados (portal_conteudo com link_do_artigo, tipo artigo).
-  // ATENÇÃO: nunca adicione colunas aqui sem confirmar no schema. Um 400 na REST
-  // devolve [] via fetchRest e o site inteiro perde os HTMLs de /blog/{slug}.
-  const posts = await fetchRest<{
-    title: string;
-    summary: string;
-    meta_description: string;
-    image_url: string;
-    link_do_artigo: string;
-    created_at: string | null;
-  }>(
-    "portal_conteudo?select=title,summary,meta_description,image_url,link_do_artigo,created_at&link_do_artigo=not.is.null&limit=500"
-  );
-  for (const p of posts) {
+  // ---------------------------------------------------------------- artigos
+  // Mais novo vence quando o slug se repete, mesma regra do React.
+  const porSlug = new Map<string, (typeof artigos)[number]>();
+  for (const p of artigos) {
     if (!p.link_do_artigo) continue;
-    const desc = clean(p.meta_description || p.summary, 160);
-    if (!p.title || !desc) continue;
-    const url = `${BASE_URL}/blog/${p.link_do_artigo}`;
+    const atual = porSlug.get(p.link_do_artigo);
+    if (!atual || (Date.parse(p.created_at ?? "") || 0) > (Date.parse(atual.created_at ?? "") || 0)) porSlug.set(p.link_do_artigo, p);
+  }
+  for (const p of porSlug.values()) {
+    if (!p.title) continue;
+    const desc = clean(p.meta_description || p.summary, 160) || clean(p.title, 160);
+    const rota = `/blog/${p.link_do_artigo}`;
     const image = p.image_url || DEFAULT_OG;
     routes.push({
-      path: `/blog/${p.link_do_artigo}`,
+      path: rota,
       title: `${clean(p.title, 80)} — Portal Ayurveda`,
       description: desc,
       image,
@@ -312,70 +223,33 @@ async function dynamicRoutes(): Promise<Route[]> {
         description: desc,
         image,
         datePublished: p.created_at || undefined,
-        mainEntityOfPage: url,
-        author: { "@type": "Person", name: "Edson Osorio" },
-        publisher: {
-          "@type": "Organization",
-          name: "Portal Ayurveda",
-          logo: { "@type": "ImageObject", url: `${BASE_URL}/og-image.jpg` },
-        },
+        mainEntityOfPage: `${BASE_URL}${rota}`,
+        inLanguage: "pt-BR",
+        author: { "@type": "Person", name: AUTOR_NOME },
+        publisher: editora,
       },
     });
     bump("blog");
   }
 
-  // Terapeutas aprovados
-  const terapeutas = await fetchRest<Record<string, any>>(
-    `portal_terapeutas?select=*&status=eq.aprovado`
-  );
-  for (const t of terapeutas) {
-    const slug = t["terapeutas(dinamica)"];
-    if (!slug || typeof slug !== "string") continue;
-    const nome = clean(t.nome, 80) || "Terapeuta Ayurveda";
-    const especialidade = clean(t.especialidade, 80);
-    const cidade = clean(t.cidade, 60);
-    const estado = clean(t.estado, 30);
-    const local = [cidade, estado].filter(Boolean).join("/");
-    const resumo = clean(t.resumo, 160);
-    const desc =
-      resumo ||
-      `${nome}${especialidade ? " — " + especialidade : ""}${local ? " em " + local : ""}. Encontre terapeutas ayurvédicos no Portal Ayurveda.`;
-    const tRoute: Route = {
-      path: `/terapeutas-do-brasil/${slug}`,
-      title: `${nome}${local ? " (" + local + ")" : ""} — Terapeuta Ayurveda`,
-      description: desc.slice(0, 200),
-      image: t.imagem || t["imagem.1"] || DEFAULT_OG,
-      type: "profile",
-    };
-    routes.push(tRoute);
-    bump("terapeuta");
-    // Alias curto /terapeutas/{slug} (rota também existe no App)
-    routes.push({ ...tRoute, path: `/terapeutas/${slug}` });
-    bump("terapeuta");
-  }
+  // ----------------------------------------------------------------- vídeos
+  const porVideoId = new Map<string, LinhaVideo>();
+  const slugsLongos = new Set<string>();
 
-  // Vídeos — lemos da view `videos_sitemap`, que já devolve exatamente as URLs
-  // que entram no sitemap.xml (~433 slugs). Não precisa mais filtrar pelo XML.
-  const videos = await fetchRest<{
-    video_id: string;
-    slug: string;
-    novo_titulo: string;
-    mini_resumo: string;
-    nova_descricao: string;
-    criado_em: string | null;
-  }>(
-    "videos_sitemap?select=slug,video_id,novo_titulo,mini_resumo,nova_descricao,criado_em&limit=1000"
-  );
+  const metaVideo = (v: LinhaVideo) => {
+    const desc = clean(limparDescricaoVideo(v.mini_resumo || v.nova_descricao), 200) || `Assista "${clean(v.novo_titulo, 80)}" no Portal Ayurveda.`;
+    const thumb = v.video_id ? `https://img.youtube.com/vi/${v.video_id}/maxresdefault.jpg` : DEFAULT_OG;
+    return { desc, thumb, titulo: `${clean(v.novo_titulo, 90)} — Portal Ayurveda` };
+  };
+
   for (const v of videos) {
-    if (!v.slug || !v.novo_titulo) continue;
-    const desc = clean(limparDescricaoVideo(v.mini_resumo || v.nova_descricao), 200) ||
-      `Assista "${clean(v.novo_titulo, 80)}" no Portal Ayurveda.`;
-    const thumb = v.video_id
-      ? `https://img.youtube.com/vi/${v.video_id}/maxresdefault.jpg`
-      : DEFAULT_OG;
+    if (!v.slug || !v.novo_titulo || slugsLongos.has(v.slug)) continue;
+    porVideoId.set(v.video_id, v);
+    slugsLongos.add(v.slug);
+    const { desc, thumb, titulo } = metaVideo(v);
     routes.push({
       path: `/video/${v.slug}`,
-      title: `${clean(v.novo_titulo, 90)} — Portal Ayurveda`,
+      title: titulo,
       description: desc,
       image: thumb,
       type: "video.other",
@@ -385,291 +259,262 @@ async function dynamicRoutes(): Promise<Route[]> {
         name: clean(v.novo_titulo, 110),
         description: desc,
         thumbnailUrl: thumb,
-        uploadDate: v.criado_em || undefined,
+        inLanguage: "pt-BR",
         embedUrl: v.video_id ? `https://www.youtube.com/embed/${v.video_id}` : undefined,
+        publisher: editora,
       },
     });
     bump("video");
   }
-  console.log(`[prerender] video: ${counts.video || 0} gerados a partir de videos_sitemap`);
 
-  // Registros akáshicos NÃO são pré-renderizados de propósito (decidido em 23/08/2026).
-  // Medido: 7 cliques e 292 impressões em 3 meses, ocupando 74% do sitemap; e os títulos são
-  // poéticos (sem intenção de busca), então não casam com busca real. Ficaram marcados noindex
-  // no index.html e saíram do sitemap (edge function `sitemap` v23).
-  // O noindex delas é escrito por JavaScript, então só conta depois que o Google renderiza.
-  // Fora do sitemap, o rastreio dessas URLs fica mais raro: as já indexadas saem do índice
-  // aos poucos, em semanas, não em dias. Isso é esperado.
-  // Para reativar seriam necessárias TRÊS mudanças juntas, nesta ordem:
-  //   1. ler `registros_akashikos_publicos` (view pública) em vez de `akasha_memory`;
-  //   2. tirar "/registros-akashikos" de privatePrefixes no index.html;
-  //   3. paginar de 1.000 em 1.000 na edge function `sitemap` (PostgREST corta em 1.000).
-  // Mudar só uma das três recria a contradição "sitemap manda indexar / página diz noindex".
+  // Endereço por id do YouTube (/video/{video_id}), com canonical para o slug longo.
+  // src/pages/Video.tsx já redireciona esse formato quando o JavaScript roda.
+  for (const v of porVideoId.values()) {
+    if (!/^[A-Za-z0-9_-]{11}$/.test(v.video_id) || slugsLongos.has(v.video_id)) continue;
+    const { desc, thumb, titulo } = metaVideo(v);
+    routes.push({ path: `/video/${v.video_id}`, title: titulo, description: desc, image: thumb, type: "video.other", canonicalPath: `/video/${v.slug}` });
+    bump("videoPorId");
+  }
 
+  // Endereços curtos antigos (videos_sitemap): mesmo vídeo de sempre, canonical para o longo.
+  const curtosUsados = new Set<string>();
+  for (const c of curtos) {
+    if (!c.slug || curtosUsados.has(c.slug) || slugsLongos.has(c.slug)) continue;
+    const v = porVideoId.get(c.video_id);
+    if (!v) continue;
+    curtosUsados.add(c.slug);
+    const { desc, thumb, titulo } = metaVideo(v);
+    routes.push({ path: `/video/${c.slug}`, title: titulo, description: desc, image: thumb, type: "video.other", canonicalPath: `/video/${v.slug}` });
+    bump("videoAlias");
+  }
 
+  // ---------------------------------------------------------------- receitas
+  for (const r of receitas) {
+    if (!r.slug || !r.titulo) continue;
+    const desc = clean(r.resumo, 160) || `${clean(r.titulo, 90)}: receita ayurvédica do Portal Ayurveda.`;
+    const image = r.imagem_url || DEFAULT_OG;
+    const ing = listaDeJson(r.ingredientes);
+    const passos = listaDeJson(r.modo_preparo);
+    routes.push({
+      path: `/receita/${r.slug}`,
+      title: `${clean(r.titulo, 90)} — Portal Ayurveda`,
+      description: desc,
+      image,
+      type: "article",
+      jsonld: {
+        "@context": "https://schema.org",
+        "@type": "Recipe",
+        name: clean(r.titulo, 110),
+        description: desc,
+        image,
+        inLanguage: "pt-BR",
+        author: { "@type": "Person", name: AUTOR_NOME },
+        ...(ing.length ? { recipeIngredient: ing.map((i) => clean(i, 200)) } : {}),
+        ...(passos.length ? { recipeInstructions: passos.map((p) => ({ "@type": "HowToStep", text: clean(p, 400) })) } : {}),
+      },
+    });
+    bump("receita");
+  }
 
+  // ------------------------------------------------------------- terapeutas
+  const vistosTerapeuta = new Set<string>();
+  for (const t of terapeutas) {
+    const slug = t["terapeutas(dinamica)"];
+    if (!slug || typeof slug !== "string" || vistosTerapeuta.has(slug)) continue;
+    vistosTerapeuta.add(slug);
+    const nome = clean(t.nome, 80) || "Terapeuta Ayurveda";
+    const especialidade = clean(t.especialidade, 80);
+    const cidade = clean(t.cidade, 60);
+    const estado = clean(t.estado, 30);
+    const local = [cidade, estado].filter(Boolean).join("/");
+    const desc = clean(t.resumo, 160) || `${nome}${especialidade ? ", " + especialidade : ""}${local ? " em " + local : ""}. Encontre terapeutas ayurvédicos no Portal Ayurveda.`;
+    const imagem = t.imagem || t["imagem.1"] || DEFAULT_OG;
+    const titulo = `${nome}${local ? " (" + local + ")" : ""} — Terapeuta Ayurveda`;
+    routes.push({
+      path: `/terapeutas/${slug}`,
+      title: titulo,
+      description: desc.slice(0, 200),
+      image: imagem,
+      type: "profile",
+      jsonld: {
+        "@context": "https://schema.org",
+        "@type": "Person",
+        name: nome,
+        url: `${BASE_URL}/terapeutas/${slug}`,
+        jobTitle: "Terapeuta ayurvédico",
+        image: imagem,
+        description: clean(t.resumo, 300) || desc,
+        ...(local ? { address: { "@type": "PostalAddress", addressLocality: cidade, addressRegion: estado, addressCountry: "BR" } } : {}),
+        ...(especialidade ? { knowsAbout: clean(t.especialidade, 300) } : {}),
+      },
+    });
+    bump("terapeuta");
+    // Endereço longo: o App já redireciona; a página só declara o curto.
+    routes.push({ path: `/terapeutas-do-brasil/${slug}`, title: titulo, description: desc.slice(0, 200), image: imagem, type: "profile", canonicalPath: `/terapeutas/${slug}` });
+    bump("terapeutaAlias");
+  }
 
-  // Loja Samkhya — produtos (schema loja)
-  const produtos = await fetchRest<{
-    slug: string;
-    nome_display: string;
-    resumo_curto: string | null;
-    imagem_url: string | null;
-    preco_pix: number | null;
-    preco_normal: number | null;
-  }>(
-    "produtos?select=slug,nome_display,resumo_curto,imagem_url,preco_pix,preco_normal&ativo=eq.true&limit=500",
-    "loja"
-  );
+  // ------------------------------------------------------------------ loja
+  const ofertaJsonld = (nome: string, desc: string, image: string, url: string, preco: number | null) => ({
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: clean(nome, 110),
+    description: desc,
+    image,
+    brand: { "@type": "Brand", name: "Samkhya" },
+    url,
+    ...(preco != null
+      ? { offers: { "@type": "Offer", url, priceCurrency: "BRL", price: Number(preco).toFixed(2), availability: "https://schema.org/InStock", seller: { "@type": "Organization", name: "Portal Ayurveda" } } }
+      : {}),
+  });
   for (const p of produtos) {
     if (!p.slug || !p.nome_display) continue;
-    const desc =
-      clean(p.resumo_curto, 200) ||
-      `${clean(p.nome_display, 90)} — produto ayurvédico da loja Samkhya do Portal Ayurveda.`;
+    const desc = clean(p.resumo_curto, 200) || `${clean(p.nome_display, 90)} — produto ayurvédico da loja Samkhya do Portal Ayurveda.`;
     const url = `${BASE_URL}/samkhya/produto/${p.slug}`;
     const image = p.imagem_url || DEFAULT_OG;
-    const preco = p.preco_pix ?? p.preco_normal;
-    routes.push({
-      path: `/samkhya/produto/${p.slug}`,
-      title: `${clean(p.nome_display, 90)} — Samkhya | Portal Ayurveda`,
-      description: desc,
-      image,
-      type: "product",
-      jsonld: {
-        "@context": "https://schema.org",
-        "@type": "Product",
-        name: clean(p.nome_display, 110),
-        description: desc,
-        image,
-        brand: { "@type": "Brand", name: "Samkhya" },
-        url,
-        ...(preco != null
-          ? {
-              offers: {
-                "@type": "Offer",
-                url,
-                priceCurrency: "BRL",
-                price: Number(preco).toFixed(2),
-                availability: "https://schema.org/InStock",
-                seller: { "@type": "Organization", name: "Portal Ayurveda" },
-              },
-            }
-          : {}),
-      },
-    });
+    routes.push({ path: `/samkhya/produto/${p.slug}`, title: `${clean(p.nome_display, 90)} — Samkhya | Portal Ayurveda`, description: desc, image, type: "product", jsonld: ofertaJsonld(p.nome_display, desc, image, url, p.preco_pix ?? p.preco_normal) });
     bump("produto");
   }
-
-  // Loja Samkhya — kits (schema loja)
-  const kits = await fetchRest<{
-    slug: string;
-    nome: string;
-    descricao_curta: string | null;
-    imagem_url: string | null;
-    preco_pix: number | null;
-    preco_normal: number | null;
-  }>(
-    "kits?select=slug,nome,descricao_curta,imagem_url,preco_pix,preco_normal&ativo=eq.true&limit=200",
-    "loja"
-  );
   for (const k of kits) {
     if (!k.slug || !k.nome) continue;
-    const desc =
-      clean(k.descricao_curta, 200) ||
-      `${clean(k.nome, 90)} — kit ayurvédico da loja Samkhya do Portal Ayurveda.`;
+    const desc = clean(k.descricao_curta, 200) || `${clean(k.nome, 90)} — kit ayurvédico da loja Samkhya do Portal Ayurveda.`;
     const url = `${BASE_URL}/samkhya/kits/${k.slug}`;
     const image = k.imagem_url || DEFAULT_OG;
-    const preco = k.preco_pix ?? k.preco_normal;
-    routes.push({
-      path: `/samkhya/kits/${k.slug}`,
-      title: `${clean(k.nome, 90)} — Samkhya | Portal Ayurveda`,
-      description: desc,
-      image,
-      type: "product",
-      jsonld: {
-        "@context": "https://schema.org",
-        "@type": "Product",
-        name: clean(k.nome, 110),
-        description: desc,
-        image,
-        brand: { "@type": "Brand", name: "Samkhya" },
-        url,
-        ...(preco != null
-          ? {
-              offers: {
-                "@type": "Offer",
-                url,
-                priceCurrency: "BRL",
-                price: Number(preco).toFixed(2),
-                availability: "https://schema.org/InStock",
-                seller: { "@type": "Organization", name: "Portal Ayurveda" },
-              },
-            }
-          : {}),
-      },
-    });
+    routes.push({ path: `/samkhya/kits/${k.slug}`, title: `${clean(k.nome, 90)} — Samkhya | Portal Ayurveda`, description: desc, image, type: "product", jsonld: ofertaJsonld(k.nome, desc, image, url, k.preco_pix ?? k.preco_normal) });
     bump("kit");
   }
-
-  // Loja Samkhya — categorias (schema loja)
-  const categorias = await fetchRest<{
-    slug: string;
-    nome: string;
-    descricao: string | null;
-  }>("categorias?select=slug,nome,descricao&limit=100", "loja");
   for (const c of categorias) {
     if (!c.slug || !c.nome) continue;
-    const desc =
-      clean(c.descricao, 200) ||
-      `${clean(c.nome, 90)} — categoria de produtos ayurvédicos na loja Samkhya do Portal Ayurveda.`;
-    routes.push({
-      path: `/samkhya/categoria/${c.slug}`,
-      title: `${clean(c.nome, 90)} — Samkhya | Portal Ayurveda`,
-      description: desc,
-      image: DEFAULT_OG,
-    });
+    routes.push({ path: `/samkhya/categoria/${c.slug}`, title: `${clean(c.nome, 90)} — Samkhya | Portal Ayurveda`, description: clean(c.descricao, 200) || `${clean(c.nome, 90)} — categoria de produtos ayurvédicos na loja Samkhya do Portal Ayurveda.`, image: DEFAULT_OG });
     bump("categoria");
   }
 
-  console.log(
-    `[prerender] dinâmicas por família: ${Object.entries(counts).map(([k, v]) => `${k}=${v}`).join(" ") || "(nenhuma)"}`
-  );
-
-  return routes;
+  console.log(`[prerender] dinâmicas: ${Object.entries(counts).map(([k, v]) => `${k}=${v}`).join(" ")}`);
+  return { routes, counts };
 }
 
+// ------------------------------------------------------------------ escrita
 
-async function writeSitemap(distDir: string): Promise<void> {
-  try {
-    const res = await fetch(SITEMAP_SOURCE, {
-      headers: { Accept: "application/xml,text/xml,*/*" },
-    });
-    const xml = await res.text();
-    const urlCount = (xml.match(/<url>/g) || []).length;
-    const articleCount = (xml.match(/<loc>https:\/\/portalayurveda\.com\/blog\//g) || []).length;
-
-    if (!res.ok || urlCount < 250 || articleCount < 250) {
-      console.warn(
-        `[prerender] sitemap dinâmico incompleto (${res.status}, ${urlCount} URLs, ${articleCount} artigos). Mantendo fallback estático se existir.`
-      );
-      return;
-    }
-
-    writeFileSync(resolve(distDir, "sitemap.xml"), xml);
-    console.log(`[prerender] sitemap.xml escrito (${urlCount} URLs, ${articleCount} artigos)`);
-  } catch (err) {
-    console.warn("[prerender] falha ao gerar sitemap.xml dinâmico", err);
-  }
+/** Troca uma tag do template. Devolve false quando a tag não existe no template (aviso, não erro). */
+function trocar(html: string, re: RegExp, novo: string): [string, boolean] {
+  if (!re.test(html)) return [html, false];
+  return [html.replace(re, () => novo), true];
 }
 
-function renderHtml(template: string, route: Route): string {
-  const url = `${BASE_URL}${route.path}`;
+function renderHtml(template: string, route: Route, faltando: Set<string>): string {
+  const canonical = `${BASE_URL}${route.canonicalPath ?? route.path}`;
   const title = escapeHtml(route.title);
   const description = escapeHtml(route.description);
   const image = escapeHtml(route.image || DEFAULT_OG);
   const type = route.type || "website";
+  const imageType = /\.png(\?|$)/i.test(image) ? "image/png" : /\.webp(\?|$)/i.test(image) ? "image/webp" : "image/jpeg";
 
   let html = template;
-
-  // <title> (tolerante a atributos como data-rh="true")
-  html = html.replace(/<title\b[^>]*>[\s\S]*?<\/title>/i, `<title>${title}</title>`);
-
-  // meta name=description (tolerante a atributos e ordem)
-  html = html.replace(
-    /<meta\b[^>]*\bname=["']description["'][^>]*\/?>/i,
-    `<meta name="description" content="${description}" />`
-  );
-
-
-  // og:title
-  html = html.replace(
-    /<meta\s+property="og:title"\s+content="[^"]*"\s*\/>/,
-    `<meta property="og:title" content="${title}" />`
-  );
-
-  // og:description
-  html = html.replace(
-    /<meta\s+property="og:description"\s+content="[^"]*"\s*\/>/,
-    `<meta property="og:description" content="${description}" />`
-  );
-
-  // og:url
-  html = html.replace(
-    /<meta\s+property="og:url"\s+content="[^"]*"\s*\/>/,
-    `<meta property="og:url" content="${url}" />`
-  );
-
-  // og:image (+ secure_url)
-  html = html.replace(
-    /<meta\s+property="og:image"\s+content="[^"]*"\s*\/>/,
-    `<meta property="og:image" content="${image}" />`
-  );
-  html = html.replace(
-    /<meta\s+property="og:image:secure_url"\s+content="[^"]*"\s*\/>/,
-    `<meta property="og:image:secure_url" content="${image}" />`
-  );
-
-  // og:type
-  html = html.replace(
-    /<meta\s+property="og:type"\s+content="[^"]*"\s*\/>/,
-    `<meta property="og:type" content="${type}" />`
-  );
-
-  // twitter:title / description / image
-  html = html.replace(
-    /<meta\s+name="twitter:title"\s+content="[^"]*"\s*\/>/,
-    `<meta name="twitter:title" content="${title}" />`
-  );
-  html = html.replace(
-    /<meta\s+name="twitter:description"\s+content="[^"]*"\s*\/>/,
-    `<meta name="twitter:description" content="${description}" />`
-  );
-  html = html.replace(
-    /<meta\s+name="twitter:image"\s+content="[^"]*"\s*\/>/,
-    `<meta name="twitter:image" content="${image}" />`
-  );
-
-  // canonical + noindex + JSON-LD: injetar no <head>
-  const extras: string[] = [`    <link rel="canonical" href="${url}" />`];
-  if (route.noindex) {
-    extras.push(`    <meta name="robots" content="noindex, follow" />`);
+  let ok = true;
+  const passos: [string, RegExp, string][] = [
+    ["title", /<title\b[^>]*>[\s\S]*?<\/title>/i, `<title>${title}</title>`],
+    ["description", /<meta\b[^>]*\bname=["']description["'][^>]*\/?>/i, `<meta name="description" content="${description}" />`],
+    ["og:title", /<meta\s+property="og:title"\s+content="[^"]*"\s*\/?>/, `<meta property="og:title" content="${title}" />`],
+    ["og:description", /<meta\s+property="og:description"\s+content="[^"]*"\s*\/?>/, `<meta property="og:description" content="${description}" />`],
+    ["og:url", /<meta\s+property="og:url"\s+content="[^"]*"\s*\/?>/, `<meta property="og:url" content="${canonical}" />`],
+    ["og:image", /<meta\s+property="og:image"\s+content="[^"]*"\s*\/?>/, `<meta property="og:image" content="${image}" />`],
+    ["og:image:secure_url", /<meta\s+property="og:image:secure_url"\s+content="[^"]*"\s*\/?>/, `<meta property="og:image:secure_url" content="${image}" />`],
+    ["og:image:type", /<meta\s+property="og:image:type"\s+content="[^"]*"\s*\/?>/, `<meta property="og:image:type" content="${imageType}" />`],
+    ["og:type", /<meta\s+property="og:type"\s+content="[^"]*"\s*\/?>/, `<meta property="og:type" content="${type}" />`],
+    ["twitter:title", /<meta\s+name="twitter:title"\s+content="[^"]*"\s*\/?>/, `<meta name="twitter:title" content="${title}" />`],
+    ["twitter:description", /<meta\s+name="twitter:description"\s+content="[^"]*"\s*\/?>/, `<meta name="twitter:description" content="${description}" />`],
+    ["twitter:image", /<meta\s+name="twitter:image"\s+content="[^"]*"\s*\/?>/, `<meta name="twitter:image" content="${image}" />`],
+  ];
+  for (const [nome, re, novo] of passos) {
+    [html, ok] = trocar(html, re, novo);
+    if (!ok) faltando.add(nome);
   }
-  if (route.jsonld) {
-    const blocks = Array.isArray(route.jsonld) ? route.jsonld : [route.jsonld];
-    for (const b of blocks) {
-      // JSON dentro de <script>: escapar </ para evitar fechar o script cedo
-      const safe = JSON.stringify(b).replace(/</g, "\\u003c");
-      extras.push(`    <script type="application/ld+json">${safe}</script>`);
-    }
-  }
-  html = html.replace(/<\/head>/, `${extras.join("\n")}\n  </head>`);
 
-  // O boot-shell é o único texto visível no HTML antes do JS rodar. Sem isto, todas as páginas
-  // entregam o h1 da home e ficam idênticas entre si para o rastreador.
-  // A home fica de fora: renderHtml também roda para a rota "/" (em main(), na linha
-  // writeFileSync(templatePath, renderHtml(template, home))), e o h1 dela é copy de venda,
-  // não título de SEO.
+  // Tira o canonical que já vem no template (duas tags de canonical fazem o Google ignorar
+  // as duas) e grava um só, carimbado com a rota do arquivo.
+  html = html.replace(/<link\b[^>]*rel=["']canonical["'][^>]*\/?>\s*/gi, "");
+  const extras: string[] = [`    <link rel="canonical" href="${canonical}" data-rota="${route.path}" />`];
+  if (route.jsonld) extras.push(`    <script type="application/ld+json">${jsonParaScript(route.jsonld)}</script>`);
+  html = html.replace(/<\/head>/, () => `${extras.join("\n")}\n  </head>`);
+
+  // O boot-shell é a cortina de carregamento. Sem trocar o texto dele, o HTML de todas as
+  // rotas mostraria o h1 da home. A home fica de fora.
   if (route.path !== "/") {
-    const tituloCurto = route.title
-      .replace(/\s*—\s*Portal Ayurveda\s*$/, "")
-      .replace(/\s*\|\s*Portal Ayurveda\s*$/, "")
-      .replace(/\s*—\s*Samkhya\s*$/, "")
-      .trim() || route.title;
-    // Substituição por função (não por string) para que um "$" no título não seja lido
+    const tituloCurto = route.title.replace(/\s*—\s*Portal Ayurveda\s*$/, "").replace(/\s*\|\s*Portal Ayurveda\s*$/, "").replace(/\s*—\s*Samkhya\s*$/, "").trim() || route.title;
+    // Substituição por função (não por string) para que um "$" no texto não seja lido
     // como referência de grupo pelo replace.
-    html = html.replace(
-      /(<div id="bs-main">\s*<h1>)[\s\S]*?(<\/h1>)/,
-      (_m, abre, fecha) => `${abre}${escapeHtml(tituloCurto)}${fecha}`
-    );
-    html = html.replace(
-      /(<div id="bs-main">[\s\S]*?<p>)[\s\S]*?(<\/p>)/,
-      (_m, abre, fecha) => `${abre}${escapeHtml(route.description.slice(0, 110))}${fecha}`
-    );
+    html = html.replace(/(<div id="bs-main">\s*<h1>)[\s\S]*?(<\/h1>)/, (_m, a, b) => `${a}${escapeHtml(tituloCurto)}${b}`);
+    html = html.replace(/(<div id="bs-main">[\s\S]*?<p>)[\s\S]*?(<\/p>)/, (_m, a, b) => `${a}${escapeHtml(route.description.slice(0, 110))}${b}`);
   }
-
   return html;
 }
 
+type Sitemap = { estado: "gerado" | "indisponivel" | "errado"; motivo: string; xml: string };
+
+/** Baixa o sitemap da edge function. Indisponível ou errado não é gravado e não derruba a build. */
+async function baixarSitemap(): Promise<Sitemap> {
+  try {
+    const res = await fetch(SITEMAP_SOURCE, { headers: { Accept: "application/xml,text/xml,*/*" } });
+    const xml = await res.text();
+    const estadoFn = res.headers.get("x-sitemap-estado") ?? "";
+    if (!res.ok || estadoFn === "ultimo-bom" || estadoFn === "sem-nada" || /ultima versao boa/i.test(xml)) {
+      return { estado: "indisponivel", motivo: `status=${res.status} X-Sitemap-Estado=${estadoFn || "?"}`, xml: "" };
+    }
+    const urls = (xml.match(/<url>/g) || []).length;
+    const blog = (xml.match(/https:\/\/portalayurveda\.com\/blog\//g) || []).length;
+    const video = (xml.match(/https:\/\/portalayurveda\.com\/video\//g) || []).length;
+    const receita = (xml.match(/https:\/\/portalayurveda\.com\/receita\//g) || []).length;
+    const v26 = xml.includes("/samkhya/produto/");
+    if (urls < 800 || blog < 250 || video < 300 || !v26) {
+      return { estado: "errado", motivo: `urls=${urls} blog=${blog} video=${video} receita=${receita} samkhya-produto=${v26 ? "ok" : "ausente"}`, xml: "" };
+    }
+    return { estado: "gerado", motivo: `${urls} URLs (blog ${blog}, vídeo ${video}, receita ${receita})`, xml };
+  } catch (err) {
+    return { estado: "indisponivel", motivo: String(err), xml: "" };
+  }
+}
+
+/** Derruba a build se o sitemap mandar uma URL que este script não escreveu:
+ *  URL do sitemap sem dist/<rota>/index.html é 404 na cara do Google. */
+function conferirSitemap(xml: string, distDir: string): void {
+  const locs = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1].trim());
+  const faltando: string[] = [];
+  for (const loc of locs) {
+    if (!loc.startsWith(`${BASE_URL}/`)) continue;
+    const rota = loc.slice(BASE_URL.length).replace(/\/+$/, "");
+    if (rota === "") continue; // a home é o próprio dist/index.html
+    if (!existsSync(resolve(distDir, rota, "index.html"))) faltando.push(loc);
+  }
+  if (faltando.length) {
+    console.error(`\n[prerender] ❌ BUILD INTERROMPIDA — ${faltando.length} URLs do sitemap sem dist/<rota>/index.html:`);
+    for (const f of faltando.slice(0, 20)) console.error(`  ${f}`);
+    if (faltando.length > 20) console.error(`  ... e mais ${faltando.length - 20}`);
+    console.error(`\n[prerender] REGRA DE URL: toda URL do sitemap precisa ter rota AQUI e arquivo em dist/.`);
+    console.error(`[prerender] Alinhe a edge function \`sitemap\` (mesma fonte de endereço que este script).\n`);
+    process.exit(1);
+  }
+  console.log(`[prerender] ✓ sitemap conferido: ${locs.length} URLs, todas com arquivo em dist/.`);
+}
+
+/** Escreve dist/sitemap.xml. Quando a edge function não entrega, grava a cópia de reserva. */
+async function writeSitemap(distDir: string): Promise<string> {
+  const s = await baixarSitemap();
+  const destino = resolve(distDir, "sitemap.xml");
+  if (s.estado === "gerado") {
+    writeFileSync(destino, s.xml);
+    console.log(`[prerender] ✓ sitemap.xml escrito (${s.motivo})`);
+    return s.xml;
+  }
+  console.error(`[prerender] ⚠️  sitemap ${s.estado} (${s.motivo}). Gravando a cópia de reserva public/sitemap.xml.`);
+  const reserva = resolve("public", "sitemap.xml");
+  if (existsSync(reserva)) {
+    writeFileSync(destino, readFileSync(reserva, "utf8"));
+    console.log("[prerender] sitemap.xml = cópia de reserva.");
+  } else {
+    console.error("[prerender] ✗ public/sitemap.xml (reserva) não existe — o site vai servir o sitemap que vier no build.");
+  }
+  return "";
+}
 
 async function main() {
   const distDir = resolve("dist");
@@ -688,12 +533,13 @@ async function main() {
     process.exit(1);
   }
 
-  const dynamic = await dynamicRoutes();
-  const all = [...staticRoutes, ...dynamic];
+  const { routes } = await dynamicRoutes();
+  const all = [...staticRoutes, ...routes];
 
   let written = 0;
   const writtenBy: Record<string, number> = {};
   const failed: { path: string; err: string }[] = [];
+  const faltando = new Set<string>();
   for (const route of all) {
     if (route.path === "/") continue; // index.html já é o root
 
@@ -702,7 +548,7 @@ async function main() {
 
     try {
       mkdirSync(outDir, { recursive: true });
-      writeFileSync(outFile, renderHtml(template, route));
+      writeFileSync(outFile, renderHtml(template, route, faltando));
       written++;
       const family = route.path.split("/").filter(Boolean)[0] || "root";
       writtenBy[family] = (writtenBy[family] || 0) + 1;
@@ -714,19 +560,23 @@ async function main() {
   // Também sobrescreve dist/index.html com tags da home (caso o template não esteja com a home explicitamente)
   const home = staticRoutes.find((r) => r.path === "/");
   if (home) {
-    writeFileSync(templatePath, renderHtml(template, home));
+    writeFileSync(templatePath, renderHtml(template, home, faltando));
   }
-
-  await writeSitemap(distDir);
 
   await bakeHome(distDir);
 
+  const sitemapXml = await writeSitemap(distDir);
+  if (sitemapXml) conferirSitemap(sitemapXml, distDir);
+
   console.log(
-    `[prerender] ${written} rotas escritas (${staticRoutes.length - 1} estáticas + ${dynamic.length} dinâmicas)`
+    `[prerender] ${written} rotas escritas (${staticRoutes.length - 1} estáticas + ${routes.length} dinâmicas)`
   );
   console.log(
     `[prerender] escritas por família: ${Object.entries(writtenBy).map(([k, v]) => `${k}=${v}`).join(" ")}`
   );
+  if (faltando.size) {
+    console.error(`[prerender] ⚠️  tags do template não encontradas para troca: ${[...faltando].join(", ")}`);
+  }
   if (failed.length) {
     console.error(`[prerender] ✗ ${failed.length} rotas falharam ao escrever:`);
     for (const f of failed.slice(0, 20)) console.error(`  ${f.path}: ${f.err}`);
