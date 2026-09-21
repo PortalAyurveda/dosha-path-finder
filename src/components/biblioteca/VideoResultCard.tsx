@@ -32,16 +32,20 @@ function getTagColor(tag: string): string {
   return "bg-accent/20 text-accent-foreground border-accent/30";
 }
 
-const VideoResultCard = ({ videoId, title, summary, tags, onClick, showActions = true }: VideoResultCardProps) => {
+const VideoResultCard = ({ videoId, title, summary, tags, slug, onClick, showActions = true }: VideoResultCardProps) => {
   const navigate = useNavigate();
   const tagList = parseTags(tags);
+  const rota = `/video/${slug || videoId}`;
 
   const handleClick = () => {
     if (onClick) {
       onClick();
-    } else {
-      navigate(`/video/${slugify(title)}`, { state: { videoId } });
     }
+  };
+
+  const linkClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    navigate(rota, { state: { videoId } });
   };
 
   return (
