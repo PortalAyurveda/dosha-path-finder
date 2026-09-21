@@ -460,279 +460,135 @@ async function baixarSitemap(): Promise<Sitemap> {
     if (!res.ok || estadoFn === "ultimo-bom" || estadoFn === "sem-nada" || /ultima versao boa/i.test(xml)) {
       return { estado: "indisponivel", motivo: `status=${res.status} X-Sitemap-Estado=${estadoFn || "?"}`, xml: "" };
     }
-    const urls = (xml.match(/<url>/g) || []).length;
-    const blog = (xml.match(/https:\/\/portalayurveda\.com\/blog\//g) || []).length;
-    const video = (xml.match(/https:\/\/portalayurveda\.com\/video\//g) || []).length;
-    const receita = (xml.match(/https:\/\/portalayurveda\.com\/receita\//g) || []).length;
-    const v26 = xml.includes("/samkhya/produto/");
-    if (urls < 800 || blog < 250 || video < 300 || !v26) {
-      return { estado: "errado", motivo: `urls=${urls} blog=${blog} video=${video} receita=${receita} samkhya-produto=${v26 ? "ok" : "ausente"}`, xml: "" };
+    const urls = (xml.match(/\u003curl>/g) || []).length;
+    const blog = (xml.match(/\u003cloc>https:\/\/portalayurveda\.com\/blog\//g) || []).length;
+    const video = (xml.match(/\u003cloc>https:\/\/portalayurveda\.com\/video\//g) || []).length;
+    const receita = (xml.match(/\u003cloc>https:\/\/portalayurveda\.com\/receita\//g) || []).length;
+    const v26 = xml.includes("\u003c!-- v26");
+    if (!v26 || urls < 1200 || blog < 250 || video < 800 || receita < 100) {
+      return { estado: "errado", motivo: `v26=${v26} urls=${urls} blog=${blog} video=${video} receita=${receita}`, xml: "" };
     }
-    return { estado: "gerado", motivo: `${urls} URLs (blog ${blog}, vídeo ${video}, receita ${receita})`, xml };
+    console.log(`[prerender] sitemap v26 baixado (${urls} URLs: blog=${blog} video=${video} receita=${receita})`);
+    return { estado: "gerado", motivo: "", xml };
   } catch (err) {
-    return { estado: "indisponivel", motivo: String(err), xml: "" };
+    return { estado: "indisponivel", motivo: `exceção: ${String(err).slice(0, 200)}`, xml: "" };
   }
 }
 
-/** Derruba a build se o sitemap mandar uma URL que este script não escreveu:
- *  URL do sitemap sem dist/<rota>/index.html é 404 na cara do Google. */
-function conferirSitemap(xml: string, distDir: string): void {
-  const locs = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1].trim());
-  const faltando: string[] = [];
-  for (const loc of locs) {
-    if (!loc.startsWith(`${BASE_URL}/`)) continue;
-    const rota = loc.slice(BASE_URL.length).replace(/\/+$/, "");
-    if (rota === "") continue; // a home é o próprio dist/index.html
-    // strip do "/" inicial: path.resolve com segmento absoluto descartaria o distDir.
-    if (!existsSync(resolve(distDir, rota.replace(/^\//, ""), "index.html"))) faltando.push(loc);
+/** Toda URL do sitemap gravado deve ter arquivo no dist. */
+function conferirSitemap(xml: string, escritos: Set<string>): string[] {
+  const orfas: string[] = [];
+  const re = /\u003cloc>https:\/\/portalayurveda\.com([^\u003c]*)\u003c\/loc>/g;
+  let m: RegExpExecArray | null;
+  let total = 0;
+  while ((m = re.exec(xml)) !== null) {
+    total++;
+    const caminho = (m[1] || "/").replace(/\/$/, "") || "/";
+    if (caminho !== "/" && !escritos.has(caminho)) orfas.push(caminho);
   }
-  if (faltando.length) {
-    console.error(`\n[prerender] ❌ BUILD INTERROMPIDA — ${faltando.length} URLs do sitemap sem dist/<rota>/index.html:`);
-    for (const f of faltando.slice(0, 20)) console.error(`  ${f}`);
-    if (faltando.length > 20) console.error(`  ... e mais ${faltando.length - 20}`);
-    console.error(`\n[prerender] REGRA DE URL: toda URL do sitemap precisa ter rota AQUI e arquivo em dist/.`);
-    console.error(`[prerender] Alinhe a edge function \`sitemap\` (mesma fonte de endereço que este script).\n`);
-    process.exit(1);
-  }
-  console.log(`[prerender] ✓ sitemap conferido: ${locs.length} URLs, todas com arquivo em dist/.`);
+  const problemas: string[] = [];
+  if (!total) problemas.push("sitemap sem nenhuma URL");
+  // Poucas URLs soltas (um conteúdo novo com dado faltando) viram aviso; muitas é erro de regra.
+  if (orfas.length > 20) problemas.push(`${orfas.length} URLs no sitemap sem arquivo no dist. Primeiras: ${orfas.slice(0, 10).join(", ")}`);
+  else if (orfas.length) console.warn(`[prerender] ⚠️  ${orfas.length} URLs no sitemap sem arquivo: ${orfas.join(", ")}`);
+  return problemas;
 }
 
-/** Escreve dist/sitemap.xml. Quando a edge function não entrega, grava a cópia de reserva. */
-async function writeSitemap(distDir: string): Promise<string> {
-  const s = await baixarSitemap();
-  const destino = resolve(distDir, "sitemap.xml");
-  if (s.estado === "gerado") {
-    writeFileSync(destino, s.xml);
-    console.log(`[prerender] ✓ sitemap.xml escrito (${s.motivo})`);
-    return s.xml;
-  }
-  console.error(`[prerender] ⚠️  sitemap ${s.estado} (${s.motivo}). Gravando a cópia de reserva public/sitemap.xml.`);
-  const reserva = resolve("public", "sitemap.xml");
-  if (existsSync(reserva)) {
-    writeFileSync(destino, readFileSync(reserva, "utf8"));
-    console.log("[prerender] sitemap.xml = cópia de reserva.");
-  } else {
-    console.error("[prerender] ✗ public/sitemap.xml (reserva) não existe — o site vai servir o sitemap que vier no build.");
-  }
-  return "";
-}
+// --------------------------------------------------------------------- main
 
 async function main() {
+  const inicio = Date.now();
   const distDir = resolve("dist");
   const templatePath = resolve(distDir, "index.html");
 
   if (!existsSync(templatePath)) {
-    console.warn("[prerender] dist/index.html não existe. Pulando.");
-    return;
+    console.error("[prerender] ❌ dist/index.html não existe.");
+    process.exit(1);
   }
 
   const template = readFileSync(templatePath, "utf8");
 
-  // O h1 por rota do item 7 só funciona enquanto o boot-shell tiver esta forma.
-  if (!/<div id="bs-main">\s*<h1>[\s\S]*?<\/h1>[\s\S]*?<p>/.test(template)) {
-    console.error(`\n[prerender] ❌ O boot-shell mudou de forma: o h1 por rota não vai ser aplicado e todas as páginas voltariam a ter o corpo da home. Ajuste as expressões em renderHtml.\n`);
+  const { routes: dynamic, counts } = await dynamicRoutes();
+
+  const all = [...staticRoutes, ...dynamic];
+
+  const caminhos = new Set<string>();
+  const duplicadas: string[] = [];
+  for (const r of all) {
+    if (caminhos.has(r.path)) duplicadas.push(r.path);
+    caminhos.add(r.path);
+  }
+  if (duplicadas.length) {
+    console.error(`\n[prerender] ❌ rotas duplicadas (${duplicadas.length}): ${duplicadas.slice(0, 15).join(", ")}\n`);
     process.exit(1);
   }
 
-  const { routes } = await dynamicRoutes();
-  const all = [...staticRoutes, ...routes];
+  let escritas = 0;
+  let bytes = 0;
+  const porFamilia: Record<string, number> = {};
+  const falhas: { path: string; err: string }[] = [];
+  const escritos = new Set<string>();
+  const tagsFaltando = new Set<string>();
 
-  let written = 0;
-  const writtenBy: Record<string, number> = {};
-  const failed: { path: string; err: string }[] = [];
-  const faltando = new Set<string>();
   for (const route of all) {
-    if (route.path === "/") continue; // index.html já é o root
-
-    const outDir = resolve(distDir, route.path.replace(/^\//, ""));
-    const outFile = resolve(outDir, "index.html");
-
+    if (route.path === "/") continue;
     try {
+      const outDir = resolve(distDir, route.path.replace(/^\//, ""));
       mkdirSync(outDir, { recursive: true });
-      writeFileSync(outFile, renderHtml(template, route, faltando));
-      written++;
-      const family = route.path.split("/").filter(Boolean)[0] || "root";
-      writtenBy[family] = (writtenBy[family] || 0) + 1;
+      const html = renderHtml(template, route, tagsFaltando);
+      writeFileSync(resolve(outDir, "index.html"), html);
+      escritas++;
+      bytes += html.length;
+      escritos.add(route.path);
+      const familia = route.path.split("/").filter(Boolean)[0] || "root";
+      porFamilia[familia] = (porFamilia[familia] || 0) + 1;
     } catch (err) {
-      failed.push({ path: route.path, err: String(err) });
+      falhas.push({ path: route.path, err: String(err) });
     }
   }
 
-  // Também sobrescreve dist/index.html com tags da home (caso o template não esteja com a home explicitamente)
   const home = staticRoutes.find((r) => r.path === "/");
-  if (home) {
-    writeFileSync(templatePath, renderHtml(template, home, faltando));
+  if (home) writeFileSync(templatePath, renderHtml(template, home, tagsFaltando));
+
+  if (tagsFaltando.size) console.warn(`[prerender] ⚠️  tags que não existem no index.html e não foram trocadas: ${[...tagsFaltando].join(", ")}`);
+
+  // Sitemap: indisponível ou errado não derruba a build (fica o public/sitemap.xml do repo).
+  const sitemap = await baixarSitemap();
+  const problemas: string[] = [];
+  if (sitemap.estado === "gerado") {
+    writeFileSync(resolve(distDir, "sitemap.xml"), sitemap.xml);
+    problemas.push(...conferirSitemap(sitemap.xml, escritos));
+  } else {
+    console.error(`\n[prerender] ⚠️  sitemap ${sitemap.estado.toUpperCase()} (${sitemap.motivo}). Mantido o public/sitemap.xml do repositório.\n`);
   }
 
-  await bakeHome(distDir);
+  console.log(`[prerender] ${escritas} páginas escritas, ${(bytes / 1048576).toFixed(1)} MB, ${((Date.now() - inicio) / 1000).toFixed(0)} s`);
+  console.log(`[prerender] por família: ${Object.entries(porFamilia).map(([k, v]) => `${k}=${v}`).join(" ")}`);
 
-  const sitemapXml = await writeSitemap(distDir);
-  if (sitemapXml) conferirSitemap(sitemapXml, distDir);
-
-  console.log(
-    `[prerender] ${written} rotas escritas (${staticRoutes.length - 1} estáticas + ${routes.length} dinâmicas)`
-  );
-  console.log(
-    `[prerender] escritas por família: ${Object.entries(writtenBy).map(([k, v]) => `${k}=${v}`).join(" ")}`
-  );
-  if (faltando.size) {
-    console.error(`[prerender] ⚠️  tags do template não encontradas para troca: ${[...faltando].join(", ")}`);
-  }
-  if (failed.length) {
-    console.error(`[prerender] ✗ ${failed.length} rotas falharam ao escrever:`);
-    for (const f of failed.slice(0, 20)) console.error(`  ${f.path}: ${f.err}`);
-    if (failed.length > 20) console.error(`  ... e mais ${failed.length - 20}`);
+  if (falhas.length) {
+    console.error(`[prerender] ✗ ${falhas.length} páginas falharam ao escrever:`);
+    for (const f of falhas.slice(0, 20)) console.error(`  ${f.path}: ${f.err}`);
   }
 
-  // blog e video são o corpo do site: sair com zero aqui já desindexou o site uma vez.
-  // Os mínimos são baixos de propósito — servem para pegar "zero" e "quase zero",
-  // não para vigiar o número exato (isso é papel do vigia diário no Supabase).
-  const FAMILIAS_CRITICAS: Record<string, number> = { blog: 100, video: 150 };
-  const IGNORAR_MINIMO = process.env.PRERENDER_IGNORAR_MINIMO === "1";
-  const criticasFaltando: string[] = [];
-  for (const [fam, minimo] of Object.entries(FAMILIAS_CRITICAS)) {
-    const n = writtenBy[fam] || 0;
-    if (n < minimo) criticasFaltando.push(`${fam}: ${n} arquivos (mínimo ${minimo})`);
-  }
-  // terapeutas gera duas rotas por pessoa (a curta e a longa), então são duas chaves.
-  const nTerapeutas = (writtenBy["terapeutas"] || 0) + (writtenBy["terapeutas-do-brasil"] || 0);
-  if (nTerapeutas < 10) console.error(`\n[prerender] ⚠️  terapeutas: só ${nTerapeutas} arquivos. Confira a permissão da tabela.\n`);
-  if ((writtenBy["samkhya"] || 0) < 20) console.error(`\n[prerender] ⚠️  samkhya: só ${writtenBy["samkhya"] || 0} arquivos. Confira a permissão do schema loja.\n`);
-  if (criticasFaltando.length && IGNORAR_MINIMO) {
-    console.error(`\n[prerender] ⚠️  Mínimos abaixo do piso, mas PRERENDER_IGNORAR_MINIMO=1 — publicando assim mesmo.\n  ${criticasFaltando.join("\n  ")}\n`);
-  } else if (criticasFaltando.length) {
-    console.error(`\n[prerender] ❌ BUILD INTERROMPIDA — famílias essenciais abaixo do mínimo:\n  ${criticasFaltando.join("\n  ")}\n`);
-    console.error(`[prerender] Publicar assim faz o Google receber o HTML da home nessas URLs.\n`);
-    console.error(`[prerender] Para publicar mesmo assim (emergência), defina PRERENDER_IGNORAR_MINIMO=1.\n`);
+  // Travas: só erro do próprio build derruba a publicação.
+  const n = (k: string) => counts[k] ?? 0;
+  if (n("blog") < 300) problemas.push(`blog: ${n("blog")} páginas (mínimo 300)`);
+  if (n("video") < 600) problemas.push(`video: ${n("video")} páginas (mínimo 600)`);
+  if (n("videoPorId") !== n("video")) problemas.push(`video por id: ${n("videoPorId")} páginas, esperado ${n("video")}`);
+  if (n("videoAlias") < 300) problemas.push(`video curto: ${n("videoAlias")} páginas (mínimo 300)`);
+  if (n("receita") < 100) problemas.push(`receita: ${n("receita")} páginas (mínimo 100)`);
+  if (n("terapeuta") < 10) problemas.push(`terapeuta: ${n("terapeuta")} páginas (mínimo 10)`);
+  if ((porFamilia["samkhya"] || 0) < 20) problemas.push(`samkhya: ${porFamilia["samkhya"] || 0} páginas (mínimo 20)`);
+  if (falhas.length) problemas.push(`${falhas.length} arquivos falharam ao escrever`);
+
+  if (problemas.length) {
+    console.error(`\n[prerender] ❌ BUILD INTERROMPIDA:\n  ${problemas.join("\n  ")}\n`);
     process.exit(1);
   }
 }
 
-// Fonte da home pré-renderizada. Pode ser sobrescrita por env (HOME_BAKE_URL).
-// Se a URL estiver 404/vazia, o build segue com o index.html padrão — mas
-// gritamos alto para não passar batido de novo.
-const HOME_SOURCE = process.env.HOME_BAKE_URL || "off";
-const HOME_BAKE_DISABLED = HOME_SOURCE === "off";
-
-async function bakeHome(distDir: string): Promise<void> {
-  const outPath = resolve(distDir, "index.html");
-  if (!existsSync(outPath)) {
-    console.error("[bake-home] ✗ dist/index.html não existe. Pulando.");
-    return;
-  }
-  if (HOME_BAKE_DISABLED) {
-    console.log("[bake-home] desativado por HOME_BAKE_URL=off. Pulando.");
-    return;
-  }
-
-  let html: string;
-  try {
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 20_000);
-    const res = await fetch(HOME_SOURCE, { signal: controller.signal });
-    clearTimeout(timer);
-    if (!res.ok) {
-      console.error(`[bake-home] ✗ ${HOME_SOURCE} respondeu ${res.status}. Home NÃO foi assada. Ajuste HOME_BAKE_URL ou defina =off.`);
-      return;
-    }
-    html = await res.text();
-  } catch (err) {
-    console.error(`[bake-home] ✗ falha ao baixar ${HOME_SOURCE}:`, err);
-    return;
-  }
-
-  if (
-    html.length < 30_000 ||
-    !html.includes("Seu guia completo") ||
-    !html.includes("window.__PORTAL_ESTADO_RQ__")
-  ) {
-    console.warn(
-      `[bake-home] conteúdo baixado não passou nas verificações (len=${html.length}). Pulando.`
-    );
-    return;
-  }
-
-  // (a) inner da <div id="root">
-  const rootOpen = html.match(/<div\s+id=["']root["'][^>]*>/i);
-  if (!rootOpen || rootOpen.index === undefined) {
-    console.warn("[bake-home] não achei <div id=\"root\">. Pulando.");
-    return;
-  }
-  const afterOpen = rootOpen.index + rootOpen[0].length;
-  const bodyClose = html.lastIndexOf("</body>");
-  if (bodyClose < 0) {
-    console.warn("[bake-home] não achei </body>. Pulando.");
-    return;
-  }
-  const beforeBody = html.slice(0, bodyClose);
-  const lastDivClose = beforeBody.lastIndexOf("</div>");
-  if (lastDivClose < afterOpen) {
-    console.warn("[bake-home] não achei </div> de fechamento do root. Pulando.");
-    return;
-  }
-  const rootInner = html.slice(afterOpen, lastDivClose);
-
-  // (b) script inline com __PORTAL_ESTADO_RQ__
-  const estadoMatch = html.match(
-    /<script\b(?![^>]*\bsrc=)[^>]*>[\s\S]*?window\.__PORTAL_ESTADO_RQ__[\s\S]*?<\/script>/i
-  );
-  if (!estadoMatch) {
-    console.warn("[bake-home] não achei script inline do __PORTAL_ESTADO_RQ__. Pulando.");
-    return;
-  }
-  const estadoScript = estadoMatch[0];
-
-  // (c) preload/preconnect do head baixado
-  const headMatch = html.match(/<head[^>]*>([\s\S]*?)<\/head>/i);
-  const headSrc = headMatch ? headMatch[1] : "";
-  const rawLinks =
-    headSrc.match(
-      /<link\b[^>]*\brel=["'](?:preload|preconnect)["'][^>]*\/?>/gi
-    ) || [];
-
-  // Injetar no dist/index.html
-  let dist = readFileSync(outPath, "utf8");
-  const beforeSize = dist.length;
-
-  const filteredLinks = rawLinks.filter((tag) => {
-    const hrefMatch = tag.match(/\bhref=["']([^"']+)["']/i);
-    const href = hrefMatch ? hrefMatch[1] : "";
-    if (!href) return false;
-    // descarta fontes do google que só bloqueiam o render
-    if (/fonts\.(googleapis|gstatic)\.com/i.test(href)) return false;
-    // dedupe: não injeta link cujo href já existe no dist
-    if (dist.includes(`href="${href}"`) || dist.includes(`href='${href}'`)) return false;
-    return true;
-  });
-  const linkTags = filteredLinks.join("\n    ");
-
-  if (linkTags) {
-    dist = dist.replace(/<head(\s[^>]*)?>/i, (m) => `${m}\n    ${linkTags}`);
-  }
-
-  const firstModuleScript = dist.search(/<script\b[^>]*type=["']module["'][^>]*>/i);
-  if (firstModuleScript >= 0) {
-    dist =
-      dist.slice(0, firstModuleScript) +
-      `${estadoScript}\n    ` +
-      dist.slice(firstModuleScript);
-  } else {
-    dist = dist.replace(/<\/body>/i, `  ${estadoScript}\n  </body>`);
-  }
-
-  dist = dist.replace(
-    /(<div\s+id=["']root["'][^>]*>)[\s\S]*?(<\/div>)(?=\s*<script|\s*<\/body>)/i,
-    (_m, open, close) => `${open}${rootInner}${close}`
-  );
-
-  writeFileSync(outPath, dist);
-  console.log(
-    `[bake-home] home assada: ${(beforeSize / 1024).toFixed(1)}KB → ${(dist.length / 1024).toFixed(1)}KB`
-  );
-}
-
-
+// Sair com 0 aqui publicaria um dist sem prerender: o HTML da home em todas as rotas.
 main().catch((err) => {
-  console.error("[prerender] falhou", err);
-  process.exit(0); // não quebrar o build
+  console.error("[prerender] ❌ falhou", err);
+  process.exit(1);
 });
