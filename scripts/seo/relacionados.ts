@@ -137,7 +137,7 @@ export function montarRelacionados(artigosBrutos: LinhaArtigo[], videos: LinhaVi
 
   const out = new Map<string, Relacionados>();
   for (let i = 0; i < nA; i++) {
-    const notas = V.map((v, k) => [produto(A[i], v), k] as [number, number]).sort((x, y) => y[0] - x[0]).slice(0, 2alam);
+    const notas = V.map((v, k) => [produto(A[i], v), k] as [number, number]).sort((x, y) => y[0] - x[0]).slice(0, 2);
     out.set(artigos[i].link_do_artigo, {
       artigos: escolhas[i].map((j) => itemArtigo(artigos[j])),
       videos: notas.filter(([s]) => s > 0).map(([, k]) => itemVideo(videos[k])),
