@@ -15,6 +15,7 @@
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from "fs";
 import { resolve } from "path";
 import { limparDescricaoVideo } from "../src/lib/videoDescricao";
+import { montarRelacionados, type Relacionados } from "./seo/relacionados";
 import { corpoArtigo, corpoVideo, corpoReceita, corpoTerapeuta, blocoCorpo } from "./seo/corpos";
 import { lerFontes, BASE_URL, DEFAULT_OG, SITEMAP_SOURCE, AUTOR_NOME, type LinhaVideo } from "./seo/fontes";
 
@@ -193,7 +194,7 @@ for (const [dosha, meta] of Object.entries(GUIAS)) {
 
 type Contagens = Record<string, number>;
 
-async function dynamicRoutes(): Promise<{ routes: Route[]; counts: Contagens }> {
+async function dynamicRoutes(): Promise<{ routes: Route[]; counts: Contagens; relacionados: Map<string, Relacionados> }> {
   const routes: Route[] = [];
   const counts: Contagens = {};
   const bump = (k: string) => (counts[k] = (counts[k] || 0) + 1);
@@ -208,6 +209,8 @@ async function dynamicRoutes(): Promise<{ routes: Route[]; counts: Contagens }> 
     const atual = porSlug.get(p.link_do_artigo);
     if (!atual || (Date.parse(p.created_at ?? "") || 0) > (Date.parse(atual.created_at ?? "") || 0)) porSlug.set(p.link_do_artigo, p);
   }
+  const relacionados = montarRelacionados([...porSlug.values()].filter((p) => p.title), videos, DEFAULT_OG);
+
   for (const p of porSlug.values()) {
     if (!p.title) continue;
     const desc = clean(p.meta_description || p.summary, 160) || clean(p.title, 160);
@@ -219,7 +222,7 @@ async function dynamicRoutes(): Promise<{ routes: Route[]; counts: Contagens }> 
       description: desc,
       image,
       type: "article",
-      corpo: corpoArtigo(p),
+      corpo: corpoArtigo(p, relacionados.get(p.link_do_artigo)),
       jsonld: {
         "@context": "https://schema.org",
         "@type": "Article",
@@ -397,7 +400,7 @@ async function dynamicRoutes(): Promise<{ routes: Route[]; counts: Contagens }> 
   }
 
   console.log(`[prerender] dinâmicas: ${Object.entries(counts).map(([k, v]) => `${k}=${v}`).join(" ")}`);
-  return { routes, counts };
+  return { routes, counts, relacionados };
 }
 
 // ------------------------------------------------------------------ escrita
@@ -522,7 +525,7 @@ async function main() {
 
   const template = readFileSync(templatePath, "utf8");
 
-  const { routes: dynamic, counts } = await dynamicRoutes();
+  const { routes: dynamic, counts, relacionados } = await dynamicRoutes();
 
   const all = [...staticRoutes, ...dynamic];
 
@@ -560,6 +563,12 @@ async function main() {
       falhas.push({ path: route.path, err: String(err) });
     }
   }
+
+  // Leia também / Assista também: um arquivo pequeno por artigo, lido por src/components/LeiaTambem.tsx.
+  const pastaRel = resolve(distDir, "leia-tambem");
+  mkdirSync(pastaRel, { recursive: true });
+  for (const [slug, rel] of relacionados) writeFileSync(resolve(pastaRel, `${slug}.json`), JSON.stringify(rel));
+  console.log(`[prerender] leia-tambem: ${relacionados.size} arquivos`);
 
   const home = staticRoutes.find((r) => r.path === "/");
   if (home) writeFileSync(templatePath, renderHtml(template, home, tagsFaltando));
