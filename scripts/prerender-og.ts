@@ -483,7 +483,8 @@ function conferirSitemap(xml: string, distDir: string): void {
     if (!loc.startsWith(`${BASE_URL}/`)) continue;
     const rota = loc.slice(BASE_URL.length).replace(/\/+$/, "");
     if (rota === "") continue; // a home é o próprio dist/index.html
-    if (!existsSync(resolve(distDir, rota, "index.html"))) faltando.push(loc);
+    // strip do "/" inicial: path.resolve com segmento absoluto descartaria o distDir.
+    if (!existsSync(resolve(distDir, rota.replace(/^\//, ""), "index.html"))) faltando.push(loc);
   }
   if (faltando.length) {
     console.error(`\n[prerender] ❌ BUILD INTERROMPIDA — ${faltando.length} URLs do sitemap sem dist/<rota>/index.html:`);
