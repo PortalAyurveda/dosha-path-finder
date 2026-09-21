@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
 import HeartButton from "@/components/HeartButton";
 import BannerSlot from "@/components/banners/BannerSlot";
+import LeiaTambem from "@/components/LeiaTambem";
 
 const BlogArticle = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -186,6 +187,8 @@ const BlogArticle = () => {
           <span className="text-sm text-muted-foreground">Isso te fez bem?</span>
           <HeartButton contentType="artigo" contentId={article.id} />
         </div>
+
+        <LeiaTambem slug={article.link_do_artigo} />
 
         <BannerSlot slot="blog_fim" className="[&:empty]:hidden mt-6" />
       </article>
