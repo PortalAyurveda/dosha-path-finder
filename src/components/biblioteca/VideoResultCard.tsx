@@ -50,37 +50,72 @@ const VideoResultCard = ({ videoId, title, summary, tags, slug, onClick, showAct
 
   return (
     <div className="group relative rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm border border-border bg-card overflow-hidden shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-1">
-      <button
-        onClick={handleClick}
-        className="text-left w-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-      >
-        <div className="aspect-video w-full overflow-hidden">
-          <img
-            src={`https://img.youtube.com/vi/${videoId}/mqdefault.jpg`}
-            alt={title}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-            loading="lazy"
+      {onClick ? (
+        <button
+          onClick={handleClick}
+          className="text-left w-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        >
+          <div className="aspect-video w-full overflow-hidden">
+            <img
+              src={`https://img.youtube.com/vi/${videoId}/mqdefault.jpg`}
+              alt={title}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              loading="lazy"
               decoding="async"
-          />
-        </div>
-        <div className="p-4">
-          <h3 className="font-serif text-base md:text-lg font-semibold text-primary line-clamp-2 mb-2 pr-16">
-            {title}
-          </h3>
-          <p className="font-sans text-sm text-muted-foreground line-clamp-3 mb-3">
-            {summary}
-          </p>
-          {tagList.length > 0 && (
-            <div className="flex flex-wrap gap-1.5">
-              {tagList.slice(0, 4).map((tag) => (
-                <Badge key={tag} variant="outline" className={`text-xs ${getTagColor(tag)}`}>
-                  {tag}
-                </Badge>
-              ))}
-            </div>
-          )}
-        </div>
-      </button>
+            />
+          </div>
+          <div className="p-4">
+            <h3 className="font-serif text-base md:text-lg font-semibold text-primary line-clamp-2 mb-2 pr-16">
+              {title}
+            </h3>
+            <p className="font-sans text-sm text-muted-foreground line-clamp-3 mb-3">
+              {summary}
+            </p>
+            {tagList.length > 0 && (
+              <div className="flex flex-wrap gap-1.5">
+                {tagList.slice(0, 4).map((tag) => (
+                  <Badge key={tag} variant="outline" className={`text-xs ${getTagColor(tag)}`}>
+                    {tag}
+                  </Badge>
+                ))}
+              </div>
+            )}
+          </div>
+        </button>
+      ) : (
+        <a
+          href={rota}
+          onClick={linkClick}
+          className="block text-left w-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        >
+          <div className="aspect-video w-full overflow-hidden">
+            <img
+              src={`https://img.youtube.com/vi/${videoId}/mqdefault.jpg`}
+              alt={title}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              loading="lazy"
+              decoding="async"
+            />
+          </div>
+          <div className="p-4">
+            <h3 className="font-serif text-base md:text-lg font-semibold text-primary line-clamp-2 mb-2 pr-16">
+              {title}
+            </h3>
+            <p className="font-sans text-sm text-muted-foreground line-clamp-3 mb-3">
+              {summary}
+            </p>
+            {tagList.length > 0 && (
+              <div className="flex flex-wrap gap-1.5">
+                {tagList.slice(0, 4).map((tag) => (
+                  <Badge key={tag} variant="outline" className={`text-xs ${getTagColor(tag)}`}>
+                    {tag}
+                  </Badge>
+                ))}
+              </div>
+            )}
+          </div>
+        </a>
+      )}
       {showActions && (
         <div
           className="absolute top-2 right-2 flex items-center gap-1 bg-background/90 backdrop-blur-sm rounded-full px-2 py-1 shadow-sm"
