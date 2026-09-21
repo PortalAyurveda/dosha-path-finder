@@ -9741,10 +9741,16 @@ export type Database = {
           created_at: string
           fontes: Json
           id: number
+          letras: number | null
           livro: string
+          nota: number | null
           nota_curadoria: string | null
+          pacotes: string[]
+          pontos: number | null
+          pontos_det: Json | null
           referencia: string
           tema: string
+          temas: string[]
           texto_pt: string
           verso_no: string | null
           verso_sanskrit: string | null
@@ -9754,10 +9760,16 @@ export type Database = {
           created_at?: string
           fontes?: Json
           id?: never
+          letras?: number | null
           livro: string
+          nota?: number | null
           nota_curadoria?: string | null
+          pacotes?: string[]
+          pontos?: number | null
+          pontos_det?: Json | null
           referencia: string
           tema: string
+          temas?: string[]
           texto_pt: string
           verso_no?: string | null
           verso_sanskrit?: string | null
@@ -9767,10 +9779,16 @@ export type Database = {
           created_at?: string
           fontes?: Json
           id?: never
+          letras?: number | null
           livro?: string
+          nota?: number | null
           nota_curadoria?: string | null
+          pacotes?: string[]
+          pontos?: number | null
+          pontos_det?: Json | null
           referencia?: string
           tema?: string
+          temas?: string[]
           texto_pt?: string
           verso_no?: string | null
           verso_sanskrit?: string | null
@@ -10447,7 +10465,39 @@ export type Database = {
       }
     }
     Functions: {
+      acervo_adicionar: {
+        Args: {
+          p_antes?: number
+          p_depois?: number
+          p_id: number
+          p_nota: number
+          p_pacotes?: string[]
+          p_tabela: string
+          p_temas: string[]
+        }
+        Returns: number
+      }
+      acervo_pacote_alternar: {
+        Args: { p_pacote: string; p_verso: number }
+        Returns: string[]
+      }
       acervo_stats: { Args: never; Returns: Json }
+      acervo_versos: {
+        Args: never
+        Returns: {
+          id: number
+          letras: number
+          livro: string
+          pacotes: string[]
+          pontos: number
+          pontos_det: Json
+          referencia: string
+          temas: string[]
+          texto_pt: string
+          verso_no: string
+          verso_sanskrit: string
+        }[]
+      }
       admin_agenda_cliques_por_link: {
         Args: { p_comunicacao_id: string; p_dias?: number }
         Returns: {
@@ -11616,6 +11666,41 @@ export type Database = {
           verse_sanskrit: string
         }[]
       }
+      verso_expandido: {
+        Args: {
+          p_antes?: number
+          p_depois?: number
+          p_id: number
+          p_tabela: string
+        }
+        Returns: {
+          continua_anterior: boolean
+          eh_o_pedido: boolean
+          posicao: number
+          sanskrit: string
+          source_id: number
+          source_table: string
+          texto_pt: string
+          verso_no: string
+        }[]
+      }
+      verso_expandido_texto: {
+        Args: {
+          p_antes?: number
+          p_depois?: number
+          p_id: number
+          p_tabela: string
+        }
+        Returns: {
+          fontes: Json
+          letras: number
+          n_versos: number
+          sanskrit: string
+          texto_pt: string
+          versos: string
+        }[]
+      }
+      verso_ordem_num: { Args: { v: string }; Returns: number }
       video_slug_sitemap: { Args: { p_titulo: string }; Returns: string }
       videos_seo2_sincronizar: { Args: never; Returns: number }
       videos_slugify: { Args: { p_titulo: string }; Returns: string }
