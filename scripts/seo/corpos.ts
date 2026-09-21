@@ -8,6 +8,7 @@
 
 import { limparDescricaoVideo } from "../../src/lib/videoDescricao";
 import type { LinhaArtigo, LinhaVideo, LinhaReceita } from "./fontes";
+import type { Relacionados, Item } from "./relacionados";
 
 const A = "\u003c";
 
@@ -38,9 +39,20 @@ function lista(itens: string[], ordenada = false): string {
   return tag(ordenada ? "ol" : "ul", itens.map((i) => tag("li", esc(i))).join(""));
 }
 
-/** Artigo: título, resumo e o texto do artigo (o mesmo HTML que BlogArticle.tsx desenha). */
-export function corpoArtigo(p: LinhaArtigo): string {
-  return [tag("h1", esc(limpo(p.title))), p.meta_description ? tag("p", esc(limpo(p.meta_description))) : "", p.summary ?? ""]
+function links(titulo: string, itens: Item[]): string {
+  if (!itens.length) return "";
+  return tag("h2", titulo) + tag("ul", itens.map((i) => tag("li", `${A}a href="${esc(i.rota)}">${esc(i.titulo)}${A}/a>`)).join(""));
+}
+
+/** Artigo: título, resumo, o texto do artigo e o bloco Leia também / Assista também (como em BlogArticle.tsx). */
+export function corpoArtigo(p: LinhaArtigo, rel?: Relacionados): string {
+  return [
+    tag("h1", esc(limpo(p.title))),
+    p.meta_description ? tag("p", esc(limpo(p.meta_description))) : "",
+    p.summary ?? "",
+    rel ? links("Leia também", rel.artigos) : "",
+    rel ? links("Assista também", rel.videos) : "",
+  ]
     .filter(Boolean)
     .join("\n");
 }
