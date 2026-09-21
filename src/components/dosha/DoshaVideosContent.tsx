@@ -29,6 +29,19 @@ const DoshaVideosContent = ({ dosha }: DoshaVideosContentProps) => {
     },
   });
 
+  const ids = (videos ?? []).map((v) => v.video_id).filter(Boolean);
+  const { data: slugs } = useQuery({
+    queryKey: ["dosha-videos-slugs", dosha, ids.join(",")],
+    enabled: ids.length > 0,
+    staleTime: 10 * 60 * 1000,
+    queryFn: async () => {
+      const { data } = await (supabase.from("videos_canonicos") as any)
+        .select("video_id, slug")
+        .in("video_id", ids);
+      return new Map<string, string>(((data ?? []) as { video_id: string; slug: string }[]).map((r) => [r.video_id, r.slug]));
+    },
+  });
+
   const doshaLabels = { vata: "Vata", pitta: "Pitta", kapha: "Kapha" };
 
   return (
@@ -63,6 +76,7 @@ const DoshaVideosContent = ({ dosha }: DoshaVideosContentProps) => {
               title={v.novo_titulo || "Sem título"}
               summary={v.mini_resumo || ""}
               tags={v.tags}
+              slug={slugs?.get(v.video_id)}
             />
           ))}
         </div>

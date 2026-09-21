@@ -134,6 +134,7 @@ const Biblioteca = () => {
                     title={v.novo_titulo || "Sem título"}
                     summary={v.mini_resumo || ""}
                     tags={v.tags}
+                    slug={v.slug}
                   />
                 ))}
               </div>

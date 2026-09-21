@@ -1,6 +1,5 @@
 import { useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
-import { slugify } from "@/lib/slugify";
 import HeartButton from "@/components/HeartButton";
 import MarkAsReadButton from "@/components/meudosha/MarkAsReadButton";
 
@@ -9,6 +8,7 @@ interface VideoResultCardProps {
   title: string;
   summary: string;
   tags: string | null;
+  slug?: string;
   onClick?: () => void;
   showActions?: boolean;
 }
