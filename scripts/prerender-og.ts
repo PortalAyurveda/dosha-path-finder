@@ -133,6 +133,17 @@ const staticRoutes: Route[] = [
     },
   },
   {
+    path: "/detox",
+    title: "Jornada da Primavera — Portal Ayurveda",
+    description: "Assista à Jornada da Primavera e acompanhe suas respostas no mapa pessoal.",
+  },
+  {
+    path: "/detox/mapa",
+    title: "Mapa da Jornada — Portal Ayurveda",
+    description: "Seu mapa pessoal da Jornada da Primavera, com Teste de Dosha e respostas das três noites.",
+    noindex: true,
+  },
+  {
     path: "/biblioteca",
     title: "Biblioteca Ayurveda — vídeos, artigos e rotinas por dosha",
     description:
