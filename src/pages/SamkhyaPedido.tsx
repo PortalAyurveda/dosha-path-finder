@@ -9,6 +9,7 @@ import StatusTimeline from "@/components/samkhya/pedido/StatusTimeline";
 import StatusBadge from "@/components/samkhya/pedido/statusBadge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
+import { useCart } from "@/contexts/CartContext";
 
 interface ItemPedido {
   nome: string;
@@ -69,6 +70,7 @@ const fmtDate = (iso?: string | null) =>
 
 const SamkhyaPedido = () => {
   const { session_id } = useParams<{ session_id: string }>();
+  const { limparCarrinho } = useCart();
   const [pedido, setPedido] = useState<PedidoDetalhe | null>(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
@@ -128,6 +130,10 @@ const SamkhyaPedido = () => {
       .catch(() => setNotFound(true))
       .finally(() => setLoading(false));
   }, [session_id]);
+
+  useEffect(() => {
+    if (pedido && pedido.status_etapa >= 2) limparCarrinho();
+  }, [pedido, limparCarrinho]);
 
   const copyRastreio = async (code: string) => {
     try {

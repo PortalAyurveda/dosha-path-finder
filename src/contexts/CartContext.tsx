@@ -1,4 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, ReactNode } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 export type CartItem = {
   id: number;
@@ -46,6 +47,8 @@ type CartContextType = {
 
 const STORAGE_KEY = "samkhya:cart:v1";
 
+export const PIX_PENDENTE_KEY = "samkhya:pix-pendente";
+
 const CartContext = createContext<CartContextType | null>(null);
 
 const loadInitial = (): CartItem[] => {
@@ -70,6 +73,43 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       /* ignore */
     }
   }, [itens]);
+
+  useEffect(() => {
+    let conferindo = false;
+    const conferirPixPendente = async () => {
+      if (conferindo) return;
+      let pedidoId: string | null = null;
+      try {
+        pedidoId = localStorage.getItem(PIX_PENDENTE_KEY);
+      } catch {
+        return;
+      }
+      if (!pedidoId) return;
+      conferindo = true;
+      try {
+        const { data, error } = await supabase.functions.invoke("conferir-pix", {
+          body: { pedido_id: pedidoId },
+        });
+        if (error) return;
+        if (data?.status === "pago") {
+          setItens([]);
+          localStorage.removeItem(PIX_PENDENTE_KEY);
+        } else if (data?.status === "expirado") {
+          localStorage.removeItem(PIX_PENDENTE_KEY);
+        }
+      } catch {
+        /* ignore */
+      } finally {
+        conferindo = false;
+      }
+    };
+    conferirPixPendente();
+    const aoVoltarNaAba = () => {
+      if (document.visibilityState === "visible") conferirPixPendente();
+    };
+    document.addEventListener("visibilitychange", aoVoltarNaAba);
+    return () => document.removeEventListener("visibilitychange", aoVoltarNaAba);
+  }, []);
 
   const abrirCarrinho = useCallback(() => setIsOpen(true), []);
   const fecharCarrinho = useCallback(() => setIsOpen(false), []);
@@ -102,7 +142,14 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     );
   }, []);
 
-  const limparCarrinho = useCallback(() => setItens([]), []);
+  const limparCarrinho = useCallback(() => {
+    setItens([]);
+    try {
+      localStorage.removeItem(PIX_PENDENTE_KEY);
+    } catch {
+      /* ignore */
+    }
+  }, []);
 
   const totalItens = useMemo(() => itens.reduce((acc, it) => acc + it.quantidade, 0), [itens]);
   const subtotal = useMemo(
