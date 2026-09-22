@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Helmet } from "react-helmet-async";
 import { ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { buscarRedirecionamento, aplicarRedirecionamento } from "@/lib/redirecionamentos";
 import { Badge } from "@/components/ui/badge";
 import HeartButton from "@/components/HeartButton";
 import BannerSlot from "@/components/banners/BannerSlot";
