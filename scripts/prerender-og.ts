@@ -18,6 +18,7 @@ import { limparDescricaoVideo } from "../src/lib/videoDescricao";
 import { montarRelacionados, type Relacionados } from "./seo/relacionados";
 import { corpoArtigo, corpoVideo, corpoReceita, corpoTerapeuta, corpoTesteDosha, blocoCorpo } from "./seo/corpos";
 import { TESTE_DOSHA_FAQ } from "../src/lib/testeDoshaFaq";
+import { akashaSlug } from "../src/lib/akashaSlug";
 import { lerFontes, BASE_URL, DEFAULT_OG, SITEMAP_SOURCE, AUTOR_NOME, type LinhaVideo, type LinhaRedirecionamento } from "./seo/fontes";
 
 interface Route {
@@ -31,6 +32,8 @@ interface Route {
   canonicalPath?: string;
   /** Texto da página no HTML (só nas páginas que têm o próprio conteúdo). */
   corpo?: string;
+  /** Página que existe para o visitante e fica fora do Google (robots noindex no HTML). */
+  noindex?: boolean;
 }
 
 const editora = {
@@ -217,7 +220,7 @@ async function dynamicRoutes(): Promise<{ routes: Route[]; counts: Contagens; re
   const counts: Contagens = {};
   const bump = (k: string) => (counts[k] = (counts[k] || 0) + 1);
 
-  const { artigos, videos, curtos, receitas, terapeutas, produtos, kits, categorias, redirecionamentos } = await lerFontes();
+  const { artigos, videos, curtos, receitas, terapeutas, produtos, kits, categorias, redirecionamentos, registros } = await lerFontes();
 
   // ---------------------------------------------------------------- artigos
   // Mais novo vence quando o slug se repete, mesma regra do React.
@@ -417,6 +420,23 @@ async function dynamicRoutes(): Promise<{ routes: Route[]; counts: Contagens; re
     bump("categoria");
   }
 
+  // ------------------------------------------------------ registros akáshicos
+  // Mesmo endereço que src/pages/RegistroAkashico.tsx monta (akashaSlug do título).
+  const slugsRegistro = new Set<string>();
+  for (const r of registros) {
+    const slug = akashaSlug(r.titulo);
+    if (!slug || slugsRegistro.has(slug)) continue;
+    slugsRegistro.add(slug);
+    routes.push({
+      path: `/registros-akashikos/${slug}`,
+      title: `${clean(r.titulo, 90)} — Portal Ayurveda`,
+      description: "Registro de um pensamento da Akasha, nossa I.A. Ayurveda.",
+      type: "article",
+      noindex: true,
+    });
+    bump("registro");
+  }
+
   console.log(`[prerender] dinâmicas: ${Object.entries(counts).map(([k, v]) => `${k}=${v}`).join(" ")}`);
   return { routes, counts, relacionados, redirecionamentos };
 }
@@ -463,6 +483,7 @@ function renderHtml(template: string, route: Route, faltando: Set<string>): stri
   html = html.replace(/<link\b[^>]*rel=["']canonical["'][^>]*\/?>\s*/gi, "");
   const extras: string[] = [`    <link rel="canonical" href="${canonical}" data-rota="${route.path}" />`];
   if (route.jsonld) extras.push(`    <script type="application/ld+json">${jsonParaScript(route.jsonld)}</script>`);
+  if (route.noindex) extras.push(`    ${"<"}meta name="robots" content="noindex, follow" />`);
   html = html.replace(/<\/head>/, () => `${extras.join("\n")}\n  </head>`);
 
   // Texto da página logo depois do div root (fora dele: o React monta ali dentro).
