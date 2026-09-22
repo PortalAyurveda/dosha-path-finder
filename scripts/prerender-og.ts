@@ -141,7 +141,6 @@ const staticRoutes: Route[] = [
     path: "/detox/mapa",
     title: "Mapa da Jornada — Portal Ayurveda",
     description: "Seu mapa pessoal da Jornada da Primavera, com Teste de Dosha e respostas das três noites.",
-    noindex: true,
   },
   {
     path: "/biblioteca",

@@ -179,7 +179,6 @@ const DetoxMapa = () => {
       <Helmet>
         <title>Mapa da Jornada — Portal Ayurveda</title>
         <meta name="description" content="Seu mapa pessoal da Jornada da Primavera, com Teste de Dosha e respostas das três noites." />
-        <meta name="robots" content="noindex, follow" />
       </Helmet>
 
       <header className="border-b border-detox-yellow bg-detox-cream">

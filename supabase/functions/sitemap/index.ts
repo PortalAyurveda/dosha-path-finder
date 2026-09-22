@@ -55,6 +55,7 @@ const staticEntries: Entry[] = [
   { loc: `${BASE_URL}/`, changefreq: "weekly", priority: "1.0" },
   { loc: `${BASE_URL}/teste-de-dosha`, changefreq: "weekly", priority: "1.0" },
   { loc: `${BASE_URL}/detox`, changefreq: "daily", priority: "0.9" },
+  { loc: `${BASE_URL}/detox/mapa`, changefreq: "daily", priority: "0.8" },
   { loc: `${BASE_URL}/assinar`, changefreq: "weekly", priority: "1.0" },
   { loc: `${BASE_URL}/blog`, changefreq: "daily", priority: "0.9" },
   { loc: `${BASE_URL}/biblioteca`, changefreq: "weekly", priority: "0.9" },
