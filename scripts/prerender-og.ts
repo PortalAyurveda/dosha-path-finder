@@ -16,7 +16,8 @@ import { readFileSync, writeFileSync, mkdirSync, existsSync } from "fs";
 import { resolve } from "path";
 import { limparDescricaoVideo } from "../src/lib/videoDescricao";
 import { montarRelacionados, type Relacionados } from "./seo/relacionados";
-import { corpoArtigo, corpoVideo, corpoReceita, corpoTerapeuta, blocoCorpo } from "./seo/corpos";
+import { corpoArtigo, corpoVideo, corpoReceita, corpoTerapeuta, corpoTesteDosha, blocoCorpo } from "./seo/corpos";
+import { TESTE_DOSHA_FAQ } from "../src/lib/testeDoshaFaq";
 import { lerFontes, BASE_URL, DEFAULT_OG, SITEMAP_SOURCE, AUTOR_NOME, type LinhaVideo, type LinhaRedirecionamento } from "./seo/fontes";
 
 interface Route {
@@ -117,6 +118,16 @@ const staticRoutes: Route[] = [
     title: "Teste de Dosha gratuito — Portal Ayurveda",
     description:
       "Faça o teste de dosha do Portal Ayurveda em 5 minutos e descubra seu tipo (Vata, Pitta ou Kapha). Receba conteúdo personalizado de alimentação, rotinas e equilíbrio.",
+    corpo: corpoTesteDosha(TESTE_DOSHA_FAQ),
+    jsonld: {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: TESTE_DOSHA_FAQ.map((f) => ({
+        "@type": "Question",
+        name: f.q,
+        acceptedAnswer: { "@type": "Answer", text: f.a },
+      })),
+    },
   },
   {
     path: "/biblioteca",

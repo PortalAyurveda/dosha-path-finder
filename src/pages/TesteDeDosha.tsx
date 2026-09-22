@@ -4,6 +4,7 @@ import InterstitialLoading from "@/components/dosha/InterstitialLoading";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import FaixaAviso from "@/components/FaixaAviso";
 import PageContainer from "@/components/PageContainer";
+import TesteDoshaFaq from "@/components/TesteDoshaFaq";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -805,6 +806,7 @@ const [step, setStep] = useState(0);
                 Começar <ChevronRight className="ml-2 h-6 w-6 md:h-7 md:w-7" />
               </Button>
             </div>
+            <TesteDoshaFaq />
           </div>
         </section>
       </>
