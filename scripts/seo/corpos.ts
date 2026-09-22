@@ -112,6 +112,17 @@ export function corpoTerapeuta(t: Record<string, any>): string {
   return partes.join("\n");
 }
 
+/** Teste de dosha: o que a tela inicial mostra (título, subtítulo e as dúvidas). */
+export function corpoTesteDosha(faq: { q: string; a: string }[]): string {
+  return [
+    tag("h1", "Seu guia completo para saúde e longevidade."),
+    tag("p", "Descubra e cuide dos seus Doshas por meio da medicina milenar."),
+    tag("p", "Comece seu Teste de Dosha Gratuito"),
+    tag("h2", "Dúvidas sobre o teste"),
+    ...faq.flatMap((f) => [tag("h3", esc(f.q)), tag("p", esc(f.a))]),
+  ].join("\n");
+}
+
 /** Bloco que entra logo depois do div root. Some sozinho quando o React desenha a página. */
 export function blocoCorpo(rota: string, corpo: string): string {
   const script =

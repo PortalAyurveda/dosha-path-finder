@@ -16,7 +16,8 @@ import { readFileSync, writeFileSync, mkdirSync, existsSync } from "fs";
 import { resolve } from "path";
 import { limparDescricaoVideo } from "../src/lib/videoDescricao";
 import { montarRelacionados, type Relacionados } from "./seo/relacionados";
-import { corpoArtigo, corpoVideo, corpoReceita, corpoTerapeuta, blocoCorpo } from "./seo/corpos";
+import { corpoArtigo, corpoVideo, corpoReceita, corpoTerapeuta, corpoTesteDosha, blocoCorpo } from "./seo/corpos";
+import { TESTE_DOSHA_FAQ } from "../src/lib/testeDoshaFaq";
 import { lerFontes, BASE_URL, DEFAULT_OG, SITEMAP_SOURCE, AUTOR_NOME, type LinhaVideo, type LinhaRedirecionamento } from "./seo/fontes";
 
 interface Route {
