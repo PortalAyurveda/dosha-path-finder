@@ -102,15 +102,19 @@ export default {
         "surface-sun": "hsl(var(--surface-sun))",
         "surface-sky": "hsl(var(--surface-sky))",
         detox: {
-          orange: "hsl(var(--detox-orange))",
-          brown: "hsl(var(--detox-brown))",
-          cream: "hsl(var(--detox-cream))",
-          yellow: "hsl(var(--detox-yellow))",
-          text: "hsl(var(--detox-text))",
-          title: "hsl(var(--detox-title))",
-          purple: "hsl(var(--detox-purple))",
-          button: "hsl(var(--detox-button))",
-          page: "hsl(var(--detox-page))",
+          primary: "var(--detox-primary)",
+          "primary-soft": "var(--detox-primary-soft)",
+          dark: "var(--detox-dark)",
+          light: "var(--detox-light)",
+          accent: "var(--detox-accent)",
+          page: "var(--detox-page)",
+          card: "var(--detox-card)",
+          "card-border": "var(--detox-card-border)",
+          "field-border": "var(--detox-field-border)",
+          divider: "var(--detox-divider)",
+          text: "var(--detox-text)",
+          muted: "var(--detox-muted)",
+          purple: "var(--detox-purple)",
         },
       },
       borderRadius: {
@@ -120,6 +124,7 @@ export default {
       },
       boxShadow: {
         therapist: "var(--shadow-therapist)",
+        detox: "var(--detox-shadow)",
       },
       keyframes: {
         "accordion-down": {

@@ -72,15 +72,21 @@ body {
     --surface-sky: 214 100% 97%;
 
     /* Jornada da Primavera */
-    --detox-orange: 29 90% 61%;
-    --detox-brown: 28 73% 38%;
-    --detox-cream: 36 100% 97%;
-    --detox-yellow: 48 96% 53%;
-    --detox-text: 249 29% 26%;
-    --detox-title: 233 41% 20%;
-    --detox-purple: 252 29% 26%;
-    --detox-button: 24 72% 55%;
-    --detox-page: 29 90% 94%;
+    --detox-primary: #E07B39;
+    --detox-primary-soft: #E07B3926;
+    --detox-dark: #A85A1A;
+    --detox-light: #FBE6D2;
+    --detox-accent: #F2CB05;
+    --detox-page: #FDF7F1;
+    --detox-card: #FFFFFF;
+    --detox-card-border: #EADFD3;
+    --detox-field-border: #DCCFC0;
+    --detox-divider: #EFE6DC;
+    --detox-text: #2A2540;
+    --detox-muted: #6C677E;
+    --detox-purple: #352F54;
+    --detox-focus: #E07B392E;
+    --detox-shadow: 0 16px 36px -24px rgb(42 37 64 / 0.32);
 
     /* Therapist palettes */
     --therapist-yellow: 44 100% 49%;
@@ -129,6 +135,19 @@ body {
 }
 
 @layer components {
+  .detox-theme .detox-chat input {
+    border: 1.5px solid var(--detox-field-border);
+    border-radius: 10px;
+    background: var(--detox-card);
+    color: var(--detox-text);
+  }
+
+  .detox-theme .detox-chat input:focus-visible {
+    border-color: var(--detox-primary);
+    box-shadow: 0 0 0 3px var(--detox-focus);
+    outline: none;
+  }
+
   .therapist-theme-yellow {
     --therapist-accent: var(--therapist-yellow);
     --therapist-accent-soft: var(--therapist-yellow-soft);

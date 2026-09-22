@@ -19,6 +19,7 @@ export type LandingPaletteKey =
   | "alimentacao-verde"
   | "remedios-salmao"
   | "diagnostico-alaranjado"
+  | "detox-primavera"
   | "rotinas-dourado"
   | "formacao-azul"
   | "samkhya-roxo-ouro"
@@ -108,6 +109,21 @@ export const LANDING_PALETTES: LandingPalette[] = [
       lightColor: "#FFE3B8",
       accentColor: "#FACC15",
       warmBg: "#FFF8EE",
+    },
+  },
+  {
+    key: "detox-primavera",
+    label: "Detox da Primavera",
+    description: "Jornada Detox da Primavera, aulas ao vivo e mapa pessoal.",
+    theme: "warm",
+    swatch: ["#E07B39", "#FBE6D2", "#A85A1A"],
+    branding: {
+      logo: "https://api.portalayurveda.com/storage/v1/object/public/portal_images/logo-detox300x.webp",
+      primaryColor: "#E07B39",
+      darkColor: "#A85A1A",
+      lightColor: "#FBE6D2",
+      accentColor: "#F2CB05",
+      warmBg: "#FDF7F1",
     },
   },
   {
