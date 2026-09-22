@@ -53,6 +53,8 @@ export type LinhaCurto = { slug: string; video_id: string };
 
 export type LinhaRedirecionamento = { de_path: string; para_path: string };
 
+export type LinhaRegistro = { id: number; titulo: string | null };
+
 export type LinhaLoja = Record<string, any>;
 
 async function fetchRest<T = any>(query: string, schema?: string): Promise<T[]> {
@@ -118,10 +120,12 @@ export type Fontes = {
   kits: LinhaLoja[];
   categorias: LinhaLoja[];
   redirecionamentos: LinhaRedirecionamento[];
+  registros: LinhaRegistro[];
+
 };
 
 export async function lerFontes(): Promise<Fontes> {
-  const [artigos, videos, curtos, receitas, terapeutas, produtos, kits, categorias, redirecionamentos] = await Promise.all([
+  const [artigos, videos, curtos, receitas, terapeutas, produtos, kits, categorias, redirecionamentos, registros] = await Promise.all([
     lerTudo<LinhaArtigo>(
       "portal_conteudo?select=id,created_at,image_url,title,summary,link_do_artigo,meta_description&status=eq.published&link_do_artigo=not.is.null",
       "id.asc"
@@ -154,7 +158,10 @@ export async function lerFontes(): Promise<Fontes> {
 
     // Endereços antigos que mudaram: cada um ganha uma página que manda para o novo.
     lerTudo<LinhaRedirecionamento>("redirecionamentos?select=de_path,para_path&ativo=eq.true", "de_path.asc"),
+
+    // Registros akáshicos: página própria com noindex escrito no HTML.
+    lerTudo<LinhaRegistro>("registros_akashikos_publicos?select=id,titulo", "id.asc"),
   ]);
 
-  return { artigos, videos, curtos, receitas, terapeutas, produtos, kits, categorias, redirecionamentos };
+  return { artigos, videos, curtos, receitas, terapeutas, produtos, kits, categorias, redirecionamentos, registros };
 }
