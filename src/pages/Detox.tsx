@@ -146,7 +146,7 @@ const Detox = () => {
           </div>
         ) : aula ? (
           <div className="grid gap-4 min-[940px]:grid-cols-[minmax(0,1fr)_330px]">
-            <div className="relative h-[480px] overflow-hidden rounded-2xl bg-detox-title shadow-lg">
+            <div className="relative aspect-video overflow-hidden rounded-2xl bg-detox-title shadow-lg min-[940px]:h-[480px] min-[940px]:aspect-auto">
               {embed ? (
                 <iframe src={embed} title={aula.titulo} allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen className="absolute inset-0 h-full w-full" />
               ) : (
