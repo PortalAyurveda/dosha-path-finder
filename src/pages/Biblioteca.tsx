@@ -55,6 +55,7 @@ const Biblioteca = () => {
       if (category === "artigos") {
         const { data, error, count } = await (supabase.from as any)("portal_conteudo")
           .select("id, title, meta_description, image_url, link_do_artigo", { count: "exact" })
+          .eq("status", "published")
           .order("created_at", { ascending: false })
           .range(from, to);
         if (error) throw error;

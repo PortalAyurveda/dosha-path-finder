@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Helmet } from "react-helmet-async";
 import { ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { buscarRedirecionamento, aplicarRedirecionamento } from "@/lib/redirecionamentos";
 import { Badge } from "@/components/ui/badge";
 import HeartButton from "@/components/HeartButton";
 import BannerSlot from "@/components/banners/BannerSlot";
@@ -20,6 +21,7 @@ const BlogArticle = () => {
         .from("portal_conteudo")
         .select("*")
         .eq("link_do_artigo", slug!)
+        .eq("status", "published")
         .maybeSingle();
 
       if (error) throw error;
@@ -39,6 +41,18 @@ const BlogArticle = () => {
     const t = window.setTimeout(remover, 0);
     return () => window.clearTimeout(t);
   }, [artigoInexistente]);
+
+  // Artigo que saiu do ar e ganhou endereço novo na tabela redirecionamentos: vai direto para o novo.
+  useEffect(() => {
+    if (!artigoInexistente || !slug) return;
+    let ativo = true;
+    buscarRedirecionamento(`/blog/${slug}`).then((destino) => {
+      if (ativo && destino) aplicarRedirecionamento(destino);
+    });
+    return () => {
+      ativo = false;
+    };
+  }, [artigoInexistente, slug]);
 
   const formattedSlug = slug
     ? slug.replace(/-/g, " ").replace(/^\w/, (c) => c.toUpperCase())
