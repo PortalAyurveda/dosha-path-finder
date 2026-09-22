@@ -127,6 +127,8 @@ const Rpg = lazy(() => import("./pages/Rpg"));
 const AdminMockups = lazy(() => import("./pages/AdminMockups"));
 const AdminTarefas = lazy(() => import("./pages/AdminTarefas"));
 const AdminEmails = lazy(() => import("./pages/AdminEmails"));
+const Detox = lazy(() => import("./pages/Detox"));
+const DetoxMapa = lazy(() => import("./pages/DetoxMapa"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -208,6 +210,8 @@ const RoutedApp = () => {
               <Route path="/" element={<Index />} />
               <Route path="/preview-loading" element={<PreviewLoading />} />
               <Route path="/teste-de-dosha" element={<TesteDeDosha />} />
+              <Route path="/detox" element={<Detox />} />
+              <Route path="/detox/mapa" element={<DetoxMapa />} />
               <Route path="/meu-dosha" element={<MeuDosha />} />
               <Route path="/meu-perfil" element={<MeuPerfil />} />
               <Route path="/minha-rotina" element={<MinhaRotina />} />
