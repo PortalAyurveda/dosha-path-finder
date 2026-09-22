@@ -64,8 +64,10 @@ const LiveChat = ({ slug }: Props) => {
   const [sending, setSending] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  const loggedName = profile?.nome || user?.email?.split("@")[0] || "";
-  const displayName = user ? loggedName : guestName;
+  const nomeSessao = user?.user_metadata?.nome;
+  const nomePerfil = profile?.nome && profile.nome !== "Visitante" ? profile.nome : undefined;
+  const loggedName = nomeSessao || nomePerfil || "";
+  const displayName = loggedName || guestName;
 
   // Initial fetch
   useEffect(() => {
@@ -157,7 +159,7 @@ const LiveChat = ({ slug }: Props) => {
     if (!msg || !name || sending) return;
     if (msg.length > 300) return;
     setSending(true);
-    if (!user) localStorage.setItem(LS_NAME_KEY, name);
+    if (!loggedName) localStorage.setItem(LS_NAME_KEY, name);
     const { error } = await supabase.from("chat_aula").insert({
       slug,
       nome: name,
@@ -224,7 +226,7 @@ const LiveChat = ({ slug }: Props) => {
         )}
       </div>
       <div className="border-t border-border p-2 space-y-2 bg-background">
-        {!user && (
+        {!loggedName && (
           <Input
             value={guestName}
             onChange={(e) => setGuestName(e.target.value.slice(0, 40))}
