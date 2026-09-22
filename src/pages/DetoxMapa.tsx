@@ -193,6 +193,8 @@ const DetoxMapa = () => {
 
   useEffect(() => {
     if (!hydrated.current) return;
+    const hasText = Boolean(answers.q1.trim() || answers.q2.trim() || answers.q3.trim());
+    if (!hasText) return;
     localStorage.setItem(DRAFT_KEY, JSON.stringify(answers));
     const timer = window.setTimeout(() => { void saveAnswers(false); }, 2000);
     return () => window.clearTimeout(timer);
