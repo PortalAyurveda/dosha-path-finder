@@ -101,6 +101,17 @@ export default {
         "bg-soft": "hsl(var(--bg-soft))",
         "surface-sun": "hsl(var(--surface-sun))",
         "surface-sky": "hsl(var(--surface-sky))",
+        detox: {
+          orange: "hsl(var(--detox-orange))",
+          brown: "hsl(var(--detox-brown))",
+          cream: "hsl(var(--detox-cream))",
+          yellow: "hsl(var(--detox-yellow))",
+          text: "hsl(var(--detox-text))",
+          title: "hsl(var(--detox-title))",
+          purple: "hsl(var(--detox-purple))",
+          button: "hsl(var(--detox-button))",
+          page: "hsl(var(--detox-page))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
