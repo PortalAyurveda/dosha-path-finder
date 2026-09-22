@@ -118,6 +118,16 @@ const staticRoutes: Route[] = [
     title: "Teste de Dosha gratuito — Portal Ayurveda",
     description:
       "Faça o teste de dosha do Portal Ayurveda em 5 minutos e descubra seu tipo (Vata, Pitta ou Kapha). Receba conteúdo personalizado de alimentação, rotinas e equilíbrio.",
+    corpo: corpoTesteDosha(TESTE_DOSHA_FAQ),
+    jsonld: {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: TESTE_DOSHA_FAQ.map((f) => ({
+        "@type": "Question",
+        name: f.q,
+        acceptedAnswer: { "@type": "Answer", text: f.a },
+      })),
+    },
   },
   {
     path: "/biblioteca",
