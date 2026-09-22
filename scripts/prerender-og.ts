@@ -17,7 +17,7 @@ import { resolve } from "path";
 import { limparDescricaoVideo } from "../src/lib/videoDescricao";
 import { montarRelacionados, type Relacionados } from "./seo/relacionados";
 import { corpoArtigo, corpoVideo, corpoReceita, corpoTerapeuta, blocoCorpo } from "./seo/corpos";
-import { lerFontes, BASE_URL, DEFAULT_OG, SITEMAP_SOURCE, AUTOR_NOME, type LinhaVideo } from "./seo/fontes";
+import { lerFontes, BASE_URL, DEFAULT_OG, SITEMAP_SOURCE, AUTOR_NOME, type LinhaVideo, type LinhaRedirecionamento } from "./seo/fontes";
 
 interface Route {
   path: string;
@@ -45,6 +45,13 @@ function escapeHtml(s: string): string {
 function clean(text: unknown, max = 200): string {
   if (!text || typeof text !== "string") return "";
   return text.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim().slice(0, max);
+}
+
+/** Página mínima de um endereço antigo: manda na hora para o endereço novo (o Google trata como redirecionamento). */
+function paginaDeRedirecionamento(alvo: string): string {
+  const a = escapeHtml(alvo);
+  const L = "\u003c";
+  return `${L}!doctype html>${L}html lang="pt-BR">${L}head>${L}meta charset="utf-8">${L}title>Esta página mudou de endereço${L}/title>${L}link rel="canonical" href="${a}">${L}meta http-equiv="refresh" content="0; url=${a}">${L}/head>${L}body>${L}p>Esta página mudou de endereço: ${L}a href="${a}">${a}${L}/a>${L}/p>${L}/body>${L}/html>`;
 }
 
 function jsonParaScript(obj: unknown): string {
@@ -194,12 +201,12 @@ for (const [dosha, meta] of Object.entries(GUIAS)) {
 
 type Contagens = Record<string, number>;
 
-async function dynamicRoutes(): Promise<{ routes: Route[]; counts: Contagens; relacionados: Map<string, Relacionados> }> {
+async function dynamicRoutes(): Promise<{ routes: Route[]; counts: Contagens; relacionados: Map<string, Relacionados>; redirecionamentos: LinhaRedirecionamento[] }> {
   const routes: Route[] = [];
   const counts: Contagens = {};
   const bump = (k: string) => (counts[k] = (counts[k] || 0) + 1);
 
-  const { artigos, videos, curtos, receitas, terapeutas, produtos, kits, categorias } = await lerFontes();
+  const { artigos, videos, curtos, receitas, terapeutas, produtos, kits, categorias, redirecionamentos } = await lerFontes();
 
   // ---------------------------------------------------------------- artigos
   // Mais novo vence quando o slug se repete, mesma regra do React.
@@ -400,7 +407,7 @@ async function dynamicRoutes(): Promise<{ routes: Route[]; counts: Contagens; re
   }
 
   console.log(`[prerender] dinâmicas: ${Object.entries(counts).map(([k, v]) => `${k}=${v}`).join(" ")}`);
-  return { routes, counts, relacionados };
+  return { routes, counts, relacionados, redirecionamentos };
 }
 
 // ------------------------------------------------------------------ escrita
@@ -525,7 +532,7 @@ async function main() {
 
   const template = readFileSync(templatePath, "utf8");
 
-  const { routes: dynamic, counts, relacionados } = await dynamicRoutes();
+  const { routes: dynamic, counts, relacionados, redirecionamentos } = await dynamicRoutes();
 
   const all = [...staticRoutes, ...dynamic];
 
@@ -569,6 +576,20 @@ async function main() {
   mkdirSync(pastaRel, { recursive: true });
   for (const [slug, rel] of relacionados) writeFileSync(resolve(pastaRel, `${slug}.json`), JSON.stringify(rel));
   console.log(`[prerender] leia-tambem: ${relacionados.size} arquivos`);
+
+  // Endereços antigos (tabela redirecionamentos). Endereço que ainda tem página própria não é tocado.
+  let redirecionados = 0;
+  for (const r of redirecionamentos) {
+    const de = (r.de_path || "").trim().replace(/\/+$/, "");
+    const para = (r.para_path || "").trim();
+    if (!de.startsWith("/") || de.includes("..") || !para || escritos.has(de)) continue;
+    const alvo = /^https?:\/\//i.test(para) ? para : `${BASE_URL}${para.startsWith("/") ? para : "/" + para}`;
+    const pasta = resolve(distDir, de.replace(/^\//, ""));
+    mkdirSync(pasta, { recursive: true });
+    writeFileSync(resolve(pasta, "index.html"), paginaDeRedirecionamento(alvo));
+    redirecionados++;
+  }
+  console.log(`[prerender] redirecionamentos: ${redirecionados} páginas`);
 
   const home = staticRoutes.find((r) => r.path === "/");
   if (home) writeFileSync(templatePath, renderHtml(template, home, tagsFaltando));
