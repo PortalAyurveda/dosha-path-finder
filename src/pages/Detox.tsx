@@ -188,11 +188,11 @@ const Detox = () => {
         <section className="mt-6 rounded-[32px] border border-detox-card-border bg-detox-card p-6 shadow-detox md:p-8">
           <div className="grid gap-7 lg:grid-cols-[minmax(190px,0.8fr)_minmax(0,1.8fr)_auto] lg:items-center">
             <div>
-              <p className="text-xs font-bold uppercase text-detox-dark">{isVisitor ? "Você está assistindo como visitante" : doshaResult ? "Seu mapa" : "Seu mapa está esperando"}</p>
+              <p className="text-xs font-bold uppercase text-detox-dark">{isVisitor ? "Primeiro passo" : doshaResult ? "Seu mapa" : "Seu mapa está esperando"}</p>
               <h2 className="mt-1 font-serif text-2xl font-bold text-detox-text md:text-3xl">
-                {isVisitor ? "Entre na sua conta" : doshaResult ? resultTitle : "Comece pelo Teste de Dosha"}
+                {isVisitor ? "Comece pelo seu Teste de Dosha" : doshaResult ? resultTitle : "Comece pelo Teste de Dosha"}
               </h2>
-              <p className="mt-2 text-sm text-detox-muted md:text-base">{isVisitor ? "É lá que fica guardado o que você responder nestas três noites." : doshaResult ? "As três perguntas de hoje estão abertas no seu mapa." : "Depois é só voltar pra cá, a aula continua."}</p>
+              <p className="mt-2 text-sm text-detox-muted md:text-base">{isVisitor ? "Não precisa de senha. Em oito minutos você tem o seu mapa." : doshaResult ? "As três perguntas de hoje estão abertas no seu mapa." : "Depois é só voltar pra cá, a aula continua."}</p>
             </div>
             <div className="grid gap-4 sm:grid-cols-3">
               {guideSteps.map(({ icon: Icon, title, text }) => (
