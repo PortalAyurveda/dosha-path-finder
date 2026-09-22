@@ -148,6 +148,12 @@ body {
     outline: none;
   }
 
+  .detox-theme .detox-chat > div {
+    border-color: var(--detox-card-border);
+    background: var(--detox-card);
+    box-shadow: var(--detox-shadow);
+  }
+
   .therapist-theme-yellow {
     --therapist-accent: var(--therapist-yellow);
     --therapist-accent-soft: var(--therapist-yellow-soft);

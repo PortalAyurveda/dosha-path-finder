@@ -85,7 +85,7 @@ const Countdown = ({ target }: { target: number }) => {
 const JourneyButton = ({ to, children, purple = false }: { to: string; children: React.ReactNode; purple?: boolean }) => (
   <Button
     asChild
-    className={`min-h-[60px] rounded-full px-7 text-sm font-bold uppercase ${purple ? "bg-detox-purple hover:bg-detox-purple/90" : "bg-detox-primary hover:bg-detox-dark"} text-primary-foreground`}
+    className={`min-h-[60px] w-full rounded-full px-7 text-sm font-bold uppercase lg:w-auto ${purple ? "bg-detox-purple hover:bg-detox-purple/90" : "bg-detox-primary hover:bg-detox-dark"} text-primary-foreground`}
   >
     <Link to={to}>{children}</Link>
   </Button>
@@ -123,7 +123,7 @@ const Detox = () => {
   const emailPrefix = user?.email?.split("@")[0]?.trim().toLocaleLowerCase("pt-BR") || "";
   const resultName = doshaResult?.nome?.trim() || "";
   const firstName = resultName.split(/\s+/)[0] || "";
-  const hasPersonalName = Boolean(firstName) && firstName.toLocaleLowerCase("pt-BR") !== emailPrefix;
+  const hasPersonalName = Boolean(firstName) && !emailPrefix.startsWith(firstName.toLocaleLowerCase("pt-BR"));
   const resultTitle = hasPersonalName
     ? `${firstName}, ${principal[0].toUpperCase()}${principal.slice(1)} em ${getFaixa(principal, score).toLowerCase()}`
     : "Seu mapa está pronto";
