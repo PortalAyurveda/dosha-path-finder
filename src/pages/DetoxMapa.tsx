@@ -8,6 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { useUser } from "@/contexts/UserContext";
 import { supabase } from "@/integrations/supabase/client";
+import { ensureAnonSession, currentUserId } from "@/lib/anonSession";
 import { getFaixa, type DoshaNome } from "@/data/doshaLevels";
 import { getPalette } from "@/data/landingPalettes";
 
@@ -25,7 +26,13 @@ const DETOX_THEME = {
 const DRAFT_KEY = "jornada_primavera_noite_1";
 
 type Respostas = { q1: string; q2: string; q3: string };
-type AgniData = { agniPrincipal: string | null; agniforte: number | null; agnifraco: number | null; agniirregular: number | null };
+type AgniData = {
+  agniPrincipal: string | null;
+  agniforte: number | null;
+  agnifraco: number | null;
+  agniirregular: number | null;
+  email?: string | null;
+};
 
 const EMPTY_ANSWERS: Respostas = { q1: "", q2: "", q3: "" };
 const QUESTIONS: Array<{ key: keyof Respostas; text: string }> = [
@@ -76,6 +83,7 @@ const DetoxMapa = () => {
   const [justSaved, setJustSaved] = useState(false);
   const hydrated = useRef(false);
   const savedTimer = useRef<number | null>(null);
+  const agniEmail = agni?.email ?? null;
 
   const markSaved = useCallback(() => {
     setJustSaved(true);
@@ -101,6 +109,17 @@ const DetoxMapa = () => {
     return () => { active = false; };
   }, [doshaResult?.idPublico]);
 
+  const persist = useCallback(async (uid: string, value: Respostas, email: string | null) => {
+    return supabase.from("jornada_ficha").upsert({
+      user_id: uid,
+      email,
+      noite: 1,
+      respostas: value,
+      dosha_id_publico: doshaResult?.idPublico ?? null,
+      updated_at: new Date().toISOString(),
+    }, { onConflict: "user_id,noite" });
+  }, [doshaResult?.idPublico]);
+
   useEffect(() => {
     let active = true;
     hydrated.current = false;
@@ -111,7 +130,9 @@ const DetoxMapa = () => {
         if (raw) local = { ...EMPTY_ANSWERS, ...JSON.parse(raw) };
       } catch { localStorage.removeItem(DRAFT_KEY); }
 
-      if (!accountUser) {
+      const uid = accountUser?.id ?? (await currentUserId());
+
+      if (!uid) {
         if (active) {
           setAnswers(local ?? EMPTY_ANSWERS);
           setLoadingFicha(false);
@@ -123,7 +144,7 @@ const DetoxMapa = () => {
       const { data } = await supabase
         .from("jornada_ficha")
         .select("respostas")
-        .eq("user_id", accountUser.id)
+        .eq("user_id", uid)
         .eq("noite", 1)
         .maybeSingle();
 
@@ -133,14 +154,7 @@ const DetoxMapa = () => {
       const restored = local ?? remote ?? EMPTY_ANSWERS;
 
       if (local) {
-        const { error } = await supabase.from("jornada_ficha").upsert({
-          user_id: accountUser.id,
-          email: accountUser.email ?? null,
-          noite: 1,
-          respostas: local,
-          dosha_id_publico: doshaResult?.idPublico ?? null,
-          updated_at: new Date().toISOString(),
-        }, { onConflict: "user_id,noite" });
+        const { error } = await persist(uid, local, accountUser?.email ?? agniEmail);
         if (!error) localStorage.removeItem(DRAFT_KEY);
       }
 
@@ -151,43 +165,38 @@ const DetoxMapa = () => {
       }
     })();
     return () => { active = false; };
-  }, [accountUser?.id, accountUser?.email, doshaResult?.idPublico]);
+  }, [accountUser?.id, accountUser?.email, agniEmail, persist]);
 
   const saveAnswers = useCallback(async (showToast: boolean) => {
-    if (!accountUser) {
+    setSaving(true);
+    const uid = accountUser?.id ?? (await currentUserId()) ?? (await ensureAnonSession());
+
+    if (!uid) {
       localStorage.setItem(DRAFT_KEY, JSON.stringify(answers));
+      setSaving(false);
       markSaved();
       if (showToast) toast({ title: "Salvo" });
       return;
     }
-    setSaving(true);
-    const { error } = await supabase.from("jornada_ficha").upsert({
-      user_id: accountUser.id,
-      email: accountUser.email ?? null,
-      noite: 1,
-      respostas: answers,
-      dosha_id_publico: doshaResult?.idPublico ?? null,
-      updated_at: new Date().toISOString(),
-    }, { onConflict: "user_id,noite" });
+
+    const { error } = await persist(uid, answers, accountUser?.email ?? agniEmail);
     setSaving(false);
     if (error) {
+      localStorage.setItem(DRAFT_KEY, JSON.stringify(answers));
       if (showToast) toast({ title: "Não foi possível salvar", description: "Tente novamente em instantes.", variant: "destructive" });
       return;
     }
     localStorage.removeItem(DRAFT_KEY);
     markSaved();
     if (showToast) toast({ title: "Salvo" });
-  }, [accountUser, answers, doshaResult?.idPublico, markSaved, toast]);
+  }, [accountUser, agniEmail, answers, markSaved, persist, toast]);
 
   useEffect(() => {
     if (!hydrated.current) return;
-    if (!accountUser) {
-      localStorage.setItem(DRAFT_KEY, JSON.stringify(answers));
-      return;
-    }
+    localStorage.setItem(DRAFT_KEY, JSON.stringify(answers));
     const timer = window.setTimeout(() => { void saveAnswers(false); }, 2000);
     return () => window.clearTimeout(timer);
-  }, [answers, accountUser, saveAnswers]);
+  }, [answers, saveAnswers]);
 
   const doshaKey = (doshaResult?.doshaprincipal?.toLowerCase().match(/vata|pitta|kapha/)?.[0] || "vata") as DoshaNome;
   const principalScore = doshaKey === "vata" ? doshaResult?.vatascore : doshaKey === "pitta" ? doshaResult?.pittascore : doshaResult?.kaphascore;
@@ -244,17 +253,11 @@ const DetoxMapa = () => {
               </div>
               <div className="mt-6"><JourneyButton to="/meu-dosha" outline>Ver meu mapa completo</JourneyButton></div>
             </div>
-          ) : accountUser ? (
-            <div className="rounded-[32px] border border-detox-card-border bg-detox-card p-6 shadow-detox md:p-8">
-              <h3 className="font-serif text-2xl font-bold text-detox-text">Você ainda não fez o teste</h3>
-              <p className="mt-2 text-sm leading-relaxed text-detox-muted md:text-base">São oito minutos, e é ele que dá sentido às três noites. Dá pra fazer agora, durante a aula.</p>
-              <div className="mt-5"><JourneyButton to="/teste-de-dosha">Fazer o meu teste</JourneyButton></div>
-            </div>
           ) : (
             <div className="rounded-[32px] border border-detox-card-border bg-detox-card p-6 shadow-detox md:p-8">
-              <h3 className="font-serif text-2xl font-bold text-detox-text">Entre para guardar o seu mapa</h3>
-              <p className="mt-2 text-sm leading-relaxed text-detox-muted md:text-base">Sem conta, o que você escrever aqui se perde quando fechar a página.</p>
-              <div className="mt-5"><JourneyButton to="/entrar?redirect=/detox/mapa">Entrar com meu e-mail</JourneyButton></div>
+              <h3 className="font-serif text-2xl font-bold text-detox-text">Comece pelo seu Teste de Dosha</h3>
+              <p className="mt-2 text-sm leading-relaxed text-detox-muted md:text-base">São oito minutos, e é ele que dá sentido às três noites. Não precisa de senha nem de e-mail para começar.</p>
+              <div className="mt-5"><JourneyButton to="/teste-de-dosha">Fazer o meu teste</JourneyButton></div>
             </div>
           )}
         </section>
@@ -281,10 +284,22 @@ const DetoxMapa = () => {
               </div>
             )}
             <div className="mt-8 flex flex-col gap-5 border-t border-detox-divider pt-6 sm:flex-row sm:items-center sm:justify-between">
-              <p className="flex max-w-md items-center gap-2 text-sm leading-relaxed text-detox-muted">
-                {justSaved && <Check className="h-4 w-4 shrink-0 text-detox-dark" aria-hidden="true" />}
-                Salva sozinho enquanto você escreve. Fica na sua conta, ninguém mais vê.
-              </p>
+              {accountUser ? (
+                <p className="flex max-w-md items-center gap-2 text-sm leading-relaxed text-detox-muted">
+                  {justSaved && <Check className="h-4 w-4 shrink-0 text-detox-dark" aria-hidden="true" />}
+                  Salva sozinho enquanto você escreve. Fica na sua conta, ninguém mais vê.
+                </p>
+              ) : (
+                <div className="max-w-md">
+                  <p className="flex items-center gap-2 text-sm leading-relaxed text-detox-muted">
+                    {justSaved && <Check className="h-4 w-4 shrink-0 text-detox-dark" aria-hidden="true" />}
+                    Já está salvo. Para guardar para sempre e abrir de outro aparelho, confirme o seu e-mail.
+                  </p>
+                  <Button asChild variant="outline" size="sm" className="mt-3 rounded-full border border-detox-field-border bg-transparent px-4 text-xs font-bold uppercase text-detox-dark hover:bg-detox-light hover:text-detox-dark">
+                    <Link to="/entrar?redirect=/detox/mapa">Confirmar meu e-mail</Link>
+                  </Button>
+                </div>
+              )}
               <Button onClick={() => void saveAnswers(true)} disabled={saving || loadingFicha} className="min-h-[60px] shrink-0 rounded-full bg-detox-primary px-7 text-sm font-bold uppercase text-primary-foreground hover:bg-detox-dark">
                 {saving && <Loader2 className="h-4 w-4 animate-spin" />} Salvar minhas respostas
               </Button>
