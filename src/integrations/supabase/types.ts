@@ -5293,6 +5293,39 @@ export type Database = {
         }
         Relationships: []
       }
+      jornada_ficha: {
+        Row: {
+          created_at: string
+          dosha_id_publico: string | null
+          email: string | null
+          id: string
+          noite: number
+          respostas: Json
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          dosha_id_publico?: string | null
+          email?: string | null
+          id?: string
+          noite?: number
+          respostas?: Json
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          dosha_id_publico?: string | null
+          email?: string | null
+          id?: string
+          noite?: number
+          respostas?: Json
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       jornadaaliment: {
         Row: {
           content: string | null
@@ -11532,6 +11565,9 @@ export type Database = {
       resultado_teste: {
         Args: { p_idpublico: string }
         Returns: {
+          agniforte: number
+          agnifraco: number
+          agniirregular: number
           agniPrincipal: string
           agravKaphaTags: string
           agravPittaTags: string
