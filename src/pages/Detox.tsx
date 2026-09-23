@@ -94,7 +94,8 @@ const JourneyButton = ({ to, children, purple = false }: { to: string; children:
 
 const Detox = () => {
   const { user, isAnonymous, doshaResult } = useUser();
-  const [aula, setAula] = useState<DetoxAula | null>(null);
+  const [aulas, setAulas] = useState<(DetoxAula & { slug: string })[]>([]);
+  const [escolhida, setEscolhida] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const now = useNow(1000);
   const isVisitor = !user || isAnonymous;
@@ -105,21 +106,30 @@ const Detox = () => {
     void (async () => {
       const { data } = await supabase
         .from("aulas_ao_vivo")
-        .select("titulo, youtube_url, starts_at")
-        .eq("slug", "detox")
-        .eq("is_active", true)
-        .maybeSingle();
+        .select("slug, titulo, youtube_url, starts_at")
+        .in("slug", ["detox-n1", "detox-n2", "detox-n3"])
+        .eq("is_active", true);
       if (active) {
-        setAula(data as DetoxAula | null);
+        const lista = ((data ?? []) as (DetoxAula & { slug: string })[]).sort((a, b) => a.slug.localeCompare(b.slug));
+        setAulas(lista);
         setLoading(false);
       }
     })();
     return () => { active = false; };
   }, []);
 
+  const slugAtivo = escolhida ?? `detox-n${noite}`;
+  const aula = aulas.find((a) => a.slug === slugAtivo) ?? aulas[0] ?? null;
+  const diaSP = (ts: number) => new Date(ts).toLocaleDateString("en-CA", { timeZone: "America/Sao_Paulo" });
+  const estadoDe = (a: DetoxAula) => {
+    const ts = a.starts_at ? new Date(a.starts_at).getTime() : null;
+    if (ts === null || now >= ts) return ts !== null && diaSP(ts) === diaSP(now) ? "live" : "gravada";
+    return "futura";
+  };
   const startTs = useMemo(() => aula?.starts_at ? new Date(aula.starts_at).getTime() : null, [aula?.starts_at]);
   const embed = aula ? getYouTubeEmbedUrl(aula.youtube_url) : null;
-  const isLive = startTs === null || now >= startTs;
+  const estado = aula ? estadoDe(aula) : "gravada";
+  const isLive = estado !== "futura";
   const principal = (doshaResult?.doshaprincipal?.split("-")[0]?.trim().toLowerCase() || "vata") as DoshaNome;
   const score = principal === "vata" ? doshaResult?.vatascore : principal === "pitta" ? doshaResult?.pittascore : doshaResult?.kaphascore;
   const emailPrefix = user?.email?.split("@")[0]?.trim().toLocaleLowerCase("pt-BR") || "";
