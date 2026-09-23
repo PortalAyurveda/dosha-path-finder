@@ -223,9 +223,10 @@ const DetoxMapa = () => {
 
   useEffect(() => {
     let active = true;
-    marcasHidratadas.current = false;
+    leituraHidratada.current = false;
     if (!uid) {
-      setMarcas([]);
+      setLeitura({});
+      setEscrita("");
       setFotoPath(null);
       setFotoUrl(null);
       return () => { active = false; };
@@ -238,48 +239,77 @@ const DetoxMapa = () => {
         .eq("noite", 2)
         .maybeSingle();
       const row = data?.respostas && typeof data.respostas === "object" && !Array.isArray(data.respostas)
-        ? (data.respostas as { marcas?: unknown; foto_path?: unknown })
-        : null;
+        ? (data.respostas as Record<string, unknown>)
+        : {};
       if (!active) return;
-      setMarcas(Array.isArray(row?.marcas) ? (row!.marcas as string[]).filter((m) => typeof m === "string") : []);
-      const path = typeof row?.foto_path === "string" ? row.foto_path : null;
+      const lida: Leitura = {};
+      for (const p of PERGUNTAS_LINGUA) {
+        const v = row[p.chave];
+        if (p.tipo === "unica" && typeof v === "string") lida[p.chave] = v;
+        if (p.tipo === "varias" && Array.isArray(v)) lida[p.chave] = v.filter((x): x is string => typeof x === "string");
+      }
+      setLeitura(lida);
+      setEscrita(typeof row.escrita === "string" ? row.escrita : "");
+      const path = typeof row.foto_path === "string" ? row.foto_path : null;
       setFotoPath(path);
       if (path) void assinarFoto(path);
-      marcasHidratadas.current = true;
+      leituraHidratada.current = true;
     })();
     return () => { active = false; };
   }, [uid, assinarFoto]);
 
-  const persistNoite2 = useCallback(async (listaMarcas: string[], path: string | null) => {
+  // Sempre mescla sobre o que já está gravado: troca só as chaves enviadas.
+  const mesclarNoite2 = useCallback(async (patch: Record<string, unknown>, emailNovo?: string) => {
     const alvo = uid ?? (await currentUserId()) ?? (await ensureAnonSession());
-    if (!alvo) return { error: new Error("sem sessão"), uid: null as string | null };
+    if (!alvo) return { error: new Error("sem sessão") };
     if (alvo !== uid) setUid(alvo);
+    const { data: atual, error: erroLeitura } = await supabase
+      .from("jornada_ficha")
+      .select("respostas, email")
+      .eq("user_id", alvo)
+      .eq("noite", 2)
+      .maybeSingle();
+    if (erroLeitura) return { error: erroLeitura };
+    const base = atual?.respostas && typeof atual.respostas === "object" && !Array.isArray(atual.respostas)
+      ? (atual.respostas as Record<string, unknown>)
+      : {};
     const { error } = await supabase.from("jornada_ficha").upsert({
       user_id: alvo,
-      email: accountUser?.email ?? agniEmail,
+      email: emailNovo ?? accountUser?.email ?? atual?.email ?? agniEmail ?? emailGuardado ?? null,
       noite: 2,
-      respostas: { marcas: listaMarcas, foto_path: path },
+      respostas: { ...base, ...patch } as never,
       dosha_id_publico: doshaResult?.idPublico ?? null,
       updated_at: new Date().toISOString(),
     }, { onConflict: "user_id,noite" });
-    return { error, uid: alvo };
-  }, [accountUser?.email, agniEmail, doshaResult?.idPublico, uid]);
+    return { error };
+  }, [accountUser?.email, agniEmail, doshaResult?.idPublico, emailGuardado, uid]);
+
+  const patchLeitura = useCallback(() => {
+    const patch: Record<string, unknown> = { escrita };
+    for (const p of PERGUNTAS_LINGUA) patch[p.chave] = leitura[p.chave] ?? (p.tipo === "unica" ? null : []);
+    return patch;
+  }, [escrita, leitura]);
 
   useEffect(() => {
-    if (!marcasHidratadas.current || !marcas.length) return;
-    const timer = window.setTimeout(() => { void persistNoite2(marcas, fotoPath); }, 1500);
+    if (!leituraHidratada.current || !leituraMexida.current) return;
+    const timer = window.setTimeout(() => { void mesclarNoite2(patchLeitura()); }, 2000);
     return () => window.clearTimeout(timer);
-  }, [marcas, fotoPath, persistNoite2]);
+  }, [leitura, escrita, mesclarNoite2, patchLeitura]);
 
-  const alternarMarca = (slug: string) => {
-    marcasHidratadas.current = true;
+  const escolher = (chave: string, tipo: "unica" | "varias", slug: string) => {
+    leituraHidratada.current = true;
+    leituraMexida.current = true;
     setLeituraSalva(false);
-    setMarcas((atual) => (atual.includes(slug) ? atual.filter((m) => m !== slug) : [...atual, slug]));
+    setLeitura((atual) => {
+      if (tipo === "unica") return { ...atual, [chave]: atual[chave] === slug ? null : slug };
+      const lista = Array.isArray(atual[chave]) ? (atual[chave] as string[]) : [];
+      return { ...atual, [chave]: lista.includes(slug) ? lista.filter((m) => m !== slug) : [...lista, slug] };
+    });
   };
 
   const salvarLeitura = async () => {
     setSalvandoLeitura(true);
-    const { error } = await persistNoite2(marcas, fotoPath);
+    const { error } = await mesclarNoite2(patchLeitura());
     setSalvandoLeitura(false);
     if (error) {
       toast({ title: "Não foi possível salvar", description: "Tente novamente em instantes.", variant: "destructive" });
@@ -301,16 +331,37 @@ const DetoxMapa = () => {
       const path = `${alvo}/noite2.jpg`;
       const { error } = await supabase.storage.from("linguas-jornada").upload(path, file, { upsert: true, contentType: "image/jpeg" });
       if (error) throw error;
-      marcasHidratadas.current = true;
       setFotoPath(path);
       await assinarFoto(path);
-      await persistNoite2(marcas, path);
+      const { error: erroFicha } = await mesclarNoite2({ foto_path: path });
+      if (erroFicha) throw erroFicha;
+      if (doshaResult?.idPublico) {
+        const { error: erroReg } = await supabase.from("doshas_registros").update({ foto_lingua_path: path }).eq("idPublico", doshaResult.idPublico);
+        if (erroReg) console.warn("[detox] foto_lingua_path não gravado:", erroReg.message);
+      }
     } catch {
       setErroFoto(true);
     } finally {
       setSubindoFoto(false);
     }
   };
+
+  const guardarEmail = async () => {
+    const limpo = emailCampo.trim().toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(limpo)) {
+      toast({ title: "Confira o e-mail", description: "Parece que falta alguma coisa.", variant: "destructive" });
+      return;
+    }
+    setGuardandoEmail(true);
+    const { error } = await mesclarNoite2({}, limpo);
+    if (!error) {
+      try { await supabase.auth.updateUser({ data: { email_jornada: limpo } }); } catch { /* segue */ }
+      setEmailGuardado(limpo);
+    }
+    setGuardandoEmail(false);
+    toast(error ? { title: "Não foi possível guardar", description: "Tente novamente em instantes.", variant: "destructive" } : { title: "E-mail guardado" });
+  };
+
 
 
   const doshaKey = (doshaResult?.doshaprincipal?.toLowerCase().match(/vata|pitta|kapha/)?.[0] || "vata") as DoshaNome;
