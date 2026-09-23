@@ -94,7 +94,8 @@ const JourneyButton = ({ to, children, purple = false }: { to: string; children:
 
 const Detox = () => {
   const { user, isAnonymous, doshaResult } = useUser();
-  const [aula, setAula] = useState<DetoxAula | null>(null);
+  const [aulas, setAulas] = useState<(DetoxAula & { slug: string })[]>([]);
+  const [escolhida, setEscolhida] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const now = useNow(1000);
   const isVisitor = !user || isAnonymous;
@@ -105,21 +106,30 @@ const Detox = () => {
     void (async () => {
       const { data } = await supabase
         .from("aulas_ao_vivo")
-        .select("titulo, youtube_url, starts_at")
-        .eq("slug", "detox")
-        .eq("is_active", true)
-        .maybeSingle();
+        .select("slug, titulo, youtube_url, starts_at")
+        .in("slug", ["detox-n1", "detox-n2", "detox-n3"])
+        .eq("is_active", true);
       if (active) {
-        setAula(data as DetoxAula | null);
+        const lista = ((data ?? []) as (DetoxAula & { slug: string })[]).sort((a, b) => a.slug.localeCompare(b.slug));
+        setAulas(lista);
         setLoading(false);
       }
     })();
     return () => { active = false; };
   }, []);
 
+  const slugAtivo = escolhida ?? `detox-n${noite}`;
+  const aula = aulas.find((a) => a.slug === slugAtivo) ?? aulas[0] ?? null;
+  const diaSP = (ts: number) => new Date(ts).toLocaleDateString("en-CA", { timeZone: "America/Sao_Paulo" });
+  const estadoDe = (a: DetoxAula) => {
+    const ts = a.starts_at ? new Date(a.starts_at).getTime() : null;
+    if (ts === null || now >= ts) return ts !== null && diaSP(ts) === diaSP(now) ? "live" : "gravada";
+    return "futura";
+  };
   const startTs = useMemo(() => aula?.starts_at ? new Date(aula.starts_at).getTime() : null, [aula?.starts_at]);
   const embed = aula ? getYouTubeEmbedUrl(aula.youtube_url) : null;
-  const isLive = startTs === null || now >= startTs;
+  const estado = aula ? estadoDe(aula) : "gravada";
+  const isLive = estado !== "futura";
   const principal = (doshaResult?.doshaprincipal?.split("-")[0]?.trim().toLowerCase() || "vata") as DoshaNome;
   const score = principal === "vata" ? doshaResult?.vatascore : principal === "pitta" ? doshaResult?.pittascore : doshaResult?.kaphascore;
   const emailPrefix = user?.email?.split("@")[0]?.trim().toLocaleLowerCase("pt-BR") || "";
@@ -155,20 +165,64 @@ const Detox = () => {
           <span className="font-serif text-xl font-bold text-detox-text sm:text-2xl">Jornada da Primavera</span>
         </div>
 
-        <div className="mb-7 space-y-4">
-          {loading ? <Skeleton className="h-12 w-72" /> : startTs && !isLive ? (
-            <Countdown target={startTs} />
-          ) : (
-            <div className="inline-flex items-center gap-2 rounded-full bg-destructive px-3 py-2 text-xs font-bold uppercase text-destructive-foreground">
-              <span className="h-2 w-2 rounded-full bg-destructive-foreground motion-safe:animate-pulse" aria-hidden="true" />
-              Ao vivo agora · Noite {noite} de 3
-            </div>
-          )}
-          <div>
-            <h1 className="font-serif text-3xl font-bold text-detox-text md:text-5xl">Jornada da Primavera</h1>
-            <p className="mt-2 text-base text-detox-muted md:text-lg">Noite {noite} de 3. Assista aqui e comente no chat. O que você responde fica no seu mapa.</p>
-          </div>
+        <div className="mb-6">
+          <h1 className="font-serif text-3xl font-bold text-detox-text md:text-5xl">Jornada da Primavera</h1>
+          <p className="mt-2 text-base text-detox-muted md:text-lg">Três noites. Assista aqui e comente no chat. O que você responde fica no seu mapa.</p>
         </div>
+
+        {loading ? (
+          <div className="mb-6 grid gap-3 md:grid-cols-3">
+            {[0, 1, 2].map((i) => <Skeleton key={i} className="h-[88px] rounded-2xl" />)}
+          </div>
+        ) : aulas.length > 0 && (
+          <div className="mb-6 grid gap-3 md:grid-cols-3" role="tablist" aria-label="Aulas da Jornada">
+            {aulas.map((a) => {
+              const st = estadoDe(a);
+              const ativo = a.slug === aula?.slug;
+              const data = a.starts_at
+                ? new Date(a.starts_at).toLocaleDateString("pt-BR", { timeZone: "America/Sao_Paulo", day: "2-digit", month: "2-digit" })
+                : "";
+              return (
+                <button
+                  key={a.slug}
+                  type="button"
+                  role="tab"
+                  aria-selected={ativo}
+                  onClick={() => setEscolhida(a.slug)}
+                  className={`flex min-h-[60px] flex-col items-start gap-2 rounded-2xl border-2 bg-detox-card p-4 text-left shadow-sm transition-colors ${ativo ? "border-detox-primary" : "border-detox-card-border hover:border-detox-primary/50"}`}
+                >
+                  <span className="font-serif text-base font-bold text-detox-text">{a.titulo}</span>
+                  <span className="flex w-full items-center justify-between gap-2">
+                    <span className="text-sm text-detox-muted">{data}</span>
+                    {st === "live" ? (
+                      <span className="inline-flex items-center gap-1.5 rounded-full bg-destructive px-2.5 py-1 text-xs font-bold uppercase text-destructive-foreground">
+                        <span className="h-2 w-2 rounded-full bg-destructive-foreground motion-safe:animate-pulse" aria-hidden="true" />
+                        Ao vivo
+                      </span>
+                    ) : st === "gravada" ? (
+                      <span className="rounded-full bg-muted-foreground px-2.5 py-1 text-xs font-bold uppercase text-background">Gravada</span>
+                    ) : (
+                      <span className="rounded-full bg-muted px-2.5 py-1 text-xs font-bold uppercase text-muted-foreground">Abre quinta, 19h</span>
+                    )}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        )}
+
+        {!loading && aula && estado !== "futura" && (
+          <div className="mb-4">
+            {estado === "gravada" ? (
+              <p className="text-base text-detox-muted">Aula gravada. Você pode assistir quando quiser.</p>
+            ) : (
+              <div className="inline-flex items-center gap-2 rounded-full bg-destructive px-3 py-2 text-xs font-bold uppercase text-destructive-foreground">
+                <span className="h-2 w-2 rounded-full bg-destructive-foreground motion-safe:animate-pulse" aria-hidden="true" />
+                Ao vivo agora
+              </div>
+            )}
+          </div>
+        )}
 
         {loading ? (
           <div className="grid gap-4 min-[940px]:grid-cols-[minmax(0,1fr)_330px]">
@@ -178,15 +232,22 @@ const Detox = () => {
         ) : aula ? (
           <div className="grid gap-4 min-[940px]:grid-cols-[minmax(0,1fr)_330px]">
             <div className="relative aspect-video overflow-hidden rounded-2xl bg-detox-text shadow-lg min-[940px]:h-[480px] min-[940px]:aspect-auto">
-              {embed ? (
-                <iframe src={embed} title={aula.titulo} allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen className="absolute inset-0 h-full w-full" />
+              {!isLive ? (
+                <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 p-6 text-center text-primary-foreground">
+                  <p className="font-serif text-xl font-bold md:text-2xl">Essa aula começa quinta, 24 de setembro, às 19h.</p>
+                  {startTs && <Countdown target={startTs} />}
+                </div>
+              ) : embed ? (
+                <iframe key={aula.slug} src={embed} title={aula.titulo} allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen className="absolute inset-0 h-full w-full" />
               ) : (
                 <div className="absolute inset-0 flex items-center justify-center text-primary-foreground">URL de vídeo inválida</div>
               )}
-              <span className="absolute left-3 top-3 rounded-[5px] bg-destructive px-2.5 py-1.5 text-xs font-bold text-destructive-foreground">● AO VIVO</span>
-              <a href={aula.youtube_url} target="_blank" rel="noopener noreferrer" className="absolute right-3 top-3 inline-flex items-center gap-1.5 rounded-md bg-detox-text px-2.5 py-1.5 text-xs font-medium text-primary-foreground backdrop-blur transition-opacity hover:opacity-90">
-                <ExternalLink className="h-3.5 w-3.5" /> Ver no YouTube
-              </a>
+              {estado === "live" && <span className="absolute left-3 top-3 rounded-[5px] bg-destructive px-2.5 py-1.5 text-xs font-bold text-destructive-foreground">● AO VIVO</span>}
+              {isLive && (
+                <a href={aula.youtube_url} target="_blank" rel="noopener noreferrer" className="absolute right-3 top-3 inline-flex items-center gap-1.5 rounded-md bg-detox-text px-2.5 py-1.5 text-xs font-medium text-primary-foreground backdrop-blur transition-opacity hover:opacity-90">
+                  <ExternalLink className="h-3.5 w-3.5" /> Ver no YouTube
+                </a>
+              )}
             </div>
             <div className="detox-chat h-[320px] min-h-0 min-[940px]:h-[480px]"><LiveChat slug="detox" /></div>
           </div>
