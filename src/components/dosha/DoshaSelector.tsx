@@ -38,9 +38,24 @@ const DoshaSelector = () => {
         : undefined;
 
   const activeRef = useRef<HTMLAnchorElement>(null);
+  const trilhoRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    activeRef.current?.scrollIntoView({ block: "nearest", inline: "center" });
+    const trilho = trilhoRef.current;
+    const ativo = activeRef.current;
+    if (!trilho || !ativo) return;
+
+    // Centraliza a pílula ativa mexendo SÓ na rolagem horizontal da tira. O
+    // scrollIntoView arrastava a JANELA junto (block: "nearest") e jogava a pessoa pro
+    // topo da biblioteca a cada montagem.
+    const caixaDoTrilho = trilho.getBoundingClientRect();
+    const caixaDaPilula = ativo.getBoundingClientRect();
+    const jaAparece =
+      caixaDaPilula.left >= caixaDoTrilho.left && caixaDaPilula.right <= caixaDoTrilho.right;
+    if (jaAparece) return;
+    const desvio =
+      caixaDaPilula.left + caixaDaPilula.width / 2 - (caixaDoTrilho.left + caixaDoTrilho.width / 2);
+    trilho.scrollLeft += desvio;
   }, [currentDosha]);
 
   return (
