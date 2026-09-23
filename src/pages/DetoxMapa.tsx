@@ -259,7 +259,7 @@ const DetoxMapa = () => {
             <div className="rounded-[32px] border border-detox-card-border bg-detox-card p-6 shadow-detox md:p-8">
               <h3 className="font-serif text-2xl font-bold text-detox-text">Comece pelo seu Teste de Dosha</h3>
               <p className="mt-2 text-sm leading-relaxed text-detox-muted md:text-base">São oito minutos, e é ele que dá sentido às três noites. Não precisa de senha nem de e-mail para começar.</p>
-              <div className="mt-5"><JourneyButton to="/teste-de-dosha">Fazer o meu teste</JourneyButton></div>
+              <div className="mt-5"><JourneyButton to="/teste-de-dosha?redirect=/detox/mapa">Fazer o meu teste</JourneyButton></div>
             </div>
           )}
         </section>
