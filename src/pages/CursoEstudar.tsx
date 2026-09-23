@@ -98,6 +98,14 @@ const youtubeEmbed = (url: string | null | undefined): string | null => {
     if (u.pathname.startsWith("/embed/")) return url;
     if (u.pathname.startsWith("/shorts/"))
       return `https://www.youtube.com/embed/${u.pathname.split("/")[2]}`;
+    if (u.pathname.startsWith("/live/"))
+      return `https://www.youtube.com/embed/${u.pathname.split("/")[2]}`;
+    if (u.hostname === "vimeo.com" || u.hostname === "www.vimeo.com") {
+      const partes = u.pathname.split("/").filter(Boolean);
+      const idVimeo = partes[0];
+      const hashVimeo = partes[1];
+      if (idVimeo) return `https://player.vimeo.com/video/${idVimeo}${hashVimeo ? `?h=${hashVimeo}` : ""}`;
+    }
     return url;
   } catch {
     return url;
