@@ -60,7 +60,7 @@ const DoshaSelector = () => {
 
   return (
     <div className="w-full px-2 sm:px-4 pt-4 pb-1">
-      <div className="flex justify-start sm:justify-center overflow-x-auto scrollbar-hide -mx-2 px-2">
+      <div ref={trilhoRef} className="flex justify-start sm:justify-center overflow-x-auto scrollbar-hide -mx-2 px-2">
         <div className="flex gap-1 sm:gap-2">
           {doshas.map((d) => {
             const isActive = currentDosha === d.key;
