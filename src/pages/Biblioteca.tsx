@@ -45,6 +45,8 @@ const Biblioteca = () => {
     }
     definirPagina(1);
   }, [debouncedSearch, category]);
+
+  // Modo BUSCA — via RPC busca_global
   const searchQuery = useQuery({
     queryKey: ["biblioteca-busca", term],
     queryFn: () => searchAll(term, 12),
@@ -54,9 +56,10 @@ const Biblioteca = () => {
 
   // Modo NAVEGAÇÃO — sem termo
   const browseQuery = useQuery({
-    queryKey: ["biblioteca-browse", category, page],
+    queryKey: ["biblioteca-browse", category, pagina],
+    retry: (falhas: number, erro: any) => erro?.code !== "PGRST103" && falhas < 2,
     queryFn: async () => {
-      const from = (page - 1) * PAGE_SIZE;
+      const from = (pagina - 1) * PAGE_SIZE;
       const to = from + PAGE_SIZE - 1;
 
       if (category === "artigos") {
@@ -86,8 +89,21 @@ const Biblioteca = () => {
 
   const totalPages = Math.max(1, Math.ceil((browseQuery.data?.count ?? 0) / PAGE_SIZE));
 
+  // Endereço pedindo página além do fim: o banco recusa a faixa com o código PGRST103
+  // e nem devolve contagem, então o erro também conta como "passou do fim".
+  useEffect(() => {
+    if (isSearching) return;
+    const erro = browseQuery.error as { code?: string } | null;
+    if (erro?.code === "PGRST103") {
+      definirPagina(1);
+      return;
+    }
+    if (!browseQuery.data) return;
+    if (pagina > totalPages) definirPagina(totalPages);
+  }, [isSearching, browseQuery.error, browseQuery.data, pagina, totalPages]);
+
   const goToPage = (p: number) => {
-    setPage(Math.min(Math.max(1, p), totalPages));
+    definirPagina(Math.min(Math.max(1, p), totalPages));
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -160,7 +176,7 @@ const Biblioteca = () => {
               </div>
             )}
             {totalPages > 1 && (
-              <PaginationControls page={page} totalPages={totalPages} onPageChange={goToPage} />
+              <PaginationControls page={Math.min(pagina, totalPages)} totalPages={totalPages} onPageChange={goToPage} />
             )}
           </>
         ) : (
