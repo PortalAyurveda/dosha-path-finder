@@ -560,7 +560,7 @@ const MinhaRotina = () => {
     setTimeout(() => {
       setConfirmandoPagamento(false);
       if (window.location.search.includes("assinatura=ok")) {
-        window.history.replaceState({}, "", "/minha-rotina");
+        window.history.replaceState(window.history.state, "", "/minha-rotina");
       }
     }, 0);
   }
