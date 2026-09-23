@@ -1,5 +1,5 @@
 import { getTransformedImageUrl } from "@/lib/imageTransform";
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { Helmet } from "react-helmet-async";
 import { useQuery } from "@tanstack/react-query";
 import { Link, useSearchParams } from "react-router-dom";
@@ -11,25 +11,28 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { BLOG_TAGS } from "@/data/blogTags";
 import PaginationControls from "@/components/PaginationControls";
+import { usePaginaUrl } from "@/hooks/usePaginaUrl";
 
 const PAGE_SIZE = 12;
 
 const Blog = () => {
   const [searchParams] = useSearchParams();
   const [searchTerm, setSearchTerm] = useState("");
-  const [isAdvanced, setIsAdvanced] = useState(false);
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  // ?tag= lido no primeiro render. Como efeito de montagem, ele mexia no filtro depois
+  // de montar e disparava o reset de página uma segunda vez.
+  const [isAdvanced, setIsAdvanced] = useState(() => !!searchParams.get("tag"));
+  const [selectedTags, setSelectedTags] = useState<string[]>(() => {
+    const tagDoEndereco = searchParams.get("tag");
+    return tagDoEndereco ? [tagDoEndereco] : [];
+  });
   const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [page, setPage] = useState(1);
-
-  // Read ?tag= from URL on mount
-  useEffect(() => {
-    const tagFromUrl = searchParams.get("tag");
-    if (tagFromUrl) {
-      setSelectedTags([tagFromUrl]);
-      setIsAdvanced(true);
-    }
-  }, []);
+  // A página só mora no endereço quando o endereço descreve a tela. Com busca digitada
+  // ou tag escolhida no clique (que não entram na URL neste passo), ela fica local.
+  const filtroForaDoEndereco =
+    debouncedSearch.trim().length > 0 ||
+    selectedTags.join(",") !== (searchParams.get("tag") ?? "");
+  const [pagina, definirPagina] = usePaginaUrl("pagina", filtroForaDoEndereco);
+  const primeiraMontagem = useRef(true);
 
   useEffect(() => {
     const t = setTimeout(() => setDebouncedSearch(searchTerm), 300);
@@ -69,19 +72,32 @@ const Blog = () => {
     });
   }, [articles, selectedTags]);
 
-  // Reset page when filters/search change
+  // Volta pra página 1 quando busca/filtro mudam — menos na primeira montagem, onde a
+  // página vem do endereço e zerar aqui apagaria ela.
   useEffect(() => {
-    setPage(1);
+    if (primeiraMontagem.current) {
+      primeiraMontagem.current = false;
+      return;
+    }
+    definirPagina(1);
   }, [debouncedSearch, isAdvanced, selectedTags]);
 
   const totalPages = Math.max(1, Math.ceil(filteredArticles.length / PAGE_SIZE));
+  // Endereço pedindo página além do fim (link velho, alguém digitou): mostra a última.
+  const paginaSegura = Math.min(pagina, totalPages);
   const paginatedArticles = useMemo(
-    () => filteredArticles.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE),
-    [filteredArticles, page]
+    () => filteredArticles.slice((paginaSegura - 1) * PAGE_SIZE, paginaSegura * PAGE_SIZE),
+    [filteredArticles, paginaSegura]
   );
 
+  // E corrige o endereço assim que a lista chega.
+  useEffect(() => {
+    if (isLoading) return;
+    if (pagina > totalPages) definirPagina(totalPages);
+  }, [isLoading, pagina, totalPages]);
+
   const goToPage = (p: number) => {
-    setPage(Math.min(Math.max(1, p), totalPages));
+    definirPagina(Math.min(Math.max(1, p), totalPages));
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -232,7 +248,7 @@ const Blog = () => {
 
             {totalPages > 1 && (
               <PaginationControls
-                page={page}
+                page={paginaSegura}
                 totalPages={totalPages}
                 onPageChange={goToPage}
               />

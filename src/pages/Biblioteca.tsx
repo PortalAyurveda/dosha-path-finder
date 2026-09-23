@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -8,6 +8,7 @@ import SearchHeader, { type VideoCategory } from "@/components/biblioteca/Search
 import VideoResultCard from "@/components/biblioteca/VideoResultCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import PaginationControls from "@/components/PaginationControls";
+import { usePaginaUrl } from "@/hooks/usePaginaUrl";
 import Seo from "@/components/Seo";
 import BannerSlot from "@/components/banners/BannerSlot";
 import { getTransformedImageUrl } from "@/lib/imageTransform";
@@ -28,16 +29,22 @@ const Biblioteca = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [category, setCategory] = useState<VideoCategory>("todos");
   const debouncedSearch = useDebounce(searchTerm, 300);
-  const [page, setPage] = useState(1);
-
-  useEffect(() => {
-    setPage(1);
-  }, [debouncedSearch, category]);
-
   const term = debouncedSearch.trim();
   const isSearching = term.length >= 2;
+  // A página só mora no endereço quando o endereço descreve a tela. Com categoria
+  // escolhida ou busca ligada (que não entram na URL neste passo), ela fica local.
+  const filtroForaDoEndereco = category !== "todos" || isSearching;
+  const [pagina, definirPagina] = usePaginaUrl("pagina", filtroForaDoEndereco);
+  const primeiraMontagem = useRef(true);
 
-  // Modo BUSCA — via RPC busca_global
+  useEffect(() => {
+    // Na primeira montagem a página vem do endereço; zerar aqui apagaria ela.
+    if (primeiraMontagem.current) {
+      primeiraMontagem.current = false;
+      return;
+    }
+    definirPagina(1);
+  }, [debouncedSearch, category]);
   const searchQuery = useQuery({
     queryKey: ["biblioteca-busca", term],
     queryFn: () => searchAll(term, 12),
