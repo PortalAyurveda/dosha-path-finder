@@ -578,6 +578,7 @@ const CursoEstudar = () => {
   const [notFound, setNotFound] = useState(false);
   const [salvando, setSalvando] = useState(false);
   const [moduloAberto, setModuloAberto] = useState(null as string | null);
+  const [posicoes, setPosicoes] = useState({} as { [aulaId: string]: Posicao });
 
   const carregarCertificado = async (cursoId: string) => {
     const { data } = await supabase.rpc("obter_certificado_curso", { p_curso_id: cursoId });
@@ -662,6 +663,14 @@ const CursoEstudar = () => {
           .select("aula_id")
           .eq("user_id", user.id);
         setConcluidas(new Set((prog ?? []).map((p: any) => p.aula_id)));
+
+        const { data: pos } = await supabase
+          .from("curso_aula_posicao" as any)
+          .select("aula_id,segundos,duracao_segundos,atualizado_em")
+          .eq("user_id", user.id);
+        const mapa = {} as { [aulaId: string]: Posicao };
+        for (const p of ((pos ?? []) as any[])) mapa[p.aula_id] = p as Posicao;
+        setPosicoes(mapa);
       }
 
       setLoading(false);
@@ -685,7 +694,10 @@ const CursoEstudar = () => {
   const totalConcluidas = aulasOrdenadas.filter((a) => concluidas.has(a.id)).length;
   const pct = totalAulas ? Math.round((totalConcluidas / totalAulas) * 100) : 0;
 
-  const primeiraNaoConcluida = aulasOrdenadas.find((a) => !concluidas.has(a.id)) ?? aulasOrdenadas[0];
+  const ultimaVista = aulasOrdenadas
+    .filter((a) => posicoes[a.id] && !concluidas.has(a.id))
+    .sort((a, b) => (posicoes[b.id].atualizado_em > posicoes[a.id].atualizado_em ? 1 : -1))[0];
+  const primeiraNaoConcluida = ultimaVista ?? aulasOrdenadas.find((a) => !concluidas.has(a.id)) ?? aulasOrdenadas[0];
   const aulaSelecionadaId = searchParams.get("aula") ?? primeiraNaoConcluida?.id ?? null;
   const aulaAtual = useMemo(
     () => aulasOrdenadas.find((a) => a.id === aulaSelecionadaId) ?? null,
