@@ -64,7 +64,7 @@ export function useEscolaAluno(): Result {
     return () => {
       cancelled = true;
     };
-  }, [user, authLoading]);
+  }, [user?.id, user?.email, authLoading]);
 
   return {
     loading: authLoading || loading,

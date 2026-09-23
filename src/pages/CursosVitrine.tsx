@@ -244,7 +244,7 @@ const CursosVitrine = () => {
       }
       setLoading(false);
     })();
-  }, [user]);
+  }, [user?.id]);
 
   const LANDING_PROPRIA: Record<string, string> = {
     "rotinas-diarias": "/curso/rotinas",
