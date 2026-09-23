@@ -321,6 +321,7 @@ const DetoxMapa = () => {
     pitta: doshaResult?.pittascore ?? 0,
     kapha: doshaResult?.kaphascore ?? 0,
   };
+  const tagsDoDosha = doshaKey === "vata" ? agni?.agravVataTags : doshaKey === "pitta" ? agni?.agravPittaTags : agni?.agravKaphaTags;
 
   return (
     <div className="detox-theme min-h-screen bg-detox-page text-detox-text" style={DETOX_THEME}>
@@ -422,9 +423,120 @@ const DetoxMapa = () => {
           </div>
         </section>
 
-        <LockedNight eyebrow="Noite 2" badge="Abre amanhã, 19h" title="A leitura da sua língua">
-          Abre na <strong>quarta, 23 de setembro, às 19h</strong>. O que você escreveu hoje continua aqui.
-        </LockedNight>
+        <section className="border-t border-detox-divider pt-[26px]">
+          <SectionHeading eyebrow="Noite 2" badge="Aberta hoje" title="A leitura da sua língua">
+            <p className="mt-2 text-sm leading-relaxed text-detox-muted md:text-base">
+              Hoje você bate a foto da sua língua, marca o que está vendo, e o seu mapa ganha uma bússola. Todo mundo produz ama, todo mundo acumula. O que a gente quer aqui é enxergar onde.
+            </p>
+          </SectionHeading>
+
+          <div className="space-y-[26px]">
+            <div className="rounded-[32px] border border-detox-card-border bg-detox-card p-6 shadow-detox md:p-8">
+              <h3 className="font-serif text-xl font-bold text-detox-text md:text-2xl">1. A foto da sua língua</h3>
+              <p className="mt-2 text-sm leading-relaxed text-detox-muted md:text-base">
+                Vá para perto de uma janela ou de uma luz boa. Ponha a língua bem para fora, bem para fora mesmo. Uma foto só, do jeito que der.
+              </p>
+
+              {fotoPath && fotoUrl && !subindoFoto ? (
+                <div className="mt-5">
+                  <img src={fotoUrl} alt="A foto da sua língua" className="max-h-[260px] w-auto rounded-[16px]" />
+                  <p className="mt-3 text-sm text-detox-muted">Guardada. Só você vê essa foto.</p>
+                  <label className="mt-4 inline-flex min-h-[60px] cursor-pointer items-center justify-center rounded-full border-2 border-detox-purple px-7 text-sm font-bold uppercase text-detox-purple hover:bg-detox-light">
+                    Trocar a foto
+                    <input type="file" accept="image/*" className="sr-only" onChange={(e) => { void enviarFoto(e.target.files?.[0]); e.target.value = ""; }} />
+                  </label>
+                </div>
+              ) : (
+                <div className="mt-5 space-y-3">
+                  <label className={`flex min-h-[60px] w-full cursor-pointer items-center justify-center gap-2 rounded-full bg-detox-primary px-7 text-sm font-bold uppercase text-primary-foreground hover:bg-detox-dark ${subindoFoto ? "pointer-events-none opacity-70" : ""}`}>
+                    {subindoFoto ? <><Loader2 className="h-4 w-4 animate-spin" /> Guardando a sua foto…</> : "Tirar a foto agora"}
+                    <input type="file" accept="image/*" capture="user" className="sr-only" onChange={(e) => { void enviarFoto(e.target.files?.[0]); e.target.value = ""; }} />
+                  </label>
+                  <label className={`flex min-h-[60px] w-full cursor-pointer items-center justify-center rounded-full border-2 border-detox-purple px-7 text-sm font-bold uppercase text-detox-purple hover:bg-detox-light ${subindoFoto ? "pointer-events-none opacity-70" : ""}`}>
+                    Escolher uma foto do celular
+                    <input type="file" accept="image/*" className="sr-only" onChange={(e) => { void enviarFoto(e.target.files?.[0]); e.target.value = ""; }} />
+                  </label>
+                </div>
+              )}
+              {erroFoto && <p className="mt-3 text-sm font-semibold text-destructive">Não consegui guardar a foto. Tente de novo.</p>}
+            </div>
+
+            <div className="rounded-[32px] border border-detox-card-border bg-detox-card p-6 shadow-detox md:p-8">
+              <h3 className="font-serif text-xl font-bold text-detox-text md:text-2xl">2. O que você está vendo</h3>
+              <p className="mt-2 text-sm leading-relaxed text-detox-muted md:text-base">
+                Olhe a sua foto e marque o que você reconhece. Pode marcar quantas quiser, ou nenhuma. Três coisas dessa lista são o normal, e elas estão aqui de propósito.
+              </p>
+
+              <div className="mt-6 space-y-6">
+                {MARCA_GRUPOS.map((grupo) => (
+                  <div key={grupo.titulo}>
+                    <p className="text-xs font-bold uppercase text-detox-dark">{grupo.titulo}</p>
+                    <div className="mt-3 space-y-2">
+                      {grupo.opcoes.map((opcao) => {
+                        const ativo = marcas.includes(opcao.slug);
+                        return (
+                          <button
+                            key={opcao.slug}
+                            type="button"
+                            aria-pressed={ativo}
+                            onClick={() => alternarMarca(opcao.slug)}
+                            className={`flex min-h-[60px] w-full items-center justify-between gap-3 rounded-[10px] border-[1.5px] px-4 py-3 text-left text-base leading-snug transition-colors ${ativo ? "border-detox-primary bg-detox-primary-soft text-detox-text" : "border-detox-field-border bg-detox-card text-detox-text hover:border-detox-primary"}`}
+                          >
+                            <span className="flex items-center gap-3">
+                              <span className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-[5px] border-2 ${ativo ? "border-detox-primary bg-detox-primary text-primary-foreground" : "border-detox-field-border"}`}>
+                                {ativo && <Check className="h-3 w-3" aria-hidden="true" />}
+                              </span>
+                              {opcao.texto}
+                            </span>
+                            {opcao.normal && <span className="shrink-0 rounded-full bg-kapha-1 px-3 py-1 text-xs font-bold text-kapha-5">Normal</span>}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-8 flex flex-col gap-5 border-t border-detox-divider pt-6 sm:flex-row sm:items-center sm:justify-between">
+                <p className="flex items-center gap-2 text-sm leading-relaxed text-detox-muted">
+                  {leituraSalva && <Check className="h-4 w-4 shrink-0 text-detox-dark" aria-hidden="true" />}
+                  Salva sozinho enquanto você marca.
+                </p>
+                <Button onClick={() => void salvarLeitura()} disabled={salvandoLeitura} className="min-h-[60px] shrink-0 rounded-full bg-detox-primary px-7 text-sm font-bold uppercase text-primary-foreground hover:bg-detox-dark">
+                  {salvandoLeitura && <Loader2 className="h-4 w-4 animate-spin" />} Salvar a minha leitura
+                </Button>
+              </div>
+            </div>
+
+            <div className="rounded-[32px] border border-detox-card-border bg-detox-card p-6 shadow-detox md:p-8">
+              <h3 className="font-serif text-xl font-bold text-detox-text md:text-2xl">3. A sua bússola</h3>
+              {doshaResult ? (
+                <>
+                  <p className="mt-2 text-sm leading-relaxed text-detox-muted md:text-base">
+                    Isso aqui já estava no seu teste de dosha. Agora ele vira um caminho.
+                  </p>
+                  <div className="mt-6">
+                    <Suspense fallback={<Skeleton className="h-64 w-full" />}>
+                      <BussolaDetox dosha={doshaKey} scores={scores} tags={tagsDoDosha} marcas={marcas} />
+                    </Suspense>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <p className="mt-4 font-serif text-xl font-bold text-detox-text">Comece pelo seu Teste de Dosha</p>
+                  <p className="mt-2 text-sm leading-relaxed text-detox-muted md:text-base">
+                    São oito minutos, e é ele que dá sentido às três noites. Não precisa de senha nem de e-mail para começar.
+                  </p>
+                  <div className="mt-5"><JourneyButton to="/teste-de-dosha?redirect=/detox/mapa">Fazer o meu teste</JourneyButton></div>
+                </>
+              )}
+            </div>
+
+            <p className="text-sm leading-relaxed text-detox-muted md:text-base">
+              O que fazer com isso é a noite 3, quinta, 24 de setembro, às 19h.
+            </p>
+          </div>
+        </section>
 
         <LockedNight eyebrow="Noite 3" badge="Abre quinta, 19h" title="O seu caminho">
           Abre na <strong>quinta, 24 de setembro, às 19h</strong>. Depende das duas noites anteriores, por isso vem por último.
