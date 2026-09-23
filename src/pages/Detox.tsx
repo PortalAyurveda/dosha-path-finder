@@ -154,7 +154,19 @@ const Detox = () => {
   const startTs = useMemo(() => aula?.starts_at ? new Date(aula.starts_at).getTime() : null, [aula?.starts_at]);
   const embed = aula ? getYouTubeEmbedUrl(aula.youtube_url) : null;
   const estado = aula ? estadoDe(aula) : "gravada";
-  const mostraPlayer = estado !== "futura";
+  const mostraPlayer = estado === "live" || estado === "gravada";
+  const videoId = aula ? getYouTubeVideoId(aula.youtube_url) : null;
+
+  useEffect(() => {
+    setThumbStage(0);
+  }, [videoId]);
+
+  const capaSrc =
+    videoId && thumbStage === 0
+      ? `https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg`
+      : videoId && thumbStage === 1
+        ? `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`
+        : null;
   const principal = (doshaResult?.doshaprincipal?.split("-")[0]?.trim().toLowerCase() || "vata") as DoshaNome;
   const score = principal === "vata" ? doshaResult?.vatascore : principal === "pitta" ? doshaResult?.pittascore : doshaResult?.kaphascore;
   const emailPrefix = user?.email?.split("@")[0]?.trim().toLocaleLowerCase("pt-BR") || "";
@@ -262,9 +274,22 @@ const Detox = () => {
           <div className="grid gap-4 min-[940px]:grid-cols-[minmax(0,1fr)_330px]">
             <div className="relative aspect-video overflow-hidden rounded-2xl bg-detox-text shadow-lg min-[940px]:h-[480px] min-[940px]:aspect-auto">
               {!mostraPlayer ? (
-                <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 p-6 text-center text-primary-foreground">
-                  <p className="font-serif text-xl font-bold md:text-2xl">Essa aula começa quinta, 24 de setembro, às 19h.</p>
-                  {startTs && <Countdown target={startTs} />}
+                <div className="absolute inset-0">
+                  {capaSrc && (
+                    <img
+                      src={capaSrc}
+                      alt=""
+                      onError={() => setThumbStage((s) => s + 1)}
+                      className="absolute inset-0 h-full w-full object-cover"
+                    />
+                  )}
+                  <div className="absolute inset-0 bg-detox-text/70" aria-hidden="true" />
+                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 p-6 text-center text-primary-foreground">
+                    <p className="font-serif text-xl font-bold md:text-2xl">
+                      {estado === "hoje" ? "Essa aula começa hoje, às 19h." : "Essa aula começa quinta, 24 de setembro, às 19h."}
+                    </p>
+                    {startTs && <Countdown target={startTs} />}
+                  </div>
                 </div>
               ) : embed ? (
                 <iframe key={aula.slug} src={embed} title={aula.titulo} allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen className="absolute inset-0 h-full w-full" />
