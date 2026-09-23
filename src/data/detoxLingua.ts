@@ -11,7 +11,7 @@ export type PerguntaLingua = {
 };
 
 const op = (textos: string[], normal?: string): MarcaOpcao[] =>
-  textos.map((texto) => ({ slug: normalizar(texto).replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, ""), texto, normal: texto === normal || undefined }));
+  textos.map((texto) => ({ slug: texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, ""), texto, normal: texto === normal || undefined }));
 
 export const PERGUNTAS_LINGUA: PerguntaLingua[] = [
   { chave: "cor", titulo: "Cor", tipo: "unica", opcoes: op(["rosa", "pálida ou branca", "vermelha", "amarelada", "arroxeada ou azulada", "acinzentada", "amarronzada"], "rosa") },
