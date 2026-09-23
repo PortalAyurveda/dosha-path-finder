@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { useQuery } from "@tanstack/react-query";
@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { akashaSlug } from "@/lib/akashaSlug";
 import { Input } from "@/components/ui/input";
 import PaginationControls from "@/components/PaginationControls";
+import { usePaginaUrl } from "@/hooks/usePaginaUrl";
 
 const PRIMARY = "#352F54";
 const AKASHA = "#9b73ad";
@@ -72,14 +73,22 @@ const useDebounced = <T,>(value: T, delay = 300) => {
 };
 
 const RegistrosAkashikos = () => {
-  const [page, setPage] = useState(1);
   const [query, setQuery] = useState("");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const debouncedQuery = useDebounced(query, 300);
+  // A página só mora no endereço quando o endereço descreve a tela. Com busca digitada
+  // ou tag marcada (que não entram na URL neste passo), ela fica local.
+  const filtroForaDoEndereco = debouncedQuery.trim().length > 0 || selectedTags.length > 0;
+  const [pagina, definirPagina] = usePaginaUrl("pagina", filtroForaDoEndereco);
+  const primeiraMontagem = useRef(true);
 
-  // reset page on filter change
+  // reset page on filter change — menos na primeira montagem, onde a página vem do endereço
   useEffect(() => {
-    setPage(1);
+    if (primeiraMontagem.current) {
+      primeiraMontagem.current = false;
+      return;
+    }
+    definirPagina(1);
   }, [debouncedQuery, selectedTags]);
 
   // Tags inventory
@@ -97,8 +106,9 @@ const RegistrosAkashikos = () => {
     staleTime: 10 * 60 * 1000,
   });
 
-  const { data, isLoading } = useQuery({
-    queryKey: ["registros_akashikos_list", debouncedQuery, selectedTags, page],
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["registros_akashikos_list", debouncedQuery, selectedTags, pagina],
+    retry: (falhas: number, erro: any) => erro?.code !== "PGRST103" && falhas < 2,
     queryFn: async () => {
       let q = supabase
         .from("registros_akashikos_publicos")
@@ -117,7 +127,7 @@ const RegistrosAkashikos = () => {
         q = q.or(tagFilter);
       }
 
-      const from = (page - 1) * PAGE_SIZE;
+      const from = (pagina - 1) * PAGE_SIZE;
       const to = from + PAGE_SIZE - 1;
 
       const { data, error, count } = await q
@@ -133,6 +143,18 @@ const RegistrosAkashikos = () => {
     () => Math.max(1, Math.ceil((data?.count ?? 0) / PAGE_SIZE)),
     [data?.count]
   );
+
+  // Endereço pedindo página além do fim: o banco recusa a faixa com o código PGRST103
+  // e nem devolve contagem, então o erro também conta como "passou do fim".
+  useEffect(() => {
+    const erro = error as { code?: string } | null;
+    if (erro?.code === "PGRST103") {
+      definirPagina(1);
+      return;
+    }
+    if (!data) return;
+    if (pagina > totalPages) definirPagina(totalPages);
+  }, [error, data, pagina, totalPages]);
 
   const toggleTag = (tag: string) => {
     setSelectedTags((prev) =>
@@ -317,7 +339,7 @@ const RegistrosAkashikos = () => {
           </div>
 
           {totalPages > 1 && (
-            <PaginationControls page={page} totalPages={totalPages} onPageChange={setPage} />
+            <PaginationControls page={Math.min(pagina, totalPages)} totalPages={totalPages} onPageChange={definirPagina} />
           )}
         </div>
       </main>
