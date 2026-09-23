@@ -11,8 +11,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { ensureAnonSession, currentUserId } from "@/lib/anonSession";
 import { getFaixa, type DoshaNome } from "@/data/doshaLevels";
 import { getPalette } from "@/data/landingPalettes";
+import { MARCA_GRUPOS } from "@/data/detoxLingua";
+import { optimizeImageToJpeg } from "@/lib/imageOptimize";
 
 const DoshaPieChart = lazy(() => import("@/components/charts/DoshaPieChart"));
+const BussolaDetox = lazy(() => import("@/components/detox/BussolaDetox"));
 const DETOX_PALETTE = getPalette("detox-primavera");
 const DETOX_THEME = {
   "--detox-primary": DETOX_PALETTE.branding.primaryColor,
@@ -32,6 +35,9 @@ type AgniData = {
   agnifraco: number | null;
   agniirregular: number | null;
   email?: string | null;
+  agravVataTags?: string | null;
+  agravPittaTags?: string | null;
+  agravKaphaTags?: string | null;
 };
 
 const EMPTY_ANSWERS: Respostas = { q1: "", q2: "", q3: "" };
