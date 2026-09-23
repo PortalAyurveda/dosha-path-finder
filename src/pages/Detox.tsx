@@ -130,10 +130,17 @@ const Detox = () => {
     ? `${firstName}, ${principal[0].toUpperCase()}${principal.slice(1)} em ${getFaixa(principal, score).toLowerCase()}`
     : "Seu mapa está pronto";
 
+  const terceiroPasso =
+    noite === 1
+      ? { title: "Volte amanhã e quinta", text: "As noites 2 e 3 abrem às 19h." }
+      : noite === 2
+        ? { title: "Volte amanhã", text: "A noite 3 abre quinta, às 19h." }
+        : { title: "O seu caminho está montado", text: "Tudo o que você respondeu está no seu mapa." };
+
   const guideSteps = [
     { icon: PlayCircle, title: `Assista a noite ${noite}`, text: "É agora, aqui mesmo." },
     { icon: PenLine, title: "Responda as três perguntas", text: "Ficam salvas na sua conta." },
-    { icon: CalendarDays, title: "Volte amanhã e quinta", text: "As noites 2 e 3 abrem às 19h." },
+    { icon: CalendarDays, ...terceiroPasso },
   ];
 
   return (
