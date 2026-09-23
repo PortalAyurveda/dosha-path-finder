@@ -307,7 +307,15 @@ const DetoxMapa = () => {
     leituraMexida.current = true;
     setLeituraSalva(false);
     setLeitura((atual) => {
-      if (tipo === "unica") return { ...atual, [chave]: atual[chave] === slug ? null : slug };
+      if (tipo === "unica") {
+        const novo = { ...atual, [chave]: atual[chave] === slug ? null : slug };
+        // Sem muco, some a cor e o onde, e o que estava marcado ali é limpo.
+        if (chave === "muco" && !temMuco(novo.muco)) {
+          novo.muco_cor = null;
+          novo.muco_onde = [];
+        }
+        return novo;
+      }
       const lista = Array.isArray(atual[chave]) ? (atual[chave] as string[]) : [];
       return { ...atual, [chave]: lista.includes(slug) ? lista.filter((m) => m !== slug) : [...lista, slug] };
     });
