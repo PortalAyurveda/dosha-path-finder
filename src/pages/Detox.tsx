@@ -118,18 +118,29 @@ const Detox = () => {
     return () => { active = false; };
   }, []);
 
-  const slugAtivo = escolhida ?? `detox-n${noite}`;
-  const aula = aulas.find((a) => a.slug === slugAtivo) ?? aulas[0] ?? null;
   const diaSP = (ts: number) => new Date(ts).toLocaleDateString("en-CA", { timeZone: "America/Sao_Paulo" });
   const estadoDe = (a: DetoxAula) => {
     const ts = a.starts_at ? new Date(a.starts_at).getTime() : null;
-    if (ts === null || now >= ts) return ts !== null && diaSP(ts) === diaSP(now) ? "live" : "gravada";
+    if (ts === null) return "gravada";
+    const diaDaAula = diaSP(ts);
+    const hoje = diaSP(now);
+    if (diaDaAula < hoje) return "gravada";
+    if (diaDaAula === hoje) return now >= ts ? "live" : "hoje";
     return "futura";
   };
+  const aulaPadrao = useMemo(() => {
+    const hoje = diaSP(now);
+    const aulaDeHoje = aulas.find((item) => item.starts_at && diaSP(new Date(item.starts_at).getTime()) === hoje);
+    if (aulaDeHoje) return aulaDeHoje;
+
+    const passadas = aulas.filter((item) => item.starts_at && new Date(item.starts_at).getTime() < now);
+    return passadas.at(-1) ?? aulas[0] ?? null;
+  }, [aulas, now]);
+  const aula = aulas.find((a) => a.slug === escolhida) ?? aulaPadrao;
   const startTs = useMemo(() => aula?.starts_at ? new Date(aula.starts_at).getTime() : null, [aula?.starts_at]);
   const embed = aula ? getYouTubeEmbedUrl(aula.youtube_url) : null;
   const estado = aula ? estadoDe(aula) : "gravada";
-  const isLive = estado !== "futura";
+  const mostraPlayer = estado !== "futura";
   const principal = (doshaResult?.doshaprincipal?.split("-")[0]?.trim().toLowerCase() || "vata") as DoshaNome;
   const score = principal === "vata" ? doshaResult?.vatascore : principal === "pitta" ? doshaResult?.pittascore : doshaResult?.kaphascore;
   const emailPrefix = user?.email?.split("@")[0]?.trim().toLocaleLowerCase("pt-BR") || "";
@@ -199,6 +210,8 @@ const Detox = () => {
                         <span className="h-2 w-2 rounded-full bg-destructive-foreground motion-safe:animate-pulse" aria-hidden="true" />
                         Ao vivo
                       </span>
+                    ) : st === "hoje" ? (
+                      <span className="rounded-full bg-detox-primary px-2.5 py-1 text-xs font-bold uppercase text-primary-foreground">Começa hoje, 19h</span>
                     ) : st === "gravada" ? (
                       <span className="rounded-full bg-muted-foreground px-2.5 py-1 text-xs font-bold uppercase text-background">Gravada</span>
                     ) : (
@@ -215,12 +228,14 @@ const Detox = () => {
           <div className="mb-4">
             {estado === "gravada" ? (
               <p className="text-base text-detox-muted">Aula gravada. Você pode assistir quando quiser.</p>
-            ) : (
+            ) : estado === "live" ? (
               <div className="inline-flex items-center gap-2 rounded-full bg-destructive px-3 py-2 text-xs font-bold uppercase text-destructive-foreground">
                 <span className="h-2 w-2 rounded-full bg-destructive-foreground motion-safe:animate-pulse" aria-hidden="true" />
                 Ao vivo agora
               </div>
-            )}
+            ) : startTs ? (
+              <Countdown target={startTs} />
+            ) : null}
           </div>
         )}
 
@@ -232,7 +247,7 @@ const Detox = () => {
         ) : aula ? (
           <div className="grid gap-4 min-[940px]:grid-cols-[minmax(0,1fr)_330px]">
             <div className="relative aspect-video overflow-hidden rounded-2xl bg-detox-text shadow-lg min-[940px]:h-[480px] min-[940px]:aspect-auto">
-              {!isLive ? (
+              {!mostraPlayer ? (
                 <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 p-6 text-center text-primary-foreground">
                   <p className="font-serif text-xl font-bold md:text-2xl">Essa aula começa quinta, 24 de setembro, às 19h.</p>
                   {startTs && <Countdown target={startTs} />}
@@ -243,7 +258,7 @@ const Detox = () => {
                 <div className="absolute inset-0 flex items-center justify-center text-primary-foreground">URL de vídeo inválida</div>
               )}
               {estado === "live" && <span className="absolute left-3 top-3 rounded-[5px] bg-destructive px-2.5 py-1.5 text-xs font-bold text-destructive-foreground">● AO VIVO</span>}
-              {isLive && (
+              {mostraPlayer && (
                 <a href={aula.youtube_url} target="_blank" rel="noopener noreferrer" className="absolute right-3 top-3 inline-flex items-center gap-1.5 rounded-md bg-detox-text px-2.5 py-1.5 text-xs font-medium text-primary-foreground backdrop-blur transition-opacity hover:opacity-90">
                   <ExternalLink className="h-3.5 w-3.5" /> Ver no YouTube
                 </a>
