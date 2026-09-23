@@ -454,7 +454,7 @@ const [step, setStep] = useState(0);
         body: JSON.stringify(webhookPayload),
       }).catch(() => {});
 
-      setInterstitialTarget(`/meu-dosha?id=${idPublico}`);
+      setInterstitialTarget(redirectDepois ?? `/meu-dosha?id=${idPublico}`);
     } catch (err: any) {
       console.error(err);
       toast({ title: "Erro ao salvar", description: err.message || "Tente novamente.", variant: "destructive" });

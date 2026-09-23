@@ -352,6 +352,51 @@ const FormacaoDestaqueCard = () => {
   );
 };
 
+// Aviso da Jornada da Primavera — some sozinho depois de 25/09/2026 23h59 (Brasília)
+const JORNADA_FIM = new Date("2026-09-25T23:59:59-03:00").getTime();
+
+const JornadaDestaqueCard = () => {
+  const { doshaResult } = useUser();
+  if (!doshaResult || Date.now() >= JORNADA_FIM) return null;
+  const theme = getPaletteBranding("detox-primavera");
+
+  return (
+    <div
+      className="relative overflow-hidden rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm border bg-white"
+      style={{ borderColor: `${theme.primaryColor}33` }}
+    >
+      <div
+        className="absolute top-0 left-0 right-0 h-1.5"
+        style={{ background: theme.primaryColor }}
+      />
+      <img
+        src="https://api.portalayurveda.com/storage/v1/object/public/portal_images/simbolo-positivo-mono.webp"
+        alt=""
+        aria-hidden
+        className="absolute right-0 top-1/2 -translate-y-1/2 h-[110%] w-auto opacity-[0.09] pointer-events-none"
+        loading="lazy" decoding="async" />
+      <div className="relative p-5 md:p-6 space-y-3">
+        <div className="flex items-center gap-2 text-xs uppercase tracking-wider" style={{ color: theme.primaryColor }}>
+          <CalendarDays className="w-3.5 h-3.5" />
+          <span>Jornada da Primavera</span>
+        </div>
+        <p className="text-sm leading-relaxed" style={{ color: theme.darkColor }}>
+          Você está na Jornada da Primavera. As perguntas das três noites ficam no seu mapa.
+        </p>
+        <Button
+          asChild
+          className="rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm h-11 px-5"
+          style={{ background: theme.primaryColor, color: "#fff" }}
+        >
+          <Link to="/detox/mapa">
+            Abrir meu mapa da Jornada <ChevronRight className="w-4 h-4" />
+          </Link>
+        </Button>
+      </div>
+    </div>
+  );
+};
+
 // Mini card compacto da caminhada — 1 linha, link p/ /meu-perfil
 const MiniCaminhadaCard = () => {
   const { user } = useUser();
