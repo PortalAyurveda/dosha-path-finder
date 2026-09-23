@@ -203,7 +203,8 @@ const PlayerYoutube = ({ videoId, inicio, onTempo }: PlayerYoutubeProps) => {
             } else if (e.data === 0) {
               pararTimer();
               const p = playerRef.current;
-              onTempoRef.current(0, Math.floor((p && typeof p.getDuration === "function" && p.getDuration()) || 0));
+              const dur = Math.floor((p && typeof p.getDuration === "function" && p.getDuration()) || 0);
+              onTempoRef.current(dur, dur);
             }
           },
         },
@@ -790,6 +791,16 @@ const CursoEstudar = () => {
       p_segundos: segundos,
       p_duracao_segundos: duracao || null,
     });
+    // Terminou o vídeo (ou passou de 90%): marca como concluída sozinha, sem tirar o botão manual.
+    if (duracao > 0 && segundos >= duracao * 0.9 && !concluidas.has(aulaId)) {
+      const { error } = await supabase
+        .from("curso_aula_progresso")
+        .insert({ user_id: user.id, aula_id: aulaId });
+      if (!error) {
+        setConcluidas((prev) => new Set([...prev, aulaId]));
+        if (curso) carregarCertificado(curso.id);
+      }
+    }
   };
 
   if (!authLoading && !user) {
