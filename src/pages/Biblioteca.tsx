@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -8,6 +8,7 @@ import SearchHeader, { type VideoCategory } from "@/components/biblioteca/Search
 import VideoResultCard from "@/components/biblioteca/VideoResultCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import PaginationControls from "@/components/PaginationControls";
+import { usePaginaUrl } from "@/hooks/usePaginaUrl";
 import Seo from "@/components/Seo";
 import BannerSlot from "@/components/banners/BannerSlot";
 import { getTransformedImageUrl } from "@/lib/imageTransform";
@@ -28,14 +29,22 @@ const Biblioteca = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [category, setCategory] = useState<VideoCategory>("todos");
   const debouncedSearch = useDebounce(searchTerm, 300);
-  const [page, setPage] = useState(1);
-
-  useEffect(() => {
-    setPage(1);
-  }, [debouncedSearch, category]);
-
   const term = debouncedSearch.trim();
   const isSearching = term.length >= 2;
+  // A página só mora no endereço quando o endereço descreve a tela. Com categoria
+  // escolhida ou busca ligada (que não entram na URL neste passo), ela fica local.
+  const filtroForaDoEndereco = category !== "todos" || isSearching;
+  const [pagina, definirPagina] = usePaginaUrl("pagina", filtroForaDoEndereco);
+  const primeiraMontagem = useRef(true);
+
+  useEffect(() => {
+    // Na primeira montagem a página vem do endereço; zerar aqui apagaria ela.
+    if (primeiraMontagem.current) {
+      primeiraMontagem.current = false;
+      return;
+    }
+    definirPagina(1);
+  }, [debouncedSearch, category]);
 
   // Modo BUSCA — via RPC busca_global
   const searchQuery = useQuery({
@@ -47,9 +56,10 @@ const Biblioteca = () => {
 
   // Modo NAVEGAÇÃO — sem termo
   const browseQuery = useQuery({
-    queryKey: ["biblioteca-browse", category, page],
+    queryKey: ["biblioteca-browse", category, pagina],
+    retry: (falhas: number, erro: any) => erro?.code !== "PGRST103" && falhas < 2,
     queryFn: async () => {
-      const from = (page - 1) * PAGE_SIZE;
+      const from = (pagina - 1) * PAGE_SIZE;
       const to = from + PAGE_SIZE - 1;
 
       if (category === "artigos") {
@@ -79,8 +89,21 @@ const Biblioteca = () => {
 
   const totalPages = Math.max(1, Math.ceil((browseQuery.data?.count ?? 0) / PAGE_SIZE));
 
+  // Endereço pedindo página além do fim: o banco recusa a faixa com o código PGRST103
+  // e nem devolve contagem, então o erro também conta como "passou do fim".
+  useEffect(() => {
+    if (isSearching) return;
+    const erro = browseQuery.error as { code?: string } | null;
+    if (erro?.code === "PGRST103") {
+      definirPagina(1);
+      return;
+    }
+    if (!browseQuery.data) return;
+    if (pagina > totalPages) definirPagina(totalPages);
+  }, [isSearching, browseQuery.error, browseQuery.data, pagina, totalPages]);
+
   const goToPage = (p: number) => {
-    setPage(Math.min(Math.max(1, p), totalPages));
+    definirPagina(Math.min(Math.max(1, p), totalPages));
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -153,7 +176,7 @@ const Biblioteca = () => {
               </div>
             )}
             {totalPages > 1 && (
-              <PaginationControls page={page} totalPages={totalPages} onPageChange={goToPage} />
+              <PaginationControls page={Math.min(pagina, totalPages)} totalPages={totalPages} onPageChange={goToPage} />
             )}
           </>
         ) : (
