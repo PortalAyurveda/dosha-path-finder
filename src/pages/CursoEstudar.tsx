@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, Navigate, useParams, useSearchParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { supabase } from "@/integrations/supabase/client";
@@ -120,6 +120,112 @@ const limparLink = (v: string | null): string | null => {
   const s = v.replace(invisiveis, "").trim();
   return s || null;
 };
+
+const youtubeIdDe = (embedUrl: string | null): string | null => {
+  if (!embedUrl) return null;
+  try {
+    const u = new URL(embedUrl);
+    if (!u.hostname.includes("youtube.com") || !u.pathname.startsWith("/embed/")) return null;
+    const id = u.pathname.split("/")[2];
+    return id ? id.split("?")[0] : null;
+  } catch {
+    return null;
+  }
+};
+
+let promessaApiYoutube: any = null;
+
+const carregarApiYoutube = () => {
+  if (promessaApiYoutube) return promessaApiYoutube;
+  promessaApiYoutube = new Promise((resolve) => {
+    const w = window as any;
+    if (w.YT && w.YT.Player) {
+      resolve(w.YT);
+      return;
+    }
+    const anterior = w.onYouTubeIframeAPIReady;
+    w.onYouTubeIframeAPIReady = () => {
+      if (typeof anterior === "function") anterior();
+      resolve(w.YT);
+    };
+    if (!document.querySelector('script[src="https://www.youtube.com/iframe_api"]')) {
+      const s = document.createElement("script");
+      s.src = "https://www.youtube.com/iframe_api";
+      s.async = true;
+      document.head.appendChild(s);
+    }
+  });
+  return promessaApiYoutube;
+};
+
+type PlayerYoutubeProps = {
+  videoId: string;
+  inicio: number;
+  onTempo: (segundos: number, duracao: number) => void;
+};
+
+const PlayerYoutube = ({ videoId, inicio, onTempo }: PlayerYoutubeProps) => {
+  const caixaRef = useRef<HTMLDivElement>(null);
+  const playerRef = useRef<any>(null);
+  const timerRef = useRef<any>(null);
+  const onTempoRef = useRef(onTempo);
+  onTempoRef.current = onTempo;
+
+  useEffect(() => {
+    let cancelado = false;
+
+    const pararTimer = () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+    };
+
+    const reportar = () => {
+      const p = playerRef.current;
+      if (!p || typeof p.getCurrentTime !== "function") return;
+      onTempoRef.current(Math.floor(p.getCurrentTime() || 0), Math.floor(p.getDuration() || 0));
+    };
+
+    carregarApiYoutube().then((YT: any) => {
+      if (cancelado || !caixaRef.current) return;
+      playerRef.current = new YT.Player(caixaRef.current, {
+        videoId,
+        playerVars: { rel: 0, playsinline: 1, start: inicio, modestbranding: 1 },
+        events: {
+          onStateChange: (e: any) => {
+            if (e.data === 1) {
+              pararTimer();
+              timerRef.current = setInterval(reportar, 10000);
+            } else if (e.data === 2) {
+              pararTimer();
+              reportar();
+            } else if (e.data === 0) {
+              pararTimer();
+              const p = playerRef.current;
+              onTempoRef.current(0, Math.floor((p && typeof p.getDuration === "function" && p.getDuration()) || 0));
+            }
+          },
+        },
+      });
+    });
+
+    return () => {
+      cancelado = true;
+      pararTimer();
+      if (playerRef.current && typeof playerRef.current.destroy === "function") playerRef.current.destroy();
+      playerRef.current = null;
+    };
+  }, [videoId]);
+
+  return (
+    <div className="w-full h-full">
+      <div ref={caixaRef} />
+    </div>
+  );
+};
+
+type Posicao = { aula_id: string; segundos: number; duracao_segundos: number | null; atualizado_em: string };
 
 const PRIMARY = "#352F54";
 const SALMAO = "#E8806A";
