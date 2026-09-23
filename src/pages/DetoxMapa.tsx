@@ -248,6 +248,12 @@ const DetoxMapa = () => {
         ? (data.respostas as Record<string, unknown>)
         : {};
       if (!active) return;
+      // Se a pessoa já começou a marcar antes da primeira gravação criar a sessão,
+      // não pisa no que está na tela: o que ela marcou vale mais que a linha vazia.
+      if (leituraMexida.current) {
+        leituraHidratada.current = true;
+        return;
+      }
       const lida: Leitura = {};
       for (const p of PERGUNTAS_LINGUA) {
         const v = row[p.chave];
