@@ -18,6 +18,8 @@ import {
   Printer,
   Sparkles,
   ChevronLeft,
+  ChevronDown,
+  ChevronRight,
   Bot,
 } from "lucide-react";
 import TutorChatBody, { type TutorCurso } from "@/components/tutor/TutorChatBody";
@@ -469,6 +471,7 @@ const CursoEstudar = () => {
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [salvando, setSalvando] = useState(false);
+  const [moduloAberto, setModuloAberto] = useState(null as string | null);
 
   const carregarCertificado = async (cursoId: string) => {
     const { data } = await supabase.rpc("obter_certificado_curso", { p_curso_id: cursoId });
@@ -576,11 +579,22 @@ const CursoEstudar = () => {
   const totalConcluidas = aulasOrdenadas.filter((a) => concluidas.has(a.id)).length;
   const pct = totalAulas ? Math.round((totalConcluidas / totalAulas) * 100) : 0;
 
-  const aulaSelecionadaId = searchParams.get("aula") ?? aulasOrdenadas[0]?.id ?? null;
+  const primeiraNaoConcluida = aulasOrdenadas.find((a) => !concluidas.has(a.id)) ?? aulasOrdenadas[0];
+  const aulaSelecionadaId = searchParams.get("aula") ?? primeiraNaoConcluida?.id ?? null;
   const aulaAtual = useMemo(
     () => aulasOrdenadas.find((a) => a.id === aulaSelecionadaId) ?? null,
     [aulasOrdenadas, aulaSelecionadaId],
   );
+
+  const indiceAtual = aulasOrdenadas.findIndex((a) => a.id === aulaSelecionadaId);
+  const aulaAnterior = indiceAtual > 0 ? aulasOrdenadas[indiceAtual - 1] : null;
+  const aulaProxima =
+    indiceAtual >= 0 && aulasOrdenadas.length - 1 > indiceAtual ? aulasOrdenadas[indiceAtual + 1] : null;
+  const numeroDaAula = (id: string) => aulasOrdenadas.findIndex((a) => a.id === id) + 1;
+  const moduloDaAula = (a: AulaFull | null) => modulosConteudo.find((m) => m.id === a?.modulo_id) ?? null;
+  useEffect(() => {
+    if (aulaAtual) setModuloAberto(aulaAtual.modulo_id);
+  }, [aulaAtual?.modulo_id]);
 
   const abasVisiveis = useMemo(
     () =>
@@ -714,7 +728,7 @@ const CursoEstudar = () => {
                 src={getTransformedImageUrl(curso.capa_url, 480)}
                 alt=""
                 aria-hidden
-                className="w-full sm:w-40 md:w-48 aspect-[4/3] object-cover rounded-2xl shadow-md shrink-0"
+                className="hidden sm:block sm:w-40 md:w-48 aspect-[4/3] object-cover rounded-2xl shadow-md shrink-0"
                 loading="lazy"
                 decoding="async"
               />
@@ -740,7 +754,7 @@ const CursoEstudar = () => {
               </h1>
               {curso.descricao && (
                 <p
-                  className="text-sm md:text-base mb-4 leading-relaxed"
+                  className="hidden sm:block text-sm md:text-base mb-4 leading-relaxed"
                   style={{ color: PRIMARY, opacity: 0.8, fontFamily: "'DM Sans', sans-serif" }}
                 >
                   {curso.descricao}
@@ -890,7 +904,7 @@ const CursoEstudar = () => {
 
             {abaAtiva === "aulas" && (
               <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_320px] gap-6 lg:gap-8">
-                <div id="player-aula" className="min-w-0 order-2 lg:order-1">
+                <div id="player-aula" className="min-w-0 order-1 scroll-mt-20">
                   {aulaAtual ? (
                     <>
                       {embedUrl ? (
@@ -909,6 +923,14 @@ const CursoEstudar = () => {
                         </div>
                       )}
                       <div className="mt-5">
+                        <p
+                          className="text-xs font-semibold uppercase tracking-wider mb-1"
+                          style={{ color: PRIMARY, opacity: 0.7 }}
+                        >
+                          {`Aula ${numeroDaAula(aulaAtual.id)} de ${totalAulas}`}
+                          {aulaAtual.duracao_segundos ? ` · ${fmtDuracao(aulaAtual.duracao_segundos)}` : ""}
+                          {moduloDaAula(aulaAtual) ? ` · ${moduloDaAula(aulaAtual)!.titulo}` : ""}
+                        </p>
                         <h2 className="font-serif font-bold text-xl md:text-2xl mb-2" style={{ color: PRIMARY }}>
                           {aulaAtual.titulo}
                         </h2>
@@ -920,11 +942,42 @@ const CursoEstudar = () => {
                             {aulaAtual.descricao}
                           </p>
                         )}
+                        <div className="grid grid-cols-[1fr_1.5fr] gap-2.5 mb-2.5">
+                          <Button
+                            type="button"
+                            variant="outline"
+                            disabled={!aulaAnterior}
+                            onClick={() => aulaAnterior && selecionarAula(aulaAnterior.id)}
+                            className="min-h-[60px] rounded-2xl border-2 text-base font-bold"
+                            style={{ borderColor: PRIMARY, color: PRIMARY }}
+                          >
+                            <ChevronLeft className="h-5 w-5" /> Anterior
+                          </Button>
+                          <Button
+                            type="button"
+                            disabled={!aulaProxima}
+                            onClick={() => aulaProxima && selecionarAula(aulaProxima.id)}
+                            className="min-h-[60px] rounded-2xl text-base font-bold flex-col gap-0.5 leading-tight text-white"
+                            style={{ backgroundColor: SALMAO }}
+                          >
+                            <span className="inline-flex items-center gap-1">
+                              Próxima aula <ChevronRight className="h-5 w-5" />
+                            </span>
+                            {aulaProxima && (
+                              <span className="text-xs font-medium opacity-95 truncate max-w-full">
+                                {aulaProxima.titulo}
+                                {aulaProxima.duracao_segundos
+                                  ? ` · ${fmtDuracao(aulaProxima.duracao_segundos)}`
+                                  : ""}
+                              </span>
+                            )}
+                          </Button>
+                        </div>
                         <Button
                           onClick={marcarConcluida}
                           disabled={salvando}
                           variant={concluidas.has(aulaAtual.id) ? "outline" : "default"}
-                          className="rounded-full"
+                          className="w-full min-h-[52px] rounded-2xl text-base"
                         >
                           {concluidas.has(aulaAtual.id) ? (
                             <>
@@ -945,7 +998,7 @@ const CursoEstudar = () => {
                   )}
                 </div>
 
-                <aside className="order-1 lg:order-2">
+                <aside className="order-2">
                   <div className="space-y-5">
                     {modulosConteudo.map((m) => {
                       const aulasMod = aulas
