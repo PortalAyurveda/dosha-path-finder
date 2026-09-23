@@ -11,8 +11,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { ensureAnonSession, currentUserId } from "@/lib/anonSession";
 import { getFaixa, type DoshaNome } from "@/data/doshaLevels";
 import { getPalette } from "@/data/landingPalettes";
+import { MARCA_GRUPOS } from "@/data/detoxLingua";
+import { optimizeImageToJpeg } from "@/lib/imageOptimize";
 
 const DoshaPieChart = lazy(() => import("@/components/charts/DoshaPieChart"));
+const BussolaDetox = lazy(() => import("@/components/detox/BussolaDetox"));
 const DETOX_PALETTE = getPalette("detox-primavera");
 const DETOX_THEME = {
   "--detox-primary": DETOX_PALETTE.branding.primaryColor,
@@ -32,6 +35,9 @@ type AgniData = {
   agnifraco: number | null;
   agniirregular: number | null;
   email?: string | null;
+  agravVataTags?: string | null;
+  agravPittaTags?: string | null;
+  agravKaphaTags?: string | null;
 };
 
 const EMPTY_ANSWERS: Respostas = { q1: "", q2: "", q3: "" };
@@ -81,6 +87,15 @@ const DetoxMapa = () => {
   const [loadingFicha, setLoadingFicha] = useState(true);
   const [saving, setSaving] = useState(false);
   const [justSaved, setJustSaved] = useState(false);
+  const [uid, setUid] = useState<string | null>(null);
+  const [marcas, setMarcas] = useState<string[]>([]);
+  const [fotoPath, setFotoPath] = useState<string | null>(null);
+  const [fotoUrl, setFotoUrl] = useState<string | null>(null);
+  const [subindoFoto, setSubindoFoto] = useState(false);
+  const [erroFoto, setErroFoto] = useState(false);
+  const [salvandoLeitura, setSalvandoLeitura] = useState(false);
+  const [leituraSalva, setLeituraSalva] = useState(false);
+  const marcasHidratadas = useRef(false);
   const hydrated = useRef(false);
   const savedTimer = useRef<number | null>(null);
   const agniEmail = agni?.email ?? null;
@@ -131,6 +146,7 @@ const DetoxMapa = () => {
       } catch { localStorage.removeItem(DRAFT_KEY); }
 
       const uid = accountUser?.id ?? (await currentUserId());
+      if (active) setUid(uid);
 
       if (!uid) {
         if (active) {
@@ -200,6 +216,103 @@ const DetoxMapa = () => {
     return () => window.clearTimeout(timer);
   }, [answers, saveAnswers]);
 
+  const assinarFoto = useCallback(async (path: string) => {
+    const { data } = await supabase.storage.from("linguas-jornada").createSignedUrl(path, 3600);
+    if (data?.signedUrl) setFotoUrl(data.signedUrl);
+  }, []);
+
+  useEffect(() => {
+    let active = true;
+    marcasHidratadas.current = false;
+    if (!uid) {
+      setMarcas([]);
+      setFotoPath(null);
+      setFotoUrl(null);
+      return () => { active = false; };
+    }
+    void (async () => {
+      const { data } = await supabase
+        .from("jornada_ficha")
+        .select("respostas")
+        .eq("user_id", uid)
+        .eq("noite", 2)
+        .maybeSingle();
+      const row = data?.respostas && typeof data.respostas === "object" && !Array.isArray(data.respostas)
+        ? (data.respostas as { marcas?: unknown; foto_path?: unknown })
+        : null;
+      if (!active) return;
+      setMarcas(Array.isArray(row?.marcas) ? (row!.marcas as string[]).filter((m) => typeof m === "string") : []);
+      const path = typeof row?.foto_path === "string" ? row.foto_path : null;
+      setFotoPath(path);
+      if (path) void assinarFoto(path);
+      marcasHidratadas.current = true;
+    })();
+    return () => { active = false; };
+  }, [uid, assinarFoto]);
+
+  const persistNoite2 = useCallback(async (listaMarcas: string[], path: string | null) => {
+    const alvo = uid ?? (await currentUserId()) ?? (await ensureAnonSession());
+    if (!alvo) return { error: new Error("sem sessão"), uid: null as string | null };
+    if (alvo !== uid) setUid(alvo);
+    const { error } = await supabase.from("jornada_ficha").upsert({
+      user_id: alvo,
+      email: accountUser?.email ?? agniEmail,
+      noite: 2,
+      respostas: { marcas: listaMarcas, foto_path: path },
+      dosha_id_publico: doshaResult?.idPublico ?? null,
+      updated_at: new Date().toISOString(),
+    }, { onConflict: "user_id,noite" });
+    return { error, uid: alvo };
+  }, [accountUser?.email, agniEmail, doshaResult?.idPublico, uid]);
+
+  useEffect(() => {
+    if (!marcasHidratadas.current || !marcas.length) return;
+    const timer = window.setTimeout(() => { void persistNoite2(marcas, fotoPath); }, 1500);
+    return () => window.clearTimeout(timer);
+  }, [marcas, fotoPath, persistNoite2]);
+
+  const alternarMarca = (slug: string) => {
+    marcasHidratadas.current = true;
+    setLeituraSalva(false);
+    setMarcas((atual) => (atual.includes(slug) ? atual.filter((m) => m !== slug) : [...atual, slug]));
+  };
+
+  const salvarLeitura = async () => {
+    setSalvandoLeitura(true);
+    const { error } = await persistNoite2(marcas, fotoPath);
+    setSalvandoLeitura(false);
+    if (error) {
+      toast({ title: "Não foi possível salvar", description: "Tente novamente em instantes.", variant: "destructive" });
+      return;
+    }
+    setLeituraSalva(true);
+    toast({ title: "Salvo" });
+  };
+
+  const enviarFoto = async (arquivo: File | null | undefined) => {
+    if (!arquivo) return;
+    setErroFoto(false);
+    setSubindoFoto(true);
+    try {
+      const alvo = uid ?? (await currentUserId()) ?? (await ensureAnonSession());
+      if (!alvo) throw new Error("sem sessão");
+      if (alvo !== uid) setUid(alvo);
+      const { file } = await optimizeImageToJpeg(arquivo, { maxWidth: 1600, quality: 0.85 });
+      const path = `${alvo}/noite2.jpg`;
+      const { error } = await supabase.storage.from("linguas-jornada").upload(path, file, { upsert: true, contentType: "image/jpeg" });
+      if (error) throw error;
+      marcasHidratadas.current = true;
+      setFotoPath(path);
+      await assinarFoto(path);
+      await persistNoite2(marcas, path);
+    } catch {
+      setErroFoto(true);
+    } finally {
+      setSubindoFoto(false);
+    }
+  };
+
+
   const doshaKey = (doshaResult?.doshaprincipal?.toLowerCase().match(/vata|pitta|kapha/)?.[0] || "vata") as DoshaNome;
   const principalScore = doshaKey === "vata" ? doshaResult?.vatascore : doshaKey === "pitta" ? doshaResult?.pittascore : doshaResult?.kaphascore;
   const principalLabel = `${doshaKey[0].toUpperCase()}${doshaKey.slice(1)}, em ${getFaixa(doshaKey, principalScore).toLowerCase()}`;
@@ -208,6 +321,7 @@ const DetoxMapa = () => {
     pitta: doshaResult?.pittascore ?? 0,
     kapha: doshaResult?.kaphascore ?? 0,
   };
+  const tagsDoDosha = doshaKey === "vata" ? agni?.agravVataTags : doshaKey === "pitta" ? agni?.agravPittaTags : agni?.agravKaphaTags;
 
   return (
     <div className="detox-theme min-h-screen bg-detox-page text-detox-text" style={DETOX_THEME}>
@@ -309,9 +423,120 @@ const DetoxMapa = () => {
           </div>
         </section>
 
-        <LockedNight eyebrow="Noite 2" badge="Abre amanhã, 19h" title="A leitura da sua língua">
-          Abre na <strong>quarta, 23 de setembro, às 19h</strong>. O que você escreveu hoje continua aqui.
-        </LockedNight>
+        <section className="border-t border-detox-divider pt-[26px]">
+          <SectionHeading eyebrow="Noite 2" badge="Aberta hoje" title="A leitura da sua língua">
+            <p className="mt-2 text-sm leading-relaxed text-detox-muted md:text-base">
+              Hoje você bate a foto da sua língua, marca o que está vendo, e o seu mapa ganha uma bússola. Todo mundo produz ama, todo mundo acumula. O que a gente quer aqui é enxergar onde.
+            </p>
+          </SectionHeading>
+
+          <div className="space-y-[26px]">
+            <div className="rounded-[32px] border border-detox-card-border bg-detox-card p-6 shadow-detox md:p-8">
+              <h3 className="font-serif text-xl font-bold text-detox-text md:text-2xl">1. A foto da sua língua</h3>
+              <p className="mt-2 text-sm leading-relaxed text-detox-muted md:text-base">
+                Vá para perto de uma janela ou de uma luz boa. Ponha a língua bem para fora, bem para fora mesmo. Uma foto só, do jeito que der.
+              </p>
+
+              {fotoPath && fotoUrl && !subindoFoto ? (
+                <div className="mt-5">
+                  <img src={fotoUrl} alt="A foto da sua língua" className="max-h-[260px] w-auto rounded-[16px]" />
+                  <p className="mt-3 text-sm text-detox-muted">Guardada. Só você vê essa foto.</p>
+                  <label className="mt-4 inline-flex min-h-[60px] cursor-pointer items-center justify-center rounded-full border-2 border-detox-purple px-7 text-sm font-bold uppercase text-detox-purple hover:bg-detox-light">
+                    Trocar a foto
+                    <input type="file" accept="image/*" className="sr-only" onChange={(e) => { void enviarFoto(e.target.files?.[0]); e.target.value = ""; }} />
+                  </label>
+                </div>
+              ) : (
+                <div className="mt-5 space-y-3">
+                  <label className={`flex min-h-[60px] w-full cursor-pointer items-center justify-center gap-2 rounded-full bg-detox-primary px-7 text-sm font-bold uppercase text-primary-foreground hover:bg-detox-dark ${subindoFoto ? "pointer-events-none opacity-70" : ""}`}>
+                    {subindoFoto ? <><Loader2 className="h-4 w-4 animate-spin" /> Guardando a sua foto…</> : "Tirar a foto agora"}
+                    <input type="file" accept="image/*" capture="user" className="sr-only" onChange={(e) => { void enviarFoto(e.target.files?.[0]); e.target.value = ""; }} />
+                  </label>
+                  <label className={`flex min-h-[60px] w-full cursor-pointer items-center justify-center rounded-full border-2 border-detox-purple px-7 text-sm font-bold uppercase text-detox-purple hover:bg-detox-light ${subindoFoto ? "pointer-events-none opacity-70" : ""}`}>
+                    Escolher uma foto do celular
+                    <input type="file" accept="image/*" className="sr-only" onChange={(e) => { void enviarFoto(e.target.files?.[0]); e.target.value = ""; }} />
+                  </label>
+                </div>
+              )}
+              {erroFoto && <p className="mt-3 text-sm font-semibold text-destructive">Não consegui guardar a foto. Tente de novo.</p>}
+            </div>
+
+            <div className="rounded-[32px] border border-detox-card-border bg-detox-card p-6 shadow-detox md:p-8">
+              <h3 className="font-serif text-xl font-bold text-detox-text md:text-2xl">2. O que você está vendo</h3>
+              <p className="mt-2 text-sm leading-relaxed text-detox-muted md:text-base">
+                Olhe a sua foto e marque o que você reconhece. Pode marcar quantas quiser, ou nenhuma. Três coisas dessa lista são o normal, e elas estão aqui de propósito.
+              </p>
+
+              <div className="mt-6 space-y-6">
+                {MARCA_GRUPOS.map((grupo) => (
+                  <div key={grupo.titulo}>
+                    <p className="text-xs font-bold uppercase text-detox-dark">{grupo.titulo}</p>
+                    <div className="mt-3 space-y-2">
+                      {grupo.opcoes.map((opcao) => {
+                        const ativo = marcas.includes(opcao.slug);
+                        return (
+                          <button
+                            key={opcao.slug}
+                            type="button"
+                            aria-pressed={ativo}
+                            onClick={() => alternarMarca(opcao.slug)}
+                            className={`flex min-h-[60px] w-full items-center justify-between gap-3 rounded-[10px] border-[1.5px] px-4 py-3 text-left text-base leading-snug transition-colors ${ativo ? "border-detox-primary bg-detox-primary-soft text-detox-text" : "border-detox-field-border bg-detox-card text-detox-text hover:border-detox-primary"}`}
+                          >
+                            <span className="flex items-center gap-3">
+                              <span className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-[5px] border-2 ${ativo ? "border-detox-primary bg-detox-primary text-primary-foreground" : "border-detox-field-border"}`}>
+                                {ativo && <Check className="h-3 w-3" aria-hidden="true" />}
+                              </span>
+                              {opcao.texto}
+                            </span>
+                            {opcao.normal && <span className="shrink-0 rounded-full bg-kapha-1 px-3 py-1 text-xs font-bold text-kapha-5">Normal</span>}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-8 flex flex-col gap-5 border-t border-detox-divider pt-6 sm:flex-row sm:items-center sm:justify-between">
+                <p className="flex items-center gap-2 text-sm leading-relaxed text-detox-muted">
+                  {leituraSalva && <Check className="h-4 w-4 shrink-0 text-detox-dark" aria-hidden="true" />}
+                  Salva sozinho enquanto você marca.
+                </p>
+                <Button onClick={() => void salvarLeitura()} disabled={salvandoLeitura} className="min-h-[60px] shrink-0 rounded-full bg-detox-primary px-7 text-sm font-bold uppercase text-primary-foreground hover:bg-detox-dark">
+                  {salvandoLeitura && <Loader2 className="h-4 w-4 animate-spin" />} Salvar a minha leitura
+                </Button>
+              </div>
+            </div>
+
+            <div className="rounded-[32px] border border-detox-card-border bg-detox-card p-6 shadow-detox md:p-8">
+              <h3 className="font-serif text-xl font-bold text-detox-text md:text-2xl">3. A sua bússola</h3>
+              {doshaResult ? (
+                <>
+                  <p className="mt-2 text-sm leading-relaxed text-detox-muted md:text-base">
+                    Isso aqui já estava no seu teste de dosha. Agora ele vira um caminho.
+                  </p>
+                  <div className="mt-6">
+                    <Suspense fallback={<Skeleton className="h-64 w-full" />}>
+                      <BussolaDetox dosha={doshaKey} scores={scores} tags={tagsDoDosha} marcas={marcas} />
+                    </Suspense>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <p className="mt-4 font-serif text-xl font-bold text-detox-text">Comece pelo seu Teste de Dosha</p>
+                  <p className="mt-2 text-sm leading-relaxed text-detox-muted md:text-base">
+                    São oito minutos, e é ele que dá sentido às três noites. Não precisa de senha nem de e-mail para começar.
+                  </p>
+                  <div className="mt-5"><JourneyButton to="/teste-de-dosha?redirect=/detox/mapa">Fazer o meu teste</JourneyButton></div>
+                </>
+              )}
+            </div>
+
+            <p className="text-sm leading-relaxed text-detox-muted md:text-base">
+              O que fazer com isso é a noite 3, quinta, 24 de setembro, às 19h.
+            </p>
+          </div>
+        </section>
 
         <LockedNight eyebrow="Noite 3" badge="Abre quinta, 19h" title="O seu caminho">
           Abre na <strong>quinta, 24 de setembro, às 19h</strong>. Depende das duas noites anteriores, por isso vem por último.
