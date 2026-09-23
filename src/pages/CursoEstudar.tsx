@@ -779,6 +779,19 @@ const CursoEstudar = () => {
     }
   };
 
+  const salvarPosicao = async (aulaId: string, segundos: number, duracao: number) => {
+    if (!user) return;
+    setPosicoes((prev) => ({
+      ...prev,
+      [aulaId]: { aula_id: aulaId, segundos, duracao_segundos: duracao || null, atualizado_em: new Date().toISOString() },
+    }));
+    await (supabase.rpc as any)("salvar_posicao_aula", {
+      p_aula_id: aulaId,
+      p_segundos: segundos,
+      p_duracao_segundos: duracao || null,
+    });
+  };
+
   if (!authLoading && !user) {
     return <Navigate to={`/entrar?redirect=/cursos/${slug}/estudar`} replace />;
   }
@@ -806,6 +819,12 @@ const CursoEstudar = () => {
   }
 
   const embedUrl = youtubeEmbed(aulaAtual?.youtube_url);
+  const videoIdAtual = youtubeIdDe(embedUrl);
+  const posicaoAtual = aulaAtual ? posicoes[aulaAtual.id] : undefined;
+  const inicioAtual =
+    posicaoAtual && posicaoAtual.segundos > 5 && (!posicaoAtual.duracao_segundos || posicaoAtual.duracao_segundos - 10 > posicaoAtual.segundos)
+      ? posicaoAtual.segundos
+      : 0;
 
   return (
     <>
@@ -1027,13 +1046,22 @@ const CursoEstudar = () => {
                     <>
                       {embedUrl ? (
                         <div className="aspect-video w-full rounded-2xl overflow-hidden bg-black shadow-md">
-                          <iframe
-                            src={embedUrl}
-                            title={aulaAtual.titulo}
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                            allowFullScreen
-                            className="w-full h-full"
-                          />
+                          {videoIdAtual ? (
+                            <PlayerYoutube
+                              key={aulaAtual.id}
+                              videoId={videoIdAtual}
+                              inicio={inicioAtual}
+                              onTempo={(segundos, duracao) => salvarPosicao(aulaAtual.id, segundos, duracao)}
+                            />
+                          ) : (
+                            <iframe
+                              src={embedUrl}
+                              title={aulaAtual.titulo}
+                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                              allowFullScreen
+                              className="w-full h-full"
+                            />
+                          )}
                         </div>
                       ) : (
                         <div className="aspect-video w-full rounded-2xl bg-muted flex items-center justify-center">
