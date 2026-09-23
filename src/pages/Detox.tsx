@@ -9,6 +9,7 @@ import { useUser } from "@/contexts/UserContext";
 import { supabase } from "@/integrations/supabase/client";
 import { getFaixa, type DoshaNome } from "@/data/doshaLevels";
 import { getPalette } from "@/data/landingPalettes";
+import { noiteDaJornada } from "@/lib/jornada";
 
 const DETOX_PALETTE = getPalette("detox-primavera");
 const DETOX_THEME = {
@@ -97,6 +98,7 @@ const Detox = () => {
   const [loading, setLoading] = useState(true);
   const now = useNow(1000);
   const isVisitor = !user || isAnonymous;
+  const noite = noiteDaJornada(new Date(now));
 
   useEffect(() => {
     let active = true;
@@ -129,7 +131,7 @@ const Detox = () => {
     : "Seu mapa está pronto";
 
   const guideSteps = [
-    { icon: PlayCircle, title: "Assista a noite 1", text: "É agora, aqui mesmo." },
+    { icon: PlayCircle, title: `Assista a noite ${noite}`, text: "É agora, aqui mesmo." },
     { icon: PenLine, title: "Responda as três perguntas", text: "Ficam salvas na sua conta." },
     { icon: CalendarDays, title: "Volte amanhã e quinta", text: "As noites 2 e 3 abrem às 19h." },
   ];
@@ -152,12 +154,12 @@ const Detox = () => {
           ) : (
             <div className="inline-flex items-center gap-2 rounded-full bg-destructive px-3 py-2 text-xs font-bold uppercase text-destructive-foreground">
               <span className="h-2 w-2 rounded-full bg-destructive-foreground motion-safe:animate-pulse" aria-hidden="true" />
-              Ao vivo agora · Noite 1 de 3
+              Ao vivo agora · Noite {noite} de 3
             </div>
           )}
           <div>
             <h1 className="font-serif text-3xl font-bold text-detox-text md:text-5xl">Jornada da Primavera</h1>
-            <p className="mt-2 text-base text-detox-muted md:text-lg">Noite 1 de 3. Assista aqui e comente no chat. O que você responde fica no seu mapa.</p>
+            <p className="mt-2 text-base text-detox-muted md:text-lg">Noite {noite} de 3. Assista aqui e comente no chat. O que você responde fica no seu mapa.</p>
           </div>
         </div>
 

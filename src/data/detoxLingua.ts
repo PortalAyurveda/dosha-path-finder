@@ -2,44 +2,31 @@
 import type { DoshaNome } from "@/data/doshaLevels";
 
 export type MarcaOpcao = { slug: string; texto: string; normal?: boolean };
-export type MarcaGrupo = { titulo: string; opcoes: MarcaOpcao[] };
+export type PerguntaLingua = {
+  chave: string;
+  titulo: string;
+  tipo: "unica" | "varias";
+  opcoes: MarcaOpcao[];
+  soComMuco?: boolean;
+};
 
-export const MARCA_GRUPOS: MarcaGrupo[] = [
-  {
-    titulo: "A ponta da língua",
-    opcoes: [
-      { slug: "ponta_limpa", texto: "Vermelha e limpa, sem nada em cima", normal: true },
-      { slug: "ponta_sem_brilho", texto: "Vermelha, mas sem brilho" },
-      { slug: "ponta_arroxeada", texto: "Arroxeada ou azulada" },
-      { slug: "ponta_treme", texto: "Treme quando eu ponho para fora" },
-    ],
-  },
-  {
-    titulo: "O meio da língua",
-    opcoes: [
-      { slug: "meio_vermelho_brilhante", texto: "Vermelha e brilhante", normal: true },
-      { slug: "meio_capa_branca", texto: "Com uma capa branca por cima" },
-      { slug: "meio_capa_amarela", texto: "Com uma capa amarelada" },
-      { slug: "meio_geografia", texto: "Com rachaduras, como um mapa" },
-    ],
-  },
-  {
-    titulo: "O fundo da língua",
-    opcoes: [
-      { slug: "fundo_capinha_leve", texto: "Uma capinha branca leve", normal: true },
-      { slug: "fundo_capa_grossa", texto: "Uma capa branca grossa, que não sai fácil" },
-      { slug: "fundo_vermelho_irritado", texto: "Vermelha e irritada" },
-    ],
-  },
-  {
-    titulo: "A língua inteira",
-    opcoes: [
-      { slug: "marca_dos_dentes", texto: "Marca dos dentes na borda" },
-      { slug: "risco_central", texto: "Um risco no meio, de cima até a ponta" },
-      { slug: "muita_saliva", texto: "Muita saliva por cima" },
-    ],
-  },
+const op = (textos: string[], normal?: string): MarcaOpcao[] =>
+  textos.map((texto) => ({ slug: texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, ""), texto, normal: texto === normal || undefined }));
+
+export const PERGUNTAS_LINGUA: PerguntaLingua[] = [
+  { chave: "cor", titulo: "Cor", tipo: "unica", opcoes: op(["rosa", "pálida ou branca", "vermelha", "amarelada", "arroxeada ou azulada", "acinzentada", "amarronzada"], "rosa") },
+  { chave: "brilho", titulo: "Brilho", tipo: "unica", opcoes: op(["brilhante", "sem brilho, opaca", "leitosa"], "brilhante") },
+  { chave: "muco", titulo: "Muco", tipo: "unica", opcoes: op(["não tem", "pouco", "muito, denso"], "não tem") },
+  { chave: "muco_cor", titulo: "Cor do muco", tipo: "unica", soComMuco: true, opcoes: op(["branco", "amarelo", "laranja", "marrom", "cinza", "verde"]) },
+  { chave: "muco_onde", titulo: "Onde está o muco", tipo: "varias", soComMuco: true, opcoes: op(["na ponta", "no meio", "no fundo", "na língua toda"]) },
+  { chave: "ponta", titulo: "A ponta", tipo: "varias", opcoes: op(["pontinhos", "arroxeada", "inchada", "afundada", "partida no meio", "bolinha na garganta"]) },
+  { chave: "meio", titulo: "O meio", tipo: "varias", opcoes: op(["rachaduras poucas", "rachaduras muitas", "um risco no meio", "áspera"]) },
+  { chave: "fundo", titulo: "O fundo", tipo: "varias", opcoes: op(["bolinhas", "raízes aparecendo", "inchado", "arroxeado"]) },
+  { chave: "bordas", titulo: "As bordas", tipo: "varias", opcoes: op(["marca dos dentes pouca", "marca dos dentes muita", "inchada e aquosa", "inchada e vazia"]) },
+  { chave: "inteira", titulo: "A língua inteira", tipo: "varias", opcoes: op(["trêmula", "inchada", "pequena", "grande"]) },
 ];
+
+export const temMuco = (muco: unknown) => muco === "pouco" || muco === "muito_denso";
 
 export const MARCA_LEITURA: Record<string, string> = {
   fundo_capa_grossa: "Capa branca grossa no fundo: o fundo da língua é o cólon descendente, que é justamente a casa do vata.",

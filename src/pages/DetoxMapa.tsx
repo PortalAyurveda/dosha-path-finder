@@ -11,11 +11,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { ensureAnonSession, currentUserId } from "@/lib/anonSession";
 import { getFaixa, type DoshaNome } from "@/data/doshaLevels";
 import { getPalette } from "@/data/landingPalettes";
-import { MARCA_GRUPOS } from "@/data/detoxLingua";
+import { PERGUNTAS_LINGUA, temMuco } from "@/data/detoxLingua";
+import { noiteDaJornada } from "@/lib/jornada";
 import { optimizeImageToJpeg } from "@/lib/imageOptimize";
 
 const DoshaPieChart = lazy(() => import("@/components/charts/DoshaPieChart"));
-const BussolaDetox = lazy(() => import("@/components/detox/BussolaDetox"));
 const DETOX_PALETTE = getPalette("detox-primavera");
 const DETOX_THEME = {
   "--detox-primary": DETOX_PALETTE.branding.primaryColor,
@@ -28,6 +28,7 @@ const DETOX_THEME = {
 } as CSSProperties;
 const DRAFT_KEY = "jornada_primavera_noite_1";
 
+type Leitura = Record<string, string | string[] | null>;
 type Respostas = { q1: string; q2: string; q3: string };
 type AgniData = {
   agniPrincipal: string | null;
@@ -88,14 +89,19 @@ const DetoxMapa = () => {
   const [saving, setSaving] = useState(false);
   const [justSaved, setJustSaved] = useState(false);
   const [uid, setUid] = useState<string | null>(null);
-  const [marcas, setMarcas] = useState<string[]>([]);
+  const [leitura, setLeitura] = useState<Leitura>({});
+  const [escrita, setEscrita] = useState("");
+  const [emailCampo, setEmailCampo] = useState("");
+  const [emailGuardado, setEmailGuardado] = useState<string | null>(null);
+  const [guardandoEmail, setGuardandoEmail] = useState(false);
   const [fotoPath, setFotoPath] = useState<string | null>(null);
   const [fotoUrl, setFotoUrl] = useState<string | null>(null);
   const [subindoFoto, setSubindoFoto] = useState(false);
   const [erroFoto, setErroFoto] = useState(false);
   const [salvandoLeitura, setSalvandoLeitura] = useState(false);
   const [leituraSalva, setLeituraSalva] = useState(false);
-  const marcasHidratadas = useRef(false);
+  const leituraHidratada = useRef(false);
+  const leituraMexida = useRef(false);
   const hydrated = useRef(false);
   const savedTimer = useRef<number | null>(null);
   const agniEmail = agni?.email ?? null;
@@ -223,9 +229,10 @@ const DetoxMapa = () => {
 
   useEffect(() => {
     let active = true;
-    marcasHidratadas.current = false;
+    leituraHidratada.current = false;
     if (!uid) {
-      setMarcas([]);
+      setLeitura({});
+      setEscrita("");
       setFotoPath(null);
       setFotoUrl(null);
       return () => { active = false; };
@@ -238,48 +245,77 @@ const DetoxMapa = () => {
         .eq("noite", 2)
         .maybeSingle();
       const row = data?.respostas && typeof data.respostas === "object" && !Array.isArray(data.respostas)
-        ? (data.respostas as { marcas?: unknown; foto_path?: unknown })
-        : null;
+        ? (data.respostas as Record<string, unknown>)
+        : {};
       if (!active) return;
-      setMarcas(Array.isArray(row?.marcas) ? (row!.marcas as string[]).filter((m) => typeof m === "string") : []);
-      const path = typeof row?.foto_path === "string" ? row.foto_path : null;
+      const lida: Leitura = {};
+      for (const p of PERGUNTAS_LINGUA) {
+        const v = row[p.chave];
+        if (p.tipo === "unica" && typeof v === "string") lida[p.chave] = v;
+        if (p.tipo === "varias" && Array.isArray(v)) lida[p.chave] = v.filter((x): x is string => typeof x === "string");
+      }
+      setLeitura(lida);
+      setEscrita(typeof row.escrita === "string" ? row.escrita : "");
+      const path = typeof row.foto_path === "string" ? row.foto_path : null;
       setFotoPath(path);
       if (path) void assinarFoto(path);
-      marcasHidratadas.current = true;
+      leituraHidratada.current = true;
     })();
     return () => { active = false; };
   }, [uid, assinarFoto]);
 
-  const persistNoite2 = useCallback(async (listaMarcas: string[], path: string | null) => {
+  // Sempre mescla sobre o que já está gravado: troca só as chaves enviadas.
+  const mesclarNoite2 = useCallback(async (patch: Record<string, unknown>, emailNovo?: string) => {
     const alvo = uid ?? (await currentUserId()) ?? (await ensureAnonSession());
-    if (!alvo) return { error: new Error("sem sessão"), uid: null as string | null };
+    if (!alvo) return { error: new Error("sem sessão") };
     if (alvo !== uid) setUid(alvo);
+    const { data: atual, error: erroLeitura } = await supabase
+      .from("jornada_ficha")
+      .select("respostas, email")
+      .eq("user_id", alvo)
+      .eq("noite", 2)
+      .maybeSingle();
+    if (erroLeitura) return { error: erroLeitura };
+    const base = atual?.respostas && typeof atual.respostas === "object" && !Array.isArray(atual.respostas)
+      ? (atual.respostas as Record<string, unknown>)
+      : {};
     const { error } = await supabase.from("jornada_ficha").upsert({
       user_id: alvo,
-      email: accountUser?.email ?? agniEmail,
+      email: emailNovo ?? accountUser?.email ?? atual?.email ?? agniEmail ?? emailGuardado ?? null,
       noite: 2,
-      respostas: { marcas: listaMarcas, foto_path: path },
+      respostas: { ...base, ...patch } as never,
       dosha_id_publico: doshaResult?.idPublico ?? null,
       updated_at: new Date().toISOString(),
     }, { onConflict: "user_id,noite" });
-    return { error, uid: alvo };
-  }, [accountUser?.email, agniEmail, doshaResult?.idPublico, uid]);
+    return { error };
+  }, [accountUser?.email, agniEmail, doshaResult?.idPublico, emailGuardado, uid]);
+
+  const patchLeitura = useCallback(() => {
+    const patch: Record<string, unknown> = { escrita };
+    for (const p of PERGUNTAS_LINGUA) patch[p.chave] = leitura[p.chave] ?? (p.tipo === "unica" ? null : []);
+    return patch;
+  }, [escrita, leitura]);
 
   useEffect(() => {
-    if (!marcasHidratadas.current || !marcas.length) return;
-    const timer = window.setTimeout(() => { void persistNoite2(marcas, fotoPath); }, 1500);
+    if (!leituraHidratada.current || !leituraMexida.current) return;
+    const timer = window.setTimeout(() => { void mesclarNoite2(patchLeitura()); }, 2000);
     return () => window.clearTimeout(timer);
-  }, [marcas, fotoPath, persistNoite2]);
+  }, [leitura, escrita, mesclarNoite2, patchLeitura]);
 
-  const alternarMarca = (slug: string) => {
-    marcasHidratadas.current = true;
+  const escolher = (chave: string, tipo: "unica" | "varias", slug: string) => {
+    leituraHidratada.current = true;
+    leituraMexida.current = true;
     setLeituraSalva(false);
-    setMarcas((atual) => (atual.includes(slug) ? atual.filter((m) => m !== slug) : [...atual, slug]));
+    setLeitura((atual) => {
+      if (tipo === "unica") return { ...atual, [chave]: atual[chave] === slug ? null : slug };
+      const lista = Array.isArray(atual[chave]) ? (atual[chave] as string[]) : [];
+      return { ...atual, [chave]: lista.includes(slug) ? lista.filter((m) => m !== slug) : [...lista, slug] };
+    });
   };
 
   const salvarLeitura = async () => {
     setSalvandoLeitura(true);
-    const { error } = await persistNoite2(marcas, fotoPath);
+    const { error } = await mesclarNoite2(patchLeitura());
     setSalvandoLeitura(false);
     if (error) {
       toast({ title: "Não foi possível salvar", description: "Tente novamente em instantes.", variant: "destructive" });
@@ -301,16 +337,37 @@ const DetoxMapa = () => {
       const path = `${alvo}/noite2.jpg`;
       const { error } = await supabase.storage.from("linguas-jornada").upload(path, file, { upsert: true, contentType: "image/jpeg" });
       if (error) throw error;
-      marcasHidratadas.current = true;
       setFotoPath(path);
       await assinarFoto(path);
-      await persistNoite2(marcas, path);
+      const { error: erroFicha } = await mesclarNoite2({ foto_path: path });
+      if (erroFicha) throw erroFicha;
+      if (doshaResult?.idPublico) {
+        const { error: erroReg } = await supabase.from("doshas_registros").update({ foto_lingua_path: path }).eq("idPublico", doshaResult.idPublico);
+        if (erroReg) console.warn("[detox] foto_lingua_path não gravado:", erroReg.message);
+      }
     } catch {
       setErroFoto(true);
     } finally {
       setSubindoFoto(false);
     }
   };
+
+  const guardarEmail = async () => {
+    const limpo = emailCampo.trim().toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(limpo)) {
+      toast({ title: "Confira o e-mail", description: "Parece que falta alguma coisa.", variant: "destructive" });
+      return;
+    }
+    setGuardandoEmail(true);
+    const { error } = await mesclarNoite2({}, limpo);
+    if (!error) {
+      try { await supabase.auth.updateUser({ data: { email_jornada: limpo } }); } catch { /* segue */ }
+      setEmailGuardado(limpo);
+    }
+    setGuardandoEmail(false);
+    toast(error ? { title: "Não foi possível guardar", description: "Tente novamente em instantes.", variant: "destructive" } : { title: "E-mail guardado" });
+  };
+
 
 
   const doshaKey = (doshaResult?.doshaprincipal?.toLowerCase().match(/vata|pitta|kapha/)?.[0] || "vata") as DoshaNome;
@@ -321,7 +378,10 @@ const DetoxMapa = () => {
     pitta: doshaResult?.pittascore ?? 0,
     kapha: doshaResult?.kaphascore ?? 0,
   };
-  const tagsDoDosha = doshaKey === "vata" ? agni?.agravVataTags : doshaKey === "pitta" ? agni?.agravPittaTags : agni?.agravKaphaTags;
+  const noiteAtual = noiteDaJornada();
+  const noite1Respondida = Boolean(answers.q1.trim() || answers.q2.trim() || answers.q3.trim());
+  const badgeNoite1 = noiteAtual === 1 ? "Aberta hoje" : noite1Respondida ? "Noite 1 · respondida" : "Noite 1 · ainda dá tempo";
+  const emailConfirmado = Boolean(accountUser?.email && accountUser.email_confirmed_at);
 
   return (
     <div className="detox-theme min-h-screen bg-detox-page text-detox-text" style={DETOX_THEME}>
@@ -379,7 +439,7 @@ const DetoxMapa = () => {
         </section>
 
         <section className="border-t border-detox-divider pt-[26px]">
-          <SectionHeading eyebrow="Noite 1" badge="Aberta hoje" title="Três perguntas sobre você">
+          <SectionHeading eyebrow="Noite 1" badge={badgeNoite1} title="Três perguntas sobre você">
             <p className="mt-2 text-sm leading-relaxed text-detox-muted md:text-base">Responda com as suas palavras, do jeito que vier. Não tem resposta certa, e você pode voltar e mudar depois.</p>
           </SectionHeading>
           <div className="rounded-[32px] border border-detox-card-border bg-detox-card p-6 shadow-detox md:p-8">
@@ -424,9 +484,9 @@ const DetoxMapa = () => {
         </section>
 
         <section className="border-t border-detox-divider pt-[26px]">
-          <SectionHeading eyebrow="Noite 2" badge="Aberta hoje" title="A leitura da sua língua">
+          <SectionHeading eyebrow="Noite 2" badge={noiteAtual === 2 ? "Aberta hoje" : undefined} title="A leitura da sua língua">
             <p className="mt-2 text-sm leading-relaxed text-detox-muted md:text-base">
-              Hoje você bate a foto da sua língua, marca o que está vendo, e o seu mapa ganha uma bússola. Todo mundo produz ama, todo mundo acumula. O que a gente quer aqui é enxergar onde.
+              Hoje você bate a foto da sua língua, marca o que está vendo e escreve o que viu. Todo mundo produz ama, todo mundo acumula. Hoje a gente só olha.
             </p>
           </SectionHeading>
 
@@ -459,36 +519,47 @@ const DetoxMapa = () => {
                 </div>
               )}
               {erroFoto && <p className="mt-3 text-sm font-semibold text-destructive">Não consegui guardar a foto. Tente de novo.</p>}
+              {!emailConfirmado && (
+                <div className="mt-6 border-t border-detox-divider pt-5">
+                  <label htmlFor="email-jornada" className="block text-sm font-bold text-detox-text">Seu e-mail</label>
+                  <div className="mt-2 flex flex-col gap-3 sm:flex-row">
+                    <input id="email-jornada" type="email" inputMode="email" autoComplete="email" value={emailCampo} onChange={(e) => setEmailCampo(e.target.value)} placeholder="voce@email.com" className="min-h-[60px] w-full rounded-[10px] border-[1.5px] border-detox-field-border bg-detox-card px-4 text-base text-detox-text placeholder:text-detox-muted focus-visible:border-detox-primary focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-[var(--detox-focus)]" />
+                    <Button onClick={() => void guardarEmail()} disabled={guardandoEmail} className="min-h-[60px] shrink-0 rounded-full bg-detox-primary px-7 text-sm font-bold uppercase text-primary-foreground hover:bg-detox-dark">
+                      {guardandoEmail && <Loader2 className="h-4 w-4 animate-spin" />} Guardar meu e-mail
+                    </Button>
+                  </div>
+                  <p className="mt-2 text-sm text-detox-muted">{emailGuardado ? <span className="inline-flex items-center gap-1.5"><Check className="h-4 w-4 text-detox-dark" aria-hidden="true" /> Guardado: {emailGuardado}.</span> : null} É assim que você abre a sua foto de outro aparelho depois.</p>
+                </div>
+              )}
             </div>
 
             <div className="rounded-[32px] border border-detox-card-border bg-detox-card p-6 shadow-detox md:p-8">
               <h3 className="font-serif text-xl font-bold text-detox-text md:text-2xl">2. O que você está vendo</h3>
               <p className="mt-2 text-sm leading-relaxed text-detox-muted md:text-base">
-                Olhe a sua foto e marque o que você reconhece. Pode marcar quantas quiser, ou nenhuma. Três coisas dessa lista são o normal, e elas estão aqui de propósito.
+                Marque o que você reconhece na sua foto. Marque só o que quiser, e pule o que não tiver certeza.
               </p>
 
               <div className="mt-6 space-y-6">
-                {MARCA_GRUPOS.map((grupo) => (
-                  <div key={grupo.titulo}>
-                    <p className="text-xs font-bold uppercase text-detox-dark">{grupo.titulo}</p>
-                    <div className="mt-3 space-y-2">
-                      {grupo.opcoes.map((opcao) => {
-                        const ativo = marcas.includes(opcao.slug);
+                {PERGUNTAS_LINGUA.filter((p) => !p.soComMuco || temMuco(leitura.muco)).map((pergunta) => (
+                  <div key={pergunta.chave}>
+                    <p className="text-xs font-bold uppercase text-detox-dark">
+                      {pergunta.titulo} <span className="font-normal normal-case text-detox-muted">{pergunta.tipo === "unica" ? "· escolha uma" : "· pode marcar várias"}</span>
+                    </p>
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      {pergunta.opcoes.map((opcao) => {
+                        const valor = leitura[pergunta.chave];
+                        const ativo = Array.isArray(valor) ? valor.includes(opcao.slug) : valor === opcao.slug;
                         return (
                           <button
                             key={opcao.slug}
                             type="button"
                             aria-pressed={ativo}
-                            onClick={() => alternarMarca(opcao.slug)}
-                            className={`flex min-h-[60px] w-full items-center justify-between gap-3 rounded-[10px] border-[1.5px] px-4 py-3 text-left text-base leading-snug transition-colors ${ativo ? "border-detox-primary bg-detox-primary-soft text-detox-text" : "border-detox-field-border bg-detox-card text-detox-text hover:border-detox-primary"}`}
+                            onClick={() => escolher(pergunta.chave, pergunta.tipo, opcao.slug)}
+                            className={`inline-flex min-h-[60px] items-center gap-2 rounded-full border-[1.5px] px-5 text-base leading-snug transition-colors ${ativo ? "border-detox-primary bg-detox-primary-soft font-semibold text-detox-text" : "border-detox-field-border bg-detox-card text-detox-text hover:border-detox-primary"}`}
                           >
-                            <span className="flex items-center gap-3">
-                              <span className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-[5px] border-2 ${ativo ? "border-detox-primary bg-detox-primary text-primary-foreground" : "border-detox-field-border"}`}>
-                                {ativo && <Check className="h-3 w-3" aria-hidden="true" />}
-                              </span>
-                              {opcao.texto}
-                            </span>
-                            {opcao.normal && <span className="shrink-0 rounded-full bg-kapha-1 px-3 py-1 text-xs font-bold text-kapha-5">Normal</span>}
+                            {ativo && <Check className="h-4 w-4 shrink-0 text-detox-dark" aria-hidden="true" />}
+                            {opcao.texto}
+                            {opcao.normal && <span className="rounded-full bg-kapha-1 px-2 py-0.5 text-[11px] font-bold text-kapha-5">Normal</span>}
                           </button>
                         );
                       })}
@@ -496,11 +567,24 @@ const DetoxMapa = () => {
                   </div>
                 ))}
               </div>
+            </div>
+
+            <div className="rounded-[32px] border border-detox-card-border bg-detox-card p-6 shadow-detox md:p-8">
+              <h3 className="font-serif text-xl font-bold text-detox-text md:text-2xl">3. Agora com as suas palavras</h3>
+              <label htmlFor="escrita-noite2" className="mt-5 block">
+                <span className="flex items-start gap-3">
+                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-detox-primary text-sm font-bold text-primary-foreground">3</span>
+                  <span className="block pt-0.5 font-serif text-lg font-bold leading-relaxed text-detox-text md:text-xl">Olhando a sua língua, o que mais te chamou a atenção?</span>
+                </span>
+              </label>
+              <p className="mt-2 text-sm leading-relaxed text-detox-muted md:text-base">Escreva do jeito que vier. É o que você viu, não o que você acha que deveria ver.</p>
+              <Textarea id="escrita-noite2" rows={6} value={escrita} onChange={(e) => { leituraHidratada.current = true; leituraMexida.current = true; setLeituraSalva(false); setEscrita(e.target.value); }} placeholder="Escreva aqui…" className="mt-5 min-h-[148px] resize-y rounded-[10px] border-[1.5px] border-detox-field-border bg-detox-card px-4 py-3 text-base leading-relaxed text-detox-text placeholder:text-detox-muted focus-visible:border-detox-primary focus-visible:ring-[3px] focus-visible:ring-[var(--detox-focus)] focus-visible:ring-offset-0" />
+              <p className="mt-1.5 text-right text-xs text-detox-muted">{escrita.length} caracteres</p>
 
               <div className="mt-8 flex flex-col gap-5 border-t border-detox-divider pt-6 sm:flex-row sm:items-center sm:justify-between">
                 <p className="flex items-center gap-2 text-sm leading-relaxed text-detox-muted">
                   {leituraSalva && <Check className="h-4 w-4 shrink-0 text-detox-dark" aria-hidden="true" />}
-                  Salva sozinho enquanto você marca.
+                  Salva sozinho enquanto você marca e escreve.
                 </p>
                 <Button onClick={() => void salvarLeitura()} disabled={salvandoLeitura} className="min-h-[60px] shrink-0 rounded-full bg-detox-primary px-7 text-sm font-bold uppercase text-primary-foreground hover:bg-detox-dark">
                   {salvandoLeitura && <Loader2 className="h-4 w-4 animate-spin" />} Salvar a minha leitura
@@ -508,32 +592,8 @@ const DetoxMapa = () => {
               </div>
             </div>
 
-            <div className="rounded-[32px] border border-detox-card-border bg-detox-card p-6 shadow-detox md:p-8">
-              <h3 className="font-serif text-xl font-bold text-detox-text md:text-2xl">3. A sua bússola</h3>
-              {doshaResult ? (
-                <>
-                  <p className="mt-2 text-sm leading-relaxed text-detox-muted md:text-base">
-                    Isso aqui já estava no seu teste de dosha. Agora ele vira um caminho.
-                  </p>
-                  <div className="mt-6">
-                    <Suspense fallback={<Skeleton className="h-64 w-full" />}>
-                      <BussolaDetox dosha={doshaKey} scores={scores} tags={tagsDoDosha} marcas={marcas} />
-                    </Suspense>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <p className="mt-4 font-serif text-xl font-bold text-detox-text">Comece pelo seu Teste de Dosha</p>
-                  <p className="mt-2 text-sm leading-relaxed text-detox-muted md:text-base">
-                    São oito minutos, e é ele que dá sentido às três noites. Não precisa de senha nem de e-mail para começar.
-                  </p>
-                  <div className="mt-5"><JourneyButton to="/teste-de-dosha?redirect=/detox/mapa">Fazer o meu teste</JourneyButton></div>
-                </>
-              )}
-            </div>
-
             <p className="text-sm leading-relaxed text-detox-muted md:text-base">
-              O que fazer com isso é a noite 3, quinta, 24 de setembro, às 19h.
+              Hoje é só olhar e anotar. O que tudo isso quer dizer, e o caminho que sai daí, é a noite 3, quinta, 24 de setembro, às 19h.
             </p>
           </div>
         </section>
