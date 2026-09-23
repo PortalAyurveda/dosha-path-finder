@@ -3205,6 +3205,7 @@ export type Database = {
           email: string | null
           espiritual: string | null
           estado: string | null
+          foto_lingua_path: string | null
           foto_lingua_url: string | null
           id: string
           idade: number | null
@@ -3249,6 +3250,7 @@ export type Database = {
           email?: string | null
           espiritual?: string | null
           estado?: string | null
+          foto_lingua_path?: string | null
           foto_lingua_url?: string | null
           id?: string
           idade?: number | null
@@ -3293,6 +3295,7 @@ export type Database = {
           email?: string | null
           espiritual?: string | null
           estado?: string | null
+          foto_lingua_path?: string | null
           foto_lingua_url?: string | null
           id?: string
           idade?: number | null
