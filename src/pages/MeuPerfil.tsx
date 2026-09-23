@@ -1214,6 +1214,13 @@ type CursoDetalhe = {
   capa_url: string | null;
   total: number;
   concluidas: number;
+  continuar: { aulaId: string; titulo: string; segundos: number } | null;
+};
+
+const formatMinSeg = (s: number) => {
+  const m = Math.floor(s / 60);
+  const seg = Math.floor(s % 60);
+  return `${m}:${String(seg).padStart(2, "0")}`;
 };
 
 const CursosCard = ({ matriculas }: { matriculas: Matricula[] }) => {
@@ -1254,6 +1261,16 @@ const CursosCard = ({ matriculas }: { matriculas: Matricula[] }) => {
           feitasPorCurso.set(cid, (feitasPorCurso.get(cid) ?? 0) + 1);
       }
       const cursosMap = new Map((cursos ?? []).map((c: any) => [c.id, c]));
+      const continuarPorCurso = new Map();
+      await Promise.all(
+        matriculas.map(async (m) => {
+          const { data } = await (supabase.rpc as any)("ultima_aula_do_curso", { p_curso_id: m.curso_id });
+          const linha = Array.isArray(data) ? data[0] : data;
+          if (linha && linha.aula_id) {
+            continuarPorCurso.set(m.curso_id, { aulaId: linha.aula_id, titulo: linha.titulo ?? "", segundos: Number(linha.segundos ?? 0) });
+          }
+        }),
+      );
       setDetalhes(
         matriculas.map((m) => {
           const c: any = cursosMap.get(m.curso_id) ?? {};
@@ -1264,6 +1281,7 @@ const CursosCard = ({ matriculas }: { matriculas: Matricula[] }) => {
             capa_url: c.capa_url ?? null,
             total: totalPorCurso.get(m.curso_id) ?? 0,
             concluidas: feitasPorCurso.get(m.curso_id) ?? 0,
+            continuar: continuarPorCurso.get(m.curso_id) ?? null,
           };
         }),
       );
@@ -1316,6 +1334,12 @@ const CursosCard = ({ matriculas }: { matriculas: Matricula[] }) => {
               <div className="text-xs text-muted-foreground mb-1.5">
                 {d.total ? `${d.concluidas} de ${d.total} aulas` : "acesso liberado"}
               </div>
+              {d.continuar && (
+                <div className="text-xs text-primary truncate mb-1.5">
+                  Continuar: {d.continuar.titulo}
+                  {d.continuar.segundos > 0 ? ` · ${formatMinSeg(d.continuar.segundos)}` : ""}
+                </div>
+              )}
               {d.total > 0 && (
                 <div className="h-1.5 rounded-full overflow-hidden bg-muted">
                   <div

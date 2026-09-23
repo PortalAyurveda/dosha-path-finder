@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, Navigate, useParams, useSearchParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { supabase } from "@/integrations/supabase/client";
@@ -120,6 +120,112 @@ const limparLink = (v: string | null): string | null => {
   const s = v.replace(invisiveis, "").trim();
   return s || null;
 };
+
+const youtubeIdDe = (embedUrl: string | null): string | null => {
+  if (!embedUrl) return null;
+  try {
+    const u = new URL(embedUrl);
+    if (!u.hostname.includes("youtube.com") || !u.pathname.startsWith("/embed/")) return null;
+    const id = u.pathname.split("/")[2];
+    return id ? id.split("?")[0] : null;
+  } catch {
+    return null;
+  }
+};
+
+let promessaApiYoutube: any = null;
+
+const carregarApiYoutube = () => {
+  if (promessaApiYoutube) return promessaApiYoutube;
+  promessaApiYoutube = new Promise((resolve) => {
+    const w = window as any;
+    if (w.YT && w.YT.Player) {
+      resolve(w.YT);
+      return;
+    }
+    const anterior = w.onYouTubeIframeAPIReady;
+    w.onYouTubeIframeAPIReady = () => {
+      if (typeof anterior === "function") anterior();
+      resolve(w.YT);
+    };
+    if (!document.querySelector('script[src="https://www.youtube.com/iframe_api"]')) {
+      const s = document.createElement("script");
+      s.src = "https://www.youtube.com/iframe_api";
+      s.async = true;
+      document.head.appendChild(s);
+    }
+  });
+  return promessaApiYoutube;
+};
+
+type PlayerYoutubeProps = {
+  videoId: string;
+  inicio: number;
+  onTempo: (segundos: number, duracao: number) => void;
+};
+
+const PlayerYoutube = ({ videoId, inicio, onTempo }: PlayerYoutubeProps) => {
+  const caixaRef = useRef<HTMLDivElement>(null);
+  const playerRef = useRef<any>(null);
+  const timerRef = useRef<any>(null);
+  const onTempoRef = useRef(onTempo);
+  onTempoRef.current = onTempo;
+
+  useEffect(() => {
+    let cancelado = false;
+
+    const pararTimer = () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+    };
+
+    const reportar = () => {
+      const p = playerRef.current;
+      if (!p || typeof p.getCurrentTime !== "function") return;
+      onTempoRef.current(Math.floor(p.getCurrentTime() || 0), Math.floor(p.getDuration() || 0));
+    };
+
+    carregarApiYoutube().then((YT: any) => {
+      if (cancelado || !caixaRef.current) return;
+      playerRef.current = new YT.Player(caixaRef.current, {
+        videoId,
+        playerVars: { rel: 0, playsinline: 1, start: inicio, modestbranding: 1 },
+        events: {
+          onStateChange: (e: any) => {
+            if (e.data === 1) {
+              pararTimer();
+              timerRef.current = setInterval(reportar, 10000);
+            } else if (e.data === 2) {
+              pararTimer();
+              reportar();
+            } else if (e.data === 0) {
+              pararTimer();
+              const p = playerRef.current;
+              onTempoRef.current(0, Math.floor((p && typeof p.getDuration === "function" && p.getDuration()) || 0));
+            }
+          },
+        },
+      });
+    });
+
+    return () => {
+      cancelado = true;
+      pararTimer();
+      if (playerRef.current && typeof playerRef.current.destroy === "function") playerRef.current.destroy();
+      playerRef.current = null;
+    };
+  }, [videoId]);
+
+  return (
+    <div className="w-full h-full">
+      <div ref={caixaRef} />
+    </div>
+  );
+};
+
+type Posicao = { aula_id: string; segundos: number; duracao_segundos: number | null; atualizado_em: string };
 
 const PRIMARY = "#352F54";
 const SALMAO = "#E8806A";
@@ -472,6 +578,7 @@ const CursoEstudar = () => {
   const [notFound, setNotFound] = useState(false);
   const [salvando, setSalvando] = useState(false);
   const [moduloAberto, setModuloAberto] = useState(null as string | null);
+  const [posicoes, setPosicoes] = useState({} as { [aulaId: string]: Posicao });
 
   const carregarCertificado = async (cursoId: string) => {
     const { data } = await supabase.rpc("obter_certificado_curso", { p_curso_id: cursoId });
@@ -556,6 +663,14 @@ const CursoEstudar = () => {
           .select("aula_id")
           .eq("user_id", user.id);
         setConcluidas(new Set((prog ?? []).map((p: any) => p.aula_id)));
+
+        const { data: pos } = await supabase
+          .from("curso_aula_posicao" as any)
+          .select("aula_id,segundos,duracao_segundos,atualizado_em")
+          .eq("user_id", user.id);
+        const mapa = {} as { [aulaId: string]: Posicao };
+        for (const p of ((pos ?? []) as any[])) mapa[p.aula_id] = p as Posicao;
+        setPosicoes(mapa);
       }
 
       setLoading(false);
@@ -579,7 +694,10 @@ const CursoEstudar = () => {
   const totalConcluidas = aulasOrdenadas.filter((a) => concluidas.has(a.id)).length;
   const pct = totalAulas ? Math.round((totalConcluidas / totalAulas) * 100) : 0;
 
-  const primeiraNaoConcluida = aulasOrdenadas.find((a) => !concluidas.has(a.id)) ?? aulasOrdenadas[0];
+  const ultimaVista = aulasOrdenadas
+    .filter((a) => posicoes[a.id] && !concluidas.has(a.id))
+    .sort((a, b) => (posicoes[b.id].atualizado_em > posicoes[a.id].atualizado_em ? 1 : -1))[0];
+  const primeiraNaoConcluida = ultimaVista ?? aulasOrdenadas.find((a) => !concluidas.has(a.id)) ?? aulasOrdenadas[0];
   const aulaSelecionadaId = searchParams.get("aula") ?? primeiraNaoConcluida?.id ?? null;
   const aulaAtual = useMemo(
     () => aulasOrdenadas.find((a) => a.id === aulaSelecionadaId) ?? null,
@@ -661,6 +779,19 @@ const CursoEstudar = () => {
     }
   };
 
+  const salvarPosicao = async (aulaId: string, segundos: number, duracao: number) => {
+    if (!user) return;
+    setPosicoes((prev) => ({
+      ...prev,
+      [aulaId]: { aula_id: aulaId, segundos, duracao_segundos: duracao || null, atualizado_em: new Date().toISOString() },
+    }));
+    await (supabase.rpc as any)("salvar_posicao_aula", {
+      p_aula_id: aulaId,
+      p_segundos: segundos,
+      p_duracao_segundos: duracao || null,
+    });
+  };
+
   if (!authLoading && !user) {
     return <Navigate to={`/entrar?redirect=/cursos/${slug}/estudar`} replace />;
   }
@@ -688,6 +819,12 @@ const CursoEstudar = () => {
   }
 
   const embedUrl = youtubeEmbed(aulaAtual?.youtube_url);
+  const videoIdAtual = youtubeIdDe(embedUrl);
+  const posicaoAtual = aulaAtual ? posicoes[aulaAtual.id] : undefined;
+  const inicioAtual =
+    posicaoAtual && posicaoAtual.segundos > 5 && (!posicaoAtual.duracao_segundos || posicaoAtual.duracao_segundos - 10 > posicaoAtual.segundos)
+      ? posicaoAtual.segundos
+      : 0;
 
   return (
     <>
@@ -909,13 +1046,22 @@ const CursoEstudar = () => {
                     <>
                       {embedUrl ? (
                         <div className="aspect-video w-full rounded-2xl overflow-hidden bg-black shadow-md">
-                          <iframe
-                            src={embedUrl}
-                            title={aulaAtual.titulo}
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                            allowFullScreen
-                            className="w-full h-full"
-                          />
+                          {videoIdAtual ? (
+                            <PlayerYoutube
+                              key={aulaAtual.id}
+                              videoId={videoIdAtual}
+                              inicio={inicioAtual}
+                              onTempo={(segundos, duracao) => salvarPosicao(aulaAtual.id, segundos, duracao)}
+                            />
+                          ) : (
+                            <iframe
+                              src={embedUrl}
+                              title={aulaAtual.titulo}
+                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                              allowFullScreen
+                              className="w-full h-full"
+                            />
+                          )}
                         </div>
                       ) : (
                         <div className="aspect-video w-full rounded-2xl bg-muted flex items-center justify-center">
