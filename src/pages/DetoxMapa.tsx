@@ -87,6 +87,15 @@ const DetoxMapa = () => {
   const [loadingFicha, setLoadingFicha] = useState(true);
   const [saving, setSaving] = useState(false);
   const [justSaved, setJustSaved] = useState(false);
+  const [uid, setUid] = useState<string | null>(null);
+  const [marcas, setMarcas] = useState<string[]>([]);
+  const [fotoPath, setFotoPath] = useState<string | null>(null);
+  const [fotoUrl, setFotoUrl] = useState<string | null>(null);
+  const [subindoFoto, setSubindoFoto] = useState(false);
+  const [erroFoto, setErroFoto] = useState(false);
+  const [salvandoLeitura, setSalvandoLeitura] = useState(false);
+  const [leituraSalva, setLeituraSalva] = useState(false);
+  const marcasHidratadas = useRef(false);
   const hydrated = useRef(false);
   const savedTimer = useRef<number | null>(null);
   const agniEmail = agni?.email ?? null;
@@ -137,6 +146,7 @@ const DetoxMapa = () => {
       } catch { localStorage.removeItem(DRAFT_KEY); }
 
       const uid = accountUser?.id ?? (await currentUserId());
+      if (active) setUid(uid);
 
       if (!uid) {
         if (active) {
@@ -205,6 +215,103 @@ const DetoxMapa = () => {
     const timer = window.setTimeout(() => { void saveAnswers(false); }, 2000);
     return () => window.clearTimeout(timer);
   }, [answers, saveAnswers]);
+
+  const assinarFoto = useCallback(async (path: string) => {
+    const { data } = await supabase.storage.from("linguas-jornada").createSignedUrl(path, 3600);
+    if (data?.signedUrl) setFotoUrl(data.signedUrl);
+  }, []);
+
+  useEffect(() => {
+    let active = true;
+    marcasHidratadas.current = false;
+    if (!uid) {
+      setMarcas([]);
+      setFotoPath(null);
+      setFotoUrl(null);
+      return () => { active = false; };
+    }
+    void (async () => {
+      const { data } = await supabase
+        .from("jornada_ficha")
+        .select("respostas")
+        .eq("user_id", uid)
+        .eq("noite", 2)
+        .maybeSingle();
+      const row = data?.respostas && typeof data.respostas === "object" && !Array.isArray(data.respostas)
+        ? (data.respostas as { marcas?: unknown; foto_path?: unknown })
+        : null;
+      if (!active) return;
+      setMarcas(Array.isArray(row?.marcas) ? (row!.marcas as string[]).filter((m) => typeof m === "string") : []);
+      const path = typeof row?.foto_path === "string" ? row.foto_path : null;
+      setFotoPath(path);
+      if (path) void assinarFoto(path);
+      marcasHidratadas.current = true;
+    })();
+    return () => { active = false; };
+  }, [uid, assinarFoto]);
+
+  const persistNoite2 = useCallback(async (listaMarcas: string[], path: string | null) => {
+    const alvo = uid ?? (await currentUserId()) ?? (await ensureAnonSession());
+    if (!alvo) return { error: new Error("sem sessão"), uid: null as string | null };
+    if (alvo !== uid) setUid(alvo);
+    const { error } = await supabase.from("jornada_ficha").upsert({
+      user_id: alvo,
+      email: accountUser?.email ?? agniEmail,
+      noite: 2,
+      respostas: { marcas: listaMarcas, foto_path: path },
+      dosha_id_publico: doshaResult?.idPublico ?? null,
+      updated_at: new Date().toISOString(),
+    }, { onConflict: "user_id,noite" });
+    return { error, uid: alvo };
+  }, [accountUser?.email, agniEmail, doshaResult?.idPublico, uid]);
+
+  useEffect(() => {
+    if (!marcasHidratadas.current || !marcas.length) return;
+    const timer = window.setTimeout(() => { void persistNoite2(marcas, fotoPath); }, 1500);
+    return () => window.clearTimeout(timer);
+  }, [marcas, fotoPath, persistNoite2]);
+
+  const alternarMarca = (slug: string) => {
+    marcasHidratadas.current = true;
+    setLeituraSalva(false);
+    setMarcas((atual) => (atual.includes(slug) ? atual.filter((m) => m !== slug) : [...atual, slug]));
+  };
+
+  const salvarLeitura = async () => {
+    setSalvandoLeitura(true);
+    const { error } = await persistNoite2(marcas, fotoPath);
+    setSalvandoLeitura(false);
+    if (error) {
+      toast({ title: "Não foi possível salvar", description: "Tente novamente em instantes.", variant: "destructive" });
+      return;
+    }
+    setLeituraSalva(true);
+    toast({ title: "Salvo" });
+  };
+
+  const enviarFoto = async (arquivo: File | null | undefined) => {
+    if (!arquivo) return;
+    setErroFoto(false);
+    setSubindoFoto(true);
+    try {
+      const alvo = uid ?? (await currentUserId()) ?? (await ensureAnonSession());
+      if (!alvo) throw new Error("sem sessão");
+      if (alvo !== uid) setUid(alvo);
+      const { file } = await optimizeImageToJpeg(arquivo, { maxWidth: 1600, quality: 0.85 });
+      const path = `${alvo}/noite2.jpg`;
+      const { error } = await supabase.storage.from("linguas-jornada").upload(path, file, { upsert: true, contentType: "image/jpeg" });
+      if (error) throw error;
+      marcasHidratadas.current = true;
+      setFotoPath(path);
+      await assinarFoto(path);
+      await persistNoite2(marcas, path);
+    } catch {
+      setErroFoto(true);
+    } finally {
+      setSubindoFoto(false);
+    }
+  };
+
 
   const doshaKey = (doshaResult?.doshaprincipal?.toLowerCase().match(/vata|pitta|kapha/)?.[0] || "vata") as DoshaNome;
   const principalScore = doshaKey === "vata" ? doshaResult?.vatascore : doshaKey === "pitta" ? doshaResult?.pittascore : doshaResult?.kaphascore;
