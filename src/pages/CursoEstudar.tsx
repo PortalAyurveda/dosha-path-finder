@@ -999,64 +999,94 @@ const CursoEstudar = () => {
                 </div>
 
                 <aside className="order-2">
-                  <div className="space-y-5">
+                  <div className="space-y-2.5">
                     {modulosConteudo.map((m) => {
                       const aulasMod = aulas
                         .filter((a) => a.modulo_id === m.id)
                         .sort((a, b) => a.ordem - b.ordem);
+                      const feitasMod = aulasMod.filter((a) => concluidas.has(a.id)).length;
                       return (
-                        <div key={m.id}>
-                          <h3
-                            className="font-serif font-bold text-sm uppercase tracking-wider mb-2 px-1"
-                            style={{ color: PRIMARY, opacity: 0.7 }}
+                        <div
+                          key={m.id}
+                          className="rounded-2xl border overflow-hidden bg-white"
+                          style={{ borderColor: `${PRIMARY}22` }}
+                        >
+                          <button
+                            type="button"
+                            onClick={() => setModuloAberto(moduloAberto === m.id ? null : m.id)}
+                            className="w-full flex items-center justify-between gap-2 px-4 min-h-[56px] text-left"
                           >
-                            {m.titulo}
-                          </h3>
-                          <ul className="space-y-1.5">
-                            {aulasMod.map((a) => {
-                              const feita = concluidas.has(a.id);
-                              const ativa = a.id === aulaSelecionadaId;
-                              return (
-                                <li key={a.id}>
-                                  <button
-                                    onClick={() => selecionarAula(a.id)}
-                                    className="w-full text-left flex items-start gap-2.5 p-3 rounded-lg border transition-colors hover:bg-muted/50"
-                                    style={{
-                                      borderColor: ativa ? SALMAO : "transparent",
-                                      background: ativa ? `${SALMAO}12` : "transparent",
-                                    }}
-                                  >
-                                    <span className="mt-0.5 shrink-0">
-                                      {feita ? (
-                                        <CheckCircle2 className="h-4 w-4" style={{ color: SALMAO }} />
-                                      ) : ativa ? (
-                                        <PlayCircle className="h-4 w-4" style={{ color: SALMAO }} />
-                                      ) : (
-                                        <Circle className="h-4 w-4 text-muted-foreground" />
-                                      )}
-                                    </span>
-                                    <div className="min-w-0 flex-1">
-                                      <p
-                                        className="text-sm leading-snug"
-                                        style={{
-                                          color: PRIMARY,
-                                          fontFamily: "'DM Sans', sans-serif",
-                                          fontWeight: ativa ? 600 : 400,
-                                        }}
+                            <span
+                              className="font-serif font-bold text-[15px] leading-snug"
+                              style={{ color: PRIMARY }}
+                            >
+                              {modulosConteudo.findIndex((x) => x.id === m.id) + 1}. {m.titulo}
+                            </span>
+                            <span className="flex items-center gap-2 shrink-0">
+                              <span className="text-xs whitespace-nowrap" style={{ color: PRIMARY, opacity: 0.6 }}>
+                                {feitasMod} de {aulasMod.length}
+                              </span>
+                              <ChevronDown
+                                className={`h-5 w-5 shrink-0 transition-transform ${
+                                  moduloAberto === m.id ? "rotate-180" : ""
+                                }`}
+                                style={{ color: PRIMARY, opacity: 0.6 }}
+                              />
+                            </span>
+                          </button>
+                          {moduloAberto === m.id && (
+                            <ul className="border-t" style={{ borderColor: `${PRIMARY}14` }}>
+                              {aulasMod.map((a) => {
+                                const feita = concluidas.has(a.id);
+                                const ativa = a.id === aulaSelecionadaId;
+                                return (
+                                  <li key={a.id}>
+                                    <button
+                                      onClick={() => selecionarAula(a.id)}
+                                      className="w-full text-left flex items-center gap-2.5 px-3 min-h-[60px] border-l-4 transition-colors hover:bg-muted/50"
+                                      style={{
+                                        borderColor: ativa ? SALMAO : "transparent",
+                                        background: ativa ? `${SALMAO}12` : "transparent",
+                                      }}
+                                    >
+                                      <span
+                                        className="w-6 text-xs shrink-0"
+                                        style={{ color: PRIMARY, opacity: 0.55 }}
                                       >
-                                        {a.titulo}
-                                      </p>
-                                      {a.duracao_segundos ? (
-                                        <p className="text-xs mt-0.5" style={{ color: PRIMARY, opacity: 0.55 }}>
-                                          {fmtDuracao(a.duracao_segundos)}
+                                        {numeroDaAula(a.id)}
+                                      </span>
+                                      <span className="mt-0.5 shrink-0">
+                                        {feita ? (
+                                          <CheckCircle2 className="h-5 w-5" style={{ color: SALMAO }} />
+                                        ) : ativa ? (
+                                          <PlayCircle className="h-5 w-5" style={{ color: SALMAO }} />
+                                        ) : (
+                                          <Circle className="h-5 w-5 text-muted-foreground" />
+                                        )}
+                                      </span>
+                                      <div className="min-w-0 flex-1">
+                                        <p
+                                          className="text-base leading-snug"
+                                          style={{
+                                            color: PRIMARY,
+                                            fontFamily: "'DM Sans', sans-serif",
+                                            fontWeight: ativa ? 600 : 400,
+                                          }}
+                                        >
+                                          {a.titulo}
                                         </p>
-                                      ) : null}
-                                    </div>
-                                  </button>
-                                </li>
-                              );
-                            })}
-                          </ul>
+                                        {a.duracao_segundos ? (
+                                          <p className="text-xs mt-0.5" style={{ color: PRIMARY, opacity: 0.55 }}>
+                                            {fmtDuracao(a.duracao_segundos)}
+                                          </p>
+                                        ) : null}
+                                      </div>
+                                    </button>
+                                  </li>
+                                );
+                              })}
+                            </ul>
+                          )}
                         </div>
                       );
                     })}
