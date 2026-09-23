@@ -2337,6 +2337,45 @@ export type Database = {
         }
         Relationships: []
       }
+      curso_aula_posicao: {
+        Row: {
+          atualizado_em: string
+          aula_id: string
+          duracao_segundos: number | null
+          segundos: number
+          user_id: string
+        }
+        Insert: {
+          atualizado_em?: string
+          aula_id: string
+          duracao_segundos?: number | null
+          segundos?: number
+          user_id: string
+        }
+        Update: {
+          atualizado_em?: string
+          aula_id?: string
+          duracao_segundos?: number | null
+          segundos?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "curso_aula_posicao_aula_id_fkey"
+            columns: ["aula_id"]
+            isOneToOne: false
+            referencedRelation: "curso_aulas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "curso_aula_posicao_aula_id_fkey"
+            columns: ["aula_id"]
+            isOneToOne: false
+            referencedRelation: "curso_aulas_indice"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       curso_aula_progresso: {
         Row: {
           aula_id: string
@@ -11655,6 +11694,14 @@ export type Database = {
       rpg_admin_select: { Args: { _table: string }; Returns: Json }
       rpg_play: { Args: { _args?: Json; _fn: string }; Returns: Json }
       rpg_rpc: { Args: { _args?: Json; _fn: string }; Returns: Json }
+      salvar_posicao_aula: {
+        Args: {
+          p_aula_id: string
+          p_duracao_segundos?: number
+          p_segundos: number
+        }
+        Returns: undefined
+      }
       search_classical_verses: {
         Args: { lim?: number; off?: number; q: string }
         Returns: {
@@ -11680,6 +11727,16 @@ export type Database = {
       tem_acesso_curso: { Args: { p_curso_id: string }; Returns: boolean }
       termos_aplicar: { Args: { p_html: string }; Returns: string }
       text_to_bytea: { Args: { data: string }; Returns: string }
+      ultima_aula_do_curso: {
+        Args: { p_curso_id: string }
+        Returns: {
+          atualizado_em: string
+          aula_id: string
+          duracao_segundos: number
+          segundos: number
+          titulo: string
+        }[]
+      }
       unaccent: { Args: { "": string }; Returns: string }
       urlencode:
         | { Args: { data: Json }; Returns: string }
