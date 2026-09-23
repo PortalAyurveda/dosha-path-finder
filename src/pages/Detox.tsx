@@ -43,6 +43,19 @@ function getYouTubeEmbedUrl(url: string): string | null {
   }
 }
 
+function getYouTubeVideoId(url: string): string | null {
+  try {
+    const u = new URL(url);
+    if (u.hostname.includes("youtu.be")) return u.pathname.slice(1) || null;
+    if (u.searchParams.get("v")) return u.searchParams.get("v");
+    if (u.pathname.startsWith("/embed/")) return u.pathname.split("/embed/")[1] || null;
+    if (u.pathname.startsWith("/live/")) return u.pathname.split("/live/")[1] || null;
+    return null;
+  } catch {
+    return null;
+  }
+}
+
 function useNow(intervalMs = 1000) {
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
@@ -97,6 +110,7 @@ const Detox = () => {
   const [aulas, setAulas] = useState<(DetoxAula & { slug: string })[]>([]);
   const [escolhida, setEscolhida] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [thumbStage, setThumbStage] = useState(0);
   const now = useNow(1000);
   const isVisitor = !user || isAnonymous;
   const noite = noiteDaJornada(new Date(now));
