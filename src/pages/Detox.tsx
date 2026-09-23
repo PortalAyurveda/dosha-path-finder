@@ -283,7 +283,7 @@ const Detox = () => {
                       className="absolute inset-0 h-full w-full object-cover"
                     />
                   )}
-                  <div className="absolute inset-0 bg-detox-text/70" aria-hidden="true" />
+                  <div className="absolute inset-0" style={{ background: "color-mix(in srgb, var(--detox-text) 72%, transparent)" }} aria-hidden="true" />
                   <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 p-6 text-center text-primary-foreground">
                     <p className="font-serif text-xl font-bold md:text-2xl">
                       {estado === "hoje" ? "Essa aula começa hoje, às 19h." : "Essa aula começa quinta, 24 de setembro, às 19h."}
