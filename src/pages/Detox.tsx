@@ -250,7 +250,7 @@ const Detox = () => {
           </div>
         )}
 
-        {!loading && aula && estado !== "futura" && (
+        {!loading && aula && (estado === "gravada" || estado === "live") && (
           <div className="mb-4">
             {estado === "gravada" ? (
               <p className="text-base text-detox-muted">Aula gravada. Você pode assistir quando quiser.</p>
