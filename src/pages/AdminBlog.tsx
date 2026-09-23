@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useUser } from "@/contexts/UserContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -23,6 +23,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import PaginationControls from "@/components/PaginationControls";
+import { usePaginaUrl } from "@/hooks/usePaginaUrl";
 import { ArrowLeft, Search, Loader2, Upload, Save, Copy, Trash2, Pencil, Star, GripVertical } from "lucide-react";
 import { sanitizeSlug } from "@/lib/sanitizeSlug";
 import AdminNav from "@/components/admin/AdminNav";
@@ -55,7 +56,8 @@ const AdminBlog = () => {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [page, setPage] = useState(1);
+  const [pagina, definirPagina] = usePaginaUrl("pagina", debouncedSearch.length > 0);
+  const primeiraBusca = useRef(true);
   const [total, setTotal] = useState(0);
 
   // Edit dialog
@@ -195,14 +197,20 @@ const AdminBlog = () => {
   useEffect(() => {
     const t = setTimeout(() => {
       setDebouncedSearch(search.trim());
-      setPage(1);
+      // Este setTimeout também roda na montagem, 300ms depois. A trava fica aqui
+      // dentro, senão a página que veio do endereço some meio segundo após a carga.
+      if (primeiraBusca.current) {
+        primeiraBusca.current = false;
+        return;
+      }
+      definirPagina(1);
     }, 300);
     return () => clearTimeout(t);
   }, [search]);
 
   const fetchArticles = useCallback(async () => {
     setLoading(true);
-    const from = (page - 1) * PAGE_SIZE;
+    const from = (pagina - 1) * PAGE_SIZE;
     const to = from + PAGE_SIZE - 1;
 
     let q = supabase
@@ -217,6 +225,11 @@ const AdminBlog = () => {
 
     const { data, error, count } = await q;
     if (error) {
+      if ((error as { code?: string }).code === "PGRST103" && pagina > 1) {
+        definirPagina(1);
+        setLoading(false);
+        return;
+      }
       toast.error("Erro ao carregar artigos");
       setLoading(false);
       return;
@@ -224,7 +237,7 @@ const AdminBlog = () => {
     setArticles((data || []) as Article[]);
     setTotal(count || 0);
     setLoading(false);
-  }, [page, debouncedSearch]);
+  }, [pagina, debouncedSearch]);
 
   useEffect(() => {
     fetchArticles();
@@ -242,6 +255,12 @@ const AdminBlog = () => {
   }, []);
 
   const totalPages = useMemo(() => Math.max(1, Math.ceil(total / PAGE_SIZE)), [total]);
+
+  // Endereço pedindo página além do fim: corrige assim que a contagem chega.
+  useEffect(() => {
+    if (loading) return;
+    if (pagina > totalPages) definirPagina(totalPages);
+  }, [loading, pagina, totalPages]);
 
   const openEdit = (article: Article) => {
     setEditing(article);
@@ -624,7 +643,7 @@ const AdminBlog = () => {
           )}
 
           {totalPages > 1 && (
-            <PaginationControls page={page} totalPages={totalPages} onPageChange={setPage} />
+            <PaginationControls page={Math.min(pagina, totalPages)} totalPages={totalPages} onPageChange={definirPagina} />
           )}
         </div>
       </div>
