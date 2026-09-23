@@ -19,6 +19,11 @@ import { STEP_CONFIG, useDoshaTestContent, type Question } from "@/lib/doshaTest
 import { ensureAnonSession, setSessionNome, currentUserId } from "@/lib/anonSession";
 import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 
+const DESTINOS_DE_VOLTA = ["/detox/mapa", "/detox"];
+
+const sanitizeRedirect = (value: string | null): string | null =>
+  value && DESTINOS_DE_VOLTA.includes(value) ? value : null;
+
 const INTERESSE_OPTIONS = [
   { id: 'aliment', label: '🥗 Nutrição, Alimentação e Culinária' },
   { id: 'remedios', label: '🌿 Dravya Guna - Alquimia e Herbologia' },
@@ -30,6 +35,7 @@ const INTERESSE_OPTIONS = [
 const TesteDeDosha = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const redirectDepois = sanitizeRedirect(searchParams.get("redirect"));
   const { toast } = useToast();
   const { setDoshaResultFromId, user, profile } = useUser();
   const mostrarFaixaAkasha = searchParams.get("motivo") === "akasha" && !user?.email;

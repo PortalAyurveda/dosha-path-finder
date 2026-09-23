@@ -206,7 +206,7 @@ const Detox = () => {
               ))}
             </div>
             <div className="w-full lg:w-auto">
-              <JourneyButton to={isVisitor ? "/teste-de-dosha" : "/detox/mapa"} purple={!isVisitor && !!doshaResult}>
+              <JourneyButton to={isVisitor ? "/teste-de-dosha?redirect=/detox/mapa" : "/detox/mapa"} purple={!isVisitor && !!doshaResult}>
                 {isVisitor ? "Fazer o meu teste" : "Abrir meu mapa"}
               </JourneyButton>
             </div>
