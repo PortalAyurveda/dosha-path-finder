@@ -211,11 +211,9 @@ const Detox = () => {
           </div>
         )}
 
-        {!loading && aula && (
+        {!loading && aula && estado !== "futura" && (
           <div className="mb-4">
-            {estado === "futura" && startTs ? (
-              <Countdown target={startTs} />
-            ) : estado === "gravada" ? (
+            {estado === "gravada" ? (
               <p className="text-base text-detox-muted">Aula gravada. Você pode assistir quando quiser.</p>
             ) : (
               <div className="inline-flex items-center gap-2 rounded-full bg-destructive px-3 py-2 text-xs font-bold uppercase text-destructive-foreground">
