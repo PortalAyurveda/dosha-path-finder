@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import { createContext, useContext, useEffect, useRef, useState, ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { User, Session } from "@supabase/supabase-js";
 
@@ -58,6 +58,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [roleLoading, setRoleLoading] = useState(true);
   const [profileLoading, setProfileLoading] = useState(true);
+  const ultimoUserId = useRef(null as string | null);
 
   const fetchProfile = async (userId: string) => {
     setProfileLoading(true);
@@ -231,10 +232,14 @@ export function UserProvider({ children }: { children: ReactNode }) {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, newSession) => {
       if (!isMounted) return;
 
+      const novoUser = newSession?.user ?? null;
+      const mudouUsuario = (novoUser?.id ?? null) !== ultimoUserId.current;
+      ultimoUserId.current = novoUser?.id ?? null;
       setSession(newSession);
-      setUser(newSession?.user ?? null);
-
-      if (newSession?.user) {
+      // Mesma pessoa (TOKEN_REFRESHED, volta do fundo): mantém a referência de user
+      // para as telas que dependem dele não recarregarem.
+      setUser((prev) => (prev && novoUser && prev.id === novoUser.id ? prev : novoUser));
+      if (novoUser && mudouUsuario) {
         // Marca imediatamente que o perfil está em busca, evitando a janela
         // em que loading=false e profile=null (falso "sem plano").
         setProfileLoading(true);

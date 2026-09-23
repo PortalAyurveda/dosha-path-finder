@@ -470,7 +470,7 @@ const CursoEstudar = () => {
   useEffect(() => {
     if (authLoading) return;
     (async () => {
-      setLoading(true);
+      if (!curso || curso.slug !== slug) setLoading(true);
       const { data: c } = await supabase
         .from("cursos")
         .select("id,slug,titulo,descricao,capa_url,ativo,card_logo_url,card_cor_primaria,card_cor_secundaria")
@@ -549,7 +549,7 @@ const CursoEstudar = () => {
 
       setLoading(false);
     })();
-  }, [slug, user, authLoading]);
+  }, [slug, user?.id, authLoading]);
 
   const modulosConteudo = useMemo(() => modulos.filter((m) => m.tipo === "conteudo"), [modulos]);
   const moduloWhatsapp = useMemo(() => modulos.find((m) => m.tipo === "whatsapp"), [modulos]);
