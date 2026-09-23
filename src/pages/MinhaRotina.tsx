@@ -184,7 +184,7 @@ const MinhaRotina = () => {
       // Deixa o React re-renderizar; o próprio efeito abaixo encerrará quando temAcessoRotina virar true.
       if (tries >= maxTries) {
         setConfirmandoPagamento(false);
-        window.history.replaceState({}, "", "/minha-rotina");
+        window.history.replaceState(window.history.state, "", "/minha-rotina");
         return;
       }
       setTimeout(tick, 2000);
@@ -560,7 +560,7 @@ const MinhaRotina = () => {
     setTimeout(() => {
       setConfirmandoPagamento(false);
       if (window.location.search.includes("assinatura=ok")) {
-        window.history.replaceState({}, "", "/minha-rotina");
+        window.history.replaceState(window.history.state, "", "/minha-rotina");
       }
     }, 0);
   }
