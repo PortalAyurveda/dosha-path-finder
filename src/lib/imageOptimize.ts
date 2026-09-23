@@ -91,6 +91,59 @@ export async function optimizeImageToWebP(
   }
 }
 
+// Reduz para no máximo `maxWidth` no lado maior e exporta JPEG.
+export async function optimizeImageToJpeg(
+  file: File,
+  opts: OptimizeOptions = {},
+): Promise<OptimizedImage> {
+  const maxSide = opts.maxWidth ?? 1600;
+  const quality = opts.quality ?? 0.85;
+
+  try {
+    const img = await loadImage(file);
+    const maior = Math.max(img.naturalWidth, img.naturalHeight);
+    const ratio = maior > maxSide ? maxSide / maior : 1;
+    const w = Math.round(img.naturalWidth * ratio);
+    const h = Math.round(img.naturalHeight * ratio);
+
+    const canvas = document.createElement("canvas");
+    canvas.width = w;
+    canvas.height = h;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) throw new Error("Canvas 2D context indisponível");
+    ctx.drawImage(img, 0, 0, w, h);
+
+    const blob: Blob = await new Promise((resolve, reject) => {
+      canvas.toBlob(
+        (b) => (b ? resolve(b) : reject(new Error("toBlob retornou null"))),
+        "image/jpeg",
+        quality,
+      );
+    });
+
+    const newFile = new File([blob], `${stripExt(file.name)}.jpg`, { type: "image/jpeg" });
+    return {
+      file: newFile,
+      blob,
+      originalSize: file.size,
+      optimizedSize: blob.size,
+      width: w,
+      height: h,
+      optimized: true,
+    };
+  } catch {
+    return {
+      file,
+      blob: file,
+      originalSize: file.size,
+      optimizedSize: file.size,
+      width: 0,
+      height: 0,
+      optimized: false,
+    };
+  }
+}
+
 export function formatBytes(n: number): string {
   if (n < 1024) return `${n} B`;
   if (n < 1024 * 1024) return `${(n / 1024).toFixed(1)} KB`;
