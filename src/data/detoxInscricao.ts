@@ -123,12 +123,12 @@ export const DETOX_INSCRICAO = {
 };
 
 export const RELATOS = [
-  { texto: "Meu intestino funciona duas vezes de maneira linda e esvazia tudo.", nome: "Aluna", fonte: "turma do Detox da Primavera" },
-  { texto: "A rinite melhorou. Nunca imaginei que o ghee ia fazer isso por mim, achei que ia me pesar e piorar a alergia por ser do leite. Foi a gordura do ghee que tirou meu muco. Confiei na rotina e veio o resultado.", nome: "Assinante da Rotina", fonte: "2 meses no Portal" },
-  { texto: "Estou dormindo profundamente, não fazia isso há mais de 6 anos. Sem as câimbras e quase sem os calores da menopausa. Agora aprendi a ler minha língua aqui no Portal.", nome: "Assinante Premium", fonte: "1 mês no Portal" },
-  { texto: "Não acordo mais de madrugada para urinar. Até o ronco diminuiu, segundo o marido. Passei a digerir melhor quando coloquei essas receitas novas.", nome: "Assinante Premium", fonte: "6 meses no Portal" },
-  { texto: "Fica delicioso esse Kitchary! Desde que aprendi faço aqui em casa e meu filho também gosta. Obrigada Edson!", nome: "Aluna", fonte: "Portal Ayurveda" },
-  { texto: "É sempre maravilhoso te ouvir, professor! Ayurveda vai muito além de dieta.", nome: "Aluna", fonte: "Portal Ayurveda" },
+  { texto: "Meu intestino funciona duas vezes de maneira linda e esvazia tudo. É a primeira vez que entendo a sensação de eliminação por completo.\u00a0", nome: "Aline", fonte: "Aline - 3 meses depois\nDetox 2021" },
+  { texto: "A rinite melhorou. Nunca imaginei que o ghee ia fazer isso por mim, achei que ia me pesar e piorar a alergia por ser do leite. Foi a gordura do ghee que tirou meu muco. Confiei na rotina e veio o resultado.", nome: "Rodrigo", fonte: "Rodrigo - 1 mes depois\nDetox 2022" },
+  { texto: "Estou dormindo profundamente, não fazia isso há mais de 6 anos. Sem as câimbras e quase sem os calores da menopausa. Agora aprendi a ler minha língua com o Edson e não largo mais Ayurveda.", nome: "Helen - 2 anos de Detox", fonte: "Helen - 2 anos de Detox\nDetox 2024 e 2025" },
+  { texto: "Não acordo mais de madrugada para urinar. Até o ronco diminuiu, segundo o marido. Passei a digerir melhor quando coloquei essas receitas novas.", nome: "Dirce - 3 meses depois", fonte: "Dirce - 3 meses depois\nDetox 2023" },
+  { texto: "Fica delicioso esse Kitchary! Desde que aprendi faço aqui em casa e meu filho também gosta. Obrigada Edson! Esse ano não tivemos gripe nem virose.", nome: "Mathilde", fonte: "Mathilde\nDetox 2024" },
+  { texto: "É sempre maravilhoso te ouvir, professor! Ayurveda vai muito além de dieta. Os resultados são incríveis, muito além do que eu imaginava.", nome: "Carolina", fonte: "A\nCarolina\nDetox 2025" },
 ];
 
 export const PREMIUM_CARD = {
