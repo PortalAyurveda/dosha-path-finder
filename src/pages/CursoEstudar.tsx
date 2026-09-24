@@ -190,6 +190,8 @@ const PlayerYoutube = ({ videoId, inicio, onTempo }: PlayerYoutubeProps) => {
     carregarApiYoutube().then((YT: any) => {
       if (cancelado || !caixaRef.current) return;
       playerRef.current = new YT.Player(caixaRef.current, {
+        width: "100%",
+        height: "100%",
         videoId,
         playerVars: { rel: 0, playsinline: 1, start: inicio, modestbranding: 1 },
         events: {
