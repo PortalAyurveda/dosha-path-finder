@@ -149,7 +149,7 @@ export const PREMIUM_CARD = {
 };
 
 export const RELATO_PREMIUM = {
-  texto: "A periodicidade dos acompanhamentos (revisão) da situação dos doshas tem sido muito interessante, principalmente porque consigo me auto-observar melhor em virtude das mudanças das estações.",
+  texto: "Tenho sentido que as poucas mudanças durante e depois do detox, fizeram uma imensa diferença no mês e no ano seguinte. Nâo tive mais alergias.",
   nome: "Assinante Premium",
   fonte: "Portal Ayurveda",
 };
