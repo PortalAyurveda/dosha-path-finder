@@ -13,6 +13,7 @@ import { getFaixa, type DoshaNome } from "@/data/doshaLevels";
 import { getPalette } from "@/data/landingPalettes";
 import { PERGUNTAS_LINGUA, temMuco } from "@/data/detoxLingua";
 import { noiteDaJornada } from "@/lib/jornada";
+import SinteseAkasha from "@/components/detox/SinteseAkasha";
 import { optimizeImageToJpeg } from "@/lib/imageOptimize";
 
 const DoshaPieChart = lazy(() => import("@/components/charts/DoshaPieChart"));
@@ -396,6 +397,7 @@ const DetoxMapa = () => {
   };
   const noiteAtual = noiteDaJornada();
   const noite1Respondida = Boolean(answers.q1.trim() || answers.q2.trim() || answers.q3.trim());
+  const mapaCompleto = Boolean(doshaResult) && noite1Respondida && PERGUNTAS_LINGUA.some((p) => { const v = leitura[p.chave]; return Array.isArray(v) ? v.length > 0 : Boolean(v); });
   const badgeNoite1 = noiteAtual === 1 ? "Aberta hoje" : noite1Respondida ? "Noite 1 · respondida" : "Noite 1 · ainda dá tempo";
   const emailConfirmado = Boolean(accountUser?.email && accountUser.email_confirmed_at);
 
@@ -614,9 +616,7 @@ const DetoxMapa = () => {
           </div>
         </section>
 
-        <LockedNight eyebrow="Noite 3" badge="Abre quinta, 19h" title="O seu caminho">
-          Abre na <strong>quinta, 24 de setembro, às 19h</strong>. Depende das duas noites anteriores, por isso vem por último.
-        </LockedNight>
+        <SinteseAkasha uid={uid} completo={mapaCompleto} />
       </main>
     </div>
   );
