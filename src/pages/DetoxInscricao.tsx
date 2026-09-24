@@ -3,15 +3,15 @@ import { createElement as h, useState, type ReactNode } from "react";
 import { Helmet } from "react-helmet-async";
 import { useNavigate } from "react-router-dom";
 import {
-  CalendarDays, Check, ClipboardList, CreditCard, Eye, Flame, HelpCircle, Loader2, PlayCircle,
-  QrCode, Quote, Sparkles, Sprout, Sun, Users, UtensilsCrossed, Waves, X,
+  BookOpen, CalendarDays, Check, ClipboardList, CreditCard, Eye, Flame, HelpCircle, Loader2, MessageCircle, PlayCircle,
+  QrCode, Quote, Sparkles, Sprout, Sun, TrendingUp, Users, UtensilsCrossed, Waves, X,
 } from "lucide-react";
 import { useUser } from "@/contexts/UserContext";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import MeuMapaDetox from "@/components/detox/MeuMapaDetox";
 import {
-  DETOX_INSCRICAO as D, RELATOS, RELATO_PREMIUM, RELATO_GRUPO, FRASE_EDSON_2025, RECEITAS, RECEITAS_TITULO, IMAGENS,
+  DETOX_INSCRICAO as D, PREMIUM_CARD, RELATOS, RELATO_PREMIUM, RELATO_GRUPO, FRASE_EDSON_2025, RECEITAS, RECEITAS_TITULO, IMAGENS,
 } from "@/data/detoxInscricao";
 
 type Metodo = "cartao" | "pix";
@@ -20,6 +20,9 @@ type Relato = { texto: string; nome: string; fonte: string };
 const ICONES: { [k: string]: typeof Sun } = {
   sol: Sun, grupo: Users, aulas: PlayCircle, lista: ClipboardList, cardapio: UtensilsCrossed,
   duvidas: HelpCircle, premium: Sparkles, lingua: Eye,
+};
+const ICONES_PREMIUM: { [k: string]: typeof Sun } = {
+  akasha: MessageCircle, revisao: TrendingUp, rotina: UtensilsCrossed, lingua: Eye, aulas: BookOpen, conteudo: Sparkles,
 };
 const ETAPAS = [
   { icone: Flame, fundo: "bg-gradient-to-br from-[#E8893F] to-[#C8602A]" },
@@ -180,16 +183,34 @@ const DetoxInscricao = () => {
         })),
     ], { largura: "max-w-[880px]" }),
 
-    secao([
-      olho(D.premium.eyebrow),
-      titulo(D.premium.titulo),
-      par(D.premium.texto),
-      h("figure", { key: "edson", className: "m-0 mt-2 rounded-3xl bg-[#1E2547] p-6 md:p-8" },
-        h(Quote, { className: "h-6 w-6 text-[#F2CB05]", "aria-hidden": true }),
-        h("blockquote", { className: "m-0 mt-3 font-serif text-[19px] md:text-[21px] italic leading-relaxed text-white" }, FRASE_EDSON_2025),
-        h("figcaption", { className: "mt-3 text-[14px] text-white/70" }, "Edson Osorio, Detox de 2025")),
-      relato(RELATO_PREMIUM, 0, "bg-[#FBF1E7]"),
-    ], { fundo: "bg-white border-y border-[#F0E6DB]" }),
+    h("section", { className: "px-4 py-12 md:py-16" },
+      h("div", { className: "mx-auto flex max-w-[1080px] flex-col gap-6" },
+        h("div", { className: "relative overflow-hidden rounded-[32px] bg-gradient-to-br from-[#1E2547] via-[#2A2F5E] to-[#3B2F5C] p-6 text-white shadow-[0_30px_60px_-30px_rgba(30,37,71,0.7)] md:p-10" },
+          h("img", { src: IMAGENS.sol, alt: "", "aria-hidden": true, className: "pointer-events-none absolute -right-20 -top-20 w-72 opacity-10" }),
+          h("div", { className: "relative flex flex-col gap-6" },
+            h("div", { className: "flex flex-wrap items-center gap-4" },
+              h("img", { src: PREMIUM_CARD.logo, alt: "Akasha I.A.", className: "h-14 w-14 rounded-2xl bg-white/10 p-2" }),
+              h("div", { className: "flex flex-col gap-1" },
+                h("p", { className: "m-0 text-[12px] font-bold uppercase tracking-[0.16em] text-[#F2CB05]" }, PREMIUM_CARD.eyebrow),
+                h("h2", { className: "m-0 font-serif text-[26px] md:text-[34px] font-bold leading-tight text-white text-balance" }, PREMIUM_CARD.titulo))),
+            h("p", { className: "m-0 max-w-[760px] text-[16px] md:text-[17px] leading-[1.75] text-white/85" }, PREMIUM_CARD.texto),
+            h("div", { className: "grid gap-3 sm:grid-cols-2 lg:grid-cols-3" },
+              ...PREMIUM_CARD.itens.map((x, i) => {
+                const Icone = ICONES_PREMIUM[x.icone] ?? Sparkles;
+                return h("div", { key: i, className: "flex flex-col gap-2 rounded-2xl bg-white/[0.07] p-5 ring-1 ring-white/10" },
+                  h(Icone, { className: "h-6 w-6 text-[#F2CB05]", "aria-hidden": true }),
+                  h("p", { className: "m-0 text-[16px] font-bold text-white" }, x.titulo),
+                  h("p", { className: "m-0 text-[14px] leading-relaxed text-white/75" }, x.texto));
+              })),
+            h("div", { className: "flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-[#F2CB05] px-5 py-4 text-[#1E2547]" },
+              h("p", { className: "m-0 text-[15px] font-bold" }, PREMIUM_CARD.valor_titulo),
+              h("p", { className: "m-0 text-[15px]" }, PREMIUM_CARD.valor_texto)))),
+        h("div", { className: "grid gap-4 md:grid-cols-2" },
+          h("figure", { className: "m-0 rounded-3xl border border-[#EFE4D8] bg-white p-6" },
+            h(Quote, { className: "h-6 w-6 text-[#D9A77E]", "aria-hidden": true }),
+            h("blockquote", { className: "m-0 mt-3 font-serif text-[18px] italic leading-relaxed text-[#1E2547]" }, FRASE_EDSON_2025),
+            h("figcaption", { className: "mt-3 text-[14px] text-[#6B6480]" }, "Edson Osorio, Detox de 2025")),
+          relato(RELATO_PREMIUM, 0, "bg-[#FBF1E7]")))),
 
     secao([
       olho(D.acompanhamento.eyebrow),
