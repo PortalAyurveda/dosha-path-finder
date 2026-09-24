@@ -2,9 +2,11 @@
 import { createElement as h } from "react";
 import { Helmet } from "react-helmet-async";
 import { Link, useSearchParams } from "react-router-dom";
+import { useUser } from "@/contexts/UserContext";
 
 const DetoxObrigado = () => {
   const [params] = useSearchParams();
+  const { user, isAnonymous } = useUser();
   const status = params.get("status") ?? params.get("collection_status") ?? "approved";
   const aprovado = status === "approved";
   const recusado = status === "rejected" || status === "failure" || status === "null";
@@ -29,10 +31,11 @@ const DetoxObrigado = () => {
       h("p", { className: "m-0 text-[15px] font-bold uppercase tracking-[1.2px] text-[#8C4513]" }, "Detox da Primavera 2026"),
       h("h1", { className: "m-0 font-serif text-[36px] font-bold leading-tight text-[#1E2547] md:text-[48px]" }, titulo),
       h("p", { className: "m-0 text-[19px] leading-relaxed md:text-[21px]" }, texto),
+      !recusado ? h("p", { className: "m-0 text-[17px] leading-relaxed text-[#4A4458]" }, "Para abrir o seu Detox, entre no Portal com o mesmo email que você usou no pagamento.") : null,
       recusado
         ? h(Link, { to: "/detox/inscricao", className: "flex min-h-[64px] items-center justify-center rounded-full bg-[#8C4513] px-6 text-[18px] font-bold text-white hover:opacity-90" }, "Tentar de novo")
         : h("div", { className: "flex flex-col gap-6" },
-            h(Link, { to: "/cursos/detox-da-primavera/estudar", className: "flex min-h-[64px] items-center justify-center rounded-full bg-[#8C4513] px-6 text-[18px] font-bold text-white hover:opacity-90" }, "Abrir o meu Detox"),
+            h(Link, { to: !user || isAnonymous ? "/entrar?redirect=/cursos/detox-da-primavera/estudar" : "/cursos/detox-da-primavera/estudar", className: "flex min-h-[64px] items-center justify-center rounded-full bg-[#E07B39] px-6 text-[18px] font-bold text-white hover:bg-[#D0662A]" }, "Abrir o meu Detox"),
             h("div", { className: "flex flex-col gap-3 rounded-[24px] bg-white p-6" },
               ...passos.map((p, i) =>
                 h("div", { key: i, className: `flex flex-col gap-1 py-3 ${i > 0 ? "border-t border-[#EADFD3]" : ""}` },
