@@ -6,7 +6,7 @@ export const DETOX_INSCRICAO = {
   hero: {
     eyebrow: "Detox da Primavera com Edson Osorio",
     titulo: "10 dias para tirar do corpo o que o tempo acumulou",
-    subtitulo: "Uma limpeza ayurvédica feita em casa, com comida quente e gostosa, o roteiro de cada dia e o grupo comigo do começo ao fim. Para você entrar na primavera mais leve e preparar o corpo para a próxima estação.",
+    subtitulo: "Uma limpeza ayurvédica feita em casa, com comida quente e gostosa, o roteiro de cada dia e o grupo comigo do começo ao fim. Para você entrar na primavera preparando seu corpo para restaurar sua vitalidade e gerar longevidade e resistência.",
     preco_rotulo: "Inscrição",
     preco: "R$ 450",
     preco_linha: "Em até 3x de R$ 150 sem juros no cartão, ou R$ 427,50 no Pix.",
