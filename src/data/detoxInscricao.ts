@@ -143,6 +143,7 @@ export const PREMIUM_CARD = {
   valor_texto: "Nos 3 meses, R$ 239,70 que já vêm com o seu Detox.",
 };
 
+export const RELATO_PREMIUM = {
   texto: "A periodicidade dos acompanhamentos (revisão) da situação dos doshas tem sido muito interessante, principalmente porque consigo me auto-observar melhor em virtude das mudanças das estações.",
   nome: "Juliana",
   fonte: "2026",
