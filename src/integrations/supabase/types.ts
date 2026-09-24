@@ -5376,6 +5376,7 @@ export type Database = {
           dosha_id_publico: string | null
           email: string | null
           id: string
+          jornada_slug: string
           noite: number
           respostas: Json
           updated_at: string
@@ -5386,6 +5387,7 @@ export type Database = {
           dosha_id_publico?: string | null
           email?: string | null
           id?: string
+          jornada_slug?: string
           noite?: number
           respostas?: Json
           updated_at?: string
@@ -5396,6 +5398,7 @@ export type Database = {
           dosha_id_publico?: string | null
           email?: string | null
           id?: string
+          jornada_slug?: string
           noite?: number
           respostas?: Json
           updated_at?: string

@@ -123,10 +123,24 @@ export function corpoTesteDosha(faq: { q: string; a: string }[]): string {
   ].join("\n");
 }
 
-/** Bloco que entra logo depois do div root. Some sozinho quando o React desenha a página. */
+/**
+ * Bloco que entra logo depois do div root. Só some quando o conteúdo de verdade estiver na tela:
+ * um h1 dentro do #root com o mesmo texto do h1 do bloco (sem acento, sem maiúscula, espaços
+ * juntos). No esqueleto de carregamento e nas telas de erro / "não encontrado" o bloco fica, e a
+ * página continua com o próprio texto. Também some quando a rota muda (navegação interna) e,
+ * como rede de segurança, 8 s depois de o React montar uma tela sem nenhum h1.
+ */
 export function blocoCorpo(rota: string, corpo: string): string {
   const script =
     "(function(){var c=document.getElementById('seo-corpo'),r=document.getElementById('root');if(!c||!r)return;" +
-    "var tirar=function(){if(r.firstChild){c.remove();o.disconnect();}};var o=new MutationObserver(tirar);o.observe(r,{childList:true});tirar();})();";
+    "var n=function(s){return (s||'').normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').replace(/\\s+/g,' ').trim().toLowerCase();};" +
+    "var h=c.querySelector('h1'),alvo=h?n(h.textContent):'',rota=c.getAttribute('data-rota')||'',t=null;" +
+    "var fim=function(){c.remove();o.disconnect();if(t){clearTimeout(t);}};" +
+    "var tirar=function(){var p=location.pathname;if(p.length>1){p=p.replace(/\\/+$/,'');}" +
+    "if(p!==rota){fim();return;}" +
+    "var hs=r.getElementsByTagName('h1');" +
+    "for(var i=0;i<hs.length;i++){if(alvo&&n(hs[i].textContent)===alvo){fim();return;}}" +
+    "if(hs.length===0&&r.firstChild&&!t){t=setTimeout(function(){if(r.getElementsByTagName('h1').length===0){fim();}else{t=null;tirar();}},8000);}};" +
+    "var o=new MutationObserver(tirar);o.observe(r,{childList:true,subtree:true});tirar();})();";
   return `\n    ${A}div id="seo-corpo" data-rota="${esc(rota)}">${corpo}${A}/div>\n    ${A}script>${script}${A}/script>`;
 }
