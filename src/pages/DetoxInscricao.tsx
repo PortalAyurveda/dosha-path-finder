@@ -24,8 +24,8 @@ const secao = (conteudo: ReactNode[], opts: { fundo?: string; largura?: string; 
     h("div", { className: `mx-auto flex w-full flex-col gap-5 ${opts.largura ?? "max-w-[760px]"}` }, ...conteudo));
 
 const titulo = (t: string) => h("h2", { className: H2 }, t);
-const par = (t: string, extra = "") => h("p", { className: `${P} ${extra}` }, talamoExtra(extra) as never);
 const parTexto = (t: string, extra = "") => h("p", { className: `${P} ${extra}` }, t);
+
 
 const ponto = (t: string, cor: string, i: number) =>
   h("div", { key: i, className: "flex items-start gap-3.5" },
@@ -43,9 +43,6 @@ const ICONE_ITEM: { [k: string]: typeof Sun } = {
   cardapio: Utensils, duvidas: HelpCircle, premium: Crown, lingua: Camera,
 };
 
-function talamoExtra(extra: string) {
-  return "";
-}
 
 const DetoxInscricao = () => {
   const { user, isAnonymous } = useUser();
