@@ -153,7 +153,7 @@ if (typeof window !== "undefined") {
 
 const LayoutOrBare = ({ children }: { children: React.ReactNode }) => {
   const { pathname } = useLocation();
-  const SEM_MOLDURA = ["/aovivo", "/imprimir"];
+  const SEM_MOLDURA = ["/aovivo", "/imprimir", "/detox/inscricao"];
   if (SEM_MOLDURA.includes(pathname)) return <>{children}</>;
   return <Layout>{children}</Layout>;
 };
