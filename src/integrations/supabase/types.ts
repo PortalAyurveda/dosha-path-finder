@@ -2839,6 +2839,9 @@ export type Database = {
           criado_em: string
           data_aula: string | null
           duracao_seg: number | null
+          fases: string[] | null
+          no_tutor: boolean
+          rotulo: string | null
           tipo: string | null
           titulo: string | null
           video_id: string
@@ -2848,6 +2851,9 @@ export type Database = {
           criado_em?: string
           data_aula?: string | null
           duracao_seg?: number | null
+          fases?: string[] | null
+          no_tutor?: boolean
+          rotulo?: string | null
           tipo?: string | null
           titulo?: string | null
           video_id: string
@@ -2857,10 +2863,31 @@ export type Database = {
           criado_em?: string
           data_aula?: string | null
           duracao_seg?: number | null
+          fases?: string[] | null
+          no_tutor?: boolean
+          rotulo?: string | null
           tipo?: string | null
           titulo?: string | null
           video_id?: string
           visibilidade?: string | null
+        }
+        Relationships: []
+      }
+      detox_calendario: {
+        Row: {
+          dia: number
+          fase: string
+          nota: string | null
+        }
+        Insert: {
+          dia: number
+          fase: string
+          nota?: string | null
+        }
+        Update: {
+          dia?: number
+          fase?: string
+          nota?: string | null
         }
         Relationships: []
       }
@@ -3242,16 +3269,72 @@ export type Database = {
         }
         Relationships: []
       }
-      documents_detox_rascunho: {
+      documents_detox_arquivo_2409: {
         Row: {
           chars: number | null
+          content: string | null
+          content_antes: string | null
+          criado_em: string | null
+          cursos: string[] | null
+          embedding: string | null
+          id: number | null
+          minuto: number | null
+          pedaco: number | null
+          segundo: number | null
+          titulo: string | null
+          total_pedacos: number | null
+          url_youtube: string | null
+          video_id: string | null
+        }
+        Insert: {
+          chars?: number | null
+          content?: string | null
+          content_antes?: string | null
+          criado_em?: string | null
+          cursos?: string[] | null
+          embedding?: string | null
+          id?: number | null
+          minuto?: number | null
+          pedaco?: number | null
+          segundo?: number | null
+          titulo?: string | null
+          total_pedacos?: number | null
+          url_youtube?: string | null
+          video_id?: string | null
+        }
+        Update: {
+          chars?: number | null
+          content?: string | null
+          content_antes?: string | null
+          criado_em?: string | null
+          cursos?: string[] | null
+          embedding?: string | null
+          id?: number | null
+          minuto?: number | null
+          pedaco?: number | null
+          segundo?: number | null
+          titulo?: string | null
+          total_pedacos?: number | null
+          url_youtube?: string | null
+          video_id?: string | null
+        }
+        Relationships: []
+      }
+      documents_detox_rascunho: {
+        Row: {
+          ano: number | null
+          chars: number | null
           content: string
+          content_antes: string | null
           criado_em: string
           cursos: string[]
+          doshas: string[] | null
           embedding: string | null
+          fases: string[] | null
           id: number
           minuto: number | null
           pedaco: number | null
+          rotulo: string | null
           segundo: number | null
           titulo: string | null
           total_pedacos: number | null
@@ -3259,14 +3342,19 @@ export type Database = {
           video_id: string
         }
         Insert: {
+          ano?: number | null
           chars?: number | null
           content: string
+          content_antes?: string | null
           criado_em?: string
           cursos?: string[]
+          doshas?: string[] | null
           embedding?: string | null
+          fases?: string[] | null
           id?: number
           minuto?: number | null
           pedaco?: number | null
+          rotulo?: string | null
           segundo?: number | null
           titulo?: string | null
           total_pedacos?: number | null
@@ -3274,14 +3362,19 @@ export type Database = {
           video_id: string
         }
         Update: {
+          ano?: number | null
           chars?: number | null
           content?: string
+          content_antes?: string | null
           criado_em?: string
           cursos?: string[]
+          doshas?: string[] | null
           embedding?: string | null
+          fases?: string[] | null
           id?: number
           minuto?: number | null
           pedaco?: number | null
+          rotulo?: string | null
           segundo?: number | null
           titulo?: string | null
           total_pedacos?: number | null
@@ -11029,6 +11122,7 @@ export type Database = {
       akasha_gate: { Args: { p_email: string }; Returns: Json }
       akasha_reset_mensal: { Args: never; Returns: number }
       antiruido_ayurveda: { Args: { t: string }; Returns: string }
+      antiruido_desde: { Args: { p_id: number; t: string }; Returns: string }
       arpg_record_rename: {
         Args: { p_nick: string; p_player: string }
         Returns: Json
@@ -11245,6 +11339,12 @@ export type Database = {
         Returns: number
       }
       detox_embed_lote: { Args: { p_lote?: number }; Returns: number }
+      detox_fases_do_trecho: {
+        Args: { p_padrao: string[]; t: string }
+        Returns: string[]
+      }
+      detox_limpar_frases: { Args: { t: string }; Returns: string }
+      detox_limpar_frases2: { Args: { t: string }; Returns: string }
       detox_norm: { Args: { p: string }; Returns: string }
       detox_pont_ciclo: {
         Args: { p_modelo?: string; p_voo?: number }
@@ -11632,6 +11732,25 @@ export type Database = {
           tags: string[]
           tipo: string
           titulo: string
+        }[]
+      }
+      match_detox_primavera: {
+        Args: {
+          match_count?: number
+          p_dia?: number
+          p_dosha?: string
+          query_embedding: string
+        }
+        Returns: {
+          content: string
+          doshas: string[]
+          fases: string[]
+          id: number
+          minuto: number
+          rotulo: string
+          score: number
+          similarity: number
+          url_youtube: string
         }[]
       }
       match_documents: {
