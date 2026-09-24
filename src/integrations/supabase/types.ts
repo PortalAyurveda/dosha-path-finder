@@ -1581,6 +1581,93 @@ export type Database = {
         }
         Relationships: []
       }
+      bkp_detox_matriculas_20260924: {
+        Row: {
+          criado_em: string | null
+          curso_id: string | null
+          expira_em: string | null
+          id: string | null
+          mp_payment_id: string | null
+          origem: string | null
+          status: string | null
+          stripe_session_id: string | null
+          user_id: string | null
+          valor_pago: number | null
+        }
+        Insert: {
+          criado_em?: string | null
+          curso_id?: string | null
+          expira_em?: string | null
+          id?: string | null
+          mp_payment_id?: string | null
+          origem?: string | null
+          status?: string | null
+          stripe_session_id?: string | null
+          user_id?: string | null
+          valor_pago?: number | null
+        }
+        Update: {
+          criado_em?: string | null
+          curso_id?: string | null
+          expira_em?: string | null
+          id?: string | null
+          mp_payment_id?: string | null
+          origem?: string | null
+          status?: string | null
+          stripe_session_id?: string | null
+          user_id?: string | null
+          valor_pago?: number | null
+        }
+        Relationships: []
+      }
+      bkp_detox_resgates_20260924: {
+        Row: {
+          aluno_externo_id: string | null
+          codigo: string | null
+          criado_em: string | null
+          curso_id: string | null
+          data_compra_origem: string | null
+          email: string | null
+          id: string | null
+          plataforma_origem: string | null
+          tipo: string | null
+          turma_origem: string | null
+          updated_at: string | null
+          usado_em: string | null
+          usado_por_user_id: string | null
+        }
+        Insert: {
+          aluno_externo_id?: string | null
+          codigo?: string | null
+          criado_em?: string | null
+          curso_id?: string | null
+          data_compra_origem?: string | null
+          email?: string | null
+          id?: string | null
+          plataforma_origem?: string | null
+          tipo?: string | null
+          turma_origem?: string | null
+          updated_at?: string | null
+          usado_em?: string | null
+          usado_por_user_id?: string | null
+        }
+        Update: {
+          aluno_externo_id?: string | null
+          codigo?: string | null
+          criado_em?: string | null
+          curso_id?: string | null
+          data_compra_origem?: string | null
+          email?: string | null
+          id?: string | null
+          plataforma_origem?: string | null
+          tipo?: string | null
+          turma_origem?: string | null
+          updated_at?: string | null
+          usado_em?: string | null
+          usado_por_user_id?: string | null
+        }
+        Relationships: []
+      }
       bling_tokens: {
         Row: {
           access_token: string
@@ -5652,6 +5739,36 @@ export type Database = {
         }
         Relationships: []
       }
+      jornada_sintese: {
+        Row: {
+          classificacao: string
+          dados: Json
+          fichas_em: string | null
+          gerado_em: string
+          jornada_slug: string
+          texto: string
+          user_id: string
+        }
+        Insert: {
+          classificacao: string
+          dados?: Json
+          fichas_em?: string | null
+          gerado_em?: string
+          jornada_slug?: string
+          texto: string
+          user_id: string
+        }
+        Update: {
+          classificacao?: string
+          dados?: Json
+          fichas_em?: string | null
+          gerado_em?: string
+          jornada_slug?: string
+          texto?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       jornadaaliment: {
         Row: {
           content: string | null
@@ -7988,6 +8105,44 @@ export type Database = {
           video_id?: string
         }
         Relationships: []
+      }
+      premium_por_curso: {
+        Row: {
+          ate: string
+          concedido_em: string
+          curso_id: string
+          encerrado_em: string | null
+          id: number
+          ja_era_premium: boolean
+          user_id: string
+        }
+        Insert: {
+          ate: string
+          concedido_em?: string
+          curso_id: string
+          encerrado_em?: string | null
+          id?: number
+          ja_era_premium?: boolean
+          user_id: string
+        }
+        Update: {
+          ate?: string
+          concedido_em?: string
+          curso_id?: string
+          encerrado_em?: string | null
+          id?: number
+          ja_era_premium?: boolean
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "premium_por_curso_curso_id_fkey"
+            columns: ["curso_id"]
+            isOneToOne: false
+            referencedRelation: "cursos"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       prompt_extrator: {
         Row: {
@@ -11339,6 +11494,7 @@ export type Database = {
         Returns: number
       }
       detox_embed_lote: { Args: { p_lote?: number }; Returns: number }
+      detox_encerra_premium: { Args: never; Returns: number }
       detox_fases_do_trecho: {
         Args: { p_padrao: string[]; t: string }
         Returns: string[]
@@ -11692,6 +11848,21 @@ export type Database = {
           nivel_ordem: number
           xp_total: number
         }[]
+      }
+      jornada_classifica: {
+        Args: { estado: Json; lingua: Json; teste: Json }
+        Returns: string
+      }
+      jornada_dossies: { Args: { p_so_pendentes?: boolean }; Returns: Json[] }
+      jornada_dossies_lidos: {
+        Args: { p_so_pendentes?: boolean }
+        Returns: Json[]
+      }
+      jornada_estado_teste: { Args: { d: Json }; Returns: Json }
+      jornada_lingua_conta: { Args: { r: Json }; Returns: Json }
+      jornada_sintese_gravar: {
+        Args: { p_texto: string; p_uid: string }
+        Returns: string
       }
       kit_detalhe: { Args: { p_slug: string }; Returns: Json }
       kit_expandir: {
