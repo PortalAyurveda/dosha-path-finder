@@ -2,7 +2,7 @@
 // Relatos reais, como a pessoa escreveu, com a fonte de cada um.
 
 export const DETOX_INSCRICAO = {
-  faixa: "Inscrições abertas · Começa em 5 de outubro",
+  faixa: "Detox da Primavera com Edson Osorio · Inscrições abertas · Começa em 5 de outubro",
   hero: {
     eyebrow: "Detox da Primavera com Edson Osorio",
     titulo: "10 dias para tirar do corpo o que o tempo acumulou",
@@ -30,7 +30,7 @@ export const DETOX_INSCRICAO = {
   },
   processo: {
     eyebrow: "Início, meio e fim",
-    titulo: "Dissolver, eliminar e restaurar",
+    titulo: "O Detox da Primavera em três etapas",
     intro: "O detox do Ayurveda é quente. O ama é frio e pesado, então só sai com calor e com óleo. São três etapas, todas em casa.",
     etapas: [
       { verbo: "Dissolver", nome: "Saturação", texto: "Comida quente, cremosa e cozida, com ghee, a manteiga clarificada. O calor e o óleo dissolvem o ama e soltam o que estava preso nos tecidos." },
@@ -46,7 +46,7 @@ export const DETOX_INSCRICAO = {
   ],
   o_que_recebe: {
     eyebrow: "Tudo incluído",
-    titulo: "O que vem com a sua inscrição",
+    titulo: "O que vem com o Detox da Primavera",
     itens: [
       { icone: "sol", titulo: "10 dias de programa ao vivo", texto: "O detox completo, com o passo a passo de cada dia, com aulas ao vivo comigo" },
       { icone: "grupo", titulo: "O grupo comigo", texto: "Acompanho a turma no WhatsApp durante toda a jornada, em grupos de até 50 pessoas." },
@@ -107,23 +107,28 @@ export const DETOX_INSCRICAO = {
   ],
   professor: {
     papel: "Terapeuta e professor de Ayurveda há 15 anos",
-    texto: "O Ayurveda mudou a minha vida em 2009. Desde então, são mais de 6.000 alunos formados. Este é o sexto ano do Detox da Primavera, e todo ano eu faço o meu junto com a turma.",
+    bio: [
+      "Terapeuta e professor há 15 anos. Mais de 6.000 alunos formados.",
+      "Fui diagnosticado com TDAH cedo e recusei aceitar que viveria à base de remédios. Pesava 54kg com 1,74m. Comia salada, fazia jejum espiritual, tomava chá, e achava que estava fazendo certo. Estava destruindo meu sistema nervoso.",
+      "O Ayurveda mudou minha vida em 2009 a partir de um teste de Dosha que fiz numa folha de caderno copiada da internet. Desde então, dediquei 15 anos a organizar esse conhecimento em um método que qualquer brasileiro consiga aplicar.",
+      "Eu não gosto de truques. Entrego tudo que você precisa e ilumino o caminho. A conquista é certa, basta você trilhá-lo.",
+    ],
     citacao: "Eu quero ensinar ao ponto em que vocês não precisam mais de mim.",
   },
   fechamento: {
-    titulo: "Vamos juntos nesta primavera?",
+    titulo: "Vamos juntos no Detox da Primavera?",
     texto: "Dez dias para dissolver, eliminar e restaurar, com comida quente, o roteiro de cada dia e o grupo comigo. E três meses de Portal Premium para acompanhar os resultados na próxima estação.",
     preco_linha: "R$ 450 em até 3x sem juros, ou R$ 427,50 no Pix.",
   },
 };
 
 export const RELATOS = [
-  { texto: "Meu intestino funciona duas vezes de maneira linda e esvazia tudo.", nome: "Alana", fonte: "2022" },
-  { texto: "Fica delicioso esse Kitchary! Desde que aprendi faço aqui em casa e meu filho também gosta. Obrigada Edson!", nome: "Dalila", fonte: "2026" },
-  { texto: "A Ayurveda me ajudou a transformar minhas rotinas e me trazer mais saúde!", nome: "Angela", fonte: "2026" },
-  { texto: "Ayurveda lúcida e prática, amei.", nome: "Renata", fonte: "2026" },
-  { texto: "É sempre maravilhoso te ouvir, professor! Ayurveda vai muito além de \"dieta\".", nome: "Camila", fonte: "2026" },
-  { texto: "Já fiz vários cursos... Encantada com a forma que você ensina! Agradeço muito!", nome: "Selma", fonte: "2026" },
+  { texto: "Meu intestino funciona duas vezes de maneira linda e esvazia tudo.", nome: "Aluna", fonte: "turma do Detox da Primavera" },
+  { texto: "A rinite melhorou. Nunca imaginei que o ghee ia fazer isso por mim, achei que ia me pesar e piorar a alergia por ser do leite. Foi a gordura do ghee que tirou meu muco. Confiei na rotina e veio o resultado.", nome: "Assinante da Rotina", fonte: "2 meses no Portal" },
+  { texto: "Estou dormindo profundamente, não fazia isso há mais de 6 anos. Sem as câimbras e quase sem os calores da menopausa. Agora aprendi a ler minha língua aqui no Portal.", nome: "Assinante Premium", fonte: "1 mês no Portal" },
+  { texto: "Não acordo mais de madrugada para urinar. Até o ronco diminuiu, segundo o marido. Passei a digerir melhor quando coloquei essas receitas novas.", nome: "Assinante Premium", fonte: "6 meses no Portal" },
+  { texto: "Fica delicioso esse Kitchary! Desde que aprendi faço aqui em casa e meu filho também gosta. Obrigada Edson!", nome: "Aluna", fonte: "Portal Ayurveda" },
+  { texto: "É sempre maravilhoso te ouvir, professor! Ayurveda vai muito além de dieta.", nome: "Aluna", fonte: "Portal Ayurveda" },
 ];
 
 export const PREMIUM_CARD = {
@@ -145,14 +150,14 @@ export const PREMIUM_CARD = {
 
 export const RELATO_PREMIUM = {
   texto: "A periodicidade dos acompanhamentos (revisão) da situação dos doshas tem sido muito interessante, principalmente porque consigo me auto-observar melhor em virtude das mudanças das estações.",
-  nome: "Juliana",
-  fonte: "2026",
+  nome: "Assinante Premium",
+  fonte: "Portal Ayurveda",
 };
 
 export const RELATO_GRUPO = {
   texto: "Excelente conteúdo. Nesta dinâmica o entendimento acaba acessando o entendimento de todos.",
-  nome: "Graziela",
-  fonte: "2026",
+  nome: "Aluna",
+  fonte: "Portal Ayurveda",
 };
 
 export const FRASE_EDSON_2025 = "O mais legal do detox não é a semana seguinte, é uns dois meses depois, quando os seus sete tecidos já começaram a se equilibrar de novo.";
