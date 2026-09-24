@@ -3932,6 +3932,41 @@ export type Database = {
           },
         ]
       }
+      escola_aula_progresso: {
+        Row: {
+          atualizado_em: string
+          concluida_em: string | null
+          duracao_segundos: number | null
+          recurso_id: string
+          segundos: number
+          user_id: string
+        }
+        Insert: {
+          atualizado_em?: string
+          concluida_em?: string | null
+          duracao_segundos?: number | null
+          recurso_id: string
+          segundos?: number
+          user_id: string
+        }
+        Update: {
+          atualizado_em?: string
+          concluida_em?: string | null
+          duracao_segundos?: number | null
+          recurso_id?: string
+          segundos?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "escola_aula_progresso_recurso_id_fkey"
+            columns: ["recurso_id"]
+            isOneToOne: false
+            referencedRelation: "escola_modulo_recursos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       escola_avaliacao_alternativas: {
         Row: {
           correta: boolean
@@ -11053,6 +11088,40 @@ export type Database = {
           ordem: number
           refeicao: string
         }[]
+      }
+      escola_continuar: {
+        Args: never
+        Returns: {
+          atualizado_em: string
+          duracao_segundos: number
+          modulo_id: string
+          modulo_numero: number
+          modulo_slug: string
+          modulo_titulo: string
+          recurso_id: string
+          segundos: number
+          titulo: string
+        }[]
+      }
+      escola_marcar_concluida: {
+        Args: { p_concluida: boolean; p_recurso_id: string }
+        Returns: undefined
+      }
+      escola_progresso_modulos: {
+        Args: never
+        Returns: {
+          aulas_vistas: number
+          modulo_id: string
+          total_aulas: number
+        }[]
+      }
+      escola_salvar_posicao: {
+        Args: {
+          p_duracao_segundos?: number
+          p_recurso_id: string
+          p_segundos: number
+        }
+        Returns: undefined
       }
       escola_vincular_minha_conta: { Args: never; Returns: undefined }
       evolucao_chave: {
