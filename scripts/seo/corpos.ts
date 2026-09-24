@@ -136,7 +136,7 @@ export function blocoCorpo(rota: string, corpo: string): string {
     "var n=function(s){return (s||'').normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').replace(/\\s+/g,' ').trim().toLowerCase();};" +
     "var h=c.querySelector('h1'),alvo=h?n(h.textContent):'',rota=c.getAttribute('data-rota')||'',t=null;" +
     "var fim=function(){c.remove();o.disconnect();if(t){clearTimeout(t);}};" +
-    "var tirar=function(){var p=location.pathname;if(p.length>1){p=p.replace(/\\/+$/','');}" +
+    "var tirar=function(){var p=location.pathname;if(p.length>1){p=p.replace(/\\/+$/,'');}" +
     "if(p!==rota){fim();return;}" +
     "var hs=r.getElementsByTagName('h1');" +
     "for(var i=0;i<hs.length;i++){if(alvo&&n(hs[i].textContent)===alvo){fim();return;}}" +
