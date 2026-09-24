@@ -1,26 +1,15 @@
-// "A sua jornada até aqui": o mapa real da pessoa na página de inscrição do Detox. Escrita com createElement (sem JSX).
+// Mapa pessoal compacto exibido na inscrição somente para quem já fez o Teste de Dosha.
 import { createElement as h, lazy, Suspense, useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import { ArrowRight, Camera, Flame, MessageCircle, Sparkles, Sprout, Waves } from "lucide-react";
+import { Camera } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useUser } from "@/contexts/UserContext";
 import { supabase } from "@/integrations/supabase/client";
 import { getFaixa, type DoshaNome } from "@/data/doshaLevels";
 
 const DoshaPieChart = lazy(() => import("@/components/charts/DoshaPieChart"));
-
 type Dados = { tags: string[]; agni: string | null; foto: string | null; relato: string | null; classificacao: string | null };
-const SELO: { [k: string]: string } = { assertiva: "Leitura assertiva", neutra: "Leitura neutra", duvidosa: "Leitura duvidosa" };
-
-const limpaTags = (...listas: (string | null | undefined)[]) =>
-  listas.flatMap((l) => (l ?? "").split(",")).map((t) => t.trim()).filter((t) => t && t.toLowerCase() !== "nenhum");
-
-const cartao = (titulo: string, Icone: typeof Camera, ...filhos: unknown[]) =>
-  h("div", { className: "flex flex-col gap-4 rounded-3xl border border-[#EFE4D8] bg-white p-5 md:p-6" },
-    h("div", { className: "flex items-center gap-2.5" },
-      h("div", { className: "flex h-9 w-9 items-center justify-center rounded-full bg-[#FBEADB]" }, h(Icone, { className: "h-4 w-4 text-[#B3622A]", "aria-hidden": true })),
-      h("p", { className: "m-0 text-[13px] font-bold uppercase tracking-[0.12em] text-[#1E2547]" }, titulo)),
-    ...(filhos as never[]));
+const SELO: Record<string, string> = { assertiva: "Leitura assertiva", neutra: "Leitura neutra", duvidosa: "Leitura duvidosa" };
+const limpaTags = (...listas: (string | null | undefined)[]) => listas.flatMap((l) => (l ?? "").split(",")).map((t) => t.trim()).filter((t) => t && t.toLowerCase() !== "nenhum");
 
 const MeuMapaDetox = () => {
   const { user, doshaResult } = useUser();
@@ -50,64 +39,33 @@ const MeuMapaDetox = () => {
         tags: limpaTags(t?.agravVataTags, t?.agravPittaTags, t?.agravKaphaTags).slice(0, 8),
         agni: t?.agniPrincipal ?? null,
         foto,
-        relato: relato ? (relato.length > 180 ? `${relato.slice(0, 177)}...` : relato) : null,
+        relato: relato ? (relato.length > 130 ? `${relato.slice(0, 127)}...` : relato) : null,
         classificacao: (sintese as { classificacao?: string } | null)?.classificacao ?? null,
       });
     })();
     return () => { ativo = false; };
   }, [uid, doshaResult?.idPublico]);
 
-  const cabecalho = (texto: string) =>
-    h("div", { className: "mx-auto flex max-w-[720px] flex-col gap-3 text-center" },
-      h("p", { className: "m-0 text-[12px] font-bold uppercase tracking-[0.14em] text-[#B3622A]" }, "O seu mapa"),
-      h("h2", { className: "m-0 font-serif text-[26px] md:text-[34px] leading-[1.2] font-bold text-[#1E2547] text-balance" }, "A sua jornada até aqui"),
-      h("p", { className: "m-0 text-[16px] md:text-[17px] leading-[1.75] text-[#3A3550]" }, texto));
-
-  if (!doshaResult) {
-    return h("section", { className: "px-4 py-12 md:py-16" },
-      h("div", { className: "mx-auto flex max-w-[720px] flex-col items-center gap-5 text-center" },
-        cabecalho("O Teste de Dosha mostra por onde o seu Detox começa. São uns oito minutos e não precisa de senha."),
-        h(Link, { to: "/teste-de-dosha?redirect=/detox/inscricao", className: "inline-flex min-h-[60px] items-center justify-center gap-2 rounded-full bg-[#8C4513] px-7 text-[16px] font-semibold text-white hover:brightness-105" },
-          "Fazer o meu Teste de Dosha", h(ArrowRight, { className: "h-5 w-5", "aria-hidden": true }))));
-  }
+  if (!doshaResult) return null;
 
   const principal = (doshaResult.doshaprincipal?.toLowerCase().match(/vata|pitta|kapha/)?.[0] || "vata") as DoshaNome;
   const scores = { vata: doshaResult.vatascore ?? 0, pitta: doshaResult.pittascore ?? 0, kapha: doshaResult.kaphascore ?? 0 };
   const nomeDosha = `${principal[0].toUpperCase()}${principal.slice(1)}, em ${getFaixa(principal, scores[principal]).toLowerCase()}`;
-  const primeiroNome = (doshaResult.nome ?? "").trim().split(/\s+/)[0];
 
-  return h("section", { className: "px-4 py-12 md:py-16" },
-    h("div", { className: "mx-auto flex max-w-[1080px] flex-col gap-6" },
-      cabecalho(`${primeiroNome && primeiroNome.toLowerCase() !== "visitante" ? `${primeiroNome}, isto` : "Isto"} é o que você trouxe nas três noites. É daqui que o seu Detox parte.`),
-      h("div", { className: "grid gap-4 md:grid-cols-3" },
-        cartao("Seu Teste de Dosha", Sparkles,
-          h("div", { className: "mx-auto h-[190px] w-[190px]" },
-            h(Suspense, { fallback: h(Skeleton, { className: "h-full w-full rounded-full" }) },
-              h(DoshaPieChart, { vata: scores.vata, pitta: scores.pitta, kapha: scores.kapha, variant: "full" }))),
-          h("p", { className: "m-0 text-center font-serif text-[20px] font-bold text-[#1E2547]" }, nomeDosha),
-          dados?.agni ? h("p", { className: "m-0 text-center text-[14px] leading-relaxed text-[#6B6480]" }, dados.agni) : null),
-        cartao("A sua língua", Camera,
-          dados?.foto
-            ? h("img", { src: dados.foto, alt: "A foto da sua língua", className: "aspect-square w-full rounded-2xl object-cover" })
-            : h("div", { className: "flex aspect-square w-full flex-col items-center justify-center gap-3 rounded-2xl bg-[#FBF1E7] p-6 text-center" },
-                h(Camera, { className: "h-8 w-8 text-[#B3622A]", "aria-hidden": true }),
-                h("p", { className: "m-0 text-[14px] leading-relaxed text-[#6B6480]" }, dados ? "A foto da noite 2 aparece aqui." : "Carregando o seu mapa...")),
-          dados?.classificacao ? h("span", { className: "self-center rounded-full bg-[#E2F1E7] px-3 py-1 text-[13px] font-bold text-[#2F7650]" }, SELO[dados.classificacao] ?? "Leitura feita") : null),
-        cartao("O que você trouxe", MessageCircle,
-          dados && dados.tags.length
-            ? h("div", { className: "flex flex-wrap gap-2" }, ...dados.tags.map((t, i) => h("span", { key: i, className: "rounded-full bg-[#FBEADB] px-3 py-1.5 text-[14px] text-[#8C4513]" }, t)))
-            : null,
-          dados?.relato ? h("blockquote", { className: "m-0 border-l-2 border-[#D9A77E] pl-3 font-serif text-[16px] italic leading-relaxed text-[#1E2547]" }, `"${dados.relato}"`) : null,
-          !dados ? h(Skeleton, { className: "h-24 w-full" }) : null)),
-      h("div", { className: "grid gap-3 rounded-3xl bg-[#1E2547] p-5 text-white md:grid-cols-[auto_1fr_1fr_1fr] md:items-center md:gap-5 md:p-6" },
-        h("p", { className: "m-0 font-serif text-[18px] font-bold" }, "O que o Detox faz com isso"),
-        ...[
-          { Icone: Flame, cor: "text-[#F2A36B]", t: "Dissolve o que sobra" },
-          { Icone: Waves, cor: "text-[#8CC3E0]", t: "Elimina o que se soltou" },
-          { Icone: Sprout, cor: "text-[#8FD3A8]", t: "Restaura o que faltava" },
-        ].map((p, i) => h("div", { key: i, className: "flex items-center gap-3" }, h(p.Icone, { className: `h-6 w-6 shrink-0 ${p.cor}`, "aria-hidden": true }), h("span", { className: "text-[15px] text-white/90" }, p.t)))),
-      h(Link, { to: "/detox/mapa", className: "mx-auto inline-flex min-h-[48px] items-center gap-2 text-[15px] font-semibold text-[#8C4513] underline-offset-4 hover:underline" },
-        dados?.classificacao ? "Ler a síntese da Akasha no meu mapa" : "Abrir o meu mapa completo", h(ArrowRight, { className: "h-4 w-4", "aria-hidden": true }))));
+  return h("section", { className: "bg-gradient-to-b from-[#FDF7F1] to-[#FBE3CC] px-4 py-8 md:py-12" },
+    h("div", { className: "mx-auto max-w-[1080px] overflow-hidden rounded-3xl bg-white/90 shadow-[0_18px_50px_-30px_rgba(53,47,84,0.35)]" },
+      h("div", { className: "grid items-center gap-5 p-5 md:grid-cols-[120px_110px_1fr] md:p-6" },
+        h("div", { className: "flex items-center gap-4 md:flex-col md:gap-1" },
+          h("div", { className: "h-24 w-24 shrink-0" }, h(Suspense, { fallback: h(Skeleton, { className: "h-full w-full rounded-full" }) }, h(DoshaPieChart, { vata: scores.vata, pitta: scores.pitta, kapha: scores.kapha, variant: "full" }))),
+          h("p", { className: "m-0 font-serif text-[18px] font-bold text-[#352F54] md:text-center" }, nomeDosha)),
+        dados?.foto
+          ? h("div", { className: "flex items-center gap-3 md:flex-col" }, h("img", { src: dados.foto, alt: "A foto da sua língua", className: "h-[88px] w-[88px] rounded-xl object-cover" }), dados.classificacao ? h("span", { className: "rounded-full bg-[#E2F1E7] px-3 py-1 text-[12px] font-bold text-[#2F7650]" }, SELO[dados.classificacao] ?? "Leitura feita") : null)
+          : h("div", { className: "flex h-[88px] w-[88px] items-center justify-center rounded-xl bg-[#FBE3CC]" }, h(Camera, { className: "h-7 w-7 text-[#E07B39]", "aria-hidden": true })),
+        h("div", { className: "flex min-w-0 flex-col gap-3" },
+          h("div", null, h("p", { className: "m-0 text-[15px] font-bold uppercase text-[#A85A1A]" }, "A sua jornada até aqui"), dados?.agni ? h("p", { className: "m-0 mt-1 text-[15px] text-[#514B62]" }, dados.agni) : null),
+          dados?.tags.length ? h("div", { className: "flex flex-wrap gap-2" }, ...dados.tags.map((t, i) => h("span", { key: i, className: "rounded-full bg-[#FBE3CC] px-3 py-1.5 text-[13px] font-semibold text-[#A85A1A]" }, t))) : null,
+          dados?.relato ? h("p", { className: "m-0 text-[15px] leading-relaxed text-[#514B62]" }, `“${dados.relato}”`) : null)),
+      h("p", { className: "m-0 bg-[#FFF0E3] px-5 py-4 text-[15px] font-semibold leading-relaxed text-[#352F54] md:px-6" }, "É daqui que o seu Detox parte: dissolver o que sobra, eliminar o que se soltou e restaurar o que faltava.")));
 };
 
 export default MeuMapaDetox;
