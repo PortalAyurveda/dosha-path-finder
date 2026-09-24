@@ -2834,6 +2834,111 @@ export type Database = {
         }
         Relationships: []
       }
+      detox_aulas: {
+        Row: {
+          criado_em: string
+          data_aula: string | null
+          duracao_seg: number | null
+          tipo: string | null
+          titulo: string | null
+          video_id: string
+          visibilidade: string | null
+        }
+        Insert: {
+          criado_em?: string
+          data_aula?: string | null
+          duracao_seg?: number | null
+          tipo?: string | null
+          titulo?: string | null
+          video_id: string
+          visibilidade?: string | null
+        }
+        Update: {
+          criado_em?: string
+          data_aula?: string | null
+          duracao_seg?: number | null
+          tipo?: string | null
+          titulo?: string | null
+          video_id?: string
+          visibilidade?: string | null
+        }
+        Relationships: []
+      }
+      detox_legendas_extra: {
+        Row: {
+          criado_em: string
+          fonte: string | null
+          legenda: string
+          video_id: string
+        }
+        Insert: {
+          criado_em?: string
+          fonte?: string | null
+          legenda: string
+          video_id: string
+        }
+        Update: {
+          criado_em?: string
+          fonte?: string | null
+          legenda?: string
+          video_id?: string
+        }
+        Relationships: []
+      }
+      detox_pont_blocos: {
+        Row: {
+          atualizado_em: string
+          bloco: number
+          erro: string | null
+          id: number
+          nivel: number
+          ordem: number | null
+          req_id: number | null
+          seg_ini: number[]
+          seg_palavras: number[]
+          segs_pont: string[] | null
+          status: string
+          tentativas: number
+          texto_orig: string
+          texto_pont: string | null
+          video_id: string
+        }
+        Insert: {
+          atualizado_em?: string
+          bloco: number
+          erro?: string | null
+          id?: number
+          nivel?: number
+          ordem?: number | null
+          req_id?: number | null
+          seg_ini: number[]
+          seg_palavras: number[]
+          segs_pont?: string[] | null
+          status?: string
+          tentativas?: number
+          texto_orig: string
+          texto_pont?: string | null
+          video_id: string
+        }
+        Update: {
+          atualizado_em?: string
+          bloco?: number
+          erro?: string | null
+          id?: number
+          nivel?: number
+          ordem?: number | null
+          req_id?: number | null
+          seg_ini?: number[]
+          seg_palavras?: number[]
+          segs_pont?: string[] | null
+          status?: string
+          tentativas?: number
+          texto_orig?: string
+          texto_pont?: string | null
+          video_id?: string
+        }
+        Relationships: []
+      }
       devlog: {
         Row: {
           criado_em: string | null
@@ -3134,6 +3239,54 @@ export type Database = {
           tipo?: string | null
           versao?: string | null
           video_id?: string | null
+        }
+        Relationships: []
+      }
+      documents_detox_rascunho: {
+        Row: {
+          chars: number | null
+          content: string
+          criado_em: string
+          cursos: string[]
+          embedding: string | null
+          id: number
+          minuto: number | null
+          pedaco: number | null
+          segundo: number | null
+          titulo: string | null
+          total_pedacos: number | null
+          url_youtube: string | null
+          video_id: string
+        }
+        Insert: {
+          chars?: number | null
+          content: string
+          criado_em?: string
+          cursos?: string[]
+          embedding?: string | null
+          id?: number
+          minuto?: number | null
+          pedaco?: number | null
+          segundo?: number | null
+          titulo?: string | null
+          total_pedacos?: number | null
+          url_youtube?: string | null
+          video_id: string
+        }
+        Update: {
+          chars?: number | null
+          content?: string
+          criado_em?: string
+          cursos?: string[]
+          embedding?: string | null
+          id?: number
+          minuto?: number | null
+          pedaco?: number | null
+          segundo?: number | null
+          titulo?: string | null
+          total_pedacos?: number | null
+          url_youtube?: string | null
+          video_id?: string
         }
         Relationships: []
       }
@@ -11081,6 +11234,33 @@ export type Database = {
         Returns: boolean
       }
       descadastro_token: { Args: { p_email: string }; Returns: string }
+      detox_cortar: {
+        Args: {
+          p_alvo?: number
+          p_max?: number
+          p_min?: number
+          p_sobra?: number
+          p_video_id: string
+        }
+        Returns: number
+      }
+      detox_embed_lote: { Args: { p_lote?: number }; Returns: number }
+      detox_norm: { Args: { p: string }; Returns: string }
+      detox_pont_ciclo: {
+        Args: { p_modelo?: string; p_voo?: number }
+        Returns: Json
+      }
+      detox_pont_ciclo_com_divisao: { Args: { p_voo?: number }; Returns: Json }
+      detox_pont_conferir: {
+        Args: { p_id: number; p_saida: string }
+        Returns: string
+      }
+      detox_pont_dividir: { Args: never; Returns: number }
+      detox_pont_montar: {
+        Args: { p_tam?: number; p_video_id: string }
+        Returns: number
+      }
+      detox_sem_acento: { Args: { p: string }; Returns: string }
       escola_aluno_atual: { Args: never; Returns: string }
       escola_cardapio_do_modulo: {
         Args: { p_slug: string }
@@ -11872,6 +12052,14 @@ export type Database = {
       video_slug_sitemap: { Args: { p_titulo: string }; Returns: string }
       videos_seo2_sincronizar: { Args: never; Returns: number }
       videos_slugify: { Args: { p_titulo: string }; Returns: string }
+      vtt_falas: {
+        Args: { p_leg: string }
+        Returns: {
+          ordem: number
+          seg: number
+          texto: string
+        }[]
+      }
       vtt_para_texto: { Args: { legenda: string }; Returns: string }
     }
     Enums: {
