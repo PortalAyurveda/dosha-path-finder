@@ -8,6 +8,7 @@ export type PerguntaLingua = {
   tipo: "unica" | "varias";
   opcoes: MarcaOpcao[];
   soComMuco?: boolean;
+  soComCor?: boolean;
 };
 
 const op = (textos: string[], normal?: string): MarcaOpcao[] =>
@@ -18,12 +19,24 @@ export const PERGUNTAS_LINGUA: PerguntaLingua[] = [
   { chave: "brilho", titulo: "Brilho", tipo: "unica", opcoes: op(["brilhante", "sem brilho, opaca", "leitosa"], "brilhante") },
   { chave: "muco", titulo: "Muco", tipo: "unica", opcoes: op(["não tem", "pouco", "muito, denso"], "não tem") },
   { chave: "muco_cor", titulo: "Cor do muco", tipo: "unica", soComMuco: true, opcoes: op(["branco", "amarelo", "laranja", "marrom", "cinza", "verde"]) },
+  { chave: "muco_leitoso", titulo: "O tom do muco", tipo: "varias", soComMuco: true, soComCor: true, opcoes: [{ slug: "leitoso", texto: "o muco tem tom leitoso" }] },
   { chave: "muco_onde", titulo: "Onde está o muco", tipo: "varias", soComMuco: true, opcoes: op(["na ponta", "no meio", "no fundo", "na língua toda"]) },
-  { chave: "ponta", titulo: "A ponta", tipo: "varias", opcoes: op(["pontinhos", "arroxeada", "inchada", "afundada", "partida no meio", "bolinha na garganta"]) },
-  { chave: "meio", titulo: "O meio", tipo: "varias", opcoes: op(["rachaduras poucas", "rachaduras muitas", "um risco no meio", "áspera"]) },
-  { chave: "fundo", titulo: "O fundo", tipo: "varias", opcoes: op(["bolinhas", "raízes aparecendo", "inchado", "arroxeado"]) },
-  { chave: "bordas", titulo: "As bordas", tipo: "varias", opcoes: op(["marca dos dentes pouca", "marca dos dentes muita", "inchada e aquosa", "inchada e vazia"]) },
-  { chave: "inteira", titulo: "A língua inteira", tipo: "varias", opcoes: op(["trêmula", "inchada", "pequena", "grande"]) },
+  { chave: "ponta", titulo: "A ponta", tipo: "varias", opcoes: [
+    { slug: "pontinhos", texto: "pontinhos vermelhos" },
+    { slug: "mais_vermelha_que_o_resto", texto: "mais vermelha que o resto" },
+    ...op(["arroxeada", "inchada", "afundada", "partida no meio"]),
+  ] },
+  { chave: "meio", titulo: "O meio", tipo: "varias", opcoes: op(["rachaduras poucas", "rachaduras muitas", "um risco no meio", "áspera", "vermelho vivo, sem capa", "capa grossa"]) },
+  { chave: "fundo", titulo: "O fundo", tipo: "varias", opcoes: op(["bolinhas", "raízes aparecendo", "inchado", "arroxeado", "vermelho e irritado"]) },
+  { chave: "bordas", titulo: "As bordas", tipo: "varias", opcoes: op(["marca dos dentes pouca", "marca dos dentes muita", "inchada e aquosa", "inchada e vazia", "vermelhas"]) },
+  { chave: "inteira", titulo: "A língua inteira", tipo: "varias", opcoes: [
+    ...op(["trêmula", "inchada"]),
+    { slug: "pequena", texto: "pequena ou fina" },
+    { slug: "grande", texto: "grande, larga, encosta nos dentes" },
+    ...op(["pontiaguda"]),
+  ] },
+  { chave: "gosto", titulo: "O gosto na boca ao acordar", tipo: "unica", opcoes: op(["normal", "seco, sem gosto", "amargo ou ácido", "doce, pegajoso"], "normal") },
+  { chave: "saliva", titulo: "A saliva", tipo: "unica", opcoes: op(["normal", "pouca, boca seca", "muita e grossa"], "normal") },
 ];
 
 export const temMuco = (muco: unknown) => muco === "pouco" || muco === "muito_denso";
