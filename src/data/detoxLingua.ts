@@ -15,20 +15,27 @@ const op = (textos: string[], normal?: string): MarcaOpcao[] =>
   textos.map((texto) => ({ slug: texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, ""), texto, normal: texto === normal || undefined }));
 
 export const PERGUNTAS_LINGUA: PerguntaLingua[] = [
-  { chave: "cor", titulo: "Cor", tipo: "unica", opcoes: op(["rosa", "pálida ou branca", "vermelha", "amarelada", "arroxeada ou azulada", "acinzentada", "amarronzada"], "rosa") },
+  { chave: "cor", titulo: "Cor (por baixo da cobertura)", tipo: "unica", opcoes: op(["rosa", "pálida, sem cor", "vermelha", "amarelada", "arroxeada ou azulada", "acinzentada", "amarronzada"], "rosa") },
   { chave: "brilho", titulo: "Brilho", tipo: "unica", opcoes: op(["brilhante", "sem brilho, opaca", "leitosa"], "brilhante") },
-  { chave: "muco", titulo: "Muco", tipo: "unica", opcoes: op(["não tem", "pouco", "muito, denso"], "não tem") },
-  { chave: "muco_cor", titulo: "Cor do muco", tipo: "unica", soComMuco: true, opcoes: op(["branco", "amarelo", "laranja", "marrom", "cinza", "verde"]) },
-  { chave: "muco_leitoso", titulo: "O tom do muco", tipo: "varias", soComMuco: true, soComCor: true, opcoes: [{ slug: "leitoso", texto: "o muco tem tom leitoso" }] },
-  { chave: "muco_onde", titulo: "Onde está o muco", tipo: "varias", soComMuco: true, opcoes: op(["na ponta", "no meio", "no fundo", "na língua toda"]) },
+  { chave: "muco", titulo: "Cobertura", tipo: "unica", opcoes: [
+    { slug: "nao_tem", texto: "não tem", normal: true },
+    { slug: "pouco", texto: "fina, dá pra ver a cor por baixo" },
+    { slug: "muito_denso", texto: "grossa, esconde a cor" },
+  ] },
+  { chave: "muco_cor", titulo: "Cor da cobertura", tipo: "unica", soComMuco: true, opcoes: op(["branco", "amarelo", "laranja", "marrom", "cinza", "verde"]) },
+  { chave: "muco_leitoso", titulo: "O tom da cobertura", tipo: "varias", soComMuco: true, soComCor: true, opcoes: [{ slug: "leitoso", texto: "a cobertura tem tom leitoso" }] },
+  { chave: "muco_onde", titulo: "Onde está a cobertura", tipo: "varias", soComMuco: true, opcoes: op(["na ponta", "no meio", "no fundo", "na língua toda"]) },
   { chave: "ponta", titulo: "A ponta", tipo: "varias", opcoes: [
     { slug: "pontinhos", texto: "pontinhos vermelhos" },
-    { slug: "mais_vermelha_que_o_resto", texto: "mais vermelha que o resto" },
     ...op(["arroxeada", "inchada", "afundada", "partida no meio"]),
   ] },
-  { chave: "meio", titulo: "O meio", tipo: "varias", opcoes: op(["rachaduras poucas", "rachaduras muitas", "um risco no meio", "áspera", "vermelho vivo, sem capa", "capa grossa"]) },
+  { chave: "meio", titulo: "O meio", tipo: "varias", opcoes: [
+    ...op(["rachaduras poucas", "rachaduras muitas", "um risco no meio", "áspera"]),
+    { slug: "vermelho_vivo_sem_capa", texto: "vermelho vivo, sem cobertura" },
+    { slug: "capa_grossa", texto: "cobertura grossa" },
+  ] },
   { chave: "fundo", titulo: "O fundo", tipo: "varias", opcoes: op(["bolinhas", "raízes aparecendo", "inchado", "arroxeado", "vermelho e irritado"]) },
-  { chave: "bordas", titulo: "As bordas", tipo: "varias", opcoes: op(["marca dos dentes pouca", "marca dos dentes muita", "inchada e aquosa", "inchada e vazia", "vermelhas"]) },
+  { chave: "bordas", titulo: "As bordas", tipo: "varias", opcoes: op(["marca dos dentes pouca", "marca dos dentes muita", "inchada e aquosa", "inchada e vazia", "vermelhas", "pontinhos vermelhos nas laterais"]) },
   { chave: "inteira", titulo: "A língua inteira", tipo: "varias", opcoes: [
     ...op(["trêmula", "inchada"]),
     { slug: "pequena", texto: "pequena ou fina" },
