@@ -126,7 +126,23 @@ export const RELATOS = [
   { texto: "Já fiz vários cursos... Encantada com a forma que você ensina! Agradeço muito!", nome: "Selma", fonte: "2026" },
 ];
 
-export const RELATO_PREMIUM = {
+export const PREMIUM_CARD = {
+  logo: "https://api.portalayurveda.com/storage/v1/object/public/portal_images/akasha-logo72x.webp",
+  eyebrow: "Incluso na sua inscrição",
+  titulo: "3 meses de Portal Premium, com a Akasha I.A. acompanhando você",
+  texto: "O Detox termina em 10 dias, mas o cuidado continua. Durante três meses, a Akasha, a inteligência artificial do Portal, treinada no acervo completo do professor Edson, acompanha você: conhece o seu dosha, o seu quadro e o programa inteiro do Detox, e responde a qualquer hora.",
+  itens: [
+    { icone: "akasha", titulo: "A Akasha sem limite", texto: "Conversas de dia ou de madrugada. Ela conhece o seu dosha, o seu quadro e lembra das suas conversas." },
+    { icone: "revisao", titulo: "Revisão mensal", texto: "Todo mês a Akasha refaz a sua leitura, compara com o mês anterior e ajusta a sua rotina." },
+    { icone: "rotina", titulo: "Minha Rotina", texto: "Café, almoço, jantar, lanches e tônicos montados para o seu dosha, com o preparo e o porquê de cada item." },
+    { icone: "lingua", titulo: "Leitura da língua", texto: "3 meses acompanhando a sua língua com o sistema novo do Portal." },
+    { icone: "aulas", titulo: "Modo Pesquisa", texto: "A Akasha mergulha nas 900+ aulas do professor para responder você." },
+    { icone: "conteudo", titulo: "Conteúdo para o seu quadro", texto: "Artigos e vídeos escolhidos para o que você está vivendo." },
+  ],
+  valor_titulo: "Valor do Premium: R$ 79,90 por mês",
+  valor_texto: "Nos 3 meses, R$ 239,70 que já vêm com o seu Detox.",
+};
+
   texto: "A periodicidade dos acompanhamentos (revisão) da situação dos doshas tem sido muito interessante, principalmente porque consigo me auto-observar melhor em virtude das mudanças das estações.",
   nome: "Juliana",
   fonte: "2026",
