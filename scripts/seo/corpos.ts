@@ -124,23 +124,32 @@ export function corpoTesteDosha(faq: { q: string; a: string }[]): string {
 }
 
 /**
- * Bloco que entra logo depois do div root. Só some quando o conteúdo de verdade estiver na tela:
- * um h1 dentro do #root com o mesmo texto do h1 do bloco (sem acento, sem maiúscula, espaços
- * juntos). No esqueleto de carregamento e nas telas de erro / "não encontrado" o bloco fica, e a
- * página continua com o próprio texto. Também some quando a rota muda (navegação interna) e,
- * como rede de segurança, 8 s depois de o React montar uma tela sem nenhum h1.
+ * Bloco que entra logo depois do div root (por isso aparece no fim da página enquanto existe).
+ * Só some quando o conteúdo de verdade está montado dentro do #root: um h1 lá dentro cujo texto,
+ * comparado só pelas letras e números (minúsculas, sem acento, sem espaço nem pontuação), é igual
+ * ao h1 deste bloco. No esqueleto de carregamento (sem h1) e nas telas de erro / "não encontrada"
+ * (h1 diferente) o bloco FICA, sem relógio nenhum: a página nunca fica idêntica às outras do mesmo
+ * tipo, mesmo que a busca de dados falhe no renderizador do Google.
+ * Também some quando a URL aberta deixa de ser a rota carimbada em data-rota (navegação dentro do
+ * site) e no primeiro toque de uma pessoa (roda do mouse, dedo, tecla, clique) depois que o React
+ * montou. Robô não toca na página. Bloco sem h1 some no primeiro h1 do React.
+ * O script não usa sinal de menor nem barra invertida de propósito.
  */
 export function blocoCorpo(rota: string, corpo: string): string {
   const script =
     "(function(){var c=document.getElementById('seo-corpo'),r=document.getElementById('root');if(!c||!r)return;" +
-    "var n=function(s){return (s||'').normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').replace(/\\s+/g,' ').trim().toLowerCase();};" +
-    "var h=c.querySelector('h1'),alvo=h?n(h.textContent):'',rota=c.getAttribute('data-rota')||'',t=null;" +
-    "var fim=function(){c.remove();o.disconnect();if(t){clearTimeout(t);}};" +
-    "var tirar=function(){var p=location.pathname;if(p.length>1){p=p.replace(/\\/+$/,'');}" +
-    "if(p!==rota){fim();return;}" +
-    "var hs=r.getElementsByTagName('h1');" +
-    "for(var i=0;i<hs.length;i++){if(alvo&&n(hs[i].textContent)===alvo){fim();return;}}" +
-    "if(hs.length===0&&r.firstChild&&!t){t=setTimeout(function(){if(r.getElementsByTagName('h1').length===0){fim();}else{t=null;tirar();}},8000);}};" +
-    "var o=new MutationObserver(tirar);o.observe(r,{childList:true,subtree:true});tirar();})();";
+    "var norm=function(s){s=s||'';if(s.normalize)s=s.normalize('NFD');return s.toLowerCase().replace(/[^a-z0-9]/g,'');};" +
+    "var caminho=function(p){p=p||'';try{p=decodeURIComponent(p);}catch(e){}p=p.toLowerCase();while(p.length>1&&p.charAt(p.length-1)==='/')p=p.slice(0,-1);return p||'/';};" +
+    "var h=c.querySelector('h1'),alvo=norm(h?h.textContent:''),rota=caminho(c.getAttribute('data-rota'));" +
+    "var evs=['wheel','touchstart','keydown','pointerdown'],op={capture:true,passive:true},o;" +
+    "var toque=function(){if(r.firstChild)tirar();};" +
+    "var tirar=function(){if(c.parentNode)c.parentNode.removeChild(c);if(o)o.disconnect();for(var i=0;i!==evs.length;i++)window.removeEventListener(evs[i],toque,op);};" +
+    "var ver=function(){" +
+    "if(caminho(location.pathname)!==rota){tirar();return;}" +
+    "var hs=r.querySelectorAll('h1');" +
+    "for(var i=0;i!==hs.length;i++){if(!alvo||norm(hs[i].textContent)===alvo){tirar();return;}}" +
+    "};" +
+    "for(var i=0;i!==evs.length;i++)window.addEventListener(evs[i],toque,op);" +
+    "o=new MutationObserver(ver);o.observe(r,{childList:true,subtree:true,characterData:true});ver();})();";
   return `\n    ${A}div id="seo-corpo" data-rota="${esc(rota)}">${corpo}${A}/div>\n    ${A}script>${script}${A}/script>`;
 }

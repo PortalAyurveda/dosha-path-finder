@@ -77,9 +77,6 @@ const Receita = () => {
   if (isLoading) {
     return (
       <>
-        <Helmet>
-          <title>Receita | Portal Ayurveda</title>
-        </Helmet>
         <div className="max-w-[720px] mx-auto px-4 py-8 animate-pulse space-y-6">
           <div className="h-8 bg-muted rounded w-3/4" />
           <div className="aspect-[16/9] bg-muted rounded-2xl" />
