@@ -552,7 +552,7 @@ const DetoxMapa = () => {
             <div className="rounded-[32px] border border-detox-card-border bg-detox-card p-6 shadow-detox md:p-8">
               <h3 className="font-serif text-xl font-bold text-detox-text md:text-2xl">2. O que você está vendo</h3>
               <p className="mt-2 text-sm leading-relaxed text-detox-muted md:text-base">
-                Marque o que você reconhece na sua foto. Marque só o que quiser, e pule o que não tiver certeza.
+                Marque só o que aparece na foto de hoje, e pule o que não tiver certeza.
               </p>
 
               <div className="mt-6 space-y-6">
