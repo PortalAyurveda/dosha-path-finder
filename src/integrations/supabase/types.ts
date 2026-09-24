@@ -12294,6 +12294,7 @@ export type Database = {
               error: true
             } & "Could not choose the best candidate function between: public.urlencode(string => bytea), public.urlencode(string => varchar). Try renaming the parameters or the function itself in the database so function overloading can be resolved"
           }
+      usuario_id_por_email: { Args: { p_email: string }; Returns: string }
       verse_of_the_day: {
         Args: { collection_slug?: string }
         Returns: {
