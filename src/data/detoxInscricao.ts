@@ -48,14 +48,14 @@ export const DETOX_INSCRICAO = {
     eyebrow: "Tudo incluído",
     titulo: "O que vem com a sua inscrição",
     itens: [
-      { icone: "sol", titulo: "10 dias de programa", texto: "O detox completo, com o passo a passo de cada dia." },
+      { icone: "sol", titulo: "10 dias de programa ao vivo", texto: "O detox completo, com o passo a passo de cada dia, com aulas ao vivo comigo" },
       { icone: "grupo", titulo: "O grupo comigo", texto: "Acompanho a turma no WhatsApp durante toda a jornada, em grupos de até 50 pessoas." },
-      { icone: "aulas", titulo: "Aulas gravadas", texto: "Para assistir no seu tempo, com acesso até maio de 2027." },
+      { icone: "aulas", titulo: "Aulas gravadas para acessar 24h", texto: "Para assistir no seu tempo, com acesso até maio de 2027." },
       { icone: "lista", titulo: "Roteiro e lista de compras", texto: "O que fazer em cada dia e o que levar do mercado e da farmácia." },
-      { icone: "cardapio", titulo: "Três cardápios", texto: "Um para cada etapa: saturação, eliminação e restauração." },
+      { icone: "cardapio", titulo: "Três cardápios - um para cada etapa", texto: "Um para cada etapa: saturação, eliminação e restauração." },
       { icone: "duvidas", titulo: "Perguntas frequentes", texto: "As dúvidas que sempre aparecem, já respondidas." },
       { icone: "premium", titulo: "3 meses de Portal Premium", texto: "Com a Akasha, a Minha Rotina e uma revisão por mês." },
-      { icone: "lingua", titulo: "Leitura da língua", texto: "3 meses acompanhando a sua língua com o sistema novo do Portal." },
+      { icone: "lingua", titulo: "Leitura da língua com Akasha I.A.", texto: "3 meses acompanhando a sua língua com o sistema novo do Portal." },
     ],
   },
   premium: {
