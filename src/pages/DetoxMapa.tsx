@@ -315,11 +315,13 @@ const DetoxMapa = () => {
     setLeitura((atual) => {
       if (tipo === "unica") {
         const novo = { ...atual, [chave]: atual[chave] === slug ? null : slug };
-        // Sem muco, some a cor e o onde, e o que estava marcado ali é limpo.
+        // Sem muco, some a cor, o onde e o tom, e o que estava marcado ali é limpo.
         if (chave === "muco" && !temMuco(novo.muco)) {
           novo.muco_cor = null;
           novo.muco_onde = [];
+          novo.muco_leitoso = [];
         }
+        if (chave === "muco_cor" && !novo.muco_cor) novo.muco_leitoso = [];
         return novo;
       }
       const lista = Array.isArray(atual[chave]) ? (atual[chave] as string[]) : [];
@@ -554,10 +556,10 @@ const DetoxMapa = () => {
               </p>
 
               <div className="mt-6 space-y-6">
-                {PERGUNTAS_LINGUA.filter((p) => !p.soComMuco || temMuco(leitura.muco)).map((pergunta) => (
+                {PERGUNTAS_LINGUA.filter((p) => (!p.soComMuco || temMuco(leitura.muco)) && (!p.soComCor || Boolean(leitura.muco_cor))).map((pergunta) => (
                   <div key={pergunta.chave}>
                     <p className="text-xs font-bold uppercase text-detox-dark">
-                      {pergunta.titulo} <span className="font-normal normal-case text-detox-muted">{pergunta.tipo === "unica" ? "· escolha uma" : "· pode marcar várias"}</span>
+                      {pergunta.titulo} {pergunta.opcoes.length > 1 && <span className="font-normal normal-case text-detox-muted">{pergunta.tipo === "unica" ? "· escolha uma" : "· pode marcar várias"}</span>}
                     </p>
                     <div className="mt-3 flex flex-wrap gap-2">
                       {pergunta.opcoes.map((opcao) => {
@@ -569,7 +571,7 @@ const DetoxMapa = () => {
                             type="button"
                             aria-pressed={ativo}
                             onClick={() => escolher(pergunta.chave, pergunta.tipo, opcao.slug)}
-                            className={`inline-flex min-h-[60px] items-center gap-2 rounded-full border-[1.5px] px-5 text-base leading-snug transition-colors ${ativo ? "border-detox-primary bg-detox-primary-soft font-semibold text-detox-text" : "border-detox-field-border bg-detox-card text-detox-text hover:border-detox-primary"}`}
+                            className={`inline-flex min-h-[60px] items-center gap-2 ${pergunta.opcoes.length === 1 ? "rounded-[14px]" : "rounded-full"} border-[1.5px] px-5 text-base leading-snug transition-colors ${ativo ? "border-detox-primary bg-detox-primary-soft font-semibold text-detox-text" : "border-detox-field-border bg-detox-card text-detox-text hover:border-detox-primary"}`}
                           >
                             {ativo && <Check className="h-4 w-4 shrink-0 text-detox-dark" aria-hidden="true" />}
                             {opcao.texto}
