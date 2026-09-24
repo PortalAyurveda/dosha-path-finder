@@ -187,7 +187,9 @@ const Detox = () => {
 
   const guideSteps = [
     { icon: PlayCircle, title: `Assista a noite ${noite}`, text: "É agora, aqui mesmo." },
-    { icon: PenLine, title: "Responda as três perguntas", text: "Ficam salvas na sua conta." },
+    noite === 3
+      ? { icon: PenLine, title: "Leia a sua síntese", text: "A Akasha escreveu o mapa da sua jornada. Abre às 19h." }
+      : { icon: PenLine, title: "Responda as três perguntas", text: "Ficam salvas na sua conta." },
     { icon: CalendarDays, ...terceiroPasso },
   ];
 
@@ -321,7 +323,7 @@ const Detox = () => {
               <h2 className="mt-1 font-serif text-2xl font-bold text-detox-text md:text-3xl">
                 {isVisitor ? "Comece pelo seu Teste de Dosha" : doshaResult ? resultTitle : "Comece pelo Teste de Dosha"}
               </h2>
-              <p className="mt-2 text-sm text-detox-muted md:text-base">{isVisitor ? "Não precisa de senha. Em oito minutos você tem o seu mapa." : doshaResult ? "As três perguntas de hoje estão abertas no seu mapa." : "Depois é só voltar pra cá, a aula continua."}</p>
+              <p className="mt-2 text-sm text-detox-muted md:text-base">{isVisitor ? "Não precisa de senha. Em oito minutos você tem o seu mapa." : doshaResult ? (noite === 3 ? "A síntese da sua jornada, escrita pela Akasha, está no seu mapa." : "As três perguntas de hoje estão abertas no seu mapa.") : "Depois é só voltar pra cá, a aula continua."}</p>
             </div>
             <div className="grid gap-4 sm:grid-cols-3">
               {guideSteps.map(({ icon: Icon, title, text }) => (
