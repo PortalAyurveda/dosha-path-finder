@@ -5,7 +5,7 @@ import { CalendarDays, ExternalLink, PenLine, PlayCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import LiveChat from "@/components/aula/LiveChat";
-import ChamadaInscricao from "@/components/detox/ChamadaInscricao";
+import ChamadaInscricao, { BarraInscricao } from "@/components/detox/ChamadaInscricao";
 import { useUser } from "@/contexts/UserContext";
 import { supabase } from "@/integrations/supabase/client";
 import { getFaixa, type DoshaNome } from "@/data/doshaLevels";
@@ -268,7 +268,6 @@ const Detox = () => {
           </div>
         )}
 
-        <div className="mb-4"><ChamadaInscricao /></div>
 
         {loading ? (
           <div className="grid gap-4 min-[940px]:grid-cols-[minmax(0,1fr)_330px]">
@@ -343,6 +342,8 @@ const Detox = () => {
             </div>
           </div>
         </section>
+
+        <BarraInscricao />
       </main>
     </div>
   );
