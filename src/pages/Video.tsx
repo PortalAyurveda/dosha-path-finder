@@ -232,20 +232,20 @@ const Video = () => {
 
   if (isLoading) {
     return (
-      <PageContainer title="Carregando..." description="">
+      <main className="w-full max-w-6xl mx-auto px-4 sm:px-6 py-8 md:py-12">
         <div className="max-w-4xl mx-auto space-y-4">
           <Skeleton className="aspect-video w-full rounded-2xl" />
           <Skeleton className="h-8 w-2/3" />
           <Skeleton className="h-4 w-full" />
           <Skeleton className="h-4 w-full" />
         </div>
-      </PageContainer>
+      </main>
     );
   }
 
   if (isError) {
     return (
-      <PageContainer title="Erro" description="">
+      <main className="w-full max-w-6xl mx-auto px-4 sm:px-6 py-8 md:py-12">
         <div className="max-w-2xl mx-auto text-center py-16 space-y-4">
           <h1 className="font-serif text-2xl md:text-3xl font-bold text-primary">
             Não foi possível carregar este vídeo agora
@@ -255,7 +255,7 @@ const Video = () => {
             Ir para a biblioteca
           </Button>
         </div>
-      </PageContainer>
+      </main>
     );
   }
 
