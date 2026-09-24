@@ -2,47 +2,55 @@
 import { createElement as h, useState, type ReactNode } from "react";
 import { Helmet } from "react-helmet-async";
 import { useNavigate } from "react-router-dom";
-import { Camera, ClipboardList, Crown, HelpCircle, Loader2, MonitorPlay, Sun, Users, Utensils } from "lucide-react";
+import {
+  CalendarDays, Check, ClipboardList, CreditCard, Eye, Flame, HelpCircle, Loader2, PlayCircle,
+  QrCode, Quote, Sparkles, Sprout, Sun, Users, UtensilsCrossed, Waves, X,
+} from "lucide-react";
 import { useUser } from "@/contexts/UserContext";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import MeuMapaDetox from "@/components/detox/MeuMapaDetox";
 import {
-  DETOX_INSCRICAO as D, RELATOS, RELATO_PREMIUM, RELATO_GRUPO, FRASE_EDSON_2025,
-  RECEITAS_TITULO, RECEITAS, IMAGENS,
+  DETOX_INSCRICAO as D, RELATOS, RELATO_PREMIUM, RELATO_GRUPO, FRASE_EDSON_2025, RECEITAS, RECEITAS_TITULO, IMAGENS,
 } from "@/data/detoxInscricao";
 
 type Metodo = "cartao" | "pix";
 type Relato = { texto: string; nome: string; fonte: string };
 
-const SERIF = "font-serif";
-const H2 = `m-0 ${SERIF} text-[30px] md:text-[42px] leading-tight font-bold text-[#1E2547] text-balance`;
-const P = "m-0 text-[18px] md:text-[20px] leading-relaxed text-[#2A2540]";
-const EYEBROW = "m-0 text-[15px] font-bold uppercase tracking-[1.2px] text-[#8C4513]";
-
-const secao = (conteudo: ReactNode[], opts: { fundo?: string; largura?: string; borda?: boolean } = {}) =>
-  h("section", { className: `px-4 py-12 md:py-20 ${opts.fundo ?? ""} ${opts.borda ? "border-y border-[#EADFD3]" : ""}` },
-    h("div", { className: `mx-auto flex w-full flex-col gap-5 ${opts.largura ?? "max-w-[760px]"}` }, ...conteudo));
-
-const titulo = (t: string) => h("h2", { className: H2 }, t);
-const parTexto = (t: string, extra = "") => h("p", { className: `${P} ${extra}` }, t);
-
-
-const ponto = (t: string, cor: string, i: number) =>
-  h("div", { key: i, className: "flex items-start gap-3.5" },
-    h("span", { className: `mt-2.5 h-3 w-3 shrink-0 rounded-full ${cor}`, "aria-hidden": true }),
-    parTexto(t));
-
-const relato = (r: Relato, fundo = "bg-white", i = 0) =>
-  h("figure", { key: i, className: `m-0 flex flex-col gap-3 rounded-[20px] p-6 ${fundo}` },
-    h("blockquote", { className: `m-0 ${SERIF} text-[19px] md:text-[21px] leading-normal text-[#1E2547]` }, `"${r.texto}"`),
-    h("figcaption", { className: "text-base text-[#4A4458]" },
-      h("strong", { className: "text-[#2A2540]" }, r.nome), `, ${r.fonte}`));
-
-const ICONE_ITEM: { [k: string]: typeof Sun } = {
-  sol: Sun, grupo: Users, aulas: MonitorPlay, lista: ClipboardList,
-  cardapio: Utensils, duvidas: HelpCircle, premium: Crown, lingua: Camera,
+const ICONES: { [k: string]: typeof Sun } = {
+  sol: Sun, grupo: Users, aulas: PlayCircle, lista: ClipboardList, cardapio: UtensilsCrossed,
+  duvidas: HelpCircle, premium: Sparkles, lingua: Eye,
 };
+const ETAPAS = [
+  { icone: Flame, fundo: "bg-gradient-to-br from-[#E8893F] to-[#C8602A]" },
+  { icone: Waves, fundo: "bg-gradient-to-br from-[#4E8DB0] to-[#2F6484]" },
+  { icone: Sprout, fundo: "bg-gradient-to-br from-[#4FA072] to-[#2F7650]" },
+];
 
+const TEXTO = "m-0 text-[16px] md:text-[17px] leading-[1.75] text-[#3A3550]";
+const SUAVE = "m-0 text-[15px] leading-relaxed text-[#6B6480]";
+
+const olho = (t: string, centro = false) =>
+  h("p", { className: `m-0 flex items-center gap-2 text-[12px] font-bold uppercase tracking-[0.14em] text-[#B3622A] ${centro ? "justify-center" : ""}` },
+    h("img", { src: IMAGENS.sol, alt: "", className: "h-4 w-4", "aria-hidden": true }), t);
+const titulo = (t: string) =>
+  h("h2", { className: "m-0 font-serif text-[26px] md:text-[34px] leading-[1.2] font-bold text-[#1E2547] text-balance" }, t);
+const par = (t: string, classe = TEXTO) => h("p", { className: classe }, t);
+
+const secao = (conteudo: ReactNode[], opts: { fundo?: string; largura?: string } = {}) =>
+  h("section", { className: `px-4 py-12 md:py-16 ${opts.fundo ?? ""}` },
+    h("div", { className: `mx-auto flex w-full flex-col gap-5 ${opts.largura ?? "max-w-[720px]"}` }, ...conteudo));
+
+const relato = (r: Relato, i = 0, fundo = "bg-white") =>
+  h("figure", { key: i, className: `m-0 flex flex-col gap-3 rounded-2xl border border-[#EFE4D8] p-5 ${fundo}` },
+    h(Quote, { className: "h-5 w-5 text-[#D9A77E]", "aria-hidden": true }),
+    h("blockquote", { className: "m-0 font-serif text-[17px] italic leading-relaxed text-[#1E2547]" }, r.texto),
+    h("figcaption", { className: "text-[14px] text-[#6B6480]" }, h("span", { className: "font-semibold text-[#3A3550]" }, r.nome), `, ${r.fonte}`));
+
+const linhaIcone = (Icone: typeof Sun, t: string, i: number, cor: string) =>
+  h("li", { key: i, className: "flex items-start gap-3" },
+    h(Icone, { className: `mt-1 h-5 w-5 shrink-0 ${cor}`, "aria-hidden": true }),
+    h("span", { className: TEXTO }, t));
 
 const DetoxInscricao = () => {
   const { user, isAnonymous } = useUser();
@@ -76,168 +84,177 @@ const DetoxInscricao = () => {
     toast({ title: "Não foi possível abrir o pagamento", description: "Tente de novo em instantes.", variant: "destructive" });
   };
 
-  const botoes = (cartao: string, pix: string, escuro = false) => [
+  const botoes = (escuro = false) => [
     h("button", {
       key: "cartao", type: "button", onClick: () => void comprar("cartao"), disabled: carregando !== null,
-      className: `flex min-h-[64px] w-full items-center justify-center gap-2 rounded-full px-5 text-center text-[18px] font-bold transition-opacity hover:opacity-90 disabled:opacity-70 ${escuro ? "bg-[#F2CB05] text-[#1E2547]" : "bg-[#8C4513] text-white"}`,
-    }, carregando === "cartao" ? h(Loader2, { className: "h-5 w-5 animate-spin" }) : null, cartao),
+      className: `flex min-h-[60px] w-full items-center justify-center gap-2.5 rounded-full px-6 text-[16px] font-semibold shadow-sm transition hover:brightness-105 disabled:opacity-70 ${escuro ? "bg-[#F2CB05] text-[#1E2547]" : "bg-[#8C4513] text-white"}`,
+    }, carregando === "cartao" ? h(Loader2, { className: "h-5 w-5 animate-spin" }) : h(CreditCard, { className: "h-5 w-5", "aria-hidden": true }), D.hero.botao_cartao),
     h("button", {
       key: "pix", type: "button", onClick: () => void comprar("pix"), disabled: carregando !== null,
-      className: `flex min-h-[64px] w-full items-center justify-center gap-2 rounded-full border-2 bg-transparent px-5 text-center text-[18px] font-bold transition-opacity hover:opacity-90 disabled:opacity-70 ${escuro ? "border-white text-white" : "border-[#8C4513] text-[#8C4513]"}`,
-    }, carregando === "pix" ? h(Loader2, { className: "h-5 w-5 animate-spin" }) : null, pix),
+      className: `flex min-h-[60px] w-full items-center justify-center gap-2.5 rounded-full border px-6 text-[16px] font-semibold transition disabled:opacity-70 ${escuro ? "border-white/60 text-white hover:bg-white/10" : "border-[#8C4513]/50 bg-white text-[#8C4513] hover:bg-[#FBF1E7]"}`,
+    }, carregando === "pix" ? h(Loader2, { className: "h-5 w-5 animate-spin" }) : h(QrCode, { className: "h-5 w-5", "aria-hidden": true }), D.hero.botao_pix),
   ];
 
   const hero = D.hero;
-  const etapaCor = ["border-t-[#E07B39] text-[#E07B39]", "border-t-[#C0392B] text-[#C0392B]", "border-t-[#2E7D5B] text-[#2E7D5B]"];
 
-  return h("div", { className: "min-h-screen bg-[#FDF7F1] text-[#2A2540]" },
+  return h("div", { className: "min-h-screen bg-[#FDF9F4] text-[#3A3550]" },
     h(Helmet, null,
-      h("title", null, "Detox da Primavera 2026 · Portal Ayurveda"),
+      h("title", null, "Detox da Primavera com Edson Osorio · Portal Ayurveda"),
       h("meta", { name: "description", content: hero.subtitulo })),
 
-    h("div", { className: "bg-[#1E2547] px-4 py-3.5 text-center text-[17px] font-bold text-white" }, D.faixa),
+    h("div", { className: "bg-[#1E2547] px-4 py-2.5 text-center text-[14px] font-medium tracking-wide text-white/90" }, D.faixa),
 
-    h("section", { className: "bg-[#FBE6D2] px-4 py-10 md:py-20" },
-      h("div", { className: "mx-auto flex max-w-[1080px] flex-wrap items-center gap-8 md:gap-14" },
-        h("div", { className: "flex flex-[1_1_380px] flex-col gap-5" },
-          h("img", { src: IMAGENS.logo, alt: "Detox da Primavera", className: "h-14 w-auto self-start" }),
-          h("p", { className: EYEBROW }, hero.eyebrow),
-          h("h1", { className: `m-0 ${SERIF} text-[38px] md:text-[60px] leading-[1.1] font-bold text-[#1E2547] text-balance` }, hero.titulo),
-          h("p", { className: "m-0 text-[19px] md:text-[22px] leading-relaxed" }, hero.subtitulo)),
-        h("div", { className: "flex w-full max-w-[460px] flex-[1_1_320px] flex-col gap-3 rounded-[24px] bg-white p-7 shadow-[0_10px_30px_rgba(140,69,19,0.12)]" },
-          h("p", { className: "m-0 text-[18px] text-[#4A4458]" }, hero.preco_rotulo),
-          h("p", { className: `m-0 ${SERIF} text-[52px] md:text-[64px] font-bold leading-none text-[#1E2547]` }, hero.preco),
-          h("p", { className: "m-0 text-[19px] leading-normal" }, hero.preco_linha),
-          h("div", { className: "mt-2 flex flex-col gap-3" }, ...botoes(hero.botao_cartao, hero.botao_pix)),
-          h("p", { className: "m-0 mt-1 text-[17px] leading-normal text-[#4A4458]" }, hero.nota)))),
+    h("section", { className: "overflow-hidden bg-gradient-to-b from-[#FBE3CC] via-[#FCEEE0] to-[#FDF9F4] px-4 pb-14 pt-10 md:pb-16 md:pt-14" },
+      h("div", { className: "mx-auto grid max-w-[1080px] items-center gap-8 md:grid-cols-[1.1fr_0.9fr] md:gap-10" },
+        h("div", { className: "flex flex-col gap-5" },
+          h("div", { className: "flex items-center gap-3" },
+            h("img", { src: IMAGENS.logo, alt: "Detox da Primavera", className: "h-12 w-12 object-contain" }),
+            h("p", { className: "m-0 text-[13px] font-bold uppercase tracking-[0.14em] text-[#B3622A]" }, hero.eyebrow)),
+          h("h1", { className: "m-0 font-serif text-[34px] md:text-[50px] leading-[1.1] font-bold text-[#1E2547] text-balance" }, hero.titulo),
+          par(hero.subtitulo, "m-0 text-[17px] md:text-[19px] leading-[1.7] text-[#3A3550]"),
+          h("div", { className: "mt-2 flex flex-col gap-3 rounded-3xl border border-[#F0E2D2] bg-white/90 p-5 shadow-[0_18px_40px_-22px_rgba(140,69,19,0.45)] backdrop-blur md:p-6" },
+            h("div", { className: "flex flex-wrap items-end gap-x-3 gap-y-1" },
+              h("p", { className: "m-0 font-serif text-[40px] md:text-[46px] font-bold leading-none text-[#1E2547]" }, hero.preco),
+              par(hero.preco_linha, "m-0 pb-1 text-[14px] leading-snug text-[#6B6480]")),
+            h("div", { className: "grid gap-2.5 sm:grid-cols-2" }, ...botoes()),
+            h("p", { className: "m-0 text-[13px] leading-relaxed text-[#6B6480]" }, hero.nota))),
+        h("div", { className: "relative mx-auto flex w-full max-w-[420px] items-end justify-center" },
+          h("img", { src: IMAGENS.sol, alt: "", "aria-hidden": true, className: "absolute left-1/2 top-4 w-[88%] -translate-x-1/2 opacity-90" }),
+          h("img", { src: IMAGENS.edsonRecorte, alt: "Edson Osorio", className: "relative z-10 w-full max-w-[380px] object-contain drop-shadow-[0_20px_30px_rgba(30,37,71,0.18)]" })))),
+
+    h(MeuMapaDetox, null),
 
     secao([
-      h("div", { key: "sol", className: "flex items-center gap-5" },
-        h("img", { src: IMAGENS.sol, alt: "", className: "h-16 w-16 shrink-0", "aria-hidden": true }),
-        h("div", { className: "flex flex-col gap-1.5" },
-          h("p", { className: EYEBROW }, D.renovar.eyebrow),
-          titulo(D.renovar.titulo))),
-      parTexto(D.renovar.texto),
-      h("h3", { key: "buscat", className: `m-0 mt-3 ${SERIF} text-[26px] text-[#1E2547]` }, D.renovar.busca_titulo),
-      h("div", { key: "busca", className: "flex flex-col gap-3.5" }, ...D.renovar.busca.map((t, i) => ponto(t, "bg-[#E07B39]", i))),
-      parTexto(D.renovar.ama, "mt-3 text-[#4A4458]"),
+      olho(D.renovar.eyebrow),
+      titulo(D.renovar.titulo),
+      par(D.renovar.texto),
+      h("div", { key: "busca", className: "mt-2 rounded-3xl border border-[#EFE4D8] bg-white p-6 md:p-7" },
+        h("p", { className: "m-0 mb-4 font-serif text-[19px] font-bold text-[#1E2547]" }, D.renovar.busca_titulo),
+        h("ul", { className: "m-0 flex list-none flex-col gap-3 p-0" }, ...D.renovar.busca.map((t, i) => linhaIcone(Check, t, i, "text-[#3F8A5F]")))),
+      par(D.renovar.ama),
     ]),
 
-    secao([
-      h("p", { className: EYEBROW }, D.processo.eyebrow),
-      titulo(D.processo.titulo),
-      parTexto(D.processo.intro),
-      h("div", { key: "etapas", className: "flex flex-wrap gap-4" },
-        ...D.processo.etapas.map((e, i) =>
-          h("div", { key: i, className: `flex flex-[1_1_260px] flex-col gap-2.5 rounded-[20px] border-t-[6px] bg-white p-6 ${etapaCor[i]}` },
-            h("p", { className: "m-0 text-[15px] font-bold uppercase tracking-[1.2px]" }, `Etapa ${i + 1} · ${e.verbo}`),
-            h("h3", { className: `m-0 ${SERIF} text-[26px] text-[#1E2547]` }, e.nome),
-            parTexto(e.texto)))),
-      parTexto(D.processo.nota, "text-[#4A4458]"),
-    ], { largura: "max-w-[1080px]" }),
+    h("section", { className: "bg-white px-4 py-12 md:py-16" },
+      h("div", { className: "mx-auto flex max-w-[1080px] flex-col gap-5" },
+        h("div", { className: "mx-auto flex max-w-[720px] flex-col gap-4 text-center" },
+          olho(D.processo.eyebrow, true), titulo(D.processo.titulo), par(D.processo.intro)),
+        h("ol", { className: "m-0 mt-4 grid list-none gap-4 p-0 md:grid-cols-3" },
+          ...D.processo.etapas.map((e, i) => {
+            const est = ETAPAS[i];
+            return h("li", { key: i, className: `relative flex flex-col gap-3 overflow-hidden rounded-3xl p-6 text-white shadow-[0_20px_40px_-24px_rgba(30,37,71,0.55)] md:p-7 ${est.fundo}` },
+              h("span", { className: "pointer-events-none absolute -right-3 -top-6 font-serif text-[120px] font-bold leading-none text-white/10", "aria-hidden": true }, String(i + 1)),
+              h("div", { className: "flex h-14 w-14 items-center justify-center rounded-2xl bg-white/20 ring-1 ring-white/30" }, h(est.icone, { className: "h-7 w-7 text-white", "aria-hidden": true })),
+              h("p", { className: "m-0 text-[12px] font-bold uppercase tracking-[0.16em] text-white/80" }, `Etapa ${i + 1} · ${e.nome}`),
+              h("h3", { className: "m-0 font-serif text-[26px] font-bold leading-tight text-white" }, e.verbo),
+              par(e.texto, "m-0 text-[15px] leading-relaxed text-white/90"));
+          })),
+        h("p", { className: "m-0 mx-auto mt-2 max-w-[720px] text-center text-[15px] leading-relaxed text-[#6B6480]" }, D.processo.nota),
+        h("div", { className: "mx-auto mt-4 grid w-full max-w-[860px] gap-3 sm:grid-cols-3" },
+          ...D.datas.map((d, i) =>
+            h("div", { key: i, className: "flex items-center gap-3 rounded-2xl bg-[#FBF1E7] px-4 py-3" },
+              h(CalendarDays, { className: "h-5 w-5 shrink-0 text-[#B3622A]", "aria-hidden": true }),
+              h("div", null,
+                h("p", { className: "m-0 text-[14px] font-bold text-[#1E2547]" }, d.quando),
+                h("p", { className: "m-0 text-[13px] text-[#6B6480]" }, d.o_que))))))),
 
     secao([
-      titulo("As datas"),
-      h("div", { key: "datas" },
-        ...D.datas.map((x, i) =>
-          h("div", { key: i, className: "flex flex-wrap gap-x-5 gap-y-1.5 border-b border-[#EADFD3] py-4" },
-            h("p", { className: "m-0 flex-[0_0_230px] text-[18px] font-bold text-[#8C4513]" }, x.quando),
-            h("p", { className: "m-0 flex-[1_1_280px] text-[18px] leading-relaxed" }, x.o_que)))),
-    ], { fundo: "bg-white", borda: true }),
+      h("div", { key: "cab", className: "flex flex-col gap-3 text-center" }, olho(RECEITAS_TITULO.eyebrow, true), titulo(RECEITAS_TITULO.titulo), par(RECEITAS_TITULO.texto)),
+      h("div", { key: "grid", className: "mt-2 grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4" },
+        ...RECEITAS.map((r, i) =>
+          h("figure", { key: i, className: "m-0 overflow-hidden rounded-2xl border border-[#EFE4D8] bg-white" },
+            h("img", { src: r.img, alt: r.nome, loading: "lazy", className: "aspect-[3/2] w-full object-cover" }),
+            h("figcaption", { className: "px-3 py-2.5 text-center text-[14px] font-semibold text-[#1E2547]" }, r.nome)))),
+    ], { fundo: "bg-[#FBF1E7]", largura: "max-w-[1080px]" }),
 
     secao([
-      h("p", { className: EYEBROW }, D.o_que_recebe.eyebrow),
+      olho(D.o_que_recebe.eyebrow),
       titulo(D.o_que_recebe.titulo),
-      h("div", { key: "itens", className: "grid grid-cols-[repeat(auto-fill,minmax(260px,1fr))] gap-3.5" },
+      h("div", { key: "itens", className: "mt-2 grid gap-3 sm:grid-cols-2" },
         ...D.o_que_recebe.itens.map((x, i) => {
-          const Icone = ICONE_ITEM[x.icone] ?? Sun;
-          return h("div", { key: i, className: "flex flex-col gap-2.5 rounded-[18px] bg-white p-5" },
-            h("div", { className: "flex h-10 w-10 items-center justify-center rounded-full bg-[#FBEADB]" },
-              h(Icone, { className: "h-5 w-5 text-[#B3622A]", "aria-hidden": true })),
-            h("h3", { className: "m-0 text-[20px] font-bold text-[#1E2547]" }, x.titulo),
-            h("p", { className: "m-0 text-[17px] leading-normal text-[#4A4458]" }, x.texto));
+          const Icone = ICONES[x.icone] ?? Sun;
+          return h("div", { key: i, className: "flex items-start gap-4 rounded-2xl border border-[#EFE4D8] bg-white p-5" },
+            h("div", { className: "flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#FBEADB]" }, h(Icone, { className: "h-5 w-5 text-[#B3622A]", "aria-hidden": true })),
+            h("div", { className: "flex flex-col gap-1" },
+              h("h3", { className: "m-0 text-[16px] font-bold text-[#1E2547]" }, x.titulo),
+              h("p", { className: "m-0 text-[15px] leading-relaxed text-[#6B6480]" }, x.texto)));
         })),
-    ], { largura: "max-w-[1080px]" }),
+    ], { largura: "max-w-[880px]" }),
 
     secao([
-      h("p", { className: EYEBROW }, D.premium.eyebrow),
+      olho(D.premium.eyebrow),
       titulo(D.premium.titulo),
-      parTexto(D.premium.texto),
-      h("figure", { key: "edson", className: "m-0 mt-3 border-l-4 border-[#8C4513] py-1 pl-5" },
-        h("blockquote", { className: `m-0 ${SERIF} text-[20px] md:text-[23px] leading-normal text-[#1E2547]` }, `"${FRASE_EDSON_2025}"`),
-        h("figcaption", { className: "mt-2.5 text-base text-[#4A4458]" }, h("strong", { className: "text-[#2A2540]" }, "Edson Osorio"), ", no Detox de 2025")),
-      relato(RELATO_PREMIUM, "bg-[#FBE6D2]"),
-    ], { fundo: "bg-white", borda: true }),
+      par(D.premium.texto),
+      h("figure", { key: "edson", className: "m-0 mt-2 rounded-3xl bg-[#1E2547] p-6 md:p-8" },
+        h(Quote, { className: "h-6 w-6 text-[#F2CB05]", "aria-hidden": true }),
+        h("blockquote", { className: "m-0 mt-3 font-serif text-[19px] md:text-[21px] italic leading-relaxed text-white" }, FRASE_EDSON_2025),
+        h("figcaption", { className: "mt-3 text-[14px] text-white/70" }, "Edson Osorio, Detox de 2025")),
+      relato(RELATO_PREMIUM, 0, "bg-[#FBF1E7]"),
+    ], { fundo: "bg-white border-y border-[#F0E6DB]" }),
 
     secao([
-      h("p", { className: EYEBROW }, D.acompanhamento.eyebrow),
+      olho(D.acompanhamento.eyebrow),
       titulo(D.acompanhamento.titulo),
-      ...D.acompanhamento.paragrafos.map((t) => parTexto(t)),
-      h("p", { key: "cit", className: `m-0 mt-2 ${SERIF} text-[21px] md:text-[25px] leading-normal text-[#1E2547]` }, `"${D.acompanhamento.citacao}"`),
+      ...D.acompanhamento.paragrafos.map((t) => par(t)),
+      h("p", { key: "cit", className: "m-0 border-l-2 border-[#D9A77E] pl-4 font-serif text-[19px] italic leading-relaxed text-[#1E2547]" }, `"${D.acompanhamento.citacao}"`),
       relato(RELATO_GRUPO),
     ]),
 
     secao([
-      h("p", { className: EYEBROW }, D.relatos.eyebrow),
-      titulo(D.relatos.titulo),
-      h("div", { key: "rel", className: "grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-3.5" }, ...RELATOS.map((r, i) => relato(r, "bg-white", i))),
-    ], { fundo: "bg-[#FBE6D2]", largura: "max-w-[1080px]" }),
+      h("div", { key: "cab", className: "flex flex-col gap-3 text-center" }, olho(D.relatos.eyebrow, true), titulo(D.relatos.titulo)),
+      h("div", { key: "rel", className: "mt-2 grid gap-3 sm:grid-cols-2 lg:grid-cols-3" }, ...RELATOS.map((r, i) => relato(r, i))),
+    ], { fundo: "bg-[#FBF1E7]", largura: "max-w-[1080px]" }),
 
     secao([
-      titulo(D.para_quem.titulo),
-      h("div", { key: "sim", className: "flex flex-col gap-3" }, ...D.para_quem.sim.map((t, i) => ponto(t, "bg-[#2E7D5B]", i))),
-      h("h3", { key: "espera", className: `m-0 mt-4 ${SERIF} text-[26px] text-[#1E2547]` }, D.para_quem.titulo_nao),
-      h("div", { key: "nao", className: "flex flex-col gap-3" }, ...D.para_quem.nao.map((t, i) => ponto(t, "bg-[#9A8F86]", i))),
-    ]),
+      h("div", { key: "quem", className: "grid gap-4 md:grid-cols-[1.4fr_1fr]" },
+        h("div", { className: "flex flex-col gap-4 rounded-3xl border border-[#EFE4D8] bg-white p-6" },
+          h("h3", { className: "m-0 font-serif text-[22px] font-bold text-[#1E2547]" }, D.para_quem.titulo),
+          h("ul", { className: "m-0 flex list-none flex-col gap-3 p-0" }, ...D.para_quem.sim.map((t, i) => linhaIcone(Check, t, i, "text-[#3F8A5F]")))),
+        h("div", { className: "flex flex-col gap-4 rounded-3xl border border-[#EFE4D8] bg-[#FDF9F4] p-6" },
+          h("h3", { className: "m-0 font-serif text-[22px] font-bold text-[#1E2547]" }, D.para_quem.titulo_nao),
+          h("ul", { className: "m-0 flex list-none flex-col gap-3 p-0" }, ...D.para_quem.nao.map((t, i) => linhaIcone(X, t, i, "text-[#B85C4A]"))))),
+    ], { largura: "max-w-[960px]" }),
 
     secao([
-      titulo(D.pagamento.titulo),
-      h("div", { key: "cards", className: "flex flex-wrap gap-4" },
-        h("div", { className: "flex flex-[1_1_300px] flex-col gap-2.5 rounded-[20px] border-2 border-[#8C4513] bg-white p-6" },
-          h("h3", { className: `m-0 ${SERIF} text-[24px] text-[#1E2547]` }, D.pagamento.cartao_titulo), parTexto(D.pagamento.cartao_texto)),
-        h("div", { className: "flex flex-[1_1_300px] flex-col gap-2.5 rounded-[20px] border-2 border-[#EADFD3] bg-white p-6" },
-          h("h3", { className: `m-0 ${SERIF} text-[24px] text-[#1E2547]` }, D.pagamento.pix_titulo), parTexto(D.pagamento.pix_texto))),
-      parTexto(D.pagamento.nota, "text-[#4A4458]"),
-      h("div", { key: "bot", className: "grid gap-3 sm:grid-cols-2" }, ...botoes(hero.botao_cartao, hero.botao_pix)),
-    ], { fundo: "bg-white", borda: true, largura: "max-w-[900px]" }),
+      h("div", { key: "cab", className: "text-center" }, titulo(D.pagamento.titulo)),
+      h("div", { key: "cards", className: "grid gap-3 sm:grid-cols-2" },
+        h("div", { className: "flex items-start gap-4 rounded-2xl border border-[#EFE4D8] bg-white p-5" },
+          h(CreditCard, { className: "mt-0.5 h-6 w-6 shrink-0 text-[#8C4513]", "aria-hidden": true }),
+          h("div", null, h("p", { className: "m-0 text-[16px] font-bold text-[#1E2547]" }, D.pagamento.cartao_titulo), par(D.pagamento.cartao_texto, SUAVE))),
+        h("div", { className: "flex items-start gap-4 rounded-2xl border border-[#EFE4D8] bg-white p-5" },
+          h(QrCode, { className: "mt-0.5 h-6 w-6 shrink-0 text-[#8C4513]", "aria-hidden": true }),
+          h("div", null, h("p", { className: "m-0 text-[16px] font-bold text-[#1E2547]" }, D.pagamento.pix_titulo), par(D.pagamento.pix_texto, SUAVE)))),
+      h("div", { key: "bot", className: "mx-auto grid w-full max-w-[620px] gap-2.5 sm:grid-cols-2" }, ...botoes()),
+      h("p", { key: "nota", className: "m-0 text-center text-[14px] text-[#6B6480]" }, D.pagamento.nota),
+    ], { fundo: "bg-white border-y border-[#F0E6DB]" }),
 
     secao([
-      h("p", { className: EYEBROW }, RECEITAS_TITULO.eyebrow),
-      titulo(RECEITAS_TITULO.titulo),
-      parTexto(RECEITAS_TITULO.texto),
-      h("div", { key: "rec", className: "grid grid-cols-[repeat(auto-fill,minmax(240px,1fr))] gap-3.5" },
-        ...RECEITAS.map((r, i) =>
-          h("figure", { key: i, className: "m-0 flex flex-col gap-2 overflow-hidden rounded-[18px] bg-white" },
-            h("img", { src: r.img, alt: r.nome, className: "aspect-[4/3] w-full object-cover", loading: "lazy" }),
-            h("figcaption", { className: "px-4 pb-4 text-[18px] font-bold text-[#1E2547]" }, r.nome)))),
-    ], { fundo: "bg-[#FBE6D2]", largura: "max-w-[1080px]" }),
-
-    secao([
-      titulo("Perguntas frequentes"),
-      h("div", { key: "faq", className: "flex flex-col gap-2.5" },
+      h("div", { key: "cab", className: "text-center" }, titulo("Perguntas frequentes")),
+      h("div", { key: "faq", className: "mt-2 flex flex-col divide-y divide-[#EFE4D8] rounded-3xl border border-[#EFE4D8] bg-white" },
         ...D.faq.map((x, i) =>
-          h("details", { key: i, className: "rounded-2xl bg-white px-5 py-4" },
-            h("summary", { className: "min-h-[44px] cursor-pointer text-[19px] font-bold leading-snug text-[#1E2547]" }, x.pergunta),
-            h("p", { className: "m-0 mt-3 text-[18px] leading-relaxed" }, x.resposta)))),
+          h("details", { key: i, className: "group px-5 py-4" },
+            h("summary", { className: "flex min-h-[44px] cursor-pointer list-none items-center justify-between gap-4 text-[16px] font-semibold text-[#1E2547]" },
+              x.pergunta, h("span", { className: "text-[20px] text-[#B3622A] transition group-open:rotate-45", "aria-hidden": true }, "+")),
+            h("p", { className: "m-0 mt-2 text-[15px] leading-relaxed text-[#3A3550]" }, x.resposta)))),
     ]),
 
     secao([
-      h("div", { key: "id", className: "flex flex-wrap items-center gap-5" },
-        h("img", { src: IMAGENS.edsonRecorte, alt: "Edson Osorio", className: "h-[130px] w-auto" }),
+      h("div", { key: "prof", className: "flex flex-col items-center gap-4 text-center" },
+        h("img", { src: IMAGENS.edsonFoto, alt: "Edson Osorio", className: "h-32 w-32 rounded-full object-cover object-top ring-4 ring-[#FBEADB]" }),
         h("div", null,
-          h("p", { className: `m-0 ${SERIF} text-[30px] font-bold text-[#1E2547]` }, "Edson Osorio"),
-          h("p", { className: "m-0 mt-1 text-[18px] text-[#4A4458]" }, D.professor.papel))),
-      parTexto(D.professor.texto),
-      h("p", { key: "cit", className: `m-0 ${SERIF} text-[21px] md:text-[25px] leading-normal text-[#1E2547]` }, `"${D.professor.citacao}"`),
-    ], { fundo: "bg-white", borda: true }),
+          h("p", { className: "m-0 font-serif text-[24px] font-bold text-[#1E2547]" }, "Edson Osorio"),
+          h("p", { className: "m-0 mt-1 text-[14px] text-[#6B6480]" }, D.professor.papel)),
+        par(D.professor.texto),
+        h("p", { className: "m-0 font-serif text-[18px] italic leading-relaxed text-[#1E2547]" }, `"${D.professor.citacao}"`)),
+    ], { largura: "max-w-[640px]" }),
 
-    h("section", { className: "bg-[#1E2547] px-4 py-12 text-white md:py-24" },
-      h("div", { className: "mx-auto flex max-w-[760px] flex-col gap-4" },
-        h("h2", { className: `m-0 ${SERIF} text-[32px] md:text-[48px] leading-tight font-bold text-white text-balance` }, D.fechamento.titulo),
-        h("p", { className: "m-0 text-[18px] md:text-[20px] leading-relaxed text-white" }, D.fechamento.texto),
-        h("p", { className: "m-0 text-[18px] font-bold leading-normal text-[#FBE6D2]" }, D.fechamento.preco_linha),
-        h("div", { className: "mt-2 flex max-w-[460px] flex-col gap-3" }, ...botoes(hero.botao_cartao, hero.botao_pix, true)),
-        h("img", { key: "assinatura", src: IMAGENS.edsonFoto, alt: "Assinatura de Edson Osorio", className: "mt-4 h-20 w-auto self-start" }))),
+    h("section", { className: "relative overflow-hidden bg-[#1E2547] px-4 py-14 md:py-20" },
+      h("img", { src: IMAGENS.sol, alt: "", "aria-hidden": true, className: "pointer-events-none absolute -right-16 -top-16 w-64 opacity-15" }),
+      h("div", { className: "relative mx-auto flex max-w-[640px] flex-col items-center gap-4 text-center" },
+        h("img", { src: IMAGENS.logo, alt: "", "aria-hidden": true, className: "h-12 w-12 object-contain" }),
+        h("h2", { className: "m-0 font-serif text-[28px] md:text-[38px] leading-tight font-bold text-white text-balance" }, D.fechamento.titulo),
+        h("p", { className: "m-0 text-[16px] md:text-[18px] leading-[1.7] text-white/85" }, D.fechamento.texto),
+        h("p", { className: "m-0 text-[15px] font-semibold text-[#FBEADB]" }, D.fechamento.preco_linha),
+        h("div", { className: "mt-2 grid w-full max-w-[520px] gap-2.5" }, ...botoes(true)))),
   );
 };
 
