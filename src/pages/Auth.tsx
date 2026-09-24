@@ -15,13 +15,56 @@ import { Loader2, Mail, Sparkles, ArrowLeft, Copy, ExternalLink } from "lucide-r
 
 const REDIRECT_STORAGE_KEY = "pendingLoginRedirect";
 
+// Login pendente (email + passo) guardado por 15 minutos. No celular, ir pro app de
+// email e voltar costuma recarregar a página; sem isso a pessoa cai de novo na tela do
+// email, pede outro código, e o código que ela tem na mão deixa de valer.
+const LOGIN_PENDENTE_KEY = "portal:login-pendente";
+const LOGIN_PENDENTE_MS = 15 * 60 * 1000;
+const REENVIO_SEGUNDOS = 60;
+
+type LoginPendente = { email: string; step: "code" | "link"; em: number };
+
+const lerLoginPendente = (): LoginPendente | null => {
+  try {
+    const cru = localStorage.getItem(LOGIN_PENDENTE_KEY);
+    if (!cru) return null;
+    const salvo = JSON.parse(cru) as LoginPendente;
+    if (!salvo?.email || (salvo.step !== "code" && salvo.step !== "link")) return null;
+    if (Date.now() - Number(salvo.em) > LOGIN_PENDENTE_MS) return null;
+    return salvo;
+  } catch {
+    return null;
+  }
+};
+
+const gravarLoginPendente = (email: string, step: "code" | "link") => {
+  try {
+    localStorage.setItem(LOGIN_PENDENTE_KEY, JSON.stringify({ email, step, em: Date.now() }));
+  } catch {
+    // armazenamento bloqueado: segue sem memória
+  }
+};
+
+const limparLoginPendente = () => {
+  try {
+    localStorage.removeItem(LOGIN_PENDENTE_KEY);
+  } catch {
+    // idem
+  }
+};
+
 const sanitizeRedirect = (value: string | null | undefined) =>
   value && value.startsWith("/") && !value.startsWith("//") ? value : null;
 
 const Auth = () => {
-  const [email, setEmail] = useState("");
+  // Se a pessoa recarregou a página com um código já pedido, volta direto pra tela do código.
+  const pendenteInicial = useMemo(() => lerLoginPendente(), []);
+  const [email, setEmail] = useState(pendenteInicial?.email ?? "");
   const [code, setCode] = useState("");
-  const [step, setStep] = useState<"email" | "code" | "link" | "confirm">("email");
+  const [step, setStep] = useState<"email" | "code" | "link" | "confirm">(pendenteInicial?.step ?? "email");
+  const [segundosParaReenviar, setSegundosParaReenviar] = useState(() =>
+    pendenteInicial ? Math.max(0, REENVIO_SEGUNDOS - Math.floor((Date.now() - pendenteInicial.em) / 1000)) : 0
+  );
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [resending, setResending] = useState(false);
@@ -43,9 +86,17 @@ const Auth = () => {
 
   useEffect(() => {
     if (user && !isAnonymous && !waitingForDosha) {
+      limparLoginPendente();
       setWaitingForDosha(true);
     }
   }, [user]);
+
+  // Contagem do botão Reenviar: 1 pedido por minuto, que é o que o servidor aceita.
+  useEffect(() => {
+    if (segundosParaReenviar <= 0) return;
+    const t = setTimeout(() => setSegundosParaReenviar((s) => s - 1), 1000);
+    return () => clearTimeout(t);
+  }, [segundosParaReenviar]);
 
   // Guarda o destino pretendido como rede de segurança (caso a URL de volta o perca)
   useEffect(() => {
@@ -169,6 +220,8 @@ const Auth = () => {
       const usarMagicLink = isInstagram && !getIsMicrosoftEmail(email);
       const contexto = usarMagicLink ? "magiclink" : "otp";
       await sendOtp(contexto);
+      gravarLoginPendente(email, usarMagicLink ? "link" : "code");
+      setSegundosParaReenviar(REENVIO_SEGUNDOS);
       if (usarMagicLink) {
         setStep("link");
       } else {
@@ -182,13 +235,17 @@ const Auth = () => {
   };
 
   const handleResend = async () => {
+    if (segundosParaReenviar > 0) return;
     setResending(true);
     try {
       const contexto = step === "link" ? "magiclink" : "otp";
       await sendOtp(contexto);
+      gravarLoginPendente(email, step === "link" ? "link" : "code");
+      setSegundosParaReenviar(REENVIO_SEGUNDOS);
+      setCode("");
       toast({
         title: contexto === "magiclink" ? "Link reenviado" : "Código reenviado",
-        description: `Verifique seu e-mail ${email}.`,
+        description: `Verifique seu e-mail ${email}. Use só o mais recente: o anterior deixou de valer.`,
       });
     } catch (err: any) {
       toast({ title: "Erro", description: err.message, variant: "destructive" });
@@ -388,11 +445,18 @@ const Auth = () => {
                   <button
                     type="button"
                     onClick={handleResend}
-                    disabled={resending}
+                    disabled={resending || segundosParaReenviar > 0}
                     className="text-sm text-primary hover:underline disabled:opacity-50"
                   >
-                    {resending ? "Reenviando..." : "Reenviar link"}
+                    {resending
+                      ? "Reenviando..."
+                      : segundosParaReenviar > 0
+                        ? `Reenviar em ${segundosParaReenviar}s`
+                        : "Reenviar link"}
                   </button>
+                  <p className="text-center text-xs text-muted-foreground">
+                    Ao pedir um novo link, o anterior deixa de valer.
+                  </p>
                 </div>
               </div>
             ) : step === "confirm" ? (
@@ -424,6 +488,10 @@ const Auth = () => {
                     Digite o código de 6 dígitos enviado para
                   </p>
                   <p className="text-sm font-medium text-foreground break-all">{email}</p>
+                  <p className="text-xs text-muted-foreground">
+                    O email pode levar até 2 minutos. Hotmail e Outlook costumam demorar mais:
+                    confira também a caixa de spam.
+                  </p>
                 </div>
 
                 <div className="flex justify-center">
@@ -452,6 +520,7 @@ const Auth = () => {
                   <button
                     type="button"
                     onClick={() => {
+                      limparLoginPendente();
                       setStep("email");
                       setCode("");
                     }}
@@ -463,12 +532,19 @@ const Auth = () => {
                   <button
                     type="button"
                     onClick={handleResend}
-                    disabled={resending}
+                    disabled={resending || segundosParaReenviar > 0}
                     className="text-primary hover:underline disabled:opacity-50"
                   >
-                    {resending ? "Reenviando..." : "Reenviar código"}
+                    {resending
+                      ? "Reenviando..."
+                      : segundosParaReenviar > 0
+                        ? `Reenviar em ${segundosParaReenviar}s`
+                        : "Reenviar código"}
                   </button>
                 </div>
+                <p className="text-center text-xs text-muted-foreground">
+                  Ao pedir um novo código, o anterior deixa de valer.
+                </p>
               </form>
             )}
           </div>
