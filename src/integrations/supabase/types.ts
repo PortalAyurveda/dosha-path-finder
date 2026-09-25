@@ -2795,6 +2795,116 @@ export type Database = {
           },
         ]
       }
+      curso_pagamentos: {
+        Row: {
+          aprovado_em: string | null
+          atualizado_em: string
+          bruto: Json | null
+          criado_mp_em: string | null
+          curso_id: string | null
+          diag: Json | null
+          email_informado: string | null
+          external_reference: string | null
+          liberado_em: string | null
+          meio: string | null
+          metodo: string | null
+          mp_payment_id: string
+          pagador_documento: string | null
+          pagador_email: string | null
+          pagador_nome: string | null
+          parcelas: number | null
+          ref_user: string | null
+          status: string
+          status_detalhe: string | null
+          taxa_mp: number | null
+          titular_cartao: string | null
+          user_id: string | null
+          valor: number | null
+          valor_liquido: number | null
+          valor_pago_cliente: number | null
+        }
+        Insert: {
+          aprovado_em?: string | null
+          atualizado_em?: string
+          bruto?: Json | null
+          criado_mp_em?: string | null
+          curso_id?: string | null
+          diag?: Json | null
+          email_informado?: string | null
+          external_reference?: string | null
+          liberado_em?: string | null
+          meio?: string | null
+          metodo?: string | null
+          mp_payment_id: string
+          pagador_documento?: string | null
+          pagador_email?: string | null
+          pagador_nome?: string | null
+          parcelas?: number | null
+          ref_user?: string | null
+          status: string
+          status_detalhe?: string | null
+          taxa_mp?: number | null
+          titular_cartao?: string | null
+          user_id?: string | null
+          valor?: number | null
+          valor_liquido?: number | null
+          valor_pago_cliente?: number | null
+        }
+        Update: {
+          aprovado_em?: string | null
+          atualizado_em?: string
+          bruto?: Json | null
+          criado_mp_em?: string | null
+          curso_id?: string | null
+          diag?: Json | null
+          email_informado?: string | null
+          external_reference?: string | null
+          liberado_em?: string | null
+          meio?: string | null
+          metodo?: string | null
+          mp_payment_id?: string
+          pagador_documento?: string | null
+          pagador_email?: string | null
+          pagador_nome?: string | null
+          parcelas?: number | null
+          ref_user?: string | null
+          status?: string
+          status_detalhe?: string | null
+          taxa_mp?: number | null
+          titular_cartao?: string | null
+          user_id?: string | null
+          valor?: number | null
+          valor_liquido?: number | null
+          valor_pago_cliente?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "curso_pagamentos_curso_id_fkey"
+            columns: ["curso_id"]
+            isOneToOne: false
+            referencedRelation: "cursos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      curso_pagamentos_sync: {
+        Row: {
+          id: number
+          ultima_em: string | null
+          ultimo_resultado: Json | null
+        }
+        Insert: {
+          id?: number
+          ultima_em?: string | null
+          ultimo_resultado?: Json | null
+        }
+        Update: {
+          id?: number
+          ultima_em?: string | null
+          ultimo_resultado?: Json | null
+        }
+        Relationships: []
+      }
       cursos: {
         Row: {
           ativo: boolean
@@ -11221,6 +11331,34 @@ export type Database = {
         Args: { p: string[] }
         Returns: string[]
       }
+      admin_vendas_cursos: {
+        Args: never
+        Returns: {
+          curso_slug: string
+          curso_titulo: string
+          email: string
+          email_informado: string
+          liberado_em: string
+          meio: string
+          metodo: string
+          mp_payment_id: string
+          nome: string
+          parcelas: number
+          quando: string
+          sem_login: boolean
+          situacao: string
+          status_detalhe: string
+          status_mp: string
+          taxa_mp: number
+          telefone: string
+          valor: number
+          valor_liquido: number
+        }[]
+      }
+      admin_vincular_pagamento_curso: {
+        Args: { p_email: string; p_mp_payment_id: string }
+        Returns: Json
+      }
       agenda_destinatarios: {
         Args: { p_comunicacao_id: string }
         Returns: {
@@ -11478,6 +11616,7 @@ export type Database = {
         Args: { p_pedido_id: string }
         Returns: string
       }
+      curso_pagamento_registrar: { Args: { p: Json }; Returns: Json }
       descadastro_confirmar: {
         Args: { p_email: string; p_token: string }
         Returns: boolean
