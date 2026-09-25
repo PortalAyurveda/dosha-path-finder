@@ -7,13 +7,14 @@ import { useUser } from "@/contexts/UserContext";
 import { supabase } from "@/integrations/supabase/client";
 import OfertaKit from "@/components/detox/OfertaKit";
 
-type Fase = "padrao" | "processando" | "liberado" | "precisa_email";
+type Fase = "padrao" | "processando" | "liberado" | "precisa_email" | "esgotado";
 
 const DetoxObrigado = () => {
   const [params] = useSearchParams();
   const { user, isAnonymous } = useUser();
   const status = params.get("status") ?? params.get("collection_status") ?? "approved";
   const aprovado = status === "approved";
+  const semCompra = !params.get("payment_id") && !params.get("status") && !params.get("collection_status");
   const recusado = status === "rejected" || status === "failure" || status === "null";
 
   const mpPaymentId = params.get("payment_id");
@@ -57,7 +58,7 @@ const DetoxObrigado = () => {
         timer = setTimeout(tentar, 5000);
         return;
       }
-      setFase("padrao");
+      setFase(r.processando ? "esgotado" : "padrao");
     };
 
     void tentar();
@@ -88,8 +89,8 @@ const DetoxObrigado = () => {
     setErro("Não foi possível liberar o acesso. Tente de novo.");
   };
 
-  const titulo = aprovado ? "Inscrição confirmada" : recusado ? "O pagamento não passou" : "Pagamento em análise";
-  const texto = aprovado
+  const titulo = semCompra ? "Detox da Primavera 2026" : aprovado ? "Inscrição confirmada" : recusado ? "O pagamento não passou" : "Pagamento em análise";
+  const texto = semCompra ? "Se você já pagou, entre no Portal com o mesmo email do pagamento para abrir o seu Detox." : aprovado
     ? "Que bom ter você no Detox da Primavera 2026. O seu acesso já está liberado."
     : recusado
       ? "Nada foi cobrado. Você pode tentar de novo, no cartão ou no Pix."
@@ -99,6 +100,8 @@ const DetoxObrigado = () => {
     ? `O seu Detox está liberado na conta ${emailMascarado}. Entre no Portal com esse email.`
     : fase === "processando"
       ? "Estamos liberando o seu acesso. Leva poucos segundos."
+      : fase === "esgotado"
+        ? "O pagamento foi aprovado. A liberação pode levar alguns minutos. Se o seu Detox não abrir, fale com a gente no WhatsApp."
       : "Para abrir o seu Detox, entre no Portal com o mesmo email que você usou no pagamento.";
 
   const passos = [
@@ -133,18 +136,18 @@ const DetoxObrigado = () => {
       h("p", { className: "m-0 text-[15px] font-bold uppercase tracking-[1.2px] text-[#A85A1A]" }, "Detox da Primavera 2026"),
       h("h1", { className: "m-0 font-serif text-[36px] font-bold leading-tight text-[#352F54] md:text-[48px]" }, titulo),
       h("p", { className: "m-0 text-[19px] leading-relaxed md:text-[21px]" }, texto),
-      !recusado ? h("p", { className: "m-0 text-[17px] leading-relaxed text-[#4A4458]" }, linhaAcesso) : null,
+      !recusado && !semCompra ? h("p", { className: "m-0 text-[17px] leading-relaxed text-[#4A4458]" }, linhaAcesso) : null,
       cartaoEmail,
       recusado
         ? h(Link, { to: "/detox/inscricao", className: "flex min-h-[64px] items-center justify-center rounded-full bg-[#E07B39] px-6 text-[18px] font-bold text-white hover:bg-[#D0662A]" }, "Tentar de novo")
         : h("div", { className: "flex flex-col gap-6" },
             h(Link, { to: !user || isAnonymous ? "/entrar?redirect=/cursos/detox-da-primavera/estudar" : "/cursos/detox-da-primavera/estudar", className: "flex min-h-[64px] items-center justify-center rounded-full bg-[#E07B39] px-6 text-[18px] font-bold text-white hover:bg-[#D0662A]" }, "Abrir o meu Detox"),
-            h("div", { className: "flex flex-col gap-3 rounded-[24px] bg-white p-6" },
+            semCompra ? null : h("div", { className: "flex flex-col gap-3 rounded-[24px] bg-white p-6" },
               ...passos.map((p, i) =>
                 h("div", { key: i, className: `flex flex-col gap-1 py-3 ${i > 0 ? "border-t border-[#EADFD3]" : ""}` },
                   h("p", { className: "m-0 text-[18px] font-bold text-[#352F54]" }, p.t),
                    h("p", { className: "m-0 text-[17px] leading-relaxed text-[#4A4458]" }, p.d)))),
-             aprovado ? h(OfertaKit) : null,
+             aprovado && !semCompra && !!mpPaymentId && (fase === "padrao" || fase === "liberado") ? h(OfertaKit) : null,
             h(Link, { to: "/detox", className: "text-center text-[17px] font-semibold text-[#A85A1A] underline" }, "Voltar para a sala da Jornada"))));
 };
 
