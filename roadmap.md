@@ -1,5 +1,5 @@
-- [ ] Criar página de compra do Kit Detox
-- [ ] Criar cartão OfertaKit e inserir após compra/no curso
-- [ ] Adicionar rota sem moldura
-- [ ] Ajustar SamkhyaKit e KitCard para checkout próprio/frete grátis
-- [ ] Validar tipos, build e fluxos públicos
+- [x] Criar página de compra do Kit Detox
+- [x] Criar cartão OfertaKit e inserir após compra/no curso
+- [x] Adicionar rota sem moldura
+- [x] Ajustar SamkhyaKit e KitCard para checkout próprio/frete grátis
+- [x] Validar tipos, build e fluxos públicos

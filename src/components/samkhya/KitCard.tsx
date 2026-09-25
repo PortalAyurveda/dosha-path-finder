@@ -19,11 +19,13 @@ const formatBRL = (v: number) =>
   v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
 const KitCard = ({ kit }: KitCardProps) => {
+  const checkoutProprio = (kit as any).checkout_proprio as string | null | undefined;
+  const freteGratisSempre = (kit as any).frete_gratis_sempre === true;
   const tipoLabel = kit.tipo_kit ? TIPO_LABEL[kit.tipo_kit] ?? kit.tipo_kit : null;
   const { data: config } = useFreteGratisConfig();
   const pct = config?.desconto_vitrine_pct ?? null;
   const precoKit = Number(kit.preco_pix);
-  const precoExibido = pct != null ? Math.round(precoKit * (1 - pct / 100) * 100) / 100 : precoKit;
+  const precoExibido = checkoutProprio ? Number(kit.preco_normal) : pct != null ? Math.round(precoKit * (1 - pct / 100) * 100) / 100 : precoKit;
 
   return (
     <Link
@@ -80,7 +82,7 @@ const KitCard = ({ kit }: KitCardProps) => {
           {kit.descricao_curta}
         </p>
       )}
-      {pct != null && (
+      {!checkoutProprio && pct != null && (
         <p
           className="mt-1 line-through"
           style={{
@@ -93,7 +95,7 @@ const KitCard = ({ kit }: KitCardProps) => {
         </p>
       )}
       <p
-        className={pct != null ? "" : "mt-1"}
+        className={!checkoutProprio && pct != null ? "" : "mt-1"}
         style={{
           color: samkhyaTokens.roxo,
           fontFamily: samkhyaTokens.fonteCorpo,
@@ -103,6 +105,11 @@ const KitCard = ({ kit }: KitCardProps) => {
       >
         {formatBRL(precoExibido)}
       </p>
+      {checkoutProprio && (
+        <p className="mt-1 text-xs" style={{ color: samkhyaTokens.textoSec, fontFamily: samkhyaTokens.fonteCorpo }}>
+          ou {formatBRL(Number(kit.preco_pix))} no Pix{freteGratisSempre ? " · Frete grátis" : ""}
+        </p>
+      )}
     </Link>
   );
 };

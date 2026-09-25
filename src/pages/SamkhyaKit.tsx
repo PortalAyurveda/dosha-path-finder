@@ -7,6 +7,7 @@ import SamkhyaLayout from "@/components/samkhya/SamkhyaLayout";
 import PrecoDisplay from "@/components/samkhya/PrecoDisplay";
 import BotaoWhatsApp from "@/components/samkhya/BotaoWhatsApp";
 import BotaoAdicionarCarrinho from "@/components/samkhya/BotaoAdicionarCarrinho";
+import { Button } from "@/components/ui/button";
 import { samkhyaTokens } from "@/components/samkhya/tokens";
 
 type ItemFixo = {
@@ -45,6 +46,8 @@ type KitDetalhe = {
   id?: number;
   itens_fixos: ItemFixo[];
   escolhas: EscolhaGrupo[];
+  checkout_proprio: string | null;
+  frete_gratis: boolean;
 };
 
 const SamkhyaKit = () => {
@@ -249,9 +252,24 @@ const SamkhyaKit = () => {
                 showParcelas
                 size="md"
               />
+              {kit.frete_gratis && (
+                <p className="-mt-8 text-sm font-semibold" style={{ color: samkhyaTokens.roxo }}>
+                  Frete grátis
+                </p>
+              )}
 
               <div className="flex flex-col gap-3">
-                <BotaoAdicionarCarrinho
+                {kit.checkout_proprio ? (
+                  <Button
+                    asChild
+                    className="w-full rounded-md text-xs font-medium text-white hover:opacity-90"
+                    size="sm"
+                    style={{ background: samkhyaTokens.ouro }}
+                  >
+                    <Link to={kit.checkout_proprio}>Comprar o kit</Link>
+                  </Button>
+                ) : (
+                  <BotaoAdicionarCarrinho
                   item={{
                     id: kit.id ?? 0,
                     slug: kit.slug,
@@ -268,7 +286,8 @@ const SamkhyaKit = () => {
                   }}
                   size="sm"
                   fullWidth
-                />
+                  />
+                )}
                 <BotaoWhatsApp
                   produtoNome={escolhasLabel ? `${kit.nome} — ${escolhasLabel}` : kit.nome}
                   size="sm"
