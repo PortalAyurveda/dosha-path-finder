@@ -112,7 +112,7 @@ const DetoxInscricao = () => {
     h(Dialog, { open: pixDialogAberto, onOpenChange: setPixDialogAberto },
       h(DialogContent, { className: "max-w-[440px] rounded-3xl bg-[#FDF7F1] p-6 md:p-8" },
         h(DialogHeader, null,
-          h(DialogTitle, { className: "font-serif text-[26px] font-bold text-[#352F54]" }, "Pagamento no Pix"),
+          h(DialogTitle, { className: "font-serif text-[26px] font-bold text-[#352F54]" }, metodoDialogo === "pix" ? "Pagamento no Pix" : "Pagamento no cartão"),
           h(DialogDescription, { className: "text-[17px] leading-relaxed text-[#514B62]" }, "Digite o seu email. É com ele que você vai entrar no Portal para abrir o seu Detox.")),
         h("div", { className: "mt-2 flex flex-col gap-4" },
           h("input", {
@@ -120,11 +120,12 @@ const DetoxInscricao = () => {
             value: pixEmail, onChange: (e: any) => setPixEmail(e.target.value),
             className: "min-h-[56px] w-full rounded-2xl border border-[#EADFD3] bg-white px-4 text-[18px] text-[#352F54] outline-none focus:border-[#E07B39]",
           }),
+          pixEmailValido ? h("p", { className: "m-0 break-all text-[16px] text-[#514B62]" }, `Vamos liberar o seu Detox no email: ${pixEmail.trim().toLowerCase()}`) : null,
           h("button", {
             type: "button", disabled: !pixEmailValido || carregando !== null,
-            onClick: () => void comprar("pix", pixEmail.trim().toLowerCase()),
+            onClick: () => void comprar(metodoDialogo, pixEmail.trim().toLowerCase()),
             className: "flex min-h-[60px] w-full items-center justify-center gap-2.5 rounded-full bg-[#E07B39] px-6 text-[16px] font-semibold text-white transition hover:bg-[#D0662A] disabled:opacity-70",
-          }, carregando === "pix" ? h(Loader2, { className: "h-5 w-5 animate-spin" }) : h(QrCode, { className: "h-5 w-5", "aria-hidden": true }), "Gerar o Pix"))))
+          }, carregando === metodoDialogo ? h(Loader2, { className: "h-5 w-5 animate-spin" }) : h(metodoDialogo === "pix" ? QrCode : CreditCard, { className: "h-5 w-5", "aria-hidden": true }), metodoDialogo === "pix" ? "Gerar o Pix" : "Ir para o pagamento"))))
   ));
 };
 export default DetoxInscricao;
