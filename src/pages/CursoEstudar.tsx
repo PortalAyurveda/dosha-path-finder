@@ -568,7 +568,7 @@ const CertificadoTab = ({
 
 const CursoEstudar = () => {
   const { slug = "" } = useParams();
-  const { user, loading: authLoading } = useUser();
+  const { user, isAnonymous, loading: authLoading } = useUser();
   const [searchParams, setSearchParams] = useSearchParams();
 
   const [curso, setCurso] = useState<Curso | null>(null);
@@ -722,9 +722,10 @@ const CursoEstudar = () => {
     () =>
       CURSO_TABS.filter((t) => {
         if (t.id === "material") return materiais.length > 0;
+        if (t.id === "certificado") return slug !== "detox-da-primavera";
         return true;
       }),
-    [materiais],
+    [materiais, slug],
   );
   const abaAtiva: CursoTabId =
     (abasVisiveis.find((t) => t.id === searchParams.get("tab"))?.id as CursoTabId) ?? "aulas";
@@ -806,7 +807,7 @@ const CursoEstudar = () => {
     }
   };
 
-  if (!authLoading && !user) {
+  if (!authLoading && (!user || isAnonymous)) {
     return <Navigate to={`/entrar?redirect=/cursos/${slug}/estudar`} replace />;
   }
 
@@ -934,7 +935,27 @@ const CursoEstudar = () => {
 
       {/* Conteúdo */}
       <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8 md:py-10">
-        {!temAcesso && (
+        {!temAcesso && slug === "detox-da-primavera" && (
+          <div
+            className="mb-8 rounded-2xl border-2 p-6 md:p-8 text-center"
+            style={{ background: "#FBF3DE", borderColor: "#B8892E" }}
+          >
+            <Sparkles className="w-8 h-8 mx-auto mb-3" style={{ color: "#8C641C" }} />
+            <h2 className="font-serif font-bold text-xl md:text-2xl mb-2" style={{ color: PRIMARY }}>
+              O Detox da Primavera 2026 é um programa à parte
+            </h2>
+            <p
+              className="text-sm md:text-base mb-5 max-w-xl mx-auto"
+              style={{ color: PRIMARY, opacity: 0.85, fontFamily: "'DM Sans', sans-serif" }}
+            >
+              Se você já pagou, entre no Portal com o mesmo email usado no pagamento. Se ainda não, as inscrições estão abertas.
+            </p>
+            <Button asChild size="lg" className="rounded-full" style={{ backgroundColor: "#B8892E" }}>
+              <Link to="/detox/inscricao">Conhecer o Detox</Link>
+            </Button>
+          </div>
+        )}
+        {!temAcesso && slug !== "detox-da-primavera" && (
           <div
             className="mb-8 rounded-2xl border-2 p-6 md:p-8 text-center"
             style={{ background: "#FBF3DE", borderColor: "#B8892E" }}

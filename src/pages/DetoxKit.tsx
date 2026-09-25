@@ -56,7 +56,10 @@ const formularioSchema = z.object({
 const dinheiro = (valor: number) => valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL", minimumFractionDigits: Number.isInteger(valor) ? 0 : 2, maximumFractionDigits: 2 });
 
 const DetoxKit = () => {
-  const [params] = useSearchParams();
+  const [params, setParams] = useSearchParams();
+  const pedidoId = params.get("pedido");
+  const [pedido, setPedido] = useState<any>(null);
+  const [jaComprou, setJaComprou] = useState<{ erro: string; metodo: Metodo } | null>(null);
   const { user, isAnonymous } = useUser();
   const [kit, setKit] = useState<KitDetalhe | null>(null);
   const [carregando, setCarregando] = useState(true);
@@ -66,6 +69,22 @@ const DetoxKit = () => {
   const [erros, setErros] = useState<Partial<Record<Campo, string>>>({});
   const [metodoCarregando, setMetodoCarregando] = useState<Metodo | null>(null);
   const [erroPagamento, setErroPagamento] = useState("");
+
+  useEffect(() => {
+    if (!pedidoId) { setPedido(null); return; }
+    let cancelado = false;
+    let timer: ReturnType<typeof setTimeout> | null = null;
+    let vezes = 0;
+    const buscar = async () => {
+      const { data } = await supabase.functions.invoke("buscar-pedido", { body: { session_id: pedidoId } });
+      if (cancelado) return;
+      setPedido(data ?? { erro: true });
+      const etapa = Number(data?.status_etapa);
+      if (data && etapa >= 0 && etapa < 2 && vezes < 24) { vezes += 1; timer = setTimeout(buscar, 5000); }
+    };
+    void buscar();
+    return () => { cancelado = true; if (timer) clearTimeout(timer); };
+  }, [pedidoId]);
 
   useEffect(() => {
     let cancelado = false;
@@ -129,18 +148,20 @@ const DetoxKit = () => {
     for (const questao of resultado.error.issues) novos[questao.path[0] as Campo] = questao.message;
     setErros(novos);
   };
-  const comprar = async (metodo: Metodo) => {
+  const comprar = async (metodo: Metodo, confirmarOutro = false) => {
     if (!kit) return;
     setMetodoCarregando(metodo);
     setErroPagamento("");
+    setJaComprou(null);
     const body = {
       kit_slug: "kit-detox-primavera", metodo,
       comprador: { nome: form.nome.trim(), email: form.email.trim().toLowerCase(), telefone: soDigitos(form.telefone), cpf: soDigitos(form.cpf) },
       endereco: { cep: soDigitos(form.cep), logradouro: form.rua.trim(), numero: form.numero.trim(), complemento: form.complemento.trim(), bairro: form.bairro.trim(), cidade: form.cidade.trim(), estado: form.estado.trim().toUpperCase() },
     };
-    const { data } = await supabase.functions.invoke("comprar-kit", { body });
+    const { data } = await supabase.functions.invoke("comprar-kit", { body: confirmarOutro ? { ...body, confirmar_outro: true } : body });
+    if (data?.ok) { if (data.checkout_url) window.location.href = data.checkout_url; return; }
     setMetodoCarregando(null);
-    if (data?.ok && data.checkout_url) { window.location.href = data.checkout_url; return; }
+    if (data?.ja_comprou) { setJaComprou({ erro: data.erro ?? "Você já comprou este kit.", metodo }); return; }
     if (data?.ja_pago && data.pedido_id) {
       toast.error(data.erro ?? "Este kit já foi pago.");
       window.location.href = `/samkhya/pedido/${encodeURIComponent(String(data.pedido_id))}`;
@@ -153,6 +174,16 @@ const DetoxKit = () => {
     h("input", { id, type: tipo, autoComplete: nome === "email" ? "email" : undefined, inputMode: (["telefone", "cpf", "cep", "numero"] as Campo[]).includes(nome) ? "numeric" : undefined, value: form[nome], onChange: alterar(nome), "aria-invalid": !!erros[nome], className: `min-h-[56px] w-full rounded-2xl border bg-white px-4 text-[18px] text-[#352F54] outline-none transition focus:border-[#E07B39] ${erros[nome] ? "border-[#B42318]" : "border-[#E5D8CA]"}` }),
     erros[nome] ? h("p", { className: "m-0 text-[15px] text-[#B42318]" }, erros[nome]) : null);
 
+  const telaPedido = () => {
+    const caixa = "flex flex-col items-start gap-4 rounded-[24px] bg-white p-6 shadow-[0_20px_50px_-32px_rgba(53,47,84,0.45)] md:p-8";
+    const tituloP = (t: string) => h("h1", { className: "m-0 font-serif text-[32px] font-bold leading-tight text-[#352F54] md:text-[42px]" }, t);
+    const txt = (t: string) => h("p", { className: "m-0 text-[17px] leading-relaxed md:text-[18px]" }, t);
+    if (!pedido) return h("div", { className: "flex min-h-[300px] items-center justify-center" }, h(Loader2, { className: "h-8 w-8 animate-spin text-[#E07B39]" }));
+    const etapaP = Number(pedido.status_etapa);
+    if (etapaP === -1) return h("section", { className: caixa }, tituloP("Este pedido foi cancelado."), h(Button, { type: "button", onClick: () => { const n = new URLSearchParams(params); n.delete("pedido"); setParams(n, { replace: true }); }, className: "min-h-[60px] rounded-full bg-[#E07B39] px-8 text-[18px] font-bold text-white hover:bg-[#D0662A]" }, "Comprar o kit"));
+    if (etapaP >= 2) return h("section", { className: caixa }, tituloP("Pedido confirmado"), pedido.numero_pedido ? h("p", { className: "m-0 text-[18px] font-bold text-[#A85A1A]" }, `Pedido nº ${pedido.numero_pedido}`) : null, txt(`O seu Kit do Detox vai para ${pedido.endereco_entrega?.cidade ?? ""}/${pedido.endereco_entrega?.estado ?? ""}. O código de rastreio chega no seu email assim que o kit for postado.`), h(Button, { asChild: true, className: "min-h-[60px] rounded-full bg-[#E07B39] px-8 text-[18px] font-bold text-white hover:bg-[#D0662A]" }, h("a", { href: "/cursos/detox-da-primavera/estudar" }, "Voltar para o meu Detox")));
+    return h("section", { className: caixa }, tituloP("Aguardando a confirmação do pagamento"), pedido.numero_pedido ? h("p", { className: "m-0 text-[18px] font-bold text-[#A85A1A]" }, `Pedido nº ${pedido.numero_pedido}`) : null, txt("No Pix, a confirmação leva poucos minutos. Esta página atualiza sozinha."), h(Loader2, { className: "h-6 w-6 animate-spin text-[#E07B39]" }));
+  };
   const normal = Number(kit?.preco_normal ?? 0);
   const pix = Number(kit?.preco_pix ?? 0);
   return h("div", { className: "min-h-screen bg-gradient-to-b from-[#FBE3CC] via-[#FDF7F1] to-[#FBE3CC] text-[#514B62]" },
@@ -160,7 +191,7 @@ const DetoxKit = () => {
     params.get("pagamento") === "recusado" ? h("div", { className: "bg-[#A85A1A] px-4 py-3 text-center text-[16px] font-bold text-white" }, "O pagamento não passou. Nada foi cobrado. Você pode tentar de novo.") : null,
     h("main", { className: "mx-auto flex max-w-[1080px] flex-col gap-8 px-4 py-8 md:py-12" },
       h("div", { className: "flex items-center gap-4" }, h("img", { src: IMAGENS.logo, alt: "Detox da Primavera", className: "h-16 w-auto object-contain md:h-20" }), h("p", { className: "m-0 text-[18px] font-bold leading-snug text-[#A85A1A]" }, "Detox da Primavera com Edson Osorio")),
-      carregando ? h("div", { className: "flex min-h-[360px] items-center justify-center", "aria-label": "Carregando o kit" }, h(Loader2, { className: "h-8 w-8 animate-spin text-[#E07B39]" })) : erroPagina || !kit ? h("p", { className: "rounded-3xl bg-white p-6 text-[18px] text-[#B42318]" }, erroPagina) : h("div", { className: "flex flex-col gap-8" },
+      pedidoId ? telaPedido() : carregando ? h("div", { className: "flex min-h-[360px] items-center justify-center", "aria-label": "Carregando o kit" }, h(Loader2, { className: "h-8 w-8 animate-spin text-[#E07B39]" })) : erroPagina || !kit ? h("p", { className: "rounded-3xl bg-white p-6 text-[18px] text-[#B42318]" }, erroPagina) : h("div", { className: "flex flex-col gap-8" },
         h("section", { className: "grid items-center gap-7 md:grid-cols-2 md:gap-10" },
           h("div", { className: "overflow-hidden rounded-[24px] bg-white p-4 shadow-[0_20px_50px_-32px_rgba(53,47,84,0.45)]" }, h("img", { src: kit.imagem_url ?? "https://api.portalayurveda.com/storage/v1/object/public/portal_images/promokit.webp", alt: kit.nome, className: "aspect-square w-full object-contain", decoding: "async" })),
           h("div", { className: "flex flex-col gap-5" },
@@ -171,7 +202,7 @@ const DetoxKit = () => {
             h("div", { className: "rounded-[24px] bg-white p-6 shadow-[0_18px_45px_-32px_rgba(53,47,84,0.45)]" }, h("p", { className: "m-0 font-serif text-[40px] font-bold leading-none text-[#352F54]" }, dinheiro(normal)), h("p", { className: "m-0 mt-3 text-[17px] leading-relaxed" }, `Em até 3x de ${dinheiro(normal / 3)} sem juros no cartão, ou ${dinheiro(pix)} no Pix.`), kit.frete_gratis ? h("p", { className: "m-0 mt-3 inline-flex items-center gap-2 font-bold text-[#A85A1A]" }, h(Check, { className: "h-5 w-5" }), "Frete grátis") : null))),
         h("section", { className: "mx-auto w-full max-w-[820px] rounded-[24px] bg-white/95 p-5 shadow-[0_20px_50px_-32px_rgba(53,47,84,0.45)] md:p-8" }, etapa === 1
           ? h("div", { className: "flex flex-col gap-5" }, h("h2", { className: "m-0 font-serif text-[30px] font-bold text-[#352F54] md:text-[38px]" }, "Para onde enviamos o seu kit"), h("div", { className: "grid gap-4 md:grid-cols-2" }, campo("kit-nome", "Nome completo", "nome"), campo("kit-email", "Email", "email", "email"), campo("kit-telefone", "Telefone com DDD", "telefone", "tel"), campo("kit-cpf", "CPF", "cpf"), campo("kit-cep", "CEP", "cep"), campo("kit-rua", "Rua", "rua"), campo("kit-numero", "Número", "numero"), campo("kit-complemento", "Complemento", "complemento", "text", true), campo("kit-bairro", "Bairro", "bairro"), campo("kit-cidade", "Cidade", "cidade"), campo("kit-estado", "Estado (UF)", "estado")), h(Button, { type: "button", onClick: continuar, className: "min-h-[60px] w-full rounded-full bg-[#E07B39] text-[18px] font-bold text-white hover:bg-[#D0662A]" }, "Continuar"))
-          : h("div", { className: "flex flex-col gap-5" }, h("h2", { className: "m-0 font-serif text-[30px] font-bold text-[#352F54] md:text-[38px]" }, "Como você quer pagar"), h("div", { className: "rounded-2xl bg-[#FDF7F1] p-5" }, h("p", { className: "m-0 text-[18px] font-bold text-[#352F54]" }, "Kit do Detox da Primavera"), h("p", { className: "m-0 mt-2 text-[17px] leading-relaxed" }, `Entrega: ${form.rua}, ${form.numero}, ${form.bairro}, ${form.cidade}/${form.estado}`), h(Button, { type: "button", variant: "link", onClick: () => setEtapa(1), className: "h-auto px-0 py-2 text-[16px] font-bold text-[#A85A1A]" }, "Alterar endereço"), h("p", { className: "m-0 font-bold text-[#A85A1A]" }, "Frete: grátis")), erroPagamento ? h("p", { className: "m-0 text-[16px] text-[#B42318]" }, erroPagamento) : null, h(Button, { type: "button", disabled: metodoCarregando !== null, onClick: () => void comprar("cartao"), className: "flex min-h-[72px] w-full flex-col rounded-2xl bg-[#E07B39] text-[18px] font-bold text-white hover:bg-[#D0662A]" }, metodoCarregando === "cartao" ? h(Loader2, { className: "h-5 w-5 animate-spin" }) : null, `Cartão: 3x de ${dinheiro(normal / 3)} sem juros`, h("span", { className: "text-[14px] font-normal text-white" }, `Total ${dinheiro(normal)}`)), h(Button, { type: "button", disabled: metodoCarregando !== null, onClick: () => void comprar("pix"), className: "min-h-[72px] w-full rounded-2xl bg-[#352F54] text-[18px] font-bold text-white hover:bg-[#1F1A38]" }, metodoCarregando === "pix" ? h(Loader2, { className: "h-5 w-5 animate-spin" }) : null, `Pix: ${dinheiro(pix)}`), h("p", { className: "m-0 flex items-center justify-center gap-2 text-center text-[14px] text-[#655E72]" }, h(ShieldCheck, { className: "h-4 w-4 text-[#E07B39]" }), "Pagamento seguro pelo Mercado Pago."))))));
+          : h("div", { className: "flex flex-col gap-5" }, h("h2", { className: "m-0 font-serif text-[30px] font-bold text-[#352F54] md:text-[38px]" }, "Como você quer pagar"), h("div", { className: "rounded-2xl bg-[#FDF7F1] p-5" }, h("p", { className: "m-0 text-[18px] font-bold text-[#352F54]" }, "Kit do Detox da Primavera"), h("p", { className: "m-0 mt-2 text-[17px] leading-relaxed" }, `Entrega: ${form.rua}, ${form.numero}, ${form.bairro}, ${form.cidade}/${form.estado}`), h(Button, { type: "button", variant: "link", onClick: () => setEtapa(1), className: "h-auto px-0 py-2 text-[16px] font-bold text-[#A85A1A]" }, "Alterar endereço"), h("p", { className: "m-0 font-bold text-[#A85A1A]" }, "Frete: grátis")), erroPagamento ? h("p", { className: "m-0 text-[16px] text-[#B42318]" }, erroPagamento) : null, jaComprou ? h("div", { className: "flex flex-col gap-3 rounded-2xl border border-[#E07B39] bg-[#FFF0E3] p-5" }, h("p", { className: "m-0 text-[17px] leading-relaxed text-[#352F54]" }, jaComprou.erro), h(Button, { type: "button", disabled: metodoCarregando !== null, onClick: () => void comprar(jaComprou.metodo, true), className: "min-h-[60px] w-full rounded-full bg-[#E07B39] text-[17px] font-bold text-white hover:bg-[#D0662A]" }, "Sim, comprar mais um")) : null, h(Button, { type: "button", disabled: metodoCarregando !== null, onClick: () => void comprar("cartao"), className: "flex min-h-[72px] w-full flex-col rounded-2xl bg-[#E07B39] text-[18px] font-bold text-white hover:bg-[#D0662A]" }, metodoCarregando === "cartao" ? h(Loader2, { className: "h-5 w-5 animate-spin" }) : null, `Cartão: 3x de ${dinheiro(normal / 3)} sem juros`, h("span", { className: "text-[14px] font-normal text-white" }, `Total ${dinheiro(normal)}`)), h(Button, { type: "button", disabled: metodoCarregando !== null, onClick: () => void comprar("pix"), className: "min-h-[72px] w-full rounded-2xl bg-[#352F54] text-[18px] font-bold text-white hover:bg-[#1F1A38]" }, metodoCarregando === "pix" ? h(Loader2, { className: "h-5 w-5 animate-spin" }) : null, `Pix: ${dinheiro(pix)}`), h("p", { className: "m-0 flex items-center justify-center gap-2 text-center text-[14px] text-[#655E72]" }, h(ShieldCheck, { className: "h-4 w-4 text-[#E07B39]" }), "Pagamento seguro pelo Mercado Pago."))))));
 };
 
 export default DetoxKit;

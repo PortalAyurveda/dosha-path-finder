@@ -114,6 +114,13 @@ const Detox = () => {
   const [thumbStage, setThumbStage] = useState(0);
   const now = useNow(1000);
   const isVisitor = !user || isAnonymous;
+  const [temDetox, setTemDetox] = useState(false);
+  useEffect(() => {
+    if (!user || isAnonymous) { setTemDetox(false); return; }
+    let ativo = true;
+    void (supabase.rpc as any)("tem_acesso_curso", { p_curso_id: "c502de23-0ce6-4179-b3c5-9db1743164bc" }).then(({ data }: { data: unknown }) => { if (ativo) setTemDetox(data === true); });
+    return () => { ativo = false; };
+  }, [user?.id, isAnonymous]);
   const noite = noiteDaJornada(new Date(now));
 
   useEffect(() => {
@@ -313,7 +320,12 @@ const Detox = () => {
           <div className="flex h-64 items-center justify-center rounded-2xl bg-card shadow-sm"><p>A aula estará disponível em breve.</p></div>
         )}
 
-        <div className="mt-6"><ChamadaInscricao /></div>
+        <div className="mt-6">{temDetox ? (
+          <div className="flex flex-col items-start gap-4 rounded-[24px] border-2 border-detox-primary bg-detox-card p-5 shadow-detox sm:flex-row sm:items-center sm:justify-between md:p-6">
+            <p className="m-0 font-serif text-xl font-bold text-detox-text md:text-2xl">Você já está no Detox da Primavera 2026</p>
+            <JourneyButton to="/cursos/detox-da-primavera/estudar">Abrir o meu Detox</JourneyButton>
+          </div>
+        ) : <ChamadaInscricao />}</div>
 
         <section className="mt-6 rounded-[32px] border border-detox-card-border bg-detox-card p-6 shadow-detox md:p-8">
           <div className="grid gap-7 lg:grid-cols-[minmax(190px,0.8fr)_minmax(0,1.8fr)_auto] lg:items-center">
@@ -343,7 +355,7 @@ const Detox = () => {
           </div>
         </section>
 
-        <BarraInscricao />
+        {!temDetox && <BarraInscricao />}
       </main>
     </div>
   );

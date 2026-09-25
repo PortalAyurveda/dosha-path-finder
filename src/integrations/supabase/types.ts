@@ -11616,6 +11616,10 @@ export type Database = {
         Args: { p_pedido_id: string }
         Returns: string
       }
+      curso_pagamento_estornado: {
+        Args: { p_mp_payment_id: string; p_status: string }
+        Returns: Json
+      }
       curso_pagamento_registrar: { Args: { p: Json }; Returns: Json }
       descadastro_confirmar: {
         Args: { p_email: string; p_token: string }
@@ -12008,6 +12012,7 @@ export type Database = {
         Args: { p_base?: number; p_escolhas?: Json; p_slug: string }
         Returns: Json
       }
+      kit_ja_comprado: { Args: { p_slug: string }; Returns: boolean }
       lista_de_compras: {
         Args: {
           p_nugget_ids?: string[]

@@ -44,6 +44,7 @@ const DetoxInscricao = () => {
   const [carregando, setCarregando] = useState(null as Metodo | null);
   const [pixDialogAberto, setPixDialogAberto] = useState(false);
   const [pixEmail, setPixEmail] = useState("");
+  const [metodoDialogo, setMetodoDialogo] = useState("pix" as Metodo);
   const pixEmailValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(pixEmail.trim());
   const comprar = async (metodo: Metodo, email?: string) => {
     setCarregando(metodo);
@@ -56,8 +57,8 @@ const DetoxInscricao = () => {
     setCarregando(null); toast({ title: "Não foi possível abrir o pagamento", description: "Tente de novo em instantes.", variant: "destructive" });
   };
   const botoes = (escuro = false) => [
-    h("button", { key: "cartao", type: "button", onClick: () => void comprar("cartao"), disabled: carregando !== null, className: `flex min-h-[60px] w-full items-center justify-center gap-2.5 rounded-full px-6 text-[16px] font-semibold whitespace-nowrap transition disabled:opacity-70 ${escuro ? "bg-[#F2CB05] text-[#1F1A38] hover:brightness-95" : "bg-[#E07B39] text-white hover:bg-[#D0662A]"}` }, carregando === "cartao" ? h(Loader2, { className: "h-5 w-5 animate-spin" }) : h(CreditCard, { className: "h-5 w-5", "aria-hidden": true }), D.hero.botao_cartao),
-    h("button", { key: "pix", type: "button", onClick: () => { if (!user || isAnonymous) { setPixDialogAberto(true); return; } void comprar("pix"); }, disabled: carregando !== null, className: `flex min-h-[60px] w-full items-center justify-center gap-2.5 rounded-full px-6 text-[16px] font-semibold whitespace-nowrap transition disabled:opacity-70 ${escuro ? "border border-white/70 text-white hover:bg-white/10" : "border border-[#E07B39] bg-white text-[#A85A1A] hover:bg-[#FFF0E3]"}` }, carregando === "pix" ? h(Loader2, { className: "h-5 w-5 animate-spin" }) : h(QrCode, { className: "h-5 w-5", "aria-hidden": true }), D.hero.botao_pix),
+    h("button", { key: "cartao", type: "button", onClick: () => { if (!user || isAnonymous) { setMetodoDialogo("cartao"); setPixDialogAberto(true); return; } void comprar("cartao"); }, disabled: carregando !== null, className: `flex min-h-[60px] w-full items-center justify-center gap-2.5 rounded-full px-6 text-[16px] font-semibold whitespace-nowrap transition disabled:opacity-70 ${escuro ? "bg-[#F2CB05] text-[#1F1A38] hover:brightness-95" : "bg-[#E07B39] text-white hover:bg-[#D0662A]"}` }, carregando === "cartao" ? h(Loader2, { className: "h-5 w-5 animate-spin" }) : h(CreditCard, { className: "h-5 w-5", "aria-hidden": true }), D.hero.botao_cartao),
+    h("button", { key: "pix", type: "button", onClick: () => { if (!user || isAnonymous) { setMetodoDialogo("pix"); setPixDialogAberto(true); return; } void comprar("pix"); }, disabled: carregando !== null, className: `flex min-h-[60px] w-full items-center justify-center gap-2.5 rounded-full px-6 text-[16px] font-semibold whitespace-nowrap transition disabled:opacity-70 ${escuro ? "border border-white/70 text-white hover:bg-white/10" : "border border-[#E07B39] bg-white text-[#A85A1A] hover:bg-[#FFF0E3]"}` }, carregando === "pix" ? h(Loader2, { className: "h-5 w-5 animate-spin" }) : h(QrCode, { className: "h-5 w-5", "aria-hidden": true }), D.hero.botao_pix),
   ];
   const compraCompacta = (key: string) => h("div", { key, className: "mx-auto mt-3 flex w-full max-w-[760px] flex-col gap-3 rounded-3xl bg-white/90 p-5 shadow-[0_18px_45px_-30px_rgba(53,47,84,0.5)] md:p-6" }, h("div", { className: "flex flex-wrap items-end justify-between gap-2" }, h("div", null, h("p", { className: "m-0 text-[14px] font-bold uppercase text-[#A85A1A]" }, "Inscrição no Detox da Primavera"), h("p", { className: "m-0 mt-1 font-serif text-[34px] font-bold text-[#352F54]" }, "R$ 450")), h("p", { className: "m-0 max-w-[330px] text-[15px] text-[#655E72]" }, "Em até 3x de R$ 150 sem juros no cartão, ou R$ 427,50 no Pix.")), h("div", { className: "grid gap-2.5 sm:grid-cols-2" }, ...botoes()));
   const hero = D.hero;
@@ -112,7 +113,7 @@ const DetoxInscricao = () => {
     h(Dialog, { open: pixDialogAberto, onOpenChange: setPixDialogAberto },
       h(DialogContent, { className: "max-w-[440px] rounded-3xl bg-[#FDF7F1] p-6 md:p-8" },
         h(DialogHeader, null,
-          h(DialogTitle, { className: "font-serif text-[26px] font-bold text-[#352F54]" }, "Pagamento no Pix"),
+          h(DialogTitle, { className: "font-serif text-[26px] font-bold text-[#352F54]" }, metodoDialogo === "pix" ? "Pagamento no Pix" : "Pagamento no cartão"),
           h(DialogDescription, { className: "text-[17px] leading-relaxed text-[#514B62]" }, "Digite o seu email. É com ele que você vai entrar no Portal para abrir o seu Detox.")),
         h("div", { className: "mt-2 flex flex-col gap-4" },
           h("input", {
@@ -120,11 +121,12 @@ const DetoxInscricao = () => {
             value: pixEmail, onChange: (e: any) => setPixEmail(e.target.value),
             className: "min-h-[56px] w-full rounded-2xl border border-[#EADFD3] bg-white px-4 text-[18px] text-[#352F54] outline-none focus:border-[#E07B39]",
           }),
+          pixEmailValido ? h("p", { className: "m-0 break-all text-[16px] text-[#514B62]" }, `Vamos liberar o seu Detox no email: ${pixEmail.trim().toLowerCase()}`) : null,
           h("button", {
             type: "button", disabled: !pixEmailValido || carregando !== null,
-            onClick: () => void comprar("pix", pixEmail.trim().toLowerCase()),
+            onClick: () => void comprar(metodoDialogo, pixEmail.trim().toLowerCase()),
             className: "flex min-h-[60px] w-full items-center justify-center gap-2.5 rounded-full bg-[#E07B39] px-6 text-[16px] font-semibold text-white transition hover:bg-[#D0662A] disabled:opacity-70",
-          }, carregando === "pix" ? h(Loader2, { className: "h-5 w-5 animate-spin" }) : h(QrCode, { className: "h-5 w-5", "aria-hidden": true }), "Gerar o Pix"))))
+          }, carregando === metodoDialogo ? h(Loader2, { className: "h-5 w-5 animate-spin" }) : h(metodoDialogo === "pix" ? QrCode : CreditCard, { className: "h-5 w-5", "aria-hidden": true }), metodoDialogo === "pix" ? "Gerar o Pix" : "Ir para o pagamento"))))
   ));
 };
 export default DetoxInscricao;
