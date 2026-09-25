@@ -1,11 +1,23 @@
 // Oferta compacta do Kit do Detox. Escrita com createElement (sem JSX).
-import { createElement as h } from "react";
+import { createElement as h, useEffect, useState } from "react";
+import { useUser } from "@/contexts/UserContext";
+import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
 const IMAGEM_KIT = "https://api.portalayurveda.com/storage/v1/object/public/portal_images/promokit.webp";
 
-const OfertaKit = () => h("section", { className: "overflow-hidden rounded-[24px] bg-white shadow-[0_20px_50px_-32px_rgba(53,47,84,0.45)]" },
+const OfertaKit = () => {
+  const { user } = useUser();
+  const [comprado, setComprado] = useState(false);
+  useEffect(() => {
+    if (!user) { setComprado(false); return; }
+    let ativo = true;
+    void (supabase.rpc as any)("kit_ja_comprado", { p_slug: "kit-detox-primavera" }).then(({ data }: { data: unknown }) => { if (ativo) setComprado(data === true); });
+    return () => { ativo = false; };
+  }, [user?.id]);
+  if (comprado) return null;
+  return h("section", { className: "overflow-hidden rounded-[24px] bg-white shadow-[0_20px_50px_-32px_rgba(53,47,84,0.45)]" },
   h("div", { className: "grid items-center md:grid-cols-[0.9fr_1.1fr]" },
     h("div", { className: "bg-[#FBE3CC] p-5 md:p-7" },
       h("img", { src: IMAGEM_KIT, alt: "Kit do Detox da Primavera", loading: "lazy", decoding: "async", className: "mx-auto aspect-square w-full max-w-[360px] object-contain" })),
@@ -16,5 +28,6 @@ const OfertaKit = () => h("section", { className: "overflow-hidden rounded-[24px
       h("p", { className: "m-0 font-serif text-[21px] font-bold leading-snug text-[#352F54]" }, "R$ 250 em até 3x sem juros, ou R$ 237,50 no Pix"),
       h(Button, { asChild: true, className: "mt-1 min-h-[60px] rounded-full bg-[#E07B39] px-8 text-[17px] font-bold text-white hover:bg-[#D0662A]" },
         h(Link, { to: "/detox/kit" }, "Quero o kit")))));
+};
 
 export default OfertaKit;

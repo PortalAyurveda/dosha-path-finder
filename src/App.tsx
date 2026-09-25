@@ -225,6 +225,7 @@ const RoutedApp = () => {
               <Route path="/biblioteca" element={<Biblioteca />} />
               <Route path="/textos-classicos" element={<TextosClassicos />} />
               <Route path="/cursos" element={<CursosVitrine />} />
+              <Route path="/cursos/detox-da-primavera" element={<Navigate to="/detox/inscricao" replace />} />
               <Route path="/cursos/:slug" element={<CursoLanding />} />
               <Route path="/cursos/:slug/estudar" element={<CursoEstudar />} />
               <Route path="/curso/alimentacao" element={<CursoAlimentacao />} />

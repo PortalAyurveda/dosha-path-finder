@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, Navigate, useParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { ChevronLeft, Check } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -101,6 +101,8 @@ const SamkhyaKit = () => {
     });
     return nomes.length ? nomes.join(" · ") : undefined;
   }, [kit, selecoes]);
+
+  if (kit?.checkout_proprio) return <Navigate to={kit.checkout_proprio} replace />;
 
   return (
     <>
