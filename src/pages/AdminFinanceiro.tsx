@@ -43,6 +43,7 @@ const isStripeReal = (id: string | null | undefined) =>
 const AdminFinanceiro = () => {
   const [assinaturas, setAssinaturas] = useState<AssinaturaRow[]>([]);
   const [pedidos, setPedidos] = useState<PedidoRow[]>([]);
+  const [cursos, setCursos] = useState<{ situacao: string; quando: string | null; valor: number | null }[]>([]);
   const [loading, setLoading] = useState(true);
 
   const [periodo, setPeriodo] = useState<PeriodoKey>("30");
@@ -51,11 +52,12 @@ const AdminFinanceiro = () => {
     rotinas: true,
     samkhya: true,
     escola: false,
+    cursos: true,
   });
 
   const load = useCallback(async () => {
     setLoading(true);
-    const [aRes, pRes] = await Promise.all([
+    const [aRes, pRes, cRes] = await Promise.all([
       (supabase as any)
         .from("assinaturas")
         .select("plano, valor, status, created_at, stripe_subscription_id")
@@ -64,7 +66,9 @@ const AdminFinanceiro = () => {
         .from("pedidos")
         .select("total, frete_valor, status, created_at")
         .limit(10000),
+      (supabase as any).rpc("admin_vendas_cursos"),
     ]);
+    if (cRes?.data) setCursos(cRes.data);
     if (aRes.data) setAssinaturas(aRes.data as AssinaturaRow[]);
     if (pRes.data) setPedidos(pRes.data as PedidoRow[]);
     setLoading(false);
@@ -127,8 +131,12 @@ const AdminFinanceiro = () => {
 
     const escola = 0;
 
-    return { premium, rotinas, samkhya, escola };
-  }, [assinaturas, pedidos, since]);
+    const cursosTotal = cursos
+      .filter((c) => (c.situacao === "pago" || c.situacao === "pago_sem_acesso") && inPeriod(c.quando))
+      .reduce((sum, c) => sum + (Number(c.valor) || 0), 0);
+
+    return { premium, rotinas, samkhya, escola, cursos: cursosTotal };
+  }, [assinaturas, pedidos, cursos, since]);
 
   const toggleFonte = (key: keyof typeof fontes) =>
     setFontes((f) => ({ ...f, [key]: !f[key] }));
@@ -137,13 +145,15 @@ const AdminFinanceiro = () => {
     (fontes.premium ? receitas.premium : 0) +
     (fontes.rotinas ? receitas.rotinas : 0) +
     (fontes.samkhya ? receitas.samkhya : 0) +
-    (fontes.escola ? receitas.escola : 0);
+    (fontes.escola ? receitas.escola : 0) +
+    (fontes.cursos ? receitas.cursos : 0);
 
   const breakdown: { label: string; value: number }[] = [];
   if (fontes.premium) breakdown.push({ label: "Premium", value: receitas.premium });
   if (fontes.rotinas) breakdown.push({ label: "Rotinas", value: receitas.rotinas });
   if (fontes.samkhya) breakdown.push({ label: "Samkhya", value: receitas.samkhya });
   if (fontes.escola) breakdown.push({ label: "Escola", value: receitas.escola });
+  if (fontes.cursos) breakdown.push({ label: "Cursos", value: receitas.cursos });
 
   return (
     <div className="min-h-screen bg-background">
@@ -223,6 +233,12 @@ const AdminFinanceiro = () => {
                 value={receitas.samkhya}
                 checked={fontes.samkhya}
                 onChange={() => toggleFonte("samkhya")}
+              />
+              <FonteCheck
+                label="Cursos"
+                value={receitas.cursos}
+                checked={fontes.cursos}
+                onChange={() => toggleFonte("cursos")}
               />
               <FonteCheck
                 label="Escola"
