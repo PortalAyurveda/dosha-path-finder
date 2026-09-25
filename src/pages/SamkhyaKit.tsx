@@ -260,7 +260,12 @@ const SamkhyaKit = () => {
 
               <div className="flex flex-col gap-3">
                 {kit.checkout_proprio ? (
-                  <Button asChild className="w-full" size="sm">
+                  <Button
+                    asChild
+                    className="w-full rounded-md text-xs font-medium text-white hover:opacity-90"
+                    size="sm"
+                    style={{ background: samkhyaTokens.ouro }}
+                  >
                     <Link to={kit.checkout_proprio}>Comprar o kit</Link>
                   </Button>
                 ) : (
