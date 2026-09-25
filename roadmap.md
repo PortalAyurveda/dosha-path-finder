@@ -2,4 +2,4 @@
 - [x] Criar cartão OfertaKit e inserir após compra/no curso
 - [x] Adicionar rota sem moldura
 - [x] Ajustar SamkhyaKit e KitCard para checkout próprio/frete grátis
-- [ ] Validar tipos, build e fluxos públicos
+- [x] Validar tipos, build e fluxos públicos
