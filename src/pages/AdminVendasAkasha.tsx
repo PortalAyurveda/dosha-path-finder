@@ -23,6 +23,7 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { MoreHorizontal } from "lucide-react";
+import VendasCursos from "@/components/admin/VendasCursos";
 
 interface Assinante {
   nome: string | null;
@@ -553,6 +554,7 @@ const AdminVendasAkasha = () => {
           <TabsList className="mb-4">
             <TabsTrigger value="premium">Premium</TabsTrigger>
             <TabsTrigger value="rotinas">Rotinas</TabsTrigger>
+            <TabsTrigger value="cursos">Cursos</TabsTrigger>
           </TabsList>
 
           <TabsContent value="premium" className="space-y-6">
@@ -662,6 +664,10 @@ const AdminVendasAkasha = () => {
                 <AssinaturasTable data={rotinasData} loading={rotinasLoading} onChanged={() => { loadAssinaturas(); loadRotinas(); }} />
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="cursos" className="space-y-6">
+            <VendasCursos />
           </TabsContent>
         </Tabs>
       </div>
