@@ -131,6 +131,7 @@ const Detox = lazy(() => import("./pages/Detox"));
 const DetoxMapa = lazy(() => import("./pages/DetoxMapa"));
 const DetoxInscricao = lazy(() => import("./pages/DetoxInscricao"));
 const DetoxObrigado = lazy(() => import("./pages/DetoxObrigado"));
+const DetoxKit = lazy(() => import("./pages/DetoxKit"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -153,7 +154,7 @@ if (typeof window !== "undefined") {
 
 const LayoutOrBare = ({ children }: { children: React.ReactNode }) => {
   const { pathname } = useLocation();
-  const SEM_MOLDURA = ["/aovivo", "/imprimir", "/detox/inscricao"];
+  const SEM_MOLDURA = ["/aovivo", "/imprimir", "/detox/inscricao", "/detox/kit"];
   if (SEM_MOLDURA.includes(pathname)) return <>{children}</>;
   return <Layout>{children}</Layout>;
 };
@@ -216,6 +217,7 @@ const RoutedApp = () => {
               <Route path="/detox/mapa" element={<DetoxMapa />} />
               <Route path="/detox/inscricao" element={<DetoxInscricao />} />
               <Route path="/detox/obrigado" element={<DetoxObrigado />} />
+              <Route path="/detox/kit" element={<DetoxKit />} />
               <Route path="/meu-dosha" element={<MeuDosha />} />
               <Route path="/meu-perfil" element={<MeuPerfil />} />
               <Route path="/minha-rotina" element={<MinhaRotina />} />

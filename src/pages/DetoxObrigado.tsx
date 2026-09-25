@@ -5,6 +5,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import { Loader2 } from "lucide-react";
 import { useUser } from "@/contexts/UserContext";
 import { supabase } from "@/integrations/supabase/client";
+import OfertaKit from "@/components/detox/OfertaKit";
 
 type Fase = "padrao" | "processando" | "liberado" | "precisa_email";
 
@@ -142,7 +143,8 @@ const DetoxObrigado = () => {
               ...passos.map((p, i) =>
                 h("div", { key: i, className: `flex flex-col gap-1 py-3 ${i > 0 ? "border-t border-[#EADFD3]" : ""}` },
                   h("p", { className: "m-0 text-[18px] font-bold text-[#352F54]" }, p.t),
-                  h("p", { className: "m-0 text-[17px] leading-relaxed text-[#4A4458]" }, p.d)))),
+                   h("p", { className: "m-0 text-[17px] leading-relaxed text-[#4A4458]" }, p.d)))),
+             aprovado ? h(OfertaKit) : null,
             h(Link, { to: "/detox", className: "text-center text-[17px] font-semibold text-[#A85A1A] underline" }, "Voltar para a sala da Jornada"))));
 };
 

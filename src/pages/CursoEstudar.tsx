@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 import TutorChatBody, { type TutorCurso } from "@/components/tutor/TutorChatBody";
 import samkhyaLogo from "@/assets/samkhya-logo-cropped.png";
+import OfertaKit from "@/components/detox/OfertaKit";
 
 const PORTAL_LOGO =
   "https://api.portalayurveda.com/storage/v1/object/public/portal_images/logo-positivo.png";
@@ -1021,6 +1022,7 @@ const CursoEstudar = () => {
           </div>
         ) : (
           <div className="space-y-6">
+            {curso.slug === "detox-da-primavera" && <OfertaKit />}
             <div className="flex items-center gap-2 overflow-x-auto pb-2">
               {abasVisiveis.map((t) => {
                 const Icon = t.icon;
