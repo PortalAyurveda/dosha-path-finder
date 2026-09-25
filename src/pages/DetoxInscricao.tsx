@@ -7,6 +7,8 @@ import {
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { useUser } from "@/contexts/UserContext";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import MeuMapaDetox from "@/components/detox/MeuMapaDetox";
 import {
   DETOX_INSCRICAO as D, PREMIUM_CARD, RELATOS, RELATO_PREMIUM, RELATO_GRUPO, FRASE_EDSON_2025, RECEITAS, RECEITAS_TITULO, IMAGENS,
@@ -38,10 +40,16 @@ const linhaIcone = (Icone: typeof Sun, t: string, i: number, cor: string) => h("
 
 const DetoxInscricao = () => {
   const { toast } = useToast();
+  const { user, isAnonymous } = useUser();
   const [carregando, setCarregando] = useState(null as Metodo | null);
-  const comprar = async (metodo: Metodo) => {
+  const [pixDialogAberto, setPixDialogAberto] = useState(false);
+  const [pixEmail, setPixEmail] = useState("");
+  const pixEmailValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(pixEmail.trim());
+  const comprar = async (metodo: Metodo, email?: string) => {
     setCarregando(metodo);
-    const { data, error } = await supabase.functions.invoke("create-cartao-curso", { body: { curso_slug: "detox-da-primavera", metodo } });
+    const corpo: Record<string, string> = { curso_slug: "detox-da-primavera", metodo };
+    if (email) corpo.email = email;
+    const { data, error } = await supabase.functions.invoke("create-cartao-curso", { body: corpo });
     if (error || !data) { setCarregando(null); toast({ title: "Não foi possível abrir o pagamento", description: "Tente de novo em instantes.", variant: "destructive" }); return; }
     if (data.ja_matriculado) { toast({ title: "Você já está inscrito no Detox. Abrindo a sua área do curso." }); window.setTimeout(() => { window.location.href = "/cursos/detox-da-primavera/estudar"; }, 700); return; }
     if (data.checkout_url) { window.location.href = data.checkout_url; return; }
@@ -49,7 +57,7 @@ const DetoxInscricao = () => {
   };
   const botoes = (escuro = false) => [
     h("button", { key: "cartao", type: "button", onClick: () => void comprar("cartao"), disabled: carregando !== null, className: `flex min-h-[60px] w-full items-center justify-center gap-2.5 rounded-full px-6 text-[16px] font-semibold whitespace-nowrap transition disabled:opacity-70 ${escuro ? "bg-[#F2CB05] text-[#1F1A38] hover:brightness-95" : "bg-[#E07B39] text-white hover:bg-[#D0662A]"}` }, carregando === "cartao" ? h(Loader2, { className: "h-5 w-5 animate-spin" }) : h(CreditCard, { className: "h-5 w-5", "aria-hidden": true }), D.hero.botao_cartao),
-    h("button", { key: "pix", type: "button", onClick: () => void comprar("pix"), disabled: carregando !== null, className: `flex min-h-[60px] w-full items-center justify-center gap-2.5 rounded-full px-6 text-[16px] font-semibold whitespace-nowrap transition disabled:opacity-70 ${escuro ? "border border-white/70 text-white hover:bg-white/10" : "border border-[#E07B39] bg-white text-[#A85A1A] hover:bg-[#FFF0E3]"}` }, carregando === "pix" ? h(Loader2, { className: "h-5 w-5 animate-spin" }) : h(QrCode, { className: "h-5 w-5", "aria-hidden": true }), D.hero.botao_pix),
+    h("button", { key: "pix", type: "button", onClick: () => { if (!user || isAnonymous) { setPixDialogAberto(true); return; } void comprar("pix"); }, disabled: carregando !== null, className: `flex min-h-[60px] w-full items-center justify-center gap-2.5 rounded-full px-6 text-[16px] font-semibold whitespace-nowrap transition disabled:opacity-70 ${escuro ? "border border-white/70 text-white hover:bg-white/10" : "border border-[#E07B39] bg-white text-[#A85A1A] hover:bg-[#FFF0E3]"}` }, carregando === "pix" ? h(Loader2, { className: "h-5 w-5 animate-spin" }) : h(QrCode, { className: "h-5 w-5", "aria-hidden": true }), D.hero.botao_pix),
   ];
   const compraCompacta = (key: string) => h("div", { key, className: "mx-auto mt-3 flex w-full max-w-[760px] flex-col gap-3 rounded-3xl bg-white/90 p-5 shadow-[0_18px_45px_-30px_rgba(53,47,84,0.5)] md:p-6" }, h("div", { className: "flex flex-wrap items-end justify-between gap-2" }, h("div", null, h("p", { className: "m-0 text-[14px] font-bold uppercase text-[#A85A1A]" }, "Inscrição no Detox da Primavera"), h("p", { className: "m-0 mt-1 font-serif text-[34px] font-bold text-[#352F54]" }, "R$ 450")), h("p", { className: "m-0 max-w-[330px] text-[15px] text-[#655E72]" }, "Em até 3x de R$ 150 sem juros no cartão, ou R$ 427,50 no Pix.")), h("div", { className: "grid gap-2.5 sm:grid-cols-2" }, ...botoes()));
   const hero = D.hero;
@@ -100,7 +108,23 @@ const DetoxInscricao = () => {
 
     secao([h("div", { key: "prof", className: "grid items-center gap-6 md:grid-cols-[0.8fr_1.2fr] md:gap-10" }, h("img", { src: "https://api.portalayurveda.com/storage/v1/object/public/portal_images/b8f47f-5f003e6165b44645b7163ec3dd646d32mv2-1.jpg", alt: "Edson Osorio", className: "mx-auto h-auto w-full max-w-[340px] rounded-3xl object-contain shadow-[0_24px_50px_-28px_rgba(53,47,84,0.5)]" }), h("div", { className: "flex flex-col gap-4" }, h("div", null, h("p", { className: "m-0 font-serif text-[30px] font-bold text-[#352F54]" }, "Edson Osorio"), h("p", { className: "m-0 mt-1 text-[16px] text-[#A85A1A]" }, D.professor.papel)), ...D.professor.bio.map((t, i) => par(t, `${TEXTO} ${i === 0 ? "font-semibold" : ""}`)), h("p", { className: "m-0 border-l-4 border-[#E07B39] pl-4 font-serif text-[20px] text-[#352F54]" }, `“${D.professor.citacao}”`)))], { fundo: "bg-gradient-to-b from-[#FBE3CC] to-[#FDF7F1]", largura: "max-w-[980px]" }),
 
-    h("section", { className: "bg-gradient-to-br from-[#352F54] to-[#1F1A38] px-4 py-10 md:py-14" }, h("div", { className: "mx-auto flex max-w-[680px] flex-col items-center gap-4 text-center" }, h("img", { src: IMAGENS.logo, alt: "Detox da Primavera", className: "h-[120px] w-auto object-contain" }), h("div", null, h("p", { className: "m-0 font-serif text-[24px] font-bold text-white" }, "Detox da Primavera"), h("p", { className: "m-0 mt-1 text-[17px] text-white" }, "com Edson Osorio")), h("h2", { className: "m-0 font-serif text-[30px] font-bold leading-tight text-white md:text-[38px]" }, D.fechamento.titulo), h("p", { className: "m-0 text-[17px] leading-[1.7] text-white md:text-[18px]" }, D.fechamento.texto), h("p", { className: "m-0 text-[16px] font-semibold text-[#FBE3CC]" }, D.fechamento.preco_linha), h("div", { className: "mt-2 grid w-full max-w-[540px] gap-2.5" }, ...botoes(true)))
+    h("section", { className: "bg-gradient-to-br from-[#352F54] to-[#1F1A38] px-4 py-10 md:py-14" }, h("div", { className: "mx-auto flex max-w-[680px] flex-col items-center gap-4 text-center" }, h("img", { src: IMAGENS.logo, alt: "Detox da Primavera", className: "h-[120px] w-auto object-contain" }), h("div", null, h("p", { className: "m-0 font-serif text-[24px] font-bold text-white" }, "Detox da Primavera"), h("p", { className: "m-0 mt-1 text-[17px] text-white" }, "com Edson Osorio")), h("h2", { className: "m-0 font-serif text-[30px] font-bold leading-tight text-white md:text-[38px]" }, D.fechamento.titulo), h("p", { className: "m-0 text-[17px] leading-[1.7] text-white md:text-[18px]" }, D.fechamento.texto), h("p", { className: "m-0 text-[16px] font-semibold text-[#FBE3CC]" }, D.fechamento.preco_linha), h("div", { className: "mt-2 grid w-full max-w-[540px] gap-2.5" }, ...botoes(true))),
+    h(Dialog, { open: pixDialogAberto, onOpenChange: setPixDialogAberto },
+      h(DialogContent, { className: "max-w-[440px] rounded-3xl bg-[#FDF7F1] p-6 md:p-8" },
+        h(DialogHeader, null,
+          h(DialogTitle, { className: "font-serif text-[26px] font-bold text-[#352F54]" }, "Pagamento no Pix"),
+          h(DialogDescription, { className: "text-[17px] leading-relaxed text-[#514B62]" }, "Digite o seu email. É com ele que você vai entrar no Portal para abrir o seu Detox.")),
+        h("div", { className: "mt-2 flex flex-col gap-4" },
+          h("input", {
+            type: "email", autoComplete: "email", id: "detox-pix-email", placeholder: "seuemail@exemplo.com",
+            value: pixEmail, onChange: (e: any) => setPixEmail(e.target.value),
+            className: "min-h-[56px] w-full rounded-2xl border border-[#EADFD3] bg-white px-4 text-[18px] text-[#352F54] outline-none focus:border-[#E07B39]",
+          }),
+          h("button", {
+            type: "button", disabled: !pixEmailValido || carregando !== null,
+            onClick: () => void comprar("pix", pixEmail.trim().toLowerCase()),
+            className: "flex min-h-[60px] w-full items-center justify-center gap-2.5 rounded-full bg-[#E07B39] px-6 text-[16px] font-semibold text-white transition hover:bg-[#D0662A] disabled:opacity-70",
+          }, carregando === "pix" ? h(Loader2, { className: "h-5 w-5 animate-spin" }) : h(QrCode, { className: "h-5 w-5", "aria-hidden": true }), "Gerar o Pix"))))
   ));
 };
 export default DetoxInscricao;
