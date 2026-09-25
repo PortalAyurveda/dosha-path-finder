@@ -11636,6 +11636,10 @@ export type Database = {
         }
         Returns: number
       }
+      detox_email_confirmacao_conteudo: {
+        Args: { p_com_nome: boolean; p_hoje: string }
+        Returns: Json
+      }
       detox_embed_lote: { Args: { p_lote?: number }; Returns: number }
       detox_encerra_premium: { Args: never; Returns: number }
       detox_fases_do_trecho: {
