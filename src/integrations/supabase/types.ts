@@ -12005,7 +12005,7 @@ export type Database = {
       }
       kit_detalhe: { Args: { p_slug: string }; Returns: Json }
       kit_expandir: {
-        Args: { p_escolhas?: Json; p_slug: string }
+        Args: { p_base?: number; p_escolhas?: Json; p_slug: string }
         Returns: Json
       }
       lista_de_compras: {
