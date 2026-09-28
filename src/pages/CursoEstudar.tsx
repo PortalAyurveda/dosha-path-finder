@@ -613,12 +613,12 @@ const TarefaItem = ({
   return (
     <label
       className="flex items-center gap-4 min-h-[60px] py-2 border-b border-[#EFE6DC] cursor-pointer"
-      onClick={(e) => e.preventDefault()}
+      onClick={alternar}
+      role="checkbox"
+      aria-checked={marcado}
     >
-      <button
-        type="button"
-        aria-pressed={marcado}
-        onClick={alternar}
+      <span
+        aria-hidden
         className="shrink-0 flex items-center justify-center"
         style={{
           width: 28,
@@ -629,7 +629,7 @@ const TarefaItem = ({
         }}
       >
         {marcado && <Check className="h-4 w-4" style={{ color: "#fff" }} />}
-      </button>
+      </span>
       <span className="text-[18px] leading-[1.7]" style={{ color: PRIMARY }}>
         {children}
       </span>
@@ -718,7 +718,7 @@ const TextoAula = ({
     ),
     a: ({ href, children }: any) => {
       const url = href ?? "";
-      if (impressao) return <span style={{ color: "#000" }}>{children}</span>;
+      if (impressao) return <span style={{ color: "#000", fontSize: "11pt", fontWeight: 700 }}>{children}</span>;
       const classe = "font-bold underline underline-offset-4";
       if (url.startsWith("/")) {
         return (
