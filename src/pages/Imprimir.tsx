@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/contexts/UserContext";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { MarcaPortal, Quadradinho } from "@/components/impressao/PecasImpressao";
 
 type Peca = "semana" | "receitas" | "compras";
 const PECAS_VALIDAS: Peca[] = ["semana", "receitas", "compras"];
