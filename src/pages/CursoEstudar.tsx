@@ -1551,6 +1551,11 @@ const CursoEstudar = () => {
                                         >
                                           {a.titulo}
                                         </p>
+                                        {!aulaAberta(a) && (
+                                          <p className="text-[16px] mt-0.5" style={{ color: "#4A4560" }}>
+                                            {rotuloTranca(a)}
+                                          </p>
+                                        )}
                                         {a.duracao_segundos ? (
                                           <p className="text-xs mt-0.5" style={{ color: PRIMARY, opacity: 0.55 }}>
                                             {fmtDuracao(a.duracao_segundos)}
@@ -1594,6 +1599,32 @@ const CursoEstudar = () => {
           </div>
         )}
       </main>
+
+      {abaAtiva === "aulas" && aulaAtual?.imprimir && (
+        <div
+          id="aula-impressao"
+          className="hidden print:block"
+          style={{ background: "#fff", color: "#000", lineHeight: 1.35, textAlign: "left", hyphens: "none" }}
+        >
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              borderBottom: "1px solid #352F54",
+              paddingBottom: "3mm",
+              marginBottom: "5mm",
+            }}
+          >
+            <MarcaPortal />
+            <span style={{ marginLeft: "4mm", fontSize: "12pt", color: "#000" }}>{curso.titulo}</span>
+            <span style={{ marginLeft: "auto", fontSize: "10pt", color: "#000" }}>portalayurveda.com</span>
+          </div>
+          <h1 className="font-serif" style={{ fontSize: "18pt", margin: "0 0 4mm", color: "#000" }}>
+            {aulaAtual.titulo}
+          </h1>
+          {aulaAtual.descricao && <TextoAula texto={aulaAtual.descricao} aulaId={aulaAtual.id} impressao />}
+        </div>
+      )}
     </>
   );
 };
