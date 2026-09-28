@@ -574,6 +574,223 @@ const CertificadoTab = ({
   );
 };
 
+const TarefaItem = ({
+  texto,
+  aulaId,
+  impressao,
+  children,
+}: {
+  texto: string;
+  aulaId?: string;
+  impressao?: boolean;
+  children: React.ReactNode;
+}) => {
+  const chave = `curso-lista:${aulaId ?? "sem-aula"}:${texto}`;
+  const [marcado, setMarcado] = useState(() => {
+    try {
+      return window.localStorage.getItem(chave) === "1";
+    } catch {
+      return false;
+    }
+  });
+  const alternar = () => {
+    const prox = !marcado;
+    setMarcado(prox);
+    try {
+      window.localStorage.setItem(chave, prox ? "1" : "0");
+    } catch {
+      /* noop */
+    }
+  };
+  if (impressao) {
+    return (
+      <div style={{ display: "flex", alignItems: "center", marginBottom: "3mm", breakInside: "avoid" }}>
+        <Quadradinho mm="5mm" />
+        <span style={{ fontSize: "11pt", fontWeight: 700, color: "#000" }}>{children}</span>
+      </div>
+    );
+  }
+  return (
+    <label
+      className="flex items-center gap-4 min-h-[60px] py-2 border-b border-[#EFE6DC] cursor-pointer"
+      onClick={(e) => e.preventDefault()}
+    >
+      <button
+        type="button"
+        aria-pressed={marcado}
+        onClick={alternar}
+        className="shrink-0 flex items-center justify-center"
+        style={{
+          width: 28,
+          height: 28,
+          border: `2px solid ${PRIMARY}`,
+          borderRadius: 6,
+          background: marcado ? PRIMARY : "#fff",
+        }}
+      >
+        {marcado && <Check className="h-4 w-4" style={{ color: "#fff" }} />}
+      </button>
+      <span className="text-[18px] leading-[1.7]" style={{ color: PRIMARY }}>
+        {children}
+      </span>
+    </label>
+  );
+};
+
+const extrairTexto = (node: React.ReactNode): string => {
+  if (node == null || typeof node === "boolean") return "";
+  if (typeof node === "string" || typeof node === "number") return String(node);
+  if (Array.isArray(node)) return node.map(extrairTexto).join("");
+  if (typeof node === "object" && "props" in (node as any)) return extrairTexto((node as any).props?.children);
+  return "";
+};
+
+const TextoAula = ({
+  texto,
+  aulaId,
+  impressao,
+}: {
+  texto: string;
+  aulaId?: string;
+  impressao?: boolean;
+}) => {
+  const corTexto = impressao ? "#000" : PRIMARY;
+  const components: any = {
+    p: ({ children }: any) => (
+      <p
+        className={impressao ? undefined : "text-[18px] leading-[1.7] mb-4"}
+        style={impressao ? { fontSize: "11pt", margin: "0 0 3mm", color: "#000" } : { color: corTexto }}
+      >
+        {children}
+      </p>
+    ),
+    li: ({ children, className, node, ...rest }: any) => {
+      const isTask = typeof className === "string" && className.includes("task-list-item");
+      if (isTask) {
+        const filhos = (Array.isArray(children) ? children : [children]).filter(
+          (c: any) => !(typeof c === "object" && c?.type === "input"),
+        );
+        return (
+          <TarefaItem texto={extrairTexto(filhos)} aulaId={aulaId} impressao={impressao}>
+            {filhos}
+          </TarefaItem>
+        );
+      }
+      return (
+        <li
+          className={impressao ? undefined : "text-[18px] leading-[1.7]"}
+          style={impressao ? { fontSize: "11pt", margin: "0 0 3mm", color: "#000" } : { color: corTexto }}
+          {...rest}
+        >
+          {children}
+        </li>
+      );
+    },
+    h1: ({ children }: any) => <TituloTexto impressao={impressao}>{children}</TituloTexto>,
+    h2: ({ children }: any) => <TituloTexto impressao={impressao}>{children}</TituloTexto>,
+    h3: ({ children }: any) => <TituloTexto impressao={impressao}>{children}</TituloTexto>,
+    ul: ({ children, className }: any) => {
+      const isTask = typeof className === "string" && className.includes("contains-task-list");
+      if (isTask) {
+        if (impressao) {
+          return (
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", columnGap: "8mm" }}>{children}</div>
+          );
+        }
+        return <div className="list-none pl-0 mb-4">{children}</div>;
+      }
+      return (
+        <ul
+          className={impressao ? undefined : "list-disc pl-[22px] mb-4 space-y-2"}
+          style={impressao ? { paddingLeft: "6mm" } : undefined}
+        >
+          {children}
+        </ul>
+      );
+    },
+    ol: ({ children }: any) => (
+      <ol
+        className={impressao ? undefined : "list-decimal pl-[22px] mb-4 space-y-2"}
+        style={impressao ? { paddingLeft: "6mm" } : undefined}
+      >
+        {children}
+      </ol>
+    ),
+    a: ({ href, children }: any) => {
+      const url = href ?? "";
+      if (impressao) return <span style={{ color: "#000" }}>{children}</span>;
+      const classe = "font-bold underline underline-offset-4";
+      if (url.startsWith("/")) {
+        return (
+          <Link to={url} className={classe} style={{ color: PRIMARY }}>
+            {children}
+          </Link>
+        );
+      }
+      if (url.startsWith("https://portalayurveda.com")) {
+        return (
+          <Link to={url.slice("https://portalayurveda.com".length) || "/"} className={classe} style={{ color: PRIMARY }}>
+            {children}
+          </Link>
+        );
+      }
+      return (
+        <a href={url} target="_blank" rel="noreferrer" className={classe} style={{ color: PRIMARY }}>
+          {children}
+        </a>
+      );
+    },
+  };
+  return (
+    <div className="[&>*:last-child]:mb-0">
+      <ReactMarkdown skipHtml remarkPlugins={[remarkGfm, remarkBreaks]} components={components}>
+        {texto}
+      </ReactMarkdown>
+    </div>
+  );
+};
+
+const TituloTexto = ({ impressao, children }: { impressao?: boolean; children: React.ReactNode }) => (
+  <h3
+    className={impressao ? undefined : "font-serif font-bold text-[22px] leading-snug mt-[22px] mb-2"}
+    style={
+      impressao
+        ? {
+            fontSize: "13pt",
+            fontWeight: 700,
+            borderBottom: "1px solid #000",
+            paddingBottom: "1mm",
+            margin: "4mm 0 2mm",
+            breakAfter: "avoid",
+            color: "#000",
+          }
+        : { color: PRIMARY }
+    }
+  >
+    {children}
+  </h3>
+);
+
+const CartaoTrancado = ({ aula, rotulo }: { aula: AulaFull; rotulo: string }) => (
+  <div
+    className="rounded-[18px] border-2 border-dashed text-center"
+    style={{ borderColor: `${PRIMARY}33`, background: "#FFF8EE", padding: "32px 24px" }}
+  >
+    <Lock className="mx-auto mb-3" style={{ width: 32, height: 32, color: PRIMARY }} />
+    <h2 className="font-serif font-bold text-[20px] mb-2" style={{ color: PRIMARY }}>
+      {aula.titulo}
+    </h2>
+    <p className="text-[18px]" style={{ color: PRIMARY }}>
+      Esta aula ainda não foi liberada.
+    </p>
+    {rotulo.startsWith("Libera em") && (
+      <p className="text-[18px] font-bold mt-2" style={{ color: PRIMARY }}>
+        {rotulo}
+      </p>
+    )}
+  </div>
+);
+
 const CursoEstudar = () => {
   const { slug = "" } = useParams();
   const { user, isAnonymous, loading: authLoading } = useUser();
