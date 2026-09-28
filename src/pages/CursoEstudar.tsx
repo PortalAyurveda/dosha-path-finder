@@ -1343,7 +1343,20 @@ const CursoEstudar = () => {
             {abaAtiva === "aulas" && (
               <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_320px] gap-6 lg:gap-8">
                 <div id="player-aula" className="min-w-0 order-1 scroll-mt-20">
-                  {aulaAtual ? (
+                  {aulaAtual && !aulaAberta(aulaAtual) ? (
+                    <>
+                      <CartaoTrancado aula={aulaAtual} rotulo={rotuloTranca(aulaAtual)} />
+                      <div className="mt-5">
+                        <p
+                          className="text-xs font-semibold uppercase tracking-wider mb-1"
+                          style={{ color: PRIMARY, opacity: 0.7 }}
+                        >
+                          {`Aula ${numeroDaAula(aulaAtual.id)}`}
+                          {moduloDaAula(aulaAtual) ? ` · ${moduloDaAula(aulaAtual)!.titulo}` : ""}
+                        </p>
+                      </div>
+                    </>
+                  ) : aulaAtual ? (
                     <>
                       {embedUrl ? (
                         <div className="aspect-video w-full rounded-2xl overflow-hidden bg-black shadow-md">
@@ -1364,17 +1377,13 @@ const CursoEstudar = () => {
                             />
                           )}
                         </div>
-                      ) : (
-                        <div className="aspect-video w-full rounded-2xl bg-muted flex items-center justify-center">
-                          <p className="text-sm text-muted-foreground">Vídeo em breve</p>
-                        </div>
-                      )}
+                      ) : null}
                       <div className="mt-5">
                         <p
                           className="text-xs font-semibold uppercase tracking-wider mb-1"
                           style={{ color: PRIMARY, opacity: 0.7 }}
                         >
-                          {`Aula ${numeroDaAula(aulaAtual.id)} de ${totalAulas}`}
+                          {`Aula ${numeroDaAula(aulaAtual.id)}`}
                           {aulaAtual.duracao_segundos ? ` · ${fmtDuracao(aulaAtual.duracao_segundos)}` : ""}
                           {moduloDaAula(aulaAtual) ? ` · ${moduloDaAula(aulaAtual)!.titulo}` : ""}
                         </p>
@@ -1382,12 +1391,9 @@ const CursoEstudar = () => {
                           {aulaAtual.titulo}
                         </h2>
                         {aulaAtual.descricao && (
-                          <p
-                            className="text-sm md:text-base whitespace-pre-line leading-relaxed mb-5"
-                            style={{ color: PRIMARY, opacity: 0.85, fontFamily: "'DM Sans', sans-serif" }}
-                          >
-                            {aulaAtual.descricao}
-                          </p>
+                          <div className="mb-5">
+                            <TextoAula texto={aulaAtual.descricao} aulaId={aulaAtual.id} />
+                          </div>
                         )}
                         <div className="grid grid-cols-[1fr_1.5fr] gap-2.5 mb-2.5">
                           <Button
