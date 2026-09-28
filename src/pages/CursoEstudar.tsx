@@ -1,6 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, Navigate, useParams, useSearchParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import remarkBreaks from "remark-breaks";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/contexts/UserContext";
 import { Button } from "@/components/ui/button";
@@ -8,6 +11,7 @@ import { toast } from "sonner";
 import { getTransformedImageUrl } from "@/lib/imageTransform";
 import {
   Award,
+  Check,
   CheckCircle2,
   Circle,
   Download,
@@ -24,7 +28,7 @@ import {
 } from "lucide-react";
 import TutorChatBody, { type TutorCurso } from "@/components/tutor/TutorChatBody";
 import samkhyaLogo from "@/assets/samkhya-logo-cropped.png";
-import OfertaKit from "@/components/detox/OfertaKit";
+import { MarcaPortal, Quadradinho } from "@/components/impressao/PecasImpressao";
 
 const PORTAL_LOGO =
   "https://api.portalayurveda.com/storage/v1/object/public/portal_images/logo-positivo.png";
@@ -39,6 +43,7 @@ interface Curso {
   card_logo_url: string | null;
   card_cor_primaria: string | null;
   card_cor_secundaria: string | null;
+  aviso_topo: string | null;
 }
 interface Modulo {
   id: string;
@@ -57,6 +62,9 @@ interface AulaBase {
 interface AulaFull extends AulaBase {
   descricao: string | null;
   youtube_url: string | null;
+  liberada?: boolean | null;
+  libera_em?: string | null;
+  imprimir?: boolean | null;
 }
 interface MaterialRow {
   id: string;
