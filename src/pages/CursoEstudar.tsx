@@ -841,7 +841,7 @@ const CursoEstudar = () => {
       if (!curso || curso.slug !== slug) setLoading(true);
       const { data: c } = await supabase
         .from("cursos")
-        .select("id,slug,titulo,descricao,capa_url,ativo,card_logo_url,card_cor_primaria,card_cor_secundaria")
+        .select("id,slug,titulo,descricao,capa_url,ativo,card_logo_url,card_cor_primaria,card_cor_secundaria,aviso_topo")
         .eq("slug", slug)
         .maybeSingle();
       if (!c) {
@@ -870,7 +870,7 @@ const CursoEstudar = () => {
         if (acesso) {
           const { data: fullAulas } = await supabase
             .from("curso_aulas")
-            .select("id,modulo_id,titulo,descricao,youtube_url,duracao_segundos,ordem")
+            .select("id,modulo_id,titulo,descricao,youtube_url,duracao_segundos,ordem,liberada,libera_em,imprimir")
             .in(
               "modulo_id",
               modulosOk.map((m) => m.id),
