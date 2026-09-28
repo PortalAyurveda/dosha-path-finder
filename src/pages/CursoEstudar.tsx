@@ -1,6 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, Navigate, useParams, useSearchParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import remarkBreaks from "remark-breaks";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/contexts/UserContext";
 import { Button } from "@/components/ui/button";
@@ -8,6 +11,7 @@ import { toast } from "sonner";
 import { getTransformedImageUrl } from "@/lib/imageTransform";
 import {
   Award,
+  Check,
   CheckCircle2,
   Circle,
   Download,
@@ -24,7 +28,7 @@ import {
 } from "lucide-react";
 import TutorChatBody, { type TutorCurso } from "@/components/tutor/TutorChatBody";
 import samkhyaLogo from "@/assets/samkhya-logo-cropped.png";
-import OfertaKit from "@/components/detox/OfertaKit";
+import { MarcaPortal, Quadradinho } from "@/components/impressao/PecasImpressao";
 
 const PORTAL_LOGO =
   "https://api.portalayurveda.com/storage/v1/object/public/portal_images/logo-positivo.png";
@@ -39,6 +43,7 @@ interface Curso {
   card_logo_url: string | null;
   card_cor_primaria: string | null;
   card_cor_secundaria: string | null;
+  aviso_topo: string | null;
 }
 interface Modulo {
   id: string;
@@ -57,6 +62,9 @@ interface AulaBase {
 interface AulaFull extends AulaBase {
   descricao: string | null;
   youtube_url: string | null;
+  liberada?: boolean | null;
+  libera_em?: string | null;
+  imprimir?: boolean | null;
 }
 interface MaterialRow {
   id: string;
@@ -566,6 +574,223 @@ const CertificadoTab = ({
   );
 };
 
+const TarefaItem = ({
+  texto,
+  aulaId,
+  impressao,
+  children,
+}: {
+  texto: string;
+  aulaId?: string;
+  impressao?: boolean;
+  children: React.ReactNode;
+}) => {
+  const chave = `curso-lista:${aulaId ?? "sem-aula"}:${texto}`;
+  const [marcado, setMarcado] = useState(() => {
+    try {
+      return window.localStorage.getItem(chave) === "1";
+    } catch {
+      return false;
+    }
+  });
+  const alternar = () => {
+    const prox = !marcado;
+    setMarcado(prox);
+    try {
+      window.localStorage.setItem(chave, prox ? "1" : "0");
+    } catch {
+      /* noop */
+    }
+  };
+  if (impressao) {
+    return (
+      <div style={{ display: "flex", alignItems: "center", marginBottom: "3mm", breakInside: "avoid" }}>
+        <Quadradinho mm="5mm" />
+        <span style={{ fontSize: "11pt", fontWeight: 700, color: "#000" }}>{children}</span>
+      </div>
+    );
+  }
+  return (
+    <label
+      className="flex items-center gap-4 min-h-[60px] py-2 border-b border-[#EFE6DC] cursor-pointer"
+      onClick={(e) => e.preventDefault()}
+    >
+      <button
+        type="button"
+        aria-pressed={marcado}
+        onClick={alternar}
+        className="shrink-0 flex items-center justify-center"
+        style={{
+          width: 28,
+          height: 28,
+          border: `2px solid ${PRIMARY}`,
+          borderRadius: 6,
+          background: marcado ? PRIMARY : "#fff",
+        }}
+      >
+        {marcado && <Check className="h-4 w-4" style={{ color: "#fff" }} />}
+      </button>
+      <span className="text-[18px] leading-[1.7]" style={{ color: PRIMARY }}>
+        {children}
+      </span>
+    </label>
+  );
+};
+
+const extrairTexto = (node: React.ReactNode): string => {
+  if (node == null || typeof node === "boolean") return "";
+  if (typeof node === "string" || typeof node === "number") return String(node);
+  if (Array.isArray(node)) return node.map(extrairTexto).join("");
+  if (typeof node === "object" && "props" in (node as any)) return extrairTexto((node as any).props?.children);
+  return "";
+};
+
+const TextoAula = ({
+  texto,
+  aulaId,
+  impressao,
+}: {
+  texto: string;
+  aulaId?: string;
+  impressao?: boolean;
+}) => {
+  const corTexto = impressao ? "#000" : PRIMARY;
+  const components: any = {
+    p: ({ children }: any) => (
+      <p
+        className={impressao ? undefined : "text-[18px] leading-[1.7] mb-4"}
+        style={impressao ? { fontSize: "11pt", margin: "0 0 3mm", color: "#000" } : { color: corTexto }}
+      >
+        {children}
+      </p>
+    ),
+    li: ({ children, className, node, ...rest }: any) => {
+      const isTask = typeof className === "string" && className.includes("task-list-item");
+      if (isTask) {
+        const filhos = (Array.isArray(children) ? children : [children]).filter(
+          (c: any) => !(typeof c === "object" && c?.type === "input"),
+        );
+        return (
+          <TarefaItem texto={extrairTexto(filhos)} aulaId={aulaId} impressao={impressao}>
+            {filhos}
+          </TarefaItem>
+        );
+      }
+      return (
+        <li
+          className={impressao ? undefined : "text-[18px] leading-[1.7]"}
+          style={impressao ? { fontSize: "11pt", margin: "0 0 3mm", color: "#000" } : { color: corTexto }}
+          {...rest}
+        >
+          {children}
+        </li>
+      );
+    },
+    h1: ({ children }: any) => <TituloTexto impressao={impressao}>{children}</TituloTexto>,
+    h2: ({ children }: any) => <TituloTexto impressao={impressao}>{children}</TituloTexto>,
+    h3: ({ children }: any) => <TituloTexto impressao={impressao}>{children}</TituloTexto>,
+    ul: ({ children, className }: any) => {
+      const isTask = typeof className === "string" && className.includes("contains-task-list");
+      if (isTask) {
+        if (impressao) {
+          return (
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", columnGap: "8mm" }}>{children}</div>
+          );
+        }
+        return <div className="list-none pl-0 mb-4">{children}</div>;
+      }
+      return (
+        <ul
+          className={impressao ? undefined : "list-disc pl-[22px] mb-4 space-y-2"}
+          style={impressao ? { paddingLeft: "6mm" } : undefined}
+        >
+          {children}
+        </ul>
+      );
+    },
+    ol: ({ children }: any) => (
+      <ol
+        className={impressao ? undefined : "list-decimal pl-[22px] mb-4 space-y-2"}
+        style={impressao ? { paddingLeft: "6mm" } : undefined}
+      >
+        {children}
+      </ol>
+    ),
+    a: ({ href, children }: any) => {
+      const url = href ?? "";
+      if (impressao) return <span style={{ color: "#000" }}>{children}</span>;
+      const classe = "font-bold underline underline-offset-4";
+      if (url.startsWith("/")) {
+        return (
+          <Link to={url} className={classe} style={{ color: PRIMARY }}>
+            {children}
+          </Link>
+        );
+      }
+      if (url.startsWith("https://portalayurveda.com")) {
+        return (
+          <Link to={url.slice("https://portalayurveda.com".length) || "/"} className={classe} style={{ color: PRIMARY }}>
+            {children}
+          </Link>
+        );
+      }
+      return (
+        <a href={url} target="_blank" rel="noreferrer" className={classe} style={{ color: PRIMARY }}>
+          {children}
+        </a>
+      );
+    },
+  };
+  return (
+    <div className="[&>*:last-child]:mb-0">
+      <ReactMarkdown skipHtml remarkPlugins={[remarkGfm, remarkBreaks]} components={components}>
+        {texto}
+      </ReactMarkdown>
+    </div>
+  );
+};
+
+const TituloTexto = ({ impressao, children }: { impressao?: boolean; children: React.ReactNode }) => (
+  <h3
+    className={impressao ? undefined : "font-serif font-bold text-[22px] leading-snug mt-[22px] mb-2"}
+    style={
+      impressao
+        ? {
+            fontSize: "13pt",
+            fontWeight: 700,
+            borderBottom: "1px solid #000",
+            paddingBottom: "1mm",
+            margin: "4mm 0 2mm",
+            breakAfter: "avoid",
+            color: "#000",
+          }
+        : { color: PRIMARY }
+    }
+  >
+    {children}
+  </h3>
+);
+
+const CartaoTrancado = ({ aula, rotulo }: { aula: AulaFull; rotulo: string }) => (
+  <div
+    className="rounded-[18px] border-2 border-dashed text-center"
+    style={{ borderColor: `${PRIMARY}33`, background: "#FFF8EE", padding: "32px 24px" }}
+  >
+    <Lock className="mx-auto mb-3" style={{ width: 32, height: 32, color: PRIMARY }} />
+    <h2 className="font-serif font-bold text-[20px] mb-2" style={{ color: PRIMARY }}>
+      {aula.titulo}
+    </h2>
+    <p className="text-[18px]" style={{ color: PRIMARY }}>
+      Esta aula ainda não foi liberada.
+    </p>
+    {rotulo.startsWith("Libera em") && (
+      <p className="text-[18px] font-bold mt-2" style={{ color: PRIMARY }}>
+        {rotulo}
+      </p>
+    )}
+  </div>
+);
+
 const CursoEstudar = () => {
   const { slug = "" } = useParams();
   const { user, isAnonymous, loading: authLoading } = useUser();
@@ -583,6 +808,27 @@ const CursoEstudar = () => {
   const [salvando, setSalvando] = useState(false);
   const [moduloAberto, setModuloAberto] = useState(null as string | null);
   const [posicoes, setPosicoes] = useState({} as { [aulaId: string]: Posicao });
+  const [agora, setAgora] = useState(() => Date.now());
+  useEffect(() => {
+    const t = setInterval(() => setAgora(Date.now()), 60000);
+    return () => clearInterval(t);
+  }, []);
+
+  const aulaAberta = (a: AulaFull) =>
+    a.liberada !== false && (!a.libera_em || Date.parse(a.libera_em) <= agora);
+
+  const rotuloTranca = (a: AulaFull) => {
+    if (a.liberada !== false && a.libera_em && Date.parse(a.libera_em) > agora) {
+      const d = new Date(a.libera_em);
+      const data = d.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", timeZone: "America/Sao_Paulo" });
+      const hora = d
+        .toLocaleTimeString("pt-BR", { hour: "numeric", minute: "2-digit", timeZone: "America/Sao_Paulo" })
+        .replace(":00", "h")
+        .replace(":", "h");
+      return `Libera em ${data}, às ${hora}`;
+    }
+    return "Ainda não liberada";
+  };
 
   const carregarCertificado = async (cursoId: string) => {
     const { data } = await supabase.rpc("obter_certificado_curso", { p_curso_id: cursoId });
@@ -595,7 +841,7 @@ const CursoEstudar = () => {
       if (!curso || curso.slug !== slug) setLoading(true);
       const { data: c } = await supabase
         .from("cursos")
-        .select("id,slug,titulo,descricao,capa_url,ativo,card_logo_url,card_cor_primaria,card_cor_secundaria")
+        .select("id,slug,titulo,descricao,capa_url,ativo,card_logo_url,card_cor_primaria,card_cor_secundaria,aviso_topo")
         .eq("slug", slug)
         .maybeSingle();
       if (!c) {
@@ -624,7 +870,7 @@ const CursoEstudar = () => {
         if (acesso) {
           const { data: fullAulas } = await supabase
             .from("curso_aulas")
-            .select("id,modulo_id,titulo,descricao,youtube_url,duracao_segundos,ordem")
+            .select("id,modulo_id,titulo,descricao,youtube_url,duracao_segundos,ordem,liberada,libera_em,imprimir")
             .in(
               "modulo_id",
               modulosOk.map((m) => m.id),
@@ -694,14 +940,15 @@ const CursoEstudar = () => {
     return modulosConteudo.flatMap((m) => byMod.get(m.id) ?? []);
   }, [aulas, modulosConteudo]);
 
-  const totalAulas = aulasOrdenadas.length;
-  const totalConcluidas = aulasOrdenadas.filter((a) => concluidas.has(a.id)).length;
+  const aulasAbertas = aulasOrdenadas.filter(aulaAberta);
+  const totalAulas = aulasAbertas.length;
+  const totalConcluidas = aulasAbertas.filter((a) => concluidas.has(a.id)).length;
   const pct = totalAulas ? Math.round((totalConcluidas / totalAulas) * 100) : 0;
 
-  const ultimaVista = aulasOrdenadas
+  const ultimaVista = aulasAbertas
     .filter((a) => posicoes[a.id] && !concluidas.has(a.id))
     .sort((a, b) => (posicoes[b.id].atualizado_em > posicoes[a.id].atualizado_em ? 1 : -1))[0];
-  const primeiraNaoConcluida = ultimaVista ?? aulasOrdenadas.find((a) => !concluidas.has(a.id)) ?? aulasOrdenadas[0];
+  const primeiraNaoConcluida = ultimaVista ?? aulasAbertas.find((a) => !concluidas.has(a.id)) ?? aulasAbertas[0] ?? aulasOrdenadas[0];
   const aulaSelecionadaId = searchParams.get("aula") ?? primeiraNaoConcluida?.id ?? null;
   const aulaAtual = useMemo(
     () => aulasOrdenadas.find((a) => a.id === aulaSelecionadaId) ?? null,
@@ -709,9 +956,8 @@ const CursoEstudar = () => {
   );
 
   const indiceAtual = aulasOrdenadas.findIndex((a) => a.id === aulaSelecionadaId);
-  const aulaAnterior = indiceAtual > 0 ? aulasOrdenadas[indiceAtual - 1] : null;
-  const aulaProxima =
-    indiceAtual >= 0 && aulasOrdenadas.length - 1 > indiceAtual ? aulasOrdenadas[indiceAtual + 1] : null;
+  const aulaAnterior = indiceAtual > 0 ? aulasOrdenadas.slice(0, indiceAtual).reverse().find(aulaAberta) ?? null : null;
+  const aulaProxima = indiceAtual >= 0 ? aulasOrdenadas.slice(indiceAtual + 1).find(aulaAberta) ?? null : null;
   const numeroDaAula = (id: string) => aulasOrdenadas.findIndex((a) => a.id === id) + 1;
   const moduloDaAula = (a: AulaFull | null) => modulosConteudo.find((m) => m.id === a?.modulo_id) ?? null;
   useEffect(() => {
@@ -849,20 +1095,32 @@ const CursoEstudar = () => {
         <meta name="robots" content="noindex, nofollow" />
       </Helmet>
 
-      <style>{`
-        @media print {
-          body * { visibility: hidden; }
-          #certificado-print, #certificado-print * { visibility: visible; }
-          #certificado-print {
-            position: fixed;
-            inset: 0;
-            margin: 0 !important;
-            width: 297mm !important;
-            height: 210mm !important;
+      {abaAtiva === "certificado" && (
+        <style>{`
+          @media print {
+            body * { visibility: hidden; }
+            #certificado-print, #certificado-print * { visibility: visible; }
+            #certificado-print {
+              position: fixed;
+              inset: 0;
+              margin: 0 !important;
+              width: 297mm !important;
+              height: 210mm !important;
+            }
+            @page { size: A4 landscape; margin: 0; }
           }
-          @page { size: A4 landscape; margin: 0; }
-        }
-      `}</style>
+        `}</style>
+      )}
+      {abaAtiva === "aulas" && aulaAtual?.imprimir && (
+        <style>{`
+          @page { size: A4 portrait; margin: 12mm; }
+          @media print {
+            body * { visibility: hidden !important; }
+            #aula-impressao, #aula-impressao * { visibility: visible !important; }
+            #aula-impressao { position: absolute; top: 0; left: 0; width: 100%; }
+          }
+        `}</style>
+      )}
 
       {/* Cabeçalho */}
       <section style={{ background: SURFACE }}>
@@ -1043,7 +1301,14 @@ const CursoEstudar = () => {
           </div>
         ) : (
           <div className="space-y-6">
-            {curso.slug === "detox-da-primavera" && <OfertaKit />}
+            {curso.aviso_topo && (
+              <div
+                className="rounded-[18px] border px-[18px] py-4"
+                style={{ background: "#FFF4E8", borderColor: "#F1D3B5" }}
+              >
+                <TextoAula texto={curso.aviso_topo} />
+              </div>
+            )}
             <div className="flex items-center gap-2 overflow-x-auto pb-2">
               {abasVisiveis.map((t) => {
                 const Icon = t.icon;
@@ -1078,7 +1343,20 @@ const CursoEstudar = () => {
             {abaAtiva === "aulas" && (
               <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_320px] gap-6 lg:gap-8">
                 <div id="player-aula" className="min-w-0 order-1 scroll-mt-20">
-                  {aulaAtual ? (
+                  {aulaAtual && !aulaAberta(aulaAtual) ? (
+                    <>
+                      <CartaoTrancado aula={aulaAtual} rotulo={rotuloTranca(aulaAtual)} />
+                      <div className="mt-5">
+                        <p
+                          className="text-xs font-semibold uppercase tracking-wider mb-1"
+                          style={{ color: PRIMARY, opacity: 0.7 }}
+                        >
+                          {`Aula ${numeroDaAula(aulaAtual.id)}`}
+                          {moduloDaAula(aulaAtual) ? ` · ${moduloDaAula(aulaAtual)!.titulo}` : ""}
+                        </p>
+                      </div>
+                    </>
+                  ) : aulaAtual ? (
                     <>
                       {embedUrl ? (
                         <div className="aspect-video w-full rounded-2xl overflow-hidden bg-black shadow-md">
@@ -1099,17 +1377,13 @@ const CursoEstudar = () => {
                             />
                           )}
                         </div>
-                      ) : (
-                        <div className="aspect-video w-full rounded-2xl bg-muted flex items-center justify-center">
-                          <p className="text-sm text-muted-foreground">Vídeo em breve</p>
-                        </div>
-                      )}
+                      ) : null}
                       <div className="mt-5">
                         <p
                           className="text-xs font-semibold uppercase tracking-wider mb-1"
                           style={{ color: PRIMARY, opacity: 0.7 }}
                         >
-                          {`Aula ${numeroDaAula(aulaAtual.id)} de ${totalAulas}`}
+                          {`Aula ${numeroDaAula(aulaAtual.id)}`}
                           {aulaAtual.duracao_segundos ? ` · ${fmtDuracao(aulaAtual.duracao_segundos)}` : ""}
                           {moduloDaAula(aulaAtual) ? ` · ${moduloDaAula(aulaAtual)!.titulo}` : ""}
                         </p>
@@ -1117,12 +1391,9 @@ const CursoEstudar = () => {
                           {aulaAtual.titulo}
                         </h2>
                         {aulaAtual.descricao && (
-                          <p
-                            className="text-sm md:text-base whitespace-pre-line leading-relaxed mb-5"
-                            style={{ color: PRIMARY, opacity: 0.85, fontFamily: "'DM Sans', sans-serif" }}
-                          >
-                            {aulaAtual.descricao}
-                          </p>
+                          <div className="mb-5">
+                            <TextoAula texto={aulaAtual.descricao} aulaId={aulaAtual.id} />
+                          </div>
                         )}
                         <div className="grid grid-cols-[1fr_1.5fr] gap-2.5 mb-2.5">
                           <Button
@@ -1159,11 +1430,11 @@ const CursoEstudar = () => {
                           onClick={marcarConcluida}
                           disabled={salvando}
                           variant={concluidas.has(aulaAtual.id) ? "outline" : "default"}
-                          className="w-full min-h-[52px] rounded-2xl text-base"
+                          className="w-full min-h-[60px] rounded-2xl text-base"
                         >
                           {concluidas.has(aulaAtual.id) ? (
                             <>
-                              <CheckCircle2 className="mr-2 h-4 w-4" /> Concluída — desmarcar
+                              <CheckCircle2 className="mr-2 h-5 w-5" /> Concluída
                             </>
                           ) : (
                             <>
@@ -1171,6 +1442,20 @@ const CursoEstudar = () => {
                             </>
                           )}
                         </Button>
+                        {aulaAtual.imprimir && (
+                          <div className="mt-2.5">
+                            <Button
+                              type="button"
+                              onClick={() => window.print()}
+                              className="w-full min-h-[60px] text-lg gap-2 bg-primary"
+                            >
+                              <Printer className="h-6 w-6" /> Imprimir
+                            </Button>
+                            <p className="text-[16px] mt-1.5 text-center" style={{ color: PRIMARY, opacity: 0.7 }}>
+                              No celular, esse botão salva em PDF.
+                            </p>
+                          </div>
+                        )}
                       </div>
                     </>
                   ) : (
@@ -1186,7 +1471,8 @@ const CursoEstudar = () => {
                       const aulasMod = aulas
                         .filter((a) => a.modulo_id === m.id)
                         .sort((a, b) => a.ordem - b.ordem);
-                      const feitasMod = aulasMod.filter((a) => concluidas.has(a.id)).length;
+                      const abertasMod = aulasMod.filter(aulaAberta);
+                      const feitasMod = abertasMod.filter((a) => concluidas.has(a.id)).length;
                       return (
                         <div
                           key={m.id}
@@ -1205,9 +1491,15 @@ const CursoEstudar = () => {
                               {modulosConteudo.findIndex((x) => x.id === m.id) + 1}. {m.titulo}
                             </span>
                             <span className="flex items-center gap-2 shrink-0">
-                              <span className="text-xs whitespace-nowrap" style={{ color: PRIMARY, opacity: 0.6 }}>
-                                {feitasMod} de {aulasMod.length}
-                              </span>
+                              {abertasMod.length > 0 ? (
+                                <span className="text-xs whitespace-nowrap" style={{ color: PRIMARY, opacity: 0.6 }}>
+                                  {feitasMod} de {abertasMod.length}
+                                </span>
+                              ) : (
+                                <span className="inline-flex items-center gap-1.5 text-[16px] whitespace-nowrap" style={{ color: "#4A4560" }}>
+                                  <Lock className="h-4 w-4" /> Ainda não liberado
+                                </span>
+                              )}
                               <ChevronDown
                                 className={`h-5 w-5 shrink-0 transition-transform ${
                                   moduloAberto === m.id ? "rotate-180" : ""
@@ -1238,7 +1530,9 @@ const CursoEstudar = () => {
                                         {numeroDaAula(a.id)}
                                       </span>
                                       <span className="mt-0.5 shrink-0">
-                                        {feita ? (
+                                        {!aulaAberta(a) ? (
+                                          <Lock className="h-5 w-5" style={{ color: "#4A4560" }} />
+                                        ) : feita ? (
                                           <CheckCircle2 className="h-5 w-5" style={{ color: SALMAO }} />
                                         ) : ativa ? (
                                           <PlayCircle className="h-5 w-5" style={{ color: SALMAO }} />
@@ -1257,6 +1551,11 @@ const CursoEstudar = () => {
                                         >
                                           {a.titulo}
                                         </p>
+                                        {!aulaAberta(a) && (
+                                          <p className="text-[16px] mt-0.5" style={{ color: "#4A4560" }}>
+                                            {rotuloTranca(a)}
+                                          </p>
+                                        )}
                                         {a.duracao_segundos ? (
                                           <p className="text-xs mt-0.5" style={{ color: PRIMARY, opacity: 0.55 }}>
                                             {fmtDuracao(a.duracao_segundos)}
@@ -1300,6 +1599,32 @@ const CursoEstudar = () => {
           </div>
         )}
       </main>
+
+      {abaAtiva === "aulas" && aulaAtual?.imprimir && (
+        <div
+          id="aula-impressao"
+          className="hidden print:block"
+          style={{ background: "#fff", color: "#000", lineHeight: 1.35, textAlign: "left", hyphens: "none" }}
+        >
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              borderBottom: "1px solid #352F54",
+              paddingBottom: "3mm",
+              marginBottom: "5mm",
+            }}
+          >
+            <MarcaPortal />
+            <span style={{ marginLeft: "4mm", fontSize: "12pt", color: "#000" }}>{curso.titulo}</span>
+            <span style={{ marginLeft: "auto", fontSize: "10pt", color: "#000" }}>portalayurveda.com</span>
+          </div>
+          <h1 className="font-serif" style={{ fontSize: "18pt", margin: "0 0 4mm", color: "#000" }}>
+            {aulaAtual.titulo}
+          </h1>
+          {aulaAtual.descricao && <TextoAula texto={aulaAtual.descricao} aulaId={aulaAtual.id} impressao />}
+        </div>
+      )}
     </>
   );
 };

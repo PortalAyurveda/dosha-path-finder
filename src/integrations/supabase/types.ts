@@ -1860,6 +1860,35 @@ export type Database = {
         }
         Relationships: []
       }
+      campanha_destinatarios: {
+        Row: {
+          comunicacao_id: string
+          criado_em: string
+          email: string
+          nome: string | null
+        }
+        Insert: {
+          comunicacao_id: string
+          criado_em?: string
+          email: string
+          nome?: string | null
+        }
+        Update: {
+          comunicacao_id?: string
+          criado_em?: string
+          email?: string
+          nome?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "campanha_destinatarios_comunicacao_id_fkey"
+            columns: ["comunicacao_id"]
+            isOneToOne: false
+            referencedRelation: "agenda_comunicacoes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       captacao_aula_secreta: {
         Row: {
           created_at: string | null
@@ -2502,6 +2531,9 @@ export type Database = {
           descricao: string | null
           duracao_segundos: number | null
           id: string
+          imprimir: boolean
+          libera_em: string | null
+          liberada: boolean
           modulo_id: string
           ordem: number
           titulo: string
@@ -2513,6 +2545,9 @@ export type Database = {
           descricao?: string | null
           duracao_segundos?: number | null
           id?: string
+          imprimir?: boolean
+          libera_em?: string | null
+          liberada?: boolean
           modulo_id: string
           ordem?: number
           titulo: string
@@ -2524,6 +2559,9 @@ export type Database = {
           descricao?: string | null
           duracao_segundos?: number | null
           id?: string
+          imprimir?: boolean
+          libera_em?: string | null
+          liberada?: boolean
           modulo_id?: string
           ordem?: number
           titulo?: string
@@ -2908,6 +2946,7 @@ export type Database = {
       cursos: {
         Row: {
           ativo: boolean
+          aviso_topo: string | null
           capa_url: string | null
           card_bullet_1: string | null
           card_bullet_2: string | null
@@ -2949,6 +2988,7 @@ export type Database = {
         }
         Insert: {
           ativo?: boolean
+          aviso_topo?: string | null
           capa_url?: string | null
           card_bullet_1?: string | null
           card_bullet_2?: string | null
@@ -2990,6 +3030,7 @@ export type Database = {
         }
         Update: {
           ativo?: boolean
+          aviso_topo?: string | null
           capa_url?: string | null
           card_bullet_1?: string | null
           card_bullet_2?: string | null
@@ -4109,6 +4150,30 @@ export type Database = {
           payload?: Json | null
           provedor?: string
           url?: string | null
+        }
+        Relationships: []
+      }
+      email_eventos_quarentena: {
+        Row: {
+          id: number
+          ip: string | null
+          payload: Json
+          recebido_em: string
+          reprocessado_em: string | null
+        }
+        Insert: {
+          id?: number
+          ip?: string | null
+          payload: Json
+          recebido_em?: string
+          reprocessado_em?: string | null
+        }
+        Update: {
+          id?: number
+          ip?: string | null
+          payload?: Json
+          recebido_em?: string
+          reprocessado_em?: string | null
         }
         Relationships: []
       }
@@ -11063,6 +11128,12 @@ export type Database = {
         }
         Relationships: []
       }
+      vw_base_quente_primavera: {
+        Row: {
+          email: string | null
+        }
+        Relationships: []
+      }
       vw_crm_base: {
         Row: {
           dominio_ok: boolean | null
@@ -11615,6 +11686,15 @@ export type Database = {
       criar_convite_avaliacao_produto: {
         Args: { p_pedido_id: string }
         Returns: string
+      }
+      curso_email_confirmacao_conteudo: {
+        Args: {
+          p_com_nome: boolean
+          p_slug: string
+          p_titulo: string
+          p_whatsapp: string
+        }
+        Returns: Json
       }
       curso_pagamento_estornado: {
         Args: { p_mp_payment_id: string; p_status: string }
