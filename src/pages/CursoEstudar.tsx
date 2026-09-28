@@ -1430,11 +1430,11 @@ const CursoEstudar = () => {
                           onClick={marcarConcluida}
                           disabled={salvando}
                           variant={concluidas.has(aulaAtual.id) ? "outline" : "default"}
-                          className="w-full min-h-[52px] rounded-2xl text-base"
+                          className="w-full min-h-[60px] rounded-2xl text-base"
                         >
                           {concluidas.has(aulaAtual.id) ? (
                             <>
-                              <CheckCircle2 className="mr-2 h-4 w-4" /> Concluída — desmarcar
+                              <CheckCircle2 className="mr-2 h-5 w-5" /> Concluída
                             </>
                           ) : (
                             <>
@@ -1442,6 +1442,20 @@ const CursoEstudar = () => {
                             </>
                           )}
                         </Button>
+                        {aulaAtual.imprimir && (
+                          <div className="mt-2.5">
+                            <Button
+                              type="button"
+                              onClick={() => window.print()}
+                              className="w-full min-h-[60px] text-lg gap-2 bg-primary"
+                            >
+                              <Printer className="h-6 w-6" /> Imprimir
+                            </Button>
+                            <p className="text-[16px] mt-1.5 text-center" style={{ color: PRIMARY, opacity: 0.7 }}>
+                              No celular, esse botão salva em PDF.
+                            </p>
+                          </div>
+                        )}
                       </div>
                     </>
                   ) : (
@@ -1457,7 +1471,8 @@ const CursoEstudar = () => {
                       const aulasMod = aulas
                         .filter((a) => a.modulo_id === m.id)
                         .sort((a, b) => a.ordem - b.ordem);
-                      const feitasMod = aulasMod.filter((a) => concluidas.has(a.id)).length;
+                      const abertasMod = aulasMod.filter(aulaAberta);
+                      const feitasMod = abertasMod.filter((a) => concluidas.has(a.id)).length;
                       return (
                         <div
                           key={m.id}
