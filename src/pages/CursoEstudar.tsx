@@ -940,14 +940,15 @@ const CursoEstudar = () => {
     return modulosConteudo.flatMap((m) => byMod.get(m.id) ?? []);
   }, [aulas, modulosConteudo]);
 
-  const totalAulas = aulasOrdenadas.length;
-  const totalConcluidas = aulasOrdenadas.filter((a) => concluidas.has(a.id)).length;
+  const aulasAbertas = aulasOrdenadas.filter(aulaAberta);
+  const totalAulas = aulasAbertas.length;
+  const totalConcluidas = aulasAbertas.filter((a) => concluidas.has(a.id)).length;
   const pct = totalAulas ? Math.round((totalConcluidas / totalAulas) * 100) : 0;
 
-  const ultimaVista = aulasOrdenadas
+  const ultimaVista = aulasAbertas
     .filter((a) => posicoes[a.id] && !concluidas.has(a.id))
     .sort((a, b) => (posicoes[b.id].atualizado_em > posicoes[a.id].atualizado_em ? 1 : -1))[0];
-  const primeiraNaoConcluida = ultimaVista ?? aulasOrdenadas.find((a) => !concluidas.has(a.id)) ?? aulasOrdenadas[0];
+  const primeiraNaoConcluida = ultimaVista ?? aulasAbertas.find((a) => !concluidas.has(a.id)) ?? aulasAbertas[0] ?? aulasOrdenadas[0];
   const aulaSelecionadaId = searchParams.get("aula") ?? primeiraNaoConcluida?.id ?? null;
   const aulaAtual = useMemo(
     () => aulasOrdenadas.find((a) => a.id === aulaSelecionadaId) ?? null,
@@ -955,9 +956,8 @@ const CursoEstudar = () => {
   );
 
   const indiceAtual = aulasOrdenadas.findIndex((a) => a.id === aulaSelecionadaId);
-  const aulaAnterior = indiceAtual > 0 ? aulasOrdenadas[indiceAtual - 1] : null;
-  const aulaProxima =
-    indiceAtual >= 0 && aulasOrdenadas.length - 1 > indiceAtual ? aulasOrdenadas[indiceAtual + 1] : null;
+  const aulaAnterior = indiceAtual > 0 ? aulasOrdenadas.slice(0, indiceAtual).reverse().find(aulaAberta) ?? null : null;
+  const aulaProxima = indiceAtual >= 0 ? aulasOrdenadas.slice(indiceAtual + 1).find(aulaAberta) ?? null : null;
   const numeroDaAula = (id: string) => aulasOrdenadas.findIndex((a) => a.id === id) + 1;
   const moduloDaAula = (a: AulaFull | null) => modulosConteudo.find((m) => m.id === a?.modulo_id) ?? null;
   useEffect(() => {
