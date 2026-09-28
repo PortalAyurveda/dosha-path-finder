@@ -808,6 +808,27 @@ const CursoEstudar = () => {
   const [salvando, setSalvando] = useState(false);
   const [moduloAberto, setModuloAberto] = useState(null as string | null);
   const [posicoes, setPosicoes] = useState({} as { [aulaId: string]: Posicao });
+  const [agora, setAgora] = useState(() => Date.now());
+  useEffect(() => {
+    const t = setInterval(() => setAgora(Date.now()), 60000);
+    return () => clearInterval(t);
+  }, []);
+
+  const aulaAberta = (a: AulaFull) =>
+    a.liberada !== false && (!a.libera_em || Date.parse(a.libera_em) <= agora);
+
+  const rotuloTranca = (a: AulaFull) => {
+    if (a.liberada !== false && a.libera_em && Date.parse(a.libera_em) > agora) {
+      const d = new Date(a.libera_em);
+      const data = d.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", timeZone: "America/Sao_Paulo" });
+      const hora = d
+        .toLocaleTimeString("pt-BR", { hour: "numeric", minute: "2-digit", timeZone: "America/Sao_Paulo" })
+        .replace(":00", "h")
+        .replace(":", "h");
+      return `Libera em ${data}, às ${hora}`;
+    }
+    return "Ainda não liberada";
+  };
 
   const carregarCertificado = async (cursoId: string) => {
     const { data } = await supabase.rpc("obter_certificado_curso", { p_curso_id: cursoId });
