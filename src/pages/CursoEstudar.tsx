@@ -1095,20 +1095,32 @@ const CursoEstudar = () => {
         <meta name="robots" content="noindex, nofollow" />
       </Helmet>
 
-      <style>{`
-        @media print {
-          body * { visibility: hidden; }
-          #certificado-print, #certificado-print * { visibility: visible; }
-          #certificado-print {
-            position: fixed;
-            inset: 0;
-            margin: 0 !important;
-            width: 297mm !important;
-            height: 210mm !important;
+      {abaAtiva === "certificado" && (
+        <style>{`
+          @media print {
+            body * { visibility: hidden; }
+            #certificado-print, #certificado-print * { visibility: visible; }
+            #certificado-print {
+              position: fixed;
+              inset: 0;
+              margin: 0 !important;
+              width: 297mm !important;
+              height: 210mm !important;
+            }
+            @page { size: A4 landscape; margin: 0; }
           }
-          @page { size: A4 landscape; margin: 0; }
-        }
-      `}</style>
+        `}</style>
+      )}
+      {abaAtiva === "aulas" && aulaAtual?.imprimir && (
+        <style>{`
+          @page { size: A4 portrait; margin: 12mm; }
+          @media print {
+            body * { visibility: hidden !important; }
+            #aula-impressao, #aula-impressao * { visibility: visible !important; }
+            #aula-impressao { position: absolute; top: 0; left: 0; width: 100%; }
+          }
+        `}</style>
+      )}
 
       {/* Cabeçalho */}
       <section style={{ background: SURFACE }}>
@@ -1289,7 +1301,14 @@ const CursoEstudar = () => {
           </div>
         ) : (
           <div className="space-y-6">
-            {curso.slug === "detox-da-primavera" && <OfertaKit />}
+            {curso.aviso_topo && (
+              <div
+                className="rounded-[18px] border px-[18px] py-4"
+                style={{ background: "#FFF4E8", borderColor: "#F1D3B5" }}
+              >
+                <TextoAula texto={curso.aviso_topo} />
+              </div>
+            )}
             <div className="flex items-center gap-2 overflow-x-auto pb-2">
               {abasVisiveis.map((t) => {
                 const Icon = t.icon;
