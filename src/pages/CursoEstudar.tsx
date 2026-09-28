@@ -1491,9 +1491,15 @@ const CursoEstudar = () => {
                               {modulosConteudo.findIndex((x) => x.id === m.id) + 1}. {m.titulo}
                             </span>
                             <span className="flex items-center gap-2 shrink-0">
-                              <span className="text-xs whitespace-nowrap" style={{ color: PRIMARY, opacity: 0.6 }}>
-                                {feitasMod} de {aulasMod.length}
-                              </span>
+                              {abertasMod.length > 0 ? (
+                                <span className="text-xs whitespace-nowrap" style={{ color: PRIMARY, opacity: 0.6 }}>
+                                  {feitasMod} de {abertasMod.length}
+                                </span>
+                              ) : (
+                                <span className="inline-flex items-center gap-1.5 text-[16px] whitespace-nowrap" style={{ color: "#4A4560" }}>
+                                  <Lock className="h-4 w-4" /> Ainda não liberado
+                                </span>
+                              )}
                               <ChevronDown
                                 className={`h-5 w-5 shrink-0 transition-transform ${
                                   moduloAberto === m.id ? "rotate-180" : ""
@@ -1524,7 +1530,9 @@ const CursoEstudar = () => {
                                         {numeroDaAula(a.id)}
                                       </span>
                                       <span className="mt-0.5 shrink-0">
-                                        {feita ? (
+                                        {!aulaAberta(a) ? (
+                                          <Lock className="h-5 w-5" style={{ color: "#4A4560" }} />
+                                        ) : feita ? (
                                           <CheckCircle2 className="h-5 w-5" style={{ color: SALMAO }} />
                                         ) : ativa ? (
                                           <PlayCircle className="h-5 w-5" style={{ color: SALMAO }} />
