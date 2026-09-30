@@ -144,6 +144,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
       .from("doshas_registros")
       .select(SELECT)
       .eq("email", email)
+      .is("criado_por", null)
       .order("created_at", { ascending: false })
       .limit(1)
       .maybeSingle();

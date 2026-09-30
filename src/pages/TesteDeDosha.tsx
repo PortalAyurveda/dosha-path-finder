@@ -37,7 +37,7 @@ const TesteDeDosha = () => {
   const [searchParams] = useSearchParams();
   const redirectDepois = sanitizeRedirect(searchParams.get("redirect"));
   const { toast } = useToast();
-  const { setDoshaResultFromId, user, profile } = useUser();
+  const { setDoshaResultFromId, user, profile, isAnonymous } = useUser();
   const mostrarFaixaAkasha = searchParams.get("motivo") === "akasha" && !user?.email;
   const faixaAkasha = mostrarFaixaAkasha ? (
     <FaixaAviso texto="Para falar com a Akasha, faça seu teste de dosha grátis primeiro." />
@@ -144,7 +144,10 @@ const [step, setStep] = useState(0);
   // Sessão anônima ao iniciar as perguntas (silenciosa, nunca bloqueia o teste)
   useEffect(() => {
     if (needsHeroInfo) return;
-    void ensureAnonSession().then(() => setSessionNome(info.nome));
+    // Conta de verdade já tem nome; o nome digitado aqui pode ser de outra pessoa.
+    void ensureAnonSession().then(() => {
+      if (!user || isAnonymous) setSessionNome(info.nome);
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [needsHeroInfo]);
 
@@ -398,18 +401,31 @@ const [step, setStep] = useState(0);
         created_at: new Date().toISOString(),
       };
 
-      const { error } = await supabase.from('doshas_registros').insert(dbPayload);
+      const { data: gravado, error } = await supabase
+        .from('doshas_registros')
+        .insert(dbPayload)
+        .select('user_id')
+        .maybeSingle();
       if (error) throw error;
 
-      // Make this NEW test the active one immediately, so Header pie + name,
-      // /meu-dosha, /metricas references and Akasha context all point to the
-      // most recent test. Akasha can still fall back to email when no id is
-      // in the URL.
-      localStorage.setItem("activeDoshaId", idPublico);
-      try {
-        await setDoshaResultFromId(idPublico);
-      } catch (e) {
-        console.warn("[TesteDeDosha] setDoshaResultFromId failed", e);
+      // O banco decide se o teste é de outra pessoa (email ou primeiro nome diferentes
+      // dos da conta): nesse caso a linha volta sem o user_id da conta, e o teste da
+      // conta continua sendo o que estava em uso.
+      const deOutraPessoa = !!(user && !isAnonymous && gravado && gravado.user_id !== user.id);
+
+      if (deOutraPessoa) {
+        localStorage.removeItem('dosha_test_info');
+      } else {
+        // Make this NEW test the active one immediately, so Header pie + name,
+        // /meu-dosha, /metricas references and Akasha context all point to the
+        // most recent test. Akasha can still fall back to email when no id is
+        // in the URL.
+        localStorage.setItem("activeDoshaId", idPublico);
+        try {
+          await setDoshaResultFromId(idPublico);
+        } catch (e) {
+          console.warn("[TesteDeDosha] setDoshaResultFromId failed", e);
+        }
       }
 
       // Webhook n8n in background
