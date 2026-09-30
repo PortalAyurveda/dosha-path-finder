@@ -3728,6 +3728,7 @@ export type Database = {
           cidade: string | null
           conhecimentoAyurveda: string | null
           created_at: string
+          criado_por: string | null
           cupom_id: string | null
           diagn: string | null
           doshaprincipal: string | null
@@ -3773,6 +3774,7 @@ export type Database = {
           cidade?: string | null
           conhecimentoAyurveda?: string | null
           created_at?: string
+          criado_por?: string | null
           cupom_id?: string | null
           diagn?: string | null
           doshaprincipal?: string | null
@@ -3818,6 +3820,7 @@ export type Database = {
           cidade?: string | null
           conhecimentoAyurveda?: string | null
           created_at?: string
+          criado_por?: string | null
           cupom_id?: string | null
           diagn?: string | null
           doshaprincipal?: string | null
@@ -11712,6 +11715,7 @@ export type Database = {
         Returns: boolean
       }
       descadastro_token: { Args: { p_email: string }; Returns: string }
+      desvincular_teste: { Args: { p_id_publico: string }; Returns: Json }
       detox_cortar: {
         Args: {
           p_alvo?: number
@@ -12297,6 +12301,7 @@ export type Database = {
         Args: { p_contexto: string; p_email: string }
         Returns: undefined
       }
+      primeiro_nome_norm: { Args: { p_nome: string }; Returns: string }
       produtos_relacionados: {
         Args: { p_limite?: number; p_slug: string }
         Returns: {
@@ -12394,6 +12399,7 @@ export type Database = {
           cidade: string
           conhecimentoAyurveda: string
           created_at: string
+          criado_por: string
           doshaprincipal: string
           email: string
           estado: string
@@ -12405,6 +12411,7 @@ export type Database = {
           pais: string
           peso: string
           pittascore: number
+          user_id: string
           vatascore: number
         }[]
       }
@@ -12577,6 +12584,7 @@ export type Database = {
       video_slug_sitemap: { Args: { p_titulo: string }; Returns: string }
       videos_seo2_sincronizar: { Args: never; Returns: number }
       videos_slugify: { Args: { p_titulo: string }; Returns: string }
+      vincular_teste: { Args: { p_id_publico: string }; Returns: Json }
       vtt_falas: {
         Args: { p_leg: string }
         Returns: {
