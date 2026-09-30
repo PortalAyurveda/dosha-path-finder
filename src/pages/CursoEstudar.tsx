@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Link, Navigate, useParams, useSearchParams } from "react-router-dom";
+import { Link, Navigate, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -29,9 +29,42 @@ import {
 import TutorChatBody, { type TutorCurso } from "@/components/tutor/TutorChatBody";
 import samkhyaLogo from "@/assets/samkhya-logo-cropped.png";
 import { MarcaPortal, Quadradinho } from "@/components/impressao/PecasImpressao";
+import DOMPurify from "dompurify";
 
 const PORTAL_LOGO =
   "https://api.portalayurveda.com/storage/v1/object/public/portal_images/logo-positivo.png";
+
+const imprimirAula = () => {
+  const fechados = Array.from(document.querySelectorAll("details")).filter((d) => !d.open);
+  fechados.forEach((d) => (d.open = true));
+  window.addEventListener("afterprint", () => fechados.forEach((d) => (d.open = false)), { once: true });
+  window.print();
+};
+
+const BlocoHtml = ({ html }: { html: string }) => {
+  const navigate = useNavigate();
+  const limpo = useMemo(
+    () => DOMPurify.sanitize(html, { ADD_TAGS: ["style"], ADD_ATTR: ["target", "rel"], FORCE_BODY: true }) as string,
+    [html],
+  );
+  const onClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    const a = (e.target as HTMLElement).closest("a");
+    if (!a) return;
+    const href = a.getAttribute("href") || "";
+    if (href.startsWith("/")) {
+      e.preventDefault();
+      navigate(href);
+    } else if (href.startsWith("#") && href.length > 1) {
+      const alvo = e.currentTarget.querySelector(`[id="${CSS.escape(href.slice(1))}"]`);
+      if (alvo instanceof HTMLDetailsElement) {
+        e.preventDefault();
+        alvo.open = true;
+        alvo.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }
+  };
+  return <div className="bloco-html" onClick={onClick} dangerouslySetInnerHTML={{ __html: limpo }} />;
+};
 
 interface Curso {
   id: string;
@@ -44,6 +77,7 @@ interface Curso {
   card_cor_primaria: string | null;
   card_cor_secundaria: string | null;
   aviso_topo: string | null;
+  banner_html: string | null;
 }
 interface Modulo {
   id: string;
@@ -65,6 +99,7 @@ interface AulaFull extends AulaBase {
   liberada?: boolean | null;
   libera_em?: string | null;
   imprimir?: boolean | null;
+  html?: string | null;
 }
 interface MaterialRow {
   id: string;
@@ -841,7 +876,7 @@ const CursoEstudar = () => {
       if (!curso || curso.slug !== slug) setLoading(true);
       const { data: c } = await supabase
         .from("cursos")
-        .select("id,slug,titulo,descricao,capa_url,ativo,card_logo_url,card_cor_primaria,card_cor_secundaria,aviso_topo")
+        .select("id,slug,titulo,descricao,capa_url,ativo,card_logo_url,card_cor_primaria,card_cor_secundaria,aviso_topo,banner_html")
         .eq("slug", slug)
         .maybeSingle();
       if (!c) {
@@ -870,7 +905,7 @@ const CursoEstudar = () => {
         if (acesso) {
           const { data: fullAulas } = await supabase
             .from("curso_aulas")
-            .select("id,modulo_id,titulo,descricao,youtube_url,duracao_segundos,ordem,liberada,libera_em,imprimir")
+            .select("id,modulo_id,titulo,descricao,youtube_url,duracao_segundos,ordem,liberada,libera_em,imprimir,html")
             .in(
               "modulo_id",
               modulosOk.map((m) => m.id),
@@ -1301,6 +1336,7 @@ const CursoEstudar = () => {
           </div>
         ) : (
           <div className="space-y-6">
+            {curso.banner_html && <BlocoHtml html={curso.banner_html} />}
             {curso.aviso_topo && (
               <div
                 className="rounded-[18px] border px-[18px] py-4"
@@ -1390,6 +1426,11 @@ const CursoEstudar = () => {
                         <h2 className="font-serif font-bold text-xl md:text-2xl mb-2" style={{ color: PRIMARY }}>
                           {aulaAtual.titulo}
                         </h2>
+                        {aulaAtual.html && (
+                          <div className="mb-5">
+                            <BlocoHtml html={aulaAtual.html} />
+                          </div>
+                        )}
                         {aulaAtual.descricao && (
                           <div className="mb-5">
                             <TextoAula texto={aulaAtual.descricao} aulaId={aulaAtual.id} />
@@ -1446,7 +1487,7 @@ const CursoEstudar = () => {
                           <div className="mt-2.5">
                             <Button
                               type="button"
-                              onClick={() => window.print()}
+                              onClick={imprimirAula}
                               className="w-full min-h-[60px] text-lg gap-2 bg-primary"
                             >
                               <Printer className="h-6 w-6" /> Imprimir
@@ -1622,6 +1663,7 @@ const CursoEstudar = () => {
           <h1 className="font-serif" style={{ fontSize: "18pt", margin: "0 0 4mm", color: "#000" }}>
             {aulaAtual.titulo}
           </h1>
+          {aulaAtual.html && <BlocoHtml html={aulaAtual.html} />}
           {aulaAtual.descricao && <TextoAula texto={aulaAtual.descricao} aulaId={aulaAtual.id} impressao />}
         </div>
       )}
