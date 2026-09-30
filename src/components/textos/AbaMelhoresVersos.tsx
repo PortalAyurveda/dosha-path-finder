@@ -73,9 +73,17 @@ export default function AbaMelhoresVersos() {
 
   const lista = useMemo(() => {
     const q = norm(busca.trim());
+    const bases = (p: string) => { const s = new Set([p]);
+      if (/s$/.test(p)) s.add(p.slice(0, -1));
+      if (/es$/.test(p)) s.add(p.slice(0, -2));
+      if (/ao$/.test(p)) s.add(p.slice(0, -2) + "oes");
+      if (/oes$/.test(p)) s.add(p.slice(0, -3) + "ao");
+      return [...s].filter((b) => b.length >= 2); };
+    const escRx = (p: string) => p.replace(/[^a-z0-9 ]/g, (c) => "\\" + c);
+    const rx = q ? new RegExp("(^|[^a-z0-9])(" + bases(q).map(escRx).join("|") + ")(s|es)?($|[^a-z0-9])") : null;
     const out = versos.filter((v) =>
       v.letras >= min && (max >= 700 || v.letras <= max) && v.pontos >= piso &&
-      (!q || norm(v.texto_pt + " " + v.livro + " " + (v.referencia ?? "")).includes(q)) &&
+      (!rx || rx.test(norm(v.texto_pt + " " + v.livro + " " + (v.referencia ?? "")))) &&
       (!livro || v.livro === livro) && (!comSanscrito || !!v.verso_sanskrit) &&
       (temas.length === 0 || v.temas.some((t) => temas.includes(t))) &&
       (!(admin && pacote && soPacote) || (v.pacotes ?? []).includes(pacote)));
