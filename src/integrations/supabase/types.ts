@@ -2537,6 +2537,7 @@ export type Database = {
           liberada: boolean
           modulo_id: string
           ordem: number
+          slug: string | null
           titulo: string
           updated_at: string
           youtube_url: string | null
@@ -2552,6 +2553,7 @@ export type Database = {
           liberada?: boolean
           modulo_id: string
           ordem?: number
+          slug?: string | null
           titulo: string
           updated_at?: string
           youtube_url?: string | null
@@ -2567,6 +2569,7 @@ export type Database = {
           liberada?: boolean
           modulo_id?: string
           ordem?: number
+          slug?: string | null
           titulo?: string
           updated_at?: string
           youtube_url?: string | null
@@ -10808,6 +10811,7 @@ export type Database = {
           id: string | null
           modulo_id: string | null
           ordem: number | null
+          slug: string | null
           titulo: string | null
         }
         Insert: {
@@ -10815,6 +10819,7 @@ export type Database = {
           id?: string | null
           modulo_id?: string | null
           ordem?: number | null
+          slug?: string | null
           titulo?: string | null
         }
         Update: {
@@ -10822,6 +10827,7 @@ export type Database = {
           id?: string | null
           modulo_id?: string | null
           ordem?: number | null
+          slug?: string | null
           titulo?: string | null
         }
         Relationships: [
@@ -12505,6 +12511,7 @@ export type Database = {
       seo_slug_video: { Args: { p_titulo: string }; Returns: string }
       show_limit: { Args: never; Returns: number }
       show_trgm: { Args: { "": string }; Returns: string[] }
+      slug_texto: { Args: { maximo?: number; t: string }; Returns: string }
       sou_aluno_escola: { Args: never; Returns: boolean }
       tag_normalizar: { Args: { p: string }; Returns: string }
       tem_acesso_curso: { Args: { p_curso_id: string }; Returns: boolean }
