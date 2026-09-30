@@ -3,3 +3,5 @@
 - [x] Adicionar rota sem moldura
 - [x] Ajustar SamkhyaKit e KitCard para checkout próprio/frete grátis
 - [x] Validar tipos, build e fluxos públicos
+- [ ] Corrigir sobreposições do cabeçalho e corte superior do carrinho no celular
+- [ ] Adicionar aviso fixo nas duas caixas de conversa da Akasha
