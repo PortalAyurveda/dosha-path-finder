@@ -2530,6 +2530,7 @@ export type Database = {
           created_at: string
           descricao: string | null
           duracao_segundos: number | null
+          html: string | null
           id: string
           imprimir: boolean
           libera_em: string | null
@@ -2544,6 +2545,7 @@ export type Database = {
           created_at?: string
           descricao?: string | null
           duracao_segundos?: number | null
+          html?: string | null
           id?: string
           imprimir?: boolean
           libera_em?: string | null
@@ -2558,6 +2560,7 @@ export type Database = {
           created_at?: string
           descricao?: string | null
           duracao_segundos?: number | null
+          html?: string | null
           id?: string
           imprimir?: boolean
           libera_em?: string | null
@@ -2947,6 +2950,7 @@ export type Database = {
         Row: {
           ativo: boolean
           aviso_topo: string | null
+          banner_html: string | null
           capa_url: string | null
           card_bullet_1: string | null
           card_bullet_2: string | null
@@ -2989,6 +2993,7 @@ export type Database = {
         Insert: {
           ativo?: boolean
           aviso_topo?: string | null
+          banner_html?: string | null
           capa_url?: string | null
           card_bullet_1?: string | null
           card_bullet_2?: string | null
@@ -3031,6 +3036,7 @@ export type Database = {
         Update: {
           ativo?: boolean
           aviso_topo?: string | null
+          banner_html?: string | null
           capa_url?: string | null
           card_bullet_1?: string | null
           card_bullet_2?: string | null
