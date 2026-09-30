@@ -92,6 +92,7 @@ interface AulaBase {
   titulo: string;
   duracao_segundos: number | null;
   ordem: number;
+  slug?: string | null;
 }
 interface AulaFull extends AulaBase {
   descricao: string | null;
@@ -827,7 +828,7 @@ const CartaoTrancado = ({ aula, rotulo }: { aula: AulaFull; rotulo: string }) =>
 );
 
 const CursoEstudar = () => {
-  const { slug = "" } = useParams();
+  const { slug = "", aula: aulaNaRota } = useParams();
   const { user, isAnonymous, loading: authLoading } = useUser();
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -905,7 +906,7 @@ const CursoEstudar = () => {
         if (acesso) {
           const { data: fullAulas } = await supabase
             .from("curso_aulas")
-            .select("id,modulo_id,titulo,descricao,youtube_url,duracao_segundos,ordem,liberada,libera_em,imprimir,html")
+            .select("id,modulo_id,titulo,descricao,youtube_url,duracao_segundos,ordem,liberada,libera_em,imprimir,html,slug")
             .in(
               "modulo_id",
               modulosOk.map((m) => m.id),
@@ -926,7 +927,7 @@ const CursoEstudar = () => {
         } else {
           const { data: idx } = await supabase
             .from("curso_aulas_indice" as any)
-            .select("id,modulo_id,titulo,duracao_segundos,ordem")
+            .select("id,modulo_id,titulo,duracao_segundos,ordem,slug")
             .in(
               "modulo_id",
               modulosOk.map((m) => m.id),
