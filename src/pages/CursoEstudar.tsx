@@ -989,7 +989,11 @@ const CursoEstudar = () => {
     .filter((a) => posicoes[a.id] && !concluidas.has(a.id))
     .sort((a, b) => (posicoes[b.id].atualizado_em > posicoes[a.id].atualizado_em ? 1 : -1))[0];
   const primeiraNaoConcluida = ultimaVista ?? aulasAbertas.find((a) => !concluidas.has(a.id)) ?? aulasAbertas[0] ?? aulasOrdenadas[0];
-  const aulaSelecionadaId = searchParams.get("aula") ?? primeiraNaoConcluida?.id ?? null;
+  const aulaPedida = searchParams.get("aula") ?? aulaNaRota ?? null;
+  const aulaSelecionadaId =
+    (aulaPedida ? aulasOrdenadas.find((a) => a.id === aulaPedida || a.slug === aulaPedida)?.id : undefined) ??
+    primeiraNaoConcluida?.id ??
+    null;
   const aulaAtual = useMemo(
     () => aulasOrdenadas.find((a) => a.id === aulaSelecionadaId) ?? null,
     [aulasOrdenadas, aulaSelecionadaId],
