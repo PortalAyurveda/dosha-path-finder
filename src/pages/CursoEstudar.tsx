@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Link, Navigate, useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { Link, Navigate, useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -92,6 +92,7 @@ interface AulaBase {
   titulo: string;
   duracao_segundos: number | null;
   ordem: number;
+  slug?: string | null;
 }
 interface AulaFull extends AulaBase {
   descricao: string | null;
@@ -827,9 +828,11 @@ const CartaoTrancado = ({ aula, rotulo }: { aula: AulaFull; rotulo: string }) =>
 );
 
 const CursoEstudar = () => {
-  const { slug = "" } = useParams();
+  const { slug = "", aula: aulaNaRota } = useParams();
   const { user, isAnonymous, loading: authLoading } = useUser();
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const [curso, setCurso] = useState<Curso | null>(null);
   const [modulos, setModulos] = useState<Modulo[]>([]);
@@ -905,7 +908,7 @@ const CursoEstudar = () => {
         if (acesso) {
           const { data: fullAulas } = await supabase
             .from("curso_aulas")
-            .select("id,modulo_id,titulo,descricao,youtube_url,duracao_segundos,ordem,liberada,libera_em,imprimir,html")
+            .select("id,modulo_id,titulo,descricao,youtube_url,duracao_segundos,ordem,liberada,libera_em,imprimir,html,slug")
             .in(
               "modulo_id",
               modulosOk.map((m) => m.id),
@@ -926,7 +929,7 @@ const CursoEstudar = () => {
         } else {
           const { data: idx } = await supabase
             .from("curso_aulas_indice" as any)
-            .select("id,modulo_id,titulo,duracao_segundos,ordem")
+            .select("id,modulo_id,titulo,duracao_segundos,ordem,slug")
             .in(
               "modulo_id",
               modulosOk.map((m) => m.id),
@@ -984,7 +987,11 @@ const CursoEstudar = () => {
     .filter((a) => posicoes[a.id] && !concluidas.has(a.id))
     .sort((a, b) => (posicoes[b.id].atualizado_em > posicoes[a.id].atualizado_em ? 1 : -1))[0];
   const primeiraNaoConcluida = ultimaVista ?? aulasAbertas.find((a) => !concluidas.has(a.id)) ?? aulasAbertas[0] ?? aulasOrdenadas[0];
-  const aulaSelecionadaId = searchParams.get("aula") ?? primeiraNaoConcluida?.id ?? null;
+  const aulaPedida = searchParams.get("aula") ?? aulaNaRota ?? null;
+  const aulaSelecionadaId =
+    (aulaPedida ? aulasOrdenadas.find((a) => a.id === aulaPedida || a.slug === aulaPedida)?.id : undefined) ??
+    primeiraNaoConcluida?.id ??
+    null;
   const aulaAtual = useMemo(
     () => aulasOrdenadas.find((a) => a.id === aulaSelecionadaId) ?? null,
     [aulasOrdenadas, aulaSelecionadaId],
@@ -998,6 +1005,20 @@ const CursoEstudar = () => {
   useEffect(() => {
     if (aulaAtual) setModuloAberto(aulaAtual.modulo_id);
   }, [aulaAtual?.modulo_id]);
+
+  // Escreve o nome da aula no endereço quando ela foi pedida por id ou ?aula=.
+  useEffect(() => {
+    if (loading || curso?.slug !== slug) return;
+    if (!aulaPedida || !aulaAtual) return;
+    const eAPedida = aulaAtual.id === aulaPedida || aulaAtual.slug === aulaPedida;
+    if (!eAPedida || !aulaAtual.slug) return;
+    const destino = `/cursos/${slug}/estudar/${aulaAtual.slug}`;
+    if (location.pathname === destino) return;
+    const parametros = new URLSearchParams(location.search);
+    parametros.delete("aula");
+    navigate({ pathname: destino, search: `?${parametros.toString()}` }, { replace: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading, curso?.slug, slug, aulaPedida, aulaAtual?.id, aulaAtual?.slug, location.pathname, location.search]);
 
   const abasVisiveis = useMemo(
     () =>
@@ -1019,12 +1040,11 @@ const CursoEstudar = () => {
   };
 
   const selecionarAula = (id: string) => {
-    setSearchParams((sp) => {
-      const s = new URLSearchParams(sp);
-      s.set("tab", "aulas");
-      s.set("aula", id);
-      return s;
-    });
+    const aula = aulasOrdenadas.find((a) => a.id === id);
+    const parametros = new URLSearchParams(searchParams);
+    parametros.delete("aula");
+    parametros.set("tab", "aulas");
+    navigate({ pathname: `/cursos/${slug}/estudar/${aula?.slug ?? id}`, search: `?${parametros.toString()}` });
     if (typeof window !== "undefined" && window.innerWidth < 1024) {
       setTimeout(
         () => document.getElementById("player-aula")?.scrollIntoView({ behavior: "smooth", block: "start" }),

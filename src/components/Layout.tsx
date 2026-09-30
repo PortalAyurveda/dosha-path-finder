@@ -18,7 +18,7 @@ const LayoutInner = ({ children }: { children: ReactNode }) => {
   const { user } = useUser();
   const location = useLocation();
   const akashaBlocked = AKASHA_BLOCKED_PREFIXES.some((p) => location.pathname.startsWith(p));
-  const isSalaCurso = /^\/cursos\/[^/]+\/estudar\/?$/.test(location.pathname);
+  const isSalaCurso = /^\/cursos\/[^/]+\/estudar(\/[^/]+)?\/?$/.test(location.pathname);
   return (
     <div className="flex min-h-screen flex-col">
       <ScrollToTop />
