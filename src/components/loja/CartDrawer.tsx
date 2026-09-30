@@ -601,10 +601,10 @@ const CartDrawer = () => {
     <Sheet open={isOpen} onOpenChange={(o) => !o && handleFecharDrawer()}>
       <SheetContent
         side="right"
-        className="w-full sm:max-w-md flex flex-col p-0"
+        className="w-full h-[100dvh] max-h-[100dvh] sm:max-w-md flex flex-col p-0 [&>button]:top-[calc(1rem+env(safe-area-inset-top))]"
         style={{ background: samkhyaTokens.fundo }}
       >
-        <SheetHeader className="px-5 py-4 border-b" style={{ borderColor: samkhyaTokens.cardBorder }}>
+        <SheetHeader className="px-5 pb-4 pt-[calc(1rem+env(safe-area-inset-top))] border-b" style={{ borderColor: samkhyaTokens.cardBorder }}>
           <SheetTitle
             className="text-lg flex items-center gap-2"
             style={{ color: samkhyaTokens.roxo, fontFamily: samkhyaTokens.fonteTitulo }}
@@ -630,7 +630,7 @@ const CartDrawer = () => {
           </SheetTitle>
         </SheetHeader>
 
-        <div className="flex-1 overflow-y-auto px-5 py-4">
+        <div className="flex-1 min-h-0 overflow-y-auto px-5 py-4">
           {step === "pix" && pixData ? (
             <div className="space-y-4">
               <div>
@@ -1045,7 +1045,7 @@ const CartDrawer = () => {
         </div>
 
         {itens.length > 0 && step === "cart" && (
-          <div className="border-t px-5 py-4 space-y-3" style={{ borderColor: samkhyaTokens.cardBorder, background: samkhyaTokens.cardBg }}>
+          <div className="border-t px-5 pt-4 pb-[calc(1rem+env(safe-area-inset-bottom))] space-y-3" style={{ borderColor: samkhyaTokens.cardBorder, background: samkhyaTokens.cardBg }}>
             <div className="flex justify-between text-sm">
               <span style={{ color: samkhyaTokens.textoSec }}>Subtotal</span>
               <span style={{ color: samkhyaTokens.texto }}>{formatBRL(subtotal)}</span>
