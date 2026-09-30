@@ -43,10 +43,45 @@ const imprimirAula = () => {
 
 const BlocoHtml = ({ html }: { html: string }) => {
   const navigate = useNavigate();
+  const caixa = useRef<HTMLDivElement>(null);
   const limpo = useMemo(
     () => DOMPurify.sanitize(html, { ADD_TAGS: ["style"], ADD_ATTR: ["target", "rel"], FORCE_BODY: true }) as string,
     [html],
   );
+  useEffect(() => {
+    const raiz = caixa.current;
+    if (!raiz) return;
+    const normalizar = (t: string) =>
+      t.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase().trim();
+    const campos = Array.from(raiz.querySelectorAll<HTMLInputElement>("input[data-busca]"));
+    const handlers: Array<[HTMLInputElement, () => void]> = [];
+    campos.forEach((campo) => {
+      const aoDigitar = () => {
+        const texto = normalizar(campo.value);
+        const itens = Array.from(raiz.querySelectorAll<HTMLElement>("[data-busca-item]"));
+        let algumVisivel = false;
+        itens.forEach((item) => {
+          const visivel =
+            texto === "" || normalizar(item.textContent || "").includes(texto);
+          item.style.display = visivel ? "" : "none";
+          if (visivel) algumVisivel = true;
+        });
+        raiz.querySelectorAll<HTMLElement>("[data-busca-grupo]").forEach((grupo) => {
+          const temVisivel = Array.from(grupo.querySelectorAll<HTMLElement>("[data-busca-item]")).some(
+            (item) => item.style.display !== "none",
+          );
+          grupo.style.display = temVisivel ? "" : "none";
+        });
+        const vazio = raiz.querySelector<HTMLElement>("[data-busca-vazio]");
+        if (vazio) vazio.style.display = texto !== "" && !algumVisivel ? "" : "none";
+      };
+      campo.addEventListener("input", aoDigitar);
+      handlers.push([campo, aoDigitar]);
+    });
+    return () => {
+      handlers.forEach(([campo, fn]) => campo.removeEventListener("input", fn));
+    };
+  }, [limpo]);
   const onClick = (e: React.MouseEvent<HTMLDivElement>) => {
     const a = (e.target as HTMLElement).closest("a");
     if (!a) return;
@@ -63,7 +98,14 @@ const BlocoHtml = ({ html }: { html: string }) => {
       }
     }
   };
-  return <div className="bloco-html" onClick={onClick} dangerouslySetInnerHTML={{ __html: limpo }} />;
+  return (
+    <div
+      ref={caixa}
+      className="bloco-html"
+      onClick={onClick}
+      dangerouslySetInnerHTML={{ __html: limpo }}
+    />
+  );
 };
 
 interface Curso {
