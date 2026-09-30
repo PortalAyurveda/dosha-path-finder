@@ -1008,6 +1008,20 @@ const CursoEstudar = () => {
     if (aulaAtual) setModuloAberto(aulaAtual.modulo_id);
   }, [aulaAtual?.modulo_id]);
 
+  // Escreve o nome da aula no endereço quando ela foi pedida por id ou ?aula=.
+  useEffect(() => {
+    if (loading || curso?.slug !== slug) return;
+    if (!aulaPedida || !aulaAtual) return;
+    const eAPedida = aulaAtual.id === aulaPedida || aulaAtual.slug === aulaPedida;
+    if (!eAPedida || !aulaAtual.slug) return;
+    const destino = `/cursos/${slug}/estudar/${aulaAtual.slug}`;
+    if (location.pathname === destino) return;
+    const parametros = new URLSearchParams(location.search);
+    parametros.delete("aula");
+    navigate({ pathname: destino, search: `?${parametros.toString()}` }, { replace: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading, curso?.slug, slug, aulaPedida, aulaAtual?.id, aulaAtual?.slug, location.pathname, location.search]);
+
   const abasVisiveis = useMemo(
     () =>
       CURSO_TABS.filter((t) => {
