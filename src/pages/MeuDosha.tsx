@@ -995,6 +995,13 @@ const MeuDosha = () => {
           {result.doshaprincipal ? ` — Dosha ${result.doshaprincipal}` : ""}
         </h1>
 
+        {!isVisitor && registroRaw && (registroRaw as any).criado_por === user?.id && (registroRaw as any).user_id !== user?.id && (
+          <div className="rounded-2xl border border-primary/30 bg-primary/5 px-4 py-3 text-sm text-foreground">
+            <strong>Este teste é de {formattedNome}, feito na sua conta.</strong>{" "}
+            O seu teste continua em uso. Ele fica guardado em Minha conta, em "Testes que você fez para outras pessoas".
+          </div>
+        )}
+
         <JornadaDestaqueCard />
 
         {!isVisitor && <FormacaoDestaqueCard />}

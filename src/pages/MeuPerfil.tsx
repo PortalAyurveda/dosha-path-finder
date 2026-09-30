@@ -116,7 +116,8 @@ type PerfilRow = {
 
 type Stats = {
   cadastro_em: string | null;
-  testes: { id_publico: string; dosha: string | null; quando: string }[];
+  testes: { id_publico: string; dosha: string | null; quando: string; nome: string | null; minha_conta: boolean }[];
+  outras_pessoas: { id_publico: string; nome: string | null; dosha: string | null; quando: string; tem_conta_propria: boolean }[];
   msgs_akasha: number;
   artigos_curtidos: number;
   receitas_feitas: number;
@@ -402,7 +403,7 @@ const Conteudo = ({
         }}
       />
 
-      <HistoriaCard stats={stats} />
+      <HistoriaCard stats={stats} onMudou={load} />
 
       
 
@@ -739,14 +740,41 @@ const CaminhadaCard = () => {
 };
 
 // ---------- 2. História ----------
-const HistoriaCard = ({ stats }: { stats: Stats | null }) => {
+const primeiroNomeTeste = (n: string | null) => primeiroNome(n) || "esta pessoa";
+
+const HistoriaCard = ({ stats, onMudou }: { stats: Stats | null; onMudou: () => void }) => {
+  const { doshaResult, setDoshaResultFromId } = useUser();
   const testes = stats?.testes ?? [];
+  const outras = stats?.outras_pessoas ?? [];
   const numeros = [
     { valor: testes.length, label: "testes de dosha" },
     { valor: stats?.msgs_akasha ?? 0, label: "conversas com a Akasha" },
     { valor: stats?.artigos_curtidos ?? 0, label: "artigos que te fizeram bem" },
     { valor: stats?.receitas_feitas ?? 0, label: "receitas feitas" },
   ];
+
+  const desvincular = async (t: Stats["testes"][number]) => {
+    const pn = primeiroNomeTeste(t.nome);
+    const { data } = await (supabase.rpc as any)("desvincular_teste", { p_id_publico: t.id_publico });
+    if ((data as any)?.ok === true) {
+      toast.success(`O teste de ${pn} saiu da sua conta. O Portal voltou a usar o seu.`);
+      if ((data as any).teste_em_uso) await setDoshaResultFromId((data as any).teste_em_uso);
+      onMudou();
+    } else {
+      toast.error("Não conseguimos tirar este teste agora.");
+    }
+  };
+
+  const vincular = async (id: string) => {
+    const { data } = await (supabase.rpc as any)("vincular_teste", { p_id_publico: id });
+    if ((data as any)?.ok === true) {
+      toast.success("Pronto, o teste voltou pra sua conta.");
+      if ((data as any).teste_em_uso) await setDoshaResultFromId((data as any).teste_em_uso);
+      onMudou();
+    } else {
+      toast.error("Não conseguimos trazer este teste agora.");
+    }
+  };
 
   return (
     <Card>
@@ -771,20 +799,96 @@ const HistoriaCard = ({ stats }: { stats: Stats | null }) => {
             {testes.map((t) => (
               <li key={t.id_publico} className="flex items-center justify-between py-3 gap-3">
                 <div className="min-w-0">
-                  <div className="text-sm text-foreground">{formatDataExtenso(t.quando)}</div>
+                  <div className="text-sm text-foreground flex items-center gap-2 flex-wrap">
+                    <span className="truncate">{t.nome?.trim() || "Sem nome"}</span>
+                    {t.id_publico === doshaResult?.idPublico && (
+                      <span className="rounded-full bg-green-100 text-green-800 text-[11px] font-bold px-2 py-0.5">
+                        em uso
+                      </span>
+                    )}
+                  </div>
                   <div className="text-xs text-muted-foreground truncate">
-                    Dosha: {t.dosha || "—"}
+                    {formatDataExtenso(t.quando)} · Dosha: {t.dosha || "—"}
                   </div>
                 </div>
-                <Link
-                  to={`/meu-dosha?id=${t.id_publico}`}
-                  className="text-sm text-primary hover:underline whitespace-nowrap inline-flex items-center gap-1"
-                >
-                  rever <ChevronRight className="h-3.5 w-3.5" />
-                </Link>
+                <div className="flex items-center gap-3 shrink-0">
+                  <Link
+                    to={`/meu-dosha?id=${t.id_publico}`}
+                    className="text-sm text-primary hover:underline whitespace-nowrap inline-flex items-center gap-1"
+                  >
+                    rever <ChevronRight className="h-3.5 w-3.5" />
+                  </Link>
+                  {t.minha_conta && testes.length > 1 && (
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className="min-h-[44px] rounded-full text-red-700 border-red-200 hover:bg-red-50 hover:text-red-800"
+                        >
+                          Não é meu
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Tirar o teste de {primeiroNomeTeste(t.nome)} da sua conta?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Ele sai da sua conta e o Portal volta a usar o seu teste. O resultado não é apagado: fica guardado em Testes que você fez para outras pessoas.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Voltar</AlertDialogCancel>
+                          <AlertDialogAction onClick={() => desvincular(t)}>Sim, não é meu</AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  )}
+                </div>
               </li>
             ))}
           </ul>
+          {testes.length > 1 && (
+            <p className="text-xs text-muted-foreground mt-2">
+              "Em uso" é o teste que o Portal está usando pra você: rotina, Akasha e emails.
+            </p>
+          )}
+        </div>
+      )}
+
+      {outras.length > 0 && (
+        <div className="mt-8 pt-6 border-t border-dashed border-border">
+          <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-3">
+            Testes que você fez para outras pessoas
+          </h3>
+          <ul className="divide-y divide-border/60">
+            {outras.map((t) => (
+              <li key={t.id_publico} className="flex items-center justify-between py-3 gap-3">
+                <div className="min-w-0">
+                  <div className="text-sm text-foreground truncate">{t.nome?.trim() || "Sem nome"}</div>
+                  <div className="text-xs text-muted-foreground truncate">
+                    {formatDataExtenso(t.quando)} · Dosha: {t.dosha || "—"}
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 shrink-0">
+                  <Link
+                    to={`/meu-dosha?id=${t.id_publico}`}
+                    className="text-sm text-primary hover:underline whitespace-nowrap inline-flex items-center gap-1"
+                  >
+                    rever <ChevronRight className="h-3.5 w-3.5" />
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={() => vincular(t.id_publico)}
+                    className="text-xs text-muted-foreground hover:text-foreground underline whitespace-nowrap"
+                  >
+                    é meu, usar
+                  </button>
+                </div>
+              </li>
+            ))}
+          </ul>
+          <p className="text-xs text-muted-foreground mt-2">
+            Esses testes não mudam a sua rotina nem a sua Akasha. Quem entrar no Portal com o email da pessoa vê o teste dela na conta dela.
+          </p>
         </div>
       )}
     </Card>
