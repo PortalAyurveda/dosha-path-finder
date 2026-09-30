@@ -833,8 +833,6 @@ const CursoEstudar = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, isAnonymous, loading: authLoading } = useUser();
-  const [searchParams, setSearchParams] = useSearchParams();
 
   const [curso, setCurso] = useState<Curso | null>(null);
   const [modulos, setModulos] = useState<Modulo[]>([]);
