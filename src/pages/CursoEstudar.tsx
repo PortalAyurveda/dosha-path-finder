@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Link, Navigate, useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { Link, Navigate, useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -829,6 +829,10 @@ const CartaoTrancado = ({ aula, rotulo }: { aula: AulaFull; rotulo: string }) =>
 
 const CursoEstudar = () => {
   const { slug = "", aula: aulaNaRota } = useParams();
+  const { user, isAnonymous, loading: authLoading } = useUser();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const location = useLocation();
   const { user, isAnonymous, loading: authLoading } = useUser();
   const [searchParams, setSearchParams] = useSearchParams();
 
