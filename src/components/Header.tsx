@@ -192,9 +192,9 @@ const Header = () => {
       className={`sticky top-0 z-50 w-full text-primary-foreground shadow-md ${isSamkhya ? "" : "bg-primary"}`}
       style={headerBg}
     >
-      <div className="max-w-6xl mx-auto grid h-16 grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3 px-4 sm:px-6">
+      <div className="max-w-6xl mx-auto grid h-16 grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 px-2 sm:gap-3 sm:px-6">
         {/* LEFT — Hamburger (mobile) + Mobile search trigger + Desktop nav */}
-        <div className="flex items-center gap-1.5 justify-self-start min-w-0 overflow-hidden">
+        <div className="flex items-center gap-1 justify-self-start min-w-0 overflow-hidden sm:gap-1.5">
 
           {/* Mobile: search icon only */}
           <button
@@ -428,7 +428,7 @@ const Header = () => {
         </div>
 
         {/* RIGHT — Search + cart + agenda + profile */}
-        <div className="flex items-center gap-1.5 justify-self-end justify-end w-full min-w-0 overflow-hidden">
+        <div className="flex items-center gap-1 justify-self-end justify-end min-w-0 sm:gap-1.5">
           {/* Desktop: inline expanded search takes cart/agenda space */}
           {searchOpen && (
             <div className="hidden lg:flex flex-1 min-w-0 justify-end">
@@ -450,7 +450,7 @@ const Header = () => {
             type="button"
             onClick={abrirCarrinho}
             aria-label={`Abrir carrinho (${totalItens} itens)`}
-            className={`relative shrink-0 flex items-center justify-center w-9 h-9 rounded-full bg-white hover:bg-white/90 transition-colors shadow-sm ${searchOpen ? "lg:hidden" : ""}`}
+            className={`relative shrink-0 hidden min-[390px]:flex lg:flex items-center justify-center w-9 h-9 rounded-full bg-white hover:bg-white/90 transition-colors shadow-sm ${searchOpen ? "lg:hidden" : ""}`}
             style={buttonTextColor ? { color: buttonTextColor } : { color: "hsl(var(--primary))" }}
           >
             <ShoppingCart className="h-[18px] w-[18px]" strokeWidth={2.2} />
