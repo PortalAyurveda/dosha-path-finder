@@ -1028,12 +1028,11 @@ const CursoEstudar = () => {
   };
 
   const selecionarAula = (id: string) => {
-    setSearchParams((sp) => {
-      const s = new URLSearchParams(sp);
-      s.set("tab", "aulas");
-      s.set("aula", id);
-      return s;
-    });
+    const aula = aulasOrdenadas.find((a) => a.id === id);
+    const parametros = new URLSearchParams(searchParams);
+    parametros.delete("aula");
+    parametros.set("tab", "aulas");
+    navigate({ pathname: `/cursos/${slug}/estudar/${aula?.slug ?? id}`, search: `?${parametros.toString()}` });
     if (typeof window !== "undefined" && window.innerWidth < 1024) {
       setTimeout(
         () => document.getElementById("player-aula")?.scrollIntoView({ behavior: "smooth", block: "start" }),
