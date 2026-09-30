@@ -7,7 +7,7 @@ import { useUser } from "@/contexts/UserContext";
 import TutorChatBody, { TutorAvatar, type TutorCurso } from "@/components/tutor/TutorChatBody";
 
 export const matchCursoEstudarSlug = (pathname: string): string | null => {
-  const m = pathname.match(/^\/cursos\/([^/]+)\/estudar\/?$/);
+  const m = pathname.match(/^\/cursos\/([^/]+)\/estudar(?:\/[^/]+)?\/?$/);
   return m ? decodeURIComponent(m[1]) : null;
 };
 

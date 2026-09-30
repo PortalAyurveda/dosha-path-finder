@@ -167,6 +167,13 @@ const trocaDeAbaDaBiblioteca = (de: string | null, para: string) => {
   return a[1] === "biblioteca" && b[1] === "biblioteca" && !!a[2] && a[2] === b[2];
 };
 
+const trocaDeAulaDoCurso = (de: string | null, para: string) => {
+  if (!de) return false;
+  const a = de.match(/^\/cursos\/([^/]+)\/estudar(\/[^/]+)?\/?$/);
+  const b = para.match(/^\/cursos\/([^/]+)\/estudar(\/[^/]+)?\/?$/);
+  return !!a && !!b && a[1] === b[1];
+};
+
 const useEfeitoVisual = typeof window !== "undefined" ? useLayoutEffect : useEffect;
 
 const ScrollToTop = () => {
@@ -214,6 +221,7 @@ const ScrollToTop = () => {
     // Só mudou o "?" da mesma tela: é a tela se reorganizando, não uma ida nova.
     if (anterior !== null && pathname === anterior) return;
     if (trocaDeAbaDaBiblioteca(anterior, pathname)) return;
+    if (trocaDeAulaDoCurso(anterior, pathname)) return;
 
     restauracaoAtiva?.parar(true);
     window.scrollTo({ top: 0, left: 0 });
