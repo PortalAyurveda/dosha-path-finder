@@ -740,7 +740,7 @@ const CaminhadaCard = () => {
 };
 
 // ---------- 2. História ----------
-const primeiroNome = (n: string | null) => (n || "").trim().split(/\s+/)[0] || "esta pessoa";
+const primeiroNomeTeste = (n: string | null) => primeiroNome(n) || "esta pessoa";
 
 const HistoriaCard = ({ stats, onMudou }: { stats: Stats | null; onMudou: () => void }) => {
   const { doshaResult, setDoshaResultFromId } = useUser();
@@ -754,7 +754,7 @@ const HistoriaCard = ({ stats, onMudou }: { stats: Stats | null; onMudou: () => 
   ];
 
   const desvincular = async (t: Stats["testes"][number]) => {
-    const pn = primeiroNome(t.nome);
+    const pn = primeiroNomeTeste(t.nome);
     const { data } = await (supabase.rpc as any)("desvincular_teste", { p_id_publico: t.id_publico });
     if ((data as any)?.ok === true) {
       toast.success(`O teste de ${pn} saiu da sua conta. O Portal voltou a usar o seu.`);
@@ -830,7 +830,7 @@ const HistoriaCard = ({ stats, onMudou }: { stats: Stats | null; onMudou: () => 
                       </AlertDialogTrigger>
                       <AlertDialogContent>
                         <AlertDialogHeader>
-                          <AlertDialogTitle>Tirar o teste de {primeiroNome(t.nome)} da sua conta?</AlertDialogTitle>
+                          <AlertDialogTitle>Tirar o teste de {primeiroNomeTeste(t.nome)} da sua conta?</AlertDialogTitle>
                           <AlertDialogDescription>
                             Ele sai da sua conta e o Portal volta a usar o seu teste. O resultado não é apagado: fica guardado em Testes que você fez para outras pessoas.
                           </AlertDialogDescription>
