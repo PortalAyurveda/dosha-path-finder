@@ -306,7 +306,7 @@ const Auth = () => {
         if (user && !isAnonymous) return null;
         const r = searchParams.get("redirect") ?? "";
         const caminho = r.split(/[?#]/)[0].replace(/\/+$/, "");
-        const texto = caminho.endsWith("/estudar")
+        const texto = /^\/cursos\/[^/]+\/(estudar|imprimir)(\/[^/]+)?$/.test(caminho)
           ? "Para abrir o seu curso, entre com o email que você usou na compra."
           : r.startsWith("/curso")
           ? "Para comprar este curso, faça login ou crie sua conta."

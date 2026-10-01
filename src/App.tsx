@@ -155,7 +155,7 @@ if (typeof window !== "undefined") {
 const LayoutOrBare = ({ children }: { children: React.ReactNode }) => {
   const { pathname } = useLocation();
   const SEM_MOLDURA = ["/aovivo", "/imprimir", "/detox/inscricao", "/detox/kit"];
-  if (SEM_MOLDURA.includes(pathname)) return <>{children}</>;
+  if (SEM_MOLDURA.includes(pathname) || /^\/cursos\/[^/]+\/imprimir\/[^/]+\/?$/.test(pathname)) return <>{children}</>;
   return <Layout>{children}</Layout>;
 };
 
@@ -229,6 +229,7 @@ const RoutedApp = () => {
               <Route path="/cursos/:slug" element={<CursoLanding />} />
               <Route path="/cursos/:slug/estudar" element={<CursoEstudar />} />
               <Route path="/cursos/:slug/estudar/:aula" element={<CursoEstudar />} />
+              <Route path="/cursos/:slug/imprimir/:aula" element={<CursoEstudar impressao />} />
               <Route path="/curso/alimentacao" element={<CursoAlimentacao />} />
               <Route path="/curso/formacao" element={<CursoFormacao />} />
               <Route path="/curso/formacao/inscricao" element={<CursoFormacaoInscricao />} />
