@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Link, Navigate, useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { Link, Navigate, useLocation, useNavigate, useNavigationType, useParams, useSearchParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -30,24 +30,18 @@ import TutorChatBody, { type TutorCurso } from "@/components/tutor/TutorChatBody
 import samkhyaLogo from "@/assets/samkhya-logo-cropped.png";
 import { MarcaPortal, Quadradinho } from "@/components/impressao/PecasImpressao";
 import DOMPurify from "dompurify";
+import { isInAppBrowser } from "@/lib/inAppBrowser";
 
 const PORTAL_LOGO =
   "https://api.portalayurveda.com/storage/v1/object/public/portal_images/logo-positivo.png";
 
-const imprimirAula = () => {
-  const fechados = Array.from(document.querySelectorAll("details")).filter((d) => !d.open);
-  fechados.forEach((d) => (d.open = true));
-  window.addEventListener("afterprint", () => fechados.forEach((d) => (d.open = false)), { once: true });
-  window.print();
-};
-
-const BlocoHtml = ({ html }: { html: string }) => {
+const BlocoHtml = ({ html, impressao = false, memoria }: { html: string; impressao?: boolean; memoria?: string }) => {
   const navigate = useNavigate();
   const caixa = useRef<HTMLDivElement>(null);
-  const limpo = useMemo(
-    () => DOMPurify.sanitize(html, { ADD_TAGS: ["style"], ADD_ATTR: ["target", "rel"], FORCE_BODY: true }) as string,
-    [html],
-  );
+  const limpo = useMemo(() => {
+    const seguro = DOMPurify.sanitize(html, { ADD_TAGS: ["style"], ADD_ATTR: ["target", "rel"], FORCE_BODY: true }) as string;
+    return impressao ? seguro.replace(/<details(?=[\s>])/gi, "<details open") : seguro;
+  }, [html, impressao]);
   useEffect(() => {
     const raiz = caixa.current;
     if (!raiz) return;
@@ -82,6 +76,31 @@ const BlocoHtml = ({ html }: { html: string }) => {
       handlers.forEach(([campo, fn]) => campo.removeEventListener("input", fn));
     };
   }, [limpo]);
+  // Lembra, por aula, quais cartões estavam abertos e reabre ao montar.
+  useEffect(() => {
+    const raiz = caixa.current;
+    if (!raiz || !memoria) return;
+    const chave = `portal:abertos:${memoria}`;
+    const todos = () => Array.from(raiz.querySelectorAll("details"));
+    try {
+      const salvos: number[] = JSON.parse(sessionStorage.getItem(chave) || "[]");
+      todos().forEach((d, i) => {
+        if (salvos.includes(i)) d.open = true;
+      });
+    } catch {
+      /* segue sem memória */
+    }
+    const guardar = () => {
+      try {
+        const abertos = todos().map((d, i) => (d.open ? i : -1)).filter((i) => i >= 0);
+        sessionStorage.setItem(chave, JSON.stringify(abertos));
+      } catch {
+        /* segue sem memória */
+      }
+    };
+    raiz.addEventListener("toggle", guardar, true);
+    return () => raiz.removeEventListener("toggle", guardar, true);
+  }, [limpo, memoria]);
   const onClick = (e: React.MouseEvent<HTMLDivElement>) => {
     const a = (e.target as HTMLElement).closest("a");
     if (!a) return;
@@ -780,7 +799,7 @@ const TextoAula = ({
       return (
         <ul
           className={impressao ? undefined : "list-disc pl-[22px] mb-4 space-y-2"}
-          style={impressao ? { paddingLeft: "6mm" } : undefined}
+          style={impressao ? { paddingLeft: "6mm", listStyle: "disc" } : undefined}
         >
           {children}
         </ul>
@@ -789,7 +808,7 @@ const TextoAula = ({
     ol: ({ children }: any) => (
       <ol
         className={impressao ? undefined : "list-decimal pl-[22px] mb-4 space-y-2"}
-        style={impressao ? { paddingLeft: "6mm" } : undefined}
+        style={impressao ? { paddingLeft: "6mm", listStyle: "decimal" } : undefined}
       >
         {children}
       </ol>
@@ -869,12 +888,14 @@ const CartaoTrancado = ({ aula, rotulo }: { aula: AulaFull; rotulo: string }) =>
   </div>
 );
 
-const CursoEstudar = () => {
+const CursoEstudar = ({ impressao = false }: { impressao?: boolean }) => {
   const { slug = "", aula: aulaNaRota } = useParams();
   const { user, isAnonymous, loading: authLoading } = useUser();
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const location = useLocation();
+  const tipoDeNavegacao = useNavigationType();
+  const aulaAnteriorId = useRef<string | null>(null);
 
   const [curso, setCurso] = useState<Curso | null>(null);
   const [modulos, setModulos] = useState<Modulo[]>([]);
@@ -1050,7 +1071,7 @@ const CursoEstudar = () => {
 
   // Escreve o nome da aula no endereço quando ela foi pedida por id ou ?aula=.
   useEffect(() => {
-    if (loading || curso?.slug !== slug) return;
+    if (impressao || loading || curso?.slug !== slug) return;
     if (!aulaPedida || !aulaAtual) return;
     const eAPedida = aulaAtual.id === aulaPedida || aulaAtual.slug === aulaPedida;
     if (!eAPedida || !aulaAtual.slug) return;
@@ -1060,7 +1081,30 @@ const CursoEstudar = () => {
     parametros.delete("aula");
     navigate({ pathname: destino, search: `?${parametros.toString()}` }, { replace: true });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loading, curso?.slug, slug, aulaPedida, aulaAtual?.id, aulaAtual?.slug, location.pathname, location.search]);
+  }, [impressao, loading, curso?.slug, slug, aulaPedida, aulaAtual?.id, aulaAtual?.slug, location.pathname, location.search]);
+
+  // Trocou de aula (lista, botões ou link do texto): leva a tela para o começo da aula, em qualquer largura.
+  useEffect(() => {
+    if (loading) {
+      aulaAnteriorId.current = null;
+      return;
+    }
+    const id = aulaAtual?.id ?? null;
+    const anterior = aulaAnteriorId.current;
+    aulaAnteriorId.current = id;
+    const pedidaNoEndereco = !!aulaPedida && !!aulaAtual && (aulaAtual.id === aulaPedida || aulaAtual.slug === aulaPedida);
+    if (impressao || !pedidaNoEndereco || !id || !anterior || anterior === id || tipoDeNavegacao === "POP") return;
+    const t = setTimeout(
+      () => document.getElementById("player-aula")?.scrollIntoView({ behavior: "smooth", block: "start" }),
+      50,
+    );
+    return () => clearTimeout(t);
+  }, [aulaAtual?.id, loading]);
+
+  // A página de impressão abre sempre no topo.
+  useEffect(() => {
+    if (impressao) window.scrollTo(0, 0);
+  }, [impressao]);
 
   const abasVisiveis = useMemo(
     () =>
@@ -1087,7 +1131,7 @@ const CursoEstudar = () => {
     parametros.delete("aula");
     parametros.set("tab", "aulas");
     navigate({ pathname: `/cursos/${slug}/estudar/${aula?.slug ?? id}`, search: `?${parametros.toString()}` });
-    if (typeof window !== "undefined" && window.innerWidth < 1024) {
+    if (id === aulaSelecionadaId) {
       setTimeout(
         () => document.getElementById("player-aula")?.scrollIntoView({ behavior: "smooth", block: "start" }),
         50,
@@ -1151,7 +1195,7 @@ const CursoEstudar = () => {
   };
 
   if (!authLoading && (!user || isAnonymous)) {
-    return <Navigate to={`/entrar?redirect=/cursos/${slug}/estudar`} replace />;
+    return <Navigate to={`/entrar?redirect=${encodeURIComponent(location.pathname + location.search)}`} replace />;
   }
 
   if (loading || authLoading) {
@@ -1173,6 +1217,117 @@ const CursoEstudar = () => {
           <Link to="/cursos">Ver todos os cursos</Link>
         </Button>
       </main>
+    );
+  }
+
+  if (impressao) {
+    if (
+      !temAcesso ||
+      !aulaAtual ||
+      (aulaAtual.slug !== aulaNaRota && aulaAtual.id !== aulaNaRota) ||
+      !aulaAberta(aulaAtual) ||
+      !aulaAtual.imprimir
+    ) {
+      return <Navigate to={`/cursos/${slug}/estudar${aulaNaRota ? `/${aulaNaRota}` : ""}`} replace />;
+    }
+    const dentroDeAplicativo = isInAppBrowser();
+    return (
+      <div id="pagina-impressao" style={{ background: "#EDEBE6", minHeight: "100vh", padding: "16px 8px 40px" }}>
+        <Helmet>
+          <title>{`${aulaAtual.titulo} · ${curso.titulo}`}</title>
+          <meta name="robots" content="noindex, nofollow" />
+        </Helmet>
+
+        <style>{`@page { size: A4 portrait; margin: 12mm; }`}</style>
+        <style>{`@media print {
+          body * { visibility: hidden !important; }
+          .no-print { display: none !important; }
+          #folha-impressao, #folha-impressao * { visibility: visible !important; }
+          #folha-impressao { position: static !important; width: auto !important; box-shadow: none !important; margin: 0 !important; padding: 0 !important; }
+          #pagina-impressao { padding: 0 !important; min-height: 0 !important; }
+          #rolagem-impressao { overflow: visible !important; }
+        }`}</style>
+        <style>{`#folha-impressao p, #folha-impressao span, #folha-impressao li,
+          #folha-impressao td, #folha-impressao th, #folha-impressao h1,
+          #folha-impressao h2, #folha-impressao h3 { color: #000 !important; }`}</style>
+
+        <div
+          className="no-print"
+          style={{
+            background: "#fff",
+            border: "1px solid #352F54",
+            borderRadius: 12,
+            maxWidth: "210mm",
+            margin: "0 auto 20px",
+            padding: 20,
+          }}
+        >
+          <Link
+            to={`/cursos/${slug}/estudar/${aulaAtual.slug ?? aulaAtual.id}`}
+            className="flex items-center underline text-[#352F54]"
+            style={{ minHeight: 60, fontSize: 17 }}
+          >
+            ← Voltar para a aula
+          </Link>
+          <h1 className="font-serif" style={{ fontSize: 22, margin: "4px 0 12px", color: "#352F54" }}>
+            {aulaAtual.titulo}
+          </h1>
+          {dentroDeAplicativo ? (
+            <p style={{ fontSize: 17, margin: 0 }}>
+              Você está dentro do aplicativo do Instagram ou do Facebook, e aqui não dá para imprimir. Toque nos três
+              pontinhos (⋮) no canto e escolha "Abrir no navegador". Lá o botão Imprimir funciona.
+            </p>
+          ) : (
+            <>
+              <Button
+                type="button"
+                onClick={() => window.print()}
+                className="w-full h-14 text-lg gap-2 bg-primary text-primary-foreground hover:bg-primary/90"
+              >
+                <Printer style={{ width: 24, height: 24 }} />
+                Imprimir
+              </Button>
+              <p style={{ fontSize: 16, marginTop: 10 }}>No celular, esse botão salva em PDF.</p>
+            </>
+          )}
+        </div>
+
+        <div id="rolagem-impressao" style={{ overflowX: "auto" }}>
+          <div
+            id="folha-impressao"
+            style={{
+              width: "210mm",
+              margin: "0 auto",
+              background: "#fff",
+              boxShadow: "0 2px 12px rgba(0,0,0,.15)",
+              padding: "12mm",
+              lineHeight: 1.35,
+              textAlign: "left",
+              hyphens: "none",
+              color: "#000",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                borderBottom: "1px solid #352F54",
+                paddingBottom: "3mm",
+                marginBottom: "5mm",
+              }}
+            >
+              <MarcaPortal />
+              <span style={{ marginLeft: "4mm", fontSize: "12pt", color: "#000" }}>{curso.titulo}</span>
+              <span style={{ marginLeft: "auto", fontSize: "10pt", color: "#000" }}>portalayurveda.com</span>
+            </div>
+            <h1 className="font-serif" style={{ fontSize: "18pt", margin: "0 0 4mm", color: "#000" }}>
+              {aulaAtual.titulo}
+            </h1>
+            {aulaAtual.html && <BlocoHtml html={aulaAtual.html} impressao />}
+            {aulaAtual.descricao && <TextoAula texto={aulaAtual.descricao} aulaId={aulaAtual.id} impressao />}
+          </div>
+        </div>
+      </div>
     );
   }
 
@@ -1208,17 +1363,6 @@ const CursoEstudar = () => {
           }
         `}</style>
       )}
-      {abaAtiva === "aulas" && aulaAtual?.imprimir && (
-        <style>{`
-          @page { size: A4 portrait; margin: 12mm; }
-          @media print {
-            body * { visibility: hidden !important; }
-            #aula-impressao, #aula-impressao * { visibility: visible !important; }
-            #aula-impressao { position: absolute; top: 0; left: 0; width: 100%; }
-          }
-        `}</style>
-      )}
-
       {/* Cabeçalho */}
       <section style={{ background: SURFACE }}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 md:py-10">
@@ -1490,7 +1634,7 @@ const CursoEstudar = () => {
                         </h2>
                         {aulaAtual.html && (
                           <div className="mb-5">
-                            <BlocoHtml html={aulaAtual.html} />
+                            <BlocoHtml html={aulaAtual.html} memoria={aulaAtual.id} />
                           </div>
                         )}
                         {aulaAtual.descricao && (
@@ -1547,16 +1691,11 @@ const CursoEstudar = () => {
                         </Button>
                         {aulaAtual.imprimir && (
                           <div className="mt-2.5">
-                            <Button
-                              type="button"
-                              onClick={imprimirAula}
-                              className="w-full min-h-[60px] text-lg gap-2 bg-primary"
-                            >
-                              <Printer className="h-6 w-6" /> Imprimir
+                            <Button asChild className="w-full min-h-[60px] text-lg gap-2 bg-primary">
+                              <Link to={`/cursos/${slug}/imprimir/${aulaAtual.slug ?? aulaAtual.id}`}>
+                                <Printer className="h-6 w-6" /> Imprimir
+                              </Link>
                             </Button>
-                            <p className="text-[16px] mt-1.5 text-center" style={{ color: PRIMARY, opacity: 0.7 }}>
-                              No celular, esse botão salva em PDF.
-                            </p>
                           </div>
                         )}
                       </div>
@@ -1703,32 +1842,6 @@ const CursoEstudar = () => {
         )}
       </main>
 
-      {abaAtiva === "aulas" && aulaAtual?.imprimir && (
-        <div
-          id="aula-impressao"
-          className="hidden print:block"
-          style={{ background: "#fff", color: "#000", lineHeight: 1.35, textAlign: "left", hyphens: "none" }}
-        >
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              borderBottom: "1px solid #352F54",
-              paddingBottom: "3mm",
-              marginBottom: "5mm",
-            }}
-          >
-            <MarcaPortal />
-            <span style={{ marginLeft: "4mm", fontSize: "12pt", color: "#000" }}>{curso.titulo}</span>
-            <span style={{ marginLeft: "auto", fontSize: "10pt", color: "#000" }}>portalayurveda.com</span>
-          </div>
-          <h1 className="font-serif" style={{ fontSize: "18pt", margin: "0 0 4mm", color: "#000" }}>
-            {aulaAtual.titulo}
-          </h1>
-          {aulaAtual.html && <BlocoHtml html={aulaAtual.html} />}
-          {aulaAtual.descricao && <TextoAula texto={aulaAtual.descricao} aulaId={aulaAtual.id} impressao />}
-        </div>
-      )}
     </>
   );
 };
