@@ -123,8 +123,8 @@ describe("LinguaMomentos", () => {
     expect(await screen.findByText("As três fotos da sua língua")).toBeInTheDocument();
     expect(screen.getByText("Começo do Detox")).toBeInTheDocument();
     expect(screen.getByText("Aberta até 21/10")).toBeInTheDocument();
-    expect(screen.getByText("Abre em 14/10")).toBeInTheDocument();
-    expect(screen.getByText("Abre em 13/11")).toBeInTheDocument();
+    expect(screen.getByText("Abre em 15/10")).toBeInTheDocument();
+    expect(screen.getByText("Abre em 14/11")).toBeInTheDocument();
     expect(screen.getByText("Fica guardada para quando o Detox terminar.")).toBeInTheDocument();
 
     // só o momento aberto tem botões de foto
