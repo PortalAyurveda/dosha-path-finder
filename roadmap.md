@@ -4,3 +4,4 @@
 - [x] Ajustar SamkhyaKit e KitCard para checkout próprio/frete grátis
 - [x] Validar tipos, build e fluxos públicos
 - [x] Corrigir sobreposições do cabeçalho e corte superior do carrinho no celular
+- [x] Aba "Língua" na sala do curso com as três fotos da língua
