@@ -128,8 +128,8 @@ describe("LinguaMomentos", () => {
     expect(screen.getByText("Fica guardada para quando o Detox terminar.")).toBeInTheDocument();
 
     // só o momento aberto tem botões de foto
-    expect(screen.getAllByRole("button", { name: /tirar a foto agora/i })).toHaveLength(1);
-    expect(screen.getAllByRole("button", { name: /escolher uma foto do celular/i })).toHaveLength(1);
+    expect(screen.getAllByText("Tirar a foto agora")).toHaveLength(1);
+    expect(screen.getAllByText("Escolher uma foto do celular")).toHaveLength(1);
     expect(screen.queryByText(/trocar a foto/i)).not.toBeInTheDocument();
   });
 
