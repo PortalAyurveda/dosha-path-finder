@@ -6250,6 +6250,126 @@ export type Database = {
         }
         Relationships: []
       }
+      lingua_leituras: {
+        Row: {
+          created_at: string
+          foto_path: string | null
+          id: string
+          marco_n: number
+          programa_slug: string
+          respostas: Json
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          foto_path?: string | null
+          id?: string
+          marco_n: number
+          programa_slug: string
+          respostas?: Json
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          foto_path?: string | null
+          id?: string
+          marco_n?: number
+          programa_slug?: string
+          respostas?: Json
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lingua_leituras_programa_slug_fkey"
+            columns: ["programa_slug"]
+            isOneToOne: false
+            referencedRelation: "lingua_programas"
+            referencedColumns: ["slug"]
+          },
+        ]
+      }
+      lingua_marcos: {
+        Row: {
+          abre_em: string
+          fecha_em: string
+          n: number
+          programa_slug: string
+          texto: string | null
+          titulo: string
+        }
+        Insert: {
+          abre_em: string
+          fecha_em: string
+          n: number
+          programa_slug: string
+          texto?: string | null
+          titulo: string
+        }
+        Update: {
+          abre_em?: string
+          fecha_em?: string
+          n?: number
+          programa_slug?: string
+          texto?: string | null
+          titulo?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lingua_marcos_programa_slug_fkey"
+            columns: ["programa_slug"]
+            isOneToOne: false
+            referencedRelation: "lingua_programas"
+            referencedColumns: ["slug"]
+          },
+        ]
+      }
+      lingua_programas: {
+        Row: {
+          ativo: boolean
+          chamada: string | null
+          created_at: string
+          curso_id: string | null
+          descricao: string | null
+          dica: string | null
+          slug: string
+          titulo: string
+          titulo_tela: string | null
+        }
+        Insert: {
+          ativo?: boolean
+          chamada?: string | null
+          created_at?: string
+          curso_id?: string | null
+          descricao?: string | null
+          dica?: string | null
+          slug: string
+          titulo: string
+          titulo_tela?: string | null
+        }
+        Update: {
+          ativo?: boolean
+          chamada?: string | null
+          created_at?: string
+          curso_id?: string | null
+          descricao?: string | null
+          dica?: string | null
+          slug?: string
+          titulo?: string
+          titulo_tela?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lingua_programas_curso_id_fkey"
+            columns: ["curso_id"]
+            isOneToOne: false
+            referencedRelation: "cursos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       lista_email: {
         Row: {
           email: string | null
@@ -12113,6 +12233,11 @@ export type Database = {
         Returns: Json
       }
       kit_ja_comprado: { Args: { p_slug: string }; Returns: boolean }
+      lingua_minhas: { Args: { p_programa: string }; Returns: Json }
+      lingua_salvar: {
+        Args: { p_foto_path: string; p_n: number; p_programa: string }
+        Returns: Json
+      }
       lista_de_compras: {
         Args: {
           p_nugget_ids?: string[]

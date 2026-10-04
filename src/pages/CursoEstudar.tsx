@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import { getTransformedImageUrl } from "@/lib/imageTransform";
 import {
   Award,
+  Camera,
   Check,
   CheckCircle2,
   Circle,
@@ -27,6 +28,7 @@ import {
   Bot,
 } from "lucide-react";
 import TutorChatBody, { type TutorCurso } from "@/components/tutor/TutorChatBody";
+import LinguaMomentos from "@/components/curso/LinguaMomentos";
 import samkhyaLogo from "@/assets/samkhya-logo-cropped.png";
 import { MarcaPortal, Quadradinho } from "@/components/impressao/PecasImpressao";
 import DOMPurify from "dompurify";
@@ -344,6 +346,7 @@ const TINTA = "#3D2233";
 const CURSO_TABS = [
   { id: "aulas", label: "Aulas", icon: PlayCircle },
   { id: "material", label: "Material", icon: FileText },
+  { id: "lingua", label: "Língua", icon: Camera },
   { id: "tutor", label: "Tutor", icon: Bot },
   { id: "certificado", label: "Certificado", icon: Award },
 ] as const;
@@ -898,6 +901,27 @@ const CursoEstudar = ({ impressao = false }: { impressao?: boolean }) => {
   const aulaAnteriorId = useRef<string | null>(null);
 
   const [curso, setCurso] = useState<Curso | null>(null);
+  const [linguaPrograma, setLinguaPrograma] = useState<string | null>(null);
+  useEffect(() => {
+    const cursoId = curso?.id;
+    if (!cursoId) {
+      setLinguaPrograma(null);
+      return;
+    }
+    let ativo = true;
+    void (async () => {
+      const { data } = await supabase
+        .from("lingua_programas" as any)
+        .select("slug")
+        .eq("curso_id", cursoId)
+        .eq("ativo", true)
+        .limit(1);
+      if (ativo) setLinguaPrograma(((data as unknown as { slug: string }[] | null) ?? [])[0]?.slug ?? null);
+    })();
+    return () => {
+      ativo = false;
+    };
+  }, [curso?.id]);
   const [modulos, setModulos] = useState<Modulo[]>([]);
   const [aulas, setAulas] = useState<AulaFull[]>([]);
   const [materiais, setMateriais] = useState<MaterialRow[]>([]);
@@ -1110,10 +1134,11 @@ const CursoEstudar = ({ impressao = false }: { impressao?: boolean }) => {
     () =>
       CURSO_TABS.filter((t) => {
         if (t.id === "material") return materiais.length > 0;
+        if (t.id === "lingua") return Boolean(linguaPrograma);
         if (t.id === "certificado") return slug !== "detox-da-primavera";
         return true;
       }),
-    [materiais, slug],
+    [materiais, slug, linguaPrograma],
   );
   const abaAtiva: CursoTabId =
     (abasVisiveis.find((t) => t.id === searchParams.get("tab"))?.id as CursoTabId) ?? "aulas";
@@ -1831,6 +1856,12 @@ const CursoEstudar = ({ impressao = false }: { impressao?: boolean }) => {
                 {materiais.map((m) => (
                   <MaterialLink key={m.id} item={m} />
                 ))}
+              </div>
+            )}
+
+            {abaAtiva === "lingua" && linguaPrograma && (
+              <div className="max-w-2xl">
+                <LinguaMomentos programa={linguaPrograma} />
               </div>
             )}
 
