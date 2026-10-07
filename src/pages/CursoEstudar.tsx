@@ -37,6 +37,7 @@ import AtividadesArea from "@/components/atividades/AtividadesArea";
 import { misturarAbas, useAbasExtras } from "@/components/atividades/base";
 import { getIconeLucide } from "@/lib/iconesLucide";
 import { EyeOff } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const PORTAL_LOGO =
   "https://api.portalayurveda.com/storage/v1/object/public/portal_images/logo-positivo.png";
