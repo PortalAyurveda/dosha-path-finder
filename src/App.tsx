@@ -89,6 +89,8 @@ const AdminCobranca = lazy(() => import("./pages/AdminCobranca"));
 const AdminCertificados = lazy(() => import("./pages/AdminCertificados"));
 const AdminAlunos = lazy(() => import("./pages/AdminAlunos"));
 const AdminEscola = lazy(() => import("./pages/AdminEscola"));
+const AdminAtividades = lazy(() => import("./pages/AdminAtividades"));
+const AtividadeImprimir = lazy(() => import("./pages/AtividadeImprimir"));
 const AdminCursos = lazy(() => import("./pages/AdminCursos"));
 const EscolaHub = lazy(() => import("./pages/escola/EscolaHub"));
 const EscolaCurso = lazy(() => import("./pages/escola/EscolaCurso"));
@@ -155,7 +157,7 @@ if (typeof window !== "undefined") {
 const LayoutOrBare = ({ children }: { children: React.ReactNode }) => {
   const { pathname } = useLocation();
   const SEM_MOLDURA = ["/aovivo", "/imprimir", "/detox/inscricao", "/detox/kit"];
-  if (SEM_MOLDURA.includes(pathname) || /^\/cursos\/[^/]+\/imprimir\/[^/]+\/?$/.test(pathname)) return <>{children}</>;
+  if (SEM_MOLDURA.includes(pathname) || /^\/cursos\/[^/]+\/imprimir\/[^/]+\/?$/.test(pathname) || /^\/atividade\/[^/]+\/imprimir\/?$/.test(pathname)) return <>{children}</>;
   return <Layout>{children}</Layout>;
 };
 
@@ -324,6 +326,8 @@ const RoutedApp = () => {
               <Route path="/admin/certificados" element={<AdminRoute><AdminCertificados /></AdminRoute>} />
               <Route path="/admin/alunos" element={<AdminRoute><AdminAlunos /></AdminRoute>} />
               <Route path="/admin/escola" element={<AdminRoute><AdminEscola /></AdminRoute>} />
+              <Route path="/admin/atividades" element={<AdminRoute><AdminAtividades /></AdminRoute>} />
+              <Route path="/atividade/:id/imprimir" element={<AtividadeImprimir />} />
               <Route path="/admin/tarefas" element={<AdminRoute><AdminTarefas /></AdminRoute>} />
               <Route path="/admin/emails" element={<AdminRoute><AdminEmails /></AdminRoute>} />
               <Route path="/admin/cursos" element={<AdminRoute><AdminCursos /></AdminRoute>} />

@@ -1390,6 +1390,16 @@ const EditarModulo = ({
 
       {/* 4. Respostas da turma */}
       <RespostasTurma moduloId={modulo.id} turmaId={modulo.turma_id} />
+
+      {/* 5. Abas extras e atividades */}
+      <Card>
+        <CardContent className="flex flex-wrap items-center justify-between gap-3 p-4">
+          <p className="font-semibold">Abas extras e atividades deste módulo</p>
+          <Button asChild size="sm">
+            <Link to={`/admin/atividades?escola_modulo_id=${modulo.id}`}>Abrir atividades</Link>
+          </Button>
+        </CardContent>
+      </Card>
     </div>
   );
 };

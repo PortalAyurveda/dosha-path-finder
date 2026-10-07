@@ -10,6 +10,7 @@ const links = [
   { to: "/admin/alunos", label: "Alunos", icon: GraduationCap },
   { to: "/admin/blog", label: "Artigos", icon: FileText },
   { to: "/admin/vendas/akasha", label: "Assinaturas Premium", icon: Crown },
+  { to: "/admin/atividades", label: "Atividades", icon: ClipboardList },
   { to: "/admin/aula", label: "Aulas", icon: Video },
   { to: "/admin/biblioteca", label: "Biblioteca", icon: Library },
   { to: "/admin/banners", label: "Banners", icon: LayoutTemplate },
