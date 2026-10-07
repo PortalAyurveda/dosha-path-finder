@@ -33,6 +33,10 @@ import samkhyaLogo from "@/assets/samkhya-logo-cropped.png";
 import { MarcaPortal, Quadradinho } from "@/components/impressao/PecasImpressao";
 import DOMPurify from "dompurify";
 import { isInAppBrowser } from "@/lib/inAppBrowser";
+import AtividadesArea from "@/components/atividades/AtividadesArea";
+import { misturarAbas, useAbasExtras } from "@/components/atividades/base";
+import { getIconeLucide } from "@/lib/iconesLucide";
+import { EyeOff } from "lucide-react";
 
 const PORTAL_LOGO =
   "https://api.portalayurveda.com/storage/v1/object/public/portal_images/logo-positivo.png";
@@ -1140,9 +1144,23 @@ const CursoEstudar = ({ impressao = false }: { impressao?: boolean }) => {
       }),
     [materiais, slug, linguaPrograma],
   );
-  const abaAtiva: CursoTabId =
-    (abasVisiveis.find((t) => t.id === searchParams.get("tab"))?.id as CursoTabId) ?? "aulas";
-  const setAba = (id: CursoTabId) => {
+  const { abas: abasExtras, carregando: carregandoExtras } = useAbasExtras(
+    curso?.id ? { p_escola_modulo_id: null, p_curso_id: curso.id } : null,
+  );
+  const tabUrl = searchParams.get("tab");
+  const extraAtiva = tabUrl?.startsWith("aba-") ? abasExtras.find((a) => `aba-${a.id}` === tabUrl) ?? null : null;
+  const esperandoExtra = Boolean(tabUrl?.startsWith("aba-")) && carregandoExtras;
+  const abaAtiva: CursoTabId | null =
+    extraAtiva || esperandoExtra
+      ? null
+      : (abasVisiveis.find((t) => t.id === tabUrl)?.id as CursoTabId) ?? "aulas";
+  const todasAbas = misturarAbas(
+    CURSO_TABS.map((t, i) => ({ aba: t as (typeof CURSO_TABS)[number], pos: (i + 1) * 10 })).filter((f) =>
+      abasVisiveis.some((v) => v.id === f.aba.id),
+    ),
+    abasExtras,
+  );
+  const setAba = (id: string) => {
     setSearchParams((sp) => {
       const s = new URLSearchParams(sp);
       s.set("tab", id);
