@@ -4,6 +4,7 @@ import AdminNav from "@/components/admin/AdminNav";
 import Seo from "@/components/Seo";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -1390,6 +1391,16 @@ const EditarModulo = ({
 
       {/* 4. Respostas da turma */}
       <RespostasTurma moduloId={modulo.id} turmaId={modulo.turma_id} />
+
+      {/* 5. Abas extras e atividades */}
+      <Card>
+        <CardContent className="flex flex-wrap items-center justify-between gap-3 p-4">
+          <p className="font-semibold">Abas extras e atividades deste módulo</p>
+          <Button asChild size="sm">
+            <Link to={`/admin/atividades?escola_modulo_id=${modulo.id}`}>Abrir atividades</Link>
+          </Button>
+        </CardContent>
+      </Card>
     </div>
   );
 };

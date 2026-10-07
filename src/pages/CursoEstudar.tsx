@@ -33,6 +33,11 @@ import samkhyaLogo from "@/assets/samkhya-logo-cropped.png";
 import { MarcaPortal, Quadradinho } from "@/components/impressao/PecasImpressao";
 import DOMPurify from "dompurify";
 import { isInAppBrowser } from "@/lib/inAppBrowser";
+import AtividadesArea from "@/components/atividades/AtividadesArea";
+import { misturarAbas, useAbasExtras } from "@/components/atividades/base";
+import { getIconeLucide } from "@/lib/iconesLucide";
+import { EyeOff } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const PORTAL_LOGO =
   "https://api.portalayurveda.com/storage/v1/object/public/portal_images/logo-positivo.png";
@@ -1140,9 +1145,23 @@ const CursoEstudar = ({ impressao = false }: { impressao?: boolean }) => {
       }),
     [materiais, slug, linguaPrograma],
   );
-  const abaAtiva: CursoTabId =
-    (abasVisiveis.find((t) => t.id === searchParams.get("tab"))?.id as CursoTabId) ?? "aulas";
-  const setAba = (id: CursoTabId) => {
+  const { abas: abasExtras, carregando: carregandoExtras } = useAbasExtras(
+    curso?.id ? { p_escola_modulo_id: null, p_curso_id: curso.id } : null,
+  );
+  const tabUrl = searchParams.get("tab");
+  const extraAtiva = tabUrl?.startsWith("aba-") ? abasExtras.find((a) => `aba-${a.id}` === tabUrl) ?? null : null;
+  const esperandoExtra = Boolean(tabUrl?.startsWith("aba-")) && carregandoExtras;
+  const abaAtiva: CursoTabId | null =
+    extraAtiva || esperandoExtra
+      ? null
+      : (abasVisiveis.find((t) => t.id === tabUrl)?.id as CursoTabId) ?? "aulas";
+  const todasAbas = misturarAbas(
+    CURSO_TABS.map((t, i) => ({ aba: t as (typeof CURSO_TABS)[number], pos: (i + 1) * 10 })).filter((f) =>
+      abasVisiveis.some((v) => v.id === f.aba.id),
+    ),
+    abasExtras,
+  );
+  const setAba = (id: string) => {
     setSearchParams((sp) => {
       const s = new URLSearchParams(sp);
       s.set("tab", id);
@@ -1577,13 +1596,17 @@ const CursoEstudar = ({ impressao = false }: { impressao?: boolean }) => {
               </div>
             )}
             <div className="flex items-center gap-2 overflow-x-auto pb-2">
-              {abasVisiveis.map((t) => {
-                const Icon = t.icon;
-                const isActive = t.id === abaAtiva;
+              {todasAbas.map((item) => {
+                const ehExtra = item.tipo === "extra";
+                const extra = ehExtra ? (item.aba as (typeof abasExtras)[number]) : null;
+                const fixa = ehExtra ? null : (item.aba as (typeof CURSO_TABS)[number]);
+                const id = extra ? `aba-${extra.id}` : fixa!.id;
+                const Icon = extra ? getIconeLucide(extra.icone) : fixa!.icon;
+                const isActive = extra ? extraAtiva?.id === extra.id : id === abaAtiva;
                 return (
                   <button
-                    key={t.id}
-                    onClick={() => setAba(t.id)}
+                    key={id}
+                    onClick={() => setAba(id)}
                     className="flex items-center gap-1.5 px-4 py-2 rounded-full border font-semibold text-sm transition-all whitespace-nowrap shrink-0"
                     style={
                       isActive
@@ -1601,11 +1624,24 @@ const CursoEstudar = ({ impressao = false }: { impressao?: boolean }) => {
                     }
                   >
                     <Icon className="h-4 w-4" />
-                    {t.label}
+                    {extra ? extra.titulo : fixa!.label}
+                    {extra && !extra.ativa && <EyeOff className="h-3 w-3 opacity-70" aria-label="Desligada" />}
                   </button>
                 );
               })}
             </div>
+
+            {esperandoExtra && <Skeleton className="h-48 w-full" />}
+            {extraAtiva && (
+              <div className="max-w-3xl">
+                <AtividadesArea
+                  key={extraAtiva.id}
+                  abaId={extraAtiva.id}
+                  abaAtiva={extraAtiva.ativa}
+                  tema={{ primaryColor: PRIMARY, darkColor: PRIMARY, lightColor: SURFACE }}
+                />
+              </div>
+            )}
 
             {abaAtiva === "aulas" && (
               <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_320px] gap-6 lg:gap-8">
