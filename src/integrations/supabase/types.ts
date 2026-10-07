@@ -916,6 +916,239 @@ export type Database = {
         }
         Relationships: []
       }
+      atividade_abas: {
+        Row: {
+          ativa: boolean
+          created_at: string
+          curso_id: string | null
+          escola_modulo_id: string | null
+          icone: string
+          id: string
+          ordem: number
+          titulo: string
+          updated_at: string
+        }
+        Insert: {
+          ativa?: boolean
+          created_at?: string
+          curso_id?: string | null
+          escola_modulo_id?: string | null
+          icone?: string
+          id?: string
+          ordem?: number
+          titulo: string
+          updated_at?: string
+        }
+        Update: {
+          ativa?: boolean
+          created_at?: string
+          curso_id?: string | null
+          escola_modulo_id?: string | null
+          icone?: string
+          id?: string
+          ordem?: number
+          titulo?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "atividade_abas_curso_id_fkey"
+            columns: ["curso_id"]
+            isOneToOne: false
+            referencedRelation: "cursos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "atividade_abas_escola_modulo_id_fkey"
+            columns: ["escola_modulo_id"]
+            isOneToOne: false
+            referencedRelation: "escola_modulos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      atividade_perguntas: {
+        Row: {
+          ajuda: string | null
+          ativa: boolean
+          atividade_id: string
+          codigo: string
+          config: Json
+          created_at: string
+          enunciado: string
+          id: string
+          obrigatoria: boolean
+          opcoes: Json
+          ordem: number
+          secao: string | null
+          tipo: string
+          updated_at: string
+        }
+        Insert: {
+          ajuda?: string | null
+          ativa?: boolean
+          atividade_id: string
+          codigo: string
+          config?: Json
+          created_at?: string
+          enunciado?: string
+          id?: string
+          obrigatoria?: boolean
+          opcoes?: Json
+          ordem?: number
+          secao?: string | null
+          tipo: string
+          updated_at?: string
+        }
+        Update: {
+          ajuda?: string | null
+          ativa?: boolean
+          atividade_id?: string
+          codigo?: string
+          config?: Json
+          created_at?: string
+          enunciado?: string
+          id?: string
+          obrigatoria?: boolean
+          opcoes?: Json
+          ordem?: number
+          secao?: string | null
+          tipo?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "atividade_perguntas_atividade_id_fkey"
+            columns: ["atividade_id"]
+            isOneToOne: false
+            referencedRelation: "atividades"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      atividade_respostas: {
+        Row: {
+          atividade_id: string
+          created_at: string
+          entregue_em: string | null
+          id: string
+          respostas: Json
+          resultado: Json | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          atividade_id: string
+          created_at?: string
+          entregue_em?: string | null
+          id?: string
+          respostas?: Json
+          resultado?: Json | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          atividade_id?: string
+          created_at?: string
+          entregue_em?: string | null
+          id?: string
+          respostas?: Json
+          resultado?: Json | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "atividade_respostas_atividade_id_fkey"
+            columns: ["atividade_id"]
+            isOneToOne: false
+            referencedRelation: "atividades"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      atividades: {
+        Row: {
+          aba_id: string | null
+          ativa: boolean
+          config: Json
+          created_at: string
+          curso_id: string | null
+          escola_modulo_id: string | null
+          id: string
+          intro_html: string | null
+          mensagem_final: string | null
+          ordem: number
+          prazo: string | null
+          slug: string | null
+          subtitulo: string | null
+          tipo: string
+          titulo: string
+          updated_at: string
+        }
+        Insert: {
+          aba_id?: string | null
+          ativa?: boolean
+          config?: Json
+          created_at?: string
+          curso_id?: string | null
+          escola_modulo_id?: string | null
+          id?: string
+          intro_html?: string | null
+          mensagem_final?: string | null
+          ordem?: number
+          prazo?: string | null
+          slug?: string | null
+          subtitulo?: string | null
+          tipo?: string
+          titulo: string
+          updated_at?: string
+        }
+        Update: {
+          aba_id?: string | null
+          ativa?: boolean
+          config?: Json
+          created_at?: string
+          curso_id?: string | null
+          escola_modulo_id?: string | null
+          id?: string
+          intro_html?: string | null
+          mensagem_final?: string | null
+          ordem?: number
+          prazo?: string | null
+          slug?: string | null
+          subtitulo?: string | null
+          tipo?: string
+          titulo?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "atividades_aba_id_fkey"
+            columns: ["aba_id"]
+            isOneToOne: false
+            referencedRelation: "atividade_abas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "atividades_curso_id_fkey"
+            columns: ["curso_id"]
+            isOneToOne: false
+            referencedRelation: "cursos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "atividades_escola_modulo_id_fkey"
+            columns: ["escola_modulo_id"]
+            isOneToOne: false
+            referencedRelation: "escola_modulos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       auditoria_envios_log: {
         Row: {
           comunicacao_id: string
@@ -3578,6 +3811,7 @@ export type Database = {
           doshas: string[] | null
           embedding: string | null
           fases: string[] | null
+          fonte: string
           id: number
           minuto: number | null
           pedaco: number | null
@@ -3598,6 +3832,7 @@ export type Database = {
           doshas?: string[] | null
           embedding?: string | null
           fases?: string[] | null
+          fonte?: string
           id?: number
           minuto?: number | null
           pedaco?: number | null
@@ -3618,6 +3853,7 @@ export type Database = {
           doshas?: string[] | null
           embedding?: string | null
           fases?: string[] | null
+          fonte?: string
           id?: number
           minuto?: number | null
           pedaco?: number | null
@@ -10121,6 +10357,30 @@ export type Database = {
         }
         Relationships: []
       }
+      tutor_detox_aluno: {
+        Row: {
+          atualizado_em: string
+          email: string
+          fatos: Json
+          inicio: string | null
+          inicio_informado_em: string | null
+        }
+        Insert: {
+          atualizado_em?: string
+          email: string
+          fatos?: Json
+          inicio?: string | null
+          inicio_informado_em?: string | null
+        }
+        Update: {
+          atualizado_em?: string
+          email?: string
+          fatos?: Json
+          inicio?: string | null
+          inicio_informado_em?: string | null
+        }
+        Relationships: []
+      }
       unidades_medida: {
         Row: {
           familia: string
@@ -11667,6 +11927,32 @@ export type Database = {
           isSetofReturn: true
         }
       }
+      atividade_abas_lista: {
+        Args: { p_curso_id?: string; p_escola_modulo_id?: string }
+        Returns: Json
+      }
+      atividade_abrir: { Args: { p_atividade_id: string }; Returns: Json }
+      atividade_entregas: { Args: { p_atividade_id: string }; Returns: Json }
+      atividade_pode_acessar: {
+        Args: { p_atividade_id: string }
+        Returns: boolean
+      }
+      atividade_salvar: {
+        Args: {
+          p_atividade_id: string
+          p_entregar?: boolean
+          p_respostas: Json
+        }
+        Returns: Json
+      }
+      atividades_lista: {
+        Args: {
+          p_aba_id?: string
+          p_curso_id?: string
+          p_escola_modulo_id?: string
+        }
+        Returns: Json
+      }
       atualizar_estatisticas_globais: { Args: never; Returns: undefined }
       atualizar_meus_dados: {
         Args: {
@@ -11842,6 +12128,7 @@ export type Database = {
       }
       descadastro_token: { Args: { p_email: string }; Returns: string }
       desvincular_teste: { Args: { p_id_publico: string }; Returns: Json }
+      detox_aula_do_dia: { Args: { p_dia?: string }; Returns: string }
       detox_cortar: {
         Args: {
           p_alvo?: number
@@ -11852,6 +12139,11 @@ export type Database = {
         }
         Returns: number
       }
+      detox_dia_por_data: {
+        Args: { p_hoje?: string; p_inicio?: string }
+        Returns: number
+      }
+      detox_dia_semana: { Args: { d: string }; Returns: string }
       detox_email_confirmacao_conteudo: {
         Args: { p_com_nome: boolean; p_hoje: string }
         Returns: Json
@@ -12258,6 +12550,8 @@ export type Database = {
           unidade_compra: string
         }[]
       }
+      live_detectada: { Args: { p_video_id: string }; Returns: string }
+      live_troca_do_dia: { Args: never; Returns: string }
       match_conteudo: {
         Args: {
           p_dosha?: string
@@ -12274,6 +12568,15 @@ export type Database = {
           titulo: string
         }[]
       }
+      match_detox_n8n: {
+        Args: { filter?: Json; match_count?: number; query_embedding: string }
+        Returns: {
+          content: string
+          id: number
+          metadata: Json
+          similarity: number
+        }[]
+      }
       match_detox_primavera: {
         Args: {
           match_count?: number
@@ -12282,9 +12585,11 @@ export type Database = {
           query_embedding: string
         }
         Returns: {
+          ano: number
           content: string
           doshas: string[]
           fases: string[]
+          fonte: string
           id: number
           minuto: number
           rotulo: string
@@ -12642,6 +12947,25 @@ export type Database = {
       tem_acesso_curso: { Args: { p_curso_id: string }; Returns: boolean }
       termos_aplicar: { Args: { p_html: string }; Returns: string }
       text_to_bytea: { Args: { data: string }; Returns: string }
+      tutor_detox_contexto: { Args: { p_email: string }; Returns: Json }
+      tutor_detox_lembrar: {
+        Args: { p_dia?: number; p_email: string; p_fato?: string }
+        Returns: Json
+      }
+      tutor_detox_lembrar_json: {
+        Args: { p_email: string; p_texto: string }
+        Returns: Json
+      }
+      tutor_detox_lembrar_lote: {
+        Args: {
+          p_dia?: string
+          p_email: string
+          p_fatos?: Json
+          p_inicio?: string
+        }
+        Returns: Json
+      }
+      tutor_detox_resumo: { Args: { ctx: Json }; Returns: string }
       ultima_aula_do_curso: {
         Args: { p_curso_id: string }
         Returns: {
