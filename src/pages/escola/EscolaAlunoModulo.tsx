@@ -20,7 +20,10 @@ import {
   Utensils,
   Video as VideoIcon,
   Link2,
+  EyeOff,
 } from "lucide-react";
+import AtividadesArea from "@/components/atividades/AtividadesArea";
+import { misturarAbas, useAbasExtras, type AbaExtra } from "@/components/atividades/base";
 import { toast } from "@/hooks/use-toast";
 import EscolaAlunoShell from "./EscolaAlunoShell";
 import { formatModuloFimDeSemana, formatModuloHorarios } from "@/lib/escolaModuloDatas";
@@ -1183,27 +1186,39 @@ const ModuloTabs = ({
 }) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const rawTab = searchParams.get("tab");
-  const active: ModuloTabId =
-    (MODULO_TABS.find((t) => t.id === rawTab)?.id as ModuloTabId) ?? "aulas";
+  const { abas: abasExtras, carregando: carregandoExtras } = useAbasExtras({ p_escola_modulo_id: modulo.id, p_curso_id: null });
+  const extraAtiva = rawTab?.startsWith("aba-") ? abasExtras.find((a) => `aba-${a.id}` === rawTab) ?? null : null;
+  const esperandoExtra = Boolean(rawTab?.startsWith("aba-")) && carregandoExtras;
+  const active: ModuloTabId | null = extraAtiva || esperandoExtra
+    ? null
+    : (MODULO_TABS.find((t) => t.id === rawTab)?.id as ModuloTabId) ?? "aulas";
 
-  const setTab = (id: ModuloTabId) => {
+  const setTab = (id: string) => {
     const next = new URLSearchParams(searchParams);
     next.set("tab", id);
     setSearchParams(next, { replace: true });
   };
 
+  const todas = misturarAbas(
+    MODULO_TABS.map((t, i) => ({ aba: t, pos: (i + 1) * 10 })),
+    abasExtras,
+  );
+
   return (
     <div className="space-y-6">
       <div className="overflow-x-auto scrollbar-hide -mx-4 px-4">
         <div className="flex gap-2 w-max">
-          {MODULO_TABS.map((t) => {
-            const Icon = t.icon;
-            const isActive = t.id === active;
+          {todas.map((item) => {
+            const ehExtra = item.tipo === "extra";
+            const id = ehExtra ? `aba-${item.aba.id}` : item.aba.id;
+            const Icon = ehExtra ? getIconeLucide((item.aba as AbaExtra).icone) : (item.aba as (typeof MODULO_TABS)[number]).icon;
+            const label = ehExtra ? (item.aba as AbaExtra).titulo : (item.aba as (typeof MODULO_TABS)[number]).label;
+            const isActive = ehExtra ? extraAtiva?.id === item.aba.id : id === active;
             return (
               <button
-                key={t.id}
+                key={id}
                 type="button"
-                onClick={() => setTab(t.id)}
+                onClick={() => setTab(id)}
                 className="flex items-center gap-1.5 px-4 py-2 rounded-full border font-semibold text-sm transition-all whitespace-nowrap shrink-0"
                 style={
                   isActive
@@ -1221,7 +1236,8 @@ const ModuloTabs = ({
                 }
               >
                 <Icon className="h-4 w-4" />
-                {t.label}
+                {label}
+                {ehExtra && !(item.aba as AbaExtra).ativa && <EyeOff className="h-3 w-3 opacity-70" aria-label="Desligada" />}
               </button>
             );
           })}
@@ -1229,6 +1245,10 @@ const ModuloTabs = ({
       </div>
 
       <div className="space-y-8">
+        {esperandoExtra && <Skeleton className="h-48 w-full" />}
+        {extraAtiva && (
+          <AtividadesArea key={extraAtiva.id} abaId={extraAtiva.id} abaAtiva={extraAtiva.ativa} tema={theme} />
+        )}
         {active === "aulas" && <AulasBlock modulo={modulo} theme={theme} />}
 
         {active === "material" && <MaterialPrevioBlock modulo={modulo} theme={theme} />}
