@@ -14,6 +14,345 @@ export type Database = {
   }
   public: {
     Tables: {
+      _bkp_objetivos_agni_20261007: {
+        Row: {
+          agni_nivel_atual: number | null
+          agni_nivel_meta: number | null
+          id: string | null
+        }
+        Insert: {
+          agni_nivel_atual?: number | null
+          agni_nivel_meta?: number | null
+          id?: string | null
+        }
+        Update: {
+          agni_nivel_atual?: number | null
+          agni_nivel_meta?: number | null
+          id?: string | null
+        }
+        Relationships: []
+      }
+      _bkp_reteste_20261007: {
+        Row: {
+          agniforte: number | null
+          agnifraco: number | null
+          agniirregular: number | null
+          agniPrincipal: string | null
+          agravKaphaTags: string | null
+          agravPittaTags: string | null
+          agravVataTags: string | null
+          aliment: string | null
+          alimKapha: string | null
+          alimPitta: string | null
+          alimVata: string | null
+          altura: string | null
+          cidade: string | null
+          conhecimentoAyurveda: string | null
+          created_at: string | null
+          criado_por: string | null
+          cupom_id: string | null
+          diagn: string | null
+          doshaprincipal: string | null
+          email: string | null
+          espiritual: string | null
+          estado: string | null
+          foto_lingua_path: string | null
+          foto_lingua_url: string | null
+          id: string | null
+          idade: number | null
+          idPublico: string | null
+          imc: number | null
+          kaphascore: number | null
+          mentoria: string | null
+          nome: string | null
+          objetivo1: string | null
+          objetivo2: string | null
+          pais: string | null
+          peso: string | null
+          pittascore: number | null
+          produtos: string | null
+          relato_aberto: string | null
+          remedios: string | null
+          reteste_sessao_id: string | null
+          texto_ia: string | null
+          tipo: string | null
+          user_id: string | null
+          vatascore: number | null
+        }
+        Insert: {
+          agniforte?: number | null
+          agnifraco?: number | null
+          agniirregular?: number | null
+          agniPrincipal?: string | null
+          agravKaphaTags?: string | null
+          agravPittaTags?: string | null
+          agravVataTags?: string | null
+          aliment?: string | null
+          alimKapha?: string | null
+          alimPitta?: string | null
+          alimVata?: string | null
+          altura?: string | null
+          cidade?: string | null
+          conhecimentoAyurveda?: string | null
+          created_at?: string | null
+          criado_por?: string | null
+          cupom_id?: string | null
+          diagn?: string | null
+          doshaprincipal?: string | null
+          email?: string | null
+          espiritual?: string | null
+          estado?: string | null
+          foto_lingua_path?: string | null
+          foto_lingua_url?: string | null
+          id?: string | null
+          idade?: number | null
+          idPublico?: string | null
+          imc?: number | null
+          kaphascore?: number | null
+          mentoria?: string | null
+          nome?: string | null
+          objetivo1?: string | null
+          objetivo2?: string | null
+          pais?: string | null
+          peso?: string | null
+          pittascore?: number | null
+          produtos?: string | null
+          relato_aberto?: string | null
+          remedios?: string | null
+          reteste_sessao_id?: string | null
+          texto_ia?: string | null
+          tipo?: string | null
+          user_id?: string | null
+          vatascore?: number | null
+        }
+        Update: {
+          agniforte?: number | null
+          agnifraco?: number | null
+          agniirregular?: number | null
+          agniPrincipal?: string | null
+          agravKaphaTags?: string | null
+          agravPittaTags?: string | null
+          agravVataTags?: string | null
+          aliment?: string | null
+          alimKapha?: string | null
+          alimPitta?: string | null
+          alimVata?: string | null
+          altura?: string | null
+          cidade?: string | null
+          conhecimentoAyurveda?: string | null
+          created_at?: string | null
+          criado_por?: string | null
+          cupom_id?: string | null
+          diagn?: string | null
+          doshaprincipal?: string | null
+          email?: string | null
+          espiritual?: string | null
+          estado?: string | null
+          foto_lingua_path?: string | null
+          foto_lingua_url?: string | null
+          id?: string | null
+          idade?: number | null
+          idPublico?: string | null
+          imc?: number | null
+          kaphascore?: number | null
+          mentoria?: string | null
+          nome?: string | null
+          objetivo1?: string | null
+          objetivo2?: string | null
+          pais?: string | null
+          peso?: string | null
+          pittascore?: number | null
+          produtos?: string | null
+          relato_aberto?: string | null
+          remedios?: string | null
+          reteste_sessao_id?: string | null
+          texto_ia?: string | null
+          tipo?: string | null
+          user_id?: string | null
+          vatascore?: number | null
+        }
+        Relationships: []
+      }
+      _bkp_reteste_duplicados_20261007: {
+        Row: {
+          agniforte: number | null
+          agnifraco: number | null
+          agniirregular: number | null
+          agniPrincipal: string | null
+          agravKaphaTags: string | null
+          agravPittaTags: string | null
+          agravVataTags: string | null
+          aliment: string | null
+          alimKapha: string | null
+          alimPitta: string | null
+          alimVata: string | null
+          altura: string | null
+          cidade: string | null
+          conhecimentoAyurveda: string | null
+          created_at: string | null
+          criado_por: string | null
+          cupom_id: string | null
+          diagn: string | null
+          doshaprincipal: string | null
+          email: string | null
+          espiritual: string | null
+          estado: string | null
+          foto_lingua_path: string | null
+          foto_lingua_url: string | null
+          id: string | null
+          idade: number | null
+          idPublico: string | null
+          imc: number | null
+          kaphascore: number | null
+          mentoria: string | null
+          nome: string | null
+          objetivo1: string | null
+          objetivo2: string | null
+          pais: string | null
+          peso: string | null
+          pittascore: number | null
+          produtos: string | null
+          relato_aberto: string | null
+          remedios: string | null
+          reteste_sessao_id: string | null
+          rn: number | null
+          texto_ia: string | null
+          tipo: string | null
+          user_id: string | null
+          vatascore: number | null
+        }
+        Insert: {
+          agniforte?: number | null
+          agnifraco?: number | null
+          agniirregular?: number | null
+          agniPrincipal?: string | null
+          agravKaphaTags?: string | null
+          agravPittaTags?: string | null
+          agravVataTags?: string | null
+          aliment?: string | null
+          alimKapha?: string | null
+          alimPitta?: string | null
+          alimVata?: string | null
+          altura?: string | null
+          cidade?: string | null
+          conhecimentoAyurveda?: string | null
+          created_at?: string | null
+          criado_por?: string | null
+          cupom_id?: string | null
+          diagn?: string | null
+          doshaprincipal?: string | null
+          email?: string | null
+          espiritual?: string | null
+          estado?: string | null
+          foto_lingua_path?: string | null
+          foto_lingua_url?: string | null
+          id?: string | null
+          idade?: number | null
+          idPublico?: string | null
+          imc?: number | null
+          kaphascore?: number | null
+          mentoria?: string | null
+          nome?: string | null
+          objetivo1?: string | null
+          objetivo2?: string | null
+          pais?: string | null
+          peso?: string | null
+          pittascore?: number | null
+          produtos?: string | null
+          relato_aberto?: string | null
+          remedios?: string | null
+          reteste_sessao_id?: string | null
+          rn?: number | null
+          texto_ia?: string | null
+          tipo?: string | null
+          user_id?: string | null
+          vatascore?: number | null
+        }
+        Update: {
+          agniforte?: number | null
+          agnifraco?: number | null
+          agniirregular?: number | null
+          agniPrincipal?: string | null
+          agravKaphaTags?: string | null
+          agravPittaTags?: string | null
+          agravVataTags?: string | null
+          aliment?: string | null
+          alimKapha?: string | null
+          alimPitta?: string | null
+          alimVata?: string | null
+          altura?: string | null
+          cidade?: string | null
+          conhecimentoAyurveda?: string | null
+          created_at?: string | null
+          criado_por?: string | null
+          cupom_id?: string | null
+          diagn?: string | null
+          doshaprincipal?: string | null
+          email?: string | null
+          espiritual?: string | null
+          estado?: string | null
+          foto_lingua_path?: string | null
+          foto_lingua_url?: string | null
+          id?: string | null
+          idade?: number | null
+          idPublico?: string | null
+          imc?: number | null
+          kaphascore?: number | null
+          mentoria?: string | null
+          nome?: string | null
+          objetivo1?: string | null
+          objetivo2?: string | null
+          pais?: string | null
+          peso?: string | null
+          pittascore?: number | null
+          produtos?: string | null
+          relato_aberto?: string | null
+          remedios?: string | null
+          reteste_sessao_id?: string | null
+          rn?: number | null
+          texto_ia?: string | null
+          tipo?: string | null
+          user_id?: string | null
+          vatascore?: number | null
+        }
+        Relationships: []
+      }
+      _bkp_reteste_duplicados_rotinas_20261007: {
+        Row: {
+          created_at: string | null
+          dia: number | null
+          id: string | null
+          nugget_id: string | null
+          praticado: boolean | null
+          semana: number | null
+          slot: string | null
+          status: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          dia?: number | null
+          id?: string | null
+          nugget_id?: string | null
+          praticado?: boolean | null
+          semana?: number | null
+          slot?: string | null
+          status?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          dia?: number | null
+          id?: string | null
+          nugget_id?: string | null
+          praticado?: boolean | null
+          semana?: number | null
+          slot?: string | null
+          status?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       admin_tarefas: {
         Row: {
           anexos: Json
@@ -9141,6 +9480,7 @@ export type Database = {
           resultado: Json | null
           seed: Json
           sinais_agni: number
+          sinais_ama: number | null
           sinais_kapha: number
           sinais_pitta: number
           sinais_vata: number
@@ -9164,6 +9504,7 @@ export type Database = {
           resultado?: Json | null
           seed?: Json
           sinais_agni?: number
+          sinais_ama?: number | null
           sinais_kapha?: number
           sinais_pitta?: number
           sinais_vata?: number
@@ -9187,6 +9528,7 @@ export type Database = {
           resultado?: Json | null
           seed?: Json
           sinais_agni?: number
+          sinais_ama?: number | null
           sinais_kapha?: number
           sinais_pitta?: number
           sinais_vata?: number
@@ -11932,7 +12274,47 @@ export type Database = {
         Returns: Json
       }
       atividade_abrir: { Args: { p_atividade_id: string }; Returns: Json }
+      atividade_chip: {
+        Args: { p_cor: string; p_texto: string }
+        Returns: string
+      }
+      atividade_cor_dosha: {
+        Args: { p_dosha: string; p_texto?: string }
+        Returns: string
+      }
+      atividade_css_ficha: { Args: never; Returns: string }
+      atividade_css_relatorio: { Args: never; Returns: string }
       atividade_entregas: { Args: { p_atividade_id: string }; Returns: Json }
+      atividade_esc: { Args: { t: string }; Returns: string }
+      atividade_html_relatorio_corpo: {
+        Args: { p_atividade_id: string; p_respostas: Json }
+        Returns: string
+      }
+      atividade_html_relatorio_topo: {
+        Args: {
+          p_atividade_id: string
+          p_cfg: Json
+          p_cfg_teste: Json
+          p_entregue: string
+          p_teste: Json
+        }
+        Returns: string
+      }
+      atividade_html_teste_dosha: {
+        Args: { cfg: Json; t: Json }
+        Returns: string
+      }
+      atividade_icone: { Args: { p_nome: string }; Returns: string }
+      atividade_icone_cor: {
+        Args: { p_cor: string; p_nome: string }
+        Returns: string
+      }
+      atividade_niveis_dosha: { Args: never; Returns: Json }
+      atividade_nivel_dosha: {
+        Args: { p_dosha: string; p_pontos: number }
+        Returns: Json
+      }
+      atividade_pinta_doshas: { Args: { t: string }; Returns: string }
       atividade_pode_acessar: {
         Args: { p_atividade_id: string }
         Returns: boolean
@@ -11944,6 +12326,11 @@ export type Database = {
           p_respostas: Json
         }
         Returns: Json
+      }
+      atividade_teste_dosha_de: { Args: { p_uid: string }; Returns: Json }
+      atividade_texto_do_teste: {
+        Args: { cfg: Json; t: Json }
+        Returns: string
       }
       atividades_lista: {
         Args: {
