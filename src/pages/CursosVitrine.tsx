@@ -328,7 +328,7 @@ const CursosVitrine = () => {
                     </Link>
                     <div className="px-6 pb-6">
                       <Button asChild className="w-full">
-                        <Link to={acessar}>{c.card_cta_texto || "Acessar curso"}</Link>
+                        <Link to={acessar}>Acessar curso</Link>
                       </Button>
                     </div>
                   </article>
