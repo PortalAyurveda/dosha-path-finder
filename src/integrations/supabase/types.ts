@@ -13332,6 +13332,7 @@ export type Database = {
       sou_aluno_escola: { Args: never; Returns: boolean }
       tag_normalizar: { Args: { p: string }; Returns: string }
       tem_acesso_curso: { Args: { p_curso_id: string }; Returns: boolean }
+      tem_desconto_15: { Args: { p_user: string }; Returns: boolean }
       termos_aplicar: { Args: { p_html: string }; Returns: string }
       text_to_bytea: { Args: { data: string }; Returns: string }
       tutor_detox_contexto: { Args: { p_email: string }; Returns: Json }
