@@ -10,10 +10,184 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.5"
+    PostgrestVersion: "14.1"
   }
   public: {
     Tables: {
+      _bkp_curso_diplomas_20261013: {
+        Row: {
+          carga_horaria: string | null
+          cor_acento: string | null
+          cor_clara: string | null
+          cor_escura: string | null
+          cor_primaria: string | null
+          created_at: string | null
+          curso_id: string | null
+          id: string | null
+          logo_url: string | null
+          n_aulas: number | null
+          n_modulos: number | null
+          nome_exibicao: string | null
+          texto_certificado: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          carga_horaria?: string | null
+          cor_acento?: string | null
+          cor_clara?: string | null
+          cor_escura?: string | null
+          cor_primaria?: string | null
+          created_at?: string | null
+          curso_id?: string | null
+          id?: string | null
+          logo_url?: string | null
+          n_aulas?: number | null
+          n_modulos?: number | null
+          nome_exibicao?: string | null
+          texto_certificado?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          carga_horaria?: string | null
+          cor_acento?: string | null
+          cor_clara?: string | null
+          cor_escura?: string | null
+          cor_primaria?: string | null
+          created_at?: string | null
+          curso_id?: string | null
+          id?: string | null
+          logo_url?: string | null
+          n_aulas?: number | null
+          n_modulos?: number | null
+          nome_exibicao?: string | null
+          texto_certificado?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      _bkp_detox_cardapios_20261013b: {
+        Row: {
+          html: string | null
+          id: string | null
+          slug: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          html?: string | null
+          id?: string | null
+          slug?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          html?: string | null
+          id?: string | null
+          slug?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      _bkp_detox_curso_20261013: {
+        Row: {
+          created_at: string | null
+          descricao: string | null
+          duracao_segundos: number | null
+          html: string | null
+          id: string | null
+          imprimir: boolean | null
+          libera_em: string | null
+          liberada: boolean | null
+          modulo_id: string | null
+          ordem: number | null
+          slug: string | null
+          titulo: string | null
+          updated_at: string | null
+          youtube_url: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          descricao?: string | null
+          duracao_segundos?: number | null
+          html?: string | null
+          id?: string | null
+          imprimir?: boolean | null
+          libera_em?: string | null
+          liberada?: boolean | null
+          modulo_id?: string | null
+          ordem?: number | null
+          slug?: string | null
+          titulo?: string | null
+          updated_at?: string | null
+          youtube_url?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          descricao?: string | null
+          duracao_segundos?: number | null
+          html?: string | null
+          id?: string | null
+          imprimir?: boolean | null
+          libera_em?: string | null
+          liberada?: boolean | null
+          modulo_id?: string | null
+          ordem?: number | null
+          slug?: string | null
+          titulo?: string | null
+          updated_at?: string | null
+          youtube_url?: string | null
+        }
+        Relationships: []
+      }
+      _bkp_detox_material_20261013: {
+        Row: {
+          content: string | null
+          id: number | null
+          rotulo: string | null
+        }
+        Insert: {
+          content?: string | null
+          id?: number | null
+          rotulo?: string | null
+        }
+        Update: {
+          content?: string | null
+          id?: number | null
+          rotulo?: string | null
+        }
+        Relationships: []
+      }
+      _bkp_detox_modulos_20261013: {
+        Row: {
+          created_at: string | null
+          curso_id: string | null
+          descricao: string | null
+          id: string | null
+          ordem: number | null
+          tipo: string | null
+          titulo: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          curso_id?: string | null
+          descricao?: string | null
+          id?: string | null
+          ordem?: number | null
+          tipo?: string | null
+          titulo?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          curso_id?: string | null
+          descricao?: string | null
+          id?: string | null
+          ordem?: number | null
+          tipo?: string | null
+          titulo?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       _bkp_objetivos_agni_20261007: {
         Row: {
           agni_nivel_atual: number | null
@@ -2534,6 +2708,27 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      certificado_modelos: {
+        Row: {
+          atualizado_em: string
+          chave: string
+          html: string
+          html_b64_rascunho: string | null
+        }
+        Insert: {
+          atualizado_em?: string
+          chave: string
+          html?: string
+          html_b64_rascunho?: string | null
+        }
+        Update: {
+          atualizado_em?: string
+          chave?: string
+          html?: string
+          html_b64_rascunho?: string | null
+        }
+        Relationships: []
       }
       charaka_verses: {
         Row: {
@@ -11897,6 +12092,9 @@ export type Database = {
       }
     }
     Functions: {
+      _html_esc: { Args: { p: string }; Returns: string }
+      _nome_completo_sugerido: { Args: { p_user: string }; Returns: Json }
+      _normalizar_nome: { Args: { p: string }; Returns: string }
       acervo_adicionar: {
         Args: {
           p_antes?: number
@@ -12456,6 +12654,7 @@ export type Database = {
           titulo: string
         }[]
       }
+      certificado_para_imprimir: { Args: { p_slug: string }; Returns: Json }
       claim_dosha_test: { Args: { p_id_publico?: string }; Returns: Json }
       coletar_dados_sintese_mensal: { Args: { p_email: string }; Returns: Json }
       confirmar_assinatura_pix: {

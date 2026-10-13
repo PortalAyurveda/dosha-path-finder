@@ -29,7 +29,6 @@ import {
 } from "lucide-react";
 import TutorChatBody, { type TutorCurso } from "@/components/tutor/TutorChatBody";
 import LinguaMomentos from "@/components/curso/LinguaMomentos";
-import samkhyaLogo from "@/assets/samkhya-logo-cropped.png";
 import { MarcaPortal, Quadradinho } from "@/components/impressao/PecasImpressao";
 import DOMPurify from "dompurify";
 import { isInAppBrowser } from "@/lib/inAppBrowser";
@@ -405,185 +404,12 @@ const MaterialLink = ({ item }: { item: MaterialRow }) => {
   );
 };
 
-const Petala = ({ cor, className }: { cor: string; className?: string }) => (
-  <svg
-    viewBox="0 0 24 24"
-    className={className}
-    fill="currentColor"
-    aria-hidden
-    style={{ color: cor }}
-  >
-    <path d="M12 2C9 7 4 9 4 14c0 4.4 3.6 8 8 8s8-3.6 8-8c0-5-5-7-8-12z" />
-  </svg>
-);
-
-const CertificadoPrint = ({ cert }: { cert: CertificadoResp }) => (
-  <div
-    id="certificado-print"
-    className="relative flex flex-col items-center justify-center text-center p-12"
-    style={{
-      width: "297mm",
-      height: "210mm",
-      background: cert.cor_clara || "#FDFAF5",
-      color: TINTA,
-      fontFamily: "'DM Sans', sans-serif",
-      overflow: "hidden",
-    }}
-  >
-    {/* Ornamentos de canto */}
-    <svg
-      className="absolute top-6 left-6 w-16 h-16 opacity-20"
-      viewBox="0 0 100 100"
-      fill="none"
-      stroke={cert.cor_acento || SALMAO}
-      strokeWidth="2"
-    >
-      <path d="M10 100V50a40 40 0 0 1 40-40h50" />
-    </svg>
-    <svg
-      className="absolute top-6 right-6 w-16 h-16 opacity-20"
-      viewBox="0 0 100 100"
-      fill="none"
-      stroke={cert.cor_acento || SALMAO}
-      strokeWidth="2"
-    >
-      <path d="M90 100V50a40 40 0 0 0-40-40H0" />
-    </svg>
-    <svg
-      className="absolute bottom-6 left-6 w-16 h-16 opacity-20"
-      viewBox="0 0 100 100"
-      fill="none"
-      stroke={cert.cor_acento || SALMAO}
-      strokeWidth="2"
-    >
-      <path d="M10 0v50a40 40 0 0 0 40 40h50" />
-    </svg>
-    <svg
-      className="absolute bottom-6 right-6 w-16 h-16 opacity-20"
-      viewBox="0 0 100 100"
-      fill="none"
-      stroke={cert.cor_acento || SALMAO}
-      strokeWidth="2"
-    >
-      <path d="M90 0v50a40 40 0 0 1-40 40H0" />
-    </svg>
-
-    {/* Faixa superior */}
-    <div
-      className="absolute top-0 left-0 right-0 h-3"
-      style={{
-        background: `linear-gradient(90deg, ${cert.cor_primaria || PRIMARY} 0%, ${cert.cor_acento || SALMAO} 100%)`,
-      }}
-    />
-
-    {/* Logo */}
-    <div className="mb-4">
-      <img
-        src={cert.logo_url || PORTAL_LOGO}
-        alt="Portal Ayurveda"
-        className="h-12 object-contain mx-auto"
-      />
-    </div>
-
-    {/* Título */}
-    <div className="mb-3">
-      <p className="text-xs uppercase tracking-[0.2em] mb-1" style={{ color: cert.cor_escura || PRIMARY, opacity: 0.7 }}>
-        Certificado de Conclusão
-      </p>
-      <h1
-        className="font-serif text-4xl"
-        style={{ color: cert.cor_primaria || PRIMARY }}
-      >
-        {cert.nome_exibicao}
-      </h1>
-      <p
-        className="text-sm mt-1 uppercase tracking-widest"
-        style={{ color: cert.cor_escura || PRIMARY, opacity: 0.8 }}
-      >
-        Ayurveda
-      </p>
-    </div>
-
-    {/* Corpo */}
-    <div className="max-w-2xl mx-auto my-5">
-      <p className="text-base leading-relaxed" style={{ color: TINTA }}>
-        Certificamos que
-      </p>
-      <p
-        className="font-serif text-3xl my-3"
-        style={{ color: cert.cor_primaria || PRIMARY }}
-      >
-        {cert.nome_aluno}
-      </p>
-      <p className="text-base leading-relaxed" style={{ color: TINTA }}>
-        concluiu com dedicação o curso{" "}
-        <span className="font-semibold" style={{ color: cert.cor_escura || PRIMARY }}>
-          {cert.nome_exibicao} do Ayurveda
-        </span>
-        , {cert.texto_certificado}.
-      </p>
-    </div>
-
-    {/* Métricas */}
-    <div className="flex items-center justify-center gap-8 my-5">
-      {[
-        { valor: cert.carga_horaria || "—", rotulo: "Carga horária" },
-        { valor: cert.n_aulas ?? "—", rotulo: "Aulas concluídas" },
-        { valor: cert.n_modulos ?? "—", rotulo: "Módulos" },
-      ].map((e, i) => (
-        <div key={i} className="text-center">
-          <p
-            className="font-serif text-2xl"
-            style={{ color: cert.cor_primaria || PRIMARY }}
-          >
-            {e.valor}
-          </p>
-          <p className="text-xs uppercase tracking-wider" style={{ color: TINTA, opacity: 0.7 }}>
-            {e.rotulo}
-          </p>
-        </div>
-      ))}
-    </div>
-
-    {/* Rodapé */}
-    <div className="absolute bottom-10 left-0 right-0 px-12">
-      <div className="flex items-end justify-between">
-        <div className="text-left">
-          <Petala cor={cert.cor_acento || SALMAO} className="w-5 h-5 mb-1" />
-          <p className="text-[10px] uppercase tracking-wider" style={{ color: TINTA, opacity: 0.6 }}>
-            Portal Ayurveda
-          </p>
-        </div>
-        <div className="text-center">
-          <p
-            className="font-serif text-lg"
-            style={{ color: cert.cor_primaria || PRIMARY }}
-          >
-            Edson Osorio
-          </p>
-          <p className="text-[10px] uppercase tracking-wider" style={{ color: TINTA, opacity: 0.6 }}>
-            Professor & Diretor Pedagógico
-          </p>
-        </div>
-        <div className="text-right">
-          <img
-            src={samkhyaLogo}
-            alt="Samkhya"
-            className="h-6 object-contain ml-auto mb-1"
-          />
-          <p className="text-[10px] uppercase tracking-wider" style={{ color: TINTA, opacity: 0.6 }}>
-            Escola Samkhya
-          </p>
-        </div>
-      </div>
-    </div>
-  </div>
-);
-
 const CertificadoTab = ({
+  slug,
   certificado,
   onIrParaAulas,
 }: {
+  slug: string;
   certificado: CertificadoResp | null;
   onIrParaAulas: () => void;
 }) => {
@@ -640,8 +466,6 @@ const CertificadoTab = ({
             <div className="flex flex-wrap gap-4 text-sm">
               {[
                 { valor: certificado.carga_horaria || "—", rotulo: "Carga horária" },
-                { valor: certificado.n_aulas ?? "—", rotulo: "Aulas" },
-                { valor: certificado.n_modulos ?? "—", rotulo: "Módulos" },
               ].map((e) => (
                 <div
                   key={e.rotulo}
@@ -663,17 +487,15 @@ const CertificadoTab = ({
 
       <div className="text-center">
         <Button
-          onClick={() => window.print()}
+          asChild
           size="lg"
           className="rounded-full gap-2"
           style={{ backgroundColor: SALMAO }}
         >
-          <Printer className="h-4 w-4" /> Baixar certificado (PDF)
+          <Link to={`/cursos/${slug}/certificado`}>
+            <Printer className="h-4 w-4" /> Baixar certificado (PDF)
+          </Link>
         </Button>
-      </div>
-
-      <div className="sr-only print:block">
-        <CertificadoPrint cert={certificado} />
       </div>
     </div>
   );
@@ -1391,22 +1213,6 @@ const CursoEstudar = ({ impressao = false }: { impressao?: boolean }) => {
         <meta name="robots" content="noindex, nofollow" />
       </Helmet>
 
-      {abaAtiva === "certificado" && (
-        <style>{`
-          @media print {
-            body * { visibility: hidden; }
-            #certificado-print, #certificado-print * { visibility: visible; }
-            #certificado-print {
-              position: fixed;
-              inset: 0;
-              margin: 0 !important;
-              width: 297mm !important;
-              height: 210mm !important;
-            }
-            @page { size: A4 landscape; margin: 0; }
-          }
-        `}</style>
-      )}
       {/* Cabeçalho */}
       <section style={{ background: SURFACE }}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 md:py-10">
@@ -1903,7 +1709,7 @@ const CursoEstudar = ({ impressao = false }: { impressao?: boolean }) => {
 
 
             {abaAtiva === "certificado" && (
-              <CertificadoTab certificado={certificado} onIrParaAulas={() => setAba("aulas")} />
+              <CertificadoTab slug={slug} certificado={certificado} onIrParaAulas={() => setAba("aulas")} />
             )}
           </div>
         )}
