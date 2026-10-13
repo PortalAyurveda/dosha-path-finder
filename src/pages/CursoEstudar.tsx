@@ -411,6 +411,7 @@ const CertificadoTab = ({
 }: {
   slug: string;
   certificado: CertificadoResp | null;
+  onIrParaAulas: () => void;
 }) => {
   if (!certificado) {
     return (
