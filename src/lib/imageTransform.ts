@@ -3,6 +3,10 @@
  * O bucket continua sendo o mesmo no Supabase, mas as URLs são reescritas
  * para o domínio customizado api.portalayurveda.com (que faz proxy/redirect
  * para o endpoint original do projeto Supabase).
+ *
+ * As imagens são servidas sempre pelo arquivo original, sem transformação:
+ * nada de endpoint /render/image/, que consome a cota paga
+ * "Storage Image Transformations".
  */
 const LEGACY_SUPABASE_HOST = "https://fwezkasjfguarjmjxifh.supabase.co";
 const PUBLIC_IMAGE_HOST = "https://api.portalayurveda.com";
@@ -21,30 +25,16 @@ export function rewriteImageHost(url: string | null | undefined): string {
 }
 
 /**
- * Retorna a URL da imagem já reescrita para o domínio público e, quando for
- * uma imagem do Supabase Storage, usando o endpoint de transformação
- * (`/render/image/public/...?width=...&quality=...`) no tamanho de exibição.
- * Formatos que não suportam transform (svg/gif) e URLs externas passam direto.
+ * Devolve a URL da imagem com o domínio público api.portalayurveda.com.
+ * Serve sempre o arquivo original: as imagens já são publicadas leves (WebP),
+ * e o endpoint /render/image/ do Supabase consome a cota paga
+ * "Storage Image Transformations". Os parâmetros width e quality ficam
+ * na assinatura só para compatibilidade com quem chama.
  */
 export function getTransformedImageUrl(
   url: string | null | undefined,
-  width = 600,
-  quality = 75,
+  _width = 600,
+  _quality = 75,
 ): string {
-  const base = rewriteImageHost(url);
-  if (!base) return "";
-  if (!base.includes("/storage/v1/object/public/")) return base;
-  if (/\.(svg|gif)(\?|$)/i.test(base)) return base;
-  if (base.includes("/render/image/")) return base;
-
-  const [path, existingQuery] = base.split("?");
-  const rendered = path.replace("/storage/v1/object/public/", "/storage/v1/render/image/public/");
-  const params = new URLSearchParams(existingQuery ?? "");
-  const w = Math.round(width);
-  params.set("width", String(w));
-  params.set("height", String(w));
-  params.set("resize", "contain");
-  params.set("quality", String(quality));
-  return `${rendered}?${params.toString()}`;
+  return rewriteImageHost(url);
 }
-

@@ -188,6 +188,24 @@ export type Database = {
         }
         Relationships: []
       }
+      _bkp_funcoes_20261013: {
+        Row: {
+          definicao: string
+          guardado_em: string | null
+          nome: string
+        }
+        Insert: {
+          definicao: string
+          guardado_em?: string | null
+          nome: string
+        }
+        Update: {
+          definicao?: string
+          guardado_em?: string | null
+          nome?: string
+        }
+        Relationships: []
+      }
       _bkp_objetivos_agni_20261007: {
         Row: {
           agni_nivel_atual: number | null
@@ -2709,6 +2727,32 @@ export type Database = {
           },
         ]
       }
+      certificado_avisos: {
+        Row: {
+          avisado_em: string
+          curso_id: string
+          user_id: string
+        }
+        Insert: {
+          avisado_em?: string
+          curso_id: string
+          user_id: string
+        }
+        Update: {
+          avisado_em?: string
+          curso_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "certificado_avisos_curso_id_fkey"
+            columns: ["curso_id"]
+            isOneToOne: false
+            referencedRelation: "cursos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       certificado_modelos: {
         Row: {
           atualizado_em: string
@@ -2729,6 +2773,47 @@ export type Database = {
           html_b64_rascunho?: string | null
         }
         Relationships: []
+      }
+      certificados_emitidos: {
+        Row: {
+          aberturas: number
+          curso_id: string
+          emitido_em: string
+          id: number
+          nome_no_diploma: string | null
+          registro: string
+          ultima_abertura_em: string
+          user_id: string
+        }
+        Insert: {
+          aberturas?: number
+          curso_id: string
+          emitido_em?: string
+          id?: number
+          nome_no_diploma?: string | null
+          registro: string
+          ultima_abertura_em?: string
+          user_id: string
+        }
+        Update: {
+          aberturas?: number
+          curso_id?: string
+          emitido_em?: string
+          id?: number
+          nome_no_diploma?: string | null
+          registro?: string
+          ultima_abertura_em?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "certificados_emitidos_curso_id_fkey"
+            columns: ["curso_id"]
+            isOneToOne: false
+            referencedRelation: "cursos"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       charaka_verses: {
         Row: {
@@ -3715,6 +3800,54 @@ export type Database = {
           ultimo_resultado?: Json | null
         }
         Relationships: []
+      }
+      curso_preco_especial: {
+        Row: {
+          ativo: boolean
+          criado_em: string
+          curso_id: string
+          id: string
+          obs: string | null
+          preco: number
+          requer_curso_id: string
+          valido_ate: string | null
+        }
+        Insert: {
+          ativo?: boolean
+          criado_em?: string
+          curso_id: string
+          id?: string
+          obs?: string | null
+          preco: number
+          requer_curso_id: string
+          valido_ate?: string | null
+        }
+        Update: {
+          ativo?: boolean
+          criado_em?: string
+          curso_id?: string
+          id?: string
+          obs?: string | null
+          preco?: number
+          requer_curso_id?: string
+          valido_ate?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "curso_preco_especial_curso_id_fkey"
+            columns: ["curso_id"]
+            isOneToOne: false
+            referencedRelation: "cursos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "curso_preco_especial_requer_curso_id_fkey"
+            columns: ["requer_curso_id"]
+            isOneToOne: false
+            referencedRelation: "cursos"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       cursos: {
         Row: {
@@ -12092,6 +12225,17 @@ export type Database = {
       }
     }
     Functions: {
+      _certificados_pendentes_de_aviso: {
+        Args: { p_user?: string }
+        Returns: {
+          curso_id: string
+          liberado_em: string
+          nome_exibicao: string
+          slug: string
+          user_id: string
+        }[]
+      }
+      _data_extenso: { Args: { p: string }; Returns: string }
       _html_esc: { Args: { p: string }; Returns: string }
       _nome_completo_sugerido: { Args: { p_user: string }; Returns: Json }
       _normalizar_nome: { Args: { p: string }; Returns: string }
@@ -12373,6 +12517,13 @@ export type Database = {
         }[]
       }
       agenda_destinatarios_alunos: {
+        Args: { p_comunicacao_id: string }
+        Returns: {
+          email: string
+          payload: Json
+        }[]
+      }
+      agenda_destinatarios_certificado: {
         Args: { p_comunicacao_id: string }
         Returns: {
           email: string
