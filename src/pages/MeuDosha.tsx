@@ -6,13 +6,12 @@ import { trackPixel } from "@/lib/metaPixel";
 import PageContainer from "@/components/PageContainer";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2, ChevronDown, ChevronUp, Calendar, CalendarDays, Play, Video as VideoIcon, BookOpen, Brain, LineChart, Lock, RefreshCw, ChevronRight } from "lucide-react";
-import EvolucaoSheet from "@/components/meudosha/EvolucaoSheet";
+import SecoesSlot from "@/components/secoes/SecoesSlot";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import MetricasTab from "@/components/meudosha/MetricasTab";
-import type { InsightAyurvedico } from "@/components/meudosha/MetricasTab";
 import ArtigosTab from "@/components/meudosha/ArtigosTab";
 import DiagnosticoCompleto from "@/components/meudosha/DiagnosticoCompleto";
 import ParedeCadastro from "@/components/meudosha/ParedeCadastro";
@@ -689,7 +688,6 @@ const MeuDosha = () => {
   const { user, isAnonymous, profile, doshaResult, loading: authLoading } = useUser();
   const isPremium = !!profile?.is_premium;
   const navigate = useNavigate();
-  const [evolucaoOpen, setEvolucaoOpen] = useState(false);
 
   // Data da ÚLTIMA revisão concluída (não só a existência de uma linha antiga).
   const { data: ultimaRevisaoEm } = useQuery({
@@ -762,27 +760,20 @@ const MeuDosha = () => {
   // Meta Pixel: dispara CompleteRegistration uma única vez quando os resultados carregam
   const pixelTestePixelFiredRef = useRef(false);
   useEffect(() => {
-    if (result && !pixelTestePixelFiredRef.current) {
-      pixelTestePixelFiredRef.current = true;
-      trackPixel("CompleteRegistration", { content_name: "Teste de Dosha" });
+    if (!result || !registroUuid || pixelTestePixelFiredRef.current) return;
+    pixelTestePixelFiredRef.current = true;
+    const chave = `pixel_cr_${registroUuid}`;
+    try {
+      if (localStorage.getItem(chave)) return;
+      localStorage.setItem(chave, "1");
+    } catch {
+      /* segue */
     }
-  }, [result]);
+    trackPixel("CompleteRegistration", { content_name: "Teste de Dosha" });
+  }, [result, registroUuid]);
 
   // (Glossário antigo removido — substituído por DiagnosticoCompleto)
 
-
-  // ── Insights RPC ──
-  const { data: insights, isLoading: insightsLoading } = useQuery({
-    queryKey: ['insights-ayurvedicos', registroUuid],
-    queryFn: async () => {
-      const { data, error } = await supabase.rpc('gerar_insights_ayurvedicos', { p_registro_id: registroUuid! });
-      return (data as unknown as InsightAyurvedico[]) || [];
-    },
-    enabled: !!registroUuid,
-    staleTime: CACHE_STALE,
-    gcTime: CACHE_GC,
-    refetchOnWindowFocus: false,
-  });
 
   // Realtime removido: resultado é buscado sob demanda via RPC.
 
@@ -978,118 +969,13 @@ const MeuDosha = () => {
   }
 
   const isVisitor = !user || isAnonymous;
+  const temAcessoRotina =
+    profile?.is_premium === true ||
+    (profile?.subscription_status === "active" &&
+      ["rotina", "mensal", "anual"].includes(profile?.plano ?? "") &&
+      (!profile?.premium_until || new Date(profile.premium_until) > new Date()));
 
-
-
-
-  return (
-    <PageContainer
-      title={`Meu Dosha — ${formattedNome}`}
-      description={`Resultado do teste de dosha de ${formattedNome}: ${result.doshaprincipal}`}
-      noindex={isVisitor}
-    >
-
-      <div className="max-w-3xl mx-auto space-y-6">
-        <h1 className="sr-only">
-          {formattedNome ? `Resultado do teste de dosha de ${formattedNome}` : "Resultado do teste de dosha"}
-          {result.doshaprincipal ? ` — Dosha ${result.doshaprincipal}` : ""}
-        </h1>
-
-        {!isVisitor && registroRaw && (registroRaw as any).criado_por === user?.id && (registroRaw as any).user_id !== user?.id && (
-          <div className="rounded-2xl border border-primary/30 bg-primary/5 px-4 py-3 text-sm text-foreground">
-            <strong>Este teste é de {formattedNome}, feito na sua conta.</strong>{" "}
-            O seu teste continua em uso. Ele fica guardado em Minha conta, em "Testes que você fez para outras pessoas".
-          </div>
-        )}
-
-        <JornadaDestaqueCard />
-
-        {!isVisitor && <FormacaoDestaqueCard />}
-
-        {!isVisitor && (
-          <div id="reteste-anchor" className="rounded-2xl transition-shadow">
-            <RetesteCard />
-          </div>
-        )}
-
-        {!isVisitor && <ConvitePesquisa />}
-        
-
-
-
-
-        {/* ===== Vitrine da Rotina ===== */}
-        {(() => {
-          if (isVisitor) return null;
-
-          const temAcessoRotina =
-            profile?.is_premium === true ||
-            (profile?.subscription_status === "active" &&
-              ["rotina", "mensal", "anual"].includes(profile?.plano ?? "") &&
-              (!profile?.premium_until || new Date(profile.premium_until) > new Date()));
-
-          if (temAcessoRotina) {
-            return (
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 rounded-2xl border border-secondary/30 bg-secondary/10 px-5 py-4">
-                <span className="text-sm font-medium text-foreground">
-                  Sua rotina de hoje está pronta
-                </span>
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  onClick={() => navigate("/minha-rotina")}
-                  className="self-start sm:self-auto"
-                >
-                  Ver minha rotina →
-                </Button>
-              </div>
-            );
-          }
-
-          return null;
-        })()}
-
-        <BannerSlot slot="meu_dosha_meio" className="[&:empty]:hidden" />
-
-
-
-
-        {/* ===== TABS ===== */}
-        <Tabs
-          value={initialTab}
-          onValueChange={(v) => {
-            const params = new URLSearchParams(searchParams);
-            params.set('tab', v);
-            navigate(`/meu-dosha?${params.toString()}`, { replace: true });
-          }}
-          className="w-full"
-        >
-          <div className="sticky top-16 z-40 py-2 flex justify-center">
-          <TabsList className="grid grid-cols-4 h-auto max-w-6xl w-full mx-4 rounded-full bg-muted/95 backdrop-blur-sm shadow-sm gap-0.5 sm:gap-0 p-1">
-            <TabsTrigger value="perfil" className="text-xs sm:text-sm py-1 flex items-center gap-1 bg-[#E8EEFF] sm:bg-transparent text-[#352F54] rounded-full">
-              <span className="hidden sm:inline-flex">
-                <DoshaMiniPie vata={result.vatascore ?? 0} pitta={result.pittascore ?? 0} kapha={result.kaphascore ?? 0} />
-              </span>
-              Perfil
-            </TabsTrigger>
-            <TabsTrigger value="metricas" className="text-xs sm:text-sm py-1 flex items-center gap-1 bg-[#FFE8E8] sm:bg-transparent text-[#352F54] rounded-full">
-              <span aria-hidden="true" className="hidden sm:inline">📊</span>
-              Métricas
-            </TabsTrigger>
-            <TabsTrigger value="artigos" className="text-xs sm:text-sm py-1 flex items-center gap-1 bg-[#E8F5E0] sm:bg-transparent text-[#352F54] rounded-full">
-              <span aria-hidden="true" className="hidden sm:inline">📖</span>
-              Artigos
-            </TabsTrigger>
-            <TabsTrigger value="videos" className="text-xs sm:text-sm py-1 flex items-center gap-1 bg-[#FFF3D6] sm:bg-transparent text-[#352F54] rounded-full">
-              <span aria-hidden="true" className="hidden sm:inline">▶️</span>
-              Vídeos
-            </TabsTrigger>
-          </TabsList>
-          </div>
-
-          {/* ===== TAB: PERFIL ===== */}
-          <TabsContent forceMount value="perfil" className="space-y-6 mt-4 data-[state=inactive]:hidden" tabIndex={-1}>
-            {/* Clinical Dashboard */}
+  const cartaoDeHoje = (
             <div className="bg-card rounded-xl border border-border p-4 space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-[1.2fr_1fr] gap-4">
                 <div className="flex flex-col items-center">
@@ -1120,60 +1006,89 @@ const MeuDosha = () => {
                     >
                       Recomeçar o teste
                     </button>
-                    {!isVisitor && (
-                    <div className="flex items-center gap-2">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          if (isPremium) setEvolucaoOpen(true);
-                          else navigate("/assinar");
-                        }}
-                        className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full border border-border bg-card hover:bg-muted transition-colors text-foreground"
-                        aria-label={isPremium ? "Ver gráficos de evolução" : "Recurso premium — gráficos de evolução"}
-                      >
-                        {isPremium ? <LineChart className="w-3.5 h-3.5" /> : <Lock className="w-3.5 h-3.5" />}
-                        Gráficos
-                      </button>
-                      {(() => {
-                        const createdAt = result.created_at ? new Date(result.created_at) : null;
-                        const ultimaRevisao = ultimaRevisaoEm ? new Date(ultimaRevisaoEm) : null;
-                        // Base = data mais recente entre o teste e a última revisão concluída
-                        const base = ultimaRevisao && createdAt
-                          ? new Date(Math.max(createdAt.getTime(), ultimaRevisao.getTime()))
-                          : (ultimaRevisao ?? createdAt);
-                        const liberaEm = base ? new Date(base.getTime() + 30 * 24 * 3600 * 1000) : null;
-                        const disponivel = liberaEm ? Date.now() >= liberaEm.getTime() : false;
-                        const baseClass = "inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full border transition-colors";
-
-                        if (!disponivel) {
-                          // Revisão recente (< 30 dias) ou teste recente: nenhum destaque
-                          return null;
-                        }
-
-                        const nuncaRevisou = !ultimaRevisaoEm;
-                        return (
-                          <button
-                            type="button"
-                            onClick={() => navigate("/revisao")}
-                            className={`${baseClass} border-akasha/60 bg-akasha/10 text-akasha hover:bg-akasha/20 animate-glow-pulse`}
-                            aria-label={nuncaRevisou ? "Iniciar revisão — novidade" : "Nova revisão disponível"}
-                            title={nuncaRevisou ? "Sua revisão está disponível" : "Nova revisão disponível"}
-                          >
-                            <RefreshCw className="w-3.5 h-3.5" />
-                            Revisão
-                            <span className="ml-1 text-[9px] uppercase tracking-wider font-bold bg-akasha text-white px-1 py-0.5 rounded">
-                              {nuncaRevisou ? 'novo' : 'nova'}
-                            </span>
-                          </button>
-                        );
-                      })()}
-                    </div>
-                    )}
                   </div>
                 </div>
                 <ClinicalThermometer doshaScores={doshaScores} />
               </div>
             </div>
+  );
+
+
+
+
+  return (
+    <PageContainer
+      title={`Meu Dosha — ${formattedNome}`}
+      description={`Resultado do teste de dosha de ${formattedNome}: ${result.doshaprincipal}`}
+      noindex={isVisitor}
+    >
+
+      <div className="max-w-3xl mx-auto space-y-6">
+        <h1 className="sr-only">
+          {formattedNome ? `Resultado do teste de dosha de ${formattedNome}` : "Resultado do teste de dosha"}
+          {result.doshaprincipal ? ` — Dosha ${result.doshaprincipal}` : ""}
+        </h1>
+
+        {!isVisitor && <FormacaoDestaqueCard />}
+
+        {!isVisitor && <ConvitePesquisa />}
+        
+
+
+
+
+        <BannerSlot slot="meu_dosha_meio" className="[&:empty]:hidden" />
+
+
+
+
+        {/* ===== TABS ===== */}
+        <Tabs
+          value={initialTab}
+          onValueChange={(v) => {
+            const params = new URLSearchParams(searchParams);
+            params.set('tab', v);
+            navigate(`/meu-dosha?${params.toString()}`, { replace: true });
+          }}
+          className="w-full"
+        >
+          <div className="sticky top-16 z-40 py-2 flex justify-center bg-background">
+          <TabsList className="grid grid-cols-4 h-auto max-w-6xl w-full mx-4 rounded-full bg-muted/95 backdrop-blur-sm shadow-sm gap-0.5 sm:gap-0 p-1">
+            <TabsTrigger value="perfil" className="text-base px-1 py-3 min-h-[48px] flex items-center gap-1 bg-[#E8EEFF] sm:bg-transparent text-[#352F54] rounded-full">
+              <span className="hidden sm:inline-flex">
+                <DoshaMiniPie vata={result.vatascore ?? 0} pitta={result.pittascore ?? 0} kapha={result.kaphascore ?? 0} />
+              </span>
+              Perfil
+            </TabsTrigger>
+            <TabsTrigger value="metricas" className="text-base px-1 py-3 min-h-[48px] flex items-center gap-1 bg-[#FFE8E8] sm:bg-transparent text-[#352F54] rounded-full">
+              <span aria-hidden="true" className="hidden sm:inline">📊</span>
+              Métricas
+            </TabsTrigger>
+            <TabsTrigger value="artigos" className="text-base px-1 py-3 min-h-[48px] flex items-center gap-1 bg-[#E8F5E0] sm:bg-transparent text-[#352F54] rounded-full">
+              <span aria-hidden="true" className="hidden sm:inline">📖</span>
+              Artigos
+            </TabsTrigger>
+            <TabsTrigger value="videos" className="text-base px-1 py-3 min-h-[48px] flex items-center gap-1 bg-[#FFF3D6] sm:bg-transparent text-[#352F54] rounded-full">
+              <span aria-hidden="true" className="hidden sm:inline">▶️</span>
+              Vídeos
+            </TabsTrigger>
+          </TabsList>
+          </div>
+
+          {/* ===== TAB: PERFIL ===== */}
+          <TabsContent forceMount value="perfil" className="space-y-6 mt-4 data-[state=inactive]:hidden" tabIndex={-1}>
+            {/* Clinical Dashboard */}
+            {isVisitor ? (
+              cartaoDeHoje
+            ) : (
+              <SecoesSlot
+                slot="meu_dosha"
+                refId={id ?? ""}
+                alturaMinima={1200}
+                aoRefazerTeste={handleRefazerTeste}
+                fallback={<div className="space-y-6"><RetesteCard />{cartaoDeHoje}</div>}
+              />
+            )}
 
             {/* ===== Diagnóstico clínico completo (substitui glossário + Recomeçar o Teste) ===== */}
             {isVisitor ? (
@@ -1185,7 +1100,7 @@ const MeuDosha = () => {
                   doshaPrincipal={primaryDosha}
                   doshaPrincipalCompleto={result.doshaprincipal || primaryDosha}
                   refazerTeste={handleRefazerTeste}
-                  isPremium={isPremium}
+                  isPremium={temAcessoRotina}
                 />
 
                 <div className="mt-8 -mx-4 sm:-mx-6">
@@ -1199,10 +1114,10 @@ const MeuDosha = () => {
           <TabsContent forceMount value="metricas" className="data-[state=inactive]:hidden" tabIndex={-1}>
             {isVisitor ? (
               <ClaimLock idPublico={id!}>
-                <MetricasTab registroUuid={registroUuid} insights={insights} isLoading={insightsLoading} />
+                <MetricasTab registroUuid={registroUuid} insights={[]} isLoading={false} />
               </ClaimLock>
             ) : (
-              <MetricasTab registroUuid={registroUuid} insights={insights} isLoading={insightsLoading} />
+              <MetricasTab registroUuid={registroUuid} insights={[]} isLoading={false} />
             )}
           </TabsContent>
 
@@ -1256,7 +1171,6 @@ const MeuDosha = () => {
 
         {!isVisitor && <PraVoceRail doshaPrincipal={result?.doshaprincipal} />}
       </div>
-      <EvolucaoSheet open={evolucaoOpen} onOpenChange={setEvolucaoOpen} registroUuid={registroUuid} />
     </PageContainer>
   );
 };
