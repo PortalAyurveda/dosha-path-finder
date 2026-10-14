@@ -20,7 +20,7 @@ const VideosTab = ({ doshaprincipal, agravVataTags, agravPittaTags, agravKaphaTa
   const [mode, setMode] = useState<Mode>(initialMode);
   const { profile } = useUser();
   const isPremium = profile?.is_premium === true;
-  const isAssinante = profile?.subscription_status === "active";
+  const isAssinante = profile?.is_premium === true || profile?.subscription_status === "active";
 
   return (
     <div className="space-y-4 mt-4">

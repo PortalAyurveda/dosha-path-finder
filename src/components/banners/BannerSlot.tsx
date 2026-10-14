@@ -4,6 +4,7 @@ import { useLocation } from "react-router-dom";
 import DOMPurify from "dompurify";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/contexts/UserContext";
+import SecoesSlot from "@/components/secoes/SecoesSlot";
 
 
 interface BannerSlotProps {
@@ -205,14 +206,17 @@ const BannerSlot = ({ slot, className, fallback, minHeight, rotacao = "diaria", 
   }
 
   // Slot vazio no banco: colapsa de vez (sem flash de espaço vazio).
-  if (!escolhido) return <>{fallback ?? null}</>;
+  if (!escolhido) return <SecoesSlot slot={slot} fallback={fallback ?? null} />;
 
   return (
-    <div
-      className={className}
-      onClick={() => registrarEvento("clique")}
-      dangerouslySetInnerHTML={{ __html: cleanHtml }}
-    />
+    <>
+      <div
+        className={className}
+        onClick={() => registrarEvento("clique")}
+        dangerouslySetInnerHTML={{ __html: cleanHtml }}
+      />
+      <SecoesSlot slot={slot} />
+    </>
   );
 };
 
