@@ -12,7 +12,7 @@ const TOOLTIP =
 
 const MemoriaBadge = ({ onNavigate, className }: MemoriaBadgeProps) => {
   const { profile } = useUser();
-  const ativo = profile?.subscription_status === "active";
+  const ativo = profile?.is_premium === true || profile?.subscription_status === "active";
 
   if (ativo) {
     return (

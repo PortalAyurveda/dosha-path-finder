@@ -64,7 +64,7 @@ const DoshaPieChart = ({ vata, pitta, kapha, variant = "compact" }: Props) => {
           </Pie>
           <Tooltip
             formatter={(value: number, name: string) => [
-              `${value} pts (${total > 0 ? Math.round((value / total) * 100) : 0}%)`,
+              `${value} pontos`,
               name,
             ]}
             contentStyle={{
