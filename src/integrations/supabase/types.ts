@@ -3808,6 +3808,7 @@ export type Database = {
           curso_id: string
           id: string
           obs: string | null
+          parcelas: number | null
           preco: number
           requer_curso_id: string
           valido_ate: string | null
@@ -3818,6 +3819,7 @@ export type Database = {
           curso_id: string
           id?: string
           obs?: string | null
+          parcelas?: number | null
           preco: number
           requer_curso_id: string
           valido_ate?: string | null
@@ -3828,6 +3830,7 @@ export type Database = {
           curso_id?: string
           id?: string
           obs?: string | null
+          parcelas?: number | null
           preco?: number
           requer_curso_id?: string
           valido_ate?: string | null
@@ -3851,6 +3854,7 @@ export type Database = {
       }
       cursos: {
         Row: {
+          acesso_meses: number | null
           ativo: boolean
           aviso_topo: string | null
           banner_html: string | null
@@ -3894,6 +3898,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          acesso_meses?: number | null
           ativo?: boolean
           aviso_topo?: string | null
           banner_html?: string | null
@@ -3937,6 +3942,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          acesso_meses?: number | null
           ativo?: boolean
           aviso_topo?: string | null
           banner_html?: string | null
@@ -8190,6 +8196,89 @@ export type Database = {
           source_note?: string | null
           sutra_no?: number
           translation_pt?: string | null
+        }
+        Relationships: []
+      }
+      paginas_venda: {
+        Row: {
+          ativo: boolean
+          atualizado_em: string
+          criado_em: string
+          css: string
+          descricao: string | null
+          encerrada_html: string | null
+          html: string
+          imagem_url: string | null
+          preco_especial_id: string
+          slug: string
+          texto_botao: string
+          texto_email: string
+          titulo: string
+        }
+        Insert: {
+          ativo?: boolean
+          atualizado_em?: string
+          criado_em?: string
+          css?: string
+          descricao?: string | null
+          encerrada_html?: string | null
+          html?: string
+          imagem_url?: string | null
+          preco_especial_id: string
+          slug: string
+          texto_botao?: string
+          texto_email?: string
+          titulo: string
+        }
+        Update: {
+          ativo?: boolean
+          atualizado_em?: string
+          criado_em?: string
+          css?: string
+          descricao?: string | null
+          encerrada_html?: string | null
+          html?: string
+          imagem_url?: string | null
+          preco_especial_id?: string
+          slug?: string
+          texto_botao?: string
+          texto_email?: string
+          titulo?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "paginas_venda_preco_especial_id_fkey"
+            columns: ["preco_especial_id"]
+            isOneToOne: false
+            referencedRelation: "curso_preco_especial"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      paginas_venda_acessos: {
+        Row: {
+          criado_em: string
+          email: string | null
+          id: number
+          resultado: string
+          slug: string
+          user_id: string | null
+        }
+        Insert: {
+          criado_em?: string
+          email?: string | null
+          id?: never
+          resultado: string
+          slug: string
+          user_id?: string | null
+        }
+        Update: {
+          criado_em?: string
+          email?: string | null
+          id?: never
+          resultado?: string
+          slug?: string
+          user_id?: string | null
         }
         Relationships: []
       }
