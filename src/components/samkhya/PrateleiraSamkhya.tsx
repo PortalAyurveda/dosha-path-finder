@@ -78,7 +78,7 @@ const PrateleiraSamkhya = ({ doshaPrincipal, titulo }: PrateleiraSamkhyaProps) =
               className="mt-1 text-xs md:text-sm"
               style={{ color: samkhyaTokens.textoSec }}
             >
-              A Samkhya produz fórmulas ayurvédicas com ervas nacionais desde 2014
+              Fórmulas Ayurvédicas com ervas do Brasil
             </p>
           </div>
           <div className="flex justify-end">
