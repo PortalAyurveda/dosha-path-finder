@@ -5,6 +5,3 @@
 - [x] Validar tipos, build e fluxos públicos
 - [x] Corrigir sobreposições do cabeçalho e corte superior do carrinho no celular
 - [x] Aba "Língua" na sala do curso com as três fotos da língua
-- [x] Integrar seções editáveis, páginas Meu Dosha e admin, e ajustes solicitados nos 13 arquivos do front
-- [x] Verificar testes e navegação pública sem alterar o banco (12 testes passaram; compilação sem erros; /auth fornecido não existe)
-- [ ] Verificar seções e edição com conta real — bloqueado: sessão autenticada indisponível no Supabase externo

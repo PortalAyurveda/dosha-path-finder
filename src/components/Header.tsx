@@ -473,7 +473,7 @@ const Header = () => {
             </Link>
           )}
 
-          {profile?.subscription_status !== "active" && profile?.is_premium !== true && (
+          {profile?.subscription_status !== "active" && (
             <Link to="/assinar" className={`hidden lg:block ${searchOpen ? "lg:hidden" : ""}`}>
               <Button
                 size="sm"

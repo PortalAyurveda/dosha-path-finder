@@ -3808,7 +3808,6 @@ export type Database = {
           curso_id: string
           id: string
           obs: string | null
-          parcelas: number | null
           preco: number
           requer_curso_id: string
           valido_ate: string | null
@@ -3819,7 +3818,6 @@ export type Database = {
           curso_id: string
           id?: string
           obs?: string | null
-          parcelas?: number | null
           preco: number
           requer_curso_id: string
           valido_ate?: string | null
@@ -3830,7 +3828,6 @@ export type Database = {
           curso_id?: string
           id?: string
           obs?: string | null
-          parcelas?: number | null
           preco?: number
           requer_curso_id?: string
           valido_ate?: string | null
@@ -3854,7 +3851,6 @@ export type Database = {
       }
       cursos: {
         Row: {
-          acesso_meses: number | null
           ativo: boolean
           aviso_topo: string | null
           banner_html: string | null
@@ -3898,7 +3894,6 @@ export type Database = {
           updated_at: string
         }
         Insert: {
-          acesso_meses?: number | null
           ativo?: boolean
           aviso_topo?: string | null
           banner_html?: string | null
@@ -3942,7 +3937,6 @@ export type Database = {
           updated_at?: string
         }
         Update: {
-          acesso_meses?: number | null
           ativo?: boolean
           aviso_topo?: string | null
           banner_html?: string | null
@@ -8199,89 +8193,6 @@ export type Database = {
         }
         Relationships: []
       }
-      paginas_venda: {
-        Row: {
-          ativo: boolean
-          atualizado_em: string
-          criado_em: string
-          css: string
-          descricao: string | null
-          encerrada_html: string | null
-          html: string
-          imagem_url: string | null
-          preco_especial_id: string
-          slug: string
-          texto_botao: string
-          texto_email: string
-          titulo: string
-        }
-        Insert: {
-          ativo?: boolean
-          atualizado_em?: string
-          criado_em?: string
-          css?: string
-          descricao?: string | null
-          encerrada_html?: string | null
-          html?: string
-          imagem_url?: string | null
-          preco_especial_id: string
-          slug: string
-          texto_botao?: string
-          texto_email?: string
-          titulo: string
-        }
-        Update: {
-          ativo?: boolean
-          atualizado_em?: string
-          criado_em?: string
-          css?: string
-          descricao?: string | null
-          encerrada_html?: string | null
-          html?: string
-          imagem_url?: string | null
-          preco_especial_id?: string
-          slug?: string
-          texto_botao?: string
-          texto_email?: string
-          titulo?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "paginas_venda_preco_especial_id_fkey"
-            columns: ["preco_especial_id"]
-            isOneToOne: false
-            referencedRelation: "curso_preco_especial"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      paginas_venda_acessos: {
-        Row: {
-          criado_em: string
-          email: string | null
-          id: number
-          resultado: string
-          slug: string
-          user_id: string | null
-        }
-        Insert: {
-          criado_em?: string
-          email?: string | null
-          id?: never
-          resultado: string
-          slug: string
-          user_id?: string | null
-        }
-        Update: {
-          criado_em?: string
-          email?: string | null
-          id?: never
-          resultado?: string
-          slug?: string
-          user_id?: string | null
-        }
-        Relationships: []
-      }
       perfis: {
         Row: {
           created_at: string | null
@@ -10457,134 +10368,6 @@ export type Database = {
           verse_sanskrit?: string
         }
         Relationships: []
-      }
-      secao_eventos: {
-        Row: {
-          criado_em: string
-          dia: string
-          estado: string | null
-          evento: string
-          slug: string
-          user_id: string
-        }
-        Insert: {
-          criado_em?: string
-          dia?: string
-          estado?: string | null
-          evento: string
-          slug: string
-          user_id: string
-        }
-        Update: {
-          criado_em?: string
-          dia?: string
-          estado?: string | null
-          evento?: string
-          slug?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
-      secoes: {
-        Row: {
-          amostra: number
-          ativo: boolean
-          atualizado_em: string
-          criado_em: string
-          funcao: string | null
-          html: string | null
-          icone: string | null
-          lancado_em: string | null
-          nivel: string
-          pilha_cadeado: string | null
-          pilha_link: string | null
-          pilha_link_texto: string | null
-          pilha_texto: string | null
-          slug: string
-          textos: Json
-          tipo: string
-          titulo: string | null
-          titulo_admin: string
-        }
-        Insert: {
-          amostra?: number
-          ativo?: boolean
-          atualizado_em?: string
-          criado_em?: string
-          funcao?: string | null
-          html?: string | null
-          icone?: string | null
-          lancado_em?: string | null
-          nivel?: string
-          pilha_cadeado?: string | null
-          pilha_link?: string | null
-          pilha_link_texto?: string | null
-          pilha_texto?: string | null
-          slug: string
-          textos?: Json
-          tipo?: string
-          titulo?: string | null
-          titulo_admin: string
-        }
-        Update: {
-          amostra?: number
-          ativo?: boolean
-          atualizado_em?: string
-          criado_em?: string
-          funcao?: string | null
-          html?: string | null
-          icone?: string | null
-          lancado_em?: string | null
-          nivel?: string
-          pilha_cadeado?: string | null
-          pilha_link?: string | null
-          pilha_link_texto?: string | null
-          pilha_texto?: string | null
-          slug?: string
-          textos?: Json
-          tipo?: string
-          titulo?: string | null
-          titulo_admin?: string
-        }
-        Relationships: []
-      }
-      secoes_lugares: {
-        Row: {
-          ativo: boolean
-          criado_em: string
-          id: string
-          ordem: number
-          publico: string | null
-          secao_slug: string
-          slot: string
-        }
-        Insert: {
-          ativo?: boolean
-          criado_em?: string
-          id?: string
-          ordem?: number
-          publico?: string | null
-          secao_slug: string
-          slot: string
-        }
-        Update: {
-          ativo?: boolean
-          criado_em?: string
-          id?: string
-          ordem?: number
-          publico?: string | null
-          secao_slug?: string
-          slot?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "secoes_lugares_secao_slug_fkey"
-            columns: ["secao_slug"]
-            isOneToOne: false
-            referencedRelation: "secoes"
-            referencedColumns: ["slug"]
-          },
-        ]
       }
       seo_sentinela: {
         Row: {
@@ -13603,131 +13386,6 @@ export type Database = {
           tag: string
         }[]
       }
-      md_acesso: { Args: { p_uid: string }; Returns: Json }
-      md_agni: {
-        Args: { forte: number; fraco: number; irr: number }
-        Returns: Json
-      }
-      md_cab: {
-        Args: { icone: string; novo?: boolean; titulo: string }
-        Returns: string
-      }
-      md_cor: { Args: { d: string; uso: string }; Returns: string }
-      md_css: { Args: never; Returns: string }
-      md_cur: { Args: { e: Json }; Returns: Json }
-      md_d: { Args: { x: string }; Returns: string }
-      md_dest: { Args: { r: Json }; Returns: string }
-      md_destaque: {
-        Args: { k: number; p: number; v: number }
-        Returns: string
-      }
-      md_dia: { Args: { t: string }; Returns: string }
-      md_dist: { Args: { d: string; s: number }; Returns: number }
-      md_dn: { Args: { d: string }; Returns: string }
-      md_e: { Args: { a: string[] }; Returns: string }
-      md_esc: { Args: { t: string }; Returns: string }
-      md_estado: { Args: { p_ref: string; p_uid: string }; Returns: Json }
-      md_faixa: { Args: { z: number }; Returns: string }
-      md_frase_faltam: {
-        Args: { d: string; s: Json; val: number }
-        Returns: string
-      }
-      md_html_agni: { Args: { meta: number; nivel: number }; Returns: string }
-      md_html_quadro: {
-        Args: { k: number; p: number; v: number }
-        Returns: string
-      }
-      md_html_rev: {
-        Args: { dest: string; rev: Json; s: Json }
-        Returns: string
-      }
-      md_icone: { Args: { nome: string; tam?: number }; Returns: string }
-      md_limpa: { Args: { t: string }; Returns: string }
-      md_lingua: { Args: { p_uid: string }; Returns: Json }
-      md_lingua_rotulo: { Args: { n: number; s: Json }; Returns: string }
-      md_linha: {
-        Args: { corpo: string; icone: string; slug: string; titulo: string }
-        Returns: string
-      }
-      md_lk: {
-        Args: { cls?: string; evento?: string; href: string; txt: string }
-        Returns: string
-      }
-      md_mes: { Args: { x: string }; Returns: string }
-      md_mes_longo: { Args: { x: string }; Returns: string }
-      md_montar: {
-        Args: { p_grava: boolean; p_ref: string; p_slot: string; p_uid: string }
-        Returns: string
-      }
-      md_n:
-        | {
-            Args: { x: number }
-            Returns: {
-              error: true
-            } & "Could not choose the best candidate function between: public.md_n(x => float8), public.md_n(x => numeric). Try renaming the parameters or the function itself in the database so function overloading can be resolved"
-          }
-        | {
-            Args: { x: number }
-            Returns: {
-              error: true
-            } & "Could not choose the best candidate function between: public.md_n(x => float8), public.md_n(x => numeric). Try renaming the parameters or the function itself in the database so function overloading can be resolved"
-          }
-      md_nome: { Args: { d: string }; Returns: string }
-      md_norm: { Args: { t: string }; Returns: string }
-      md_novo: { Args: { s: Json }; Returns: boolean }
-      md_oa: { Args: { tipo: string }; Returns: string }
-      md_pilha_cartao: {
-        Args: { s: Json; texto: string; titulo?: string }
-        Returns: string
-      }
-      md_posicao: { Args: { d: string; s: number }; Returns: number }
-      md_regua: { Args: { d: string }; Returns: number[] }
-      md_rev: { Args: { p_sess: string }; Returns: Json }
-      md_rodape: { Args: { frase: string; lk?: string }; Returns: string }
-      md_sec_akasha: { Args: { e: Json; s: Json }; Returns: string }
-      md_sec_aviso: { Args: { e: Json; s: Json }; Returns: string }
-      md_sec_caminho: { Args: { e: Json; s: Json }; Returns: string }
-      md_sec_cursos: { Args: { e: Json; s: Json }; Returns: string }
-      md_sec_digestao: { Args: { e: Json; s: Json }; Returns: string }
-      md_sec_doshas: { Args: { e: Json; s: Json }; Returns: string }
-      md_sec_evolucao: { Args: { e: Json; s: Json }; Returns: string }
-      md_sec_lingua: { Args: { e: Json; s: Json }; Returns: string }
-      md_sec_lingua_pagina: { Args: { e: Json; s: Json }; Returns: string }
-      md_sec_momento: { Args: { e: Json; s: Json }; Returns: string }
-      md_sec_passo: { Args: { e: Json; s: Json }; Returns: string }
-      md_sec_pilha: { Args: { e: Json; s: Json }; Returns: string }
-      md_sec_pontos: { Args: { e: Json; s: Json }; Returns: string }
-      md_sec_refazer: { Args: { e: Json; s: Json }; Returns: string }
-      md_sec_retrato: { Args: { e: Json; s: Json }; Returns: string }
-      md_sec_revisoes: { Args: { e: Json; s: Json }; Returns: string }
-      md_sec_revisoes_pagina: { Args: { e: Json; s: Json }; Returns: string }
-      md_sec_rotina: { Args: { e: Json; s: Json }; Returns: string }
-      md_sec_sintomas: { Args: { e: Json; s: Json }; Returns: string }
-      md_sec_tipos: { Args: { e: Json; s: Json }; Returns: string }
-      md_sintomas: { Args: { tags: string }; Returns: string[] }
-      md_svg_evolucao: {
-        Args: { cols: Json; dest: string; gid?: string; w?: number }
-        Returns: string
-      }
-      md_svg_pizza: {
-        Args: { k: number; p: number; v: number }
-        Returns: string
-      }
-      md_t: {
-        Args: { chave: string; padrao: string; s: Json; vars?: Json }
-        Returns: string
-      }
-      md_titulo: {
-        Args: { k: number; p: number; v: number }
-        Returns: string[]
-      }
-      md_titulo_secao: {
-        Args: { padrao: string; s: Json; vars?: Json }
-        Returns: string
-      }
-      md_topo: { Args: { e: Json }; Returns: Json }
-      md_zn: { Args: { d: string; s: number }; Returns: number }
-      md_zona: { Args: { d: string; s: number }; Returns: string }
       meus_agravamentos: {
         Args: never
         Returns: {
@@ -14011,12 +13669,6 @@ export type Database = {
           verse_sanskrit: string
         }[]
       }
-      secao_evento: {
-        Args: { p_evento: string; p_slug: string }
-        Returns: undefined
-      }
-      secoes_html: { Args: { p_ref?: string; p_slot: string }; Returns: string }
-      secoes_lugares_ativos: { Args: never; Returns: string[] }
       sede_predominante_dosha: {
         Args: { p_dosha: string; p_tags: string }
         Returns: string

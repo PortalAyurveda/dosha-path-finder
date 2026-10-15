@@ -827,13 +827,13 @@ const Plano30Dias = ({ isPremium }: { isPremium: boolean }) => {
             <p className="text-base text-foreground font-medium leading-relaxed">
               {isPremium
                 ? "Seu plano diário de Ayurveda está pronto: café da manhã, almoço, chás, prática e tônico da noite."
-                : "Receba um plano diário para o seu dosha: café, almoço, chás, prática e tônico da noite, revisado todo mês."}
+                : "Receba um plano diário para o seu dosha — café, almoço, chás, prática e tônico da noite, revisado todo mês."}
             </p>
           </div>
           <Button
             variant={isPremium ? "secondary" : "default"}
             size="sm"
-            onClick={() => navigate(isPremium ? "/minha-rotina" : "/minha-rotina?origem=meu_dosha_plano30")}
+            onClick={() => navigate("/minha-rotina")}
             className="self-start sm:self-auto shrink-0"
           >
             {isPremium ? "Ver minha rotina →" : "Conhecer minha rotina →"}

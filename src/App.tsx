@@ -32,7 +32,6 @@ const LaunchPage = lazy(() => import("./pages/LaunchPage"));
 const PreviewLoading = lazy(() => import("./pages/PreviewLoading"));
 const TesteDeDosha = lazy(() => import("./pages/TesteDeDosha"));
 const MeuDosha = lazy(() => import("./pages/MeuDosha"));
-const MeuDoshaModulo = lazy(() => import("./pages/MeuDoshaModulo"));
 const MeuPerfil = lazy(() => import("./pages/MeuPerfil"));
 const Biblioteca = lazy(() => import("./pages/Biblioteca"));
 const TextosClassicos = lazy(() => import("./pages/TextosClassicos"));
@@ -125,7 +124,6 @@ const Cobranca = lazy(() => import("./pages/Cobranca"));
 const Pesquisa = lazy(() => import("./pages/Pesquisa"));
 const Revisao = lazy(() => import("./pages/Revisao"));
 const AdminBanners = lazy(() => import("./pages/AdminBanners"));
-const AdminSecoes = lazy(() => import("./pages/AdminSecoes"));
 const RpgAdmin = lazy(() => import("./pages/RpgAdmin"));
 const AdminRpg = lazy(() => import("./pages/AdminRpg"));
 const Rpg = lazy(() => import("./pages/Rpg"));
@@ -224,7 +222,6 @@ const RoutedApp = () => {
               <Route path="/detox/obrigado" element={<DetoxObrigado />} />
               <Route path="/detox/kit" element={<DetoxKit />} />
               <Route path="/meu-dosha" element={<MeuDosha />} />
-              <Route path="/meu-dosha/:modulo" element={<MeuDoshaModulo />} />
               <Route path="/meu-perfil" element={<MeuPerfil />} />
               <Route path="/minha-rotina" element={<MinhaRotina />} />
               <Route path="/imprimir" element={<Imprimir />} />
@@ -346,7 +343,6 @@ const RoutedApp = () => {
               <Route path="/escola/aluno/aula/:id" element={<EscolaAlunoAula />} />
 
               <Route path="/admin/banners" element={<AdminRoute><AdminBanners /></AdminRoute>} />
-              <Route path="/admin/secoes" element={<AdminRoute><AdminSecoes /></AdminRoute>} />
               <Route path="/admin/mockups" element={<AdminRoute><AdminMockups /></AdminRoute>} />
               <Route path="/admin/rpg" element={<AdminRoute><AdminRpg /></AdminRoute>} />
 
