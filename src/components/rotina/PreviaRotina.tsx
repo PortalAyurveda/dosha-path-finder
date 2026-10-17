@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { Check, ChevronRight, Lock, LockOpen } from "lucide-react";
+import { Check, ChevronRight, Lock, LockOpen, Search } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/contexts/UserContext";
 import NuggetIscaDialog from "@/components/rotina/NuggetIscaDialog";
@@ -42,6 +42,7 @@ const PreviaRotina = ({ linhas, temTeste, nuggetAlvo, abrirItem, dataLabel, dosh
   const planoRef = useRef<HTMLDivElement | null>(null);
   const [aberto, setAberto] = useState<Nugget | null>(null);
   const [carregando, setCarregando] = useState(false);
+  const [aba, setAba] = useState<"hoje" | "receitas">("hoje");
 
   const registrar = (evento: string, plano?: string) => {
     void (supabase.from("assinar_eventos" as any) as any)
@@ -165,6 +166,32 @@ const PreviaRotina = ({ linhas, temTeste, nuggetAlvo, abrirItem, dataLabel, dosh
         ) : null}
       </div>
 
+      <div role="tablist" className="flex justify-center gap-1 border-b-2 border-border">
+        <button
+          type="button"
+          role="tab"
+          aria-selected={aba === "hoje"}
+          onClick={() => setAba("hoje")}
+          className={`font-serif font-bold whitespace-nowrap px-2 pt-2 pb-3 -mb-[2px] border-b-[3px] text-base ${aba === "hoje" ? "border-[#E8806A]" : "border-transparent text-muted-foreground"}`}
+          style={aba === "hoje" ? { color: PRIMARY } : undefined}
+        >
+          Rotina de hoje
+        </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={aba === "receitas"}
+          onClick={() => { setAba("receitas"); registrar("clique_aba_receitas"); }}
+          className={`inline-flex items-center gap-1.5 font-serif font-bold whitespace-nowrap px-2 pt-2 pb-3 -mb-[2px] border-b-[3px] text-base ${aba === "receitas" ? "border-[#E8806A]" : "border-transparent text-muted-foreground"}`}
+          style={aba === "receitas" ? { color: PRIMARY } : undefined}
+        >
+          <Lock className="h-4 w-4" />
+          Todas as receitas
+        </button>
+      </div>
+
+      {aba === "hoje" ? (
+        <>
       {itens.length === 0 ? (
         <div className="rounded-2xl border border-border bg-card p-6 text-center text-sm text-muted-foreground">
           Sua rotina de hoje está sendo montada. Volte em alguns minutos.
@@ -217,6 +244,55 @@ const PreviaRotina = ({ linhas, temTeste, nuggetAlvo, abrirItem, dataLabel, dosh
               </button>
             );
           })}
+        </div>
+      )}
+        </>
+      ) : (
+        <div className="space-y-4">
+          <div className="pointer-events-none select-none opacity-40" aria-hidden="true">
+            <div
+              className="flex items-center gap-2 rounded-xl border-2 border-border bg-background px-3"
+              style={{ minHeight: 52 }}
+            >
+              <Search className="h-5 w-5 text-muted-foreground" />
+              <span className="text-base text-muted-foreground">Receita ou ingrediente (ex.: inhame)</span>
+            </div>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {["Tudo", "Café da manhã", "Sucos e leites", "Lanches", "Almoço", "Jantar"].map((c, i) => (
+                <span
+                  key={c}
+                  className={`rounded-full border px-3 py-2 text-sm font-semibold ${i === 0 ? "bg-primary text-primary-foreground border-primary" : "bg-background text-muted-foreground border-border"}`}
+                >
+                  {c}
+                </span>
+              ))}
+            </div>
+            <div className="mt-2 flex flex-wrap gap-2">
+              {[
+                { nome: "Todos", cor: "" },
+                { nome: "Para Vata", cor: "#6B8AFF" },
+                { nome: "Para Pitta", cor: "#FF7676" },
+                { nome: "Para Kapha", cor: "#9ED88B" },
+              ].map((d, i) => (
+                <span
+                  key={d.nome}
+                  className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-2 text-sm font-semibold ${i === 0 ? "bg-primary text-primary-foreground border-primary" : "bg-background text-muted-foreground border-border"}`}
+                >
+                  {d.cor && <span className="h-2.5 w-2.5 rounded-full" style={{ background: d.cor }} />}
+                  {d.nome}
+                </span>
+              ))}
+            </div>
+          </div>
+          <div className="rounded-2xl border border-border bg-card p-5 text-center">
+            <Lock className="mx-auto h-5 w-5" style={{ color: PRIMARY }} />
+            <p className="mt-2 font-serif font-bold text-lg" style={{ color: PRIMARY }}>
+              Somente para assinantes
+            </p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Com a assinatura você procura em todas as receitas do programa: por nome, por ingrediente, por refeição e por dosha.
+            </p>
+          </div>
         </div>
       )}
 
