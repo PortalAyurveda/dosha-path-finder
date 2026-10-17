@@ -137,6 +137,24 @@ export type Database = {
         }
         Relationships: []
       }
+      _bkp_detox_elixir_coar_20261017: {
+        Row: {
+          conteudo: string | null
+          id: string | null
+          tabela: string | null
+        }
+        Insert: {
+          conteudo?: string | null
+          id?: string | null
+          tabela?: string | null
+        }
+        Update: {
+          conteudo?: string | null
+          id?: string | null
+          tabela?: string | null
+        }
+        Relationships: []
+      }
       _bkp_detox_material_20261013: {
         Row: {
           content: string | null
@@ -542,6 +560,30 @@ export type Database = {
           slot?: string | null
           status?: string | null
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      _bkp_videos_repetidos_20261016: {
+        Row: {
+          chave: string | null
+          coluna: string | null
+          gravado_em: string | null
+          tabela: string | null
+          valor_antigo: string | null
+        }
+        Insert: {
+          chave?: string | null
+          coluna?: string | null
+          gravado_em?: string | null
+          tabela?: string | null
+          valor_antigo?: string | null
+        }
+        Update: {
+          chave?: string | null
+          coluna?: string | null
+          gravado_em?: string | null
+          tabela?: string | null
+          valor_antigo?: string | null
         }
         Relationships: []
       }
@@ -3043,6 +3085,308 @@ export type Database = {
         }
         Relationships: []
       }
+      classicos_capitulos: {
+        Row: {
+          amostra: string | null
+          ativo: boolean
+          created_at: string
+          filtro: Json
+          fonte_titulo: string | null
+          id: number
+          n_versos: number
+          nivel1: string | null
+          nivel1_ordem: number
+          nivel2: string | null
+          nivel2_ordem: number
+          obra_id: number
+          resumo: string | null
+          revisado: boolean
+          temas: string[]
+          titulo_devanagari: string | null
+          titulo_pt: string | null
+          titulo_translit: string | null
+          updated_at: string
+          verso_final: string | null
+          verso_inicial: string | null
+        }
+        Insert: {
+          amostra?: string | null
+          ativo?: boolean
+          created_at?: string
+          filtro?: Json
+          fonte_titulo?: string | null
+          id?: never
+          n_versos?: number
+          nivel1?: string | null
+          nivel1_ordem?: number
+          nivel2?: string | null
+          nivel2_ordem?: number
+          obra_id: number
+          resumo?: string | null
+          revisado?: boolean
+          temas?: string[]
+          titulo_devanagari?: string | null
+          titulo_pt?: string | null
+          titulo_translit?: string | null
+          updated_at?: string
+          verso_final?: string | null
+          verso_inicial?: string | null
+        }
+        Update: {
+          amostra?: string | null
+          ativo?: boolean
+          created_at?: string
+          filtro?: Json
+          fonte_titulo?: string | null
+          id?: never
+          n_versos?: number
+          nivel1?: string | null
+          nivel1_ordem?: number
+          nivel2?: string | null
+          nivel2_ordem?: number
+          obra_id?: number
+          resumo?: string | null
+          revisado?: boolean
+          temas?: string[]
+          titulo_devanagari?: string | null
+          titulo_pt?: string | null
+          titulo_translit?: string | null
+          updated_at?: string
+          verso_final?: string | null
+          verso_inicial?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "classicos_capitulos_obra_id_fkey"
+            columns: ["obra_id"]
+            isOneToOne: false
+            referencedRelation: "classicos_obras"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      classicos_obras: {
+        Row: {
+          apresentacao: string | null
+          ativo: boolean
+          autor: string | null
+          capa_url: string | null
+          col_nivel1: string | null
+          col_nivel2: string | null
+          col_ordem: string | null
+          col_sanscrito: string | null
+          col_titulo: string | null
+          col_verso: string
+          completude: string
+          created_at: string
+          epoca: string | null
+          estante: string
+          filtro: Json
+          id: number
+          nome: string
+          nome_devanagari: string | null
+          nome_simples: string | null
+          nota_estado: string | null
+          ordem: number
+          rotulo_nivel1: string | null
+          rotulo_nivel2: string | null
+          slug: string
+          tabela: string
+          titulo_idioma: string | null
+          total_versos: number
+          updated_at: string
+        }
+        Insert: {
+          apresentacao?: string | null
+          ativo?: boolean
+          autor?: string | null
+          capa_url?: string | null
+          col_nivel1?: string | null
+          col_nivel2?: string | null
+          col_ordem?: string | null
+          col_sanscrito?: string | null
+          col_titulo?: string | null
+          col_verso?: string
+          completude?: string
+          created_at?: string
+          epoca?: string | null
+          estante?: string
+          filtro?: Json
+          id?: never
+          nome: string
+          nome_devanagari?: string | null
+          nome_simples?: string | null
+          nota_estado?: string | null
+          ordem?: number
+          rotulo_nivel1?: string | null
+          rotulo_nivel2?: string | null
+          slug: string
+          tabela: string
+          titulo_idioma?: string | null
+          total_versos?: number
+          updated_at?: string
+        }
+        Update: {
+          apresentacao?: string | null
+          ativo?: boolean
+          autor?: string | null
+          capa_url?: string | null
+          col_nivel1?: string | null
+          col_nivel2?: string | null
+          col_ordem?: string | null
+          col_sanscrito?: string | null
+          col_titulo?: string | null
+          col_verso?: string
+          completude?: string
+          created_at?: string
+          epoca?: string | null
+          estante?: string
+          filtro?: Json
+          id?: never
+          nome?: string
+          nome_devanagari?: string | null
+          nome_simples?: string | null
+          nota_estado?: string | null
+          ordem?: number
+          rotulo_nivel1?: string | null
+          rotulo_nivel2?: string | null
+          slug?: string
+          tabela?: string
+          titulo_idioma?: string | null
+          total_versos?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      classicos_pagina: {
+        Row: {
+          ativo: boolean
+          bloco: string
+          chave: string
+          icone: string | null
+          ordem: number
+          rota: string | null
+          texto: string | null
+          titulo: string | null
+          updated_at: string
+        }
+        Insert: {
+          ativo?: boolean
+          bloco: string
+          chave: string
+          icone?: string | null
+          ordem?: number
+          rota?: string | null
+          texto?: string | null
+          titulo?: string | null
+          updated_at?: string
+        }
+        Update: {
+          ativo?: boolean
+          bloco?: string
+          chave?: string
+          icone?: string | null
+          ordem?: number
+          rota?: string | null
+          texto?: string | null
+          titulo?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      classicos_planta_versos: {
+        Row: {
+          entrada: string | null
+          obra_id: number
+          planta_id: number
+          source_id: number
+          source_table: string
+          verso_no: string | null
+        }
+        Insert: {
+          entrada?: string | null
+          obra_id: number
+          planta_id: number
+          source_id: number
+          source_table: string
+          verso_no?: string | null
+        }
+        Update: {
+          entrada?: string | null
+          obra_id?: number
+          planta_id?: number
+          source_id?: number
+          source_table?: string
+          verso_no?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "classicos_planta_versos_obra_id_fkey"
+            columns: ["obra_id"]
+            isOneToOne: false
+            referencedRelation: "classicos_obras"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "classicos_planta_versos_planta_id_fkey"
+            columns: ["planta_id"]
+            isOneToOne: false
+            referencedRelation: "classicos_plantas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      classicos_plantas: {
+        Row: {
+          ativo: boolean
+          chave: string
+          created_at: string
+          descricao: string | null
+          id: number
+          n_obras: number
+          n_versos: number
+          nome: string
+          nome_devanagari: string | null
+          nome_latim: string | null
+          nome_popular: string | null
+          revisado: boolean
+          sinonimos: string[]
+          updated_at: string
+        }
+        Insert: {
+          ativo?: boolean
+          chave: string
+          created_at?: string
+          descricao?: string | null
+          id?: never
+          n_obras?: number
+          n_versos?: number
+          nome: string
+          nome_devanagari?: string | null
+          nome_latim?: string | null
+          nome_popular?: string | null
+          revisado?: boolean
+          sinonimos?: string[]
+          updated_at?: string
+        }
+        Update: {
+          ativo?: boolean
+          chave?: string
+          created_at?: string
+          descricao?: string | null
+          id?: never
+          n_obras?: number
+          n_versos?: number
+          nome?: string
+          nome_devanagari?: string | null
+          nome_latim?: string | null
+          nome_popular?: string | null
+          revisado?: boolean
+          sinonimos?: string[]
+          updated_at?: string
+        }
+        Relationships: []
+      }
       cobrancas: {
         Row: {
           created_at: string
@@ -3808,6 +4152,7 @@ export type Database = {
           curso_id: string
           id: string
           obs: string | null
+          parcelas: number | null
           preco: number
           requer_curso_id: string
           valido_ate: string | null
@@ -3818,6 +4163,7 @@ export type Database = {
           curso_id: string
           id?: string
           obs?: string | null
+          parcelas?: number | null
           preco: number
           requer_curso_id: string
           valido_ate?: string | null
@@ -3828,6 +4174,7 @@ export type Database = {
           curso_id?: string
           id?: string
           obs?: string | null
+          parcelas?: number | null
           preco?: number
           requer_curso_id?: string
           valido_ate?: string | null
@@ -3851,6 +4198,7 @@ export type Database = {
       }
       cursos: {
         Row: {
+          acesso_meses: number | null
           ativo: boolean
           aviso_topo: string | null
           banner_html: string | null
@@ -3894,6 +4242,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          acesso_meses?: number | null
           ativo?: boolean
           aviso_topo?: string | null
           banner_html?: string | null
@@ -3937,6 +4286,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          acesso_meses?: number | null
           ativo?: boolean
           aviso_topo?: string | null
           banner_html?: string | null
@@ -7341,6 +7691,7 @@ export type Database = {
           atankadarpana_note: string | null
           book: string
           chapter_name: string | null
+          chapter_name_norm: string | null
           citation_key: string
           continues_from_prev: boolean | null
           continues_to_next: boolean | null
@@ -7364,6 +7715,7 @@ export type Database = {
           atankadarpana_note?: string | null
           book?: string
           chapter_name?: string | null
+          chapter_name_norm?: string | null
           citation_key: string
           continues_from_prev?: boolean | null
           continues_to_next?: boolean | null
@@ -7387,6 +7739,7 @@ export type Database = {
           atankadarpana_note?: string | null
           book?: string
           chapter_name?: string | null
+          chapter_name_norm?: string | null
           citation_key?: string
           continues_from_prev?: boolean | null
           continues_to_next?: boolean | null
@@ -8190,6 +8543,89 @@ export type Database = {
           source_note?: string | null
           sutra_no?: number
           translation_pt?: string | null
+        }
+        Relationships: []
+      }
+      paginas_venda: {
+        Row: {
+          ativo: boolean
+          atualizado_em: string
+          criado_em: string
+          css: string
+          descricao: string | null
+          encerrada_html: string | null
+          html: string
+          imagem_url: string | null
+          preco_especial_id: string
+          slug: string
+          texto_botao: string
+          texto_email: string
+          titulo: string
+        }
+        Insert: {
+          ativo?: boolean
+          atualizado_em?: string
+          criado_em?: string
+          css?: string
+          descricao?: string | null
+          encerrada_html?: string | null
+          html?: string
+          imagem_url?: string | null
+          preco_especial_id: string
+          slug: string
+          texto_botao?: string
+          texto_email?: string
+          titulo: string
+        }
+        Update: {
+          ativo?: boolean
+          atualizado_em?: string
+          criado_em?: string
+          css?: string
+          descricao?: string | null
+          encerrada_html?: string | null
+          html?: string
+          imagem_url?: string | null
+          preco_especial_id?: string
+          slug?: string
+          texto_botao?: string
+          texto_email?: string
+          titulo?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "paginas_venda_preco_especial_id_fkey"
+            columns: ["preco_especial_id"]
+            isOneToOne: false
+            referencedRelation: "curso_preco_especial"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      paginas_venda_acessos: {
+        Row: {
+          criado_em: string
+          email: string | null
+          id: number
+          resultado: string
+          slug: string
+          user_id: string | null
+        }
+        Insert: {
+          criado_em?: string
+          email?: string | null
+          id?: never
+          resultado: string
+          slug: string
+          user_id?: string | null
+        }
+        Update: {
+          criado_em?: string
+          email?: string | null
+          id?: never
+          resultado?: string
+          slug?: string
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -10369,6 +10805,134 @@ export type Database = {
         }
         Relationships: []
       }
+      secao_eventos: {
+        Row: {
+          criado_em: string
+          dia: string
+          estado: string | null
+          evento: string
+          slug: string
+          user_id: string
+        }
+        Insert: {
+          criado_em?: string
+          dia?: string
+          estado?: string | null
+          evento: string
+          slug: string
+          user_id: string
+        }
+        Update: {
+          criado_em?: string
+          dia?: string
+          estado?: string | null
+          evento?: string
+          slug?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      secoes: {
+        Row: {
+          amostra: number
+          ativo: boolean
+          atualizado_em: string
+          criado_em: string
+          funcao: string | null
+          html: string | null
+          icone: string | null
+          lancado_em: string | null
+          nivel: string
+          pilha_cadeado: string | null
+          pilha_link: string | null
+          pilha_link_texto: string | null
+          pilha_texto: string | null
+          slug: string
+          textos: Json
+          tipo: string
+          titulo: string | null
+          titulo_admin: string
+        }
+        Insert: {
+          amostra?: number
+          ativo?: boolean
+          atualizado_em?: string
+          criado_em?: string
+          funcao?: string | null
+          html?: string | null
+          icone?: string | null
+          lancado_em?: string | null
+          nivel?: string
+          pilha_cadeado?: string | null
+          pilha_link?: string | null
+          pilha_link_texto?: string | null
+          pilha_texto?: string | null
+          slug: string
+          textos?: Json
+          tipo?: string
+          titulo?: string | null
+          titulo_admin: string
+        }
+        Update: {
+          amostra?: number
+          ativo?: boolean
+          atualizado_em?: string
+          criado_em?: string
+          funcao?: string | null
+          html?: string | null
+          icone?: string | null
+          lancado_em?: string | null
+          nivel?: string
+          pilha_cadeado?: string | null
+          pilha_link?: string | null
+          pilha_link_texto?: string | null
+          pilha_texto?: string | null
+          slug?: string
+          textos?: Json
+          tipo?: string
+          titulo?: string | null
+          titulo_admin?: string
+        }
+        Relationships: []
+      }
+      secoes_lugares: {
+        Row: {
+          ativo: boolean
+          criado_em: string
+          id: string
+          ordem: number
+          publico: string | null
+          secao_slug: string
+          slot: string
+        }
+        Insert: {
+          ativo?: boolean
+          criado_em?: string
+          id?: string
+          ordem?: number
+          publico?: string | null
+          secao_slug: string
+          slot: string
+        }
+        Update: {
+          ativo?: boolean
+          criado_em?: string
+          id?: string
+          ordem?: number
+          publico?: string | null
+          secao_slug?: string
+          slot?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "secoes_lugares_secao_slug_fkey"
+            columns: ["secao_slug"]
+            isOneToOne: false
+            referencedRelation: "secoes"
+            referencedColumns: ["slug"]
+          },
+        ]
+      }
       seo_sentinela: {
         Row: {
           falhas: Json
@@ -11380,6 +11944,7 @@ export type Database = {
       }
       verses_search_index: {
         Row: {
+          busca_pt: unknown
           id: number
           livro: string
           location_label: string | null
@@ -11391,6 +11956,7 @@ export type Database = {
           verse_sanskrit: string | null
         }
         Insert: {
+          busca_pt?: unknown
           id?: never
           livro: string
           location_label?: string | null
@@ -11402,6 +11968,7 @@ export type Database = {
           verse_sanskrit?: string | null
         }
         Update: {
+          busca_pt?: unknown
           id?: never
           livro?: string
           location_label?: string | null
@@ -11543,6 +12110,30 @@ export type Database = {
           texto_pt?: string
           verso_no?: string | null
           verso_sanskrit?: string | null
+        }
+        Relationships: []
+      }
+      videos_repetidos: {
+        Row: {
+          criado_em: string
+          fica_video_id: string | null
+          grupo: string | null
+          motivo: string | null
+          video_id: string
+        }
+        Insert: {
+          criado_em?: string
+          fica_video_id?: string | null
+          grupo?: string | null
+          motivo?: string | null
+          video_id: string
+        }
+        Update: {
+          criado_em?: string
+          fica_video_id?: string | null
+          grupo?: string | null
+          motivo?: string | null
+          video_id?: string
         }
         Relationships: []
       }
@@ -12807,6 +13398,169 @@ export type Database = {
       }
       certificado_para_imprimir: { Args: { p_slug: string }; Returns: Json }
       claim_dosha_test: { Args: { p_id_publico?: string }; Returns: Json }
+      classicos_capitulo: {
+        Args: { p_capitulo_id: number }
+        Returns: {
+          anterior_id: number
+          anterior_titulo: string
+          capitulo_id: number
+          estante: string
+          n_versos: number
+          nivel1: string
+          nivel2: string
+          obra_devanagari: string
+          obra_nome: string
+          obra_slug: string
+          proximo_id: number
+          proximo_titulo: string
+          resumo: string
+          rotulo_nivel1: string
+          rotulo_nivel2: string
+          temas: string[]
+          titulo_devanagari: string
+          titulo_pt: string
+          titulo_translit: string
+        }[]
+      }
+      classicos_capitulo_versos: {
+        Args: { p_capitulo_id: number; p_limite?: number; p_offset?: number }
+        Returns: {
+          ordem: number
+          sanscrito: string
+          texto_pt: string
+          verso_no: string
+        }[]
+      }
+      classicos_capitulos_por_tema: {
+        Args: { p_limite?: number; p_offset?: number; p_tema: string }
+        Returns: {
+          capitulo_id: number
+          n_versos: number
+          nivel1: string
+          nivel2: string
+          obra_nome: string
+          obra_slug: string
+          titulo_pt: string
+          titulo_translit: string
+          total: number
+        }[]
+      }
+      classicos_chave_planta: { Args: { p_iast: string }; Returns: string }
+      classicos_estante: {
+        Args: never
+        Returns: {
+          apresentacao: string
+          autor: string
+          capa_url: string
+          completude: string
+          epoca: string
+          estante: string
+          nome: string
+          nome_devanagari: string
+          nota_estado: string
+          slug: string
+          total_capitulos: number
+          total_versos: number
+        }[]
+      }
+      classicos_inventario: {
+        Args: never
+        Returns: {
+          capitulos: number
+          com_nome_capitulo: number
+          com_sanscrito: number
+          com_traducao: number
+          entradas_planta: number
+          estrutura: string
+          obra: string
+          secoes: number
+          tabela: string
+          versos: number
+        }[]
+      }
+      classicos_ordem_secao: { Args: { p_nome: string }; Returns: number }
+      classicos_planta_ler: {
+        Args: { p_planta_id: number }
+        Returns: {
+          entrada: string
+          obra: string
+          obra_slug: string
+          sanscrito: string
+          texto_pt: string
+          verso_no: string
+        }[]
+      }
+      classicos_plantas_listar: {
+        Args: {
+          p_busca?: string
+          p_letra?: string
+          p_limite?: number
+          p_minimo_obras?: number
+          p_obra?: string
+          p_offset?: number
+        }
+        Returns: {
+          id: number
+          n_obras: number
+          n_versos: number
+          nome: string
+          nome_devanagari: string
+          nome_latim: string
+          nome_popular: string
+          total: number
+          versos_nesta_obra: number
+        }[]
+      }
+      classicos_plantas_sincronizar: {
+        Args: never
+        Returns: {
+          entradas: number
+          obra: string
+        }[]
+      }
+      classicos_reindexar: {
+        Args: { p_slug?: string }
+        Returns: {
+          linhas: number
+          obra: string
+        }[]
+      }
+      classicos_sincronizar: {
+        Args: { p_slug?: string }
+        Returns: {
+          capitulos_gravados: number
+          obra: string
+          versos: number
+        }[]
+      }
+      classicos_sumario: {
+        Args: { p_obra: string }
+        Returns: {
+          capitulo_id: number
+          n_versos: number
+          nivel1: string
+          nivel1_ordem: number
+          nivel2: string
+          nivel2_ordem: number
+          resumo: string
+          rotulo_nivel1: string
+          rotulo_nivel2: string
+          temas: string[]
+          titulo_devanagari: string
+          titulo_pt: string
+          titulo_translit: string
+          verso_final: string
+          verso_inicial: string
+        }[]
+      }
+      classicos_temas_automaticos: {
+        Args: { p_estante?: string; p_texto: string }
+        Returns: string[]
+      }
+      classicos_titulo_automatico: {
+        Args: { p_amostra: string }
+        Returns: string
+      }
       coletar_dados_sintese_mensal: { Args: { p_email: string }; Returns: Json }
       confirmar_assinatura_pix: {
         Args: { p_mp_payment_id: string }
@@ -12909,6 +13663,7 @@ export type Database = {
         Returns: number
       }
       detox_sem_acento: { Args: { p: string }; Returns: string }
+      devanagari_iast: { Args: { p_texto: string }; Returns: string }
       escola_aluno_atual: { Args: never; Returns: string }
       escola_cardapio_do_modulo: {
         Args: { p_slug: string }
@@ -13386,6 +14141,131 @@ export type Database = {
           tag: string
         }[]
       }
+      md_acesso: { Args: { p_uid: string }; Returns: Json }
+      md_agni: {
+        Args: { forte: number; fraco: number; irr: number }
+        Returns: Json
+      }
+      md_cab: {
+        Args: { icone: string; novo?: boolean; titulo: string }
+        Returns: string
+      }
+      md_cor: { Args: { d: string; uso: string }; Returns: string }
+      md_css: { Args: never; Returns: string }
+      md_cur: { Args: { e: Json }; Returns: Json }
+      md_d: { Args: { x: string }; Returns: string }
+      md_dest: { Args: { r: Json }; Returns: string }
+      md_destaque: {
+        Args: { k: number; p: number; v: number }
+        Returns: string
+      }
+      md_dia: { Args: { t: string }; Returns: string }
+      md_dist: { Args: { d: string; s: number }; Returns: number }
+      md_dn: { Args: { d: string }; Returns: string }
+      md_e: { Args: { a: string[] }; Returns: string }
+      md_esc: { Args: { t: string }; Returns: string }
+      md_estado: { Args: { p_ref: string; p_uid: string }; Returns: Json }
+      md_faixa: { Args: { z: number }; Returns: string }
+      md_frase_faltam: {
+        Args: { d: string; s: Json; val: number }
+        Returns: string
+      }
+      md_html_agni: { Args: { meta: number; nivel: number }; Returns: string }
+      md_html_quadro: {
+        Args: { k: number; p: number; v: number }
+        Returns: string
+      }
+      md_html_rev: {
+        Args: { dest: string; rev: Json; s: Json }
+        Returns: string
+      }
+      md_icone: { Args: { nome: string; tam?: number }; Returns: string }
+      md_limpa: { Args: { t: string }; Returns: string }
+      md_lingua: { Args: { p_uid: string }; Returns: Json }
+      md_lingua_rotulo: { Args: { n: number; s: Json }; Returns: string }
+      md_linha: {
+        Args: { corpo: string; icone: string; slug: string; titulo: string }
+        Returns: string
+      }
+      md_lk: {
+        Args: { cls?: string; evento?: string; href: string; txt: string }
+        Returns: string
+      }
+      md_mes: { Args: { x: string }; Returns: string }
+      md_mes_longo: { Args: { x: string }; Returns: string }
+      md_montar: {
+        Args: { p_grava: boolean; p_ref: string; p_slot: string; p_uid: string }
+        Returns: string
+      }
+      md_n:
+        | {
+            Args: { x: number }
+            Returns: {
+              error: true
+            } & "Could not choose the best candidate function between: public.md_n(x => float8), public.md_n(x => numeric). Try renaming the parameters or the function itself in the database so function overloading can be resolved"
+          }
+        | {
+            Args: { x: number }
+            Returns: {
+              error: true
+            } & "Could not choose the best candidate function between: public.md_n(x => float8), public.md_n(x => numeric). Try renaming the parameters or the function itself in the database so function overloading can be resolved"
+          }
+      md_nome: { Args: { d: string }; Returns: string }
+      md_norm: { Args: { t: string }; Returns: string }
+      md_novo: { Args: { s: Json }; Returns: boolean }
+      md_oa: { Args: { tipo: string }; Returns: string }
+      md_pilha_cartao: {
+        Args: { s: Json; texto: string; titulo?: string }
+        Returns: string
+      }
+      md_posicao: { Args: { d: string; s: number }; Returns: number }
+      md_regua: { Args: { d: string }; Returns: number[] }
+      md_rev: { Args: { p_sess: string }; Returns: Json }
+      md_rodape: { Args: { frase: string; lk?: string }; Returns: string }
+      md_sec_akasha: { Args: { e: Json; s: Json }; Returns: string }
+      md_sec_aviso: { Args: { e: Json; s: Json }; Returns: string }
+      md_sec_caminho: { Args: { e: Json; s: Json }; Returns: string }
+      md_sec_cursos: { Args: { e: Json; s: Json }; Returns: string }
+      md_sec_digestao: { Args: { e: Json; s: Json }; Returns: string }
+      md_sec_doshas: { Args: { e: Json; s: Json }; Returns: string }
+      md_sec_evolucao: { Args: { e: Json; s: Json }; Returns: string }
+      md_sec_lingua: { Args: { e: Json; s: Json }; Returns: string }
+      md_sec_lingua_pagina: { Args: { e: Json; s: Json }; Returns: string }
+      md_sec_momento: { Args: { e: Json; s: Json }; Returns: string }
+      md_sec_passo: { Args: { e: Json; s: Json }; Returns: string }
+      md_sec_pilha: { Args: { e: Json; s: Json }; Returns: string }
+      md_sec_pontos: { Args: { e: Json; s: Json }; Returns: string }
+      md_sec_refazer: { Args: { e: Json; s: Json }; Returns: string }
+      md_sec_retrato: { Args: { e: Json; s: Json }; Returns: string }
+      md_sec_revisoes: { Args: { e: Json; s: Json }; Returns: string }
+      md_sec_revisoes_pagina: { Args: { e: Json; s: Json }; Returns: string }
+      md_sec_rotina: { Args: { e: Json; s: Json }; Returns: string }
+      md_sec_sintomas: { Args: { e: Json; s: Json }; Returns: string }
+      md_sec_tipos: { Args: { e: Json; s: Json }; Returns: string }
+      md_sintomas: { Args: { tags: string }; Returns: string[] }
+      md_svg_evolucao: {
+        Args: { cols: Json; dest: string; gid?: string; w?: number }
+        Returns: string
+      }
+      md_svg_pizza: {
+        Args: { k: number; p: number; v: number }
+        Returns: string
+      }
+      md_t: {
+        Args: { chave: string; padrao: string; s: Json; vars?: Json }
+        Returns: string
+      }
+      md_titulo: {
+        Args: { k: number; p: number; v: number }
+        Returns: string[]
+      }
+      md_titulo_secao: {
+        Args: { padrao: string; s: Json; vars?: Json }
+        Returns: string
+      }
+      md_topo: { Args: { e: Json }; Returns: Json }
+      md_zn: { Args: { d: string; s: number }; Returns: number }
+      md_zona: { Args: { d: string; s: number }; Returns: string }
       meus_agravamentos: {
         Args: never
         Returns: {
@@ -13520,6 +14400,21 @@ export type Database = {
         }
       }
       receita_teaser: { Args: { p_item: string }; Returns: Json }
+      receitas_catalogo: {
+        Args: never
+        Returns: {
+          busca: string
+          grupo: string
+          grupo_nome: string
+          grupo_ordem: number
+          id: string
+          ingredientes: string[]
+          kapha: number
+          pitta: number
+          titulo: string
+          vata: number
+        }[]
+      }
       receitas_para_impressao: {
         Args: { p_nugget_ids: string[] }
         Returns: {
@@ -13669,6 +14564,12 @@ export type Database = {
           verse_sanskrit: string
         }[]
       }
+      secao_evento: {
+        Args: { p_evento: string; p_slug: string }
+        Returns: undefined
+      }
+      secoes_html: { Args: { p_ref?: string; p_slot: string }; Returns: string }
+      secoes_lugares_ativos: { Args: never; Returns: string[] }
       sede_predominante_dosha: {
         Args: { p_dosha: string; p_tags: string }
         Returns: string
