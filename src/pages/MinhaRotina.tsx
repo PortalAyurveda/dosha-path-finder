@@ -24,6 +24,7 @@ import {
   ShoppingCart,
   CalendarDays,
   BookOpen,
+  Search,
 } from "lucide-react";
 
 import { getIconeLucide } from "@/lib/iconesLucide";
@@ -460,14 +461,6 @@ const MinhaRotina = () => {
     },
   });
 
-  const favoritas = useMemo(
-    () =>
-      (favoritosRows ?? [])
-        .map((f) => nuggetsById.get(f.nugget_id))
-        .filter((n): n is Nugget => !!n),
-    [favoritosRows, nuggetsById]
-  );
-
   const favoritosKey = ["minhas-favoritas", user?.id] as const;
   const favoritosSet = useMemo(
     () => new Set((favoritosRows ?? []).map((f) => f.nugget_id)),
@@ -507,6 +500,20 @@ const MinhaRotina = () => {
     }
   };
 
+  // ===== Todas as receitas =====
+  const [aba, setAba] = useState<"semana" | "receitas">(() =>
+    new URLSearchParams(window.location.search).get("aba") === "receitas" ? "receitas" : "semana"
+  );
+  const { data: catalogo } = useQuery({
+    queryKey: ["receitas-catalogo", user?.id],
+    enabled: temAcessoRotina,
+    staleTime: 30 * 60 * 1000,
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("receitas_catalogo" as any);
+      if (error) throw error;
+      return (data ?? []) as ReceitaCatalogo[];
+    },
+  });
 
   // Modal de impressão
 
@@ -795,6 +802,36 @@ const MinhaRotina = () => {
         ultimaRevisao={(doshaInfo?.created_at as string | null) ?? null}
       />
 
+      <div role="tablist" className="flex gap-1 border-b-2 border-border mb-6">
+        {([
+          { k: "semana", nome: "Minha semana" },
+          { k: "receitas", nome: "Todas as receitas" },
+        ] as const).map((t) => (
+          <button
+            key={t.k}
+            role="tab"
+            aria-selected={aba === t.k}
+            onClick={() => setAba(t.k)}
+            className={cn(
+              "font-serif font-bold whitespace-nowrap px-2 pt-2 pb-3 -mb-[2px] border-b-[3px] text-base md:text-lg transition-colors",
+              aba === t.k ? "text-[#352F54] border-[#E8806A]" : "text-muted-foreground border-transparent"
+            )}
+          >
+            {t.nome}
+            {t.k === "receitas" && catalogo && (
+              <span
+                className="ml-1.5 align-middle rounded-full px-2 py-0.5 font-sans text-xs font-bold"
+                style={{ background: "rgba(232,128,106,0.15)", color: "#B4382E" }}
+              >
+                {catalogo.length}
+              </span>
+            )}
+          </button>
+        ))}
+      </div>
+
+      {aba === "semana" ? (
+        <>
       {/* Topo */}
       <header className="mb-6">
         <div className="flex items-start justify-between gap-3 flex-wrap">
@@ -1086,57 +1123,6 @@ const MinhaRotina = () => {
           </section>
         )}
 
-        {/* ===== Suas receitas favoritas ===== */}
-        <section>
-          <div className="flex items-center justify-between gap-3 flex-wrap">
-            <h2 className="font-serif" style={{ fontSize: 18, color: "#352F54", fontWeight: 600 }}>
-              Suas receitas favoritas
-            </h2>
-            {favoritas.length > 0 && (
-              <button
-                onClick={() =>
-                  navigate(
-                    `/imprimir?pecas=receitas&ids=${favoritas.map((n) => n.id).join(",")}`
-                  )
-                }
-                className="inline-flex items-center gap-2 rounded-xl px-4 font-semibold text-white"
-                style={{ minHeight: 48, fontSize: 15, background: "#352F54" }}
-              >
-                <Printer className="h-5 w-5" strokeWidth={2} />
-                Imprimir só as favoritas
-              </button>
-            )}
-          </div>
-          {favoritas.length === 0 ? (
-            <p className="mt-2" style={{ fontSize: 16, color: "#3F3A52", lineHeight: 1.6 }}>
-              Você ainda não guardou nenhuma. Toque na <strong>estrela</strong> no card de uma
-              receita que você gostou: ela fica guardada aqui pra você imprimir depois.
-            </p>
-          ) : (
-            <div className="mt-3 -mx-1 px-1 flex gap-3 overflow-x-auto snap-x pb-2">
-              {favoritas.map((n) => (
-                <div key={`fav-${n.id}`} className="shrink-0 w-[190px] snap-start">
-                  <RotinaSlotCard
-                    slotLabel=""
-                    semSlotLabel
-                    row={undefined}
-                    nugget={n}
-                    feito={false}
-                    agniFracoOuIrregular={agniFracoOuIrregular}
-                    onToggleFeito={() => {}}
-                    mini
-                    favorito={favoritosSet.has(n.id)}
-                    onToggleFavorito={() => toggleFavorito(n.id)}
-                    mostrarLista
-                    naLista={selecionados.has(n.id)}
-                    onToggleLista={() => toggleSelecao(n.id)}
-                    erroLista={erroSelecao === n.id}
-                  />
-                </div>
-              ))}
-            </div>
-          )}
-        </section>
 
 
 
@@ -1147,6 +1133,19 @@ const MinhaRotina = () => {
           kapha={(doshaInfo?.kaphascore as number | null) ?? null}
         />
       </div>
+        </>
+      ) : (
+        <TodasAsReceitas
+          catalogo={catalogo}
+          nuggetsById={nuggetsById}
+          favoritosSet={favoritosSet}
+          onToggleFavorito={toggleFavorito}
+          selecionados={selecionados}
+          onToggleSelecao={toggleSelecao}
+          erroSelecao={erroSelecao}
+          agniFracoOuIrregular={agniFracoOuIrregular}
+        />
+      )}
       <div className="mt-8" style={{ paddingBottom: selecionados.size > 0 ? 104 : undefined }}>
         <PrateleiraSamkhya
           doshaPrincipal={doshaResult?.doshaprincipal ?? null}
@@ -1459,6 +1458,7 @@ interface SlotCardProps {
   naLista?: boolean;
   onToggleLista?: () => void;
   erroLista?: boolean;
+  destaque?: string;
 }
 
 const RotinaSlotCard = ({
@@ -1480,6 +1480,7 @@ const RotinaSlotCard = ({
   naLista = false,
   onToggleLista,
   erroLista = false,
+  destaque,
 }: SlotCardProps) => {
 
 
@@ -1628,11 +1629,15 @@ const RotinaSlotCard = ({
                         <Flame className="h-3.5 w-3.5 text-secondary shrink-0 mt-0.5" aria-label="bom para o seu agni" />
                       )}
                     </span>
-                    {nugget?.nugget_json?.resumo && (
+                    {destaque ? (
+                      <span className="mt-0.5 block text-xs leading-snug line-clamp-2" style={{ color: "#15803D" }}>
+                        {destaque}
+                      </span>
+                    ) : nugget?.nugget_json?.resumo ? (
                       <span className="mt-0.5 block text-xs text-muted-foreground leading-snug line-clamp-3">
                         {nugget.nugget_json.resumo}
                       </span>
-                    )}
+                    ) : null}
                   </span>
                 </button>
               </DialogTrigger>
@@ -1852,6 +1857,240 @@ const RotinaSlotCard = ({
 
       {videoDialog}
     </Card>
+  );
+};
+
+// ===== Todas as receitas =====
+type ReceitaCatalogo = {
+  id: string;
+  titulo: string;
+  grupo: string;
+  grupo_nome: string;
+  grupo_ordem: number;
+  vata: number | null;
+  pitta: number | null;
+  kapha: number | null;
+  ingredientes: string[];
+  busca: string;
+};
+
+const GRUPOS_RECEITA = [
+  { k: "cafe", nome: "Café da manhã" },
+  { k: "bebidas", nome: "Sucos e leites" },
+  { k: "lanches", nome: "Lanches" },
+  { k: "almoco", nome: "Almoço" },
+  { k: "jantar", nome: "Jantar" },
+  { k: "chas", nome: "Chás" },
+  { k: "tonicos", nome: "Tônicos" },
+  { k: "praticas", nome: "Práticas" },
+];
+
+const DOSHAS_FILTRO = [
+  { k: "vata", nome: "Vata", cor: "#6B8AFF" },
+  { k: "pitta", nome: "Pitta", cor: "#FF7676" },
+  { k: "kapha", nome: "Kapha", cor: "#9ED88B" },
+] as const;
+
+const semAcento = (s: string) =>
+  s.normalize("NFD").replace(/\p{M}/gu, "").toLowerCase();
+
+interface TodasAsReceitasProps {
+  catalogo: ReceitaCatalogo[] | undefined;
+  nuggetsById: Map<string, Nugget>;
+  favoritosSet: Set<string>;
+  onToggleFavorito: (id: string) => void;
+  selecionados: Set<string>;
+  onToggleSelecao: (id: string) => void;
+  erroSelecao: string | null;
+  agniFracoOuIrregular: boolean;
+}
+
+const TodasAsReceitas = ({
+  catalogo,
+  nuggetsById,
+  favoritosSet,
+  onToggleFavorito,
+  selecionados,
+  onToggleSelecao,
+  erroSelecao,
+  agniFracoOuIrregular,
+}: TodasAsReceitasProps) => {
+  const navigate = useNavigate();
+  const [busca, setBusca] = useState("");
+  const [grupo, setGrupo] = useState("tudo");
+  const [dosha, setDosha] = useState("todos");
+  const [limite, setLimite] = useState(24);
+
+  const termos = useMemo(
+    () => semAcento(busca).split(/\s+/).filter((t) => t.length >= 2),
+    [busca]
+  );
+
+  if (!catalogo) {
+    return (
+      <div className="min-h-[30vh] flex items-center justify-center">
+        <div className="h-8 w-8 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+      </div>
+    );
+  }
+
+  const passaBusca = (r: ReceitaCatalogo) => termos.every((t) => r.busca.includes(t));
+  const passaGrupo = (r: ReceitaCatalogo, g: string) =>
+    g === "tudo" || (g === "favoritas" ? favoritosSet.has(r.id) : r.grupo === g);
+  const passaDosha = (r: ReceitaCatalogo, d: string) =>
+    d === "todos" || r[d as "vata" | "pitta" | "kapha"] === -1;
+
+  const lista = catalogo.filter((r) => passaBusca(r) && passaGrupo(r, grupo) && passaDosha(r, dosha));
+  const contaGrupo = (g: string) =>
+    catalogo.filter((r) => passaBusca(r) && passaGrupo(r, g) && passaDosha(r, dosha)).length;
+  const contaDosha = (d: string) =>
+    catalogo.filter((r) => passaBusca(r) && passaGrupo(r, grupo) && passaDosha(r, d)).length;
+
+  const levaDe = (r: ReceitaCatalogo) => {
+    if (termos.length === 0) return undefined;
+    const achados = r.ingredientes.filter((i) => termos.some((t) => semAcento(i).includes(t)));
+    return achados.length ? `Leva: ${achados.slice(0, 2).join(", ")}` : undefined;
+  };
+
+  const partes: string[] = [];
+  if (grupo !== "tudo") {
+    partes.push(
+      grupo === "favoritas"
+        ? "favoritas"
+        : (GRUPOS_RECEITA.find((g) => g.k === grupo)?.nome ?? "").toLowerCase()
+    );
+  }
+  if (dosha !== "todos") partes.push(`para ${DOSHAS_FILTRO.find((d) => d.k === dosha)?.nome ?? ""}`);
+  if (busca.trim()) partes.push(`com "${busca.trim()}"`);
+
+  const chip = (ativo: boolean) =>
+    cn(
+      "shrink-0 inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border px-3 py-2 text-sm font-semibold transition-colors",
+      ativo
+        ? "bg-primary text-primary-foreground border-primary"
+        : "bg-background text-muted-foreground border-border hover:bg-muted/60"
+    );
+
+  return (
+    <section>
+      <div
+        className="flex items-center gap-2 rounded-xl border-2 border-border bg-background px-3 focus-within:border-primary"
+        style={{ minHeight: 52 }}
+      >
+        <Search className="h-5 w-5 shrink-0 text-muted-foreground" />
+        <input
+          value={busca}
+          onChange={(e) => { setBusca(e.target.value); setLimite(24); }}
+          placeholder="Receita ou ingrediente (ex.: inhame)"
+          aria-label="Procurar receita ou ingrediente"
+          className="min-w-0 flex-1 bg-transparent text-base text-foreground outline-none"
+        />
+        {busca && (
+          <button
+            type="button"
+            onClick={() => { setBusca(""); setLimite(24); }}
+            aria-label="Limpar busca"
+            className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-muted"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        )}
+      </div>
+
+      <p className="mt-4 mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Refeição</p>
+      <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1 md:flex-wrap">
+        {[{ k: "tudo", nome: "Tudo" }, ...GRUPOS_RECEITA, { k: "favoritas", nome: "Favoritas" }].map((g) => (
+          <button key={g.k} type="button" onClick={() => { setGrupo(g.k); setLimite(24); }} className={chip(grupo === g.k)}>
+            {g.k === "favoritas" && <Star className="h-4 w-4 fill-[#F2CC03] text-[#F2CC03]" />}
+            {g.nome}
+            <span className="font-normal opacity-70">{contaGrupo(g.k)}</span>
+          </button>
+        ))}
+      </div>
+
+      <p className="mt-4 mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Dosha</p>
+      <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1 md:flex-wrap">
+        <button type="button" onClick={() => { setDosha("todos"); setLimite(24); }} className={chip(dosha === "todos")}>
+          Todos
+          <span className="font-normal opacity-70">{contaDosha("todos")}</span>
+        </button>
+        {DOSHAS_FILTRO.map((d) => (
+          <button key={d.k} type="button" onClick={() => { setDosha(d.k); setLimite(24); }} className={chip(dosha === d.k)}>
+            <span className="h-2.5 w-2.5 rounded-full" style={{ background: d.cor }} />
+            Para {d.nome}
+            <span className="font-normal opacity-70">{contaDosha(d.k)}</span>
+          </button>
+        ))}
+      </div>
+
+      <p className="mt-5 mb-3 text-sm text-muted-foreground">
+        <span className="font-semibold text-foreground">
+          {lista.length} {lista.length === 1 ? "receita" : "receitas"}
+        </span>
+        {partes.length ? ` · ${partes.join(" · ")}` : " no programa"}
+      </p>
+
+      {lista.length === 0 ? (
+        <div className="rounded-2xl border border-border bg-card p-6 text-center text-sm text-muted-foreground">
+          Nenhuma receita com esses filtros. Tente tirar um filtro ou procurar outro ingrediente.
+        </div>
+      ) : (
+        <div className="grid gap-2 md:grid-cols-2">
+          {lista.slice(0, limite).map((r) => {
+            const nugget = nuggetsById.get(r.id);
+            if (!nugget) return null;
+            return (
+              <RotinaSlotCard
+                key={r.id}
+                slotLabel={r.grupo_nome}
+                row={undefined}
+                nugget={nugget}
+                feito={false}
+                agniFracoOuIrregular={agniFracoOuIrregular}
+                onToggleFeito={() => {}}
+                linha
+                destaque={levaDe(r)}
+                favorito={favoritosSet.has(r.id)}
+                onToggleFavorito={() => onToggleFavorito(r.id)}
+                mostrarLista
+                naLista={selecionados.has(r.id)}
+                onToggleLista={() => onToggleSelecao(r.id)}
+                erroLista={erroSelecao === r.id}
+              />
+            );
+          })}
+        </div>
+      )}
+
+      {lista.length > limite && (
+        <button
+          type="button"
+          onClick={() => setLimite((n) => n + 24)}
+          className="mx-auto mt-4 block rounded-full border border-border bg-background px-5 py-2.5 text-sm font-semibold text-primary"
+        >
+          Ver mais ({lista.length - limite})
+        </button>
+      )}
+
+      {lista.length >= 1 && lista.length <= 12 && (
+        <div className="mt-4 flex justify-end">
+          <button
+            type="button"
+            onClick={() => navigate(`/imprimir?pecas=receitas&ids=${lista.map((r) => r.id).join(",")}`)}
+            className="inline-flex items-center gap-2 rounded-xl px-4 font-semibold text-white"
+            style={{ minHeight: 48, fontSize: 15, background: "#352F54" }}
+          >
+            <Printer className="h-5 w-5" strokeWidth={2} />
+            Imprimir estas receitas
+          </button>
+        </div>
+      )}
+      {lista.length > 12 && (
+        <p className="mt-4 text-right text-sm text-muted-foreground">
+          Pra imprimir, filtre até 12 receitas.
+        </p>
+      )}
+    </section>
   );
 };
 
