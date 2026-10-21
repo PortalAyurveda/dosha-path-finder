@@ -482,6 +482,23 @@ const EntendaSeuDosha = ({
             </button>
           </CollapsibleTrigger>
 
+          {!aberto && (glossario.frase_clinica || glossario.oque) && (
+            <div className="px-5 pb-5 -mt-1 space-y-2">
+              {glossario.frase_clinica && (
+                <p className="text-base font-medium leading-snug" style={{ color: cor, fontFamily: "'DM Sans', sans-serif" }}>
+                  {stripHtml(glossario.frase_clinica)}
+                </p>
+              )}
+              {glossario.oque && (
+                <p className="text-[15px] leading-relaxed line-clamp-3" style={{ color: COLOR.texto, fontFamily: "'DM Sans', sans-serif" }}>
+                  {stripHtml(glossario.oque)}
+                </p>
+              )}
+              <button type="button" onClick={() => setAberto(true)} className="text-sm font-semibold underline-offset-4 hover:underline" style={{ color: cor }}>
+                Ler tudo sobre o seu dosha →
+              </button>
+            </div>
+          )}
           <CollapsibleContent>
             <div className="px-5 pb-6 pt-1 space-y-6">
               {glossario.frase_clinica && (
@@ -961,7 +978,7 @@ const DiagnosticoCompleto = ({
   }
 
   return (
-    <div className="space-y-0 pt-12 pb-12">
+    <div className={partes.length < 4 ? "space-y-8 [&>section]:pt-0 [&>div]:pt-0" : "space-y-0 pt-12 pb-12"}>
       {partes.includes("diagnostico") && <Diagnostico
         analise={analise}
         doshaPrincipal={doshaPrincipal}
