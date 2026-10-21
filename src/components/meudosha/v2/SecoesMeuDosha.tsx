@@ -130,7 +130,7 @@ export const MeusCursos = () => {
       <Titulo lado={meus ? `${meus} ${meus === 1 ? "seu" : "seus"} · ${cursos.length} cursos no Portal` : `${cursos.length} cursos no Portal`}>
         Meus cursos
       </Titulo>
-      <div className="flex gap-4 overflow-x-auto pb-2 sm:grid sm:grid-cols-2 sm:overflow-visible">
+      <div className="-mx-4 flex snap-x gap-3 overflow-x-auto px-4 pb-2 sm:mx-0 sm:grid sm:grid-cols-2 sm:gap-4 sm:overflow-visible sm:px-0 lg:grid-cols-3">
         {cursos.map((c) => {
           const row = cards.find((r) => r.id === c.id);
           const cfg = row
@@ -141,7 +141,7 @@ export const MeusCursos = () => {
               key={c.id}
               to={c.link}
               className={cn(
-                "group flex flex-none w-[78%] sm:w-auto flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition-shadow hover:shadow-md",
+                "group flex flex-none w-[64%] snap-start sm:w-auto flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition-shadow hover:shadow-md",
                 c.tem && "ring-2 ring-amber-400/80"
               )}
             >
@@ -158,7 +158,7 @@ export const MeusCursos = () => {
                 )}
               </div>
               <CursoCardTituloAbaixo cfg={cfg} />
-              <div className="mt-auto px-6 pb-5 pt-4">
+              <div className="mt-auto px-6 pb-4 pt-3">
                 <span className={cn("flex h-10 w-full items-center justify-center rounded-md text-sm font-semibold", c.tem ? "bg-primary text-primary-foreground" : "border border-border text-foreground")}>
                   {c.tem ? "Acessar curso" : row?.card_cta_texto || "Conhecer"}
                 </span>
@@ -195,7 +195,7 @@ export const AkashaPerguntas = ({ dosha }: { dosha: string }) => {
 
   return (
     <section className="rounded-3xl p-5 md:p-6 text-white" style={{ background: "linear-gradient(160deg, #2E2850, #4A3F7A)" }}>
-      <h2 className="font-serif font-bold text-xl md:text-2xl">O que mais perguntam à Akasha quem tem {grupo} agravado</h2>
+      <h2 className="font-serif font-bold text-xl md:text-2xl !text-white">O que mais perguntam à Akasha quem tem {grupo} agravado</h2>
       <p className="mt-1 text-sm text-[#D9D3F2]">Resumo das conversas de pessoas com o mesmo dosha agravado que você.</p>
       <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-3">
         {cartoes.map((c) => (
@@ -205,7 +205,7 @@ export const AkashaPerguntas = ({ dosha }: { dosha: string }) => {
             onClick={() => abrir(c.pergunta)}
             className="flex flex-col gap-2 rounded-2xl border border-white/15 bg-white/[0.08] p-4 text-left transition-colors hover:bg-white/[0.12]"
           >
-            <span className="font-serif text-[15px] font-bold leading-snug">{c.pergunta}</span>
+            <span className="font-serif text-[15px] font-bold leading-snug text-white">{c.pergunta}</span>
             <span className="text-[13px] leading-relaxed text-[#E4DFF7]">{c.resposta}</span>
             <span className="mt-auto text-xs font-bold text-[#FFD8A8]">Continuar com a Akasha →</span>
           </button>
