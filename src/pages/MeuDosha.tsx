@@ -1217,6 +1217,25 @@ const MeuDosha = () => {
         </Tabs> : (
           <div className="space-y-10">
             {cartaoHoje}
+            <DiagnosticoCompleto
+              email={result.email}
+              doshaPrincipal={primaryDosha}
+              doshaPrincipalCompleto={result.doshaprincipal || primaryDosha}
+              refazerTeste={handleRefazerTeste}
+              isPremium={isPremium}
+              partes={["diagnostico", "protocolo"]}
+            />
+            <DiagnosticoCompleto
+              email={result.email}
+              doshaPrincipal={primaryDosha}
+              doshaPrincipalCompleto={result.doshaprincipal || primaryDosha}
+              refazerTeste={handleRefazerTeste}
+              isPremium={isPremium}
+              partes={["entenda"]}
+            />
+            <SeuDia idPublico={id} temAcesso={temAcessoRotina} />
+            <MeusCursos />
+            <ClassicosDosha dosha={result.doshaprincipal || primaryDosha} />
             <div>
               <GraficoMeses idPublico={id} />
               <Sheet>
@@ -1233,32 +1252,11 @@ const MeuDosha = () => {
                 </SheetContent>
               </Sheet>
             </div>
-            <SeuDia idPublico={id} temAcesso={temAcessoRotina} />
-            <MeusCursos />
             <BannerSlot slot="meu_dosha_meio" className="[&:empty]:hidden" />
             <AkashaPerguntas dosha={result.doshaprincipal || primaryDosha} />
-            <DiagnosticoCompleto
-              email={result.email}
-              doshaPrincipal={primaryDosha}
-              doshaPrincipalCompleto={result.doshaprincipal || primaryDosha}
-              refazerTeste={handleRefazerTeste}
-              isPremium={isPremium}
-              partes={["diagnostico", "entenda"]}
-            />
             <ArtigosComecar dosha={result.doshaprincipal || primaryDosha} />
-            <ClassicosDosha dosha={result.doshaprincipal || primaryDosha} />
-            <div>
-              <DiagnosticoCompleto
-                email={result.email}
-                doshaPrincipal={primaryDosha}
-                doshaPrincipalCompleto={result.doshaprincipal || primaryDosha}
-                refazerTeste={handleRefazerTeste}
-                isPremium={isPremium}
-                partes={["protocolo"]}
-              />
-              <div className="mt-8 -mx-4 sm:-mx-6">
-                <PrateleiraSamkhya doshaPrincipal={result.doshaprincipal || primaryDosha} />
-              </div>
+            <div className="-mx-4 sm:-mx-6">
+              <PrateleiraSamkhya doshaPrincipal={result.doshaprincipal || primaryDosha} />
             </div>
             <PraVoceRail doshaPrincipal={result?.doshaprincipal} />
             <TerapeutasPerto idPublico={id} />
