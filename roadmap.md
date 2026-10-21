@@ -13,3 +13,4 @@
 - [x] Verificar arquivos do anexo, redirecionamento e fluxos disponíveis
 - [ ] Verificar a nova página com sessão real — bloqueado: Supabase externo sem sessão autenticada disponível
 - [x] Deixar em cinza os cursos que a pessoa não tem (inclusive o Detox da Primavera) em "Meus cursos"
+- [x] Deixar os cards de "Meus cursos" simétricos: sem logo amarelo e sem texto abaixo da capa

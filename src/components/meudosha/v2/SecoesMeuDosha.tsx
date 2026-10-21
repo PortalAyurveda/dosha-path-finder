@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { CheckCircle2, Lock } from "lucide-react";
-import { CursoCardCapa, CursoCardTituloAbaixo } from "@/components/course/CursoCardCapa";
+import { CursoCardCapa } from "@/components/course/CursoCardCapa";
 import { cursoParaCardConfig } from "@/pages/CursosVitrine";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/contexts/UserContext";
@@ -133,9 +133,11 @@ export const MeusCursos = () => {
       <div className="-mx-4 flex snap-x gap-3 overflow-x-auto px-4 pb-2 sm:mx-0 sm:grid sm:grid-cols-2 sm:gap-4 sm:overflow-visible sm:px-0 lg:grid-cols-3">
         {cursos.map((c) => {
           const row = cards.find((r) => r.id === c.id);
-          const cfg = row
+          // A capa já traz o título desenhado: sem logo e sem texto abaixo, para todos os cards ficarem iguais.
+          const cfgBase = row
             ? cursoParaCardConfig(row)
             : cursoParaCardConfig({ titulo: c.titulo, capa_url: c.capa, card_subtitulo: c.subtitulo, card_cor_secundaria: c.cor } as any);
+          const cfg = { ...cfgBase, mostrarLogo: false };
           return (
             <Link
               key={c.id}
@@ -158,9 +160,6 @@ export const MeusCursos = () => {
                     <Lock className="h-4 w-4 text-muted-foreground" />
                   </span>
                 )}
-              </div>
-              <div className={cn(!c.tem && "grayscale")}>
-                <CursoCardTituloAbaixo cfg={cfg} />
               </div>
               <div className="mt-auto px-6 pb-4 pt-3">
                 <span className={cn("flex h-10 w-full items-center justify-center rounded-md text-sm font-semibold", c.tem ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground")}>
