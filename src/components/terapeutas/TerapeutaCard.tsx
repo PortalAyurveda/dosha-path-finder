@@ -4,6 +4,7 @@ import {
   cleanTherapistText,
   getTherapistDisplayName,
   getTherapistProfilePath,
+  nomeCurtoEspecialidade,
   splitTherapistSpecialties,
 } from "@/lib/terapeutas";
 
@@ -20,28 +21,6 @@ interface TerapeutaCardProps {
   formado_desde: number | null;
   temWhatsapp: boolean;
   temInstagram: boolean;
-}
-
-const NOME_CURTO_ESPECIALIDADES: Array<[string, string]> = [
-  ["Ahara", "Alimentação"],
-  ["Yoga & Dinacharya", "Rotina e Yoga"],
-  ["Dravya Guna", "Ervas e fitoterapia"],
-  ["Rasayana", "Longevidade"],
-  ["Manas", "Saúde mental"],
-  ["Stri Roga", "Saúde da mulher"],
-  ["Nidana & Pareeksha", "Diagnóstico"],
-  ["Panchakarma", "Desintoxicação"],
-  ["Bala & Performance", "Esporte e vigor"],
-  ["Vajikarana", "Vitalidade"],
-  ["Prasuti & Balachikitsa", "Mãe e criança"],
-  ["Abhyanga", "Massagem"],
-];
-
-function nomeCurtoEspecialidade(especialidade: string) {
-  const found = NOME_CURTO_ESPECIALIDADES.find(([chave]) =>
-    especialidade.startsWith(chave),
-  );
-  return found ? found[1] : especialidade;
 }
 
 function primeiraFrase(texto: string) {
