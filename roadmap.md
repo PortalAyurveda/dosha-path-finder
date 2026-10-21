@@ -5,3 +5,6 @@
 - [x] Validar tipos, build e fluxos públicos
 - [x] Corrigir sobreposições do cabeçalho e corte superior do carrinho no celular
 - [x] Aba "Língua" na sala do curso com as três fotos da língua
+
+- [x] Aplicar o anexo da área Textos Clássicos e integrar páginas, navegação e Biblioteca
+- [x] Conferir fidelidade ao anexo e navegação com dados reais

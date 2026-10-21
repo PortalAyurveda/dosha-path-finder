@@ -65,6 +65,21 @@ export type Database = {
         }
         Relationships: []
       }
+      _bkp_detox_aula3_remarcada_20261019: {
+        Row: {
+          linha: Json | null
+          tabela: string | null
+        }
+        Insert: {
+          linha?: Json | null
+          tabela?: string | null
+        }
+        Update: {
+          linha?: Json | null
+          tabela?: string | null
+        }
+        Relationships: []
+      }
       _bkp_detox_cardapios_20261013b: {
         Row: {
           html: string | null
@@ -151,6 +166,21 @@ export type Database = {
         Update: {
           conteudo?: string | null
           id?: string | null
+          tabela?: string | null
+        }
+        Relationships: []
+      }
+      _bkp_detox_encontro7_20261019: {
+        Row: {
+          linha: Json | null
+          tabela: string | null
+        }
+        Insert: {
+          linha?: Json | null
+          tabela?: string | null
+        }
+        Update: {
+          linha?: Json | null
           tabela?: string | null
         }
         Relationships: []
@@ -3101,6 +3131,7 @@ export type Database = {
           obra_id: number
           resumo: string | null
           revisado: boolean
+          rota: string | null
           temas: string[]
           titulo_devanagari: string | null
           titulo_pt: string | null
@@ -3124,6 +3155,7 @@ export type Database = {
           obra_id: number
           resumo?: string | null
           revisado?: boolean
+          rota?: string | null
           temas?: string[]
           titulo_devanagari?: string | null
           titulo_pt?: string | null
@@ -3147,6 +3179,7 @@ export type Database = {
           obra_id?: number
           resumo?: string | null
           revisado?: boolean
+          rota?: string | null
           temas?: string[]
           titulo_devanagari?: string | null
           titulo_pt?: string | null
@@ -13402,6 +13435,7 @@ export type Database = {
         Args: { p_capitulo_id: number }
         Returns: {
           anterior_id: number
+          anterior_rota: string
           anterior_titulo: string
           capitulo_id: number
           estante: string
@@ -13412,8 +13446,37 @@ export type Database = {
           obra_nome: string
           obra_slug: string
           proximo_id: number
+          proximo_rota: string
           proximo_titulo: string
           resumo: string
+          rota: string
+          rotulo_nivel1: string
+          rotulo_nivel2: string
+          temas: string[]
+          titulo_devanagari: string
+          titulo_pt: string
+          titulo_translit: string
+        }[]
+      }
+      classicos_capitulo_por_rota: {
+        Args: { p_obra: string; p_rota: string }
+        Returns: {
+          anterior_id: number
+          anterior_rota: string
+          anterior_titulo: string
+          capitulo_id: number
+          estante: string
+          n_versos: number
+          nivel1: string
+          nivel2: string
+          obra_devanagari: string
+          obra_nome: string
+          obra_slug: string
+          proximo_id: number
+          proximo_rota: string
+          proximo_titulo: string
+          resumo: string
+          rota: string
           rotulo_nivel1: string
           rotulo_nivel2: string
           temas: string[]
@@ -13440,6 +13503,9 @@ export type Database = {
           nivel2: string
           obra_nome: string
           obra_slug: string
+          rota: string
+          rotulo_nivel1: string
+          rotulo_nivel2: string
           titulo_pt: string
           titulo_translit: string
           total: number
@@ -13478,7 +13544,28 @@ export type Database = {
           versos: number
         }[]
       }
+      classicos_letras_plantas: {
+        Args: { p_obra?: string }
+        Returns: {
+          letra: string
+          total: number
+        }[]
+      }
       classicos_ordem_secao: { Args: { p_nome: string }; Returns: number }
+      classicos_planta: {
+        Args: { p_chave: string }
+        Returns: {
+          chave: string
+          descricao: string
+          id: number
+          n_obras: number
+          n_versos: number
+          nome: string
+          nome_devanagari: string
+          nome_latim: string
+          nome_popular: string
+        }[]
+      }
       classicos_planta_ler: {
         Args: { p_planta_id: number }
         Returns: {
@@ -13498,8 +13585,10 @@ export type Database = {
           p_minimo_obras?: number
           p_obra?: string
           p_offset?: number
+          p_so_com_popular?: boolean
         }
         Returns: {
+          chave: string
           id: number
           n_obras: number
           n_versos: number
@@ -13525,6 +13614,7 @@ export type Database = {
           obra: string
         }[]
       }
+      classicos_rota: { Args: { p_capitulo_id: number }; Returns: string }
       classicos_sincronizar: {
         Args: { p_slug?: string }
         Returns: {
@@ -13533,6 +13623,7 @@ export type Database = {
           versos: number
         }[]
       }
+      classicos_slug: { Args: { p_texto: string }; Returns: string }
       classicos_sumario: {
         Args: { p_obra: string }
         Returns: {
@@ -13543,6 +13634,7 @@ export type Database = {
           nivel2: string
           nivel2_ordem: number
           resumo: string
+          rota: string
           rotulo_nivel1: string
           rotulo_nivel2: string
           temas: string[]
@@ -13551,6 +13643,14 @@ export type Database = {
           titulo_translit: string
           verso_final: string
           verso_inicial: string
+        }[]
+      }
+      classicos_temas: {
+        Args: never
+        Returns: {
+          rotulo: string
+          tema: string
+          total: number
         }[]
       }
       classicos_temas_automaticos: {

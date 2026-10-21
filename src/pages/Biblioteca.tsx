@@ -139,6 +139,17 @@ const Biblioteca = () => {
 
         <BannerSlot slot="biblioteca" className="my-4 [&:empty]:hidden" />
 
+        <Link
+          to="/textos-classicos"
+          className="mb-6 flex min-h-[72px] items-center gap-4 rounded-2xl border border-classics bg-classics-soft p-4 transition-shadow hover:shadow-md"
+        >
+          <span aria-hidden className="shrink-0 text-2xl text-classics" style={{ fontFamily: "'Noto Serif Devanagari', serif" }}>॥</span>
+          <span className="min-w-0">
+            <span className="block font-serif text-lg font-bold text-primary">Textos Clássicos</span>
+            <span className="block text-base text-muted-foreground">As obras antigas traduzidas: estante, plantas de A a Z e busca em todos os versos.</span>
+          </span>
+        </Link>
+
         {isSearching ? (
           searchQuery.isLoading ? (
             <SkeletonGrid />
