@@ -1,15 +1,11 @@
 import { Link } from "react-router-dom";
-import { MapPin } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { Instagram, MessageCircle } from "lucide-react";
 import {
   cleanTherapistText,
   getTherapistDisplayName,
-  getTherapistLocation,
   getTherapistProfilePath,
-  getTherapistThemeClass,
   splitTherapistSpecialties,
 } from "@/lib/terapeutas";
-import { cn } from "@/lib/utils";
 
 interface TerapeutaCardProps {
   nome: string;
@@ -19,85 +15,154 @@ interface TerapeutaCardProps {
   resumo: string | null;
   imagem: string | null;
   slug: string | null;
+  imagem_card: string | null;
+  frase_card: string | null;
+  formado_desde: number | null;
+  temWhatsapp: boolean;
+  temInstagram: boolean;
 }
 
-const TerapeutaCard = ({ nome, cidade, estado, especialidade, resumo, imagem, slug }: TerapeutaCardProps) => {
+const NOME_CURTO_ESPECIALIDADES: Array<[string, string]> = [
+  ["Ahara", "Alimentação"],
+  ["Yoga & Dinacharya", "Rotina e Yoga"],
+  ["Dravya Guna", "Ervas e fitoterapia"],
+  ["Rasayana", "Longevidade"],
+  ["Manas", "Saúde mental"],
+  ["Stri Roga", "Saúde da mulher"],
+  ["Nidana & Pareeksha", "Diagnóstico"],
+  ["Panchakarma", "Desintoxicação"],
+  ["Bala & Performance", "Esporte e vigor"],
+  ["Vajikarana", "Vitalidade"],
+  ["Prasuti & Balachikitsa", "Mãe e criança"],
+  ["Abhyanga", "Massagem"],
+];
+
+function nomeCurtoEspecialidade(especialidade: string) {
+  const found = NOME_CURTO_ESPECIALIDADES.find(([chave]) =>
+    especialidade.startsWith(chave),
+  );
+  return found ? found[1] : especialidade;
+}
+
+function primeiraFrase(texto: string) {
+  const match = texto.match(/^(.+?[.!?])(\s|$)/);
+  if (match) return match[1];
+  return texto.length > 140 ? `${texto.slice(0, 140).trim()}…` : texto;
+}
+
+const TerapeutaCard = ({
+  nome,
+  cidade,
+  estado,
+  especialidade,
+  resumo,
+  imagem,
+  slug,
+  imagem_card,
+  frase_card,
+  formado_desde,
+  temWhatsapp,
+  temInstagram,
+}: TerapeutaCardProps) => {
   const displayName = getTherapistDisplayName(nome);
-  const especialidades = splitTherapistSpecialties(especialidade);
-  const location = getTherapistLocation(cidade, estado);
-  const summary = cleanTherapistText(resumo);
+  const especialidades = splitTherapistSpecialties(especialidade).map(
+    nomeCurtoEspecialidade,
+  );
   const profilePath = getTherapistProfilePath(slug ?? nome);
-  const themeClass = getTherapistThemeClass(slug ?? nome);
+
+  const foto = imagem_card || imagem || null;
+
+  const linhaLocal = [
+    cleanTherapistText(cidade) || null,
+    estado ? estado.trim().slice(0, 2).toUpperCase() : null,
+    formado_desde ? `desde ${formado_desde}` : null,
+  ]
+    .filter(Boolean)
+    .join(" · ");
+
+  const frase =
+    cleanTherapistText(frase_card) || primeiraFrase(cleanTherapistText(resumo));
 
   return (
     <Link
       to={profilePath}
-      className={cn(
-        "group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-therapist-soft/20 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg cursor-pointer",
-        themeClass,
-      )}
+      className="group flex gap-3.5 rounded-2xl border border-border bg-white p-3 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg cursor-pointer"
     >
-      <div className="absolute top-0 left-0 right-0 h-1 bg-therapist opacity-70" />
-
-      <div className="p-4 pt-5 flex flex-col items-center text-center flex-1">
-        <div className="relative mb-3">
-          <div className="w-24 aspect-[3/4] shadow-therapist">
-            <div className="therapist-portal-arch h-full w-full bg-therapist/30 p-[3px]">
-              <div className="therapist-portal-arch h-full w-full overflow-hidden bg-muted">
-                {imagem ? (
-                  <img
-                    src={imagem}
-                    alt={`Foto de ${displayName}`}
-                    className="h-full w-full object-cover object-center"
-                    loading="lazy"
-              decoding="async"
-                  />
-                ) : (
-                  <div className="flex h-full w-full items-center justify-center bg-therapist-soft text-3xl font-bold text-therapist-ink">
-                    {displayName[0] || "?"}
-                  </div>
-                )}
-              </div>
-            </div>
+      <div className="w-[92px] sm:w-[132px] shrink-0 aspect-[4/5] rounded-xl overflow-hidden bg-muted">
+        {foto ? (
+          <img
+            src={foto}
+            alt={`Foto de ${displayName}`}
+            width={480}
+            height={600}
+            className="h-full w-full object-cover object-center"
+            loading="lazy"
+            decoding="async"
+          />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center bg-muted text-3xl font-bold text-muted-foreground">
+            {displayName[0] || "?"}
           </div>
-        </div>
+        )}
+      </div>
 
-        <h3 className="text-base font-bold text-foreground mb-0.5 font-serif leading-tight">{displayName}</h3>
+      <div className="flex flex-1 flex-col gap-1.5 min-w-0">
+        <h3 className="text-[15px] sm:text-[17px] font-serif font-bold text-foreground leading-tight">
+          {displayName}
+        </h3>
 
-        {location && (
-          <p className="text-xs text-muted-foreground flex items-center gap-1 mb-2">
-            <MapPin className="h-3 w-3 shrink-0" />
-            {location}
-          </p>
+        {linhaLocal && (
+          <p className="text-[12.5px] text-muted-foreground">{linhaLocal}</p>
         )}
 
         {especialidades.length > 0 && (
-          <div className="flex items-center gap-1 mb-2 w-full overflow-hidden">
-            <div className="flex gap-1 overflow-x-auto scrollbar-hide whitespace-nowrap max-w-full">
-              {especialidades.slice(0, 3).map((esp) => (
-                <Badge
-                  key={esp}
-                  variant="outline"
-                  className="border-therapist/30 bg-therapist-soft/80 px-2 py-0 text-[10px] text-therapist-ink shrink-0"
-                >
-                  {esp}
-                </Badge>
-              ))}
-            </div>
+          <div className="flex flex-wrap gap-1">
+            {especialidades.slice(0, 3).map((esp) => (
+              <span
+                key={esp}
+                className="rounded-full bg-[#F1EEF8] px-[9px] py-[3px] text-[11.5px] font-semibold text-[#4E3F7E]"
+              >
+                {esp}
+              </span>
+            ))}
             {especialidades.length > 3 && (
-              <Badge variant="outline" className="text-[10px] px-1.5 py-0 border-muted text-muted-foreground shrink-0">
+              <span className="rounded-full bg-[#F3F4F7] px-[9px] py-[3px] text-[11.5px] font-semibold text-[#7A7690]">
                 +{especialidades.length - 3}
-              </Badge>
+              </span>
             )}
           </div>
         )}
 
-        {summary && (
-          <p className="text-xs text-muted-foreground line-clamp-3 leading-relaxed mb-2">
-            {summary}
+        {frase && (
+          <p className="text-[13px] text-[#4A4566] leading-snug line-clamp-2 sm:line-clamp-3">
+            “{frase}”
           </p>
         )}
 
+        <div className="mt-auto flex items-end justify-between gap-2 pt-1">
+          <span className="rounded-full bg-[#F1EEF8] px-3 py-1 text-[13px] font-bold text-[#352F54]">
+            Ver perfil
+          </span>
+
+          <div className="flex items-center gap-1.5">
+            {temWhatsapp && (
+              <span
+                className="flex h-[28px] w-[28px] items-center justify-center rounded-full border border-border bg-white text-[#25A35A]"
+                aria-label="WhatsApp"
+              >
+                <MessageCircle className="h-3.5 w-3.5" />
+              </span>
+            )}
+            {temInstagram && (
+              <span
+                className="flex h-[28px] w-[28px] items-center justify-center rounded-full border border-border bg-white text-[#C13584]"
+                aria-label="Instagram"
+              >
+                <Instagram className="h-3.5 w-3.5" />
+              </span>
+            )}
+          </div>
+        </div>
       </div>
     </Link>
   );
