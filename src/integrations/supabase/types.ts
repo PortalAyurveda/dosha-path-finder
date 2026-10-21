@@ -1022,6 +1022,36 @@ export type Database = {
         }
         Relationships: []
       }
+      akasha_perguntas_dosha: {
+        Row: {
+          ativo: boolean
+          created_at: string
+          grupo: string
+          id: number
+          ordem: number
+          pergunta: string
+          resposta: string | null
+        }
+        Insert: {
+          ativo?: boolean
+          created_at?: string
+          grupo: string
+          id?: number
+          ordem: number
+          pergunta: string
+          resposta?: string | null
+        }
+        Update: {
+          ativo?: boolean
+          created_at?: string
+          grupo?: string
+          id?: number
+          ordem?: number
+          pergunta?: string
+          resposta?: string | null
+        }
+        Relationships: []
+      }
       akasha_tags_inventory: {
         Row: {
           count: number | null
@@ -8180,6 +8210,32 @@ export type Database = {
         }
         Relationships: []
       }
+      meu_dosha_plantas: {
+        Row: {
+          chave: string
+          dosha: string
+          ordem: number
+        }
+        Insert: {
+          chave: string
+          dosha: string
+          ordem?: number
+        }
+        Update: {
+          chave?: string
+          dosha?: string
+          ordem?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "meu_dosha_plantas_chave_fkey"
+            columns: ["chave"]
+            isOneToOne: false
+            referencedRelation: "classicos_plantas"
+            referencedColumns: ["chave"]
+          },
+        ]
+      }
       mimamsa_sutras_verses: {
         Row: {
           adhyaya_no: number
@@ -11681,6 +11737,38 @@ export type Database = {
         }
         Relationships: []
       }
+      trilha_comecar: {
+        Row: {
+          ativo: boolean
+          conteudo_id: string
+          created_at: string
+          id: number
+          ordem: number
+        }
+        Insert: {
+          ativo?: boolean
+          conteudo_id: string
+          created_at?: string
+          id?: number
+          ordem: number
+        }
+        Update: {
+          ativo?: boolean
+          conteudo_id?: string
+          created_at?: string
+          id?: number
+          ordem?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trilha_comecar_conteudo_id_fkey"
+            columns: ["conteudo_id"]
+            isOneToOne: true
+            referencedRelation: "portal_conteudo"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tutor_chat_histories: {
         Row: {
           data_hora: string | null
@@ -13272,6 +13360,16 @@ export type Database = {
         }[]
       }
       akasha_gate: { Args: { p_email: string }; Returns: Json }
+      akasha_grupo_dosha: { Args: { p_dosha: string }; Returns: string }
+      akasha_perguntas_para: {
+        Args: { p_dosha: string }
+        Returns: {
+          grupo: string
+          ordem: number
+          pergunta: string
+          resposta: string
+        }[]
+      }
       akasha_reset_mensal: { Args: never; Returns: number }
       antiruido_ayurveda: { Args: { t: string }; Returns: string }
       antiruido_desde: { Args: { p_id: number; t: string }; Returns: string }
@@ -13319,6 +13417,17 @@ export type Database = {
           isOneToOne: false
           isSetofReturn: true
         }
+      }
+      artigos_para_comecar: {
+        Args: { p_dosha?: string; p_limite?: number }
+        Returns: {
+          id: string
+          imagem: string
+          origem: string
+          resumo: string
+          slug: string
+          titulo: string
+        }[]
       }
       atividade_abas_lista: {
         Args: { p_curso_id?: string; p_escola_modulo_id?: string }
@@ -13630,6 +13739,7 @@ export type Database = {
         }[]
       }
       classicos_ordem_secao: { Args: { p_nome: string }; Returns: number }
+      classicos_para_dosha: { Args: { p_dosha: string }; Returns: Json }
       classicos_planta: {
         Args: { p_chave: string }
         Returns: {
@@ -13791,6 +13901,21 @@ export type Database = {
         Returns: Json
       }
       curso_pagamento_registrar: { Args: { p: Json }; Returns: Json }
+      cursos_para_mim: {
+        Args: never
+        Returns: {
+          capa: string
+          cor: string
+          id: string
+          link: string
+          ordem: number
+          rotulo: string
+          slug: string
+          subtitulo: string
+          tem: boolean
+          titulo: string
+        }[]
+      }
       descadastro_confirmar: {
         Args: { p_email: string; p_token: string }
         Returns: boolean
@@ -14222,6 +14347,10 @@ export type Database = {
       }
       live_detectada: { Args: { p_video_id: string }; Returns: string }
       live_troca_do_dia: { Args: never; Returns: string }
+      marcar_visto: {
+        Args: { p_id: string; p_tipo: string }
+        Returns: undefined
+      }
       match_conteudo: {
         Args: {
           p_dosha?: string
@@ -14320,10 +14449,9 @@ export type Database = {
         }[]
       }
       md_acesso: { Args: { p_uid: string }; Returns: Json }
-      md_agni: {
-        Args: { forte: number; fraco: number; irr: number }
-        Returns: Json
-      }
+      md_agni:
+        | { Args: { forte: number; fraco: number; irr: number }; Returns: Json }
+        | { Args: { p_txt: string }; Returns: Record<string, unknown> }
       md_cab: {
         Args: { icone: string; novo?: boolean; titulo: string }
         Returns: string
@@ -14344,6 +14472,10 @@ export type Database = {
       md_esc: { Args: { t: string }; Returns: string }
       md_estado: { Args: { p_ref: string; p_uid: string }; Returns: Json }
       md_faixa: { Args: { z: number }; Returns: string }
+      md_faixa_normal: {
+        Args: { p_dosha: string }
+        Returns: Record<string, unknown>
+      }
       md_frase_faltam: {
         Args: { d: string; s: Json; val: number }
         Returns: string
@@ -14392,6 +14524,7 @@ export type Database = {
       md_norm: { Args: { t: string }; Returns: string }
       md_novo: { Args: { s: Json }; Returns: boolean }
       md_oa: { Args: { tipo: string }; Returns: string }
+      md_passo: { Args: { p_dosha: string; p_v: number }; Returns: number }
       md_pilha_cartao: {
         Args: { s: Json; texto: string; titulo?: string }
         Returns: string
@@ -14444,6 +14577,21 @@ export type Database = {
       md_topo: { Args: { e: Json }; Returns: Json }
       md_zn: { Args: { d: string; s: number }; Returns: number }
       md_zona: { Args: { d: string; s: number }; Returns: string }
+      meu_dia: {
+        Args: { p_idpublico: string }
+        Returns: {
+          imagem: string
+          nugget_id: string
+          rotulo: string
+          slot: string
+          slug: string
+          titulo: string
+        }[]
+      }
+      meu_dosha_grafico: {
+        Args: { p_idpublico: string; p_meses?: number }
+        Returns: Json
+      }
       meus_agravamentos: {
         Args: never
         Returns: {
@@ -14762,6 +14910,10 @@ export type Database = {
       tag_normalizar: { Args: { p: string }; Returns: string }
       tem_acesso_curso: { Args: { p_curso_id: string }; Returns: boolean }
       tem_desconto_15: { Args: { p_user: string }; Returns: boolean }
+      terapeutas_perto: {
+        Args: { p_idpublico?: string; p_uf?: string }
+        Returns: Json
+      }
       termos_aplicar: { Args: { p_html: string }; Returns: string }
       text_to_bytea: { Args: { data: string }; Returns: string }
       tutor_detox_contexto: { Args: { p_email: string }; Returns: Json }
