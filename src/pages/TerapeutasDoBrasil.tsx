@@ -17,6 +17,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import { nomeCurtoEspecialidade, splitTherapistSpecialties } from "@/lib/terapeutas";
 import Seo from "@/components/Seo";
 import BannerSlot from "@/components/banners/BannerSlot";
 
@@ -24,6 +25,7 @@ const TerapeutasDoBrasil = () => {
   const [search, setSearch] = useState("");
   const [locationMode, setLocationMode] = useState(false);
   const [sortBy, setSortBy] = useState("recentes");
+  const [especialidadeSel, setEspecialidadeSel] = useState<string | null>(null);
 
   const { data: terapeutas, isLoading } = useQuery({
     queryKey: ["terapeutas"],
@@ -57,6 +59,14 @@ const TerapeutasDoBrasil = () => {
       );
     });
 
+    if (especialidadeSel) {
+      results = results.filter((t) =>
+        splitTherapistSpecialties(t.especialidade).some(
+          (esp) => nomeCurtoEspecialidade(esp) === especialidadeSel,
+        ),
+      );
+    }
+
     if (sortBy === "experientes") {
       results = [...results].sort(
         (a, b) => (a.formado_desde ?? 9999) - (b.formado_desde ?? 9999)
@@ -68,7 +78,23 @@ const TerapeutasDoBrasil = () => {
     }
 
     return results;
-  }, [terapeutas, search, locationMode, sortBy]);
+  }, [terapeutas, search, locationMode, sortBy, especialidadeSel]);
+
+  const chipsEspecialidade = useMemo(() => {
+    if (!terapeutas) return [] as Array<{ nome: string; total: number }>;
+    const contagem = new Map<string, number>();
+    terapeutas.forEach((t) => {
+      const nomes = new Set(
+        splitTherapistSpecialties(t.especialidade).map(nomeCurtoEspecialidade),
+      );
+      nomes.forEach((nome) =>
+        contagem.set(nome, (contagem.get(nome) ?? 0) + 1),
+      );
+    });
+    return [...contagem.entries()]
+      .map(([nome, total]) => ({ nome, total }))
+      .sort((a, b) => b.total - a.total || a.nome.localeCompare(b.nome));
+  }, [terapeutas]);
 
   return (
     <>
@@ -141,12 +167,54 @@ const TerapeutasDoBrasil = () => {
               <SelectItem value="novos">Novos Talentos</SelectItem>
             </SelectContent>
           </Select>
-          {search && (
+          {(search || especialidadeSel) && (
             <span className="text-sm text-muted-foreground ml-auto">
               {filtered.length} resultado{filtered.length !== 1 && "s"}
             </span>
           )}
         </div>
+
+        {chipsEspecialidade.length > 0 && (
+          <div className="flex gap-1.5 overflow-x-auto scrollbar-hide pb-1 -mb-1">
+            <button
+              type="button"
+              onClick={() => setEspecialidadeSel(null)}
+              className={cn(
+                "shrink-0 whitespace-nowrap rounded-full px-2.5 py-1 text-[11.5px] font-semibold transition-colors cursor-pointer",
+                !especialidadeSel
+                  ? "bg-[#352F54] text-white"
+                  : "bg-[#F1EEF8] text-[#4E3F7E]",
+              )}
+            >
+              Todas
+            </button>
+            {chipsEspecialidade.map((chip) => {
+              const selecionado = especialidadeSel === chip.nome;
+              return (
+                <button
+                  key={chip.nome}
+                  type="button"
+                  onClick={() =>
+                    setEspecialidadeSel(selecionado ? null : chip.nome)
+                  }
+                  className={cn(
+                    "shrink-0 whitespace-nowrap rounded-full px-2.5 py-1 text-[11.5px] font-semibold transition-colors cursor-pointer",
+                    selecionado
+                      ? "bg-[#352F54] text-white"
+                      : "bg-[#F1EEF8] text-[#4E3F7E]",
+                  )}
+                >
+                  {chip.nome}
+                  <span
+                    className={selecionado ? "ml-1 opacity-80" : "ml-1 opacity-60"}
+                  >
+                    ({chip.total})
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       {/* Grid */}
