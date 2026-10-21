@@ -8,3 +8,6 @@
 
 - [x] Aplicar o anexo da área Textos Clássicos e integrar páginas, navegação e Biblioteca
 - [x] Conferir fidelidade ao anexo e navegação com dados reais
+
+- [ ] Aplicar Meu Dosha 2.0 do anexo sem alterar visitantes ou banco
+- [ ] Verificar arquivos do anexo, redirecionamento e fluxos disponíveis
