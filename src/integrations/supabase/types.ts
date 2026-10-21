@@ -272,6 +272,78 @@ export type Database = {
         }
         Relationships: []
       }
+      _bkp_portal_terapeutas_20261021: {
+        Row: {
+          cidade: string | null
+          "created date": string | null
+          email: string | null
+          especialidade: string | null
+          estado: string | null
+          formado_desde: number | null
+          id: string | null
+          imagem: string | null
+          "imagem.1": string | null
+          instagram: string | null
+          nome: string | null
+          owner: string | null
+          pais: string | null
+          resumo: string | null
+          status: string | null
+          "terapeutas(dinamica)": string | null
+          title: string | null
+          "updated date": string | null
+          user_id: string | null
+          website: string | null
+          whatsapp: string | null
+        }
+        Insert: {
+          cidade?: string | null
+          "created date"?: string | null
+          email?: string | null
+          especialidade?: string | null
+          estado?: string | null
+          formado_desde?: number | null
+          id?: string | null
+          imagem?: string | null
+          "imagem.1"?: string | null
+          instagram?: string | null
+          nome?: string | null
+          owner?: string | null
+          pais?: string | null
+          resumo?: string | null
+          status?: string | null
+          "terapeutas(dinamica)"?: string | null
+          title?: string | null
+          "updated date"?: string | null
+          user_id?: string | null
+          website?: string | null
+          whatsapp?: string | null
+        }
+        Update: {
+          cidade?: string | null
+          "created date"?: string | null
+          email?: string | null
+          especialidade?: string | null
+          estado?: string | null
+          formado_desde?: number | null
+          id?: string | null
+          imagem?: string | null
+          "imagem.1"?: string | null
+          instagram?: string | null
+          nome?: string | null
+          owner?: string | null
+          pais?: string | null
+          resumo?: string | null
+          status?: string | null
+          "terapeutas(dinamica)"?: string | null
+          title?: string | null
+          "updated date"?: string | null
+          user_id?: string | null
+          website?: string | null
+          whatsapp?: string | null
+        }
+        Relationships: []
+      }
       _bkp_reteste_20261007: {
         Row: {
           agniforte: number | null
@@ -9649,8 +9721,10 @@ export type Database = {
           especialidade: string | null
           estado: string | null
           formado_desde: number | null
+          frase_card: string | null
           id: string
           imagem: string | null
+          imagem_card: string | null
           "imagem.1": string | null
           instagram: string | null
           nome: string | null
@@ -9672,8 +9746,10 @@ export type Database = {
           especialidade?: string | null
           estado?: string | null
           formado_desde?: number | null
+          frase_card?: string | null
           id?: string
           imagem?: string | null
+          imagem_card?: string | null
           "imagem.1"?: string | null
           instagram?: string | null
           nome?: string | null
@@ -9695,8 +9771,10 @@ export type Database = {
           especialidade?: string | null
           estado?: string | null
           formado_desde?: number | null
+          frase_card?: string | null
           id?: string
           imagem?: string | null
+          imagem_card?: string | null
           "imagem.1"?: string | null
           instagram?: string | null
           nome?: string | null
