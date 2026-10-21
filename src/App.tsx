@@ -35,6 +35,15 @@ const MeuDosha = lazy(() => import("./pages/MeuDosha"));
 const MeuPerfil = lazy(() => import("./pages/MeuPerfil"));
 const Biblioteca = lazy(() => import("./pages/Biblioteca"));
 const TextosClassicos = lazy(() => import("./pages/TextosClassicos"));
+const ClassicosEstante = lazy(() => import("./pages/classicos/Estante"));
+const ClassicosObra = lazy(() => import("./pages/classicos/Obra"));
+const ClassicosCapitulo = lazy(() => import("./pages/classicos/Capitulo"));
+const ClassicosPlantas = lazy(() => import("./pages/classicos/Plantas"));
+const ClassicosPlanta = lazy(() => import("./pages/classicos/Planta"));
+const ClassicosTema = lazy(() => import("./pages/classicos/Tema"));
+const ClassicosRoteiro = lazy(() => import("./pages/classicos/Roteiro"));
+const ClassicosPesquisar = lazy(() => import("./pages/classicos/Pesquisar"));
+const ClassicosMelhores = lazy(() => import("./pages/classicos/Melhores"));
 const CursosVitrine = lazy(() => import("./pages/CursosVitrine"));
 const CursoLanding = lazy(() => import("./pages/CursoLanding"));
 const CursoEstudar = lazy(() => import("./pages/CursoEstudar"));
@@ -227,6 +236,15 @@ const RoutedApp = () => {
               <Route path="/imprimir" element={<Imprimir />} />
               <Route path="/biblioteca" element={<Biblioteca />} />
               <Route path="/textos-classicos" element={<TextosClassicos />} />
+              <Route path="/textos-classicos/estante" element={<ClassicosEstante />} />
+              <Route path="/textos-classicos/roteiro" element={<ClassicosRoteiro />} />
+              <Route path="/textos-classicos/pesquisar" element={<ClassicosPesquisar />} />
+              <Route path="/textos-classicos/melhores" element={<ClassicosMelhores />} />
+              <Route path="/textos-classicos/plantas" element={<ClassicosPlantas />} />
+              <Route path="/textos-classicos/plantas/:chave" element={<ClassicosPlanta />} />
+              <Route path="/textos-classicos/tema/:tema" element={<ClassicosTema />} />
+              <Route path="/textos-classicos/:obra" element={<ClassicosObra />} />
+              <Route path="/textos-classicos/:obra/*" element={<ClassicosCapitulo />} />
               <Route path="/cursos" element={<CursosVitrine />} />
               <Route path="/cursos/detox-da-primavera" element={<Navigate to="/detox/inscricao" replace />} />
               <Route path="/cursos/:slug" element={<CursoLanding />} />
