@@ -852,6 +852,7 @@ interface DiagnosticoCompletoProps {
   doshaPrincipalCompleto: string;
   refazerTeste: () => void;
   isPremium?: boolean;
+  partes?: Array<"diagnostico" | "entenda" | "plano30" | "protocolo">;
 }
 
 const DiagnosticoCompleto = ({
@@ -860,6 +861,7 @@ const DiagnosticoCompleto = ({
   doshaPrincipalCompleto,
   refazerTeste,
   isPremium = false,
+  partes = ["diagnostico", "entenda", "plano30", "protocolo"],
 }: DiagnosticoCompletoProps) => {
   const { analise, analiseLoading, analiseTimeout } = useAnalise(email);
   const { data: produtos } = useProdutosPrescritos(analise);
@@ -960,18 +962,18 @@ const DiagnosticoCompleto = ({
 
   return (
     <div className="space-y-0 pt-12 pb-12">
-      <Diagnostico
+      {partes.includes("diagnostico") && <Diagnostico
         analise={analise}
         doshaPrincipal={doshaPrincipal}
         doshaPrincipalCompleto={doshaPrincipalCompleto}
-      />
-      <EntendaSeuDosha
+      />}
+      {partes.includes("entenda") && <EntendaSeuDosha
         glossario={glossario || null}
         doshaPrincipalCompleto={doshaPrincipalCompleto}
         cor={corDosha(doshaPrincipal)}
-      />
-      <Plano30Dias isPremium={isPremium} />
-      {!!produtos?.length && <ProtocoloSamkhya analise={analise} produtos={produtos} />}
+      />}
+      {partes.includes("plano30") && <Plano30Dias isPremium={isPremium} />}
+      {partes.includes("protocolo") && !!produtos?.length && <ProtocoloSamkhya analise={analise} produtos={produtos} />}
     </div>
   );
 };

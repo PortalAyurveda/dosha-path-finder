@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, Suspense, lazy } from "react";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -633,8 +633,8 @@ const orgSchema = {
 };
 
 const Index = () => {
-  const { doshaResult, user, loading, refreshProfile } = useUser();
-  const isLoggedWithDosha = !!(user && doshaResult?.idPublico);
+  const { doshaResult, user, isAnonymous, loading, refreshProfile } = useUser();
+  const isLoggedWithDosha = !!(user && !isAnonymous && doshaResult?.idPublico);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -656,6 +656,10 @@ const Index = () => {
       document.cookie.includes("sb-") ||
       Object.keys(localStorage).some((k) => k.startsWith("sb-")));
   const shouldWait = loading && hasStoredSession && !isLoggedWithDosha;
+
+  if (!loading && user && !isAnonymous && doshaResult?.idPublico) {
+    return <Navigate to={`/meu-dosha?id=${doshaResult.idPublico}`} replace />;
+  }
 
   return (
     <>

@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { getTransformedImageUrl } from "@/lib/imageTransform";
 import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -10,9 +10,12 @@ import { Badge } from "@/components/ui/badge";
 import HeartButton from "@/components/HeartButton";
 import BannerSlot from "@/components/banners/BannerSlot";
 import LeiaTambem from "@/components/LeiaTambem";
+import { useUser } from "@/contexts/UserContext";
 
 const BlogArticle = () => {
   const { slug } = useParams<{ slug: string }>();
+  const { user, isAnonymous } = useUser();
+  const artigosVistos = useRef(new Set<string>());
 
   const { data: article, isLoading, isError, isSuccess } = useQuery({
     queryKey: ["blog-article", slug],
@@ -29,6 +32,18 @@ const BlogArticle = () => {
     },
     enabled: !!slug,
   });
+
+  useEffect(() => {
+    if (!user || isAnonymous || !article?.id || artigosVistos.current.has(article.id)) return;
+    artigosVistos.current.add(article.id);
+    void (async () => {
+      try {
+        await supabase.rpc("marcar_visto" as any, { p_tipo: "artigo", p_id: article.id });
+      } catch {
+        // Leitura registrada em silêncio; falhas não afetam o artigo.
+      }
+    })();
+  }, [user, isAnonymous, article?.id]);
 
   // O canonical é escrito por DOM pelo hook global useCanonical (no pai desta página).
   // O efeito do pai roda DEPOIS do efeito do filho, então o setTimeout é obrigatório.
