@@ -12,3 +12,4 @@
 - [x] Aplicar Meu Dosha 2.0 do anexo sem alterar visitantes ou banco
 - [x] Verificar arquivos do anexo, redirecionamento e fluxos disponíveis
 - [ ] Verificar a nova página com sessão real — bloqueado: Supabase externo sem sessão autenticada disponível
+- [x] Deixar em cinza os cursos que a pessoa não tem (inclusive o Detox da Primavera) em "Meus cursos"
