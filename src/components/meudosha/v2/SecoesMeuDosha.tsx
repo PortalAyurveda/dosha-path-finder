@@ -146,7 +146,9 @@ export const MeusCursos = () => {
               )}
             >
               <div className="relative">
-                <CursoCardCapa cfg={cfg} />
+                <div className={cn(!c.tem && "grayscale opacity-75")}>
+                  <CursoCardCapa cfg={cfg} />
+                </div>
                 {c.tem ? (
                   <span className="absolute top-3 left-3 inline-flex items-center gap-1.5 rounded-full bg-[#D9A400] px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-[0.12em] text-white shadow-md">
                     <CheckCircle2 className="h-3.5 w-3.5" /> Seu curso
@@ -157,9 +159,11 @@ export const MeusCursos = () => {
                   </span>
                 )}
               </div>
-              <CursoCardTituloAbaixo cfg={cfg} />
+              <div className={cn(!c.tem && "grayscale")}>
+                <CursoCardTituloAbaixo cfg={cfg} />
+              </div>
               <div className="mt-auto px-6 pb-4 pt-3">
-                <span className={cn("flex h-10 w-full items-center justify-center rounded-md text-sm font-semibold", c.tem ? "bg-primary text-primary-foreground" : "border border-border text-foreground")}>
+                <span className={cn("flex h-10 w-full items-center justify-center rounded-md text-sm font-semibold", c.tem ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground")}>
                   {c.tem ? "Acessar curso" : row?.card_cta_texto || "Conhecer"}
                 </span>
               </div>
