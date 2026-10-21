@@ -126,7 +126,6 @@ const Header = () => {
   ];
   const aprenderLinks = [
     { label: "Biblioteca", to: "/biblioteca" },
-    { label: "Textos Clássicos", to: "/textos-classicos" },
     { label: "Cursos", to: "/cursos" },
   ];
   const cuidarLinks = [
