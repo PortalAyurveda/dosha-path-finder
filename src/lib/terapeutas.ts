@@ -84,3 +84,25 @@ export function getInstagramHandle(value: string | null | undefined) {
   const handle = value?.replace(/^['"\s]*@?/, "").trim().replace(/\/+$/, "") ?? "";
   return handle || null;
 }
+
+export const NOME_CURTO_ESPECIALIDADES: Array<[string, string]> = [
+  ["Ahara", "Alimentação"],
+  ["Yoga & Dinacharya", "Rotina e Yoga"],
+  ["Dravya Guna", "Ervas e fitoterapia"],
+  ["Rasayana", "Longevidade"],
+  ["Manas", "Saúde mental"],
+  ["Stri Roga", "Saúde da mulher"],
+  ["Nidana & Pareeksha", "Diagnóstico"],
+  ["Panchakarma", "Desintoxicação"],
+  ["Bala & Performance", "Esporte e vigor"],
+  ["Vajikarana", "Vitalidade"],
+  ["Prasuti & Balachikitsa", "Mãe e criança"],
+  ["Abhyanga", "Massagem"],
+];
+
+export function nomeCurtoEspecialidade(especialidade: string) {
+  const found = NOME_CURTO_ESPECIALIDADES.find(([chave]) =>
+    especialidade.startsWith(chave),
+  );
+  return found ? found[1] : especialidade;
+}
