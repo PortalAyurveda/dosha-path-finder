@@ -41,7 +41,7 @@ function posicao(d: Dosha, v: number) {
 
 const GraficoMeses = ({ idPublico }: { idPublico: string }) => {
   const compacto = useIsMobile();
-  const futuros = compacto ? 5 : 6;
+  const futuros = 6;
 
   const { data } = useQuery({
     queryKey: ["meu-dosha-grafico", idPublico, futuros],
@@ -58,7 +58,11 @@ const GraficoMeses = ({ idPublico }: { idPublico: string }) => {
   });
 
   if (!data || !data.meses?.length) return null;
-  const meses = data.meses;
+  // Exatamente 6 colunas: o mês atual e os seguintes (com o histórico só se faltar futuro).
+  const todos = data.meses;
+  const iA = Math.max(0, todos.findIndex((m) => m.tipo === "agora"));
+  const ini = Math.max(0, Math.min(iA, todos.length - 6));
+  const meses = todos.slice(ini, ini + 6);
 
   const W = compacto ? 350 : 820;
   const L = compacto ? 66 : 84;
@@ -104,7 +108,7 @@ const GraficoMeses = ({ idPublico }: { idPublico: string }) => {
   return (
     <section id="grafico" className="bg-card rounded-xl border border-border p-4 space-y-3 scroll-mt-24">
       <div className="flex flex-wrap items-end justify-between gap-2">
-        <h2 className="font-serif font-bold text-foreground text-lg">Seus próximos {futuros} meses</h2>
+        <h2 className="font-serif font-bold text-foreground text-lg">Seus próximos 6 meses</h2>
         <span className="text-xs text-muted-foreground">Normal: Vata 17–24 · Pitta 20–30 · Kapha 15–35</span>
       </div>
       <p className="text-sm text-foreground">{data.frase}</p>

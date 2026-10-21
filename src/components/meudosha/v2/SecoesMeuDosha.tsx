@@ -1,11 +1,16 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { Lock } from "lucide-react";
+import { CheckCircle2, Lock } from "lucide-react";
+import { CursoCardCapa, CursoCardTituloAbaixo } from "@/components/course/CursoCardCapa";
+import { cursoParaCardConfig } from "@/pages/CursosVitrine";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/contexts/UserContext";
 import { getTherapistProfilePath, nomeCurtoEspecialidade, splitTherapistSpecialties } from "@/lib/terapeutas";
 import { cn } from "@/lib/utils";
+
+const CAMPOS_CARD =
+  "id,titulo,capa_url,card_logo_url,card_cor_secundaria,card_subtitulo,card_cta_texto,card_foto_posicao,card_fosco_opacidade,card_titulo_sobre_foto,card_foto_zoom,card_titulo_tamanho,card_mostrar_titulo,card_mostrar_subtitulo,card_mostrar_logo,card_overlay_pos,card_logo_tamanho,card_texto_cor";
 
 // Seções do Meu Dosha 2.0. Todos os dados vêm de RPCs do banco (CMS).
 
@@ -107,48 +112,60 @@ export const MeusCursos = () => {
       return (data ?? []) as CursoMeu[];
     },
   });
+  const ids = cursos.map((c) => c.id);
+  const { data: cards = [] } = useQuery({
+    queryKey: ["cursos-cards", ids.join(",")],
+    enabled: ids.length > 0,
+    staleTime: 10 * 60 * 1000,
+    queryFn: async () => {
+      const { data } = await supabase.from("cursos").select(CAMPOS_CARD).in("id", ids);
+      return (data ?? []) as any[];
+    },
+  });
   if (!cursos.length) return null;
   const meus = cursos.filter((c) => c.tem).length;
 
   return (
     <section>
-      <Titulo lado={meus ? `${meus} ${meus === 1 ? "seu" : "seus"} · ${cursos.length} cursos no Portal` : `Você ainda não tem cursos · ${cursos.length} cursos no Portal`}>
+      <Titulo lado={meus ? `${meus} ${meus === 1 ? "seu" : "seus"} · ${cursos.length} cursos no Portal` : `${cursos.length} cursos no Portal`}>
         Meus cursos
       </Titulo>
-      <div className="flex gap-3 overflow-x-auto pb-1 sm:grid sm:grid-cols-3 sm:overflow-visible">
-        {cursos.map((c) => (
-          <Link
-            key={c.id}
-            to={c.link}
-            className={cn(
-              "flex flex-none w-[72%] sm:w-auto flex-col overflow-hidden rounded-2xl border border-border transition-shadow hover:shadow-md",
-              c.tem ? "bg-card" : "bg-[#F1F1F5]"
-            )}
-          >
-            <div
-              className={cn("flex h-20 items-start justify-between p-2", !c.tem && "grayscale opacity-50")}
-              style={{ background: `linear-gradient(135deg, ${c.cor || "#C8BDEB"}, ${(c.cor || "#C8BDEB") + "AA"})` }}
+      <div className="flex gap-4 overflow-x-auto pb-2 sm:grid sm:grid-cols-2 sm:overflow-visible">
+        {cursos.map((c) => {
+          const row = cards.find((r) => r.id === c.id);
+          const cfg = row
+            ? cursoParaCardConfig(row)
+            : cursoParaCardConfig({ titulo: c.titulo, capa_url: c.capa, card_subtitulo: c.subtitulo, card_cor_secundaria: c.cor } as any);
+          return (
+            <Link
+              key={c.id}
+              to={c.link}
+              className={cn(
+                "group flex flex-none w-[78%] sm:w-auto flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition-shadow hover:shadow-md",
+                c.tem && "ring-2 ring-amber-400/80"
+              )}
             >
-              <span className="text-[11px] font-bold uppercase tracking-wide text-[#352F54]">{c.tem ? "Seu curso" : "Curso"}</span>
-              {!c.tem && <Cadeado />}
-            </div>
-            <div className={cn("flex flex-1 flex-col gap-1 p-3", !c.tem && "opacity-60")}>
-              <p className="font-serif text-[15px] font-semibold leading-snug text-foreground">{c.titulo}</p>
-              {c.subtitulo && <p className="text-xs text-muted-foreground">{c.subtitulo}</p>}
-            </div>
-            <div className="flex items-center justify-between gap-2 px-3 pb-3">
-              <span className="text-xs text-muted-foreground">{c.tem ? "" : c.rotulo}</span>
-              <span
-                className={cn(
-                  "rounded-full px-3 py-1.5 text-xs font-semibold",
-                  c.tem ? "bg-[#FF7676] text-white" : "border border-border bg-card text-foreground"
+              <div className="relative">
+                <CursoCardCapa cfg={cfg} />
+                {c.tem ? (
+                  <span className="absolute top-3 left-3 inline-flex items-center gap-1.5 rounded-full bg-[#D9A400] px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-[0.12em] text-white shadow-md">
+                    <CheckCircle2 className="h-3.5 w-3.5" /> Seu curso
+                  </span>
+                ) : (
+                  <span className="absolute top-3 right-3 flex h-8 w-8 items-center justify-center rounded-full bg-white/90 shadow-md">
+                    <Lock className="h-4 w-4 text-muted-foreground" />
+                  </span>
                 )}
-              >
-                {c.tem ? "Continuar" : "Conhecer"}
-              </span>
-            </div>
-          </Link>
-        ))}
+              </div>
+              <CursoCardTituloAbaixo cfg={cfg} />
+              <div className="mt-auto px-6 pb-5 pt-4">
+                <span className={cn("flex h-10 w-full items-center justify-center rounded-md text-sm font-semibold", c.tem ? "bg-primary text-primary-foreground" : "border border-border text-foreground")}>
+                  {c.tem ? "Acessar curso" : row?.card_cta_texto || "Conhecer"}
+                </span>
+              </div>
+            </Link>
+          );
+        })}
       </div>
     </section>
   );
