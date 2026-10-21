@@ -6,7 +6,9 @@ import { trackPixel } from "@/lib/metaPixel";
 import PageContainer from "@/components/PageContainer";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2, ChevronDown, ChevronUp, Calendar, CalendarDays, Play, Video as VideoIcon, BookOpen, Brain, LineChart, Lock, RefreshCw, ChevronRight } from "lucide-react";
-import EvolucaoSheet from "@/components/meudosha/EvolucaoSheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import GraficoMeses from "@/components/meudosha/v2/GraficoMeses";
+import { SeuDia, MeusCursos, AkashaPerguntas, ArtigosComecar, ClassicosDosha, TerapeutasPerto } from "@/components/meudosha/v2/SecoesMeuDosha";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -689,7 +691,6 @@ const MeuDosha = () => {
   const { user, isAnonymous, profile, doshaResult, loading: authLoading } = useUser();
   const isPremium = !!profile?.is_premium;
   const navigate = useNavigate();
-  const [evolucaoOpen, setEvolucaoOpen] = useState(false);
 
   // Data da ÚLTIMA revisão concluída (não só a existência de uma linha antiga).
   const { data: ultimaRevisaoEm } = useQuery({
@@ -979,117 +980,13 @@ const MeuDosha = () => {
 
   const isVisitor = !user || isAnonymous;
 
+  const temAcessoRotina =
+    profile?.is_premium === true ||
+    (profile?.subscription_status === "active" &&
+      ["rotina", "mensal", "anual"].includes(profile?.plano ?? "") &&
+      (!profile?.premium_until || new Date(profile.premium_until) > new Date()));
 
-
-
-  return (
-    <PageContainer
-      title={`Meu Dosha — ${formattedNome}`}
-      description={`Resultado do teste de dosha de ${formattedNome}: ${result.doshaprincipal}`}
-      noindex={isVisitor}
-    >
-
-      <div className="max-w-3xl mx-auto space-y-6">
-        <h1 className="sr-only">
-          {formattedNome ? `Resultado do teste de dosha de ${formattedNome}` : "Resultado do teste de dosha"}
-          {result.doshaprincipal ? ` — Dosha ${result.doshaprincipal}` : ""}
-        </h1>
-
-        {!isVisitor && registroRaw && (registroRaw as any).criado_por === user?.id && (registroRaw as any).user_id !== user?.id && (
-          <div className="rounded-2xl border border-primary/30 bg-primary/5 px-4 py-3 text-sm text-foreground">
-            <strong>Este teste é de {formattedNome}, feito na sua conta.</strong>{" "}
-            O seu teste continua em uso. Ele fica guardado em Minha conta, em "Testes que você fez para outras pessoas".
-          </div>
-        )}
-
-        <JornadaDestaqueCard />
-
-        {!isVisitor && <FormacaoDestaqueCard />}
-
-        {!isVisitor && (
-          <div id="reteste-anchor" className="rounded-2xl transition-shadow">
-            <RetesteCard />
-          </div>
-        )}
-
-        {!isVisitor && <ConvitePesquisa />}
-        
-
-
-
-
-        {/* ===== Vitrine da Rotina ===== */}
-        {(() => {
-          if (isVisitor) return null;
-
-          const temAcessoRotina =
-            profile?.is_premium === true ||
-            (profile?.subscription_status === "active" &&
-              ["rotina", "mensal", "anual"].includes(profile?.plano ?? "") &&
-              (!profile?.premium_until || new Date(profile.premium_until) > new Date()));
-
-          if (temAcessoRotina) {
-            return (
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 rounded-2xl border border-secondary/30 bg-secondary/10 px-5 py-4">
-                <span className="text-sm font-medium text-foreground">
-                  Sua rotina de hoje está pronta
-                </span>
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  onClick={() => navigate("/minha-rotina")}
-                  className="self-start sm:self-auto"
-                >
-                  Ver minha rotina →
-                </Button>
-              </div>
-            );
-          }
-
-          return null;
-        })()}
-
-        <BannerSlot slot="meu_dosha_meio" className="[&:empty]:hidden" />
-
-
-
-
-        {/* ===== TABS ===== */}
-        <Tabs
-          value={initialTab}
-          onValueChange={(v) => {
-            const params = new URLSearchParams(searchParams);
-            params.set('tab', v);
-            navigate(`/meu-dosha?${params.toString()}`, { replace: true });
-          }}
-          className="w-full"
-        >
-          <div className="sticky top-16 z-40 py-2 flex justify-center">
-          <TabsList className="grid grid-cols-4 h-auto max-w-6xl w-full mx-4 rounded-full bg-muted/95 backdrop-blur-sm shadow-sm gap-0.5 sm:gap-0 p-1">
-            <TabsTrigger value="perfil" className="text-xs sm:text-sm py-1 flex items-center gap-1 bg-[#E8EEFF] sm:bg-transparent text-[#352F54] rounded-full">
-              <span className="hidden sm:inline-flex">
-                <DoshaMiniPie vata={result.vatascore ?? 0} pitta={result.pittascore ?? 0} kapha={result.kaphascore ?? 0} />
-              </span>
-              Perfil
-            </TabsTrigger>
-            <TabsTrigger value="metricas" className="text-xs sm:text-sm py-1 flex items-center gap-1 bg-[#FFE8E8] sm:bg-transparent text-[#352F54] rounded-full">
-              <span aria-hidden="true" className="hidden sm:inline">📊</span>
-              Métricas
-            </TabsTrigger>
-            <TabsTrigger value="artigos" className="text-xs sm:text-sm py-1 flex items-center gap-1 bg-[#E8F5E0] sm:bg-transparent text-[#352F54] rounded-full">
-              <span aria-hidden="true" className="hidden sm:inline">📖</span>
-              Artigos
-            </TabsTrigger>
-            <TabsTrigger value="videos" className="text-xs sm:text-sm py-1 flex items-center gap-1 bg-[#FFF3D6] sm:bg-transparent text-[#352F54] rounded-full">
-              <span aria-hidden="true" className="hidden sm:inline">▶️</span>
-              Vídeos
-            </TabsTrigger>
-          </TabsList>
-          </div>
-
-          {/* ===== TAB: PERFIL ===== */}
-          <TabsContent forceMount value="perfil" className="space-y-6 mt-4 data-[state=inactive]:hidden" tabIndex={-1}>
-            {/* Clinical Dashboard */}
+  const cartaoHoje = (
             <div className="bg-card rounded-xl border border-border p-4 space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-[1.2fr_1fr] gap-4">
                 <div className="flex flex-col items-center">
@@ -1125,13 +1022,12 @@ const MeuDosha = () => {
                       <button
                         type="button"
                         onClick={() => {
-                          if (isPremium) setEvolucaoOpen(true);
-                          else navigate("/assinar");
+                          document.getElementById("grafico")?.scrollIntoView({ behavior: "smooth" });
                         }}
                         className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full border border-border bg-card hover:bg-muted transition-colors text-foreground"
-                        aria-label={isPremium ? "Ver gráficos de evolução" : "Recurso premium — gráficos de evolução"}
+                        aria-label="Ver gráficos de evolução"
                       >
-                        {isPremium ? <LineChart className="w-3.5 h-3.5" /> : <Lock className="w-3.5 h-3.5" />}
+                        <LineChart className="w-3.5 h-3.5" />
                         Gráficos
                       </button>
                       {(() => {
@@ -1174,6 +1070,72 @@ const MeuDosha = () => {
                 <ClinicalThermometer doshaScores={doshaScores} />
               </div>
             </div>
+  );
+
+
+
+
+
+  return (
+    <PageContainer
+      title={`Meu Dosha — ${formattedNome}`}
+      description={`Resultado do teste de dosha de ${formattedNome}: ${result.doshaprincipal}`}
+      noindex={isVisitor}
+    >
+
+      <div className={cn("max-w-3xl mx-auto", isVisitor ? "space-y-6" : "space-y-10")}>
+        <h1 className="sr-only">
+          {formattedNome ? `Resultado do teste de dosha de ${formattedNome}` : "Resultado do teste de dosha"}
+          {result.doshaprincipal ? ` — Dosha ${result.doshaprincipal}` : ""}
+        </h1>
+
+        {!isVisitor && registroRaw && (registroRaw as any).criado_por === user?.id && (registroRaw as any).user_id !== user?.id && (
+          <div className="rounded-2xl border border-primary/30 bg-primary/5 px-4 py-3 text-sm text-foreground">
+            <strong>Este teste é de {formattedNome}, feito na sua conta.</strong>{" "}
+            O seu teste continua em uso. Ele fica guardado em Minha conta, em "Testes que você fez para outras pessoas".
+          </div>
+        )}
+
+        {isVisitor && <JornadaDestaqueCard />}
+        {!isVisitor && <ConvitePesquisa />}
+        {isVisitor && <BannerSlot slot="meu_dosha_meio" className="[&:empty]:hidden" />}
+
+        {/* ===== TABS ===== */}
+        {isVisitor ? <Tabs
+          value={initialTab}
+          onValueChange={(v) => {
+            const params = new URLSearchParams(searchParams);
+            params.set('tab', v);
+            navigate(`/meu-dosha?${params.toString()}`, { replace: true });
+          }}
+          className="w-full"
+        >
+          <div className="sticky top-16 z-40 py-2 flex justify-center">
+          <TabsList className="grid grid-cols-4 h-auto max-w-6xl w-full mx-4 rounded-full bg-muted/95 backdrop-blur-sm shadow-sm gap-0.5 sm:gap-0 p-1">
+            <TabsTrigger value="perfil" className="text-xs sm:text-sm py-1 flex items-center gap-1 bg-[#E8EEFF] sm:bg-transparent text-[#352F54] rounded-full">
+              <span className="hidden sm:inline-flex">
+                <DoshaMiniPie vata={result.vatascore ?? 0} pitta={result.pittascore ?? 0} kapha={result.kaphascore ?? 0} />
+              </span>
+              Perfil
+            </TabsTrigger>
+            <TabsTrigger value="metricas" className="text-xs sm:text-sm py-1 flex items-center gap-1 bg-[#FFE8E8] sm:bg-transparent text-[#352F54] rounded-full">
+              <span aria-hidden="true" className="hidden sm:inline">📊</span>
+              Métricas
+            </TabsTrigger>
+            <TabsTrigger value="artigos" className="text-xs sm:text-sm py-1 flex items-center gap-1 bg-[#E8F5E0] sm:bg-transparent text-[#352F54] rounded-full">
+              <span aria-hidden="true" className="hidden sm:inline">📖</span>
+              Artigos
+            </TabsTrigger>
+            <TabsTrigger value="videos" className="text-xs sm:text-sm py-1 flex items-center gap-1 bg-[#FFF3D6] sm:bg-transparent text-[#352F54] rounded-full">
+              <span aria-hidden="true" className="hidden sm:inline">▶️</span>
+              Vídeos
+            </TabsTrigger>
+          </TabsList>
+          </div>
+
+          {/* ===== TAB: PERFIL ===== */}
+          <TabsContent forceMount value="perfil" className="space-y-6 mt-4 data-[state=inactive]:hidden" tabIndex={-1}>
+            {cartaoHoje}
 
             {/* ===== Diagnóstico clínico completo (substitui glossário + Recomeçar o Teste) ===== */}
             {isVisitor ? (
@@ -1252,11 +1214,57 @@ const MeuDosha = () => {
             )}
           </TabsContent>
 
-        </Tabs>
-
-        {!isVisitor && <PraVoceRail doshaPrincipal={result?.doshaprincipal} />}
+        </Tabs> : (
+          <div className="space-y-10">
+            {cartaoHoje}
+            <div>
+              <GraficoMeses idPublico={id} />
+              <Sheet>
+                <SheetTrigger asChild>
+                  <Button variant="ghost" size="sm" className="mt-2 text-muted-foreground">
+                    Ver as métricas do seu teste
+                  </Button>
+                </SheetTrigger>
+                <SheetContent className="w-full sm:max-w-3xl overflow-y-auto">
+                  <SheetHeader>
+                    <SheetTitle>Métricas</SheetTitle>
+                  </SheetHeader>
+                  <MetricasTab registroUuid={registroUuid} insights={insights} isLoading={insightsLoading} />
+                </SheetContent>
+              </Sheet>
+            </div>
+            <SeuDia idPublico={id} temAcesso={temAcessoRotina} />
+            <MeusCursos />
+            <BannerSlot slot="meu_dosha_meio" className="[&:empty]:hidden" />
+            <AkashaPerguntas dosha={result.doshaprincipal || primaryDosha} />
+            <DiagnosticoCompleto
+              email={result.email}
+              doshaPrincipal={primaryDosha}
+              doshaPrincipalCompleto={result.doshaprincipal || primaryDosha}
+              refazerTeste={handleRefazerTeste}
+              isPremium={isPremium}
+              partes={["diagnostico", "entenda"]}
+            />
+            <ArtigosComecar dosha={result.doshaprincipal || primaryDosha} />
+            <ClassicosDosha dosha={result.doshaprincipal || primaryDosha} />
+            <div>
+              <DiagnosticoCompleto
+                email={result.email}
+                doshaPrincipal={primaryDosha}
+                doshaPrincipalCompleto={result.doshaprincipal || primaryDosha}
+                refazerTeste={handleRefazerTeste}
+                isPremium={isPremium}
+                partes={["protocolo"]}
+              />
+              <div className="mt-8 -mx-4 sm:-mx-6">
+                <PrateleiraSamkhya doshaPrincipal={result.doshaprincipal || primaryDosha} />
+              </div>
+            </div>
+            <PraVoceRail doshaPrincipal={result?.doshaprincipal} />
+            <TerapeutasPerto idPublico={id} />
+          </div>
+        )}
       </div>
-      <EvolucaoSheet open={evolucaoOpen} onOpenChange={setEvolucaoOpen} registroUuid={registroUuid} />
     </PageContainer>
   );
 };
