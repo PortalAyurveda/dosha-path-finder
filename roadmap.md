@@ -14,3 +14,4 @@
 - [ ] Verificar a nova página com sessão real — bloqueado: Supabase externo sem sessão autenticada disponível
 - [x] Deixar em cinza os cursos que a pessoa não tem (inclusive o Detox da Primavera) em "Meus cursos"
 - [x] Deixar os cards de "Meus cursos" simétricos: sem logo amarelo e sem texto abaixo da capa
+- [x] Tirar "Seu Protocolo Samkhya" (e o selo do cupom) do /meu-dosha: diagnóstico completo mostra só o diagnóstico
