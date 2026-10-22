@@ -369,3 +369,23 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .akasha-call { animation: none; box-shadow: 0 0 26px -4px hsl(var(--akasha) / 0.6); }
 }
+
+/* Akasha: barra de rolagem fina e integrada ao chat */
+.akasha-scroll {
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--akasha) / 0.35) transparent;
+}
+.akasha-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+.akasha-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.akasha-scroll::-webkit-scrollbar-thumb {
+  background: hsl(var(--akasha) / 0.35);
+  border-radius: 999px;
+}
+.akasha-scroll::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--akasha) / 0.55);
+}

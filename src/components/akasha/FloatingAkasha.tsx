@@ -129,7 +129,7 @@ const FloatingAkasha = () => {
 
   const scrollChatToBottom = useCallback(() => {
     const el = chatContainerRef.current;
-    if (el) el.scrollTop = el.scrollHeight;
+    if (el) el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
   }, []);
 
   useEffect(() => {
@@ -329,7 +329,7 @@ const FloatingAkasha = () => {
         </div>
 
         {/* Mensagens */}
-        <div ref={chatContainerRef} className="flex-1 overflow-y-auto overscroll-contain space-y-3 px-3 py-3 bg-background">
+        <div ref={chatContainerRef} className="flex-1 min-h-0 overflow-y-auto akasha-scroll space-y-3 px-3 py-3 bg-background">
           {loadingHistory && messages.length === 0 && (
             <div className="flex items-center justify-center py-6">
               <Loader2 className="w-5 h-5 animate-spin text-akasha" />
