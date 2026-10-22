@@ -353,8 +353,28 @@ const Diagnostico = ({
   const deficits = (analise.deficit_doshas ?? []).filter(Boolean);
   const objetivos = (analise.objetivos ?? []).filter(Boolean);
 
+  const Texto = ({ texto, destaque }: { texto: string; destaque?: boolean }) => {
+    const [aberto, setAberto] = useState(false);
+    const longo = texto.length > 320;
+    return (
+      <div>
+        <p
+          className={cn("leading-relaxed", destaque ? "text-[16px]" : "text-[15px]", longo && !aberto && "line-clamp-4")}
+          style={{ color: COLOR.texto, fontFamily: "'DM Sans', sans-serif", lineHeight: 1.7 }}
+        >
+          {texto}
+        </p>
+        {longo && (
+          <button type="button" onClick={() => setAberto((v) => !v)} className="mt-1 text-sm font-semibold" style={{ color: cor }}>
+            {aberto ? "Mostrar menos" : "Ler mais"}
+          </button>
+        )}
+      </div>
+    );
+  };
+
   return (
-    <section className="space-y-6">
+    <section className="space-y-4">
       <h2
         className="font-serif font-bold text-2xl md:text-3xl text-left"
         style={{ color: COLOR.primary, fontFamily: "'Roboto Serif', serif" }}
@@ -362,49 +382,41 @@ const Diagnostico = ({
         Seu plano clínico: <span style={{ color: cor }}>{doshaPrincipalCompleto}</span>
       </h2>
 
-      <div className="space-y-4">
-        {objetivos.length > 0 && (
-          <DiagnosticoCard Icon={TrendingUp} label="Objetivos" cor={cor}>
-            <ul className="space-y-2">
-              {objetivos.map((o, i) => (
-                <li
-                  key={i}
-                  className="text-[15px] leading-relaxed flex gap-2"
-                  style={{ color: COLOR.texto, fontFamily: "'DM Sans', sans-serif", lineHeight: 1.7 }}
-                >
-                  <span style={{ color: cor }}>•</span>
-                  <span>{o}</span>
-                </li>
-              ))}
-            </ul>
+      <div className="space-y-3">
+        {blocos[0] && (
+          <DiagnosticoCard Icon={blocos[0].Icon} label={blocos[0].label} cor={cor}>
+            {blocos[0].texto ? <Texto texto={blocos[0].texto} destaque /> : <AkashaPlaceholder cor={cor} />}
           </DiagnosticoCard>
         )}
 
-        {blocos.map((b, idx) => (
-          <DiagnosticoCard key={idx} Icon={b.Icon} label={b.label} cor={cor}>
-            {b.texto ? (
-              <p
-                className="text-[15px] leading-relaxed"
-                style={{ color: COLOR.texto, fontFamily: "'DM Sans', sans-serif", lineHeight: 1.7 }}
-              >
-                {b.texto}
-              </p>
-            ) : (
-              <AkashaPlaceholder cor={cor} />
-            )}
-          </DiagnosticoCard>
-        ))}
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+          {blocos.slice(1).map((b, idx) => (
+            <DiagnosticoCard key={idx} Icon={b.Icon} label={b.label} cor={cor}>
+              {b.texto ? <Texto texto={b.texto} /> : <AkashaPlaceholder cor={cor} />}
+            </DiagnosticoCard>
+          ))}
+        </div>
 
         {deficits.map((d, idx) => (
           <DiagnosticoCard key={`def-${idx}`} Icon={TrendingUp} label="Dosha em Déficit" cor={cor}>
-            <p
-              className="text-[15px] leading-relaxed"
-              style={{ color: COLOR.texto, fontFamily: "'DM Sans', sans-serif", lineHeight: 1.7 }}
-            >
-              {d}
-            </p>
+            <Texto texto={d} />
           </DiagnosticoCard>
         ))}
+
+        {objetivos.length > 0 && (
+          <div className={cn("px-5 py-4", LEAF)} style={{ backgroundColor: "#FBFAFD", border: `1px solid ${COLOR.cardBorder}` }}>
+            <p className="mb-2 text-[12px] font-semibold uppercase tracking-wider" style={{ color: cor }}>
+              Direção do seu plano
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {objetivos.map((o, i) => (
+                <span key={i} className="rounded-full border px-3 py-1 text-[13px]" style={{ borderColor: COLOR.cardBorder, color: COLOR.texto, backgroundColor: "#FFFFFF" }}>
+                  {o}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </section>
   );

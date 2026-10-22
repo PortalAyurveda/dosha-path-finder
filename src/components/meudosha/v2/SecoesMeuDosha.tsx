@@ -347,8 +347,36 @@ export const TerapeutasPerto = ({ idPublico }: { idPublico: string }) => {
       return (data ?? null) as Perto | null;
     },
   });
-  if (!data) return null;
-  const ufAtual = data.uf;
+  const semItens = !data || !data.itens?.length;
+  const { data: reserva = [] } = useQuery({
+    queryKey: ["terapeutas-reserva"],
+    enabled: semItens,
+    staleTime: 30 * 60 * 1000,
+    queryFn: async () => {
+      const { data: rows } = await supabase
+        .from("portal_terapeutas")
+        .select("*")
+        .eq("status", "aprovado")
+        .order("created date", { ascending: false })
+        .limit(3);
+      return ((rows ?? []) as any[]).map(
+        (t): TerapeutaPerto => ({
+          nome: t.nome ?? "Terapeuta",
+          cidade: t.cidade,
+          uf: t.estado ? String(t.estado).slice(0, 2).toUpperCase() : null,
+          desde: t.formado_desde ?? null,
+          especialidade: t.especialidade,
+          frase: t.frase_card ?? null,
+          imagem: t.imagem_card || t.imagem || t["imagem.1"] || null,
+          slug: t["terapeutas(dinamica)"] ?? null,
+        })
+      );
+    },
+  });
+  const itensMostrar = semItens ? reserva : data!.itens;
+  if (!data && !reserva.length) return null;
+  const ufAtual = data?.uf ?? null;
+  const ufs = data?.ufs ?? [];
 
   return (
     <section>
@@ -360,7 +388,7 @@ export const TerapeutasPerto = ({ idPublico }: { idPublico: string }) => {
             <option value="" disabled>
               escolha
             </option>
-            {(data.ufs ?? []).map((u) => (
+            {ufs.map((u) => (
               <option key={u.uf} value={u.uf}>
                 {u.uf}
               </option>
@@ -370,14 +398,14 @@ export const TerapeutasPerto = ({ idPublico }: { idPublico: string }) => {
       </div>
       <p className="mb-3 text-sm text-muted-foreground">
         {ufAtual
-          ? data.total_uf
+          ? data?.total_uf
             ? `Em ${ufAtual} ${data.total_uf === 1 ? "é 1 terapeuta" : `são ${data.total_uf} terapeutas`}.`
-            : `Ainda não temos terapeutas em ${ufAtual}.`
-          : "Escolha o estado onde você mora para ver quem atende perto."}
+            : `Ainda não temos terapeutas em ${ufAtual}. Veja alguns terapeutas do Portal.`
+          : "Escolha o estado onde você mora para ver quem atende perto. Enquanto isso, conheça alguns terapeutas do Portal."}
       </p>
-      {data.itens.length > 0 && (
+      {itensMostrar.length > 0 && (
         <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
-          {data.itens.map((t) => {
+          {itensMostrar.map((t) => {
             const esp = splitTherapistSpecialties(t.especialidade).slice(0, 2).map(nomeCurtoEspecialidade);
             return (
               <Link key={t.slug ?? t.nome} to={getTherapistProfilePath(t.slug ?? t.nome)} className="flex gap-3 rounded-2xl border border-border bg-card p-3 transition-shadow hover:shadow-md">
@@ -404,7 +432,7 @@ export const TerapeutasPerto = ({ idPublico }: { idPublico: string }) => {
         </div>
       )}
       <Link to="/terapeutas-do-brasil" className="mt-3 inline-block rounded-full border border-border bg-card px-4 py-2 text-sm font-semibold text-foreground">
-        Ver os {data.total} terapeutas do Brasil
+        {data?.total ? `Ver os ${data.total} terapeutas do Brasil` : "Ver todos os terapeutas do Brasil"}
       </Link>
     </section>
   );

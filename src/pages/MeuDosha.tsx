@@ -1235,7 +1235,10 @@ const MeuDosha = () => {
               isPremium={isPremium}
               partes={["entenda"]}
             />
-            <SeuDia idPublico={id} temAcesso={temAcessoRotina} />
+            <div>
+              <p className="mb-3 font-serif text-lg text-foreground">Agora, escolha um cuidado possível para o seu dia.</p>
+              <SeuDia idPublico={id} temAcesso={temAcessoRotina} />
+            </div>
             <MeusCursos />
             <HojeNoPortal />
             <Suspense fallback={null}>
