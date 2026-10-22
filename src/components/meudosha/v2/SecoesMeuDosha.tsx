@@ -347,8 +347,36 @@ export const TerapeutasPerto = ({ idPublico }: { idPublico: string }) => {
       return (data ?? null) as Perto | null;
     },
   });
-  if (!data) return null;
-  const ufAtual = data.uf;
+  const semItens = !data || !data.itens?.length;
+  const { data: reserva = [] } = useQuery({
+    queryKey: ["terapeutas-reserva"],
+    enabled: semItens,
+    staleTime: 30 * 60 * 1000,
+    queryFn: async () => {
+      const { data: rows } = await supabase
+        .from("portal_terapeutas")
+        .select("*")
+        .eq("status", "aprovado")
+        .order("created date", { ascending: false })
+        .limit(3);
+      return ((rows ?? []) as any[]).map(
+        (t): TerapeutaPerto => ({
+          nome: t.nome ?? "Terapeuta",
+          cidade: t.cidade,
+          uf: t.estado ? String(t.estado).slice(0, 2).toUpperCase() : null,
+          desde: t.formado_desde ?? null,
+          especialidade: t.especialidade,
+          frase: t.frase_card ?? null,
+          imagem: t.imagem_card || t.imagem || t["imagem.1"] || null,
+          slug: t["terapeutas(dinamica)"] ?? null,
+        })
+      );
+    },
+  });
+  const itensMostrar = semItens ? reserva : data!.itens;
+  if (!data && !reserva.length) return null;
+  const ufAtual = data?.uf ?? null;
+  const ufs = data?.ufs ?? [];
 
   return (
     <section>
