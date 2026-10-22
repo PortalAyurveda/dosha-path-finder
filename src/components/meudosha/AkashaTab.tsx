@@ -106,7 +106,7 @@ const AkashaTab = ({
   // Scroll only the chat container, never the page
   const scrollChatToBottom = useCallback(() => {
     const el = chatContainerRef.current;
-    if (el) el.scrollTop = el.scrollHeight;
+    if (el) el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
   }, []);
 
   useEffect(() => {
@@ -258,22 +258,21 @@ const AkashaTab = ({
   const tokens = profile?.tokens_akasha ?? 10;
 
   return (
-    <div className="flex flex-col mt-2">
-      {/* Messages - scrolls only inside this container */}
-      <div ref={chatContainerRef} className="flex-1 overflow-y-auto overscroll-contain space-y-3 pb-3 px-1 min-h-[50vh]">
-        {/* Akasha Header - compacto */}
-        <div className="flex items-center justify-center gap-2 pb-2 pt-1">
-          <img src={AKASHA_LOGO} alt="Akasha IA" className="w-7 h-7 object-contain shrink-0"  loading="lazy" decoding="async" />
-          <div className="flex flex-col leading-tight">
-            <h2 className="font-serif text-sm font-bold text-akasha">Akasha IA</h2>
-            <p className="text-[10px] text-muted-foreground/80">
-              {isPremium ? "Conversas ilimitadas ✨" : tokens > 0 ? `${tokens} conversas restantes` : "Tokens esgotados"}
-            </p>
-            <MemoriaBadge className="mt-0.5 self-start" />
-          </div>
+    <div className="flex flex-col mt-2 h-[calc(100dvh-6.5rem)] sm:h-[calc(100dvh-8.5rem)] min-h-0">
+      {/* Akasha Header - fixo no topo */}
+      <div className="flex items-center justify-center gap-2 pb-2 pt-1 shrink-0">
+        <img src={AKASHA_LOGO} alt="Akasha IA" className="w-7 h-7 object-contain shrink-0"  loading="lazy" decoding="async" />
+        <div className="flex flex-col leading-tight">
+          <h2 className="font-serif text-sm font-bold text-akasha">Akasha IA</h2>
+          <p className="text-[10px] text-muted-foreground/80">
+            {isPremium ? "Conversas ilimitadas ✨" : tokens > 0 ? `${tokens} conversas restantes` : "Tokens esgotados"}
+          </p>
+          <MemoriaBadge className="mt-0.5 self-start" />
         </div>
+      </div>
 
-
+      {/* Messages - scrolls only inside this container */}
+      <div ref={chatContainerRef} className="flex-1 min-h-0 overflow-y-auto akasha-scroll space-y-3 pb-3 px-1">
         {loadingHistory && (
           <div className="flex items-center justify-center py-6">
             <Loader2 className="w-5 h-5 animate-spin text-akasha" />
@@ -327,9 +326,9 @@ const AkashaTab = ({
         )}
       </div>
 
-      {/* Input ou bloqueio de tokens — sticky para nunca sumir no mobile */}
+      {/* Input ou bloqueio de tokens — fixo na base da caixa de chat */}
       <div
-        className="sticky bottom-0 z-10 bg-background pt-2 pb-2"
+        className="shrink-0 bg-background pt-2 pb-2"
         style={{ paddingBottom: "calc(0.5rem + env(safe-area-inset-bottom))" }}
       >
         {(isPremium || tokens > 0) ? (
