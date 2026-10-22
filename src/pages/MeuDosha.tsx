@@ -1223,7 +1223,7 @@ const MeuDosha = () => {
               doshaPrincipalCompleto={result.doshaprincipal || primaryDosha}
               refazerTeste={handleRefazerTeste}
               isPremium={isPremium}
-              partes={["diagnostico"]}
+              partes={["diagnostico","protocolo"]}
             />
             <DiagnosticoCompleto
               email={result.email}
