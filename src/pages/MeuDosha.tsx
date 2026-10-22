@@ -8,7 +8,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { Loader2, ChevronDown, ChevronUp, Calendar, CalendarDays, Play, Video as VideoIcon, BookOpen, Brain, LineChart, Lock, RefreshCw, ChevronRight } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import GraficoMeses from "@/components/meudosha/v2/GraficoMeses";
-import { SeuDia, MeusCursos, AkashaPerguntas, ArtigosComecar, ClassicosDosha, TerapeutasPerto } from "@/components/meudosha/v2/SecoesMeuDosha";
+import { SeuDia, MeusCursos, AkashaPerguntas, ArtigosComecar, TerapeutasPerto } from "@/components/meudosha/v2/SecoesMeuDosha";
+import HojeNoPortal from "@/components/home/HojeNoPortal";
+const VersoERegistros = lazy(() => import("@/components/index/VersoERegistros"));
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -1083,7 +1085,7 @@ const MeuDosha = () => {
       noindex={isVisitor}
     >
 
-      <div className={cn("max-w-3xl mx-auto", isVisitor ? "space-y-6" : "space-y-10")}>
+      <div className={cn("mx-auto", isVisitor ? "max-w-3xl space-y-6" : "max-w-6xl space-y-10")}>
         <h1 className="sr-only">
           {formattedNome ? `Resultado do teste de dosha de ${formattedNome}` : "Resultado do teste de dosha"}
           {result.doshaprincipal ? ` — Dosha ${result.doshaprincipal}` : ""}
@@ -1235,7 +1237,10 @@ const MeuDosha = () => {
             />
             <SeuDia idPublico={id} temAcesso={temAcessoRotina} />
             <MeusCursos />
-            <ClassicosDosha dosha={result.doshaprincipal || primaryDosha} />
+            <HojeNoPortal />
+            <Suspense fallback={null}>
+              <VersoERegistros />
+            </Suspense>
             <div>
               <GraficoMeses idPublico={id} />
               <Sheet>
