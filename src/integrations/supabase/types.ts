@@ -689,6 +689,39 @@ export type Database = {
         }
         Relationships: []
       }
+      _ingest_token: {
+        Row: {
+          criado_em: string | null
+          token: string
+        }
+        Insert: {
+          criado_em?: string | null
+          token: string
+        }
+        Update: {
+          criado_em?: string | null
+          token?: string
+        }
+        Relationships: []
+      }
+      acomp_paginas: {
+        Row: {
+          atualizado_em: string
+          html: string
+          slug: string
+        }
+        Insert: {
+          atualizado_em?: string
+          html: string
+          slug: string
+        }
+        Update: {
+          atualizado_em?: string
+          html?: string
+          slug?: string
+        }
+        Relationships: []
+      }
       admin_tarefas: {
         Row: {
           anexos: Json
@@ -1128,6 +1161,87 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      aniversarios_dias: {
+        Row: {
+          conselho: string | null
+          created_at: string
+          dia: number
+          dia_chave: string
+          elemento_qualidade: string | null
+          meditacao: string | null
+          mes: number
+          mes_nome: string
+          nascidos_neste_dia: string | null
+          numeros_planetas: string | null
+          observacao: string | null
+          ordem: number
+          pag_principal: number | null
+          pag_secoes: number | null
+          palavras_negativas: string[]
+          palavras_positivas: string[]
+          periodo: string | null
+          saude: string | null
+          signo: string | null
+          signo_graus: string | null
+          taro: string | null
+          texto_principal: string | null
+          titulo_data: string | null
+          titulo_dia: string | null
+        }
+        Insert: {
+          conselho?: string | null
+          created_at?: string
+          dia: number
+          dia_chave: string
+          elemento_qualidade?: string | null
+          meditacao?: string | null
+          mes: number
+          mes_nome: string
+          nascidos_neste_dia?: string | null
+          numeros_planetas?: string | null
+          observacao?: string | null
+          ordem: number
+          pag_principal?: number | null
+          pag_secoes?: number | null
+          palavras_negativas?: string[]
+          palavras_positivas?: string[]
+          periodo?: string | null
+          saude?: string | null
+          signo?: string | null
+          signo_graus?: string | null
+          taro?: string | null
+          texto_principal?: string | null
+          titulo_data?: string | null
+          titulo_dia?: string | null
+        }
+        Update: {
+          conselho?: string | null
+          created_at?: string
+          dia?: number
+          dia_chave?: string
+          elemento_qualidade?: string | null
+          meditacao?: string | null
+          mes?: number
+          mes_nome?: string
+          nascidos_neste_dia?: string | null
+          numeros_planetas?: string | null
+          observacao?: string | null
+          ordem?: number
+          pag_principal?: number | null
+          pag_secoes?: number | null
+          palavras_negativas?: string[]
+          palavras_positivas?: string[]
+          periodo?: string | null
+          saude?: string | null
+          signo?: string | null
+          signo_graus?: string | null
+          taro?: string | null
+          texto_principal?: string | null
+          titulo_data?: string | null
+          titulo_dia?: string | null
+        }
+        Relationships: []
       }
       antiruido_trocas: {
         Row: {
@@ -3708,6 +3822,60 @@ export type Database = {
           video_id?: string | null
         }
         Relationships: []
+      }
+      consultas: {
+        Row: {
+          cancelada_em: string | null
+          criado_em: string
+          fim: string
+          id: string
+          inicio: string
+          marcada_por: string
+          paciente_user_id: string
+          sala_id: string | null
+          status: string
+          terapeuta_id: string
+        }
+        Insert: {
+          cancelada_em?: string | null
+          criado_em?: string
+          fim: string
+          id?: string
+          inicio: string
+          marcada_por?: string
+          paciente_user_id: string
+          sala_id?: string | null
+          status?: string
+          terapeuta_id: string
+        }
+        Update: {
+          cancelada_em?: string | null
+          criado_em?: string
+          fim?: string
+          id?: string
+          inicio?: string
+          marcada_por?: string
+          paciente_user_id?: string
+          sala_id?: string | null
+          status?: string
+          terapeuta_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "consultas_sala_id_fkey"
+            columns: ["sala_id"]
+            isOneToOne: false
+            referencedRelation: "video_salas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "consultas_terapeuta_id_fkey"
+            columns: ["terapeuta_id"]
+            isOneToOne: false
+            referencedRelation: "portal_terapeutas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       content_likes: {
         Row: {
@@ -8341,6 +8509,39 @@ export type Database = {
         }
         Relationships: []
       }
+      municipios: {
+        Row: {
+          capital: boolean
+          codigo_ibge: number
+          fuso: string
+          latitude: number
+          longitude: number
+          nome: string
+          nome_busca: string
+          uf: string
+        }
+        Insert: {
+          capital?: boolean
+          codigo_ibge: number
+          fuso: string
+          latitude: number
+          longitude: number
+          nome: string
+          nome_busca: string
+          uf: string
+        }
+        Update: {
+          capital?: boolean
+          codigo_ibge?: number
+          fuso?: string
+          latitude?: number
+          longitude?: number
+          nome?: string
+          nome_busca?: string
+          uf?: string
+        }
+        Relationships: []
+      }
       n8n_backups: {
         Row: {
           arquivo_nome: string
@@ -8704,6 +8905,36 @@ export type Database = {
           source_note?: string | null
           sutra_no?: number
           translation_pt?: string | null
+        }
+        Relationships: []
+      }
+      osho_tarot_cartas: {
+        Row: {
+          comentario: string | null
+          created_at: string
+          foto_path: string | null
+          id: number
+          nome: string
+          numero: number
+          texto_carta: string
+        }
+        Insert: {
+          comentario?: string | null
+          created_at?: string
+          foto_path?: string | null
+          id?: never
+          nome: string
+          numero: number
+          texto_carta: string
+        }
+        Update: {
+          comentario?: string | null
+          created_at?: string
+          foto_path?: string | null
+          id?: never
+          nome?: string
+          numero?: number
+          texto_carta?: string
         }
         Relationships: []
       }
@@ -9106,6 +9337,47 @@ export type Database = {
         }
         Relationships: []
       }
+      pessoa_nascimento: {
+        Row: {
+          atualizado_em: string
+          atualizado_por: string | null
+          data: string | null
+          hora: string | null
+          hora_conhecida: boolean
+          local_exterior: string | null
+          municipio_ibge: number | null
+          user_id: string
+        }
+        Insert: {
+          atualizado_em?: string
+          atualizado_por?: string | null
+          data?: string | null
+          hora?: string | null
+          hora_conhecida?: boolean
+          local_exterior?: string | null
+          municipio_ibge?: number | null
+          user_id: string
+        }
+        Update: {
+          atualizado_em?: string
+          atualizado_por?: string | null
+          data?: string | null
+          hora?: string | null
+          hora_conhecida?: boolean
+          local_exterior?: string | null
+          municipio_ibge?: number | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pessoa_nascimento_municipio_ibge_fkey"
+            columns: ["municipio_ibge"]
+            isOneToOne: false
+            referencedRelation: "municipios"
+            referencedColumns: ["codigo_ibge"]
+          },
+        ]
+      }
       plano_30_dias: {
         Row: {
           data_criacao: string | null
@@ -9160,6 +9432,36 @@ export type Database = {
         }
         Relationships: []
       }
+      pontos_atencao_regras: {
+        Row: {
+          anda_junto: string | null
+          ativo: boolean
+          minimo: number
+          nome: string
+          ordem: number
+          queixas: string[]
+          slug: string
+        }
+        Insert: {
+          anda_junto?: string | null
+          ativo?: boolean
+          minimo: number
+          nome: string
+          ordem?: number
+          queixas: string[]
+          slug: string
+        }
+        Update: {
+          anda_junto?: string | null
+          ativo?: boolean
+          minimo?: number
+          nome?: string
+          ordem?: number
+          queixas?: string[]
+          slug?: string
+        }
+        Relationships: []
+      }
       portal_ajuda: {
         Row: {
           assunto: string
@@ -9208,6 +9510,7 @@ export type Database = {
           image_url: string | null
           link_do_artigo: string | null
           meta_description: string | null
+          publicar_em: string | null
           status: string | null
           summary: string | null
           tags: string | null
@@ -9223,6 +9526,7 @@ export type Database = {
           image_url?: string | null
           link_do_artigo?: string | null
           meta_description?: string | null
+          publicar_em?: string | null
           status?: string | null
           summary?: string | null
           tags?: string | null
@@ -9238,6 +9542,7 @@ export type Database = {
           image_url?: string | null
           link_do_artigo?: string | null
           meta_description?: string | null
+          publicar_em?: string | null
           status?: string | null
           summary?: string | null
           tags?: string | null
@@ -9772,6 +10077,7 @@ export type Database = {
       portal_terapeutas: {
         Row: {
           cidade: string | null
+          codigo: string | null
           "created date": string | null
           email: string | null
           especialidade: string | null
@@ -9797,6 +10103,7 @@ export type Database = {
         }
         Insert: {
           cidade?: string | null
+          codigo?: string | null
           "created date"?: string | null
           email?: string | null
           especialidade?: string | null
@@ -9822,6 +10129,7 @@ export type Database = {
         }
         Update: {
           cidade?: string | null
+          codigo?: string | null
           "created date"?: string | null
           email?: string | null
           especialidade?: string | null
@@ -9977,6 +10285,41 @@ export type Database = {
           versao?: string
         }
         Relationships: []
+      }
+      prontuario_notas: {
+        Row: {
+          consulta_id: string | null
+          criado_em: string
+          id: string
+          paciente_user_id: string
+          terapeuta_id: string
+          texto: string
+        }
+        Insert: {
+          consulta_id?: string | null
+          criado_em?: string
+          id?: string
+          paciente_user_id: string
+          terapeuta_id: string
+          texto: string
+        }
+        Update: {
+          consulta_id?: string | null
+          criado_em?: string
+          id?: string
+          paciente_user_id?: string
+          terapeuta_id?: string
+          texto?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "prontuario_notas_terapeuta_id_fkey"
+            columns: ["terapeuta_id"]
+            isOneToOne: false
+            referencedRelation: "portal_terapeutas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       rasaratna_samuccaya_verses: {
         Row: {
@@ -11569,6 +11912,94 @@ export type Database = {
         }
         Relationships: []
       }
+      terapeuta_agenda: {
+        Row: {
+          dia_semana: number
+          duracao_min: number
+          fim: string
+          id: string
+          inicio: string
+          intervalo_min: number
+          terapeuta_id: string
+        }
+        Insert: {
+          dia_semana: number
+          duracao_min?: number
+          fim: string
+          id?: string
+          inicio: string
+          intervalo_min?: number
+          terapeuta_id: string
+        }
+        Update: {
+          dia_semana?: number
+          duracao_min?: number
+          fim?: string
+          id?: string
+          inicio?: string
+          intervalo_min?: number
+          terapeuta_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "terapeuta_agenda_terapeuta_id_fkey"
+            columns: ["terapeuta_id"]
+            isOneToOne: false
+            referencedRelation: "portal_terapeutas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      terapeuta_pacientes: {
+        Row: {
+          criado_em: string
+          encerrado_em: string | null
+          id: string
+          origem: string
+          paciente_user_id: string
+          perm_akasha: boolean
+          perm_fotos: boolean
+          perm_rotina: boolean
+          perm_teste: boolean
+          status: string
+          terapeuta_id: string
+        }
+        Insert: {
+          criado_em?: string
+          encerrado_em?: string | null
+          id?: string
+          origem?: string
+          paciente_user_id: string
+          perm_akasha?: boolean
+          perm_fotos?: boolean
+          perm_rotina?: boolean
+          perm_teste?: boolean
+          status?: string
+          terapeuta_id: string
+        }
+        Update: {
+          criado_em?: string
+          encerrado_em?: string | null
+          id?: string
+          origem?: string
+          paciente_user_id?: string
+          perm_akasha?: boolean
+          perm_fotos?: boolean
+          perm_rotina?: boolean
+          perm_teste?: boolean
+          status?: string
+          terapeuta_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "terapeuta_pacientes_terapeuta_id_fkey"
+            columns: ["terapeuta_id"]
+            isOneToOne: false
+            referencedRelation: "portal_terapeutas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       test_gpt54_vision: {
         Row: {
           created_at: string | null
@@ -12312,6 +12743,110 @@ export type Database = {
         }
         Relationships: []
       }
+      video_config: {
+        Row: {
+          atualizado_em: string | null
+          chave: string
+          valor: string
+        }
+        Insert: {
+          atualizado_em?: string | null
+          chave: string
+          valor: string
+        }
+        Update: {
+          atualizado_em?: string | null
+          chave?: string
+          valor?: string
+        }
+        Relationships: []
+      }
+      video_presenca: {
+        Row: {
+          detalhe: Json | null
+          em: string
+          evento: string
+          id: number
+          papel: string
+          sala_id: string
+        }
+        Insert: {
+          detalhe?: Json | null
+          em?: string
+          evento: string
+          id?: never
+          papel: string
+          sala_id: string
+        }
+        Update: {
+          detalhe?: Json | null
+          em?: string
+          evento?: string
+          id?: never
+          papel?: string
+          sala_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "video_presenca_sala_id_fkey"
+            columns: ["sala_id"]
+            isOneToOne: false
+            referencedRelation: "video_salas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      video_salas: {
+        Row: {
+          abre_em: string
+          codigo_paciente: string
+          codigo_terapeuta: string
+          consulta_id: string | null
+          criado_em: string
+          fecha_em: string
+          id: string
+          minimo_minutos: number
+          nome_sala: string
+          paciente_nome: string
+          paciente_user_id: string | null
+          terapeuta_nome: string
+          terapeuta_user_id: string | null
+          titulo: string | null
+        }
+        Insert: {
+          abre_em?: string
+          codigo_paciente?: string
+          codigo_terapeuta?: string
+          consulta_id?: string | null
+          criado_em?: string
+          fecha_em?: string
+          id?: string
+          minimo_minutos?: number
+          nome_sala?: string
+          paciente_nome: string
+          paciente_user_id?: string | null
+          terapeuta_nome: string
+          terapeuta_user_id?: string | null
+          titulo?: string | null
+        }
+        Update: {
+          abre_em?: string
+          codigo_paciente?: string
+          codigo_terapeuta?: string
+          consulta_id?: string | null
+          criado_em?: string
+          fecha_em?: string
+          id?: string
+          minimo_minutos?: number
+          nome_sala?: string
+          paciente_nome?: string
+          paciente_user_id?: string | null
+          terapeuta_nome?: string
+          terapeuta_user_id?: string | null
+          titulo?: string | null
+        }
+        Relationships: []
+      }
       videos_repetidos: {
         Row: {
           criado_em: string
@@ -12418,6 +12953,63 @@ export type Database = {
           tags?: string | null
           texto_para_embedding?: string | null
           titulo_original?: string | null
+          url?: string | null
+          video_id?: string
+        }
+        Relationships: []
+      }
+      videos_seo2026: {
+        Row: {
+          atualizado_em: string
+          categoria: string | null
+          criado_em: string
+          duracao_seg: number | null
+          excluido: boolean
+          legenda: string | null
+          legenda_fonte: string | null
+          motivo_exclusao: string | null
+          origem_lista: string | null
+          publicado_em: string | null
+          subtemas: string[] | null
+          tipo: string | null
+          titulo: string | null
+          triagem: string | null
+          url: string | null
+          video_id: string
+        }
+        Insert: {
+          atualizado_em?: string
+          categoria?: string | null
+          criado_em?: string
+          duracao_seg?: number | null
+          excluido?: boolean
+          legenda?: string | null
+          legenda_fonte?: string | null
+          motivo_exclusao?: string | null
+          origem_lista?: string | null
+          publicado_em?: string | null
+          subtemas?: string[] | null
+          tipo?: string | null
+          titulo?: string | null
+          triagem?: string | null
+          url?: string | null
+          video_id: string
+        }
+        Update: {
+          atualizado_em?: string
+          categoria?: string | null
+          criado_em?: string
+          duracao_seg?: number | null
+          excluido?: boolean
+          legenda?: string | null
+          legenda_fonte?: string | null
+          motivo_exclusao?: string | null
+          origem_lista?: string | null
+          publicado_em?: string | null
+          subtemas?: string[] | null
+          tipo?: string | null
+          titulo?: string | null
+          triagem?: string | null
           url?: string | null
           video_id?: string
         }
@@ -13026,9 +13618,35 @@ export type Database = {
         }[]
       }
       _data_extenso: { Args: { p: string }; Returns: string }
+      _ficha_json: {
+        Args: { p_paciente: string; p_terapeuta: string }
+        Returns: Json
+      }
+      _horarios_livres: {
+        Args: { p_dias: number; p_terapeuta: string }
+        Returns: {
+          fim: string
+          inicio: string
+        }[]
+      }
       _html_esc: { Args: { p: string }; Returns: string }
+      _nascimento_grava: {
+        Args: {
+          p_data: string
+          p_exterior: string
+          p_hora: string
+          p_hora_conhecida: boolean
+          p_municipio: number
+          p_uid: string
+        }
+        Returns: Json
+      }
+      _nascimento_json: { Args: { p_uid: string }; Returns: Json }
       _nome_completo_sugerido: { Args: { p_user: string }; Returns: Json }
+      _nome_conta: { Args: { p_uid: string }; Returns: string }
       _normalizar_nome: { Args: { p: string }; Returns: string }
+      _paciente_meu: { Args: { p_paciente: string }; Returns: string }
+      _terapeuta_id_de: { Args: { p_uid: string }; Returns: string }
       acervo_adicionar: {
         Args: {
           p_antes?: number
@@ -13062,6 +13680,53 @@ export type Database = {
           verso_sanskrit: string
         }[]
       }
+      acomp_agenda_minha: { Args: never; Returns: Json }
+      acomp_agenda_salvar: { Args: { p_regras: Json }; Returns: undefined }
+      acomp_cancelar: { Args: { p_consulta: string }; Returns: undefined }
+      acomp_desligar: { Args: { p_ligacao: string }; Returns: undefined }
+      acomp_eu: { Args: never; Returns: Json }
+      acomp_ficha: { Args: { p_paciente: string }; Returns: Json }
+      acomp_horarios_livres: {
+        Args: { p_dias?: number; p_terapeuta: string }
+        Returns: Json
+      }
+      acomp_ligar: {
+        Args: { p_codigo: string; p_origem?: string; p_perm_akasha?: boolean }
+        Returns: Json
+      }
+      acomp_marcar: {
+        Args: { p_inicio: string; p_terapeuta: string }
+        Returns: Json
+      }
+      acomp_meus_pacientes: { Args: never; Returns: Json }
+      acomp_minhas_consultas: { Args: never; Returns: Json }
+      acomp_nascimento: { Args: { p_paciente: string }; Returns: Json }
+      acomp_nascimento_salvar: {
+        Args: {
+          p_data: string
+          p_exterior?: string
+          p_hora?: string
+          p_hora_conhecida?: boolean
+          p_municipio?: number
+          p_paciente: string
+        }
+        Returns: Json
+      }
+      acomp_nota_salvar: {
+        Args: { p_consulta?: string; p_paciente: string; p_texto: string }
+        Returns: string
+      }
+      acomp_permissoes: {
+        Args: {
+          p_akasha: boolean
+          p_fotos: boolean
+          p_ligacao: string
+          p_rotina: boolean
+          p_teste: boolean
+        }
+        Returns: undefined
+      }
+      acomp_terapeuta_por_codigo: { Args: { p_codigo: string }; Returns: Json }
       admin_agenda_cliques_por_link: {
         Args: { p_comunicacao_id: string; p_dias?: number }
         Returns: {
@@ -13116,6 +13781,12 @@ export type Database = {
           taxa_clique: number
         }[]
       }
+      admin_agenda_mudar_data: {
+        Args: { _data?: string; _id: string }
+        Returns: string
+      }
+      admin_agenda_publicar_agora: { Args: { _id: string }; Returns: string }
+      admin_agenda_reorganizar: { Args: { _inicio?: string }; Returns: number }
       admin_agenda_tendencia: {
         Args: { p_comunicacao_id: string; p_dias?: number }
         Returns: {
@@ -13124,6 +13795,11 @@ export type Database = {
           dia: string
           envios: number
         }[]
+      }
+      admin_agenda_tirar: { Args: { _id: string }; Returns: undefined }
+      admin_agenda_trocar: {
+        Args: { _a: string; _b: string }
+        Returns: undefined
       }
       admin_agenda_visao: {
         Args: never
@@ -13404,6 +14080,7 @@ export type Database = {
           image_url: string | null
           link_do_artigo: string | null
           meta_description: string | null
+          publicar_em: string | null
           status: string | null
           summary: string | null
           tags: string | null
@@ -14136,6 +14813,7 @@ export type Database = {
           verse_no: string
         }[]
       }
+      girar_destaques_index: { Args: never; Returns: string }
       girar_rotinas_lote: { Args: { p_tamanho?: number }; Returns: number }
       girar_rotinas_mensal: { Args: never; Returns: number }
       has_role: {
@@ -14621,6 +15299,26 @@ export type Database = {
         Returns: Json
       }
       mockups_dados: { Args: never; Returns: Json }
+      municipios_busca: {
+        Args: { p_q: string; p_uf?: string }
+        Returns: {
+          codigo_ibge: number
+          fuso: string
+          nome: string
+          uf: string
+        }[]
+      }
+      nascimento_meu: { Args: never; Returns: Json }
+      nascimento_salvar: {
+        Args: {
+          p_data: string
+          p_exterior?: string
+          p_hora?: string
+          p_hora_conhecida?: boolean
+          p_municipio?: number
+        }
+        Returns: Json
+      }
       obter_certificado_curso: { Args: { p_curso_id: string }; Returns: Json }
       owns_rotina: { Args: { p_test_id: string }; Returns: boolean }
       payload_pessoa_preview: {
@@ -14665,6 +15363,7 @@ export type Database = {
         }
         Returns: Json
       }
+      pontos_atencao_de: { Args: { p_registro: string }; Returns: Json }
       prateleira_samkhya: {
         Args: { p_dosha?: string }
         Returns: {
@@ -14692,6 +15391,7 @@ export type Database = {
           slug: string
         }[]
       }
+      publicar_artigo_do_dia: { Args: never; Returns: string }
       random_curated_verse: {
         Args: { collection_slug?: string }
         Returns: {
@@ -14907,6 +15607,7 @@ export type Database = {
       show_trgm: { Args: { "": string }; Returns: string[] }
       slug_texto: { Args: { maximo?: number; t: string }; Returns: string }
       sou_aluno_escola: { Args: never; Returns: boolean }
+      sou_terapeuta: { Args: never; Returns: boolean }
       tag_normalizar: { Args: { p: string }; Returns: string }
       tem_acesso_curso: { Args: { p_curso_id: string }; Returns: boolean }
       tem_desconto_15: { Args: { p_user: string }; Returns: boolean }
@@ -14914,6 +15615,11 @@ export type Database = {
         Args: { p_idpublico?: string; p_uf?: string }
         Returns: Json
       }
+      terapia_aniversario: {
+        Args: { p_dia: number; p_mes: number }
+        Returns: Json
+      }
+      terapia_tarot: { Args: { p_numero?: number }; Returns: Json }
       termos_aplicar: { Args: { p_html: string }; Returns: string }
       text_to_bytea: { Args: { data: string }; Returns: string }
       tutor_detox_contexto: { Args: { p_email: string }; Returns: Json }
@@ -15006,8 +15712,23 @@ export type Database = {
         }[]
       }
       verso_ordem_num: { Args: { v: string }; Returns: number }
+      video_sala_resumo: { Args: { p_sala: string }; Returns: Json }
       video_slug_sitemap: { Args: { p_titulo: string }; Returns: string }
       videos_seo2_sincronizar: { Args: never; Returns: number }
+      videos_seo2026_receber: {
+        Args: {
+          p_duracao: number
+          p_fonte: string
+          p_legenda: string
+          p_origem: string
+          p_publicado: string
+          p_tipo: string
+          p_titulo: string
+          p_token: string
+          p_video_id: string
+        }
+        Returns: string
+      }
       videos_slugify: { Args: { p_titulo: string }; Returns: string }
       vincular_teste: { Args: { p_id_publico: string }; Returns: Json }
       vtt_falas: {
