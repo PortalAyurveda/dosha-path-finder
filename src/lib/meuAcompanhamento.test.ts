@@ -1,7 +1,7 @@
 import { describe,it,expect,vi } from 'vitest';
 vi.mock('@/integrations/supabase/client',()=>({supabase:{rpc:vi.fn()}}));
 import { supabase } from '@/integrations/supabase/client';
-import { acompanhamento,temAcompanhamento,avaliacoesDa,pendencias,abaValida,nomeMarca } from './meuAcompanhamento';
+import { acompanhamento,temAcompanhamento,avaliacoesDa,pendencias,abaValida,nomeMarca,dataAcompanhamento,horaAcompanhamento,desdeAcompanhamento } from './meuAcompanhamento';
 import type { MeuTerapeutaLigacao } from './terapiaMeu';
 const l={ligacao:'l1',terapeuta:{id:'t1',slug:'juliana',primeiro_nome:'Juliana'},folhas:[{id:'f1',vista_em:null},{id:'f2',vista_em:'2026-10-26'}],historico:[]} as unknown as MeuTerapeutaLigacao;
 describe('Meu acompanhamento',()=>{
@@ -16,4 +16,7 @@ describe('Meu acompanhamento',()=>{
  it('usa o histórico já criado sem parâmetros extras',async()=>{vi.mocked(supabase.rpc).mockResolvedValueOnce({data:[],error:null} as never);await acompanhamento.consultas();expect(supabase.rpc).toHaveBeenLastCalledWith('minhas_consultas_acompanhamento');});
  it('conta consultas realizadas sem nota da terapeuta selecionada',()=>{const cs=[{id:'c1',terapeuta_id:'t1',status:'realizada',nota:null},{id:'c2',terapeuta_id:'t1',status:'realizada',nota:5},{id:'c3',terapeuta_id:'outra',status:'realizada',nota:null}] as Parameters<typeof pendencias>[2];expect(pendencias(l,undefined,cs).avaliar.map(c=>c.id)).toEqual(['c1']);});
  it('traduz chave de sintoma em nome legível',()=>{expect(nomeMarca('sintoma:Constipação')).toBe('Constipação');});
+ it('consulta usa data extensa e hora de Brasília',()=>{expect(dataAcompanhamento('2026-10-28T13:00:00Z',true)).toBe('quarta, 28 de outubro, às 10h');});
+ it('abertura usa minutos com h sem zero à esquerda',()=>{expect(horaAcompanhamento('2026-10-28T12:50:00Z')).toBe('9h50');});
+ it('vínculo mantém somente dia e mês',()=>{expect(desdeAcompanhamento('2026-10-26T21:00:00Z')).toBe('26/10');});
 });

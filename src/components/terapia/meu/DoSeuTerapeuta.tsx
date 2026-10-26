@@ -4,6 +4,7 @@ import { Check, ExternalLink, Printer } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { MarcaPortal } from "@/components/impressao/PecasImpressao";
+import { dataAcompanhamento } from '@/lib/meuAcompanhamento';
 import { diaBR } from "@/lib/terapia";
 import { iniciarIndicacoes, linkCurto, linkIndicacao } from "@/lib/terapiaIndicacoes";
 import { alternarFeito, feitoHoje, meu, semanaDoItem, type MinhaFolha } from "@/lib/terapiaMeu";
@@ -18,6 +19,7 @@ export default function DoSeuTerapeuta({ folha, rodape, acompanhamento=false }: 
   const [imprimindo, setImprimindo] = useState(false);
   const ref = useRef<HTMLElement>(null);
   const nome = folha.terapeuta.primeiro_nome;
+  const dataFolha = acompanhamento ? dataAcompanhamento : diaBR;
   useEffect(() => setFeitos(folha.feitos ?? []), [folha]);
   useEffect(() => {
     if (vistas.has(folha.id)) return;
@@ -40,17 +42,17 @@ export default function DoSeuTerapeuta({ folha, rodape, acompanhamento=false }: 
   };
   const dados = iniciarIndicacoes(folha.dados ?? {});
   const agora = new Date();
-  const blocos: [string, string | null][] = [["Diagnóstico", folha.diagnostico], ["Tratamento", folha.tratamento], ["Retorno", folha.retorno ? new Date(`${folha.retorno}T12:00:00`).toLocaleDateString("pt-BR") : null]];
+  const blocos: [string, string | null][] = [["Diagnóstico", folha.diagnostico], ["Tratamento", folha.tratamento], ["Retorno", folha.retorno ? (acompanhamento ? dataAcompanhamento(folha.retorno) : new Date(`${folha.retorno}T12:00:00`).toLocaleDateString("pt-BR")) : null]];
 
   return (
     <article ref={ref} className={`do-seu-terapeuta rounded-2xl border border-secondary/30 bg-card p-5 md:p-6 ${imprimindo ? "imprimir-este" : ""}`} aria-label={`Do seu terapeuta: ${folha.terapeuta.nome}`}>
-      <div className="so-impressao mb-4 flex items-center justify-between border-b border-border pb-3"><span className="font-serif text-lg font-bold">Indicações · {diaBR(folha.enviada_em)}</span><MarcaPortal /></div>
+      <div className="so-impressao mb-4 flex items-center justify-between border-b border-border pb-3"><span className="font-serif text-lg font-bold">Indicações · {dataFolha(folha.enviada_em)}</span><MarcaPortal /></div>
       <header className="flex flex-wrap items-center gap-3">
         {!acompanhamento && (folha.terapeuta.imagem ? <img src={folha.terapeuta.imagem} alt="" className="h-12 w-12 rounded-t-full rounded-b-md object-cover" /> : <span className="flex h-12 w-12 items-center justify-center rounded-t-full rounded-b-md bg-secondary/15 font-serif font-bold text-secondary">{nome[0]}</span>)}
         <div className="min-w-0 flex-1">
           {!acompanhamento&&<p className="text-xs font-semibold uppercase tracking-wide text-secondary">Do seu terapeuta</p>}
-          <h2 className="font-serif text-lg font-bold text-primary">{acompanhamento?`Folha de ${diaBR(folha.enviada_em)}`:folha.terapeuta.nome}</h2>
-          <p className="text-xs text-muted-foreground">Enviada em {diaBR(folha.enviada_em)}</p>
+          <h2 className="font-serif text-lg font-bold text-primary">{acompanhamento?`Folha de ${dataFolha(folha.enviada_em)}`:folha.terapeuta.nome}</h2>
+          <p className="text-xs text-muted-foreground">Enviada em {dataFolha(folha.enviada_em)}</p>
         </div>
         <Button variant="outline" size="sm" className="no-print" onClick={() => setImprimindo(true)}><Printer className="mr-2 h-4 w-4" />Imprimir</Button>
       </header>

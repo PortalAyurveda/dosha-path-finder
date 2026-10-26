@@ -31,3 +31,16 @@ export function pendencias(l:MeuTerapeutaLigacao,fotos?:FotosMinhas,consultas:Co
   return {pedidos,folhas,avaliar,total:pedidos.length+folhas.length+avaliar.length};
 }
 export const avaliacoesDa=(lista:AvaliacaoMinha[],slug:string)=>lista.filter(a=>a.terapeuta.slug===slug);
+const zonaAcompanhamento='America/Sao_Paulo';
+export function horaAcompanhamento(valor:string) {
+  const data=new Date(valor);if(Number.isNaN(data.getTime()))return 'sem hora';
+  const partes=new Intl.DateTimeFormat('pt-BR',{hour:'numeric',minute:'2-digit',hourCycle:'h23',timeZone:zonaAcompanhamento}).formatToParts(data);
+  const h=partes.find(p=>p.type==='hour')?.value??'0';const m=partes.find(p=>p.type==='minute')?.value??'00';
+  return `${Number(h)}h${m==='00'?'':m}`;
+}
+export function dataAcompanhamento(valor:string,comHora=false) {
+  const data=new Date(valor.length===10?`${valor}T12:00:00-03:00`:valor);if(Number.isNaN(data.getTime()))return 'sem data';
+  const texto=new Intl.DateTimeFormat('pt-BR',{weekday:'long',day:'numeric',month:'long',timeZone:zonaAcompanhamento}).format(data).replace('-feira','').toLowerCase();
+  return `${texto}${comHora?`, às ${horaAcompanhamento(valor)}`:''}`;
+}
+export function desdeAcompanhamento(valor:string) {const data=new Date(valor);return Number.isNaN(data.getTime())?'sem data':data.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',timeZone:zonaAcompanhamento});}
