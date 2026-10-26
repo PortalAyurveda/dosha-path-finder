@@ -119,6 +119,11 @@ body {
     --therapist-accent-foreground: 252 29% 20%;
     --shadow-therapist: 0 18px 40px -24px hsl(var(--therapist-accent) / 0.48);
 
+    /* Consultation room */
+    --sala-fundo: 240 8% 10%;
+    --sala-texto: 0 0% 96%;
+    --sala-superficie: 240 6% 18%;
+
     /* Header */
     --header-bg: 252 29% 26%;
     --header-foreground: 0 0% 100%;

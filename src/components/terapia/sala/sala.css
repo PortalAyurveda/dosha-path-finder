@@ -1,4 +1,4 @@
-.consulta-sala { --sala-fundo: 240 8% 10%; --sala-texto: 0 0% 96%; --sala-superficie: 240 6% 18%; background:hsl(var(--sala-fundo));color:hsl(var(--sala-texto));min-height:100dvh; }
+.consulta-sala { background:hsl(var(--sala-fundo));color:hsl(var(--sala-texto));min-height:100dvh; }
 .sala-camera { aspect-ratio:16/9;position:relative;background:hsl(var(--sala-superficie));display:flex;align-items:center;justify-content:center;overflow:hidden;border-radius:8px; }
 .sala-camera video { width:100%;height:100%;object-fit:cover; }
 .sala-camera > button { position:absolute; }
@@ -15,3 +15,8 @@
 .sala-video-no-quadro .sala-video{height:180px;min-height:120px;}
 .sala-video-no-quadro section{max-width:600px;margin:auto;}
 .consulta-sala > main button[class*="outline"],.consulta-sala > main section button[class*="outline"]{color:hsl(var(--foreground));}
+
+.consulta-sala :is(h1,h2,h3,p,span,li,label){color:inherit;}
+.consulta-sala .quadro-tela{color:hsl(var(--foreground));}
+.consulta-sala button:not(.bg-secondary):not(.bg-destructive){color:hsl(var(--foreground));}
+.consulta-sala textarea{color:hsl(var(--foreground));}
