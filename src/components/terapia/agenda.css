@@ -4,3 +4,4 @@
 .agenda-marcado {background:hsl(var(--secondary)/.13);border:1px solid hsl(var(--secondary)/.3);color:hsl(var(--foreground));}
 .agenda-fechado {background:repeating-linear-gradient(135deg,hsl(var(--muted)),hsl(var(--muted)) 5px,hsl(var(--background)) 5px,hsl(var(--background)) 9px);color:hsl(var(--muted-foreground));border:1px solid hsl(var(--border));}
 .agenda-passado {background:hsl(var(--muted));color:hsl(var(--muted-foreground));}
+.agenda-tabs [role="tab"][data-state="active"]{background:hsl(var(--secondary)/.12);color:hsl(var(--foreground));}
