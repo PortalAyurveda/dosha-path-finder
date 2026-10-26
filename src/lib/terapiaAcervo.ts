@@ -5,4 +5,4 @@ export const novoAcervo=():ItemAcervo=>({tipo:'receita',titulo:'',resumo:'',subc
 export function ordenarMinhas<T extends {serve?:boolean}>(itens:T[]) { return [...itens].sort((a,b)=>Number(!!b.serve)-Number(!!a.serve)); }
 export function enderecoAcervo(slug:string,item:string) { return `/terapeutas/${encodeURIComponent(slug)}/acervo/${encodeURIComponent(item)}`; }
 export function inicioYoutube(inicio:string) { const p=inicio.split(':').map(Number);return p.length===2&&p.every(Number.isFinite)?Math.max(0,p[0]*60+p[1]):0; }
-export function linkSeguro(link:string) { try { const url=new URL(link,window.location.origin);return ['https:','http:'].includes(url.protocol)?url.href:''; }catch{return '';} }
+export function linkSeguro(link:string) { if(!link.trim())return '';try { const url=new URL(link,window.location.origin);return ['https:','http:'].includes(url.protocol)?url.href:''; }catch{return '';} }
