@@ -9,6 +9,7 @@ vi.mock("@/lib/inAppBrowser", () => ({ isInAppBrowser: () => false }));
 import LoginForm from "./LoginForm";
 
 beforeEach(() => {
+  vi.stubGlobal("ResizeObserver", class { observe() {} unobserve() {} disconnect() {} });
   localStorage.clear(); vi.clearAllMocks();
   auth.invoke.mockResolvedValue({ error: null });
   auth.signInWithOtp.mockResolvedValue({ error: null });
@@ -42,10 +43,10 @@ describe("login compartilhado do convite", () => {
     const input = document.querySelector<HTMLInputElement>('input[autocomplete="one-time-code"]');
     if (!input) throw new Error("Campo de código ausente");
     fireEvent.change(input, { target: { value: "12345" } });
-    expect(screen.getByRole("button", { name: "Entrar", exact: true })).toBeDisabled();
+    expect(screen.getByRole("button", { name: /^Entrar$/ })).toBeDisabled();
     expect(auth.verifyOtp).not.toHaveBeenCalled();
     fireEvent.change(input, { target: { value: "123456" } });
-    fireEvent.click(screen.getByRole("button", { name: "Entrar", exact: true }));
+    fireEvent.click(screen.getByRole("button", { name: /^Entrar$/ }));
     await waitFor(() => expect(auth.verifyOtp).toHaveBeenCalledWith({ email: "test@example.invalid", token: "123456", type: "email" }));
   });
 });
