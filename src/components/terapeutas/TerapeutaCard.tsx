@@ -72,7 +72,7 @@ const TerapeutaCard = ({
     <article
       className="group flex gap-3.5 rounded-2xl border border-border bg-card p-3 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg cursor-pointer"
     >
-      <Link to={profilePath} aria-label={`Ver perfil de ${displayName}`} className="w-[92px] sm:w-[132px] shrink-0 aspect-[4/5] rounded-xl overflow-hidden bg-muted">
+      <Link to={profilePath} aria-label={`Ver perfil de ${displayName}`} className="w-[92px] sm:w-[132px] self-start shrink-0 aspect-[4/5] rounded-xl overflow-hidden bg-muted">
         {foto ? (
           <img
             src={foto}
