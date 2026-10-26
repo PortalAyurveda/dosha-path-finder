@@ -1,0 +1,7 @@
+.agenda-slot { width:100%; height:auto; min-height:54px; padding:8px; display:flex; flex-direction:column; align-items:flex-start; justify-content:center; gap:3px; border-radius:6px; white-space:normal; text-align:left; font-size:11px; overflow-wrap:anywhere; }
+.agenda-livre,.agenda-extra {background:hsl(var(--therapist-green-soft));color:hsl(var(--therapist-green-ink));border:1px solid hsl(var(--therapist-green));}
+.agenda-extra {border-style:dashed;}
+.agenda-marcado {background:hsl(var(--secondary)/.13);border:1px solid hsl(var(--secondary)/.3);color:hsl(var(--foreground));}
+.agenda-fechado {background:repeating-linear-gradient(135deg,hsl(var(--muted)),hsl(var(--muted)) 5px,hsl(var(--background)) 5px,hsl(var(--background)) 9px);color:hsl(var(--muted-foreground));border:1px solid hsl(var(--border));}
+.agenda-passado {background:hsl(var(--muted));color:hsl(var(--muted-foreground));}
+.agenda-tabs [role="tab"][data-state="active"]{background:hsl(var(--secondary)/.12);color:hsl(var(--foreground));}

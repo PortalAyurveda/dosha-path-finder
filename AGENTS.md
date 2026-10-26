@@ -19,3 +19,4 @@
 
 - Keep consultation rooms independently lazy-loaded and room RPC/video access in consultaSala; reuse the assessment editor and board with explicit in-memory training mode so practice never writes patient records and live rooms do not load other portal views.
 - Keep therapist administration in dedicated admin/terapeutas views with RPC contracts and CMS value helpers in terapiaAdmin; retain the original registration editor separately and build CMS fields recursively from public values so new keys require no hardcoded form.
+- Keep weekly slot operations, photo requests, indication templates and consultation follow-up in dedicated therapy modules and views; reuse existing private upload and serialized indication saves, and cancel day appointments sequentially after one confirmation to preserve errors and avoid duplicate writes.

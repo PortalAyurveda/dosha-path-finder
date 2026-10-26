@@ -16809,6 +16809,7 @@ export type Database = {
         Returns: Json
       }
       terapia_indicacoes_fontes: { Args: { p_paciente: string }; Returns: Json }
+      terapia_manutencao: { Args: never; Returns: Json }
       terapia_marcar_para: {
         Args: { p_inicio: string; p_paciente: string }
         Returns: Json

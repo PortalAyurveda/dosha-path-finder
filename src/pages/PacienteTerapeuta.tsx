@@ -37,7 +37,7 @@ export default function PacienteTerapeuta() {
     <nav aria-label="Ficha da paciente" className="mb-6 flex overflow-x-auto border-b border-border">{abas.map(([v,l]) => <Button key={v} variant="ghost" aria-current={v === aba ? 'page' : undefined} className={`h-12 shrink-0 rounded-none border-b-2 px-4 text-sm hover:bg-secondary/10 ${v === aba ? 'border-secondary bg-secondary/5 font-semibold' : 'border-transparent text-muted-foreground'}`} onClick={() => setParams({ aba: v })}>{l}</Button>)}</nav>
     {aba === 'resumo' && <PacienteResumo ficha={dados} userId={acesso.userId} />}
     {aba === 'consultas' && <PacienteConsultas ficha={dados} userId={acesso.userId} agora={agora} />}
-    {aba === 'fotos' && (!dados.permissoes.fotos ? <Trancado nome={dados.nome} assunto="as fotos" /> : fotos.data ? <PacienteFotos dados={fotos.data} nome={dados.nome} /> : <p role={fotos.error ? 'alert' : 'status'}>{fotos.error?.message ?? 'Carregando fotos…'}</p>)}
+    {aba === 'fotos' && (!dados.permissoes.fotos ? <Trancado nome={dados.nome} assunto="as fotos" /> : fotos.data ? <PacienteFotos dados={fotos.data} nome={dados.nome} paciente={dados.paciente_id} /> : <p role={fotos.error ? 'alert' : 'status'}>{fotos.error?.message ?? 'Carregando fotos…'}</p>)}
     {aba === 'evolucao' && <PacienteEvolucao ficha={dados} />}
     {aba === 'anotacoes' && <PacienteAnotacoes key={id} paciente={dados.paciente_id} notas={dados.notas} executar={executar} />}
     {aba === 'rotina' && (!dados.permissoes.rotina ? <Trancado nome={dados.nome} assunto="a rotina" /> : rotina.data ? <PacienteRotina dados={rotina.data} nome={dados.nome} /> : <p role={rotina.error ? 'alert' : 'status'}>{rotina.error?.message ?? 'Carregando rotina…'}</p>)}

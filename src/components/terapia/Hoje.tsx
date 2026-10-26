@@ -1,8 +1,12 @@
+import { useState } from 'react';
+import ConversaAtencao from './ConversaAtencao';
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import CTAButton from "@/components/CTAButton";
 import { Hoje as HojeDados, horaBR, diaBR, salaAberta } from "@/lib/terapia";
 import { inicial, Secao } from "./Comuns";
+import { Switch } from '@/components/ui/switch';
+import { useOnlineTerapeuta } from './online/OnlineTerapeuta';
 export default function Hoje({
   dados,
   agora,
@@ -10,11 +14,14 @@ export default function Hoje({
   dados: HojeDados;
   agora: number;
 }) {
+  const [conversa,setConversa]=useState<{paciente:string;nome:string}|null>(null);
+  const online = useOnlineTerapeuta();
   return (
-    <div className="grid gap-6 xl:grid-cols-[minmax(0,1.8fr)_minmax(240px,1fr)]">
+    <><div className="grid gap-6 xl:grid-cols-[minmax(0,1.8fr)_minmax(240px,1fr)]">
       <Secao
-        titulo={`Hoje · ${new Date(agora).toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" })}`}
+        titulo="Hoje e amanhã"
       >
+        {online && <label className="mb-4 flex items-center justify-end gap-2 text-sm">Estou online<Switch checked={online.online} disabled={online.mudando || !online.participa} onCheckedChange={v=>void online.mudar(v)} className="data-[state=checked]:bg-secondary"/></label>}
         <div className="divide-y divide-border">
           {dados.consultas.length === 0 && (
             <p className="py-5 text-sm text-muted-foreground">
@@ -92,6 +99,10 @@ export default function Hoje({
         </div>
       </Secao>
       <div className="space-y-7 xl:border-l xl:border-border xl:pl-6">
+        <Secao titulo={`Pede sua atenção · ${dados.atencao?.length??0}`}>
+          {(dados.atencao??[]).map((a,i)=>{const base=`/painel-terapeuta/paciente/${a.paciente_id}`;const url=a.tipo==='sem_folha'?`${base}/indicacoes/nova${a.consulta_id?`?consulta=${a.consulta_id}`:''}`:a.tipo==='folha_nao_vista'&&a.folha_id?`${base}/indicacoes/${a.folha_id}`:a.tipo==='mensagens'?`${base}?aba=mensagens`:`${base}?aba=fotos`;return <article key={i} className="flex items-start justify-between gap-3 border-b border-border py-3"><div className="min-w-0"><p className="text-sm">{a.texto}</p>{a.detalhe&&<p className="text-xs text-muted-foreground">{a.detalhe}</p>}</div>{a.tipo==='mensagens'?<Button variant="outline" size="sm" onClick={()=>setConversa({paciente:a.paciente_id,nome:a.nome})}>Ver</Button>:<Button asChild variant="outline" size="sm"><Link to={url}>{a.tipo==='sem_folha'?'Montar':a.tipo==='folha_nao_vista'?'Ver folha':a.tipo==='faltam_fotos'?'Ver fotos':'Ver'}</Link></Button>}</article>;})}
+          {!dados.atencao?.length&&<p className="text-sm text-muted-foreground">Nada pede sua atenção.</p>}
+        </Secao>
         <Secao titulo="Novidades">
           {dados.novidades.length ? (
             <ul className="space-y-4">
@@ -124,6 +135,6 @@ export default function Hoje({
           )}
         </Secao>
       </div>
-    </div>
+    </div>{conversa&&<ConversaAtencao paciente={conversa.paciente} nome={conversa.nome} fechar={()=>setConversa(null)}/>}</>
   );
 }
