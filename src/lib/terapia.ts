@@ -4,6 +4,8 @@ import type { Json } from "@/integrations/supabase/types";
 import type { Convite, PermissoesConvite } from "./terapiaConvite";
 import type { FichaPaciente, FotosPaciente, NascimentoPaciente, RotinaPaciente, HorarioPaciente, FotoPaciente } from "./terapiaPaciente";
 import { FOTO_EXPIRA_SEGUNDOS } from "./terapiaPaciente";
+import type { Carta } from './terapiaAdicoes';
+export interface MunicipioNascimento { codigo_ibge:number; nome:string; uf:string; fuso:string }
 
 export interface Regra {
   dia_semana: number;
@@ -95,6 +97,17 @@ const read = async <T>(
   return data as T;
 };
 export const terapia = {
+  tarotLista: () => read<Carta[]>(supabase.rpc('terapia_tarot')),
+  tarotCarta: (numero:number) => read<Carta | null>(supabase.rpc('terapia_tarot',{p_numero:numero})),
+  tarotFoto: async (path:string) => {
+    const {data,error}=await supabase.storage.from('osho-tarot').createSignedUrl(path,3600);
+    if(error)throw new Error(error.message);
+    if(!data?.signedUrl)throw new Error('Não foi possível abrir a carta.');
+    return data.signedUrl;
+  },
+  aniversario: (mes:number,dia:number) => read<Record<string,unknown>|null>(supabase.rpc('terapia_aniversario',{p_mes:mes,p_dia:dia})),
+  municipios: (texto:string,uf?:string) => read<MunicipioNascimento[]>(supabase.rpc('municipios_busca',{p_q:texto,...(uf?{p_uf:uf}:{})})),
+  nascimentoSalvar: (paciente:string,n:{data:string;hora?:string;hora_conhecida:boolean;municipio?:number;exterior?:string}) => read<NascimentoPaciente>(supabase.rpc('acomp_nascimento_salvar',{p_paciente:paciente,p_data:n.data,p_hora:n.hora,p_hora_conhecida:n.hora_conhecida,p_municipio:n.municipio,p_exterior:n.exterior})),
   avaliacaoNova: (paciente: string, consulta?: string) => read<string>(supabase.rpc('terapia_avaliacao_nova', { p_paciente: paciente, ...(consulta ? { p_consulta: consulta } : {}) })),
   avaliacao: (id: string) => read<Avaliacao>(supabase.rpc('terapia_avaliacao', { p_id: id })),
   fichaConteudo: () => read<ConteudoFicha>(supabase.rpc('terapia_ficha_conteudo')),

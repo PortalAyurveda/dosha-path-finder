@@ -1,7 +1,8 @@
 import type { TestePaciente } from './terapiaPaciente';
 import { textosMarcados } from './terapiaPaciente';
 export const SETORES = [['dosha','Dosha'],['sintomas','Sintomas'],['agni','Agni e Ama'],['dhatus','Dhatus'],['malas','3 excreções'],['subdoshas','15 subdoshas'],['fotos','Fotos']] as const;
-export type Setor = typeof SETORES[number][0];
+export type SetorNucleo = typeof SETORES[number][0];
+export type Setor = SetorNucleo | 'mente' | 'lingua' | 'unhas' | 'olhos' | 'pulso' | 'etapa' | 'conversa' | 'tarot' | 'aniversario' | 'mapa' | `custom:${string}`;
 export const DOSHAS = ['V','P','K'] as const;
 export type Dosha = typeof DOSHAS[number];
 export const NOMES = { V:'Vata', P:'Pitta', K:'Kapha' };
@@ -16,7 +17,7 @@ export interface Conhecimento { id?:string; nome:string; texto?:string; sugestao
 export interface Biblioteca { sintomas?:ItemClinico[]; especificacoes?:ItemClinico[]; [key:string]:unknown }
 export interface Dhatu { n:string; t:string; f:string; up:string; ml:string; boa:string; exc:string; def:string }
 export interface Subdosha { n:string; loc:string; d:Dosha; V:string; P:string; K:string }
-export interface ConteudoFicha { SIST:Record<string,Partial<Record<Dosha,string[]>>>; SINT:Record<string,{sug?:{d:Dosha;s:string}[]}>; DEF:Record<string,string>; COMUNS:string[]; DHATUS:Dhatu[]; SD_ROWS:string[][]; SD:Record<string,Subdosha>; MALAS:string[][]; AGNIS:[string,string,string,Dosha|null][]; AMA:Record<Dosha,string> }
+export interface ConteudoFicha { SIST:Record<string,Partial<Record<Dosha,string[]>>>; SINT:Record<string,{sug?:{d:Dosha;s:string}[]}>; DEF:Record<string,string>; COMUNS:string[]; DHATUS:Dhatu[]; SD_ROWS:string[][]; SD:Record<string,Subdosha>; MALAS:string[][]; AGNIS:[string,string,string,Dosha|null][]; AMA:Record<Dosha,string>; GUNAS?:string[][]; MANAS?:string[][]; PURUS?:string[][]; ENERG?:string[][]; LINGUA?:[string,Dosha|null,string][]; UNHAS?:Record<Dosha,string>; UNHAS_ACH?:string[]; OLHOS?:string[][]; OLHOS_ACH?:string[]; PULSO?:[string,Dosha][]; GPARES?:string[][]; ETAPAS?:string[]; CONVERSA?:string[]; TIRAGENS?:{nome:string;posicoes:string[]}[] }
 export const AUTOSAVE_MS=2000;
 export const proximoNivel=(n:number)=>(n+1)%4;
 export function nivel(n:unknown) { return typeof n==='number' && Number.isFinite(n) ? Math.max(0,Math.min(3,Math.round(n))) : 0; }

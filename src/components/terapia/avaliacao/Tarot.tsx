@@ -1,0 +1,275 @@
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { terapia } from "@/lib/terapia";
+import { cartaAoAcaso, posicoes } from "@/lib/terapiaAdicoes";
+import type { Carta, Modelo, Posicao } from "@/lib/terapiaAdicoes";
+function Foto({ carta, mini = false }: { carta: Carta; mini?: boolean }) {
+  const q = useQuery({
+    queryKey: ["tarot-foto", carta.foto_path],
+    queryFn: () => terapia.tarotFoto(carta.foto_path),
+    staleTime: 50 * 60000,
+    gcTime: 55 * 60000,
+  });
+  return q.error ? (
+    <p role="alert">{q.error.message}</p>
+  ) : q.data ? (
+    <img
+      src={q.data}
+      alt={carta.nome}
+      className={
+        mini
+          ? "h-24 w-full object-contain"
+          : "mx-auto max-h-64 max-w-full object-contain"
+      }
+    />
+  ) : (
+    <p role="status">Carregando carta…</p>
+  );
+}
+export default function Tarot({
+  valor,
+  mudar,
+  modelos,
+  guardar,
+}: {
+  valor: Posicao[];
+  mudar: (p: Posicao[]) => void;
+  modelos: Modelo[];
+  guardar: (m: Modelo) => Promise<boolean>;
+}) {
+  const [busca, setBusca] = useState("");
+  const [grupo, setGrupo] = useState("Todas");
+  const [ativa, setAtiva] = useState(0);
+  const [erro, setErro] = useState("");
+  const [ocupada, setOcupada] = useState(false);
+  const [nome, setNome] = useState("");
+  const lista = useQuery({
+    queryKey: ["avaliacao-tarot"],
+    queryFn: terapia.tarotLista,
+  });
+  const p = valor.length ? valor : posicoes([], 1);
+  const escolher = async (c?: Carta) => {
+    if (!c) return;
+    setOcupada(true);
+    setErro("");
+    try {
+      const completa = await terapia.tarotCarta(c.numero);
+      if (!completa) throw new Error("Carta não encontrada.");
+      mudar(
+        p.map((v, i) =>
+          i === ativa ? { ...v, carta: { ...c, ...completa } } : v,
+        ),
+      );
+    } catch (e) {
+      setErro(e instanceof Error ? e.message : String(e));
+    } finally {
+      setOcupada(false);
+    }
+  };
+  return (
+    <div className="space-y-5">
+      <div className="flex flex-wrap gap-2">
+        {modelos.map((m, i) => (
+          <Button
+            key={i}
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              mudar(
+                posicoes([], m.posicoes.length).map((v, j) => ({
+                  ...v,
+                  titulo: m.posicoes[j],
+                })),
+              );
+              setAtiva(0);
+            }}
+          >
+            {m.nome}
+          </Button>
+        ))}
+      </div>
+      <div className="flex flex-wrap items-center gap-2">
+        <span className="text-sm">Cartas</span>
+        {[1, 2, 3, 4, 5].map((n) => (
+          <Button
+            key={n}
+            variant="outline"
+            size="icon"
+            className={`h-9 w-9 ${p.length === n ? "border-secondary bg-secondary/15" : ""}`}
+            aria-label={`${n} cartas`}
+            aria-pressed={p.length === n}
+            onClick={() => {
+              mudar(posicoes(p, n));
+              setAtiva(0);
+            }}
+          >
+            {n}
+          </Button>
+        ))}
+      </div>
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        {p.map((v, i) => (
+          <article
+            key={i}
+            className={`min-w-0 rounded border p-3 ${ativa === i ? "border-secondary" : "border-border"}`}
+          >
+            <Button
+              variant="ghost"
+              className="mb-2 w-full"
+              aria-pressed={ativa === i}
+              onClick={() => setAtiva(i)}
+            >
+              Posição {i + 1}
+            </Button>
+            <Input
+              aria-label={`Título da posição ${i + 1}`}
+              value={v.titulo}
+              onChange={(e) =>
+                mudar(
+                  p.map((x, j) =>
+                    j === i ? { ...x, titulo: e.target.value } : x,
+                  ),
+                )
+              }
+            />
+            {v.carta && (
+              <div className="mt-3 space-y-3">
+                <Foto carta={v.carta} />
+                <h3 className="font-serif font-semibold">
+                  {v.carta.numero} · {v.carta.nome}
+                </h3>
+                <p className="whitespace-pre-wrap text-sm">
+                  {v.carta.texto_carta}
+                </p>
+                <h4 className="text-xs font-semibold text-muted-foreground">
+                  Comentário
+                </h4>
+                <p className="whitespace-pre-wrap text-sm">
+                  {v.carta.comentario}
+                </p>
+                <label className="block text-xs">
+                  O que a carta diz aqui, para esta pessoa
+                  <Textarea
+                    aria-label={`Nota da posição ${i + 1}`}
+                    className="mt-2"
+                    value={v.nota}
+                    onChange={(e) =>
+                      mudar(
+                        p.map((x, j) =>
+                          j === i ? { ...x, nota: e.target.value } : x,
+                        ),
+                      )
+                    }
+                  />
+                </label>
+                <Button
+                  variant="link"
+                  onClick={() =>
+                    mudar(
+                      p.map((x, j) =>
+                        j === i ? { titulo: x.titulo, nota: "" } : x,
+                      ),
+                    )
+                  }
+                >
+                  Tirar carta
+                </Button>
+              </div>
+            )}
+          </article>
+        ))}
+      </div>
+      <div className="flex flex-wrap gap-2">
+        <Input
+          aria-label="Nome do meu modelo"
+          placeholder="Nome da tiragem"
+          value={nome}
+          onChange={(e) => setNome(e.target.value)}
+          className="min-w-0 flex-1"
+        />
+        <Button
+          variant="outline"
+          disabled={!nome.trim()}
+          onClick={async () => {
+            if (
+              await guardar({
+                nome: nome.trim(),
+                posicoes: p.map((v) => v.titulo),
+              })
+            )
+              setNome("");
+          }}
+        >
+          Guardar como meu modelo
+        </Button>
+      </div>
+      <div className="flex flex-wrap gap-2">
+        <Input
+          aria-label="Buscar carta"
+          placeholder="Número, nome ou elemento"
+          value={busca}
+          onChange={(e) => setBusca(e.target.value)}
+          className="min-w-0 flex-1"
+        />
+        <Button
+          variant="outline"
+          disabled={ocupada || !lista.data?.length}
+          onClick={() => void escolher(cartaAoAcaso(lista.data ?? [], p))}
+        >
+          Tirar ao acaso
+        </Button>
+      </div>
+      <div className="flex flex-wrap gap-2">
+        {["Todas", "Maiores", "Fogo", "Água", "Nuvens", "Arco-íris"].map(
+          (g) => (
+            <Button
+              key={g}
+              variant="outline"
+              size="sm"
+              aria-pressed={g === grupo}
+              className={g === grupo ? "border-secondary bg-secondary/15" : ""}
+              onClick={() => setGrupo(g)}
+            >
+              {g}
+            </Button>
+          ),
+        )}
+      </div>
+      {(erro || lista.error) && (
+        <p role="alert" className="text-destructive">
+          {erro || lista.error?.message}
+        </p>
+      )}
+      {lista.isPending && <p role="status">Carregando cartas…</p>}
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
+        {(lista.data ?? [])
+          .filter(
+            (c) =>
+              (grupo === "Todas" ||
+                c.grupo === (grupo === "Maiores" ? "Maior" : grupo)) &&
+              `${c.numero} ${c.nome} ${c.grupo}`
+                .toLowerCase()
+                .includes(busca.toLowerCase()),
+          )
+          .map((c) => (
+            <Button
+              key={c.numero}
+              variant="outline"
+              disabled={
+                ocupada ||
+                p.some((x, i) => i !== ativa && x.carta?.numero === c.numero)
+              }
+              className="h-auto min-h-36 flex-col justify-start whitespace-normal text-center text-xs"
+              onClick={() => void escolher(c)}
+            >
+              <Foto carta={c} mini />
+              {c.numero} · {c.nome}
+            </Button>
+          ))}
+      </div>
+    </div>
+  );
+}

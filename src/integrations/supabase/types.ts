@@ -11975,6 +11975,80 @@ export type Database = {
         }
         Relationships: []
       }
+      terapeuta_acervo: {
+        Row: {
+          arquivo_path: string | null
+          atualizado_em: string
+          conteudo: Json
+          criado_em: string
+          id: string
+          kapha: number
+          periodo: string | null
+          pitta: number
+          resumo: string | null
+          revisao: string
+          serve_para: string[]
+          slug: string
+          subcategoria: string | null
+          tags: string[]
+          terapeuta_id: string
+          tipo: string
+          titulo: string
+          vata: number
+          visibilidade: string
+        }
+        Insert: {
+          arquivo_path?: string | null
+          atualizado_em?: string
+          conteudo?: Json
+          criado_em?: string
+          id?: string
+          kapha?: number
+          periodo?: string | null
+          pitta?: number
+          resumo?: string | null
+          revisao?: string
+          serve_para?: string[]
+          slug: string
+          subcategoria?: string | null
+          tags?: string[]
+          terapeuta_id: string
+          tipo: string
+          titulo: string
+          vata?: number
+          visibilidade?: string
+        }
+        Update: {
+          arquivo_path?: string | null
+          atualizado_em?: string
+          conteudo?: Json
+          criado_em?: string
+          id?: string
+          kapha?: number
+          periodo?: string | null
+          pitta?: number
+          resumo?: string | null
+          revisao?: string
+          serve_para?: string[]
+          slug?: string
+          subcategoria?: string | null
+          tags?: string[]
+          terapeuta_id?: string
+          tipo?: string
+          titulo?: string
+          vata?: number
+          visibilidade?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "terapeuta_acervo_terapeuta_id_fkey"
+            columns: ["terapeuta_id"]
+            isOneToOne: false
+            referencedRelation: "portal_terapeutas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       terapeuta_agenda: {
         Row: {
           dia_semana: number
@@ -12239,6 +12313,130 @@ export type Database = {
           valor?: Json
         }
         Relationships: []
+      }
+      terapia_folhas: {
+        Row: {
+          atualizado_em: string
+          avaliacao_id: string | null
+          consulta_id: string | null
+          criado_em: string
+          dados: Json
+          diagnostico: string | null
+          enviada_em: string | null
+          id: string
+          paciente_user_id: string
+          retorno: string | null
+          terapeuta_id: string
+          tratamento: string | null
+          vista_em: string | null
+        }
+        Insert: {
+          atualizado_em?: string
+          avaliacao_id?: string | null
+          consulta_id?: string | null
+          criado_em?: string
+          dados?: Json
+          diagnostico?: string | null
+          enviada_em?: string | null
+          id?: string
+          paciente_user_id: string
+          retorno?: string | null
+          terapeuta_id: string
+          tratamento?: string | null
+          vista_em?: string | null
+        }
+        Update: {
+          atualizado_em?: string
+          avaliacao_id?: string | null
+          consulta_id?: string | null
+          criado_em?: string
+          dados?: Json
+          diagnostico?: string | null
+          enviada_em?: string | null
+          id?: string
+          paciente_user_id?: string
+          retorno?: string | null
+          terapeuta_id?: string
+          tratamento?: string | null
+          vista_em?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "terapia_folhas_avaliacao_id_fkey"
+            columns: ["avaliacao_id"]
+            isOneToOne: false
+            referencedRelation: "terapia_avaliacoes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "terapia_folhas_consulta_id_fkey"
+            columns: ["consulta_id"]
+            isOneToOne: false
+            referencedRelation: "consultas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "terapia_folhas_terapeuta_id_fkey"
+            columns: ["terapeuta_id"]
+            isOneToOne: false
+            referencedRelation: "portal_terapeutas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      terapia_quadros: {
+        Row: {
+          atualizado_em: string
+          avaliacao_id: string | null
+          criado_em: string
+          id: string
+          imagem_path: string | null
+          item: string | null
+          mostrar_paciente: boolean
+          paciente_user_id: string
+          terapeuta_id: string
+          tracos: Json
+        }
+        Insert: {
+          atualizado_em?: string
+          avaliacao_id?: string | null
+          criado_em?: string
+          id?: string
+          imagem_path?: string | null
+          item?: string | null
+          mostrar_paciente?: boolean
+          paciente_user_id: string
+          terapeuta_id: string
+          tracos?: Json
+        }
+        Update: {
+          atualizado_em?: string
+          avaliacao_id?: string | null
+          criado_em?: string
+          id?: string
+          imagem_path?: string | null
+          item?: string | null
+          mostrar_paciente?: boolean
+          paciente_user_id?: string
+          terapeuta_id?: string
+          tracos?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "terapia_quadros_avaliacao_id_fkey"
+            columns: ["avaliacao_id"]
+            isOneToOne: false
+            referencedRelation: "terapia_avaliacoes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "terapia_quadros_terapeuta_id_fkey"
+            columns: ["terapeuta_id"]
+            isOneToOne: false
+            referencedRelation: "portal_terapeutas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       test_gpt54_vision: {
         Row: {
@@ -13887,6 +14085,7 @@ export type Database = {
       _nome_conta: { Args: { p_uid: string }; Returns: string }
       _normalizar_nome: { Args: { p: string }; Returns: string }
       _paciente_meu: { Args: { p_paciente: string }; Returns: string }
+      _slug: { Args: { p: string }; Returns: string }
       _ter_cfg: { Args: { p_chave: string }; Returns: Json }
       _ter_sis_garante: { Args: { p_tid: string }; Returns: undefined }
       _terapeuta_id_de: { Args: { p_uid: string }; Returns: string }
@@ -13903,6 +14102,10 @@ export type Database = {
           p_temas: string[]
         }
         Returns: number
+      }
+      acervo_item: {
+        Args: { p_item_slug: string; p_terapeuta_slug: string }
+        Returns: Json
       }
       acervo_pacote_alternar: {
         Args: { p_pacote: string; p_verso: number }
@@ -15621,7 +15824,9 @@ export type Database = {
         }
         Returns: Json
       }
+      pode_ver_acervo_de: { Args: { p_dono: string }; Returns: boolean }
       pode_ver_fotos_de: { Args: { p_dono: string }; Returns: boolean }
+      pode_ver_quadro: { Args: { p_path: string }; Returns: boolean }
       pontos_atencao_de: { Args: { p_registro: string }; Returns: Json }
       prateleira_samkhya: {
         Args: { p_dosha?: string }
@@ -15874,6 +16079,9 @@ export type Database = {
         Args: { p_idpublico?: string; p_uf?: string }
         Returns: Json
       }
+      terapia_acervo: { Args: never; Returns: Json }
+      terapia_acervo_apagar: { Args: { p_id: string }; Returns: string }
+      terapia_acervo_salvar: { Args: { p: Json }; Returns: Json }
       terapia_aniversario: {
         Args: { p_dia: number; p_mes: number }
         Returns: Json
@@ -15924,7 +16132,26 @@ export type Database = {
         Returns: Json
       }
       terapia_ficha_conteudo: { Args: never; Returns: Json }
+      terapia_folha: { Args: { p_id: string }; Returns: Json }
+      terapia_folha_apagar: { Args: { p_id: string }; Returns: undefined }
+      terapia_folha_enviar: { Args: { p_id: string }; Returns: string }
+      terapia_folha_nova: {
+        Args: { p_avaliacao?: string; p_consulta?: string; p_paciente: string }
+        Returns: string
+      }
+      terapia_folha_salvar: {
+        Args: {
+          p_dados: Json
+          p_diagnostico?: string
+          p_id: string
+          p_retorno?: string
+          p_tratamento?: string
+        }
+        Returns: string
+      }
+      terapia_folhas_da: { Args: { p_paciente: string }; Returns: Json }
       terapia_hoje: { Args: never; Returns: Json }
+      terapia_indicacoes_fontes: { Args: { p_paciente: string }; Returns: Json }
       terapia_marcar_para: {
         Args: { p_inicio: string; p_paciente: string }
         Returns: Json
@@ -15934,6 +16161,22 @@ export type Database = {
       terapia_perfil_salvar: { Args: { p: Json }; Returns: undefined }
       terapia_ping: { Args: never; Returns: undefined }
       terapia_preferencias_salvar: { Args: { p: Json }; Returns: undefined }
+      terapia_quadro_apagar: { Args: { p_id: string }; Returns: string }
+      terapia_quadro_guardar: {
+        Args: {
+          p_avaliacao: string
+          p_id?: string
+          p_imagem_path: string
+          p_item: string
+          p_tracos: Json
+        }
+        Returns: string
+      }
+      terapia_quadro_mostrar: {
+        Args: { p_id: string; p_mostrar: boolean }
+        Returns: undefined
+      }
+      terapia_quadros_da: { Args: { p_avaliacao: string }; Returns: Json }
       terapia_semana: { Args: { p_inicio?: string }; Returns: Json }
       terapia_tarot: { Args: { p_numero?: number }; Returns: Json }
       terapia_termo_aceitar: { Args: { p_versao: string }; Returns: undefined }
