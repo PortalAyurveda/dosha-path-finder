@@ -16380,6 +16380,7 @@ export type Database = {
         }[]
       }
       minhas_avaliacoes: { Args: never; Returns: Json }
+      minhas_consultas_acompanhamento: { Args: never; Returns: Json }
       minhas_indicacoes: { Args: never; Returns: Json }
       mockups_buscar: {
         Args: {
