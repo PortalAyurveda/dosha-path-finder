@@ -3,12 +3,10 @@ import { Link,Navigate,useNavigate,useParams,useSearchParams } from 'react-route
 import { useQuery,useQueryClient } from '@tanstack/react-query';
 import { Helmet } from 'react-helmet-async';
 import { Button } from '@/components/ui/button';
-import CTAButton from '@/components/CTAButton';
 import { useSouTerapeuta } from '@/hooks/useSouTerapeuta';
 import { terapia,diaBR } from '@/lib/terapia';
-import { textosMarcados } from '@/lib/terapiaPaciente';
 import type { FichaPaciente } from '@/lib/terapiaPaciente';
-import { AUTOSAVE_MS,COR,DOSHAS,NOMES,SETORES,iniciarDados,nivel,marcada,somas } from '@/lib/terapiaAvaliacao';
+import { AUTOSAVE_MS,DOSHAS,SETORES,iniciarDados,nivel,marcada,somas } from '@/lib/terapiaAvaliacao';
 import type { Avaliacao,Biblioteca,ConteudoFicha,DadosAvaliacao,Leitura,Setor } from '@/lib/terapiaAvaliacao';
 import Setores from '@/components/terapia/avaliacao/Setores';
 import Fotos from '@/components/terapia/avaliacao/Fotos';
