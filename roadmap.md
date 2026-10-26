@@ -47,5 +47,6 @@
 - [x] Construir Parte 11: Participantes, números, Consultas, Sugestões, Avaliações e Textos; preservar Cadastros
 - [x] Validar Parte 11: 19 testes e fluxo computador/celular com respostas isoladas; participação, confirmação, período, aprovação, publicação, CMS e Desfazer
 - [ ] Validar Parte 11 com conta admin real — bloqueado: Supabase externo sem sessão autenticada disponível
-- [ ] Construir Parte 12: agenda, Hoje completo, pedidos de fotos, modelos de indicação e fim da consulta
-- [ ] Validar Parte 12 com testes e fluxos disponíveis
+- [x] Construir Parte 12: agenda, Hoje completo, pedidos de fotos, modelos de indicação e fim da consulta
+- [x] Validar Parte 12: 52 testes e fluxos isolados computador/celular; marcação, cancelamentos sequenciais, molde, pedidos/envio de foto, cópia/modelos, salvamento, retorno e notas
+- [ ] Validar Parte 12 com contas reais — bloqueado: Supabase externo sem sessão autenticada disponível
