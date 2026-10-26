@@ -27,6 +27,8 @@
 .portal-conteudo .xl\:border-l {border-left:0;padding-left:0;}
 .portal-hoje-linha {display:grid;grid-template-columns:34px minmax(0,1fr) auto;align-items:start;gap:10px;padding:14px 0;}.portal-hoje-acoes {display:flex;gap:6px;align-items:center;}.portal-icone {width:32px;height:32px;border-radius:10px;background:hsl(var(--muted));display:grid;place-items:center;}.portal-icone svg {width:18px;height:18px;}
 .portal-cartao{align-self:start;}.portal-cartao>h2,.portal-cartao>h2.text-xs,.portal-cartao>h2.text-sm {font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;}
+.portal-cartao{position:relative;}.portal-atencao-num{position:absolute;top:16px;right:16px;background:hsl(var(--secondary));color:hsl(var(--secondary-foreground));border-radius:999px;padding:0 7px;font-size:12px;font-weight:600;}
+.portal-terapeuta .portal-cartao>label:first-of-type {position:absolute;right:16px;top:12px;font-size:13px;}.portal-terapeuta .portal-cartao>label:first-of-type [role="switch"][data-state="checked"]{background:hsl(var(--therapist-green-ink));}
 .portal-hoje-linha h3 {font-family:'DM Sans',sans-serif;font-size:15px;}
 .portal-conteudo input,.portal-conteudo textarea {background:hsl(var(--card));}
 .portal-conteudo thead th {text-transform:uppercase;font-size:12px;}
