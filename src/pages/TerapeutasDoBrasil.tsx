@@ -54,12 +54,15 @@ const TerapeutasDoBrasil = () => {
 
   const { data: noSistema } = useQuery({ queryKey: ["terapeutas-no-sistema", user?.id], queryFn: terapia.noSistema });
   const sistemaPorId = useMemo(() => new Map((noSistema ?? []).map((t) => [String(t.id), t])), [noSistema]);
+  const testesIds = (noSistema ?? []).filter(t=>t.teste).map(t=>t.id);
+  const testes = useQuery({queryKey:['terapeutas-teste',user?.id,testesIds.join(',')],enabled:testesIds.length>0,queryFn:async()=>{const {data,error}=await supabase.from('portal_terapeutas').select('*').in('id',testesIds);if(error)throw error;return data;}});
+  const lista = useMemo(()=>[...(testes.data ?? []),...(terapeutas ?? [])].filter((t,i,l)=>l.findIndex(x=>x.id===t.id)===i),[testes.data,terapeutas]);
 
   const filtered = useMemo(() => {
     if (!terapeutas) return [];
     const q = search.toLowerCase().trim();
 
-    let results = terapeutas.filter((t) => {
+    let results = lista.filter((t) => {
       if (!q) return true;
       if (locationMode) {
         return (
@@ -84,7 +87,7 @@ const TerapeutasDoBrasil = () => {
     if (soPortal) results = results.filter(t => sistemaPorId.has(String(t.id)));
     if (estaSemana) results = results.filter(t => horarioNestaSemana(sistemaPorId.get(String(t.id))?.proximo ?? null));
     return ordenarDiretorio(results, noSistema ?? [], ordem);
-  }, [terapeutas, search, locationMode, ordem, especialidadeSel, soPortal, estaSemana, sistemaPorId, noSistema]);
+  }, [terapeutas, lista, search, locationMode, ordem, especialidadeSel, soPortal, estaSemana, sistemaPorId, noSistema]);
 
   const chipsEspecialidade = useMemo(() => {
     if (!terapeutas) return [] as Array<{ nome: string; total: number }>;

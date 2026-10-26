@@ -52,8 +52,7 @@ const TerapeutaCard = ({
   valor,
 }: TerapeutaCardProps) => {
   const displayName = getTherapistDisplayName(nome);
-  const especialidades = splitTherapistSpecialties(especialidade).map(
-    );
+  const especialidades = splitTherapistSpecialties(especialidade);
   const profilePath = getTherapistProfilePath(slug ?? nome);
 
   const foto = imagem_card || imagem || null;

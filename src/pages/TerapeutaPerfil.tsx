@@ -41,6 +41,9 @@ const TerapeutaPerfil = () => {
   const agenda = useQuery({queryKey:["agenda-publica",requestedSlug,user?.id],queryFn:()=>terapia.agendaPublica(requestedSlug),enabled:!!requestedSlug});
   const avaliacoes = useQuery({queryKey:["avaliacoes-publicas",requestedSlug],queryFn:()=>terapia.avaliacoesPublicas(requestedSlug),enabled:!!agenda.data?.no_sistema});
   const participante = !!agenda.data?.no_sistema;
+  const sistema = useQuery({queryKey:['terapeutas-no-sistema',user?.id],queryFn:terapia.noSistema});
+  const perfilTesteId = sistema.data?.find(t=>t.teste && normalizeTherapistSlug(t.slug)===requestedSlug)?.id;
+  const perfilTeste = useQuery({queryKey:['perfil-terapeuta-teste',user?.id,perfilTesteId],enabled:!!perfilTesteId,queryFn:async()=>{if(!perfilTesteId)return null;const {data,error}=await supabase.from('portal_terapeutas').select('*').eq('id',perfilTesteId).maybeSingle();if(error)throw error;return data;}});
 
   // Fetch all approved therapists for prev/next navigation
   const { data: allTerapeutas } = useQuery({
@@ -56,8 +59,8 @@ const TerapeutaPerfil = () => {
     },
   });
 
-  const terapeuta = allTerapeutas?.find((item) => therapistMatchesSlug(requestedSlug, item)) ?? null;
-  const isLoading = !allTerapeutas;
+  const terapeuta = allTerapeutas?.find((item) => therapistMatchesSlug(requestedSlug, item)) ?? perfilTeste.data ?? null;
+  const isLoading = !allTerapeutas || (!!perfilTesteId && perfilTeste.isPending);
 
   // Prev/next navigation
   const currentIndex = allTerapeutas?.findIndex((item) => therapistMatchesSlug(requestedSlug, item)) ?? -1;
