@@ -1,0 +1,37 @@
+import { useEffect, useState } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { Navigate, useSearchParams } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import CTAButton from '@/components/CTAButton';
+import { useToast } from '@/hooks/use-toast';
+import { useSouTerapeuta } from '@/hooks/useSouTerapeuta';
+import { terapia, PING_MS, saudacao } from '@/lib/terapia';
+import { ChaveSistema, TermoTexto } from '@/components/terapia/Comuns';
+import Hoje from '@/components/terapia/Hoje';
+import Pacientes from '@/components/terapia/Pacientes';
+import Agenda from '@/components/terapia/Agenda';
+import MeuLink from '@/components/terapia/MeuLink';
+import Perfil from '@/components/terapia/Perfil';
+import '@/components/terapia/painel.css';
+const abas=[['hoje','Hoje'],['pacientes','Pacientes'],['agenda','Agenda'],['link','Meu link'],['perfil','Perfil público']];
+export default function PainelTerapeuta() {
+ const acesso=useSouTerapeuta();const [params,setParams]=useSearchParams();const selecionada=params.get('aba')??'hoje';const aba=abas.some(([v])=>v===selecionada)?selecionada:'hoje';const qc=useQueryClient();const {toast}=useToast();const [aceito,setAceito]=useState(false);const [ocupado,setOcupado]=useState(false);const [agora,setAgora]=useState(Date.now());
+ const painel=useQuery({queryKey:['terapia-painel'],queryFn:terapia.painel,enabled:acesso.permitido});const emDia=painel.data?.sistema.termo_em_dia===true;
+ const hoje=useQuery({queryKey:['terapia-hoje'],queryFn:terapia.hoje,enabled:acesso.permitido&&emDia});const pacientes=useQuery({queryKey:['terapia-pacientes'],queryFn:terapia.pacientes,enabled:acesso.permitido&&emDia&&aba==='pacientes'});
+ const erro=acesso.error||painel.error||hoje.error||pacientes.error;
+ useEffect(()=>{if(erro)toast({title:erro.message,variant:'destructive'});},[erro,toast]);
+ useEffect(()=>{if(!acesso.permitido)return;const id=setInterval(()=>{void terapia.ping().catch(e=>toast({title:e.message,variant:'destructive'}));},PING_MS);return()=>clearInterval(id);},[acesso.permitido,toast]);
+ useEffect(()=>{const id=setInterval(()=>setAgora(Date.now()),1000);return()=>clearInterval(id);},[]);
+ const atualizar=()=>qc.invalidateQueries({queryKey:['terapia-painel']});
+ const executar=async(fn:()=>Promise<unknown>)=>{try{await fn();return true;}catch(e){toast({title:e instanceof Error?e.message:String(e),variant:'destructive'});return false;}};
+ const mudar=async(v:boolean)=>{setOcupado(true);try{await executar(async()=>{await terapia.sistema(v);await atualizar();});}finally{setOcupado(false);}};
+ const trocar=(v:string)=>{setParams(p=>{const novo=new URLSearchParams(p);novo.set('aba',v);return novo;});};
+ if(acesso.carregando || (acesso.permitido&&painel.isPending))return <main className="mx-auto max-w-6xl p-8" role="status">Carregando…</main>;
+ if(!acesso.permitido&&!acesso.error)return <Navigate to="/" replace/>;
+ if(!painel.data)return <main className="mx-auto max-w-6xl p-8"><p role="alert">{erro?.message??'Não foi possível carregar a área da terapeuta.'}</p><Button variant="outline" onClick={()=>{void acesso.refetch();void painel.refetch();}}>Tentar novamente</Button></main>;
+ const dados=painel.data;const total=hoje.data?.consultas.filter(c=>c.hoje).length??0;
+ const menu=<nav aria-label="Área da terapeuta" className="flex overflow-x-auto border-b border-border lg:flex-col lg:overflow-visible lg:border-0">{abas.map(([v,l])=><Button key={v} variant="ghost" aria-current={aba===v?'page':undefined} onClick={()=>trocar(v)} className={`h-11 shrink-0 justify-start rounded-md border-l-2 px-3 text-sm lg:w-full ${aba===v?'border-secondary bg-secondary/10 font-semibold hover:bg-secondary/15':'border-transparent text-muted-foreground'}`}><span>{l}</span>{v==='hoje'&&<span className="ml-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-secondary px-1 text-xs text-secondary-foreground">{total}</span>}</Button>)}</nav>;
+ return <><Helmet><title>Área da terapeuta | Portal Ayurveda</title></Helmet>{!emDia?<main className="mx-auto max-w-2xl px-5 py-10"><p className="mb-4 text-xs font-semibold uppercase text-muted-foreground">Bem-vinda à área da terapeuta</p><TermoTexto painel={dados}/><div className="my-6 flex items-center gap-3"><Checkbox id="aceitar-termo" checked={aceito} onCheckedChange={v=>setAceito(v===true)}/><label htmlFor="aceitar-termo" className="text-sm font-semibold">Li e aceito o termo</label></div><CTAButton disabled={!aceito||ocupado} className="h-11 px-5 py-2 text-base" onClick={async()=>{setOcupado(true);try{await executar(async()=>{await terapia.aceitar(dados.termo.versao);await atualizar();});}finally{setOcupado(false);}}}>Aceitar e entrar</CTAButton><p className="mt-4 text-xs text-muted-foreground">Depois de aceitar, você liga “Estou no sistema” quando quiser aparecer com agenda no diretório.</p></main>:<div className="mx-auto grid min-h-[calc(100dvh-4rem)] max-w-7xl lg:grid-cols-[210px_minmax(0,1fr)]"><aside className="hidden border-r border-border p-5 lg:block"><div className="mb-5 flex items-center gap-3 border-b border-border pb-5">{dados.terapeuta.imagem&&<img src={dados.terapeuta.imagem} alt="" className="h-12 w-10 rounded-md object-cover"/>}<div><p className="text-sm font-semibold">{dados.terapeuta.primeiro_nome}</p><p className="text-xs text-muted-foreground">Terapeuta</p></div></div><ChaveSistema painel={dados} ocupado={ocupado} mudar={mudar}/><div className="mt-5">{menu}</div></aside><div className="min-w-0"><div className="lg:hidden">{menu}<div className="px-4 pt-4"><ChaveSistema painel={dados} ocupado={ocupado} mudar={mudar}/></div></div><main className="p-4 sm:p-6 lg:p-7"><h1 className="mb-6 font-serif text-2xl font-bold text-primary">{aba==='hoje'?saudacao(dados.terapeuta.primeiro_nome,new Date(agora).getHours()):abas.find(([v])=>v===aba)?.[1]}{aba==='pacientes'&&<span className="ml-2 font-sans text-sm text-secondary">{pacientes.data?.length??dados.numeros.pacientes}</span>}</h1>{aba==='hoje'&&(hoje.data?<Hoje dados={hoje.data} agora={agora}/>:<p role="status">{hoje.error?.message??'Carregando consultas…'}</p>)}{aba==='pacientes'&&(pacientes.data?<Pacientes lista={pacientes.data} convidar={()=>trocar('link')}/>:<p role="status">{pacientes.error?.message??'Carregando pacientes…'}</p>)}{aba==='agenda'&&<Agenda painel={dados} executar={executar}/>} {aba==='link'&&<MeuLink painel={dados} executar={executar}/>} {aba==='perfil'&&<Perfil painel={dados} ocupado={ocupado} mudar={mudar} executar={executar} atualizar={atualizar}/>}</main></div></div>}</>;
+}
