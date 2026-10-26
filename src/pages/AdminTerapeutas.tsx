@@ -127,8 +127,10 @@ export default function AdminTerapeutas() {
       setBusy(null);
     }
   };
-  const configSalva = (chave: string, valor: ValorCMS) =>
+  const configSalva = (chave: string, valor: ValorCMS) => {
     setConfig((c) => ({ ...c, [chave]: valor }));
+    if (chave === "sistema_ligado") void terapiaAdmin.participantes().then(setParticipantes).catch(() => {});
+  };
   const sistema = (v: boolean) =>
     executar("sistema", async () => {
       await terapiaAdmin.salvar("sistema_ligado", v);
@@ -182,7 +184,7 @@ export default function AdminTerapeutas() {
             </div>
             <Tabs defaultValue="participantes" className="min-w-0">
               <div className="overflow-x-auto border-b border-border">
-                <TabsList className="bg-transparent rounded-none h-auto p-0 justify-start">
+                <TabsList className="bg-transparent rounded-none h-auto p-0 justify-start [&>button]:rounded-none [&>button]:border-b-2 [&>button]:border-transparent [&>button[data-state=active]]:border-secondary [&>button[data-state=active]]:shadow-none">
                   <TabsTrigger
                     value="participantes"
                     className="data-[state=active]:border-secondary border-b-2 border-transparent rounded-none data-[state=active]:shadow-none"
@@ -312,7 +314,7 @@ export default function AdminTerapeutas() {
                   }
                 />
               </TabsContent>
-              <TabsContent value="textos" className="pt-4">
+              <TabsContent value="textos" forceMount className="pt-4 data-[state=inactive]:hidden">
                 <Textos config={config} onSaved={configSalva} />
               </TabsContent>
             </Tabs>

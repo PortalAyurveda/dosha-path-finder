@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import { ArrowUp, ArrowDown, Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,6 +24,7 @@ export default function EditorValor({
   nome: string;
   id: string;
 }) {
+  const modelo = useRef<ValorCMS>(Array.isArray(valor) && valor.length ? valor[0] : "");
   if (Array.isArray(valor))
     return (
       <div className="space-y-3">
@@ -30,7 +32,7 @@ export default function EditorValor({
         {valor.map((v, i) => (
           <div
             key={`${id}-${i}`}
-            className="border-b border-border pb-3 space-y-2"
+            className={objetoCMS(v) ? "rounded-lg border border-border p-3 space-y-2" : "border-b border-border pb-3 space-y-2"}
           >
             <EditorValor
               valor={v}
@@ -81,7 +83,7 @@ export default function EditorValor({
           variant="outline"
           size="sm"
           onClick={() =>
-            onChange([...valor, valor.length ? vazioCMS(valor[0]) : ""])
+            onChange([...valor, vazioCMS(valor.length ? valor[0] : modelo.current)])
           }
         >
           <Plus /> item
