@@ -1,10 +1,10 @@
 import type { Leitura } from './terapiaAvaliacao';
 export const INDICACOES_AUTOSAVE_MS = 2000;
 export interface SecaoIndicacoes { chave: string; titulo: string }
-export interface FonteIndicacao { id?: string | number; tipo?: string; titulo?: string; nome?: string; resumo?: string; texto?: string; livro?: string; referencia?: string; link?: string; slug?: string; imagem?: string; porque?: string; combina?: boolean; serve?:boolean; slot?: string; favorito?: boolean; vata?: number; pitta?: number; kapha?: number }
+export interface FonteIndicacao { queixa?:string; assunto?:string; id?: string | number; tipo?: string; titulo?: string; nome?: string; resumo?: string; texto?: string; livro?: string; referencia?: string; link?: string; slug?: string; imagem?: string; porque?: string; combina?: boolean; serve?:boolean; slot?: string; favorito?: boolean; vata?: number; pitta?: number; kapha?: number }
 export interface ItemIndicacao extends FonteIndicacao { id: string; titulo: string; nota: string }
 export interface DadosIndicacoes { secoes: Record<string, ItemIndicacao[]>; [chave: string]: unknown }
-export interface FolhaIndicacoes { id: string; paciente_user_id: string; paciente_nome: string; criado_em: string; atualizado_em: string; enviada_em: string | null; vista_em: string | null; dados: Partial<DadosIndicacoes>; diagnostico: string | null; tratamento: string | null; retorno: string | null; secoes: SecaoIndicacoes[]; avaliacao: { leitura: Leitura; resumo: string; criado_em: string } | null }
+export interface FolhaIndicacoes { avaliacao_id?:string|null; id: string; paciente_user_id: string; paciente_nome: string; criado_em: string; atualizado_em: string; enviada_em: string | null; vista_em: string | null; dados: Partial<DadosIndicacoes>; diagnostico: string | null; tratamento: string | null; retorno: string | null; secoes: SecaoIndicacoes[]; avaliacao: { id?:string; leitura: Leitura; resumo: string; criado_em: string } | null }
 export interface FolhaIndicacoesLista { id: string; criado_em: string; enviada_em: string | null; vista_em: string | null }
 export interface FontesIndicacoes { minhas?:FonteIndicacao[]; favoritos?:FonteIndicacao[]; para_ela: FonteIndicacao[]; rotina_dela: FonteIndicacao[] | null; rotina: Record<string, FonteIndicacao[]>; samkhya: FonteIndicacao[]; aulas: FonteIndicacao[]; versos: FonteIndicacao[] }
 export interface RascunhoIndicacoes { dados: DadosIndicacoes; diagnostico: string; tratamento: string; retorno: string }
