@@ -4,7 +4,7 @@ import { useQuery,useQueryClient } from '@tanstack/react-query';
 import { Helmet } from 'react-helmet-async';
 import { Button } from '@/components/ui/button';
 import { useSouTerapeuta } from '@/hooks/useSouTerapeuta';
-import { terapia,diaBR } from '@/lib/terapia';
+import { terapia } from '@/lib/terapia';
 import type { FichaPaciente } from '@/lib/terapiaPaciente';
 import { AUTOSAVE_MS,DOSHAS,SETORES,iniciarDados,nivel,marcada,somas } from '@/lib/terapiaAvaliacao';
 import type { Avaliacao,Biblioteca,ConteudoFicha,DadosAvaliacao,Leitura,Setor } from '@/lib/terapiaAvaliacao';
