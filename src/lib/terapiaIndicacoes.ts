@@ -9,7 +9,7 @@ export interface FolhaIndicacoesLista { id: string; criado_em: string; enviada_e
 export interface FontesIndicacoes { para_ela: FonteIndicacao[]; rotina_dela: FonteIndicacao[] | null; rotina: Record<string, FonteIndicacao[]>; samkhya: FonteIndicacao[]; aulas: FonteIndicacao[]; versos: FonteIndicacao[] }
 export interface RascunhoIndicacoes { dados: DadosIndicacoes; diagnostico: string; tratamento: string; retorno: string }
 export const iniciarIndicacoes = (d: Partial<DadosIndicacoes> | null): DadosIndicacoes => ({ ...d, secoes: d?.secoes ?? {} });
-export function criarIndicacao(fonte: FonteIndicacao, id = crypto.randomUUID()): ItemIndicacao {
+export function criarIndicacao(fonte: FonteIndicacao, id: string = crypto.randomUUID()): ItemIndicacao {
   return { ...fonte, id, titulo: fonte.titulo ?? fonte.nome ?? [fonte.livro, fonte.referencia].filter(Boolean).join(' · '), nota: '' };
 }
 export function inserirIndicacao(dados: DadosIndicacoes, secao: string, item: ItemIndicacao): DadosIndicacoes {
@@ -29,4 +29,4 @@ export function diagnosticoDaAvaliacao(a: FolhaIndicacoes['avaliacao']) {
 }
 export function linkIndicacao(i: FonteIndicacao) { return i.link ?? (i.slug ? `/receita/${i.slug}` : ''); }
 export function linkCurto(link: string) { try { const u = new URL(link, 'https://portalayurveda.com'); return `${u.host}${u.pathname}`; } catch { return link; } }
-export const HORARIOS_INDICACOES: Record<string,string> = { cafe_manha:'Café da manhã', lanche_manha:'Lanche da manhã', almoco:'Almoço', lanche_tarde:'Lanche da tarde', jantar:'Jantar', ceia:'Ceia', acordar:'Ao acordar', dormir:'Antes de dormir' };
+export const HORARIOS_INDICACOES: Record<string,string> = { cafe_manha:'Café da manhã', lanche_manha:'Lanche da manhã', almoco:'Almoço', lanche_tarde:'Lanche da tarde', jantar:'Jantar', ceia:'Ceia', acordar:'Ao acordar', dormir:'Antes de dormir', rotina_manha:'Ritual da manhã', bonus_diario:'Bônus do dia', tonico_noite:'Tônico da noite' };
