@@ -2226,6 +2226,27 @@ export type Database = {
         }
         Relationships: []
       }
+      backup_terapia_config_20261026c: {
+        Row: {
+          atualizado_em: string | null
+          chave: string | null
+          descricao: string | null
+          valor: Json | null
+        }
+        Insert: {
+          atualizado_em?: string | null
+          chave?: string | null
+          descricao?: string | null
+          valor?: Json | null
+        }
+        Update: {
+          atualizado_em?: string | null
+          chave?: string | null
+          descricao?: string | null
+          valor?: Json | null
+        }
+        Relationships: []
+      }
       banner_eventos: {
         Row: {
           banner_id: string | null
