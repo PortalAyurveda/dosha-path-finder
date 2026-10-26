@@ -43,11 +43,11 @@ export default function MeuTerapeutaFotos({ primeiroNome }: { primeiroNome: stri
   const [erro, setErro] = useState("");
   const [tituloExtra, setTituloExtra] = useState("");
   const atualizar = () => { qc.invalidateQueries({ queryKey: ["fotos-minhas"] }); qc.invalidateQueries({ queryKey: ["meu-terapeuta"] }); };
-  const enviar = async (tipo: string, f: File, titulo?: string, antiga?: FotoMinha) => {
+  const enviar = async (tipo: string, f: File, titulo?: string, antiga?: FotoMinha, pedido?:string) => {
     if (!user) return; setOcupado(true); setErro("");
     try {
       const path = await meu.fotoEnviar(user.id, f);
-      await meu.fotoRegistrar(tipo, path, titulo);
+      try { await meu.fotoRegistrar(tipo, path, titulo, pedido); } catch(e) { await meu.fotoTirarDoStorage(path).catch(()=>undefined); throw e; }
       if (antiga) { const p = await meu.fotoApagar(antiga.id); if (p) await meu.fotoTirarDoStorage(p).catch(() => undefined); }
       if (tipo === "extra") setTituloExtra("");
       atualizar();
@@ -67,6 +67,7 @@ export default function MeuTerapeutaFotos({ primeiroNome }: { primeiroNome: stri
     <div className="space-y-4">
       <p className="text-sm text-muted-foreground">Essas fotos vão para {primeiroNome} ver antes da consulta. No celular, cada quadro abre a câmera.</p>
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+        {(q.data?.pedidos??[]).map(p=><article key={p.id} className="min-w-0 rounded-lg border border-secondary bg-secondary/5 p-3"><p className="mb-2 text-xs font-semibold">{p.terapeuta??primeiroNome} pediu</p><h3 className="text-sm font-semibold">{p.titulo}</h3>{p.instrucao&&<p className="my-2 text-xs">{p.instrucao}</p>}{p.modelo&&<img src={p.modelo} alt={`Modelo: ${p.titulo}`} className="my-2 aspect-[3/4] w-full object-contain"/>}{p.ate&&<p className="mb-2 text-xs text-muted-foreground">Até {diaBR(p.ate)}</p>}<Button asChild variant="secondary" size="sm" disabled={ocupado}><label className="cursor-pointer">Tirar foto<input type="file" accept="image/*" capture="environment" className="sr-only" disabled={ocupado} onChange={e=>{const f=e.target.files?.[0];e.target.value='';if(f)void enviar('extra',f,p.titulo,undefined,p.id);}}/></label></Button></article>)}
         {guiadas.map(g => <Quadro key={g.chave} titulo={g.titulo} instrucao={g.instrucao ?? ('texto' in g ? String(g.texto ?? '') : '')} modelo={g.modelo} tipo={g.chave} foto={recente(g.chave)} ocupado={ocupado} enviar={enviar} apagar={apagar} />)}
         {fotos.filter(f => f.tipo === "extra").map(f => <Quadro key={f.id} titulo={f.titulo || "Outra foto"} tipo="extra" extraTitulo={f.titulo ?? undefined} foto={f} ocupado={ocupado} enviar={enviar} apagar={apagar} />)}
       </div>

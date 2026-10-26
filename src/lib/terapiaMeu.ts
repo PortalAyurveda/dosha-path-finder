@@ -1,6 +1,7 @@
 import { supabase } from "@/integrations/supabase/client";
 import type { HorarioPaciente } from "./terapiaPaciente";
 import type { DadosIndicacoes, SecaoIndicacoes } from "./terapiaIndicacoes";
+import type { PedidoFoto } from './terapiaFotoPedidos';
 
 export interface MeuTerapeutaLigacao {
   ligacao: string;
@@ -19,7 +20,7 @@ export interface MeuTerapeutaLigacao {
 }
 export interface GuiadaMinha { chave: string; titulo: string; instrucao?: string; texto?: string; modelo?: string }
 export interface FotoMinha { id: string; tipo: string; titulo: string | null; path: string; criado_em: string }
-export interface FotosMinhas { guiadas: GuiadaMinha[] | null; fotos: FotoMinha[] }
+export interface FotosMinhas { guiadas: GuiadaMinha[] | null; fotos: FotoMinha[]; pedidos?:PedidoFoto[] }
 export interface MinhaFolha {
   id: string; enviada_em: string; vista_em: string | null;
   dados: Partial<DadosIndicacoes> | null; diagnostico: string | null; tratamento: string | null; retorno: string | null;
@@ -44,7 +45,7 @@ export const meu = {
   cancelar: (consulta: string) => read<void>(rpc("acomp_cancelar", { p_consulta: consulta })),
   motivo: (consulta: string, texto: string) => read<void>(rpc("consulta_motivo_salvar", { p_consulta: consulta, p_texto: texto })),
   fotos: () => read<FotosMinhas>(rpc("fotos_minhas")),
-  fotoRegistrar: (tipo: string, path: string, titulo?: string) => read<string>(rpc("foto_registrar", { p_tipo: tipo, p_path: path, ...(titulo ? { p_titulo: titulo } : {}) })),
+  fotoRegistrar: (tipo: string, path: string, titulo?: string, pedido?:string) => read<string>(rpc("foto_registrar", { p_tipo: tipo, p_path: path, ...(titulo ? { p_titulo: titulo } : {}), ...(pedido?{p_pedido:pedido}:{}) })),
   fotoApagar: (id: string) => read<string | null>(rpc("foto_apagar", { p_id: id })),
   fotoEnviar: async (userId: string, arquivo: File) => {
     const ext = (arquivo.name.split(".").pop() || "jpg").toLowerCase().replace(/[^a-z0-9]/g, "") || "jpg";
