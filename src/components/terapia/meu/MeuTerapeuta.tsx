@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, lazy, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -14,6 +14,8 @@ import Nascimento from "./Nascimento";
 import MeuTerapeutaFotos from "./MeuTerapeutaFotos";
 import FolhasDoTerapeuta from "./FolhasDoTerapeuta";
 
+const ConversaPessoa = lazy(()=>import('../chat/ConversaPessoa'));
+const ListaConversas = lazy(()=>import('../chat/ListaConversas'));
 const STATUS: Record<string, string> = { marcada: "Marcada", realizada: "Realizada", cancelada: "Cancelada", faltou: "Faltou" };
 const Bloco = ({ titulo, children }: { titulo: string; children: React.ReactNode }) => (
   <section className="border-t border-border pt-5"><h3 className="mb-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">{titulo}</h3>{children}</section>
@@ -45,6 +47,7 @@ function Ligacao({ l }: { l: MeuTerapeutaLigacao }) {
   const recarregar = () => qc.invalidateQueries({ queryKey: ["meu-terapeuta"] });
   const [agora, setAgora] = useState(Date.now());
   useEffect(() => { const t = setInterval(() => setAgora(Date.now()), 30000); return () => clearInterval(t); }, []);
+  const [conversar,setConversar]=useState(false);
   const [remarcar, setRemarcar] = useState(false);
   const [motivo, setMotivo] = useState(l.proxima?.motivo ?? ""); const [motivoMsg, setMotivoMsg] = useState("");
   useEffect(() => setMotivo(l.proxima?.motivo ?? ""), [l.proxima?.id, l.proxima?.motivo]);
@@ -74,6 +77,7 @@ function Ligacao({ l }: { l: MeuTerapeutaLigacao }) {
           {l.terapeuta.especialidade && <p className="text-sm text-muted-foreground">{l.terapeuta.especialidade}</p>}
           <Link to={`/terapeutas/${l.terapeuta.slug}`} className="text-sm font-semibold text-secondary underline-offset-2 hover:underline">Ver o perfil dela</Link>
         </div>
+        <Button variant="secondary" onClick={()=>setConversar(true)}>Conversar</Button>
         <span className="rounded-full bg-muted px-3 py-1 text-xs font-semibold">● Ligada desde {diaBR(l.desde)}</span>
       </header>
 
@@ -119,6 +123,7 @@ function Ligacao({ l }: { l: MeuTerapeutaLigacao }) {
 
       {erro && <p role="alert" className="text-sm text-destructive">{erro}</p>}
       <div className="border-t border-border pt-4"><Button variant="ghost" className="text-destructive" onClick={desligar}>Parar de ser acompanhada</Button></div>
+      {conversar && <Suspense fallback={null}><ConversaPessoa slug={l.terapeuta.slug} fechar={()=>setConversar(false)} marcar={()=>{setConversar(false);window.location.assign(`/terapeutas/${l.terapeuta.slug}#agenda`);}}/></Suspense>}
       {remarcar && <Remarcar l={l} fechar={() => setRemarcar(false)} pronto={() => { setRemarcar(false); recarregar(); }} />}
     </div>
   );
@@ -129,7 +134,7 @@ export default function MeuTerapeuta() {
   if (q.isLoading) return <p role="status" className="text-sm text-muted-foreground">Carregando…</p>;
   if (q.error) return <p role="alert" className="text-sm text-destructive">{q.error.message}</p>;
   if (!q.data?.length) return (
-    <div className="space-y-3"><p className="text-sm leading-relaxed text-muted-foreground">Você ainda não está com um terapeuta no Portal. Se o seu terapeuta te mandou um link de convite, é só abrir o link.</p><Button asChild variant="secondary"><Link to="/terapeutas-do-brasil">Ver terapeutas do Brasil</Link></Button></div>
+    <div className="space-y-3"><Suspense fallback={null}><ListaConversas/></Suspense><p className="text-sm leading-relaxed text-muted-foreground">Você ainda não está com um terapeuta no Portal. Se o seu terapeuta te mandou um link de convite, é só abrir o link.</p><Button asChild variant="secondary"><Link to="/terapeutas-do-brasil">Ver terapeutas do Brasil</Link></Button></div>
   );
-  return <div className="space-y-10">{q.data.map(l => <Ligacao key={l.ligacao} l={l} />)}</div>;
+  return <div className="space-y-10"><Suspense fallback={null}><ListaConversas/></Suspense>{q.data.map(l => <Ligacao key={l.ligacao} l={l} />)}</div>;
 }
