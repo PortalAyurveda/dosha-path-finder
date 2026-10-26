@@ -72,3 +72,6 @@
 - [x] Parte 18: 45 testes e conferência em 1366 px e 390 px com respostas isoladas; gravação e download com fluxos de mídia simulados
 - [ ] Parte 18: confirmar chamada 720p e captura de aba/microfone entre aparelhos reais — bloqueado: Supabase externo sem sessão autenticada e teste automatizado sem seletor real de captura
 - [ ] Parte 18: forçar nitidez do compartilhamento Jitsi mantendo 5–15 fps — bloqueado: JitsiMeetExternalAPI não oferece comando público para contentHint; mantida configuração pedida, gravação própria usa detail
+- [x] Alunos admin: separar Formação sem alterações e criar lista geral, ficha e diálogos pelas RPCs existentes, sem SQL
+- [x] Alunos admin: 10 testes de regras e conferência em 1366 px e 390 px com respostas simuladas; ficha, extensão, convite, cancelamento, Formação, adicionar e contrato
+- [ ] Alunos admin: validar ações com conta admin real — bloqueado: Supabase externo sem sessão autenticada disponível

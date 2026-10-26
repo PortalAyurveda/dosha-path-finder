@@ -1,5 +1,7 @@
 # Project Rules
 
+- Keep admin students orchestration in its page and the original Formation workflow isolated from the RPC-only general student views; load release configuration once per page so every dialog uses the same server-defined options.
+
 - On narrow mobile headers below 390px, hide the cart shortcut before allowing navigation controls to overlap; the cart remains available through the store flow.
 
 - Keep the classical library pages independently lazy-loaded and share verse rendering and RPC access through dedicated modules, so each address loads only its own view.
