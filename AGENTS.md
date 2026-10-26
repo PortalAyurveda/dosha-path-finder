@@ -10,3 +10,4 @@
 - Keep therapist invitations independently lazy-loaded beside therapist routes and share the existing authentication form with /entrar; embedded authentication suppresses default navigation while preserving email functions, messages and external-browser return destinations.
 
 - Keep therapy assessments and their print route independently lazy-loaded next to patient routes, with core sectors, optional additions and photo annotations in dedicated assessment components; preserve the single JSON draft and existing RPCs, and calculate birth charts locally to isolate editing and private content from other portal views.
+- Keep therapy indications and their print route independently lazy-loaded beside patient routes, with source catalog and section editing in dedicated components and contracts in the indications module; serialize saves through existing therapy RPCs so sending and printing use the latest single JSON draft.
