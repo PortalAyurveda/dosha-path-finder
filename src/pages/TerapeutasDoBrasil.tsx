@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import PageContainer from "@/components/PageContainer";
 import SectionTitle from "@/components/SectionTitle";
 import TerapeutaCard from "@/components/terapeutas/TerapeutaCard";
+import { terapia } from "@/lib/terapia";
 import TerapeutaCardSkeleton from "@/components/terapeutas/TerapeutaCardSkeleton";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -40,6 +41,9 @@ const TerapeutasDoBrasil = () => {
       return data;
     },
   });
+
+  const { data: noSistema } = useQuery({ queryKey: ["terapeutas-no-sistema"], queryFn: terapia.noSistema });
+  const sistemaPorId = useMemo(() => new Map((noSistema ?? []).map((t) => [String(t.id), t])), [noSistema]);
 
   const filtered = useMemo(() => {
     if (!terapeutas) return [];
@@ -247,6 +251,8 @@ const TerapeutasDoBrasil = () => {
               formado_desde={t.formado_desde}
               temWhatsapp={!!t.whatsapp}
               temInstagram={!!t.instagram}
+              online={sistemaPorId.get(String(t.id))?.online}
+              valor={sistemaPorId.get(String(t.id))?.valor}
             />
           ))}
         </div>

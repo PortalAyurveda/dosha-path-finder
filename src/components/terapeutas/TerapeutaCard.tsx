@@ -7,6 +7,7 @@ import {
   nomeCurtoEspecialidade,
   splitTherapistSpecialties,
 } from "@/lib/terapeutas";
+import { reais } from "@/lib/terapia";
 
 interface TerapeutaCardProps {
   nome: string;
@@ -21,6 +22,8 @@ interface TerapeutaCardProps {
   formado_desde: number | null;
   temWhatsapp: boolean;
   temInstagram: boolean;
+  online?: boolean;
+  valor?: number | null;
 }
 
 function primeiraFrase(texto: string) {
@@ -42,6 +45,8 @@ const TerapeutaCard = ({
   formado_desde,
   temWhatsapp,
   temInstagram,
+  online,
+  valor,
 }: TerapeutaCardProps) => {
   const displayName = getTherapistDisplayName(nome);
   const especialidades = splitTherapistSpecialties(especialidade).map(
@@ -92,6 +97,13 @@ const TerapeutaCard = ({
 
         {linhaLocal && (
           <p className="text-[12.5px] text-muted-foreground">{linhaLocal}</p>
+        )}
+
+        {(online || valor) && (
+          <p className="flex flex-wrap items-center gap-x-2 text-[12.5px] text-muted-foreground">
+            {online && <span className="inline-flex items-center gap-1 font-semibold text-[hsl(var(--therapist-green-ink))]"><span className="h-2 w-2 rounded-full bg-[hsl(var(--therapist-green-ink))]" aria-hidden />online agora</span>}
+            {valor ? <span>Consulta {reais(Number(valor))}</span> : null}
+          </p>
         )}
 
         {especialidades.length > 0 && (

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuSeparator,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
@@ -18,6 +19,8 @@ import samkhyaLogo from "@/assets/samkhya-logo-cropped.png";
 import GlobalSearch from "@/components/GlobalSearch";
 import { RedeemCourseDialog } from "@/components/RedeemCourseDialog";
 import { useSouTerapeuta } from "@/hooks/useSouTerapeuta";
+import { useOnlineTerapeuta } from "@/components/terapia/online/OnlineTerapeuta";
+import { Switch } from "@/components/ui/switch";
 
 
 const PIE_COLORS: Record<string, string> = {
@@ -89,6 +92,7 @@ const Header = () => {
   const navigate = useNavigate();
   const { user, isAnonymous, doshaResult, profile, signOut } = useUser();
   const { permitido: souTerapeuta } = useSouTerapeuta();
+  const onlineTerapeuta = useOnlineTerapeuta();
   const { totalItens, abrirCarrinho } = useCart();
   const { immersive } = useImmersive();
 
@@ -531,6 +535,21 @@ const Header = () => {
                 )}
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="bg-white">
+                {onlineTerapeuta?.participa && (
+                  <>
+                    <div className="px-2 py-1.5">
+                      <p className="text-sm font-semibold">{onlineTerapeuta.nome}</p>
+                      <label className="mt-2 flex items-center justify-between gap-4 text-sm">
+                        <span className="flex items-center gap-1.5">
+                          {onlineTerapeuta.online && <span className="h-2 w-2 rounded-full bg-[hsl(var(--therapist-green-ink))]" aria-hidden />}
+                          Estou online
+                        </span>
+                        <Switch aria-label="Estou online" checked={onlineTerapeuta.online} disabled={onlineTerapeuta.mudando} onCheckedChange={(v) => void onlineTerapeuta.mudar(v)} className="data-[state=checked]:bg-secondary" />
+                      </label>
+                    </div>
+                    <DropdownMenuSeparator />
+                  </>
+                )}
                 {doshaResult && (
                   <DropdownMenuItem asChild>
                     <Link to={profileLink}>Meu dosha</Link>

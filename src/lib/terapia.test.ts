@@ -101,3 +101,13 @@ describe("Regras do painel da terapeuta", () => {
     });
   });
 });
+
+import { valorDigitado, passosFaltando, podeLigarParticipar, pedidoAberto } from "./terapia";
+import { minhasComFavoritos } from "./terapiaIndicacoes";
+describe("participar do portal", () => {
+  it("lê o valor em reais", () => { expect(valorDigitado("R$ 180")).toBe(180); expect(valorDigitado("1.250,50")).toBe(1250.5); expect(valorDigitado("")).toBeNull(); });
+  it("lista o que falta na ordem premium, termo, agenda, valor", () => { expect(passosFaltando(["valor", "premium"])).toEqual(["premium", "valor"]); });
+  it("só deixa ligar quando não falta nada", () => { expect(podeLigarParticipar([])).toBe(true); expect(podeLigarParticipar(["agenda"])).toBe(false); });
+  it("pedido aberto só em pedido ou aceito", () => { expect(pedidoAberto("aceito")).toBe(true); expect(pedidoAberto("expirado")).toBe(false); });
+  it("favoritos entram em Minhas com selo", () => { expect(minhasComFavoritos([{ titulo: "a" }], [{ titulo: "b" }]).map(f => !!f.favorito)).toEqual([false, true]); });
+});

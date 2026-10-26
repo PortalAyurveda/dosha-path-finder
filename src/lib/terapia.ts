@@ -82,11 +82,25 @@ export interface Painel {
     termo_aceito_em: string | null;
     antecedencia_horas: number;
     pedir_nascimento: boolean;
+    participa?: boolean;
+    online?: boolean;
+    valor_consulta?: number | null;
+    falta?: FaltaParticipar[];
   };
+  premium?: boolean;
+  premium_textos?: { titulo?: string; texto?: string; botao?: string; link?: string } | null;
   termo: { titulo: string; texto: string; versao: string };
   textos: { saudacao: string; convite_mensagem: string };
   numeros: { pacientes: number; pelo_link: number; pela_agenda: number };
 }
+export type FaltaParticipar = 'premium' | 'termo' | 'agenda' | 'valor';
+export interface Ping { online: boolean; participa: boolean; pedidos_agora: number }
+export type StatusPedido = 'pedido' | 'aceito' | 'confirmado' | 'recusado' | 'expirado' | 'cancelado';
+export interface PedidoAgora { id: string; status: StatusPedido; motivo: string | null; em_minutos: number | null; inicio: string | null; duracao_min: number | null; consulta_id: string | null; expira_em: string | null; criado_em: string; paciente_id: string; paciente_nome: string | null; terapeuta: { nome: string; primeiro_nome: string; slug: string; imagem: string | null } | null }
+export interface AgendaPublica { no_sistema: boolean; online?: boolean; valor?: number | null; horarios?: { inicio: string; fim: string }[]; eu?: { ligada: boolean; tem_teste: boolean } | null }
+export interface TerapeutaNoSistema { id: string; slug: string; online: boolean; valor: number | null; proximo: string | null }
+export type TipoPortal = 'favoritos' | 'receita' | 'aula' | 'artigo' | 'produto' | 'verso';
+export interface ItemPortal { tipo: string; ref: string; titulo?: string; resumo?: string; link?: string; imagem?: string; vata?: number; pitta?: number; kapha?: number; livro?: string; referencia?: string; texto?: string; favorito: boolean }
 export interface Hoje {
   consultas: Consulta[];
   novidades: { texto: string; detalhe?: string }[];
@@ -170,7 +184,21 @@ export const terapia = {
     read<void>(supabase.rpc("terapia_termo_aceitar", { p_versao: versao })),
   sistema: (ligar: boolean) =>
     read<boolean>(supabase.rpc("terapia_no_sistema", { p_ligar: ligar })),
-  ping: () => read<void>(supabase.rpc("terapia_ping")),
+  ping: () => read<Ping | null>(supabase.rpc("terapia_ping")),
+  online: (ligar: boolean) => read<boolean>(supabase.rpc("terapia_online", { p_ligar: ligar })),
+  valor: (valor: number | null) => read<void>(supabase.rpc("terapia_preferencias_salvar", { p: { valor_consulta: valor ?? '' } as unknown as Json })),
+  agendaPublica: (slug: string) => read<AgendaPublica>(supabase.rpc("terapeuta_agenda_publica", { p_slug: slug })),
+  noSistema: () => read<TerapeutaNoSistema[]>(supabase.rpc("terapeutas_no_sistema")),
+  marcarPublico: (terapeuta: string, inicio: string) => read<unknown>(supabase.rpc("acomp_marcar", { p_terapeuta: terapeuta, p_inicio: inicio })),
+  agoraPedir: (slug: string, motivo: string) => read<PedidoAgora>(supabase.rpc("consulta_agora_pedir", { p_slug: slug, ...(motivo.trim() ? { p_motivo: motivo.trim() } : {}) })),
+  agoraMeu: (id: string) => read<PedidoAgora>(supabase.rpc("consulta_agora_meu", { p_id: id })),
+  agoraCancelar: (id: string) => read<void>(supabase.rpc("consulta_agora_cancelar", { p_id: id })),
+  agoraPedidos: () => read<PedidoAgora[]>(supabase.rpc("consulta_agora_pedidos")),
+  agoraResponder: (id: string, aceitar: boolean, minutos = 0) => read<PedidoAgora>(supabase.rpc("consulta_agora_responder", { p_id: id, p_aceitar: aceitar, p_em_minutos: minutos })),
+  agoraConfirmar: (id: string, p: PermissoesConvite) => read<PedidoAgora>(supabase.rpc("consulta_agora_confirmar", { p_id: id, p_teste: p.teste, p_fotos: p.fotos, p_rotina: p.rotina, p_akasha: p.akasha })),
+  agoraDoPedido: (id: string) => read<PedidoAgora>(supabase.rpc("consulta_agora_do_pedido", { p_id: id })),
+  bibliotecaPortal: (tipo: TipoPortal, busca: string, limite: number, deslocamento: number) => read<ItemPortal[]>(supabase.rpc("terapia_biblioteca_portal", { p_tipo: tipo, ...(busca.trim() ? { p_q: busca.trim() } : {}), p_limite: limite, p_offset: deslocamento })),
+  favoritar: (tipo: string, ref: string, favorito: boolean) => read<boolean>(supabase.rpc("terapia_favoritar", { p_tipo: tipo, p_ref: ref, p_favorito: favorito })),
   salvarAgenda: (regras: Regra[]) =>
     read<void>(
       supabase.rpc("acomp_agenda_salvar", {
@@ -196,6 +224,12 @@ export const terapia = {
     ),
 };
 export const PING_MS = 120000;
+export const AGORA_POLL_MS = 5000;
+export const passosFaltando = (falta: FaltaParticipar[] = []) => (['premium', 'termo', 'agenda', 'valor'] as const).filter(f => falta.includes(f));
+export const podeLigarParticipar = (falta: FaltaParticipar[] = []) => falta.length === 0;
+export const reais = (v: number) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: Number.isInteger(v) ? 0 : 2 });
+export function valorDigitado(texto: string): number | null { const t = texto.replace(/[^\d,.]/g, '').replace(/\.(?=\d{3}(\D|$))/g, '').replace(',', '.'); if (!t) return null; const n = Number(t); return Number.isFinite(n) && n > 0 ? Math.round(n * 100) / 100 : null; }
+export const pedidoAberto = (s: StatusPedido) => s === 'pedido' || s === 'aceito';
 export function saudacao(nome: string, hora: number) {
   return `${hora < 12 ? "Bom dia" : hora < 18 ? "Boa tarde" : "Boa noite"}, ${nome}`;
 }
