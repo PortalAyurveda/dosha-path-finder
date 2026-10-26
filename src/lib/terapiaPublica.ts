@@ -1,7 +1,7 @@
 export interface NumerosTerapeuta { nota: number | null; avaliacoes: number; comentarios?: number; atendimentos: number }
 export interface PontoAtencao { slug: string; nome: string; especialidades: string[] }
 export interface PreviaConvite { slug: string; titulo: string; descricao: string; imagem_previa: string }
-export interface ConfigPublica { chat_textos?: import("./terapiaChat").ChatTextos; especialidades?: string[]; diretorio_ordem?: string; fotos_guiadas?: { chave: string; titulo: string; instrucao?: string; modelo?: string }[]; consulta_agora?: { prazo_min: number; som_repetir_seg: number } }
+export interface ConfigPublica { quadro_pranchas?: import('./terapiaQuadro').PranchaQuadro[]; chat_textos?: import("./terapiaChat").ChatTextos; especialidades?: string[]; diretorio_ordem?: string; fotos_guiadas?: { chave: string; titulo: string; instrucao?: string; modelo?: string }[]; consulta_agora?: { prazo_min: number; som_repetir_seg: number } }
 export interface AvaliacaoPublica { nota: number; comentario: string; primeiro_nome: string; quando: string }
 export interface ConsultaMarcada { consulta: string; inicio: string; fim: string }
 export const AGORA_ESPERA_MS = 15000;

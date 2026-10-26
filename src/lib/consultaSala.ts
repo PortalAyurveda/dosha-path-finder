@@ -18,7 +18,9 @@ type Resposta = PromiseLike<{data: unknown; error: {message: string}|null}>;
 const read = async <T>(request: Resposta):Promise<T> => { const {data,error}=await request; if(error)throw new Error(error.message);return data as T; };
 // Nullable p_quadro is supported by the database but not represented by generated Args.
 const rpc = supabase.rpc.bind(supabase) as unknown as (name: string, args: Record<string,unknown>)=>Resposta;
+export interface TreinoVideo { codigo:string; codigo_paciente:string; fecha_em:string }
 export const sala = {
+  treino: ()=>read<TreinoVideo>(rpc('terapia_sala_treino',{})),
   consultar: (id:string)=>read<SalaConsulta>(rpc('consulta_sala',{p_consulta:id})),
   aoVivo: (id:string)=>read<AoVivo>(rpc('consulta_ao_vivo',{p_consulta:id})),
   gravando: (id:string,gravando:boolean)=>read<void>(rpc('consulta_gravando',{p_consulta:id,p_gravando:gravando})),
@@ -35,4 +37,4 @@ export function faseSala(s:SalaConsulta,agora:number) { return s.status==='cance
 export function presencaRecente(em:string|undefined,agora:number) { return !!em&&agora-Date.parse(em)<2*PRESENCA_MS; }
 export function fichaTreino(t:SalaTreino):FichaPaciente {
   return {paciente_id:'treino',nome:t.paciente.nome,ligado_em:'',origem:'treino',permissoes:{teste:true,fotos:true,rotina:false,akasha:false},notas:[],consultas:[],avaliacoes:[],teste:{data:'',idade:null,cidade:null,estado:null,...t.paciente.teste,queixas:{treino:t.paciente.teste.queixas},alimentos:{},relato:null,objetivo1:null,objetivo2:null}};
-}
+}export const enderecoTreinoPessoa=(origem:string,codigo:string)=>`${origem}/consulta/treino/pessoa?c=${encodeURIComponent(codigo)}`;
