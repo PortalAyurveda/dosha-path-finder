@@ -131,4 +131,8 @@
 .sala-p :is(h1,h2,h3,p,span,li,label,b,ol),.mesa-sala-video :is(p,span,li,label,b),.qa-video :is(span,label,b){color:inherit}
 .qa-video .qa-toggle,.sala-p-quadro,.sala-fim{color:var(--m-ink)}
 .mesa-conteudo{container-type:inline-size}
-@container (max-width:560px){.m-fin{grid-template-columns:1fr}}
+@container (max-width:420px){.m-fin{grid-template-columns:1fr}}
+
+.m-treino+.mesa-sala{min-height:calc(100dvh - var(--mesa-hdr) - 54px);max-height:calc(100dvh - var(--mesa-hdr) - 54px)}
+.m-treino+.mesa-sala .mesa-sala-ficha{max-height:calc(100dvh - var(--mesa-hdr) - 54px)}
+@media (max-width:900px){.qa-video .slot{width:160px;height:60px}.qa-video .qa-toggle{flex-basis:100%;justify-content:center}.m-treino+.mesa-sala{max-height:none}}
