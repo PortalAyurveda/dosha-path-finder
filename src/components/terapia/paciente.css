@@ -1,0 +1,2 @@
+.paciente-status-ok { background: hsl(var(--therapist-green-soft)); color: hsl(var(--therapist-green-ink)); }
+.paciente-status-pendente { background: hsl(var(--therapist-yellow-soft)); color: hsl(var(--therapist-yellow-ink)); }
