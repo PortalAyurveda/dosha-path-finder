@@ -251,6 +251,8 @@ const TerapeutasDoBrasil = () => {
               formado_desde={t.formado_desde}
               temWhatsapp={!!t.whatsapp}
               temInstagram={!!t.instagram}
+              online={sistemaPorId.get(String(t.id))?.online}
+              valor={sistemaPorId.get(String(t.id))?.valor}
             />
           ))}
         </div>
