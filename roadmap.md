@@ -58,3 +58,6 @@
 - [x] Conferir Parte 15 em 1366 px e 390 px, testes e diferenças da referência
 
 - [ ] Validar Parte 15 com contas reais, fotos privadas e chamada entre dois aparelhos — bloqueado: Supabase externo sem sessão autenticada disponível
+- [ ] Parte 17: Meu acompanhamento, sete abas, entradas e liberação das avaliações
+- [ ] Parte 17: corrigir tamanho dos textos e notas nas indicações
+- [ ] Parte 17: conferir referências em 1366 px e 390 px, regras e fluxos
