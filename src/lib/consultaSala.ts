@@ -17,7 +17,7 @@ export interface SalaTreino { titulo: string; texto: string; paciente: { nome: s
 type Resposta = PromiseLike<{data: unknown; error: {message: string}|null}>;
 const read = async <T>(request: Resposta):Promise<T> => { const {data,error}=await request; if(error)throw new Error(error.message);return data as T; };
 // Nullable p_quadro is supported by the database but not represented by generated Args.
-const rpc = supabase.rpc as unknown as (name: string, args: Record<string,unknown>)=>Resposta;
+const rpc = supabase.rpc.bind(supabase) as unknown as (name: string, args: Record<string,unknown>)=>Resposta;
 export const sala = {
   consultar: (id:string)=>read<SalaConsulta>(rpc('consulta_sala',{p_consulta:id})),
   aoVivo: (id:string)=>read<AoVivo>(rpc('consulta_ao_vivo',{p_consulta:id})),
