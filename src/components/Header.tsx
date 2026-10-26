@@ -571,7 +571,7 @@ const Header = () => {
                     Resgatar curso
                   </DropdownMenuItem>
                 )}
-                {!isAnonymous && <DropdownMenuItem asChild><Link to={souTerapeuta ? "/painel-terapeuta?aba=mensagens" : "/meu-perfil?aba=meu-terapeuta"}>Mensagens{chatTotal > 0 ? ` · ${chatTotal}` : ""}</Link></DropdownMenuItem>}
+                {!isAnonymous && <DropdownMenuItem asChild><Link to={souTerapeuta ? "/painel-terapeuta?aba=mensagens" : "/meu-perfil?section=terapeuta"}>Mensagens{chatTotal > 0 ? ` · ${chatTotal}` : ""}</Link></DropdownMenuItem>}
                 {souTerapeuta && (
                   <DropdownMenuItem asChild>
                     <Link to="/painel-terapeuta?aba=hoje">Portal do terapeuta</Link>

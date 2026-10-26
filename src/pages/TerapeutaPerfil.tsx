@@ -187,12 +187,12 @@ const TerapeutaPerfil = () => {
         </div>
 
         <Suspense fallback={null}>
-          <MensagemPerfil slug={requestedSlug} permitido={participante || !!agenda.data?.eu?.ligada}/>
+          <div><MensagemPerfil slug={requestedSlug} permitido={participante || !!agenda.data?.eu?.ligada}/>
           <ConsultaPublica
             slug={terapeuta["terapeutas(dinamica)"]?.trim() || String(terapeuta.id)}
             terapeutaId={String(terapeuta.id)}
             primeiroNome={displayName.split(" ")[0]}
-          />
+          /></div>
         </Suspense>
 
         </div>
