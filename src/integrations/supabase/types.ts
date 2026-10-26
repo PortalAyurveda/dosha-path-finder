@@ -3193,6 +3193,41 @@ export type Database = {
         }
         Relationships: []
       }
+      chat_conversas: {
+        Row: {
+          ausente_enviada_em: string | null
+          criado_em: string
+          id: string
+          paciente_user_id: string
+          terapeuta_id: string
+          ultima_em: string
+        }
+        Insert: {
+          ausente_enviada_em?: string | null
+          criado_em?: string
+          id?: string
+          paciente_user_id: string
+          terapeuta_id: string
+          ultima_em?: string
+        }
+        Update: {
+          ausente_enviada_em?: string | null
+          criado_em?: string
+          id?: string
+          paciente_user_id?: string
+          terapeuta_id?: string
+          ultima_em?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_conversas_terapeuta_id_fkey"
+            columns: ["terapeuta_id"]
+            isOneToOne: false
+            referencedRelation: "portal_terapeutas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       chat_histories: {
         Row: {
           data_hora: string | null
@@ -3261,6 +3296,41 @@ export type Database = {
           session_id?: string | null
         }
         Relationships: []
+      }
+      chat_mensagens: {
+        Row: {
+          autor: string
+          conversa_id: string
+          criado_em: string
+          id: number
+          lida_em: string | null
+          texto: string
+        }
+        Insert: {
+          autor: string
+          conversa_id: string
+          criado_em?: string
+          id?: never
+          lida_em?: string | null
+          texto: string
+        }
+        Update: {
+          autor?: string
+          conversa_id?: string
+          criado_em?: string
+          id?: never
+          lida_em?: string | null
+          texto?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_mensagens_conversa_id_fkey"
+            columns: ["conversa_id"]
+            isOneToOne: false
+            referencedRelation: "chat_conversas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       clarity_auditoria: {
         Row: {
@@ -3858,6 +3928,51 @@ export type Database = {
           tipo?: string
         }
         Relationships: []
+      }
+      consulta_avaliacoes: {
+        Row: {
+          comentario: string | null
+          consulta_id: string
+          criado_em: string
+          nota: number
+          paciente_user_id: string
+          publicar: boolean
+          terapeuta_id: string
+        }
+        Insert: {
+          comentario?: string | null
+          consulta_id: string
+          criado_em?: string
+          nota: number
+          paciente_user_id: string
+          publicar?: boolean
+          terapeuta_id: string
+        }
+        Update: {
+          comentario?: string | null
+          consulta_id?: string
+          criado_em?: string
+          nota?: number
+          paciente_user_id?: string
+          publicar?: boolean
+          terapeuta_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "consulta_avaliacoes_consulta_id_fkey"
+            columns: ["consulta_id"]
+            isOneToOne: true
+            referencedRelation: "consultas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "consulta_avaliacoes_terapeuta_id_fkey"
+            columns: ["terapeuta_id"]
+            isOneToOne: false
+            referencedRelation: "portal_terapeutas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       consultas: {
         Row: {
@@ -14119,6 +14234,13 @@ export type Database = {
           user_id: string
         }[]
       }
+      _chat_json: {
+        Args: {
+          c: Database["public"]["Tables"]["chat_conversas"]["Row"]
+          p_papel: string
+        }
+        Returns: Json
+      }
       _data_extenso: { Args: { p: string }; Returns: string }
       _eh_terapeuta: { Args: never; Returns: string }
       _ficha_json: {
@@ -14151,10 +14273,13 @@ export type Database = {
       _normalizar_nome: { Args: { p: string }; Returns: string }
       _paciente_meu: { Args: { p_paciente: string }; Returns: string }
       _slug: { Args: { p: string }; Returns: string }
+      _so_admin: { Args: never; Returns: undefined }
       _ter_cfg: { Args: { p_chave: string }; Returns: Json }
       _ter_sis_garante: { Args: { p_tid: string }; Returns: undefined }
       _terapeuta_id_de: { Args: { p_uid: string }; Returns: string }
+      _terapeuta_numeros: { Args: { p_tid: string }; Returns: Json }
       _terapeuta_por_slug: { Args: { p_slug: string }; Returns: string }
+      _terapeuta_premium: { Args: { p_tid: string }; Returns: boolean }
       _terapia_novidades: { Args: { p_tid: string }; Returns: Json }
       acervo_adicionar: {
         Args: {
@@ -14247,6 +14372,11 @@ export type Database = {
       }
       acomp_rotina: { Args: { p_paciente: string }; Returns: Json }
       acomp_terapeuta_por_codigo: { Args: { p_codigo: string }; Returns: Json }
+      admin_acervo_revisar: {
+        Args: { p_decisao: string; p_id: string }
+        Returns: undefined
+      }
+      admin_acervo_sugestoes: { Args: never; Returns: Json }
       admin_agenda_cliques_por_link: {
         Args: { p_comunicacao_id: string; p_dias?: number }
         Returns: {
@@ -14358,6 +14488,11 @@ export type Database = {
           tipo: string
         }[]
       }
+      admin_avaliacao_publicar: {
+        Args: { p_consulta: string; p_publicar: boolean }
+        Returns: undefined
+      }
+      admin_avaliacoes: { Args: { p_limite?: number }; Returns: Json }
       admin_banners_dashboard: {
         Args: never
         Returns: {
@@ -14467,6 +14602,12 @@ export type Database = {
         Args: { p: string[] }
         Returns: string[]
       }
+      admin_terapia_consultas: { Args: { p_dias?: number }; Returns: Json }
+      admin_terapia_no_sistema: {
+        Args: { p_ligar: boolean; p_terapeuta: string }
+        Returns: undefined
+      }
+      admin_terapia_terapeutas: { Args: never; Returns: Json }
       admin_vendas_cursos: {
         Args: never
         Returns: {
@@ -14814,6 +14955,18 @@ export type Database = {
         }[]
       }
       certificado_para_imprimir: { Args: { p_slug: string }; Returns: Json }
+      chat_abrir: { Args: { p_slug: string }; Returns: Json }
+      chat_enviar: {
+        Args: { p_conversa: string; p_texto: string }
+        Returns: Json
+      }
+      chat_ler: { Args: { p_conversa: string }; Returns: undefined }
+      chat_mensagens_de: {
+        Args: { p_antes?: number; p_conversa: string }
+        Returns: Json
+      }
+      chat_minhas: { Args: never; Returns: Json }
+      chat_nao_lidas: { Args: never; Returns: number }
       claim_dosha_test: { Args: { p_id_publico?: string }; Returns: Json }
       classicos_capitulo: {
         Args: { p_capitulo_id: number }
@@ -15071,6 +15224,10 @@ export type Database = {
         Args: { p_mp_payment_id: string }
         Returns: Json
       }
+      consulta_avaliar: {
+        Args: { p_comentario?: string; p_consulta: string; p_nota: number }
+        Returns: undefined
+      }
       consulta_motivo_salvar: {
         Args: { p_consulta: string; p_texto: string }
         Returns: undefined
@@ -15079,6 +15236,7 @@ export type Database = {
         Args: { p_consulta: string; p_inicio: string }
         Returns: Json
       }
+      consulta_sala: { Args: { p_consulta: string }; Returns: Json }
       corrigir_grafia: { Args: { t: string }; Returns: string }
       cortar_nas_ancoras: {
         Args: { p_ancoras: string[]; p_texto: string }
@@ -15823,6 +15981,7 @@ export type Database = {
           sintoma: string
         }[]
       }
+      meus_pontos_atencao: { Args: never; Returns: Json }
       minha_rotina_por_teste: {
         Args: { p_teste_id: string }
         Returns: {
@@ -15867,6 +16026,7 @@ export type Database = {
       }
       obter_certificado_curso: { Args: { p_curso_id: string }; Returns: Json }
       owns_rotina: { Args: { p_test_id: string }; Returns: boolean }
+      participa_conversa: { Args: { p_conversa: string }; Returns: boolean }
       payload_pessoa_preview: {
         Args: { p_comunicacao_id: string; p_email: string }
         Returns: Json
@@ -16117,6 +16277,7 @@ export type Database = {
           titulo: string
         }[]
       }
+      rotina_via_terapeuta: { Args: never; Returns: Json }
       rpg_admin_select: { Args: { _table: string }; Returns: Json }
       rpg_play: { Args: { _args?: Json; _fn: string }; Returns: Json }
       rpg_rpc: { Args: { _args?: Json; _fn: string }; Returns: Json }
@@ -16162,6 +16323,10 @@ export type Database = {
       tem_desconto_15: { Args: { p_user: string }; Returns: boolean }
       terapeuta_agenda_publica: {
         Args: { p_dias?: number; p_slug: string }
+        Returns: Json
+      }
+      terapeuta_avaliacoes_publicas: {
+        Args: { p_limite?: number; p_slug: string }
         Returns: Json
       }
       terapeuta_marcar_publico: {
@@ -16226,6 +16391,7 @@ export type Database = {
         Returns: Json
       }
       terapia_conhecimento_nucleo: { Args: never; Returns: Json }
+      terapia_conversas: { Args: never; Returns: Json }
       terapia_convite: { Args: { p_slug: string }; Returns: Json }
       terapia_convite_aceitar: {
         Args: {
