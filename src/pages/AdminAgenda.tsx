@@ -101,7 +101,7 @@ const AdminAgenda = () => {
     return !error;
   };
 
-  const rpc = supabase.rpc as unknown as (n: string, a?: Record<string, unknown>) => PromiseLike<{ error: { message?: string } | null }>;
+  const rpc = ((n: string, a?: Record<string, unknown>) => (supabase as any).rpc(n, a)) as (n: string, a?: Record<string, unknown>) => PromiseLike<{ error: { message?: string } | null }>;
   const porNaAgenda = (it: Item) => rodar(`por-${it.id}`, () => rpc("admin_agenda_mudar_data", { _id: it.id, _data: null }), "Foi para o fim da fila");
   const trocar = (a: Item, b: Item) => rodar(`troca-${a.id}`, () => rpc("admin_agenda_trocar", { _a: a.id, _b: b.id }), "Datas trocadas");
   const tirar = (it: Item) => { if (window.confirm(`Tirar "${it.title}" da agenda? Ele continua guardado como rascunho.`)) rodar(`tirar-${it.id}`, () => rpc("admin_agenda_tirar", { _id: it.id }), "Saiu da agenda"); };
