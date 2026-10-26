@@ -54,6 +54,14 @@ export type LinhaCurto = { slug: string; video_id: string };
 export type LinhaRedirecionamento = { de_path: string; para_path: string };
 
 export type LinhaRegistro = { id: number; titulo: string | null };
+export type LinhaConvite = { slug: string; titulo: string; descricao: string; imagem_previa: string };
+export async function lerConvites(): Promise<LinhaConvite[]> {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/convite_previa`, { method:'POST', headers:{apikey:SUPABASE_ANON,Authorization:`Bearer ${SUPABASE_ANON}`,'Content-Type':'application/json'},body:'{}' });
+  if (!res.ok) throw new Error(`[prerender] convite_previa: ${res.status}`);
+  const data: unknown = await res.json();
+  if (!Array.isArray(data)) throw new Error('[prerender] convite_previa não devolveu uma lista.');
+  return data as LinhaConvite[];
+}
 
 export type LinhaLoja = Record<string, any>;
 

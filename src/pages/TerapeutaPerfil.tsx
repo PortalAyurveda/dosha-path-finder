@@ -10,7 +10,6 @@ import {
   Instagram,
   Mail,
   Phone,
-  MessageCircle,
   X,
   ChevronLeft,
   ChevronRight,
@@ -30,13 +29,21 @@ import {
   therapistMatchesSlug,
 } from "@/lib/terapeutas";
 import { cn } from "@/lib/utils";
-import { whatsappLink } from "@/lib/whatsapp";
+import { terapia } from "@/lib/terapia";
+import { useUser } from "@/contexts/UserContext";
 
 const TerapeutaPerfil = () => {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
   const [showContact, setShowContact] = useState(false);
   const requestedSlug = normalizeTherapistSlug(slug);
+  const { user } = useUser();
+  const agenda = useQuery({queryKey:["agenda-publica",requestedSlug,user?.id],queryFn:()=>terapia.agendaPublica(requestedSlug),enabled:!!requestedSlug});
+  const avaliacoes = useQuery({queryKey:["avaliacoes-publicas",requestedSlug],queryFn:()=>terapia.avaliacoesPublicas(requestedSlug),enabled:!!agenda.data?.no_sistema});
+  const participante = !!agenda.data?.no_sistema;
+  const sistema = useQuery({queryKey:['terapeutas-no-sistema',user?.id],queryFn:terapia.noSistema});
+  const perfilTesteId = sistema.data?.find(t=>t.teste && normalizeTherapistSlug(t.slug)===requestedSlug)?.id;
+  const perfilTeste = useQuery({queryKey:['perfil-terapeuta-teste',user?.id,perfilTesteId],enabled:!!perfilTesteId,queryFn:async()=>{if(!perfilTesteId)return null;const {data,error}=await supabase.from('portal_terapeutas').select('*').eq('id',perfilTesteId).maybeSingle();if(error)throw error;return data;}});
 
   // Fetch all approved therapists for prev/next navigation
   const { data: allTerapeutas } = useQuery({
@@ -52,14 +59,14 @@ const TerapeutaPerfil = () => {
     },
   });
 
-  const terapeuta = allTerapeutas?.find((item) => therapistMatchesSlug(requestedSlug, item)) ?? null;
-  const isLoading = !allTerapeutas;
+  const terapeuta = allTerapeutas?.find((item) => therapistMatchesSlug(requestedSlug, item)) ?? perfilTeste.data ?? null;
+  const isLoading = !allTerapeutas || (!!perfilTesteId && perfilTeste.isPending);
 
   // Prev/next navigation
   const currentIndex = allTerapeutas?.findIndex((item) => therapistMatchesSlug(requestedSlug, item)) ?? -1;
-  const prevTerapeuta = currentIndex > 0 ? allTerapeutas![currentIndex - 1] : null;
+  const prevTerapeuta = currentIndex > 0 ? allTerapeutas?.[currentIndex - 1] : null;
   const nextTerapeuta = currentIndex >= 0 && currentIndex < (allTerapeutas?.length ?? 0) - 1
-    ? allTerapeutas![currentIndex + 1]
+    ? allTerapeutas?.[currentIndex + 1]
     : null;
 
   const getPrevPath = () =>
@@ -106,14 +113,12 @@ const TerapeutaPerfil = () => {
     .map((paragraph) => paragraph.trim())
     .filter(Boolean);
   const instagramHandle = getInstagramHandle(terapeuta.instagram);
-  const whatsappNumber = terapeuta.whatsapp?.trim() || null;
   const emailAddress = terapeuta.email?.trim() || null;
   const imageUrl = terapeuta.imagem ?? terapeuta["imagem.1"];
   const themeClass = getTherapistThemeClass(terapeuta["terapeutas(dinamica)"] ?? displayName);
-  const hasWhatsapp = !!whatsappNumber;
   const hasEmail = !!emailAddress;
   const hasInstagram = !!instagramHandle;
-  const hasAnyContact = hasWhatsapp || hasEmail || hasInstagram;
+  const hasAnyContact = hasEmail || hasInstagram;
 
   const prevPath = getPrevPath();
   const nextPath = getNextPath();
@@ -130,7 +135,7 @@ const TerapeutaPerfil = () => {
         />
       </Helmet>
 
-      <main className={cn("max-w-3xl mx-auto px-4 py-8 md:py-12", themeClass)}>
+      <main className={cn("mx-auto px-4 py-8 md:py-12", participante ? "max-w-5xl" : "max-w-3xl", themeClass)}>
         <Link
           to="/terapeutas-do-brasil"
           className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-8 transition-colors"
@@ -139,6 +144,7 @@ const TerapeutaPerfil = () => {
           Voltar ao diretório
         </Link>
 
+        <div className={participante ? "grid gap-8 md:grid-cols-2" : ""}>
         <div className="flex flex-col items-center text-center mb-10">
           <div className="relative mb-5">
             <div className="w-40 md:w-48 aspect-[3/4] shadow-therapist">
@@ -179,6 +185,16 @@ const TerapeutaPerfil = () => {
           )}
         </div>
 
+        <Suspense fallback={null}>
+          <ConsultaPublica
+            slug={terapeuta["terapeutas(dinamica)"]?.trim() || String(terapeuta.id)}
+            terapeutaId={String(terapeuta.id)}
+            primeiroNome={displayName.split(" ")[0]}
+          />
+        </Suspense>
+
+        </div>
+
         {especialidades.length > 0 && (
           <section className="mb-8">
             <h2 className="text-lg font-semibold text-foreground mb-3 font-serif">Especialidades</h2>
@@ -207,14 +223,8 @@ const TerapeutaPerfil = () => {
           </section>
         )}
 
-        <Suspense fallback={null}>
-          <ConsultaPublica
-            slug={terapeuta["terapeutas(dinamica)"]?.trim() || String(terapeuta.id)}
-            terapeutaId={String(terapeuta.id)}
-            primeiroNome={displayName.split(" ")[0]}
-          />
-        </Suspense>
 
+        {participante && !!avaliacoes.data?.length && <section className="mb-10 border-t border-border pt-5"><h2 className="mb-3 font-serif text-lg font-semibold">Avaliações</h2><div className="divide-y divide-border">{avaliacoes.data.map((a,i)=><article key={`${a.quando}-${i}`} className="py-3"><p className="text-sm font-semibold">★ {a.nota.toLocaleString("pt-BR")} · {a.primeiro_nome}</p><p className="mt-1 whitespace-pre-line text-sm text-muted-foreground">{a.comentario}</p></article>)}</div></section>}
         {hasAnyContact && (
           <section className="mb-10">
             {!showContact ? (
@@ -240,18 +250,6 @@ const TerapeutaPerfil = () => {
                 <p className="text-sm text-muted-foreground mb-5">Informações de contato</p>
 
                 <div className="space-y-3">
-                  {hasWhatsapp && (
-                    <a
-                      href={whatsappLink(whatsappNumber!)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-3 rounded-xl bg-therapist px-4 py-3 font-medium text-therapist-foreground transition-opacity hover:opacity-95"
-                    >
-                      <MessageCircle className="h-5 w-5" />
-                      WhatsApp
-                    </a>
-                  )}
-
                   {hasEmail && (
                     <a
                       href={`mailto:${emailAddress}`}

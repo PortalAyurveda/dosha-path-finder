@@ -1,9 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import CTAButton from "@/components/CTAButton";
 import { AGORA_POLL_MS, horaBR, terapia, type PedidoAgora } from "@/lib/terapia";
+import { AGORA_ESPERA_MS, tempoPedido } from '@/lib/terapiaPublica';
+import { somConsulta } from '@/lib/consultaAgoraAvisos';
 
 function Acompanhar({ id, fechar }: { id: string; fechar: () => void }) {
   const q = useQuery({ queryKey: ["agora-do-pedido", id], queryFn: () => terapia.agoraDoPedido(id), refetchInterval: (r) => (r.state.data && r.state.data.status !== "aceito" ? false : AGORA_POLL_MS) });
@@ -24,15 +26,31 @@ function Acompanhar({ id, fechar }: { id: string; fechar: () => void }) {
   );
 }
 
-export default function AvisoConsultaAgora({ temPedidos }: { temPedidos: boolean }) {
+export default function AvisoConsultaAgora({ temPedidos, online }: { temPedidos: boolean; online: boolean }) {
   const [acompanhando, setAcompanhando] = useState<string[]>([]);
   const [erro, setErro] = useState("");
   const [ocupado, setOcupado] = useState(false);
-  const [ativo, setAtivo] = useState(true);
-  const q = useQuery({ queryKey: ["agora-pedidos"], queryFn: terapia.agoraPedidos, enabled: ativo || temPedidos, refetchInterval: AGORA_POLL_MS });
-  const novos = (q.data ?? []).filter((p) => p.status === "pedido");
-  useEffect(() => { if (temPedidos) setAtivo(true); }, [temPedidos]);
-  useEffect(() => { if (q.data && !q.data.length && !temPedidos) setAtivo(false); }, [q.data, temPedidos]);
+  const [agora, setAgora] = useState(Date.now());
+  const notificados = useRef(new Set<string>());
+  const config = useQuery({queryKey:['terapia-config'],queryFn:terapia.config});
+  const q = useQuery({ queryKey: ["agora-pedidos"], queryFn: terapia.agoraPedidos, enabled: online || temPedidos, refetchInterval: r => (r.state.data?.some(p=>p.status === 'pedido' || p.status === 'aceito') ? AGORA_POLL_MS : AGORA_ESPERA_MS), refetchIntervalInBackground:true });
+  const novos = (q.data ?? []).filter((p) => p.status === "pedido" && (!p.expira_em || Date.parse(p.expira_em)>agora));
+  const ids = novos.map(p=>p.id).join(',');
+  const repetir = config.data?.consulta_agora?.som_repetir_seg ?? 30;
+  useEffect(() => { if (!novos.length) return; const t = setInterval(()=>setAgora(Date.now()),1000); return ()=>clearInterval(t); }, [ids]);
+  useEffect(() => {
+    const recebidos = novos.filter(p=>!notificados.current.has(p.id));
+    if (!recebidos.length) return;
+    somConsulta();
+    recebidos.forEach(p=>{notificados.current.add(p.id); if ('Notification' in window && Notification.permission === 'granted') { try { const n = new Notification('Pedido de consulta', {body:`${p.paciente_nome ?? 'Alguém'} quer uma consulta`,tag:p.id}); n.onclick=()=>{window.focus();n.close();}; } catch { /* sem suporte */ } }});
+  }, [ids]);
+  useEffect(() => { if (!ids || repetir<=0) return; const t=setInterval(somConsulta,repetir*1000); return ()=>clearInterval(t); }, [ids,repetir]);
+  useEffect(() => {
+    if (!ids) return;
+    const titulo = document.title; let alterna=false;
+    const t=setInterval(()=>{alterna=!alterna; document.title=alterna ? `(${novos.length}) Pedido de consulta` : titulo;},1500);
+    return ()=>{clearInterval(t);document.title=titulo;};
+  }, [ids]);
   const responder = async (p: PedidoAgora, aceitar: boolean, minutos = 0) => {
     setOcupado(true); setErro("");
     try {
@@ -48,6 +66,7 @@ export default function AvisoConsultaAgora({ temPedidos }: { temPedidos: boolean
         <div key={p.id} className="rounded-lg border border-secondary/30 bg-card p-4 shadow-lg">
           <p className="text-xs font-semibold uppercase text-secondary">Consulta agora</p>
           <p className="mt-1 text-sm font-semibold">{p.paciente_nome ?? "Alguém"} quer uma consulta</p>
+          <p className="mt-1 text-xs text-muted-foreground">responda em {tempoPedido(p.expira_em ?? new Date(Date.parse(p.criado_em)+(config.data?.consulta_agora?.prazo_min ?? 5)*60000).toISOString(), agora)}</p>
           {p.motivo && <p className="mt-1 whitespace-pre-wrap text-sm text-muted-foreground">“{p.motivo}”</p>}
           <div className="mt-3 grid grid-cols-2 gap-2">
             <CTAButton disabled={ocupado} className="col-span-2 h-10 px-4 py-2 text-sm" onClick={() => void responder(p, true, 0)}>Atender agora</CTAButton>

@@ -24,6 +24,8 @@ export default function TerapeutaConvite() {
   const [salvando, setSalvando] = useState(false);
   const [erro, setErro] = useState("");
   const convite = useQuery({ queryKey: ["terapia-convite", slug, logado ? user?.id : "visitante"], queryFn: () => terapia.convite(slug), enabled: !authLoading && !!slug, staleTime: 0, refetchOnWindowFocus: false });
+  const previa = useQuery({queryKey:["convite-previa",slug],queryFn:()=>terapia.convitePrevia(slug),enabled:!!slug});
+  const meta = previa.data?.[0];
   const data = convite.data;
   useEffect(() => {
     if (!data) return;
@@ -56,8 +58,8 @@ export default function TerapeutaConvite() {
 
   return <main className="w-full px-4 sm:px-6 py-8 md:py-12">
     <Helmet defer={false}>
-      <title>Convite da terapeuta — Portal Ayurveda</title>
-      <meta name="description" content="Convite para acompanhamento com sua terapeuta no Portal Ayurveda." />
+      <title>{meta?.titulo || "Convite da terapeuta — Portal Ayurveda"}</title>
+      <meta name="description" content={meta?.descricao || "Convite para acompanhamento com sua terapeuta no Portal Ayurveda."} />
       <meta name="robots" content="noindex, nofollow" />
     </Helmet>
     <div className="mx-auto max-w-xl bg-card text-card-foreground border border-border rounded-2xl shadow-therapist p-5 sm:p-7 space-y-6">

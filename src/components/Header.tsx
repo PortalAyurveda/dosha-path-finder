@@ -569,7 +569,7 @@ const Header = () => {
                 )}
                 {souTerapeuta && (
                   <DropdownMenuItem asChild>
-                    <Link to="/painel-terapeuta?aba=hoje">Área da terapeuta</Link>
+                    <Link to="/painel-terapeuta?aba=hoje">Portal do terapeuta</Link>
                   </DropdownMenuItem>
                 )}
                 {isAnonymous ? (

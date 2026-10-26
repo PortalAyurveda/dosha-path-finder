@@ -4,6 +4,7 @@ import { useSouTerapeuta } from "@/hooks/useSouTerapeuta";
 import { useToast } from "@/hooks/use-toast";
 import { PING_MS, terapia, type Ping } from "@/lib/terapia";
 import AvisoConsultaAgora from "./AvisoConsultaAgora";
+import { prepararAvisosConsulta } from '@/lib/consultaAgoraAvisos';
 
 interface EstadoOnline { participa: boolean; online: boolean; nome: string; mudando: boolean; mudar: (v: boolean) => Promise<void> }
 const Ctx = createContext<EstadoOnline | null>(null);
@@ -29,6 +30,7 @@ export function OnlineTerapeutaProvider({ children }: { children: ReactNode }) {
     return () => clearInterval(id);
   }, [acesso.permitido, online, pingar]);
   const mudar = async (v: boolean) => {
+    if (v) prepararAvisosConsulta();
     setMudando(true);
     try {
       const r = await terapia.online(v);
@@ -43,7 +45,7 @@ export function OnlineTerapeutaProvider({ children }: { children: ReactNode }) {
   return (
     <Ctx.Provider value={valor}>
       {children}
-      {valor && participa && <AvisoConsultaAgora temPedidos={(ping?.pedidos_agora ?? 0) > 0} />}
+      {valor && participa && <AvisoConsultaAgora key={acesso.userId} online={online} temPedidos={(ping?.pedidos_agora ?? 0) > 0} />}
     </Ctx.Provider>
   );
 }

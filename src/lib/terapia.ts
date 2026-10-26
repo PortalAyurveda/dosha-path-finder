@@ -8,6 +8,7 @@ import type { Carta } from './terapiaAdicoes';
 import type { DadosIndicacoes, FolhaIndicacoes, FolhaIndicacoesLista, FontesIndicacoes } from './terapiaIndicacoes';
 import type { ItemAcervo,OpcoesAcervo } from './terapiaAcervo';
 import type { EstadoQuadro,QuadroSalvo } from './terapiaQuadro';
+import type { ConfigPublica, NumerosTerapeuta, PontoAtencao, PreviaConvite, AvaliacaoPublica, ConsultaMarcada } from './terapiaPublica';
 export interface MunicipioNascimento { codigo_ibge:number; nome:string; uf:string; fuso:string }
 
 export interface Regra {
@@ -97,8 +98,8 @@ export type FaltaParticipar = 'premium' | 'termo' | 'agenda' | 'valor';
 export interface Ping { online: boolean; participa: boolean; pedidos_agora: number }
 export type StatusPedido = 'pedido' | 'aceito' | 'confirmado' | 'recusado' | 'expirado' | 'cancelado';
 export interface PedidoAgora { id: string; status: StatusPedido; motivo: string | null; em_minutos: number | null; inicio: string | null; duracao_min: number | null; consulta_id: string | null; expira_em: string | null; criado_em: string; paciente_id: string; paciente_nome: string | null; terapeuta: { nome: string; primeiro_nome: string; slug: string; imagem: string | null } | null }
-export interface AgendaPublica { no_sistema: boolean; online?: boolean; valor?: number | null; horarios?: { inicio: string; fim: string }[]; eu?: { ligada: boolean; tem_teste: boolean } | null }
-export interface TerapeutaNoSistema { id: string; slug: string; online: boolean; valor: number | null; proximo: string | null }
+export interface AgendaPublica { no_sistema: boolean; online?: boolean; valor?: number | null; pedir_nascimento?: boolean; regras?: { texto?: string; reserva_min?: number; gravacao?: string }; numeros?: NumerosTerapeuta; horarios?: { inicio: string; fim: string }[]; eu?: { ligada: boolean; tem_teste: boolean } | null }
+export interface TerapeutaNoSistema { id: string; slug: string; online: boolean; valor: number | null; proximo: string | null; numeros?: NumerosTerapeuta; teste?: boolean }
 export type TipoPortal = 'favoritos' | 'receita' | 'aula' | 'artigo' | 'produto' | 'verso';
 export interface ItemPortal { tipo: string; ref: string; titulo?: string; resumo?: string; link?: string; imagem?: string; vata?: number; pitta?: number; kapha?: number; livro?: string; referencia?: string; texto?: string; favorito: boolean }
 export interface Hoje {
@@ -114,7 +115,11 @@ const read = async <T>(
   return data as T;
 };
 export const terapia = {
-  config: () => read<{acervo_opcoes:OpcoesAcervo}>(supabase.rpc('terapia_config_publica')),
+  config: () => read<ConfigPublica & {acervo_opcoes:OpcoesAcervo}>(supabase.rpc('terapia_config_publica')),
+  pontosAtencao: () => read<PontoAtencao[]>(supabase.rpc('meus_pontos_atencao')),
+  convitePrevia: (slug: string) => read<PreviaConvite[]>(supabase.rpc('convite_previa', { p_slug: slug })),
+  avaliacoesPublicas: (slug: string) => read<AvaliacaoPublica[]>(supabase.rpc('terapeuta_avaliacoes_publicas', { p_slug: slug })),
+  reservar: (slug: string, inicio: string) => read<string>(supabase.rpc('terapeuta_reservar', { p_slug: slug, p_inicio: inicio })),
   acervo: () => read<ItemAcervo[]>(supabase.rpc('terapia_acervo')),
   acervoSalvar: (item:ItemAcervo) => read<ItemAcervo>(supabase.rpc('terapia_acervo_salvar',{p:item as unknown as Json})),
   acervoApagar: (id:string) => read<string|null>(supabase.rpc('terapia_acervo_apagar',{p_id:id})),
@@ -187,9 +192,9 @@ export const terapia = {
   ping: () => read<Ping | null>(supabase.rpc("terapia_ping")),
   online: (ligar: boolean) => read<boolean>(supabase.rpc("terapia_online", { p_ligar: ligar })),
   valor: (valor: number | null) => read<void>(supabase.rpc("terapia_preferencias_salvar", { p: { valor_consulta: valor ?? '' } as unknown as Json })),
-  agendaPublica: (slug: string) => read<AgendaPublica>(supabase.rpc("terapeuta_agenda_publica", { p_slug: slug })),
+  agendaPublica: (slug: string) => read<AgendaPublica>(supabase.rpc("terapeuta_agenda_publica", { p_slug: slug, p_dias: 14 })),
   noSistema: () => read<TerapeutaNoSistema[]>(supabase.rpc("terapeutas_no_sistema")),
-  marcarPublico: (terapeuta: string, inicio: string) => read<unknown>(supabase.rpc("acomp_marcar", { p_terapeuta: terapeuta, p_inicio: inicio })),
+  marcarPublico: (slug: string, inicio: string, motivo: string, perm: PermissoesConvite) => read<ConsultaMarcada>(supabase.rpc("terapeuta_marcar_publico", { p_slug: slug, p_inicio: inicio, p_motivo: motivo, p_teste: perm.teste, p_fotos: perm.fotos, p_rotina: perm.rotina, p_akasha: perm.akasha })),
   agoraPedir: (slug: string, motivo: string) => read<PedidoAgora>(supabase.rpc("consulta_agora_pedir", { p_slug: slug, ...(motivo.trim() ? { p_motivo: motivo.trim() } : {}) })),
   agoraMeu: (id: string) => read<PedidoAgora>(supabase.rpc("consulta_agora_meu", { p_id: id })),
   agoraCancelar: (id: string) => read<void>(supabase.rpc("consulta_agora_cancelar", { p_id: id })),
@@ -228,7 +233,7 @@ export const AGORA_POLL_MS = 5000;
 export const passosFaltando = (falta: FaltaParticipar[] = []) => (['premium', 'termo', 'agenda', 'valor'] as const).filter(f => falta.includes(f));
 export const podeLigarParticipar = (falta: FaltaParticipar[] = []) => falta.length === 0;
 export const reais = (v: number) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: Number.isInteger(v) ? 0 : 2 });
-export function valorDigitado(texto: string): number | null { const t = texto.replace(/[^\d,.]/g, '').replace(/\.(?=\d{3}(\D|$))/g, '').replace(',', '.'); if (!t) return null; const n = Number(t); return Number.isFinite(n) && n > 0 ? Math.round(n * 100) / 100 : null; }
+export function valorDigitado(texto: string): number | null { if (texto.includes('-')) return null; const t = texto.replace(/[^\d,.]/g, '').replace(/\.(?=\d{3}(\D|$))/g, '').replace(',', '.'); if (!t) return null; const n = Number(t); return Number.isFinite(n) && n >= 0 ? Math.round(n * 100) / 100 : null; }
 export const pedidoAberto = (s: StatusPedido) => s === 'pedido' || s === 'aceito';
 export function saudacao(nome: string, hora: number) {
   return `${hora < 12 ? "Bom dia" : hora < 18 ? "Boa tarde" : "Boa noite"}, ${nome}`;

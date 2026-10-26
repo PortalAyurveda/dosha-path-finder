@@ -19,7 +19,7 @@ import { montarRelacionados, type Relacionados } from "./seo/relacionados";
 import { corpoArtigo, corpoVideo, corpoReceita, corpoTerapeuta, corpoTesteDosha, blocoCorpo } from "./seo/corpos";
 import { TESTE_DOSHA_FAQ } from "../src/lib/testeDoshaFaq";
 import { akashaSlug } from "../src/lib/akashaSlug";
-import { lerFontes, BASE_URL, DEFAULT_OG, SITEMAP_SOURCE, AUTOR_NOME, type LinhaVideo, type LinhaRedirecionamento } from "./seo/fontes";
+import { lerFontes, lerConvites, BASE_URL, DEFAULT_OG, SITEMAP_SOURCE, AUTOR_NOME, type LinhaVideo, type LinhaRedirecionamento } from "./seo/fontes";
 
 interface Route {
   path: string;
@@ -396,6 +396,12 @@ async function dynamicRoutes(): Promise<{ routes: Route[]; counts: Contagens; re
   }
 
   // ------------------------------------------------------------------ loja
+  for (const convite of await lerConvites()) {
+    if (!/^[a-zA-Z0-9_-]+$/.test(convite.slug)) continue;
+    routes.push({path:`/terapeutas/${convite.slug}/convite`,title:convite.titulo,description:convite.descricao,image:convite.imagem_previa,noindex:true});
+    bump('convite');
+  }
+
   const ofertaJsonld = (nome: string, desc: string, image: string, url: string, preco: number | null) => ({
     "@context": "https://schema.org",
     "@type": "Product",
@@ -465,7 +471,7 @@ function renderHtml(template: string, route: Route, faltando: Set<string>): stri
   const description = escapeHtml(route.description);
   const image = escapeHtml(route.image || DEFAULT_OG);
   const type = route.type || "website";
-  const imageType = /\.png(\?|$)/i.test(image) ? "image/png" : /\.webp(\?|$)/i.test(image) ? "image/webp" : "image/jpeg";
+  const imageType = image.includes("/functions/v1/og-convite?") ? "image/png" : /\.png(\?|$)/i.test(image) ? "image/png" : /\.webp(\?|$)/i.test(image) ? "image/webp" : "image/jpeg";
 
   let html = template;
   let ok = true;
