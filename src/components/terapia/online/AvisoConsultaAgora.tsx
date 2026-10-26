@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -60,7 +59,6 @@ export default function AvisoConsultaAgora({ temPedidos }: { temPedidos: boolean
         </div>
       ))}
       {acompanhando.map((id) => <Acompanhar key={id} id={id} fechar={() => setAcompanhando((l) => l.filter((x) => x !== id))} />)}
-      <span className="sr-only"><Link to="/painel-terapeuta">Área da terapeuta</Link></span>
     </div>
   );
 }

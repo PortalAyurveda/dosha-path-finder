@@ -6,6 +6,7 @@ import ScrollToTop from "./ScrollToTop";
 import { HeaderCtaProvider } from "@/contexts/HeaderCtaContext";
 import { ImmersiveProvider, useImmersive } from "@/contexts/ImmersiveContext";
 import { useUser } from "@/contexts/UserContext";
+import { OnlineTerapeutaProvider } from "@/components/terapia/online/OnlineTerapeuta";
 
 const FloatingAkasha = lazy(() => import("./akasha/FloatingAkasha"));
 const FloatingTutorCurso = lazy(() => import("./tutor/FloatingTutorCurso"));
@@ -47,7 +48,9 @@ const Layout = ({ children }: { children: ReactNode }) => {
   return (
     <HeaderCtaProvider>
       <ImmersiveProvider>
-        <LayoutInner>{children}</LayoutInner>
+        <OnlineTerapeutaProvider>
+          <LayoutInner>{children}</LayoutInner>
+        </OnlineTerapeutaProvider>
       </ImmersiveProvider>
     </HeaderCtaProvider>
   );
