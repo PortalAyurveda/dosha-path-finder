@@ -8,12 +8,19 @@ export default function PacienteConsultas({ ficha, userId, agora }: { ficha: Fic
   const fotos = useQuery({ queryKey: ['paciente-fotos', userId, ficha.paciente_id], queryFn: () => terapia.fotosPaciente(ficha.paciente_id), enabled: ficha.permissoes.fotos });
   const nascimento = useQuery({ queryKey: ['paciente-nascimento', userId, ficha.paciente_id], queryFn: () => terapia.nascimentoPaciente(ficha.paciente_id) });
   const proxima = proximaConsulta(ficha.consultas, agora);
+  const folhas = useQuery({ queryKey: ['indicacoes-lista', userId, ficha.paciente_id], queryFn: () => terapia.folhasDa(ficha.paciente_id), retry: false });
   const entradas = [
+    ...(folhas.data ?? []).map(f => ({ tipo: 'indicacoes' as const, data: f.criado_em, folha: f })),
     ...ficha.consultas.map(c => ({ tipo: 'consulta' as const, data: c.inicio, consulta: c })),
     ...(ficha.avaliacoes ?? []).map(a => ({ tipo: 'avaliacao' as const, data: a.criado_em, avaliacao: a })),
   ].sort((a,b) => Date.parse(b.data)-Date.parse(a.data));
-  return <section><TituloPaciente>Consultas</TituloPaciente>{!entradas.length && <p className="text-sm text-muted-foreground">Nenhuma consulta.</p>}
+  return <section><TituloPaciente>Consultas</TituloPaciente>{folhas.error && <p role="alert" className="mb-3 text-sm text-destructive">{folhas.error.message}</p>}{folhas.isPending && <p role="status" className="mb-3 text-sm text-muted-foreground">Carregando indicações…</p>}{!entradas.length && <p className="text-sm text-muted-foreground">Nenhuma consulta.</p>}
     <div className="divide-y divide-border">{entradas.map(entrada => {
+      if (entrada.tipo === 'indicacoes') {
+        const f = entrada.folha;
+        const base = `/painel-terapeuta/paciente/${ficha.paciente_id}/indicacoes/${f.id}`;
+        return <article key={`indicacoes-${f.id}`} className="grid gap-3 py-5 sm:grid-cols-[90px_minmax(0,1fr)]"><div><p className="font-semibold">{diaBR(f.criado_em)}</p><p className="text-xs text-muted-foreground">{horaBR(f.criado_em)}</p></div><div className="flex flex-wrap items-center justify-between gap-3"><div><h3 className="text-sm font-semibold">Indicações</h3><p className="mt-1 text-xs text-muted-foreground">{f.enviada_em ? `enviada em ${diaBR(f.enviada_em)} às ${horaBR(f.enviada_em)}` : 'Rascunho'}{f.vista_em ? ` · ela viu em ${diaBR(f.vista_em)} às ${horaBR(f.vista_em)}` : ''}</p></div><div className="flex gap-2"><Button variant="outline" asChild><Link to={`${base}/folha`}>Ver</Link></Button><Button variant="outline" asChild><Link to={base}>Ajustar</Link></Button></div></div></article>;
+      }
       if (entrada.tipo === 'avaliacao') {
         const a = entrada.avaliacao;
         return <article key={`avaliacao-${a.id}`} className="grid gap-3 py-5 sm:grid-cols-[90px_minmax(0,1fr)]"><div><p className="font-semibold">{diaBR(a.criado_em)}</p><p className="text-xs text-muted-foreground">{horaBR(a.criado_em)}</p></div><div className="flex flex-wrap items-center justify-between gap-3"><h3 className="text-sm font-semibold">Avaliação{a.consulta_id && ` · consulta ${diaBR(ficha.consultas.find(c=>c.id===a.consulta_id)?.inicio ?? a.criado_em)}`}</h3><Button variant="outline" asChild><Link to={`/painel-terapeuta/paciente/${ficha.paciente_id}/avaliacao/${a.id}`}>Continuar</Link></Button></div></article>;

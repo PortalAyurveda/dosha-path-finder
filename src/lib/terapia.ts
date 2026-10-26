@@ -5,6 +5,7 @@ import type { Convite, PermissoesConvite } from "./terapiaConvite";
 import type { FichaPaciente, FotosPaciente, NascimentoPaciente, RotinaPaciente, HorarioPaciente, FotoPaciente } from "./terapiaPaciente";
 import { FOTO_EXPIRA_SEGUNDOS } from "./terapiaPaciente";
 import type { Carta } from './terapiaAdicoes';
+import type { DadosIndicacoes, FolhaIndicacoes, FolhaIndicacoesLista, FontesIndicacoes } from './terapiaIndicacoes';
 export interface MunicipioNascimento { codigo_ibge:number; nome:string; uf:string; fuso:string }
 
 export interface Regra {
@@ -97,6 +98,12 @@ const read = async <T>(
   return data as T;
 };
 export const terapia = {
+  folhaNova: (paciente: string, avaliacao?: string, consulta?: string) => read<string>(supabase.rpc('terapia_folha_nova', { p_paciente: paciente, ...(avaliacao ? { p_avaliacao: avaliacao } : {}), ...(consulta ? { p_consulta: consulta } : {}) })),
+  folha: (id: string) => read<FolhaIndicacoes>(supabase.rpc('terapia_folha', { p_id: id })),
+  folhasDa: (paciente: string) => read<FolhaIndicacoesLista[]>(supabase.rpc('terapia_folhas_da', { p_paciente: paciente })),
+  indicacoesFontes: (paciente: string) => read<FontesIndicacoes>(supabase.rpc('terapia_indicacoes_fontes', { p_paciente: paciente })),
+  folhaSalvar: (id: string, dados: DadosIndicacoes, diagnostico: string, tratamento: string, retorno: string) => read<string>(supabase.rpc('terapia_folha_salvar', { p_id: id, p_dados: dados as unknown as Json, p_diagnostico: diagnostico, p_tratamento: tratamento, ...(retorno ? { p_retorno: retorno } : {}) })),
+  folhaEnviar: (id: string) => read<string>(supabase.rpc('terapia_folha_enviar', { p_id: id })),
   tarotLista: () => read<Carta[]>(supabase.rpc('terapia_tarot')),
   tarotCarta: (numero:number) => read<Carta | null>(supabase.rpc('terapia_tarot',{p_numero:numero})),
   tarotFoto: async (path:string) => {
