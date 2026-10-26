@@ -60,6 +60,7 @@ const TerapeutaPerfil = lazy(() => import("./pages/TerapeutaPerfil"));
 const TerapeutaConvite = lazy(() => import("./pages/TerapeutaConvite"));
 const TerapeutaCadastro = lazy(() => import("./pages/TerapeutaCadastro"));
 const PainelTerapeuta = lazy(() => import("./pages/PainelTerapeuta"));
+const AvaliacaoTerapeuta = lazy(() => import("./pages/AvaliacaoTerapeuta"));
 const PacienteTerapeuta = lazy(() => import("./pages/PacienteTerapeuta"));
 const Video = lazy(() => import("./pages/Video"));
 const Receita = lazy(() => import("./pages/Receita"));
@@ -271,6 +272,7 @@ const RoutedApp = () => {
               <Route path="/terapeutas/:slug/convite" element={<TerapeutaConvite />} />
               <Route path="/painel-terapeuta" element={<PainelTerapeuta />} />
               <Route path="/painel-terapeuta/paciente/:id" element={<PacienteTerapeuta />} />
+              <Route path="/painel-terapeuta/paciente/:id/avaliacao/:avaliacaoId" element={<AvaliacaoTerapeuta />} />
               <Route path="/akasha" element={<Akasha />} />
               <Route path="/video/:slug" element={<Video />} />
               <Route path="/receita/:slug" element={<Receita />} />

@@ -1,3 +1,4 @@
+import type { Avaliacao, ConteudoFicha, Conhecimento, Biblioteca, DadosAvaliacao, Leitura } from "./terapiaAvaliacao";
 import { supabase } from "@/integrations/supabase/client";
 import type { Json } from "@/integrations/supabase/types";
 import type { Convite, PermissoesConvite } from "./terapiaConvite";
@@ -94,6 +95,13 @@ const read = async <T>(
   return data as T;
 };
 export const terapia = {
+  avaliacaoNova: (paciente: string, consulta?: string) => read<string>(supabase.rpc('terapia_avaliacao_nova', { p_paciente: paciente, ...(consulta ? { p_consulta: consulta } : {}) })),
+  avaliacao: (id: string) => read<Avaliacao>(supabase.rpc('terapia_avaliacao', { p_id: id })),
+  fichaConteudo: () => read<ConteudoFicha>(supabase.rpc('terapia_ficha_conteudo')),
+  conhecimentoBusca: (texto: string) => read<Conhecimento[]>(supabase.rpc('terapia_conhecimento_busca', { p_q: texto })),
+  biblioteca: () => read<Biblioteca>(supabase.rpc('terapia_biblioteca')),
+  bibliotecaSalvar: (dados: Biblioteca) => read<void>(supabase.rpc('terapia_biblioteca_salvar', { p_dados: dados as unknown as Json })),
+  avaliacaoSalvar: (id: string, dados: DadosAvaliacao, leitura: Leitura, resumo: string) => read<string>(supabase.rpc('terapia_avaliacao_salvar', { p_id: id, p_dados: dados as unknown as Json, p_leitura: leitura as unknown as Json, p_resumo: resumo })),
   ficha: (paciente: string) => read<FichaPaciente>(supabase.rpc('acomp_ficha', { p_paciente: paciente })),
   fotosPaciente: (paciente: string) => read<FotosPaciente>(supabase.rpc('acomp_fotos', { p_paciente: paciente })),
   nascimentoPaciente: (paciente: string) => read<NascimentoPaciente | null>(supabase.rpc('acomp_nascimento', { p_paciente: paciente })),
