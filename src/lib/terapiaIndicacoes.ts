@@ -6,7 +6,7 @@ export interface ItemIndicacao extends FonteIndicacao { id: string; titulo: stri
 export interface DadosIndicacoes { secoes: Record<string, ItemIndicacao[]>; [chave: string]: unknown }
 export interface FolhaIndicacoes { avaliacao_id?:string|null; id: string; paciente_user_id: string; paciente_nome: string; criado_em: string; atualizado_em: string; enviada_em: string | null; vista_em: string | null; dados: Partial<DadosIndicacoes>; diagnostico: string | null; tratamento: string | null; retorno: string | null; secoes: SecaoIndicacoes[]; avaliacao: { id?:string; leitura: Leitura; resumo: string; criado_em: string } | null }
 export interface FolhaIndicacoesLista { id: string; criado_em: string; enviada_em: string | null; vista_em: string | null }
-export interface FontesIndicacoes { minhas?:FonteIndicacao[]; favoritos?:FonteIndicacao[]; para_ela: FonteIndicacao[]; rotina_dela: FonteIndicacao[] | null; rotina: Record<string, FonteIndicacao[]>; samkhya: FonteIndicacao[]; aulas: FonteIndicacao[]; versos: FonteIndicacao[] }
+export interface FontesIndicacoes { dosha?:string|null; queixas?:string[]; minhas?:FonteIndicacao[]; favoritos?:FonteIndicacao[]; para_ela: FonteIndicacao[]; rotina_dela: FonteIndicacao[] | null; rotina: Record<string, FonteIndicacao[]>; samkhya: FonteIndicacao[]; aulas: FonteIndicacao[]; versos: FonteIndicacao[] }
 export interface RascunhoIndicacoes { dados: DadosIndicacoes; diagnostico: string; tratamento: string; retorno: string }
 export const iniciarIndicacoes = (d: Partial<DadosIndicacoes> | null): DadosIndicacoes => ({ ...d, secoes: d?.secoes ?? {} });
 export function criarIndicacao(fonte: FonteIndicacao, id: string = crypto.randomUUID()): ItemIndicacao {
@@ -31,3 +31,6 @@ export function linkIndicacao(i: FonteIndicacao) { return i.link ?? (i.slug ? `/
 export function linkCurto(link: string) { try { const u = new URL(link, 'https://portalayurveda.com'); return `${u.host}${u.pathname}`; } catch { return link; } }
 export const HORARIOS_INDICACOES: Record<string,string> = { cafe_manha:'Café da manhã', lanche_manha:'Lanche da manhã', almoco:'Almoço', lanche_tarde:'Lanche da tarde', jantar:'Jantar', ceia:'Ceia', acordar:'Ao acordar', dormir:'Antes de dormir', rotina_manha:'Ritual da manhã', bonus_diario:'Bônus do dia', tonico_noite:'Tônico da noite' };
 export function minhasComFavoritos(minhas: FonteIndicacao[] = [], favoritos: FonteIndicacao[] = []) { return [...minhas, ...favoritos.map(f => ({ ...f, favorito: true }))]; }
+
+/** A função atual identifica a queixa no texto de origem, sem inventar agrupamentos. */
+export function queixaIndicacao(f:FonteIndicacao){return f.queixa??f.assunto??f.porque?.match(/relatou\s+["“]([^"”]+)["”]/i)?.[1]??'';}
