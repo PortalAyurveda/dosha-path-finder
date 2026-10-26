@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { Suspense, lazy, useState } from "react";
+const ConsultaPublica = lazy(() => import("@/components/terapia/publico/ConsultaPublica"));
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { Helmet } from "react-helmet-async";
@@ -205,6 +206,14 @@ const TerapeutaPerfil = () => {
             </div>
           </section>
         )}
+
+        <Suspense fallback={null}>
+          <ConsultaPublica
+            slug={terapeuta["terapeutas(dinamica)"]?.trim() || String(terapeuta.id)}
+            terapeutaId={String(terapeuta.id)}
+            primeiroNome={displayName.split(" ")[0]}
+          />
+        </Suspense>
 
         {hasAnyContact && (
           <section className="mb-10">
