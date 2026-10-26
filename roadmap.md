@@ -67,3 +67,6 @@
 - [x] Parte 16: corrigir agenda, mensagens, links, salvamentos, sala, quadro e indicações
 - [x] Parte 16: conferir em 1366 px e 390 px e executar testes das regras; 89 testes e fluxos com respostas isoladas
 - [ ] Parte 16: validar com contas reais, fotos privadas e chamada entre aparelhos — bloqueado: Supabase externo sem sessão autenticada disponível
+- [ ] Parte 18: vídeo adaptável, altura do treino como pessoa, barra e marca do Portal, ficha estreita e gravação no navegador
+- [ ] Parte 18: textos neutros e datas em Meu acompanhamento
+- [ ] Parte 18: testes e conferência em 1366 px e 390 px
