@@ -101,11 +101,14 @@ const LoginForm = ({ embedded = false, emailOnly = false, redirectPath }: LoginF
     return () => clearTimeout(t);
   }, [segundosParaReenviar]);
 
-  // Guarda o destino pretendido como rede de segurança (caso a URL de volta o perca)
+  // Guarda o destino pretendido como rede de segurança (caso a URL de volta o perca).
+  // Só fora do modo embutido: no embutido (ex.: convite da terapeuta) o destino vai
+  // apenas no link mágico (emailRedirectTo) e a página que embute o login segue sozinha.
   useEffect(() => {
+    if (embedded) return;
     const r = sanitizeRedirect(redirectPath) || sanitizeRedirect(searchParams.get("redirect"));
     if (r) localStorage.setItem(REDIRECT_STORAGE_KEY, r);
-  }, [searchParams, redirectPath]);
+  }, [searchParams, redirectPath, embedded]);
 
   useEffect(() => {
     if (!waitingForDosha) return;

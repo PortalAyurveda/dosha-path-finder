@@ -49,4 +49,12 @@ describe("login compartilhado do convite", () => {
     fireEvent.click(screen.getByRole("button", { name: /^Entrar$/ }));
     await waitFor(() => expect(auth.verifyOtp).toHaveBeenCalledWith({ email: "test@example.invalid", token: "123456", type: "email" }));
   });
+  it("não grava o destino no localStorage no modo embutido", () => {
+    open();
+    expect(localStorage.getItem("pendingLoginRedirect")).toBeNull();
+  });
+  it("fora do modo embutido, grava o destino no localStorage", () => {
+    render(<MemoryRouter><LoginForm redirectPath="/assinar" /></MemoryRouter>);
+    expect(localStorage.getItem("pendingLoginRedirect")).toBe("/assinar");
+  });
 });

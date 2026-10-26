@@ -3867,6 +3867,7 @@ export type Database = {
           id: string
           inicio: string
           marcada_por: string
+          motivo: string | null
           paciente_user_id: string
           sala_id: string | null
           status: string
@@ -3879,6 +3880,7 @@ export type Database = {
           id?: string
           inicio: string
           marcada_por?: string
+          motivo?: string | null
           paciente_user_id: string
           sala_id?: string | null
           status?: string
@@ -3891,6 +3893,7 @@ export type Database = {
           id?: string
           inicio?: string
           marcada_por?: string
+          motivo?: string | null
           paciente_user_id?: string
           sala_id?: string | null
           status?: string
@@ -7031,6 +7034,67 @@ export type Database = {
           verse_no?: number
         }
         Relationships: []
+      }
+      horario_reservas: {
+        Row: {
+          expira_em: string
+          inicio: string
+          terapeuta_id: string
+          user_id: string
+        }
+        Insert: {
+          expira_em: string
+          inicio: string
+          terapeuta_id: string
+          user_id: string
+        }
+        Update: {
+          expira_em?: string
+          inicio?: string
+          terapeuta_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "horario_reservas_terapeuta_id_fkey"
+            columns: ["terapeuta_id"]
+            isOneToOne: false
+            referencedRelation: "portal_terapeutas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      indicacao_feitos: {
+        Row: {
+          criado_em: string
+          dia: string
+          folha_id: string
+          item: string
+          user_id: string
+        }
+        Insert: {
+          criado_em?: string
+          dia: string
+          folha_id: string
+          item: string
+          user_id: string
+        }
+        Update: {
+          criado_em?: string
+          dia?: string
+          folha_id?: string
+          item?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "indicacao_feitos_folha_id_fkey"
+            columns: ["folha_id"]
+            isOneToOne: false
+            referencedRelation: "terapia_folhas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       ingredientes_catalogo: {
         Row: {
@@ -14081,6 +14145,7 @@ export type Database = {
         Returns: Json
       }
       _nascimento_json: { Args: { p_uid: string }; Returns: Json }
+      _no_sistema: { Args: { p_tid: string }; Returns: boolean }
       _nome_completo_sugerido: { Args: { p_user: string }; Returns: Json }
       _nome_conta: { Args: { p_uid: string }; Returns: string }
       _normalizar_nome: { Args: { p: string }; Returns: string }
@@ -15006,6 +15071,14 @@ export type Database = {
         Args: { p_mp_payment_id: string }
         Returns: Json
       }
+      consulta_motivo_salvar: {
+        Args: { p_consulta: string; p_texto: string }
+        Returns: undefined
+      }
+      consulta_remarcar: {
+        Args: { p_consulta: string; p_inicio: string }
+        Returns: Json
+      }
       corrigir_grafia: { Args: { t: string }; Returns: string }
       cortar_nas_ancoras: {
         Args: { p_ancoras: string[]; p_texto: string }
@@ -15411,6 +15484,16 @@ export type Database = {
         Returns: boolean
       }
       immutable_unaccent: { Args: { "": string }; Returns: string }
+      indicacao_marcar: {
+        Args: {
+          p_dia?: string
+          p_feito: boolean
+          p_folha: string
+          p_item: string
+        }
+        Returns: undefined
+      }
+      indicacao_vista: { Args: { p_folha: string }; Returns: undefined }
       ingerir_lote_cursos: {
         Args: { p_ate: number; p_de: number; p_lote_embed?: number }
         Returns: Json
@@ -15731,6 +15814,7 @@ export type Database = {
         Args: { p_idpublico: string; p_meses?: number }
         Returns: Json
       }
+      meu_terapeuta: { Args: never; Returns: Json }
       meus_agravamentos: {
         Args: never
         Returns: {
@@ -15750,6 +15834,7 @@ export type Database = {
           slot: string
         }[]
       }
+      minhas_indicacoes: { Args: never; Returns: Json }
       mockups_buscar: {
         Args: {
           p_limite?: number
@@ -16075,6 +16160,27 @@ export type Database = {
       tag_normalizar: { Args: { p: string }; Returns: string }
       tem_acesso_curso: { Args: { p_curso_id: string }; Returns: boolean }
       tem_desconto_15: { Args: { p_user: string }; Returns: boolean }
+      terapeuta_agenda_publica: {
+        Args: { p_dias?: number; p_slug: string }
+        Returns: Json
+      }
+      terapeuta_marcar_publico: {
+        Args: {
+          p_akasha?: boolean
+          p_fotos?: boolean
+          p_inicio: string
+          p_motivo?: string
+          p_rotina?: boolean
+          p_slug: string
+          p_teste?: boolean
+        }
+        Returns: Json
+      }
+      terapeuta_reservar: {
+        Args: { p_inicio: string; p_slug: string }
+        Returns: string
+      }
+      terapeutas_no_sistema: { Args: never; Returns: Json }
       terapeutas_perto: {
         Args: { p_idpublico?: string; p_uf?: string }
         Returns: Json
