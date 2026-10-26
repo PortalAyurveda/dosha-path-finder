@@ -21,5 +21,6 @@
 - [x] Construir Parte 2: convite da terapeuta e login existente dentro do cartão
 - [x] Validar fluxo do convite e regras com testes e telas (computador/celular simulados; convite inativo com RPC real)
 - [ ] Validar Parte 2 com paciente real — bloqueado: Supabase externo sem sessão autenticada disponível; usuário testa com as contas combinadas
-- [ ] Construir Parte 3: ficha da paciente, sete abas, fotos privadas, anotações e marcação de consulta
-- [ ] Validar regras e fluxo da Parte 3 com testes e telas
+- [x] Construir Parte 3: ficha da paciente, sete abas, fotos privadas, anotações e marcação de consulta
+- [x] Validar regras e fluxo da Parte 3 com testes e telas
+- [ ] Validar Parte 3 com terapeuta e paciente reais — bloqueado: Supabase externo sem sessão autenticada disponível; usuário testa com as contas combinadas
