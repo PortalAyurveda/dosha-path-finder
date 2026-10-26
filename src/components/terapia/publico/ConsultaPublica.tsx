@@ -72,7 +72,7 @@ export default function ConsultaPublica({ slug, terapeutaId, primeiroNome }: { s
       {a.valor != null ? <p className="mt-1 text-sm text-muted-foreground">{a.valor === 0 ? 'Consulta gratuita' : `Valor da consulta: ${reais(Number(a.valor))}, combinado direto com a terapeuta`}</p> : null}
       {erro && <p role="alert" className="mt-3 text-sm text-destructive">{erro}</p>}
 
-      {!propria && (aberto ? (
+      {(aberto ? (
         <div className="mt-4 rounded-lg border border-secondary/30 bg-secondary/5 p-4">
           {p.status === "pedido" ? (
             <>
@@ -99,9 +99,6 @@ export default function ConsultaPublica({ slug, terapeutaId, primeiroNome }: { s
       ) : (
         <>
           {naoDeu && <p className="mt-4 rounded-lg border border-border p-3 text-sm">Agora não deu. Veja os próximos horários</p>}
-          {false && a.online && !naoDeu && modo !== "agora" && (
-            <CTAButton className="mt-4 h-11 w-full px-5 py-2 text-base" onClick={() => setModo(logado ? "agora" : "entrar")}>Consulta agora</CTAButton>
-          )}
           {modo === "agora" && logado && (
             <form className="mt-4 space-y-3" onSubmit={(e) => { e.preventDefault(); void rodar(async () => { const r = await terapia.agoraPedir(slug, motivo); guardar(r.id); }); }}>
               <div>
@@ -116,7 +113,7 @@ export default function ConsultaPublica({ slug, terapeutaId, primeiroNome }: { s
           )}
           {modo === "entrar" && !logado && <div className="mt-4"><LoginForm embedded emailOnly redirectPath={`/terapeutas/${slug}`} /></div>}
           <AgendamentoPublico slug={slug} nome={primeiroNome} agenda={a} atualizar={agenda.refetch} />
-          <div className="mt-4 border-t border-border pt-4"><MensagemPerfil slug={slug} permitido/><div>{a.online&&!naoDeu&&modo!=="agora"&&<CTAButton className="h-11 w-full px-4 py-2" onClick={()=>setModo(logado?"agora":"entrar")}>Consulta agora</CTAButton>}</div></div>
+          <div className="mt-4 border-t border-border pt-4"><MensagemPerfil slug={slug} permitido={!propria}/><div>{!propria&&a.online&&!naoDeu&&modo!=="agora"&&<CTAButton className="h-11 w-full px-4 py-2" onClick={()=>setModo(logado?"agora":"entrar")}>Consulta agora</CTAButton>}</div></div>
         </>
       ))}
     </section>

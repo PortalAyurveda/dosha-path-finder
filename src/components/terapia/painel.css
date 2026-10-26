@@ -26,4 +26,14 @@
 .portal-mensagens {padding:0!important;}.portal-mensagens>.portal-topo {display:none;}.portal-mensagens .chat-lista {height:calc(100dvh - 80px);min-height:600px;}.portal-mensagens .chat-lista>div:first-child {padding:12px;background:hsl(var(--card));}
 .portal-conteudo .xl\:border-l {border-left:0;padding-left:0;}
 .portal-hoje-linha {display:grid;grid-template-columns:34px minmax(0,1fr) auto;align-items:start;gap:10px;padding:14px 0;}.portal-hoje-acoes {display:flex;gap:6px;align-items:center;}.portal-icone {width:32px;height:32px;border-radius:10px;background:hsl(var(--muted));display:grid;place-items:center;}.portal-icone svg {width:18px;height:18px;}
+.portal-cartao{align-self:start;}.portal-cartao>h2,.portal-cartao>h2.text-xs,.portal-cartao>h2.text-sm {font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;}
+.portal-hoje-linha h3 {font-family:'DM Sans',sans-serif;font-size:15px;}
+.portal-conteudo input,.portal-conteudo textarea {background:hsl(var(--card));}
+.portal-conteudo thead th {text-transform:uppercase;font-size:12px;}
+.portal-paciente section h2{border:0;padding-bottom:0;}.portal-paciente header span.rounded {border-radius:999px;background:hsl(var(--muted));}
+.portal-paciente section span.rounded {border-radius:999px;}
+.portal-terapeuta .chat-selecionada,.portal-terapeuta .chat-selecionada:hover {background:hsl(var(--secondary)/.08);}
+.portal-mensagens .chat-lista>div:first-child>button {border-radius:0;border-width:0 0 1px;background:transparent;}
+.portal-mensagens .chat-bolha {width:85%;}.portal-mensagens .chat-conversa header h2 {font-family:'DM Sans',sans-serif;font-size:17px;}
+.portal-mensagens .chat-conversa form {display:flex;align-items:end;gap:8px;background:hsl(var(--card));}.portal-mensagens .chat-conversa form textarea{flex:1;}.portal-mensagens .chat-conversa form>div {flex-shrink:0;}
 @media(max-width:1023px){.portal-terapeuta nav[aria-label="Portal do terapeuta"] {padding:10px;background:hsl(var(--card));gap:8px;}.portal-terapeuta nav button{font-size:15px;}.portal-topo{flex-wrap:wrap;}.portal-hoje-acoes{flex-direction:column;align-items:flex-end;}.portal-hoje-acoes a,.portal-hoje-acoes button{font-size:13px!important;padding:6px 8px!important;height:auto;min-height:34px;}.portal-paciente>header,.portal-paciente>nav{margin-left:-16px;margin-right:-16px;padding-left:16px;padding-right:16px;}}

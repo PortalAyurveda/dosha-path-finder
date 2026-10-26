@@ -175,16 +175,10 @@ const TerapeutaPerfil = () => {
           {location && (
             <p className="text-muted-foreground flex items-center gap-1.5 mb-3">
               <MapPin className="h-4 w-4" />
-              {location}
+              {[terapeuta.cidade,terapeuta.estado].filter(Boolean).join("/")}{terapeuta.formado_desde?` · terapeuta desde ${terapeuta.formado_desde}`:""}
             </p>
           )}
 
-          {terapeuta.formado_desde && (
-            <Badge variant="outline" className="border-therapist/30 bg-therapist-soft text-sm px-3 py-1 mb-4 text-therapist-ink">
-              <Calendar className="h-3.5 w-3.5 mr-1.5" />
-              Atua desde {terapeuta.formado_desde}
-            </Badge>
-          )}
           {hasInstagram&&<a className="inline-flex items-center gap-2 text-sm" href={`https://instagram.com/${instagramHandle}`} target="_blank" rel="noreferrer"><Instagram size={16}/>@{instagramHandle}</a>}
         </div>
 

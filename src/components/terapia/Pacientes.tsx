@@ -22,13 +22,13 @@ export function filtrarPacientes(
 function Pontos({ p }: { p: Paciente }) {
   return p.teste ? (
     <div className="flex flex-wrap gap-1 text-xs font-semibold">
-      <span className="rounded bg-vata/15 px-1.5 text-vata">
+      <span className="rounded bg-vata/15 px-1.5 text-[hsl(var(--vata-ink))]">
         V{p.teste.vata ?? ""}
       </span>
-      <span className="rounded bg-pitta/15 px-1.5 text-pitta">
+      <span className="rounded bg-pitta/15 px-1.5 text-[hsl(var(--pitta-ink))]">
         P{p.teste.pitta ?? ""}
       </span>
-      <span className="rounded bg-kapha/15 px-1.5 text-kapha">
+      <span className="rounded bg-kapha/15 px-1.5 text-[hsl(var(--kapha-ink))]">
         K{p.teste.kapha ?? ""}
       </span>
     </div>
@@ -92,7 +92,7 @@ export default function Pacientes({
           <Button
             key={v}
             variant={filtro === v ? "secondary" : "ghost"}
-            className="rounded-full bg-muted"
+            className={`rounded-full ${filtro===v?"bg-secondary text-secondary-foreground":"bg-muted text-primary"}`}
             size="sm"
             aria-pressed={filtro === v}
             onClick={() => setFiltro(v)}

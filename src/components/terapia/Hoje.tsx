@@ -34,11 +34,6 @@ export default function Hoje({
               <span className="portal-icone">{c.hoje?<Video/>:<Calendar/>}</span>
               <div className="min-w-0"><h3 className="text-sm font-semibold">{c.hoje?'':'Amanhã '}{horaBR(c.inicio).replace(':','h')} · {c.nome}</h3><p className="text-xs text-muted-foreground">{c.primeira?'Primeira consulta':'Retorno'}{c.hoje&&c.sala_abre_em?` · sala abre às ${horaBR(c.sala_abre_em).replace(':','h')}`:''}</p><div className="mt-1 flex gap-1">{c.tem_teste&&<span className="text-xs text-muted-foreground">teste feito</span>}{c.nascimento&&<span className="text-xs text-muted-foreground"> · nascimento</span>}</div></div>
               <div className="portal-hoje-acoes">
-                <Button asChild variant="outline" size="sm">
-                  <Link to={`/painel-terapeuta/paciente/${c.paciente_id}`}>
-                    Abrir a ficha
-                  </Link>
-                </Button>
                 {c.hoje &&
                   (salaAberta(c, agora) ? (
                     <CTAButton asChild className="px-3 py-2 text-sm h-9">
@@ -52,6 +47,11 @@ export default function Hoje({
                         : "sem data"}
                     </Button>
                   ))}
+                <Button asChild variant="outline" size="sm">
+                  <Link to={`/painel-terapeuta/paciente/${c.paciente_id}`}>
+                    Abrir a ficha
+                  </Link>
+                </Button>
               </div>
             </article>
           ))}

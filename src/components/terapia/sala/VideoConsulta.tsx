@@ -17,7 +17,7 @@ export const SLOT_VIDEO='sala-video-quadro';export const SLOT_CONTROLES='sala-qu
  * O iframe do Jitsi fica sempre no mesmo nó (trocar de pai recarrega a chamada).
  * Com o quadro aberto, só a posição muda: o vídeo segue o retângulo reservado pelo quadro.
  */
-export default function VideoConsulta({codigo,consulta,terapeuta,sair,quadroAberto=false,treino=false,terapeutaNome,pessoaNome,encerrar}:{encerrar?:()=>void;quadroAberto?:boolean;codigo:string;consulta:string;terapeuta:boolean;sair:()=>void;treino?:boolean;terapeutaNome?:string;pessoaNome?:string;compacto?:boolean}) {
+export default function VideoConsulta({codigo,consulta,terapeuta,sair,quadroAberto=false,treino=false,terapeutaNome,pessoaNome,encerrar,onRetry}:{onRetry?:()=>Promise<unknown>;encerrar?:()=>void;quadroAberto?:boolean;codigo:string;consulta:string;terapeuta:boolean;sair:()=>void;treino?:boolean;terapeutaNome?:string;pessoaNome?:string;compacto?:boolean}) {
  const parent=useRef<HTMLDivElement>(null);const api=useRef<JitsiAPI>();const sairRef=useRef(sair);sairRef.current=sair;
  const participantes=useRef(new Set<string>());const [temPessoa,setTemPessoa]=useState(false);
  const [erro,setErro]=useState('');const [conectado,setConectado]=useState(false);const [mic,setMic]=useState(false);const [cam,setCam]=useState(false);const [gravando,setGravando]=useState(false);const [tela,setTela]=useState(false);const [tentativa,setTentativa]=useState(0);const [slotCtl,setSlotCtl]=useState<HTMLElement|null>(null);
@@ -45,7 +45,7 @@ export default function VideoConsulta({codigo,consulta,terapeuta,sair,quadroAber
 {treino&&terapeuta&&!temPessoa&&!quadroAberto&&<div className="treino-paciente"><h2>Paciente exemplo</h2></div>}
   {terapeuta&&!quadroAberto&&<div className="m-grav">{botoesTerapeuta}</div>}
   <div ref={parent} className="sala-video" aria-label="Vídeo da consulta"/>
-  {erro&&<div role="alert" className="flex flex-wrap items-center justify-center gap-3 p-2 text-sm"><p>{erro}</p><Button variant="ghost" type="button" className="m-btn" onClick={()=>{setErro('');setTentativa(t=>t+1);}}>Tentar novamente</Button></div>}
+  {erro&&<div role="alert" className="flex flex-wrap items-center justify-center gap-3 p-2 text-sm"><p>{erro}</p><Button variant="ghost" type="button" className="m-btn" onClick={()=>{setErro('');if(onRetry)void onRetry();else setTentativa(t=>t+1);}}>Tentar novamente</Button></div>}
   {!quadroAberto&&controles(false)}
   {quadroAberto&&slotCtl&&createPortal(terapeuta?<div className="ctl">{botoesTerapeuta}</div>:controles(true),slotCtl)}
  </section>;

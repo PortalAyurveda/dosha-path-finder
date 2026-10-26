@@ -13,7 +13,7 @@ export const chat={
  minhas:()=>read<Conversa[]>(supabase.rpc('chat_minhas')),
  terapeuta:()=>read<Conversa[]>(supabase.rpc('terapia_conversas')),
  naoLidas:()=>read<number>(supabase.rpc('chat_nao_lidas')),
- agenda:(slug:string)=>read<{horarios?:{inicio:string;fim:string}[]}>(supabase.rpc('terapeuta_agenda_publica',{p_slug:slug,p_dias:14})),
+ agenda:(slug:string)=>read<{no_sistema:boolean;horarios?:{inicio:string;fim:string}[]}>(supabase.rpc('terapeuta_agenda_publica',{p_slug:slug,p_dias:14})),
  preferencias:(boas_vindas:string,msg_ausente:string)=>read<void>(supabase.rpc('terapia_preferencias_salvar',{p:{boas_vindas,msg_ausente} as Json})),
 };
 export function juntarMensagens(...paginas:Mensagem[][]){return [...new Map(paginas.flat().map(m=>[m.id,m])).values()].sort((a,b)=>a.id-b.id);}
