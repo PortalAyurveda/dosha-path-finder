@@ -9,7 +9,7 @@ import LoginForm from '@/components/auth/LoginForm';
 import { useUser } from '@/contexts/UserContext';
 import { terapia, dataBR, horaBR, type AgendaPublica } from '@/lib/terapia';
 import { consultaICS, RESERVA_MINUTOS, type ConsultaMarcada } from '@/lib/terapiaPublica';
-import { Nascimento } from '@/components/terapia/meu/MeuTerapeuta';
+import Nascimento from '@/components/terapia/meu/Nascimento';
 import type { PermissoesConvite } from '@/lib/terapiaConvite';
 
 export default function AgendamentoPublico({ slug, nome, agenda, atualizar }: { slug: string; nome: string; agenda: AgendaPublica; atualizar: () => Promise<unknown> }) {

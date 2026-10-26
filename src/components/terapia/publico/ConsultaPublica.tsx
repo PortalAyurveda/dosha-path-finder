@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -30,7 +30,6 @@ export default function ConsultaPublica({ slug, terapeutaId, primeiroNome }: { s
   const [perm, setPerm] = useState<PermissoesConvite>({ teste: true, fotos: true, rotina: true, akasha: false });
   const [erro, setErro] = useState("");
   const [ocupado, setOcupado] = useState(false);
-  const [marcada, setMarcada] = useState<string | null>(null);
   const [naoDeu, setNaoDeu] = useState(false);
   const pedido = useQuery({
     queryKey: ["agora-meu", pedidoId],
@@ -49,14 +48,6 @@ export default function ConsultaPublica({ slug, terapeutaId, primeiroNome }: { s
     if (p.status === "confirmado" && p.consulta_id) { guardar(null); navigate(`/consulta/${p.consulta_id}`); }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [p, pedido.error]);
-  const dias = useMemo(() => {
-    const g: Record<string, { inicio: string }[]> = {};
-    for (const h of agenda.data?.horarios ?? []) {
-      const d = new Date(h.inicio).toLocaleDateString("pt-BR", { weekday: "short", day: "2-digit", month: "2-digit", timeZone: "America/Sao_Paulo" });
-      (g[d] ??= []).push(h);
-    }
-    return Object.entries(g).slice(0, 7);
-  }, [agenda.data]);
   const rodar = async (fn: () => Promise<void>) => { setOcupado(true); setErro(""); try { await fn(); } catch (e) { setErro(e instanceof Error ? e.message : String(e)); } finally { setOcupado(false); } };
   const a = agenda.data;
   if (!a?.no_sistema) return null;
