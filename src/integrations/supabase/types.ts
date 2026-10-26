@@ -689,21 +689,6 @@ export type Database = {
         }
         Relationships: []
       }
-      _ingest_token: {
-        Row: {
-          criado_em: string | null
-          token: string
-        }
-        Insert: {
-          criado_em?: string | null
-          token: string
-        }
-        Update: {
-          criado_em?: string | null
-          token?: string
-        }
-        Relationships: []
-      }
       acomp_paginas: {
         Row: {
           atualizado_em: string
@@ -8938,6 +8923,33 @@ export type Database = {
         }
         Relationships: []
       }
+      paciente_fotos: {
+        Row: {
+          criado_em: string
+          id: string
+          path: string
+          tipo: string
+          titulo: string | null
+          user_id: string
+        }
+        Insert: {
+          criado_em?: string
+          id?: string
+          path: string
+          tipo: string
+          titulo?: string | null
+          user_id: string
+        }
+        Update: {
+          criado_em?: string
+          id?: string
+          path?: string
+          tipo?: string
+          titulo?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       paginas_venda: {
         Row: {
           ativo: boolean
@@ -13790,6 +13802,7 @@ export type Database = {
       acomp_desligar: { Args: { p_ligacao: string }; Returns: undefined }
       acomp_eu: { Args: never; Returns: Json }
       acomp_ficha: { Args: { p_paciente: string }; Returns: Json }
+      acomp_fotos: { Args: { p_paciente: string }; Returns: Json }
       acomp_horarios_livres: {
         Args: { p_dias?: number; p_terapeuta: string }
         Returns: Json
@@ -13816,6 +13829,11 @@ export type Database = {
         }
         Returns: Json
       }
+      acomp_nota_apagar: { Args: { p_nota: string }; Returns: undefined }
+      acomp_nota_editar: {
+        Args: { p_nota: string; p_texto: string }
+        Returns: undefined
+      }
       acomp_nota_salvar: {
         Args: { p_consulta?: string; p_paciente: string; p_texto: string }
         Returns: string
@@ -13830,6 +13848,7 @@ export type Database = {
         }
         Returns: undefined
       }
+      acomp_rotina: { Args: { p_paciente: string }; Returns: Json }
       acomp_terapeuta_por_codigo: { Args: { p_codigo: string }; Returns: Json }
       admin_agenda_cliques_por_link: {
         Args: { p_comunicacao_id: string; p_dias?: number }
@@ -14890,6 +14909,12 @@ export type Database = {
         }[]
       }
       fmt_qtd: { Args: { q: number }; Returns: string }
+      foto_apagar: { Args: { p_id: string }; Returns: string }
+      foto_registrar: {
+        Args: { p_path: string; p_tipo: string; p_titulo?: string }
+        Returns: string
+      }
+      fotos_minhas: { Args: never; Returns: Json }
       gerar_insights_ayurvedicos: {
         Args: { p_registro_id: string }
         Returns: Json
@@ -15467,6 +15492,7 @@ export type Database = {
         }
         Returns: Json
       }
+      pode_ver_fotos_de: { Args: { p_dono: string }; Returns: boolean }
       pontos_atencao_de: { Args: { p_registro: string }; Returns: Json }
       prateleira_samkhya: {
         Args: { p_dosha?: string }
@@ -15746,6 +15772,10 @@ export type Database = {
         Returns: Json
       }
       terapia_hoje: { Args: never; Returns: Json }
+      terapia_marcar_para: {
+        Args: { p_inicio: string; p_paciente: string }
+        Returns: Json
+      }
       terapia_no_sistema: { Args: { p_ligar: boolean }; Returns: boolean }
       terapia_painel_eu: { Args: never; Returns: Json }
       terapia_perfil_salvar: { Args: { p: Json }; Returns: undefined }
@@ -15849,20 +15879,6 @@ export type Database = {
       video_sala_resumo: { Args: { p_sala: string }; Returns: Json }
       video_slug_sitemap: { Args: { p_titulo: string }; Returns: string }
       videos_seo2_sincronizar: { Args: never; Returns: number }
-      videos_seo2026_receber: {
-        Args: {
-          p_duracao: number
-          p_fonte: string
-          p_legenda: string
-          p_origem: string
-          p_publicado: string
-          p_tipo: string
-          p_titulo: string
-          p_token: string
-          p_video_id: string
-        }
-        Returns: string
-      }
       videos_slugify: { Args: { p_titulo: string }; Returns: string }
       vincular_teste: { Args: { p_id_publico: string }; Returns: Json }
       vtt_falas: {

@@ -1,6 +1,8 @@
 import { supabase } from "@/integrations/supabase/client";
 import type { Json } from "@/integrations/supabase/types";
 import type { Convite, PermissoesConvite } from "./terapiaConvite";
+import type { FichaPaciente, FotosPaciente, NascimentoPaciente, RotinaPaciente, HorarioPaciente, FotoPaciente } from "./terapiaPaciente";
+import { FOTO_EXPIRA_SEGUNDOS } from "./terapiaPaciente";
 
 export interface Regra {
   dia_semana: number;
@@ -92,6 +94,21 @@ const read = async <T>(
   return data as T;
 };
 export const terapia = {
+  ficha: (paciente: string) => read<FichaPaciente>(supabase.rpc('acomp_ficha', { p_paciente: paciente })),
+  fotosPaciente: (paciente: string) => read<FotosPaciente>(supabase.rpc('acomp_fotos', { p_paciente: paciente })),
+  nascimentoPaciente: (paciente: string) => read<NascimentoPaciente | null>(supabase.rpc('acomp_nascimento', { p_paciente: paciente })),
+  rotinaPaciente: (paciente: string) => read<RotinaPaciente>(supabase.rpc('acomp_rotina', { p_paciente: paciente })),
+  horariosPaciente: (terapeuta: string) => read<HorarioPaciente[]>(supabase.rpc('acomp_horarios_livres', { p_terapeuta: terapeuta, p_dias: 14 })),
+  marcarPaciente: (paciente: string, inicio: string) => read<{ consulta: string; inicio: string; fim: string }>(supabase.rpc('terapia_marcar_para', { p_paciente: paciente, p_inicio: inicio })),
+  salvarNota: (paciente: string, texto: string) => read<string>(supabase.rpc('acomp_nota_salvar', { p_paciente: paciente, p_texto: texto })),
+  editarNota: (nota: string, texto: string) => read<void>(supabase.rpc('acomp_nota_editar', { p_nota: nota, p_texto: texto })),
+  apagarNota: (nota: string) => read<void>(supabase.rpc('acomp_nota_apagar', { p_nota: nota })),
+  fotoAssinada: async (foto: FotoPaciente) => {
+    const { data, error } = await supabase.storage.from(foto.bucket).createSignedUrl(foto.path, FOTO_EXPIRA_SEGUNDOS);
+    if (error) throw new Error(error.message);
+    if (!data?.signedUrl) throw new Error('Não foi possível abrir a foto.');
+    return data.signedUrl;
+  },
   convite: (slug: string) => read<Convite>(supabase.rpc("terapia_convite", { p_slug: slug })),
   aceitarConvite: (slug: string, perm: PermissoesConvite) =>
     read<{ ligacao: string; terapeuta: string; tem_teste: boolean }>(supabase.rpc("terapia_convite_aceitar", {

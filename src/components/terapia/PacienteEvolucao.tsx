@@ -1,0 +1,9 @@
+import { CartesianGrid, LabelList, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { FichaPaciente } from '@/lib/terapiaPaciente';
+import { diaBR } from '@/lib/terapia';
+import { TituloPaciente, Trancado } from './PacienteComuns';
+export default function PacienteEvolucao({ ficha }: { ficha: FichaPaciente }) {
+  if (!ficha.permissoes.teste) return <Trancado nome={ficha.nome} assunto="o teste de dosha" />;
+  const dados = [...(ficha.evolucao ?? [])].sort((a,b) => Date.parse(a.data)-Date.parse(b.data));
+  return <section><TituloPaciente>Evolução dos testes</TituloPaciente>{!dados.length ? <p className="text-sm text-muted-foreground">Nenhum teste disponível.</p> : <><div className="mt-6 h-80 w-full"><ResponsiveContainer width="100%" height="100%"><LineChart data={dados} margin={{ top: 30, right: 24, bottom: 12, left: 0 }}><CartesianGrid vertical={false} stroke="hsl(var(--border))" /><XAxis dataKey="data" tickFormatter={diaBR} tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} /><YAxis domain={[0, 'auto']} width={35} tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} /><Tooltip labelFormatter={v => diaBR(String(v))} />{(['vata','pitta','kapha'] as const).map((d,i) => <Line key={d} dataKey={d} name={d} stroke={`hsl(var(--${d}))`} strokeWidth={2} dot={{ r: 4 }} isAnimationActive={false}><LabelList dataKey={d} position={i === 1 ? 'bottom' : 'top'} fill={`hsl(var(--${d}))`} fontSize={11} /></Line>)}</LineChart></ResponsiveContainer></div><div className="flex gap-4"><span className="text-sm text-vata">Vata</span><span className="text-sm text-pitta">Pitta</span><span className="text-sm text-kapha">Kapha</span></div></>}</section>;
+}
