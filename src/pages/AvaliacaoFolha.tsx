@@ -9,6 +9,7 @@ import { terapia, diaBR } from "@/lib/terapia";
 import { iniciarDados, DOSHAS, NOMES } from "@/lib/terapiaAvaliacao";
 import { linhasFolha } from "@/lib/terapiaAdicoes";
 import "@/components/terapia/avaliacao/folha.css";
+import Quadros from "@/components/terapia/quadro/Quadros";
 export default function AvaliacaoFolha() {
   const { id, avaliacaoId } = useParams();
   const acesso = useSouTerapeuta();
@@ -103,6 +104,7 @@ export default function AvaliacaoFolha() {
               ))}
             </section>
           ))}
+          <Quadros avaliacao={d.a.id} userId={acesso.userId} impressao />
           {anterior && (
             <section>
               <h2>Avaliação anterior · {diaBR(anterior.criado_em)}</h2>

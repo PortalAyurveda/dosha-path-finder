@@ -11,3 +11,5 @@
 
 - Keep therapy assessments and their print route independently lazy-loaded next to patient routes, with core sectors, optional additions and photo annotations in dedicated assessment components; preserve the single JSON draft and existing RPCs, and calculate birth charts locally to isolate editing and private content from other portal views.
 - Keep therapy indications and their print route independently lazy-loaded beside patient routes, with source catalog and section editing in dedicated components and contracts in the indications module; serialize saves through existing therapy RPCs so sending and printing use the latest single JSON draft.
+
+- Keep therapist collection editing and item display in dedicated collection components with a lazy item route; keep teaching boards independently lazy-loaded with canvas strokes and source metadata in their own module, reuse assessment marking, and delete Storage files using the paths returned by existing RPCs. This isolates the private editor and preserves resumable boards without altering other portal views.
