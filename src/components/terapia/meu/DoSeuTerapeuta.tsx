@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { Check, ExternalLink, Printer } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { MarcaPortal } from "@/components/impressao/PecasImpressao";
 import { diaBR } from "@/lib/terapia";
@@ -78,7 +79,7 @@ export default function DoSeuTerapeuta({ folha, rodape, acompanhamento=false }: 
                         {link && (externo(link)
                           ? <Button asChild variant="outline" size="sm"><a href={link} target="_blank" rel="noreferrer">Abrir<ExternalLink className="ml-1 h-3 w-3" /></a></Button>
                           : <Button asChild variant="outline" size="sm"><Link to={link.replace(/^https?:\/\/(www\.)?portalayurveda\.com/, "") || "/"}>Abrir</Link></Button>)}
-                        <Button size="sm" variant={hoje ? "secondary" : "outline"} aria-pressed={hoje} onClick={() => marcar(i.id, !hoje)}>{hoje && <Check className="mr-1 h-3 w-3" />}Feito hoje</Button>
+                        {acompanhamento?<label className="flex items-center gap-2 whitespace-nowrap text-xs"><Checkbox aria-label={`Feito hoje: ${i.titulo}`} checked={hoje} onCheckedChange={v=>void marcar(i.id,v===true)}/>feito hoje</label>:<Button size="sm" variant={hoje ? "secondary" : "outline"} aria-pressed={hoje} onClick={() => marcar(i.id, !hoje)}>{hoje && <Check className="mr-1 h-3 w-3" />}Feito hoje</Button>}
                         {!acompanhamento&&<div className="flex gap-1" aria-label="Últimos 7 dias">{semanaDoItem(feitos, i.id, agora).map(d => <span key={d.dia} title={d.dia.split("-").reverse().join("/")} className={`h-2 w-2 rounded-full ${d.feito ? "bg-secondary" : "bg-muted"}`} />)}</div>}
                       </div>
                     </div>
