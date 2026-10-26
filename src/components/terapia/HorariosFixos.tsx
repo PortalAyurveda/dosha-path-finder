@@ -34,7 +34,6 @@ export default function HorariosFixos({
 }) {
   const qc = useQueryClient();
   const { toast } = useToast();
-  const [inicio, setInicio] = useState<string>();
   const [regras, setRegras] = useState<Regra[]>([]);
   const [editando, setEditando] = useState<number | null>(null);
   const [duracao, setDuracao] = useState(50);
@@ -43,8 +42,6 @@ export default function HorariosFixos({
     painel.sistema.antecedencia_horas,
   );
   const [nascimento, setNascimento] = useState(painel.sistema.pedir_nascimento);
-  const [dia, setDia] = useState("");
-  const [motivo, setMotivo] = useState("");
   const [salvando, setSalvando] = useState(false);
   const agenda = useQuery({
     queryKey: ["terapia-agenda", userId],
@@ -94,6 +91,39 @@ export default function HorariosFixos({
         titulo="Meus horários de atendimento"
         className=""
       >
+        <div className="my-5 grid grid-cols-2 gap-3">
+          <div>
+            <Label htmlFor="duracao">Duração (min)</Label>
+            <Input
+              id="duracao"
+              type="number"
+              min={15}
+              required
+              value={duracao}
+              onChange={(e) => setDuracao(Number(e.target.value))}
+            />
+          </div>
+          <div>
+            <Label htmlFor="intervalo">Intervalo (min)</Label>
+            <Input
+              id="intervalo"
+              type="number"
+              min={0}
+              required
+              value={intervalo}
+              onChange={(e) => setIntervalo(Number(e.target.value))}
+            />
+          </div>
+        </div>
+        <Label htmlFor="antecedencia">Marcar com antecedência de (horas)</Label>
+        <Input
+          id="antecedencia"
+          type="number"
+          min={0}
+          max={168}
+          value={antecedencia}
+          onChange={(e) => setAntecedencia(Number(e.target.value))}
+        />
         <p className="mb-4 text-sm text-muted-foreground">Mudar o molde não mexe nas consultas já marcadas.</p><p className="mb-4 text-sm font-semibold">{horariosNoMolde(regras, duracao, intervalo)} horários por semana</p><div className="space-y-3">
           {[1, 2, 3, 4, 5, 6, 0].map((d) => (
             <div key={d}>
@@ -192,39 +222,6 @@ export default function HorariosFixos({
             </div>
           ))}
         </div>
-        <div className="my-5 grid grid-cols-2 gap-3">
-          <div>
-            <Label htmlFor="duracao">Duração (min)</Label>
-            <Input
-              id="duracao"
-              type="number"
-              min={15}
-              required
-              value={duracao}
-              onChange={(e) => setDuracao(Number(e.target.value))}
-            />
-          </div>
-          <div>
-            <Label htmlFor="intervalo">Intervalo (min)</Label>
-            <Input
-              id="intervalo"
-              type="number"
-              min={0}
-              required
-              value={intervalo}
-              onChange={(e) => setIntervalo(Number(e.target.value))}
-            />
-          </div>
-        </div>
-        <Label htmlFor="antecedencia">Marcar com antecedência de (horas)</Label>
-        <Input
-          id="antecedencia"
-          type="number"
-          min={0}
-          max={168}
-          value={antecedencia}
-          onChange={(e) => setAntecedencia(Number(e.target.value))}
-        />
         <div className="my-5 flex items-center justify-between gap-3">
           <Label htmlFor="pedir-nascimento" className="text-sm leading-relaxed">
             Pedir data, hora e cidade de nascimento antes
@@ -243,6 +240,7 @@ export default function HorariosFixos({
             !!agenda.error ||
             duracao < 15 ||
             intervalo < 0 ||
+            antecedencia < 0 || antecedencia > 168 ||
             regras.some((r) => r.inicio >= r.fim)
           }
           onClick={salvar}
