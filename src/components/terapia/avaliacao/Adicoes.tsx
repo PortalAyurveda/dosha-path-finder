@@ -102,6 +102,7 @@ export default function Adicoes({
   biblioteca,
   guardar,
   paciente,
+  treino=false,
   abrir,
 }: {
   setor: Setor;
@@ -111,6 +112,7 @@ export default function Adicoes({
   biblioteca: Biblioteca;
   guardar: (b: Biblioteca) => Promise<boolean>;
   paciente: string;
+  treino?: boolean;
   abrir: (s: Setor) => void;
 }) {
   const e = extras(dados);
@@ -223,7 +225,7 @@ export default function Adicoes({
           }
         />
       )}{" "}
-      {(setor === "aniversario" || setor === "mapa") && (
+      {!treino && (setor === "aniversario" || setor === "mapa") && (
         <Nascimento
           paciente={paciente}
           setor={setor}

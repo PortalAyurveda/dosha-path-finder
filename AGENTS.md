@@ -16,3 +16,5 @@
 - Keep therapist online presence, the global 2-minute ping and the "Consulta agora" corner alert in one provider mounted by Layout, and the public consultation card lazy-loaded inside the therapist profile; this lets the avatar switch and requests work on any page without loading therapy views elsewhere.
 - Keep public booking steps and directory rules in dedicated public-therapy modules, reuse the patient birth form, and generate invitation metadata from the public preview RPC; this isolates booking from private therapist views and keeps crawler previews consistent.
 - Keep the patient-side therapist views (Meu terapeuta in /meu-perfil, the shared Do seu terapeuta sheet block also shown atop /minha-rotina) lazy-loaded in src/components/terapia/meu with RPC access in src/lib/terapiaMeu.ts; the block prints itself via a body class and print CSS so patients never reach therapist routes.
+
+- Keep consultation rooms independently lazy-loaded and room RPC/video access in consultaSala; reuse the assessment editor and board with explicit in-memory training mode so practice never writes patient records and live rooms do not load other portal views.
