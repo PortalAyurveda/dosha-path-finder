@@ -17,6 +17,7 @@ import { samkhyaTokens } from "@/components/samkhya/tokens";
 import samkhyaLogo from "@/assets/samkhya-logo-cropped.png";
 import GlobalSearch from "@/components/GlobalSearch";
 import { RedeemCourseDialog } from "@/components/RedeemCourseDialog";
+import { useSouTerapeuta } from "@/hooks/useSouTerapeuta";
 
 
 const PIE_COLORS: Record<string, string> = {
@@ -87,6 +88,7 @@ const Header = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, isAnonymous, doshaResult, profile, signOut } = useUser();
+  const { permitido: souTerapeuta } = useSouTerapeuta();
   const { totalItens, abrirCarrinho } = useCart();
   const { immersive } = useImmersive();
 
@@ -544,6 +546,11 @@ const Header = () => {
                 {!isAnonymous && (
                   <DropdownMenuItem onClick={() => setRedeemDialogOpen(true)}>
                     Resgatar curso
+                  </DropdownMenuItem>
+                )}
+                {souTerapeuta && (
+                  <DropdownMenuItem asChild>
+                    <Link to="/painel-terapeuta?aba=hoje">Área da terapeuta</Link>
                   </DropdownMenuItem>
                 )}
                 {isAnonymous ? (

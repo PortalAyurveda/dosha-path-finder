@@ -13749,6 +13749,7 @@ export type Database = {
       _ter_cfg: { Args: { p_chave: string }; Returns: Json }
       _ter_sis_garante: { Args: { p_tid: string }; Returns: undefined }
       _terapeuta_id_de: { Args: { p_uid: string }; Returns: string }
+      _terapeuta_por_slug: { Args: { p_slug: string }; Returns: string }
       _terapia_novidades: { Args: { p_tid: string }; Returns: Json }
       acervo_adicionar: {
         Args: {
@@ -15732,6 +15733,17 @@ export type Database = {
       terapia_config_salvar: {
         Args: { p_chave: string; p_valor: Json }
         Returns: undefined
+      }
+      terapia_convite: { Args: { p_slug: string }; Returns: Json }
+      terapia_convite_aceitar: {
+        Args: {
+          p_akasha?: boolean
+          p_fotos?: boolean
+          p_rotina?: boolean
+          p_slug: string
+          p_teste?: boolean
+        }
+        Returns: Json
       }
       terapia_hoje: { Args: never; Returns: Json }
       terapia_no_sistema: { Args: { p_ligar: boolean }; Returns: boolean }
