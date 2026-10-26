@@ -7,11 +7,13 @@ import {Textarea} from '@/components/ui/textarea';
 import {chat,CHAT_ABERTA_MS,CHAT_LISTA_MS,juntarMensagens,textoConvite,type Conversa as Dados,type Mensagem} from '@/lib/terapiaChat';
 import {terapia,diaBR,horaBR} from '@/lib/terapia';
 import {OnlineAgora} from '../publico/ConsultaPublica';
+import {useUser} from '@/contexts/UserContext';
 import './chat.css';
 export default function Conversa({conversa,papel,voltar,marcar,convite}:{conversa:Dados;papel:'paciente'|'terapeuta';voltar?:()=>void;marcar?:()=>void;convite?:string}){
  const qc=useQueryClient();const [texto,setTexto]=useState('');const [erro,setErro]=useState('');const [ocupado,setOcupado]=useState(false);const [historico,setHistorico]=useState<Mensagem[]>([]);const [anteriores,setAnteriores]=useState(true);const fim=useRef<HTMLDivElement>(null);const ultima=useRef<number>();
  const config=useQuery({queryKey:['terapia-config'],queryFn:terapia.config});const textos=config.data?.chat_textos??{};
- const lista=useQuery({queryKey:['chat-lista',papel==='terapeuta'],queryFn:papel==='paciente'?chat.minhas:chat.terapeuta,refetchInterval:CHAT_LISTA_MS});
+ const {user}=useUser();
+ const lista=useQuery({queryKey:['chat-lista',papel==='terapeuta',user?.id],queryFn:papel==='paciente'?chat.minhas:chat.terapeuta,enabled:!!user,refetchInterval:CHAT_LISTA_MS});
  conversa=lista.data?.find(c=>c.id===conversa.id)??conversa;
  const pessoa=papel==='paciente'?conversa.terapeuta:conversa.paciente;
  const q=useQuery({queryKey:['chat-mensagens',conversa.id,papel],queryFn:async()=>{const m=await chat.mensagens(conversa.id);if(!document.hidden){await chat.ler(conversa.id);void qc.invalidateQueries({queryKey:['chat-total']});void qc.invalidateQueries({queryKey:['chat-lista']});}return m;},refetchInterval:()=>document.hidden?false:CHAT_ABERTA_MS});
