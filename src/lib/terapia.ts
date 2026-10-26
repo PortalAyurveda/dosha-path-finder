@@ -1,5 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import type { Json } from "@/integrations/supabase/types";
+import type { Convite, PermissoesConvite } from "./terapiaConvite";
 
 export interface Regra {
   dia_semana: number;
@@ -91,6 +92,11 @@ const read = async <T>(
   return data as T;
 };
 export const terapia = {
+  convite: (slug: string) => read<Convite>(supabase.rpc("terapia_convite", { p_slug: slug })),
+  aceitarConvite: (slug: string, perm: PermissoesConvite) =>
+    read<{ ligacao: string; terapeuta: string; tem_teste: boolean }>(supabase.rpc("terapia_convite_aceitar", {
+      p_slug: slug, p_teste: perm.teste, p_fotos: perm.fotos, p_rotina: perm.rotina, p_akasha: perm.akasha,
+    })),
   sou: () => read<boolean>(supabase.rpc("sou_terapeuta")),
   painel: () => read<Painel | null>(supabase.rpc("terapia_painel_eu")),
   hoje: () => read<Hoje>(supabase.rpc("terapia_hoje")),
