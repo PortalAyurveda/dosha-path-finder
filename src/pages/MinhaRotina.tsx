@@ -59,6 +59,7 @@ import NuggetDetalhe, { type Nugget } from "@/components/rotina/NuggetDetalhe";
 
 import NuggetIscaDialog from "@/components/rotina/NuggetIscaDialog";
 import PreviaRotina from "@/components/rotina/PreviaRotina";
+const IndicacoesNaRotina = lazy(() => import("@/components/terapia/meu/IndicacoesNaRotina"));
 
 
 // ===== Slots =====
