@@ -1,3 +1,4 @@
+import {Calendar,Video,MessageCircle,Camera,FileText,Sparkles} from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import CTAButton from "@/components/CTAButton";
@@ -14,7 +15,7 @@ export default function Hoje({
 }) {
   const online = useOnlineTerapeuta();
   return (
-    <><div className="grid gap-6 xl:grid-cols-[minmax(0,1.8fr)_minmax(240px,1fr)]">
+    <><div className="grid gap-6 lg:grid-cols-[minmax(0,1.5fr)_minmax(280px,1fr)] items-start">
       <Secao
         titulo="Hoje e amanhã"
       >
@@ -28,55 +29,11 @@ export default function Hoje({
           {dados.consultas.map((c) => (
             <article
               key={c.id}
-              className="flex flex-wrap items-center gap-3 py-5"
+              className="portal-hoje-linha"
             >
-              <div className="w-16 shrink-0">
-                <p className="font-serif text-xl font-bold text-primary">
-                  {c.hoje
-                    ? horaBR(c.inicio)
-                    : new Date(c.inicio).toLocaleDateString("pt-BR", {
-                        weekday: "short",
-                        timeZone: "America/Sao_Paulo",
-                      })}
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  {c.hoje
-                    ? c.primeira
-                      ? "Primeira consulta"
-                      : "Retorno"
-                    : diaBR(c.inicio)}
-                </p>
-              </div>
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-muted text-xs font-semibold text-primary">
-                {inicial(c.nome)}
-              </div>
-              <div className="min-w-0 flex-1">
-                <h3 className="text-sm font-semibold">{c.nome}</h3>
-                {!c.hoje && (
-                  <p className="text-xs text-muted-foreground">
-                    {c.primeira ? "Primeira consulta" : "Retorno"} ·{" "}
-                    {horaBR(c.inicio)}
-                  </p>
-                )}
-                <div className="mt-1 flex gap-1">
-                  {c.tem_teste && (
-                    <span className="rounded bg-muted px-2 py-0.5 text-xs">
-                      teste
-                    </span>
-                  )}
-                  {c.nascimento && (
-                    <span className="rounded bg-muted px-2 py-0.5 text-xs">
-                      nascimento
-                    </span>
-                  )}
-                </div>
-              </div>
-              <div className="ml-auto flex flex-wrap justify-end gap-2 max-sm:w-full">
-                <Button asChild variant="outline" size="sm">
-                  <Link to={`/painel-terapeuta/paciente/${c.paciente_id}`}>
-                    Abrir ficha
-                  </Link>
-                </Button>
+              <span className="portal-icone">{c.hoje?<Video/>:<Calendar/>}</span>
+              <div className="min-w-0"><h3 className="text-sm font-semibold">{c.hoje?'':'Amanhã '}{horaBR(c.inicio).replace(':','h')} · {c.nome}</h3><p className="text-xs text-muted-foreground">{c.primeira?'Primeira consulta':'Retorno'}{c.hoje&&c.sala_abre_em?` · sala abre às ${horaBR(c.sala_abre_em).replace(':','h')}`:''}</p><div className="mt-1 flex gap-1">{c.tem_teste&&<span className="text-xs text-muted-foreground">teste feito</span>}{c.nascimento&&<span className="text-xs text-muted-foreground"> · nascimento</span>}</div></div>
+              <div className="portal-hoje-acoes">
                 {c.hoje &&
                   (salaAberta(c, agora) ? (
                     <CTAButton asChild className="px-3 py-2 text-sm h-9">
@@ -87,17 +44,23 @@ export default function Hoje({
                       Sala às{" "}
                       {c.sala_abre_em
                         ? horaBR(c.sala_abre_em).replace(":", "h")
-                        : "—"}
+                        : "sem data"}
                     </Button>
                   ))}
+                <Button asChild variant="outline" size="sm">
+                  <Link to={`/painel-terapeuta/paciente/${c.paciente_id}`}>
+                    Abrir a ficha
+                  </Link>
+                </Button>
               </div>
             </article>
           ))}
         </div>
       </Secao>
-      <div className="space-y-7 xl:border-l xl:border-border xl:pl-6">
-        <Secao titulo={`Pede sua atenção · ${dados.atencao?.length??0}`}>
-          {(dados.atencao??[]).map((a,i)=>{const base=`/painel-terapeuta/paciente/${a.paciente_id}`;const url=a.tipo==='sem_folha'?`${base}/indicacoes/nova${a.consulta_id?`?consulta=${a.consulta_id}`:''}`:a.tipo==='folha_nao_vista'&&a.folha_id?`${base}/indicacoes/${a.folha_id}`:a.tipo==='mensagens'?`/painel-terapeuta?aba=mensagens&paciente=${a.paciente_id}`:`${base}?aba=fotos`;return <article key={i} className="flex items-start justify-between gap-3 border-b border-border py-3"><div className="min-w-0"><p className="text-sm">{a.texto}</p>{a.detalhe&&<p className="text-xs text-muted-foreground">{a.detalhe}</p>}</div>{<Button asChild variant="outline" size="sm"><Link to={url}>{a.tipo==='sem_folha'?'Montar':a.tipo==='folha_nao_vista'?'Ver folha':a.tipo==='faltam_fotos'?'Ver fotos':'Ver'}</Link></Button>}</article>;})}
+      <div className="space-y-4">
+        <Secao titulo="Pede sua atenção">
+          {(dados.atencao?.length??0)>0&&<span className="portal-atencao-num">{dados.atencao?.length}</span>}
+          {(dados.atencao??[]).map((a,i)=>{const base=`/painel-terapeuta/paciente/${a.paciente_id}`;const url=a.tipo==='sem_folha'?`${base}/indicacoes/nova${a.consulta_id?`?consulta=${a.consulta_id}`:''}`:a.tipo==='folha_nao_vista'&&a.folha_id?`${base}/indicacoes/${a.folha_id}`:a.tipo==='mensagens'?`/painel-terapeuta?aba=mensagens&paciente=${a.paciente_id}`:`${base}?aba=fotos`;return <article key={i} className="flex items-start justify-between gap-3 border-b border-border py-3"><span className="portal-icone">{a.tipo==='mensagens'?<MessageCircle/>:a.tipo.includes('foto')?<Camera/>:<FileText/>}</span><div className="min-w-0 flex-1"><p className="text-sm font-semibold">{a.texto}</p>{a.detalhe&&<p className="text-xs text-muted-foreground">{a.detalhe}</p>}</div>{<Button asChild variant="outline" size="sm"><Link to={url}>{a.tipo==='sem_folha'?'Montar':a.tipo==='folha_nao_vista'?'Ver folha':a.tipo==='faltam_fotos'?'Ver fotos':'Ver'}</Link></Button>}</article>;})}
           {!dados.atencao?.length&&<p className="text-sm text-muted-foreground">Nada pede sua atenção.</p>}
         </Secao>
         <Secao titulo="Novidades">
@@ -121,7 +84,7 @@ export default function Hoje({
             <p className="text-sm text-muted-foreground">Nenhuma novidade.</p>
           )}
         </Secao>
-        <Secao titulo="Pendências">
+        {dados.pendencias.length > 0 && <Secao titulo="Pendências">
           <ul className="space-y-3 text-sm">
             {dados.pendencias.map((p, i) => (
               <li key={i}>{p.texto}</li>
@@ -130,7 +93,7 @@ export default function Hoje({
           {!dados.pendencias.length && (
             <p className="text-sm text-muted-foreground">Nenhuma pendência.</p>
           )}
-        </Secao>
+        </Secao>}
       </div>
     </div></>
   );

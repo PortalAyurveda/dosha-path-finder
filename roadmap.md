@@ -63,3 +63,7 @@
 - [x] Parte 17: conferir referências em 1366 px e 390 px, regras e fluxos com respostas isoladas; 43 testes
 - [x] Usar minhas_consultas_acompanhamento já criada pelo usuário; não executar SQL
 - [ ] Validar Parte 17 com contas e fotos reais — bloqueado: Supabase externo sem sessão autenticada disponível
+- [x] Parte 16: ampliar moldura, cartões e visual do Portal e perfil público
+- [x] Parte 16: corrigir agenda, mensagens, links, salvamentos, sala, quadro e indicações
+- [x] Parte 16: conferir em 1366 px e 390 px e executar testes das regras; 89 testes e fluxos com respostas isoladas
+- [ ] Parte 16: validar com contas reais, fotos privadas e chamada entre aparelhos — bloqueado: Supabase externo sem sessão autenticada disponível

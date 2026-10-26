@@ -39,7 +39,7 @@ export default function Perfil({
             setSalvando(false);
           }
         }}
-        className="space-y-4"
+        className="portal-cartao space-y-4"
       >
         {(
           [
@@ -77,9 +77,8 @@ export default function Perfil({
           {salvando ? "Salvando…" : "Salvar"}
         </CTAButton>
       </form>
-      <div className="space-y-6 lg:border-l lg:border-border lg:pl-6">
-        <ConfiguracaoMensagens painel={painel} atualizar={atualizar}/>
-        <div className="flex gap-4">
+      <div className="space-y-6">
+        <div className="portal-cartao flex gap-4">
           {painel.terapeuta.imagem && (
             <img
               src={painel.terapeuta.imagem}
@@ -105,6 +104,7 @@ export default function Perfil({
             </Button>
           </div>
         </div>
+        <div className="portal-cartao"><ConfiguracaoMensagens painel={painel} atualizar={atualizar}/></div>
         <Secao titulo="Termo">
           <p className="text-xs text-muted-foreground">
             Termo aceito em{" "}
@@ -112,7 +112,7 @@ export default function Perfil({
               ? new Date(painel.sistema.termo_aceito_em).toLocaleDateString(
                   "pt-BR",
                 )
-              : "—"}
+              : "sem data"}
           </p>
           <Button
             variant="link"

@@ -54,6 +54,7 @@ export default function HorariosFixos({
     ]);
   };
   const salvar = async () => {
+    if (!regras.length && !window.confirm("Sem faixas, você sai do diretório até abrir horários de novo.")) return;
     setSalvando(true);
     try {
       await executar(async () => {

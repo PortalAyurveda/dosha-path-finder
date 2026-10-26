@@ -10,7 +10,7 @@ export interface SalaConsulta {
   terapeuta: { nome: string; primeiro_nome: string; imagem: string|null; slug?: string };
   avaliacao_id: string|null; presenca: Partial<Record<'paciente'|'terapeuta',string>>|null; ja_avaliou: boolean;
 }
-export interface AoVivo { gravando: boolean; quadro: { quadro: string; bucket: string; path: string; atualizado_em: string }|null }
+export interface AoVivo { gravando: boolean; quadro: { item?:string; quadro: string; bucket: string; path: string; atualizado_em: string }|null }
 export interface VideoEntrada { dominio: string; sala: string; jwt: string; nome: string; papel: string; outro: unknown }
 export type EventoVideo = 'entrou'|'pulso'|'saiu'|'outro_entrou'|'outro_saiu';
 export interface SalaTreino { titulo: string; texto: string; paciente: { nome: string; teste: { vata: number; pitta: number; kapha: number; dosha: string; agni: string; queixas: string[] } }; fotos: { tipo: string; titulo: string; url: string }[] }
@@ -38,3 +38,5 @@ export function presencaRecente(em:string|undefined,agora:number) { return !!em&
 export function fichaTreino(t:SalaTreino):FichaPaciente {
   return {paciente_id:'treino',nome:t.paciente.nome,ligado_em:'',origem:'treino',permissoes:{teste:true,fotos:true,rotina:false,akasha:false},notas:[],consultas:[],avaliacoes:[],teste:{data:'',idade:null,cidade:null,estado:null,...t.paciente.teste,queixas:{treino:t.paciente.teste.queixas},alimentos:{},relato:null,objetivo1:null,objetivo2:null}};
 }export const enderecoTreinoPessoa=(origem:string,codigo:string)=>`${origem}/consulta/treino/pessoa?c=${encodeURIComponent(codigo)}`;
+
+export function destinoSaida(s:SalaConsulta,agora:number,explicito=false){return explicito||faseSala(s,agora)==='encerrada'?'encerrada':'saiu';}

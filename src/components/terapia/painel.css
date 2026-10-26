@@ -7,3 +7,40 @@
     hsl(var(--background)) 10px
   );
 }
+.portal-terapeuta,.portal-paciente {font-size:15px;line-height:1.5;background:hsl(var(--background));}
+.portal-lateral {background:hsl(var(--card));}
+.portal-lateral nav button {font-size:15px;border-radius:12px;}
+.portal-topo {display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.portal-titulo {font-size:28px;line-height:1.25;}
+.portal-cartao {background:hsl(var(--card));border:1px solid hsl(var(--border));border-radius:14px;padding:16px;}
+.portal-terapeuta .text-xs,.portal-paciente .text-xs {font-size:13px;line-height:1.45;}
+.portal-terapeuta .text-sm,.portal-paciente .text-sm {font-size:15px;line-height:1.45;}
+.portal-cartao>h2 {font-size:12px;letter-spacing:0;border-bottom:1px solid hsl(var(--border));padding-bottom:8px;}
+.portal-avatar {display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:50%;flex-shrink:0;background:hsl(var(--therapist-purple)/.65);color:hsl(var(--primary));font-weight:700;}
+.portal-avatar-1 {background:hsl(var(--therapist-salmon));}.portal-avatar-2 {background:hsl(var(--therapist-green));}.portal-avatar-3 {background:hsl(var(--bg-soft));}.portal-avatar-4 {background:hsl(var(--therapist-yellow)/.5);}.portal-avatar-5 {background:hsl(var(--therapist-purple)/.4);}
+.portal-avatar-grande {width:64px;height:64px;font-size:24px;}
+.portal-atencao {background:hsl(var(--therapist-yellow-soft));color:hsl(var(--therapist-yellow-ink));border:1px solid hsl(var(--therapist-yellow)/.4);border-radius:999px;}
+.portal-paciente h1 {font-size:32px;line-height:1.2;}.portal-paciente section h2 {font-size:20px;}
+.portal-paciente>header,.portal-paciente>nav {background:hsl(var(--card));margin-left:-24px;margin-right:-24px;padding-left:24px;padding-right:24px;}
+.portal-paciente .text-vata {color:hsl(var(--vata-ink));}.portal-paciente .text-pitta {color:hsl(var(--pitta-ink));}.portal-paciente .text-kapha {color:hsl(var(--kapha-ink));}
+.portal-mensagens {padding:0!important;}.portal-mensagens>.portal-topo {display:none;}.portal-mensagens .chat-lista {height:calc(100dvh - 80px);min-height:600px;}.portal-mensagens .chat-lista>div:first-child {padding:12px;background:hsl(var(--card));}
+.portal-conteudo .xl\:border-l {border-left:0;padding-left:0;}
+.portal-hoje-linha {display:grid;grid-template-columns:34px minmax(0,1fr) auto;align-items:start;gap:10px;padding:14px 0;}.portal-hoje-acoes {display:flex;gap:6px;align-items:center;}.portal-icone {width:32px;height:32px;border-radius:10px;background:hsl(var(--muted));display:grid;place-items:center;}.portal-icone svg {width:18px;height:18px;}
+.portal-cartao{align-self:start;}.portal-cartao>h2,.portal-cartao>h2.text-xs,.portal-cartao>h2.text-sm {font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;}
+.portal-cartao{position:relative;}.portal-atencao-num{position:absolute;top:16px;right:16px;background:hsl(var(--secondary));color:hsl(var(--secondary-foreground));border-radius:999px;padding:0 7px;font-size:12px;font-weight:600;}
+.portal-terapeuta .portal-cartao>label:first-of-type {position:absolute;right:16px;top:12px;font-size:13px;}.portal-terapeuta .portal-cartao>label:first-of-type [role="switch"][data-state="checked"]{background:hsl(var(--therapist-green-ink));}
+.portal-hoje-linha h3 {font-family:'DM Sans',sans-serif;font-size:15px;}
+.portal-conteudo input,.portal-conteudo textarea {background:hsl(var(--card));}
+.portal-conteudo thead th {text-transform:uppercase;font-size:12px;}
+.portal-paciente section h2{border:0;padding-bottom:0;}.portal-paciente header span.rounded {border-radius:999px;background:hsl(var(--muted));}
+.portal-paciente section span.rounded {border-radius:999px;}
+.portal-terapeuta .chat-selecionada,.portal-terapeuta .chat-selecionada:hover {background:hsl(var(--secondary)/.08);}
+.portal-mensagens .chat-lista>div:first-child>button {border-radius:0;border-width:0 0 1px;background:transparent;}
+.portal-mensagens .chat-bolha {width:85%;}.portal-mensagens .chat-conversa header h2 {font-family:'DM Sans',sans-serif;font-size:17px;}
+.portal-mensagens .chat-conversa form {display:flex;align-items:end;gap:8px;background:hsl(var(--card));}.portal-mensagens .chat-conversa form textarea{flex:1;}.portal-mensagens .chat-conversa form>div {flex-shrink:0;}
+@media(max-width:1023px){.portal-terapeuta nav[aria-label="Portal do terapeuta"] {padding:10px;background:hsl(var(--card));gap:8px;}.portal-terapeuta nav button{font-size:15px;}.portal-topo{flex-wrap:wrap;}.portal-hoje-acoes{flex-direction:column;align-items:flex-end;}.portal-hoje-acoes a,.portal-hoje-acoes button{font-size:13px!important;padding:6px 8px!important;height:auto;min-height:34px;}.portal-paciente>header,.portal-paciente>nav{margin-left:-16px;margin-right:-16px;padding-left:16px;padding-right:16px;}}
+
+.portal-terapeuta table td:nth-child(2)>div{flex-wrap:nowrap;font-size:12px;}.portal-terapeuta table td:last-child span {font-size:12px;}.portal-cartao>label~.divide-y{margin-top:0;}
+.portal-paciente .portal-cartao{padding:16px;}.portal-paciente .portal-cartao .h-2{height:12px;}.portal-paciente .portal-cartao .text-vata,.portal-paciente .portal-cartao .text-pitta,.portal-paciente .portal-cartao .text-kapha {font-size:17px;}
+
+.portal-paciente section.portal-cartao>h2 {font-family:'Roboto Serif',Georgia,serif;font-size:20px;font-weight:700;}

@@ -1,9 +1,11 @@
 import { describe,it,expect,vi } from 'vitest';
 vi.mock('@/integrations/supabase/client',()=>({supabase:{rpc:vi.fn().mockResolvedValue({data:null,error:null}),functions:{invoke:vi.fn().mockResolvedValue({data:{},error:null})}}}));
 import {supabase} from '@/integrations/supabase/client';
-import {sala,faseSala,presencaRecente,PRESENCA_MS,ESPERA_SALA_MS,AO_VIVO_MS,QUADRO_AO_VIVO_MS} from './consultaSala';
+import {sala,faseSala,destinoSaida,presencaRecente,PRESENCA_MS,ESPERA_SALA_MS,AO_VIVO_MS,QUADRO_AO_VIVO_MS} from './consultaSala';
 import type {SalaConsulta} from './consultaSala';
 describe('Sala da consulta',()=>{
+ it('sair ainda no horário não encerra a consulta',()=>{const s={status:'marcada',abre_em:'2026-10-26T17:00:00Z',fecha_em:'2026-10-26T18:00:00Z'} as SalaConsulta;expect(destinoSaida(s,Date.parse('2026-10-26T17:30:00Z'))).toBe('saiu');});
+ it('encerramento explícito e horário fechado encerram',()=>{const s={status:'marcada',abre_em:'2026-10-26T17:00:00Z',fecha_em:'2026-10-26T18:00:00Z'} as SalaConsulta;expect(destinoSaida(s,Date.parse('2026-10-26T17:30:00Z'),true)).toBe('encerrada');expect(destinoSaida(s,Date.parse('2026-10-26T18:00:00Z'))).toBe('encerrada');});
  it('consulta usa p_consulta',async()=>{await sala.consultar('c');expect(supabase.rpc).toHaveBeenCalledWith('consulta_sala',{p_consulta:'c'});});
  it('consulta ao vivo usa p_consulta',async()=>{await sala.aoVivo('c');expect(supabase.rpc).toHaveBeenCalledWith('consulta_ao_vivo',{p_consulta:'c'});});
  it('retira quadro com p_quadro nulo',async()=>{await sala.mostrar('c',null);expect(supabase.rpc).toHaveBeenCalledWith('consulta_quadro_mostrar',{p_consulta:'c',p_quadro:null});});

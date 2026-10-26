@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import CTAButton from "@/components/CTAButton";
 import { Paciente, diaBR, horaBR } from "@/lib/terapia";
-import { inicial } from "./Comuns";
+import { AvatarPessoa } from "./Comuns";
 export function filtrarPacientes(
   lista: Paciente[],
   busca: string,
@@ -22,18 +22,18 @@ export function filtrarPacientes(
 function Pontos({ p }: { p: Paciente }) {
   return p.teste ? (
     <div className="flex flex-wrap gap-1 text-xs font-semibold">
-      <span className="rounded bg-vata/15 px-1.5 text-vata">
-        V{p.teste.vata ?? "—"}
+      <span className="rounded bg-vata/15 px-1.5 text-[hsl(var(--vata-ink))]">
+        V{p.teste.vata ?? ""}
       </span>
-      <span className="rounded bg-pitta/15 px-1.5 text-pitta">
-        P{p.teste.pitta ?? "—"}
+      <span className="rounded bg-pitta/15 px-1.5 text-[hsl(var(--pitta-ink))]">
+        P{p.teste.pitta ?? ""}
       </span>
-      <span className="rounded bg-kapha/15 px-1.5 text-kapha">
-        K{p.teste.kapha ?? "—"}
+      <span className="rounded bg-kapha/15 px-1.5 text-[hsl(var(--kapha-ink))]">
+        K{p.teste.kapha ?? ""}
       </span>
     </div>
   ) : (
-    <span className="text-muted-foreground">—</span>
+    <span className="text-muted-foreground">sem teste</span>
   );
 }
 function Atencao({ p }: { p: Paciente }) {
@@ -42,7 +42,7 @@ function Atencao({ p }: { p: Paciente }) {
       {p.teste?.pontos.map((ponto, i) => (
         <span
           key={i}
-          className="rounded bg-accent px-2 py-1 text-xs text-accent-foreground"
+          className="portal-atencao px-2 py-1 text-xs"
         >
           {ponto}
         </span>
@@ -92,6 +92,7 @@ export default function Pacientes({
           <Button
             key={v}
             variant={filtro === v ? "secondary" : "ghost"}
+            className={`rounded-full ${filtro===v?"bg-secondary text-secondary-foreground":"bg-muted text-primary"}`}
             size="sm"
             aria-pressed={filtro === v}
             onClick={() => setFiltro(v)}
@@ -103,7 +104,7 @@ export default function Pacientes({
           + Convidar paciente
         </CTAButton>
       </div>
-      <div className="hidden overflow-x-auto lg:block">
+      <div className="portal-cartao hidden overflow-x-auto lg:block">
         <table className="w-full text-left text-sm">
           <thead className="border-b border-border text-xs text-muted-foreground">
             <tr>
@@ -126,10 +127,10 @@ export default function Pacientes({
               <tr key={p.paciente_id} className="border-b border-border">
                 <td className="p-3">
                   <Link
-                    className="font-semibold hover:underline"
+                    className="flex items-center gap-3 font-semibold hover:underline"
                     to={`/painel-terapeuta/paciente/${p.paciente_id}`}
                   >
-                    {p.nome}
+                    <AvatarPessoa nome={p.nome} id={p.paciente_id}/><span>{p.nome}</span>
                   </Link>
                 </td>
                 <td className="p-3">
@@ -162,9 +163,7 @@ export default function Pacientes({
             className="rounded-lg border border-border bg-background p-4"
           >
             <div className="mb-3 flex gap-3">
-              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-muted text-xs font-semibold text-primary">
-                {inicial(p.nome)}
-              </span>
+              <AvatarPessoa nome={p.nome} id={p.paciente_id}/>
               <div>
                 <Link
                   className="text-sm font-semibold"

@@ -133,7 +133,7 @@ const TerapeutaCard = ({
         )}
 
         <div className="mt-auto flex items-end justify-between gap-2 pt-1">
-          {sistema ? <CTAButton to={`${profilePath}#agenda`} className="h-9 px-4 py-1 text-sm">Agendar</CTAButton> : <Link to={profilePath} className="rounded-full bg-muted px-3 py-1 text-sm font-bold text-primary">Ver perfil</Link>}
+          {sistema ? <CTAButton to={`${profilePath}#agenda`} className="h-9 px-4 py-1 text-sm">Marcar consulta</CTAButton> : <Link to={profilePath} className="rounded-full bg-muted px-3 py-1 text-sm font-bold text-primary">Ver perfil</Link>}
           <div className="flex items-center gap-1.5">
             {temInstagram && (
               <span
