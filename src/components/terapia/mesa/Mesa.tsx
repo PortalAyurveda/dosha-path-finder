@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { terapia,diaBR } from '@/lib/terapia';
 import { textosMarcados } from '@/lib/terapiaPaciente';
 import type { FichaPaciente } from '@/lib/terapiaPaciente';
-import type { AvaliacaoLista } from '@/lib/terapiaPaciente';
+import type { AvaliacaoLista } from '@/lib/terapiaAvaliacao';
 import './mesa.css';
 
 /** Barra fina e escura da mesa de trabalho. Sem `nome`, lê o primeiro nome da terapeuta logada. */
