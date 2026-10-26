@@ -17,7 +17,7 @@
 .m-btn.sal{background:hsl(var(--secondary));color:hsl(var(--secondary-foreground));border-color:hsl(var(--secondary));font-weight:700}
 .m-btn.contorno{border-color:var(--m-ink)}
 .m-muted{color:var(--m-muted);font-size:13px}
-.m-eti{font-size:11px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;color:var(--m-muted)}
+.mesa .m-eti{font-family:'DM Sans',system-ui,sans-serif;font-size:11px;line-height:1.4;letter-spacing:.08em;text-transform:uppercase;font-weight:700;color:var(--m-muted)}
 .m-card{background:hsl(var(--card));border:1px solid var(--m-line);border-radius:14px;padding:14px}
 .m-tag{display:inline-block;font-size:12px;padding:2px 8px;border-radius:999px;border:1px solid var(--m-line);background:var(--m-soft);margin:0 4px 4px 0}
 .m-tag.at{border-color:var(--m-am);background:var(--m-ams)}
@@ -29,6 +29,7 @@
 .mesa-ficha.sem-teste .mesa-teste{border-right:0;border-bottom:1px solid var(--m-line)}
 .mesa-teste .cab{display:flex;justify-content:space-between;align-items:center;gap:8px}
 .mesa-teste .cab h2{font-size:18px}
+.mesa-teste .cab .m-btn,.cab-pessoa .m-btn{white-space:nowrap;padding:6px 10px;font-size:13px}
 .mesa-teste section{display:flex;flex-direction:column;gap:4px}
 .mesa-av{display:flex;flex-direction:column;min-width:0}
 .mesa-soma{position:sticky;top:var(--mesa-hdr);z-index:3;background:hsl(var(--card));border-bottom:1px solid var(--m-line);padding:10px 16px;display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;justify-content:space-between}
