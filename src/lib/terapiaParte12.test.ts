@@ -1,0 +1,25 @@
+import {describe,it,expect,vi,beforeEach} from 'vitest';
+vi.mock('@/integrations/supabase/client',()=>({supabase:{rpc:vi.fn()}}));
+import {supabase} from '@/integrations/supabase/client';
+import {agendaTerapia,cancelarConsultasDoDia,horariosNoMolde,horarioExtra,type DiaAgenda} from './terapiaAgenda';
+import {juntarModelo,modelosTerapia} from './terapiaModelos';
+import {fotosPedidos} from './terapiaFotoPedidos';
+import {fimTerapia} from './terapiaFim';
+import {meu} from './terapiaMeu';
+const rpc=vi.mocked(supabase.rpc);
+beforeEach(()=>{rpc.mockReset();rpc.mockResolvedValue({data:null,error:null} as never);});
+describe('Parte 12: contratos e regras',()=>{
+ it('semana recebe p_inicio date',async()=>{await agendaTerapia.semana('2026-10-26');expect(rpc).toHaveBeenCalledWith('terapia_agenda_semana',{p_inicio:'2026-10-26'});});
+ it('fecha horário com falso',async()=>{await agendaTerapia.horario('i','f',false);expect(rpc).toHaveBeenCalledWith('terapia_horario',{p_inicio:'i',p_fim:'f',p_abrir:false});});
+ it('fecha dia com motivo',async()=>{await agendaTerapia.dia('2026-10-26',false,'Viagem');expect(rpc).toHaveBeenCalledWith('terapia_dia',{p_dia:'2026-10-26',p_abrir:false,p_motivo:'Viagem'});});
+ it('cancela todas uma a uma sem repetir consulta',async()=>{let liberar:()=>void=()=>undefined;const primeira=new Promise<void>(r=>{liberar=r;});const cancelar=vi.fn().mockReturnValueOnce(primeira).mockResolvedValue(undefined);const dia={horarios:[{consulta:{id:'a'}},{consulta:{id:'b'}},{consulta:{id:'a'}}]} as DiaAgenda;const tarefa=cancelarConsultasDoDia(dia,cancelar);expect(cancelar.mock.calls).toEqual([['a']]);liberar();await tarefa;expect(cancelar.mock.calls).toEqual([['a'],['b']]);});
+ it('interrompe cancelamentos em erro para não esconder falha',async()=>{const cancelar=vi.fn().mockRejectedValue(new Error('Falha'));await expect(cancelarConsultasDoDia({horarios:[{consulta:{id:'a'}},{consulta:{id:'b'}}]} as DiaAgenda,cancelar)).rejects.toThrow('Falha');expect(cancelar).toHaveBeenCalledTimes(1);});
+ it('conta slots pela duração e intervalo sem extrapolar faixa',()=>{expect(horariosNoMolde([{dia_semana:1,inicio:'09:00',fim:'12:00',duracao_min:50,intervalo_min:10}],50,10)).toBe(3);});
+ it('extra usa duração em minutos e fuso São Paulo',()=>{expect(horarioExtra('2026-10-26','09:00',50)).toEqual({inicio:'2026-10-26T12:00:00.000Z',fim:'2026-10-26T12:50:00.000Z'});});
+ it('juntar modelo não duplica slug na mesma seção e cria ids',()=>{let n=0;const item={id:'velho',titulo:'Receita',nota:'',slug:'arroz'};const d=juntarModelo({secoes:{comida:[item]}},{secoes:{comida:[item,{...item,slug:'sopa'}],noite:[item]}},()=>`novo-${++n}`);expect(d.secoes.comida.map(i=>i.id)).toEqual(['velho','novo-1']);expect(d.secoes.noite[0].id).toBe('novo-2');});
+ it('juntar modelo não duplica link na mesma seção',()=>{const item={id:'a',titulo:'A',nota:'',link:'/a'};expect(juntarModelo({secoes:{s:[item]}},{secoes:{s:[{...item,id:'b'}]}}).secoes.s).toHaveLength(1);});
+ it('criar de modelo envia todos parâmetros exatos inclusive nulos',async()=>{await modelosTerapia.novaDe('p','m',null,'a','c');expect(rpc).toHaveBeenCalledWith('terapia_folha_nova_de',{p_paciente:'p',p_modelo:'m',p_folha_origem:null,p_avaliacao:'a',p_consulta:'c'});});
+ it('pedido transmite data e modelo',async()=>{await fotosPedidos.pedir('p','Pele','Luz natural','url','2026-10-30');expect(rpc).toHaveBeenCalledWith('terapia_foto_pedir',{p_paciente:'p',p_titulo:'Pele',p_instrucao:'Luz natural',p_modelo:'url',p_ate:'2026-10-30'});});
+ it('foto extra vincula pedido',async()=>{await meu.fotoRegistrar('extra','path','Pele','pedido');expect(rpc).toHaveBeenCalledWith('foto_registrar',{p_tipo:'extra',p_path:'path',p_titulo:'Pele',p_pedido:'pedido'});});
+ it('nota vincula paciente e consulta',async()=>{await fimTerapia.nota('p','Texto','c');expect(rpc).toHaveBeenCalledWith('acomp_nota_salvar',{p_paciente:'p',p_texto:'Texto',p_consulta:'c'});});
+});
