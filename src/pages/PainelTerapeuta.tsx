@@ -18,7 +18,7 @@ import Perfil from "@/components/terapia/Perfil";
 import Acervos from "@/components/terapia/acervo/Acervos";
 import Configuracoes, { PassosParticipar } from "@/components/terapia/Participar";
 import "@/components/terapia/painel.css";
-import { useChatTotal } from '@/components/terapia/chat/ChatAvisos';
+import { chat, CHAT_LISTA_MS } from '@/lib/terapiaChat';
 const ListaConversas = lazy(()=>import('@/components/terapia/chat/ListaConversas'));
 const abas = [
   ["hoje", "Hoje"],
@@ -32,7 +32,8 @@ const abas = [
 ];
 export default function PainelTerapeuta() {
   const acesso = useSouTerapeuta();
-  const totalMensagens = useChatTotal();
+  const conversas = useQuery({queryKey:['chat-lista',true,acesso.userId],queryFn:chat.terapeuta,enabled:acesso.permitido,refetchInterval:CHAT_LISTA_MS});
+  const totalMensagens = conversas.data?.reduce((n,c)=>n+c.nao_lidas,0)??0;
   const [params, setParams] = useSearchParams();
   const selecionada = params.get("aba") ?? "hoje";
   const aba = abas.some(([v]) => v === selecionada) ? selecionada : "hoje";

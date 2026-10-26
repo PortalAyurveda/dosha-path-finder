@@ -4,18 +4,20 @@ import {Link} from 'react-router-dom';
 import {ArrowLeft,Send} from 'lucide-react';
 import {Button} from '@/components/ui/button';
 import {Textarea} from '@/components/ui/textarea';
-import {chat,CHAT_ABERTA_MS,juntarMensagens,textoConvite,type Conversa as Dados,type Mensagem} from '@/lib/terapiaChat';
+import {chat,CHAT_ABERTA_MS,CHAT_LISTA_MS,juntarMensagens,textoConvite,type Conversa as Dados,type Mensagem} from '@/lib/terapiaChat';
 import {terapia,diaBR,horaBR} from '@/lib/terapia';
 import {OnlineAgora} from '../publico/ConsultaPublica';
 import './chat.css';
 export default function Conversa({conversa,papel,voltar,marcar,convite}:{conversa:Dados;papel:'paciente'|'terapeuta';voltar?:()=>void;marcar?:()=>void;convite?:string}){
  const qc=useQueryClient();const [texto,setTexto]=useState('');const [erro,setErro]=useState('');const [ocupado,setOcupado]=useState(false);const [historico,setHistorico]=useState<Mensagem[]>([]);const [anteriores,setAnteriores]=useState(true);const fim=useRef<HTMLDivElement>(null);const ultima=useRef<number>();
  const config=useQuery({queryKey:['terapia-config'],queryFn:terapia.config});const textos=config.data?.chat_textos??{};
+ const lista=useQuery({queryKey:['chat-lista',papel==='terapeuta'],queryFn:papel==='paciente'?chat.minhas:chat.terapeuta,refetchInterval:CHAT_LISTA_MS});
+ conversa=lista.data?.find(c=>c.id===conversa.id)??conversa;
  const pessoa=papel==='paciente'?conversa.terapeuta:conversa.paciente;
  const q=useQuery({queryKey:['chat-mensagens',conversa.id,papel],queryFn:async()=>{const m=await chat.mensagens(conversa.id);if(!document.hidden){await chat.ler(conversa.id);void qc.invalidateQueries({queryKey:['chat-total']});void qc.invalidateQueries({queryKey:['chat-lista']});}return m;},refetchInterval:()=>document.hidden?false:CHAT_ABERTA_MS});
  useEffect(()=>{const visivel=()=>{if(!document.hidden)void q.refetch();};document.addEventListener('visibilitychange',visivel);return()=>document.removeEventListener('visibilitychange',visivel);},[conversa.id]);
  const mensagens=juntarMensagens(historico,q.data??[]);const primeiroSistema=mensagens.find(m=>m.autor==='sistema')?.id;
- useEffect(()=>{if(q.data?.length===0) setAnteriores(false);if(q.data&&q.data.length<50&&!historico.length)setAnteriores(false);const id=q.data?.at(-1)?.id;if(id!==ultima.current){ultima.current=id;fim.current?.scrollIntoView({block:'nearest'});}},[q.data]);
+ useEffect(()=>{if(!q.data)return;setHistorico(h=>juntarMensagens(h,q.data??[]));if(q.data.length<50&&!historico.length)setAnteriores(false);const id=q.data.at(-1)?.id;if(id!==ultima.current){ultima.current=id;fim.current?.scrollIntoView({block:'nearest'});}},[q.data]);
  const agenda=useQuery({queryKey:['chat-agenda',conversa.terapeuta.slug],queryFn:()=>chat.agenda(conversa.terapeuta.slug),enabled:papel==='paciente'&&mensagens.some(m=>m.autor==='terapeuta')});
  const enviar=async(valor=texto)=>{if(!valor.trim()||ocupado)return;setOcupado(true);setErro('');try{await chat.enviar(conversa.id,valor);if(valor===texto)setTexto('');await q.refetch();}catch(e){setErro(e instanceof Error?e.message:String(e));}finally{setOcupado(false);}};
  return <section className="chat-conversa" aria-label={`Conversa com ${pessoa.nome}`}><header className="flex flex-wrap items-center gap-3 border-b border-border p-4">{voltar&&<Button variant="ghost" size="icon" aria-label="Voltar às conversas" onClick={voltar}><ArrowLeft className="h-5 w-5"/></Button>}{papel==='paciente'&&conversa.terapeuta.imagem&&<img src={conversa.terapeuta.imagem} alt="" className="h-10 w-10 rounded-full object-cover"/>}<div className="min-w-0 flex-1"><h2 className="break-words font-semibold">{pessoa.nome}</h2><p className="text-xs text-muted-foreground">{papel==='paciente'?(conversa.terapeuta.online?<OnlineAgora/>:textos.fora):!conversa.paciente.ligada?textos.nao_paciente:'Paciente'}</p></div>{papel==='paciente'?<Button variant="outline" size="sm" onClick={marcar}>Marcar consulta</Button>:conversa.paciente.ligada?<Button asChild variant="outline" size="sm"><Link to={`/painel-terapeuta/paciente/${conversa.paciente.id}`}>Abrir a ficha</Link></Button>:<Button variant="secondary" size="sm" disabled={ocupado||!convite||!textos.convite_mensagem} onClick={()=>void enviar(textoConvite(textos.convite_mensagem??'',convite??''))}>Enviar meu convite</Button>}</header>
