@@ -10,7 +10,7 @@
 - Keep therapist invitations independently lazy-loaded beside therapist routes and share the existing authentication form with /entrar; embedded authentication suppresses default navigation while preserving email functions, messages and external-browser return destinations.
 
 - Keep therapy assessments and their print route independently lazy-loaded next to patient routes, with core sectors, optional additions and photo annotations in dedicated assessment components; preserve the single JSON draft and existing RPCs, and calculate birth charts locally to isolate editing and private content from other portal views.
-- Keep therapy indications and their print route independently lazy-loaded beside patient routes, with source catalog and section editing in dedicated components and contracts in the indications module; serialize saves through existing therapy RPCs so sending and printing use the latest single JSON draft.
+- Keep therapy indications and their print route independently lazy-loaded and bare inside the shared therapist workspace; isolate patient context, source catalog and sheet editing in dedicated indication components, load assessments by the sheet reference or latest patient assessment, and serialize existing RPC saves so sending and printing read the latest single draft.
 
 - Keep therapist collection editing and item display in dedicated collection components with a lazy item route; keep teaching boards independently lazy-loaded with canvas strokes and source metadata in their own module, reuse assessment marking, and delete Storage files using the paths returned by existing RPCs. This isolates the private editor and preserves resumable boards without altering other portal views.
 - Keep therapist online presence, the global 2-minute ping and the "Consulta agora" corner alert in one provider mounted by Layout, and the public consultation card lazy-loaded inside the therapist profile; this lets the avatar switch and requests work on any page without loading therapy views elsewhere.
@@ -22,3 +22,6 @@
 - Keep weekly slot operations, photo requests, indication templates and consultation follow-up in dedicated therapy modules and views; reuse existing private upload and serialized indication saves, and cancel day appointments sequentially after one confirmation to preserve errors and avoid duplicate writes.
 
 - Keep patient and therapist messaging in shared dedicated chat views with RPC-only access; coordinate message and consultation title alerts through a single owner to avoid competing title timers.
+
+- Fit the teaching-board canvas to both available dimensions before applying zoom, and scale long source cards independently of normalized drawing coordinates; this keeps all content visible without changing saved strokes.
+- Keep the training Jitsi iframe mounted while participant events switch its CSS framing between a local-camera inset and the large call area; this avoids reconnecting when someone joins or leaves.
