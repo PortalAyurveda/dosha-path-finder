@@ -72,11 +72,11 @@ export function GradeSemana({ semana }: { semana: Semana }) {
                 return (
                   <td
                     key={d}
-                    className={`h-16 align-top rounded p-1 ${bloqueio ? "terapia-bloqueado border border-border" : consultas.length ? "bg-primary text-primary-foreground" : livre ? "border border-dashed border-secondary/40 bg-background" : "bg-muted"}`}
+                    className={`h-11 overflow-hidden align-top rounded p-1 ${bloqueio ? "terapia-bloqueado border border-border" : consultas.length ? "bg-primary text-primary-foreground" : livre ? "border border-dashed border-secondary/40 bg-background" : "bg-muted"}`}
                     title={bloqueio?.motivo ?? undefined}
                   >
                     {bloqueio ? (
-                      <span className="text-muted-foreground">Bloqueado</span>
+                      <span className="block break-words text-[10px] leading-tight text-muted-foreground">Bloqueado</span>
                     ) : (
                       consultas.map((c) => (
                         <div
@@ -243,6 +243,7 @@ export default function Agenda({
                 <Button
                   variant="link"
                   size="sm"
+                  disabled={agenda.isPending || salvando}
                   onClick={() => setEditando(editando === d ? null : d)}
                 >
                   mudar
@@ -427,6 +428,8 @@ export default function Agenda({
         <CTAButton
           disabled={
             salvando ||
+            agenda.isPending ||
+            !!agenda.error ||
             duracao < 15 ||
             intervalo < 0 ||
             regras.some((r) => r.inicio >= r.fim)

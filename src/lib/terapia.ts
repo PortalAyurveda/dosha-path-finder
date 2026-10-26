@@ -192,4 +192,7 @@ export const dataBR = (s: string) =>
     year: "numeric",
     month: "2-digit",
     day: "2-digit",
-  }).format(new Date(s));
+  }).formatToParts(new Date(s)).reduce<Record<string, string>>((partes, parte) => {
+    partes[parte.type] = parte.value;
+    return partes;
+  }, {}) satisfies Record<string, string>;

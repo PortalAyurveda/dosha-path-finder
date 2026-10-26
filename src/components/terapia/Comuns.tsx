@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { ReactNode, useId } from "react";
 import { Switch } from "@/components/ui/switch";
 import { Painel } from "@/lib/terapia";
 export function Secao({
@@ -30,10 +30,11 @@ export function ChaveSistema({
   ocupado: boolean;
   mudar: (v: boolean) => void;
 }) {
+  const id = useId();
   return (
     <div className="flex items-center justify-between gap-3 rounded-lg border border-secondary/25 bg-secondary/5 p-3">
       <div>
-        <label htmlFor="sistema-chave" className="text-sm font-semibold">
+        <label htmlFor={id} className="text-sm font-semibold">
           Estou no sistema
         </label>
         <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
@@ -43,7 +44,7 @@ export function ChaveSistema({
         </p>
       </div>
       <Switch
-        id="sistema-chave"
+        id={id}
         aria-label="Estou no sistema"
         checked={painel.sistema.no_sistema}
         disabled={ocupado}
