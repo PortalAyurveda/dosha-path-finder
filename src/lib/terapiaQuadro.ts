@@ -3,7 +3,7 @@ import type { FotoPaciente,FotosPaciente } from './terapiaPaciente';
 export const QUADRO_MAX_PX=1600;
 export const CORES_QUADRO=['foreground','secondary','muted-foreground','background'] as const;
 export type CorQuadro=typeof CORES_QUADRO[number];
-export interface BaseQuadro { chave:string; nome:string; texto?:string; foto?:FotoPaciente; clinico?:ItemClinico }
+export interface BaseQuadro { chave:string; nome:string; texto?:string; url?:string; foto?:FotoPaciente; clinico?:ItemClinico }
 export interface TracoQuadro { tipo:'pincel'|'texto'; cor:CorQuadro; pontos:{x:number;y:number}[]; texto?:string }
 export interface EstadoQuadro { base:BaseQuadro; desenhos:TracoQuadro[] }
 export interface QuadroSalvo { id:string; item:string; imagem_path:string|null; tracos:EstadoQuadro|TracoQuadro[]; mostrar_paciente:boolean; criado_em:string; atualizado_em:string }

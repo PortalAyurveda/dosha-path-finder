@@ -12722,9 +12722,13 @@ export type Database = {
           atualizado_em: string
           criado_em: string
           dados: Json
+          descricao: string | null
+          do_portal: boolean
+          dosha: string | null
           id: string
           nome: string
-          terapeuta_id: string
+          tags: string[]
+          terapeuta_id: string | null
           tratamento: string | null
           usos: number
         }
@@ -12732,9 +12736,13 @@ export type Database = {
           atualizado_em?: string
           criado_em?: string
           dados?: Json
+          descricao?: string | null
+          do_portal?: boolean
+          dosha?: string | null
           id?: string
           nome: string
-          terapeuta_id: string
+          tags?: string[]
+          terapeuta_id?: string | null
           tratamento?: string | null
           usos?: number
         }
@@ -12742,9 +12750,13 @@ export type Database = {
           atualizado_em?: string
           criado_em?: string
           dados?: Json
+          descricao?: string | null
+          do_portal?: boolean
+          dosha?: string | null
           id?: string
           nome?: string
-          terapeuta_id?: string
+          tags?: string[]
+          terapeuta_id?: string | null
           tratamento?: string | null
           usos?: number
         }
@@ -16801,6 +16813,7 @@ export type Database = {
         Args: { p_inicio: string; p_paciente: string }
         Returns: Json
       }
+      terapia_modelo: { Args: { p_id: string }; Returns: Json }
       terapia_modelo_apagar: { Args: { p_id: string }; Returns: undefined }
       terapia_modelo_salvar: {
         Args: { p_folha: string; p_id?: string; p_nome: string }

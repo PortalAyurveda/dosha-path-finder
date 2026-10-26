@@ -1,0 +1,9 @@
+import {useEffect,useRef,useState} from 'react';
+import {Mic,MicOff,Video,VideoOff} from 'lucide-react';
+import {Button} from '@/components/ui/button';
+export default function CameraPrevia({mudar}:{mudar?:(pronta:boolean)=>void}) {
+ const video=useRef<HTMLVideoElement>(null);const stream=useRef<MediaStream>();const [ativa,setAtiva]=useState(false);const [erro,setErro]=useState('');const [mic,setMic]=useState(true);const [cam,setCam]=useState(true);
+ useEffect(()=>()=>{stream.current?.getTracks().forEach(t=>t.stop());},[]);
+ const abrir=async()=>{try{if(!navigator.mediaDevices?.getUserMedia)throw new Error('Abra esta sala no Chrome ou no Safari.');const s=await navigator.mediaDevices.getUserMedia({video:true,audio:true});stream.current=s;if(video.current)video.current.srcObject=s;setAtiva(true);mudar?.(true);setErro('');}catch{setErro('Não foi possível abrir a câmera e o microfone. Confira a permissão do navegador.');mudar?.(false);}};
+ return <div className="space-y-3"><div className="sala-camera"><video ref={video} autoPlay playsInline muted aria-label="Sua câmera"/>{!ativa&&<Button variant="outline" onClick={()=>void abrir()}>Testar câmera e microfone</Button>}</div><div className="flex justify-center gap-3"><Button variant="outline" size="icon" aria-label={mic?'Desligar microfone':'Ligar microfone'} disabled={!ativa} onClick={()=>{stream.current?.getAudioTracks().forEach(t=>t.enabled=!mic);setMic(!mic);}}>{mic?<Mic/>:<MicOff/>}</Button><Button variant="outline" size="icon" aria-label={cam?'Desligar câmera':'Ligar câmera'} disabled={!ativa} onClick={()=>{stream.current?.getVideoTracks().forEach(t=>t.enabled=!cam);setCam(!cam);}}>{cam?<Video/>:<VideoOff/>}</Button></div>{erro&&<p role="alert" className="text-sm">{erro}</p>}</div>;
+}

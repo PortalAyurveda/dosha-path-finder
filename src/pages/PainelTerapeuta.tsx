@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Navigate, useSearchParams } from "react-router-dom";
+import { Link, Navigate, useSearchParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -232,6 +232,7 @@ export default function PainelTerapeuta() {
                   </span>
                 )}
               </h1>
+              {(aba === "hoje" || aba === "agenda") && <Button asChild variant="outline" className="mb-5"><Link to="/consulta/treino">Sala de treino</Link></Button>}
               {aba === "hoje" &&
                 (hoje.data ? (
                   <Hoje dados={hoje.data} agora={agora} />
