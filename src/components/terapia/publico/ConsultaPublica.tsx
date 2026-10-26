@@ -10,6 +10,7 @@ import LoginForm from "@/components/auth/LoginForm";
 import { useUser } from "@/contexts/UserContext";
 import { AGORA_POLL_MS, horaBR, pedidoAberto, reais, terapia, type PedidoAgora } from "@/lib/terapia";
 import type { PermissoesConvite } from "@/lib/terapiaConvite";
+import AgendamentoPublico from './AgendamentoPublico';
 
 const PERMS: [keyof PermissoesConvite, string][] = [["teste", "Meu teste de dosha"], ["fotos", "Minhas fotos"], ["rotina", "Minha rotina"], ["akasha", "Minhas conversas com a Akasha"]];
 const chave = (slug: string) => `consulta-agora:${slug}`;
@@ -33,7 +34,7 @@ export default function ConsultaPublica({ slug, terapeutaId, primeiroNome }: { s
   const [naoDeu, setNaoDeu] = useState(false);
   const pedido = useQuery({
     queryKey: ["agora-meu", pedidoId],
-    queryFn: () => terapia.agoraMeu(pedidoId!),
+    queryFn: () => { if (!pedidoId) throw new Error('Pedido não encontrado.'); return terapia.agoraMeu(pedidoId); },
     enabled: !!pedidoId && logado,
     refetchInterval: (q) => (q.state.data && !pedidoAberto(q.state.data.status) ? false : AGORA_POLL_MS),
     retry: false,
@@ -61,12 +62,12 @@ export default function ConsultaPublica({ slug, terapeutaId, primeiroNome }: { s
   if (!a?.no_sistema) return null;
   const aberto = p && pedidoAberto(p.status);
   return (
-    <section aria-label="Marcar consulta" className="mb-10 rounded-2xl border border-border bg-card p-5">
+    <section id="agenda" aria-label="Marcar consulta" className="mb-10 scroll-mt-24 rounded-lg border border-border bg-card p-5">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h2 className="font-serif text-lg font-bold text-primary">Marcar consulta</h2>
+        <h2 className="font-serif text-lg font-bold text-primary">Marcar consulta com {primeiroNome}</h2>
         {a.online && <OnlineAgora />}
       </div>
-      {a.valor ? <p className="mt-1 text-sm text-muted-foreground">Valor da consulta: {reais(Number(a.valor))}, combinado direto com a terapeuta</p> : null}
+      {a.valor != null ? <p className="mt-1 text-sm text-muted-foreground">{a.valor === 0 ? 'Consulta gratuita' : `Valor da consulta: ${reais(Number(a.valor))}, combinado direto com a terapeuta`}</p> : null}
       {erro && <p role="alert" className="mt-3 text-sm text-destructive">{erro}</p>}
 
       {aberto ? (
@@ -112,25 +113,7 @@ export default function ConsultaPublica({ slug, terapeutaId, primeiroNome }: { s
             </form>
           )}
           {modo === "entrar" && !logado && <div className="mt-4"><LoginForm embedded emailOnly redirectPath={`/terapeutas/${slug}`} /></div>}
-          {marcada ? (
-            <p className="mt-4 text-sm font-semibold">Consulta marcada para {new Date(marcada).toLocaleString("pt-BR", { weekday: "long", day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit", timeZone: "America/Sao_Paulo" })}.</p>
-          ) : dias.length > 0 ? (
-            <div className="mt-5 space-y-3">
-              <p className="text-xs font-semibold uppercase text-muted-foreground">Próximos horários</p>
-              {dias.map(([d, hs]) => (
-                <div key={d}>
-                  <p className="mb-1.5 text-sm font-semibold capitalize">{d}</p>
-                  <div className="flex flex-wrap gap-2">
-                    {hs.map((h) => (
-                      <Button key={h.inicio} variant="outline" size="sm" disabled={ocupado} onClick={() => { if (!logado) { setModo("entrar"); return; } if (window.confirm(`Marcar consulta ${d} às ${horaBR(h.inicio)}?`)) void rodar(async () => { await terapia.marcarPublico(terapeutaId, h.inicio); setMarcada(h.inicio); await agenda.refetch(); }); }}>{horaBR(h.inicio)}</Button>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p className="mt-4 text-sm text-muted-foreground">Sem horários livres nos próximos dias.</p>
-          )}
+          <AgendamentoPublico slug={slug} nome={primeiroNome} agenda={a} atualizar={agenda.refetch} />
         </>
       )}
     </section>

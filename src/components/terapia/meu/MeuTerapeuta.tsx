@@ -37,7 +37,7 @@ function Remarcar({ l, fechar, pronto }: { l: MeuTerapeutaLigacao; fechar: () =>
   );
 }
 
-function Nascimento({ pronto }: { pronto: () => void }) {
+export function Nascimento({ pronto }: { pronto: () => void }) {
   const [data, setData] = useState(""); const [hora, setHora] = useState(""); const [semHora, setSemHora] = useState(false);
   const [cidade, setCidade] = useState(""); const [municipio, setMunicipio] = useState<MunicipioNascimento>(); const [fora, setFora] = useState(false); const [exterior, setExterior] = useState("");
   const [erro, setErro] = useState(""); const [ocupado, setOcupado] = useState(false);
@@ -69,7 +69,7 @@ function Ligacao({ l }: { l: MeuTerapeutaLigacao }) {
   const [remarcar, setRemarcar] = useState(false);
   const [motivo, setMotivo] = useState(l.proxima?.motivo ?? ""); const [motivoMsg, setMotivoMsg] = useState("");
   useEffect(() => setMotivo(l.proxima?.motivo ?? ""), [l.proxima?.id, l.proxima?.motivo]);
-  const [fotos, setFotos] = useState(false);
+  const [fotos, setFotos] = useState(window.location.hash === '#meu-terapeuta-fotos');
   const [nasc, setNasc] = useState(false);
   const [folha, setFolha] = useState<string>("");
   const [perm, setPerm] = useState(l.permissoes); useEffect(() => setPerm(l.permissoes), [l.permissoes]);
@@ -87,7 +87,7 @@ function Ligacao({ l }: { l: MeuTerapeutaLigacao }) {
   const desligar = async () => { if (!window.confirm(`Parar de ser acompanhada por ${l.terapeuta.nome}? Ela deixa de ver seus dados e suas próximas consultas são canceladas. Para voltar, será preciso um novo convite.`)) return; setErro(""); try { await meu.desligar(l.ligacao); recarregar(); } catch (e) { setErro((e as Error).message); } };
 
   return (
-    <div className="space-y-5">
+    <div id="meu-terapeuta-fotos" className="space-y-5 scroll-mt-24">
       <header className="flex flex-wrap items-center gap-4">
         {l.terapeuta.imagem ? <img src={l.terapeuta.imagem} alt="" className="h-16 w-16 rounded-t-full rounded-b-lg object-cover" /> : <span className="flex h-16 w-16 items-center justify-center rounded-t-full rounded-b-lg bg-secondary/15 font-serif text-xl font-bold text-secondary">{nome[0]}</span>}
         <div className="min-w-0 flex-1">
