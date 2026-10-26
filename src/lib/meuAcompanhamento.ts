@@ -1,6 +1,6 @@
 import { supabase } from '@/integrations/supabase/client';
 import type { MeuTerapeutaLigacao, FotosMinhas } from './terapiaMeu';
-import type { SalaConsulta } from './consultaSala';
+export interface ConsultaMinha {id:string;inicio:string;fim:string;status:string;terapeuta_id:string;tipo:string;nota:number|null;folha_enviada:boolean;avaliacao_id:string|null}
 export const ABAS_ACOMPANHAMENTO = [['inicio','Início'],['indicacoes','Indicações'],['consultas','Consultas'],['avaliacao','Minha avaliação'],['evolucao','Minha evolução'],['fotos','Fotos'],['conversa','Conversa']] as const;
 export type AbaAcompanhamento = typeof ABAS_ACOMPANHAMENTO[number][0];
 export interface AvaliacaoMinha {
@@ -10,6 +10,7 @@ export interface AvaliacaoMinha {
   quadros:{id:string;imagem_path:string;item:string}[];
 }
 export const acompanhamento = {
+  consultas:async():Promise<ConsultaMinha[]>=>{const {data,error}=await supabase.rpc('minhas_consultas_acompanhamento' as never);if(error)throw new Error(error.message);return (data??[]) as unknown as ConsultaMinha[];},
   avaliacoes:async():Promise<AvaliacaoMinha[]>=>{const {data,error}=await supabase.rpc('minhas_avaliacoes' as never);if(error)throw new Error(error.message);return (data??[]) as unknown as AvaliacaoMinha[];},
   mostrar:async(id:string,mostrar:boolean):Promise<{id:string;mostrar_pessoa:boolean;mostrada_em:string|null}>=>{const {data,error}=await supabase.rpc('terapia_avaliacao_mostrar' as never,{p_id:id,p_mostrar:mostrar} as never);if(error)throw new Error(error.message);return data as unknown as {id:string;mostrar_pessoa:boolean;mostrada_em:string|null};},
 };
@@ -22,11 +23,11 @@ export function nomeMarca(chave:string) {
   const texto=nomes[ultimo]??ultimo.replace(/[_-]/g,' ');
   return texto.charAt(0).toUpperCase()+texto.slice(1);
 }
-export function pendencias(l:MeuTerapeutaLigacao,fotos?:FotosMinhas,salas:Record<string,SalaConsulta>={}) {
+export function pendencias(l:MeuTerapeutaLigacao,fotos?:FotosMinhas,consultas:ConsultaMinha[]=[]) {
   // The photo RPC exposes the therapist's first name rather than her ID.
   const pedidos=(fotos?.pedidos??[]).filter(p=>!p.terapeuta||p.terapeuta===l.terapeuta.primeiro_nome);
   const folhas=l.folhas.filter(f=>!f.vista_em);
-  const avaliar=l.historico.filter(c=>c.status==='realizada'&&salas[c.id]&&!salas[c.id].ja_avaliou);
+  const avaliar=consultas.filter(c=>c.terapeuta_id===l.terapeuta.id&&c.status==='realizada'&&c.nota==null);
   return {pedidos,folhas,avaliar,total:pedidos.length+folhas.length+avaliar.length};
 }
 export const avaliacoesDa=(lista:AvaliacaoMinha[],slug:string)=>lista.filter(a=>a.terapeuta.slug===slug);

@@ -1,17 +1,14 @@
 import { useQuery } from '@tanstack/react-query';
 import { useUser } from '@/contexts/UserContext';
 import { meu } from '@/lib/terapiaMeu';
-import { sala, type SalaConsulta } from '@/lib/consultaSala';
-import { pendencias } from '@/lib/meuAcompanhamento';
+import { acompanhamento,pendencias } from '@/lib/meuAcompanhamento';
+import { chat } from '@/lib/terapiaChat';
 export function useMeuAcompanhamento() {
   const {user,isAnonymous}=useUser();const enabled=!!user&&!isAnonymous;
   const ligacoes=useQuery({queryKey:['meu-terapeuta',user?.id],queryFn:meu.terapeuta,enabled,refetchInterval:30000,refetchIntervalInBackground:false});
   const fotos=useQuery({queryKey:['fotos-minhas',user?.id],queryFn:meu.fotos,enabled:enabled&&!!ligacoes.data?.length,refetchInterval:30000,refetchIntervalInBackground:false});
-  const ids=(ligacoes.data??[]).flatMap(l=>l.historico.filter(c=>c.status==='realizada').map(c=>c.id));
-  const salas=useQuery({queryKey:['acomp-salas',user?.id,ids],queryFn:async()=>{
-    const resultados=await Promise.all(ids.map(async id=>{try{return [id,await sala.consultar(id)] as const;}catch{return null;}}));
-    return Object.fromEntries(resultados.filter((r):r is readonly [string,SalaConsulta]=>r!==null)) as Record<string,SalaConsulta>;
-  },enabled:enabled&&ids.length>0,refetchInterval:30000,refetchIntervalInBackground:false});
-  const total=(ligacoes.data??[]).reduce((n,l)=>n+pendencias(l,fotos.data,salas.data).total,0);
-  return {ligacoes,fotos,salas,total};
+  const consultas=useQuery({queryKey:['acomp-consultas',user?.id],queryFn:acompanhamento.consultas,enabled:enabled&&!!ligacoes.data?.length,refetchInterval:30000,refetchIntervalInBackground:false});
+  const conversas=useQuery({queryKey:['chat-lista',false,user?.id],queryFn:chat.minhas,enabled:enabled&&!!ligacoes.data?.length,refetchInterval:30000,refetchIntervalInBackground:false});
+  const total=(ligacoes.data??[]).reduce((n,l)=>n+pendencias(l,fotos.data,consultas.data).total+(conversas.data?.find(c=>c.terapeuta.slug===l.terapeuta.slug)?.nao_lidas??0),0);
+  return {ligacoes,fotos,consultas,conversas,total};
 }
