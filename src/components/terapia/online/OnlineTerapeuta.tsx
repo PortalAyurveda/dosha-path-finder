@@ -6,6 +6,7 @@ import { PING_MS, terapia, type Ping } from "@/lib/terapia";
 import AvisoConsultaAgora from "./AvisoConsultaAgora";
 import { prepararAvisosConsulta } from '@/lib/consultaAgoraAvisos';
 
+import ChatAvisos from '../chat/ChatAvisos';
 interface EstadoOnline { participa: boolean; online: boolean; nome: string; mudando: boolean; mudar: (v: boolean) => Promise<void> }
 const Ctx = createContext<EstadoOnline | null>(null);
 export const useOnlineTerapeuta = () => useContext(Ctx);
@@ -44,6 +45,7 @@ export function OnlineTerapeutaProvider({ children }: { children: ReactNode }) {
   const valor: EstadoOnline | null = acesso.permitido && painel.data ? { participa, online, nome: painel.data.terapeuta.nome, mudando, mudar } : null;
   return (
     <Ctx.Provider value={valor}>
+      <ChatAvisos/>
       {children}
       {valor && participa && <AvisoConsultaAgora key={acesso.userId} online={online} temPedidos={(ping?.pedidos_agora ?? 0) > 0} />}
     </Ctx.Provider>

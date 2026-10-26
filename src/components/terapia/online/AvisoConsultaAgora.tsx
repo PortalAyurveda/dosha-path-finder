@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import CTAButton from "@/components/CTAButton";
 import { AGORA_POLL_MS, horaBR, terapia, type PedidoAgora } from "@/lib/terapia";
 import { AGORA_ESPERA_MS, tempoPedido } from '@/lib/terapiaPublica';
+import { avisoTitulo } from '@/lib/avisosTitulo';
 import { somConsulta } from '@/lib/consultaAgoraAvisos';
 
 function Acompanhar({ id, fechar }: { id: string; fechar: () => void }) {
@@ -46,10 +47,8 @@ export default function AvisoConsultaAgora({ temPedidos, online }: { temPedidos:
   }, [ids]);
   useEffect(() => { if (!ids || repetir<=0) return; const t=setInterval(somConsulta,repetir*1000); return ()=>clearInterval(t); }, [ids,repetir]);
   useEffect(() => {
-    if (!ids) return;
-    const titulo = document.title; let alterna=false;
-    const t=setInterval(()=>{alterna=!alterna; document.title=alterna ? `(${novos.length}) Pedido de consulta` : titulo;},1500);
-    return ()=>{clearInterval(t);document.title=titulo;};
+    avisoTitulo('consulta',ids ? `(${novos.length}) Pedido de consulta` : null);
+    return ()=>avisoTitulo('consulta',null);
   }, [ids]);
   const responder = async (p: PedidoAgora, aceitar: boolean, minutos = 0) => {
     setOcupado(true); setErro("");

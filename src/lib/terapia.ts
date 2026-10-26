@@ -78,6 +78,8 @@ export interface Painel {
   };
   perfil: Perfil;
   sistema: {
+    boas_vindas?: string | null;
+    msg_ausente?: string | null;
     no_sistema: boolean;
     termo_em_dia: boolean;
     termo_aceito_em: string | null;

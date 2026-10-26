@@ -50,3 +50,6 @@
 - [x] Construir Parte 12: agenda, Hoje completo, pedidos de fotos, modelos de indicação e fim da consulta
 - [x] Validar Parte 12: 52 testes e fluxos isolados computador/celular; marcação, cancelamentos sequenciais, molde, pedidos/envio de foto, cópia/modelos, salvamento, retorno e notas
 - [ ] Validar Parte 12 com contas reais — bloqueado: Supabase externo sem sessão autenticada disponível
+- [x] Construir Parte 9: mensagens, configurações, avisos e filtro de doshas combinados
+- [x] Validar Parte 9: 50 testes e conversas pessoa/terapeuta com respostas isoladas no computador/celular, convite, envio multilinha, configurações e agenda; nenhuma leitura direta de tabela de chat
+- [ ] Validar Parte 9 entre contas reais — bloqueado: Supabase externo sem sessão autenticada disponível

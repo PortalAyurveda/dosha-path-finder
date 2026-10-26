@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { Suspense, lazy, useEffect, useState } from "react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, Navigate, useSearchParams } from "react-router-dom";
@@ -18,9 +18,12 @@ import Perfil from "@/components/terapia/Perfil";
 import Acervos from "@/components/terapia/acervo/Acervos";
 import Configuracoes, { PassosParticipar } from "@/components/terapia/Participar";
 import "@/components/terapia/painel.css";
+import { chat, CHAT_LISTA_MS } from '@/lib/terapiaChat';
+const ListaConversas = lazy(()=>import('@/components/terapia/chat/ListaConversas'));
 const abas = [
   ["hoje", "Hoje"],
   ["pacientes", "Pacientes"],
+  ["mensagens", "Mensagens"],
   ["agenda", "Agenda"],
   ["link", "Meu link"],
   ["acervo", "Meu acervo"],
@@ -29,6 +32,8 @@ const abas = [
 ];
 export default function PainelTerapeuta() {
   const acesso = useSouTerapeuta();
+  const conversas = useQuery({queryKey:['chat-lista',true,acesso.userId],queryFn:chat.terapeuta,enabled:acesso.permitido,refetchInterval:CHAT_LISTA_MS});
+  const totalMensagens = conversas.data?.reduce((n,c)=>n+c.nao_lidas,0)??0;
   const [params, setParams] = useSearchParams();
   const selecionada = params.get("aba") ?? "hoje";
   const aba = abas.some(([v]) => v === selecionada) ? selecionada : "hoje";
@@ -140,7 +145,7 @@ export default function PainelTerapeuta() {
           onClick={() => trocar(v)}
           className={`h-11 shrink-0 justify-start rounded-md border-l-2 px-3 text-sm lg:w-full ${aba === v ? "border-secondary bg-secondary/10 font-semibold hover:bg-secondary/15" : "border-transparent text-muted-foreground"}`}
         >
-          <span>{l}</span>
+          <span>{l}</span>{v === "mensagens" && totalMensagens > 0 && <span className="ml-auto rounded-full bg-secondary px-2 text-xs text-secondary-foreground">{totalMensagens}</span>}
           {v === "hoje" && (
             <span className="ml-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-secondary px-1 text-xs text-secondary-foreground">
               {total}
@@ -260,7 +265,8 @@ export default function PainelTerapeuta() {
                 />
               )}{" "}
               {aba === "link" && <MeuLink painel={dados} executar={executar} />}{" "}
-              {aba === "acervo" && <Acervos userId={acesso.userId} painel={dados} />}
+              {aba === "mensagens" && <Suspense fallback={<p role="status">Carregando conversas…</p>}><ListaConversas terapeuta userId={acesso.userId} convite={dados.terapeuta.link_convite}/></Suspense>}
+               {aba === "acervo" && <Acervos userId={acesso.userId} painel={dados} />}
               {aba === "perfil" && (
                 <Perfil
                   painel={dados}

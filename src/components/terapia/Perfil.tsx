@@ -7,6 +7,7 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import CTAButton from "@/components/CTAButton";
 import { Painel, terapia } from "@/lib/terapia";
 import { TermoTexto, Secao } from "./Comuns";
+import ConfiguracaoMensagens from './chat/ConfiguracaoMensagens';
 export default function Perfil({
   painel,
   ocupado,
@@ -77,6 +78,7 @@ export default function Perfil({
         </CTAButton>
       </form>
       <div className="space-y-6 lg:border-l lg:border-border lg:pl-6">
+        <ConfiguracaoMensagens painel={painel} atualizar={atualizar}/>
         <div className="flex gap-4">
           {painel.terapeuta.imagem && (
             <img

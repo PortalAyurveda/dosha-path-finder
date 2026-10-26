@@ -1,4 +1,5 @@
 import { Suspense, lazy, useState } from "react";
+const MensagemPerfil = lazy(() => import('@/components/terapia/chat/MensagemPerfil'));
 const ConsultaPublica = lazy(() => import("@/components/terapia/publico/ConsultaPublica"));
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -186,11 +187,12 @@ const TerapeutaPerfil = () => {
         </div>
 
         <Suspense fallback={null}>
+          <div><MensagemPerfil slug={requestedSlug} permitido={participante || !!agenda.data?.eu?.ligada}/>
           <ConsultaPublica
             slug={terapeuta["terapeutas(dinamica)"]?.trim() || String(terapeuta.id)}
             terapeutaId={String(terapeuta.id)}
             primeiroNome={displayName.split(" ")[0]}
-          />
+          /></div>
         </Suspense>
 
         </div>

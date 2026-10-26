@@ -1,0 +1,21 @@
+import {beforeEach,describe,expect,it,vi} from 'vitest';
+const {rpc}=vi.hoisted(()=>({rpc:vi.fn()}));
+vi.mock('@/integrations/supabase/client',()=>({supabase:{rpc}}));
+import {chat,CHAT_ABERTA_MS,CHAT_LISTA_MS,juntarMensagens,textoConvite,type Mensagem} from './terapiaChat';
+import {filtrarModelos} from './terapiaModelos';
+beforeEach(()=>{rpc.mockReset();rpc.mockResolvedValue({data:[],error:null});});
+describe('Parte 9',()=>{
+ it('abre pelo slug',async()=>{await chat.abrir('maria');expect(rpc).toHaveBeenCalledWith('chat_abrir',{p_slug:'maria'});});
+ it('pagina por menor id',async()=>{await chat.mensagens('c',51);expect(rpc).toHaveBeenCalledWith('chat_mensagens_de',{p_conversa:'c',p_antes:51});});
+ it('envia texto integral',async()=>{await chat.enviar('c','Linha 1\nLinha 2');expect(rpc).toHaveBeenCalledWith('chat_enviar',{p_conversa:'c',p_texto:'Linha 1\nLinha 2'});});
+ it('marca a conversa lida',async()=>{await chat.ler('c');expect(rpc).toHaveBeenCalledWith('chat_ler',{p_conversa:'c'});});
+ it('lista terapeuta exclusivamente por função',async()=>{await chat.terapeuta();expect(rpc).toHaveBeenCalledWith('terapia_conversas');});
+ it('lista pessoa por função',async()=>{await chat.minhas();expect(rpc).toHaveBeenCalledWith('chat_minhas');});
+ it('busca 14 dias',async()=>{await chat.agenda('maria');expect(rpc).toHaveBeenCalledWith('terapeuta_agenda_publica',{p_slug:'maria',p_dias:14});});
+ it('salva só as duas preferências',async()=>{await chat.preferencias('Olá','Ausente');expect(rpc).toHaveBeenCalledWith('terapia_preferencias_salvar',{p:{boas_vindas:'Olá',msg_ausente:'Ausente'}});});
+ it('polling em 5 e 30 segundos',()=>{expect(CHAT_ABERTA_MS).toBe(5000);expect(CHAT_LISTA_MS).toBe(30000);});
+ it('substitui convite',()=>{expect(textoConvite('Entre em {link}','/convite')).toBe('Entre em /convite');});
+ it('ordena e atualiza sem duplicar histórico',()=>{const m={id:2,texto:'antes'} as Mensagem;expect(juntarMensagens([m,{id:1} as Mensagem],[{...m,texto:'agora'}]).map(m=>[m.id,m.texto])).toEqual([[1,undefined],[2,'agora']]);});
+ it('vata inclui vata-pitta e vata-kapha mas não pitta',()=>{const lista=['vata','vata-pitta','vata-kapha','pitta'].map(dosha=>({id:dosha,nome:dosha,dosha,itens:0,usos:0}));expect(filtrarModelos(lista,'','vata').map(m=>m.id)).toEqual(['vata','vata-pitta','vata-kapha']);});
+ it('propaga erros sem ocultar',async()=>{rpc.mockResolvedValue({data:null,error:{message:'Sem acesso'}});await expect(chat.enviar('c','oi')).rejects.toThrow('Sem acesso');});
+});

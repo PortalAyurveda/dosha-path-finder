@@ -21,4 +21,4 @@ export function juntarModelo(atual:DadosIndicacoes,modelo:Partial<DadosIndicacoe
  }
  return {...atual,secoes};
 }
-export function filtrarModelos(lista:ModeloIndicacoes[],busca:string,dosha:string){return lista.filter(m=>(!dosha||m.dosha?.toLowerCase()===dosha)&&`${m.nome} ${m.tags?.join(' ')??''}`.toLowerCase().includes(busca.toLowerCase()));}
+export function filtrarModelos(lista:ModeloIndicacoes[],busca:string,dosha:string){return lista.filter(m=>(!dosha||m.dosha?.toLowerCase().split(/[^a-z]+/).includes(dosha.toLowerCase()))&&`${m.nome} ${m.tags?.join(' ')??''}`.toLowerCase().includes(busca.toLowerCase()));}

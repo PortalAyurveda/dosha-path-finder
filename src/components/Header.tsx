@@ -20,6 +20,7 @@ import GlobalSearch from "@/components/GlobalSearch";
 import { RedeemCourseDialog } from "@/components/RedeemCourseDialog";
 import { useSouTerapeuta } from "@/hooks/useSouTerapeuta";
 import { useOnlineTerapeuta } from "@/components/terapia/online/OnlineTerapeuta";
+import { useChatTotal } from '@/components/terapia/chat/ChatAvisos';
 import { Switch } from "@/components/ui/switch";
 
 
@@ -93,6 +94,7 @@ const Header = () => {
   const { user, isAnonymous, doshaResult, profile, signOut } = useUser();
   const { permitido: souTerapeuta } = useSouTerapeuta();
   const onlineTerapeuta = useOnlineTerapeuta();
+  const chatTotal = useChatTotal();
   const { totalItens, abrirCarrinho } = useCart();
   const { immersive } = useImmersive();
 
@@ -496,7 +498,8 @@ const Header = () => {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 {doshaResult ? (
-                  <button className="flex shrink-0 min-w-0 items-center gap-2 h-9 pl-3 pr-2.5 rounded-full bg-white hover:bg-white/90 transition-colors border border-border/30 shadow-sm">
+                  <button aria-label={`Minha conta${chatTotal ? `, ${chatTotal} mensagens não lidas` : ""}`} className="relative flex shrink-0 min-w-0 items-center gap-2 h-9 pl-3 pr-2.5 rounded-full bg-white hover:bg-white/90 transition-colors border border-border/30 shadow-sm">
+                    {chatTotal > 0 && <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-secondary px-1 text-xs text-secondary-foreground">{chatTotal}</span>}
                     <span className="text-xs sm:text-sm font-semibold text-foreground truncate max-w-[64px] sm:max-w-[120px] leading-none">
                       {firstName ? firstName.charAt(0).toUpperCase() + firstName.slice(1).toLowerCase() : ""}
                     </span>
@@ -522,10 +525,11 @@ const Header = () => {
                   </button>
                 ) : (
                   <button
-                    className="flex items-center justify-center w-9 h-9 rounded-full bg-white font-bold text-sm hover:bg-white/90 transition-colors shadow-sm overflow-hidden"
+                    className="relative flex items-center justify-center w-9 h-9 rounded-full bg-white font-bold text-sm hover:bg-white/90 transition-colors shadow-sm"
                     style={buttonTextColor ? { color: buttonTextColor } : { color: "hsl(var(--primary))" }}
-                    aria-label="Minha conta"
+                    aria-label={`Minha conta${chatTotal ? `, ${chatTotal} mensagens não lidas` : ""}`}
                   >
+                    {chatTotal > 0 && <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-secondary px-1 text-xs text-secondary-foreground">{chatTotal}</span>}
                     {profile?.avatar_url ? (
                       <img src={profile.avatar_url} alt="" width={36} height={36} className="w-9 h-9 object-cover" />
                     ) : (
@@ -567,6 +571,7 @@ const Header = () => {
                     Resgatar curso
                   </DropdownMenuItem>
                 )}
+                {!isAnonymous && <DropdownMenuItem asChild><Link to={souTerapeuta ? "/painel-terapeuta?aba=mensagens" : "/meu-perfil?section=terapeuta"}>Mensagens{chatTotal > 0 ? ` · ${chatTotal}` : ""}</Link></DropdownMenuItem>}
                 {souTerapeuta && (
                   <DropdownMenuItem asChild>
                     <Link to="/painel-terapeuta?aba=hoje">Portal do terapeuta</Link>
