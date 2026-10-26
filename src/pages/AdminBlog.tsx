@@ -38,6 +38,8 @@ interface Article {
   created_at: string;
   destaque_index?: boolean | null;
   destaque_ordem?: number | null;
+  status?: string | null;
+  publicar_em?: string | null;
 }
 
 interface FeaturedArticle {
@@ -215,7 +217,7 @@ const AdminBlog = () => {
 
     let q = supabase
       .from("portal_conteudo")
-      .select("id, title, image_url, created_at, destaque_index, destaque_ordem", { count: "exact" })
+      .select("id, title, image_url, created_at, destaque_index, destaque_ordem, status, publicar_em", { count: "exact" })
       .order("created_at", { ascending: false })
       .range(from, to);
 
@@ -434,7 +436,7 @@ const AdminBlog = () => {
                   Destaques no Index
                 </h2>
                 <p className="text-xs text-muted-foreground mt-0.5">
-                  Arraste pelo ícone <GripVertical className="inline w-3 h-3" /> para reordenar. Aparecem em "Conheça Ayurveda por aqui" na home (3×3).
+                  Arraste para reordenar. As vagas 1 a 6 são suas. As vagas 7, 8 e 9 giram sozinhas todo dia com os artigos da agenda.
                 </p>
               </div>
               <div className="flex items-center gap-3">
@@ -498,7 +500,12 @@ const AdminBlog = () => {
                         <img src={f.image_url} alt={f.title} className="w-full h-full object-cover" loading="lazy" />
                       )}
                     </div>
-                    <p className="text-xs font-medium text-foreground flex-1 line-clamp-2">{f.title}</p>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-medium text-foreground line-clamp-2">{f.title}</p>
+                      {idx >= 6 && idx <= 8 && (
+                        <span className="inline-block mt-0.5 text-[10px] font-semibold px-1.5 py-0.5 rounded bg-yellow-100 text-yellow-800">gira todo dia</span>
+                      )}
+                    </div>
                     <Button
                       variant="ghost"
                       size="icon"
@@ -592,6 +599,11 @@ const AdminBlog = () => {
                         <p className="text-xs font-medium text-foreground line-clamp-3">
                           {a.title}
                         </p>
+                      )}
+                      {inlineEditId !== a.id && a.status === "draft" && a.publicar_em && (
+                        <span className="inline-block mt-1 text-[10px] font-semibold px-1.5 py-0.5 rounded bg-primary/10 text-primary">
+                          Agendado {a.publicar_em.slice(8, 10)}/{a.publicar_em.slice(5, 7)}
+                        </span>
                       )}
                     </div>
                   </button>
