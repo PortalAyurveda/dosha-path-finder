@@ -10,7 +10,7 @@ export interface SalaConsulta {
   terapeuta: { nome: string; primeiro_nome: string; imagem: string|null; slug?: string };
   avaliacao_id: string|null; presenca: Partial<Record<'paciente'|'terapeuta',string>>|null; ja_avaliou: boolean;
 }
-export interface AoVivo { gravando: boolean; quadro: { quadro: string; bucket: string; path: string; atualizado_em: string }|null }
+export interface AoVivo { gravando: boolean; quadro: { item?:string; quadro: string; bucket: string; path: string; atualizado_em: string }|null }
 export interface VideoEntrada { dominio: string; sala: string; jwt: string; nome: string; papel: string; outro: unknown }
 export type EventoVideo = 'entrou'|'pulso'|'saiu'|'outro_entrou'|'outro_saiu';
 export interface SalaTreino { titulo: string; texto: string; paciente: { nome: string; teste: { vata: number; pitta: number; kapha: number; dosha: string; agni: string; queixas: string[] } }; fotos: { tipo: string; titulo: string; url: string }[] }

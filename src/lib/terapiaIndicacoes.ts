@@ -13,6 +13,8 @@ export function criarIndicacao(fonte: FonteIndicacao, id: string = crypto.random
   return { ...fonte, id, titulo: fonte.titulo ?? fonte.nome ?? [fonte.livro, fonte.referencia].filter(Boolean).join(' · '), nota: '' };
 }
 export function inserirIndicacao(dados: DadosIndicacoes, secao: string, item: ItemIndicacao): DadosIndicacoes {
+  const key = item.slug || item.link;
+  if (key && Object.values(dados.secoes).flat().some(i => (i.slug || i.link) === key)) return dados;
   return { ...dados, secoes: { ...dados.secoes, [secao]: [...(dados.secoes[secao] ?? []), item] } };
 }
 export function moverIndicacao(dados: DadosIndicacoes, itemId: string, destino: string, indice?: number): DadosIndicacoes {
@@ -34,3 +36,12 @@ export function minhasComFavoritos(minhas: FonteIndicacao[] = [], favoritos: Fon
 
 /** A função atual identifica a queixa no texto de origem, sem inventar agrupamentos. */
 export function queixaIndicacao(f:FonteIndicacao){return f.queixa??f.assunto??f.porque?.match(/relatou\s+["“]([^"”]+)["”]/i)?.[1]??'';}
+
+export function origemIndicacao(item:FonteIndicacao) {
+ if(item.tipo==='texto') return '';
+ if(item.favorito || /acervo|material|minha/.test(item.tipo??'')) return 'Do seu acervo';
+ if(item.tipo==='produto') return 'Produto Samkhya';
+ if(item.tipo==='receita') return 'Receita do Portal';
+ if(['aula','video','live'].includes(item.tipo??'')) return 'Aula do Portal';
+ return item.tipo==='artigo'?'Artigo do Portal':item.tipo==='verso'?'Texto clássico do Portal':'';
+}
