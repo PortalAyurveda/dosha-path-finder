@@ -15877,6 +15877,7 @@ export type Database = {
         Args: {
           p_nugget_ids?: string[]
           p_pessoas?: number
+          p_semana?: number
           p_teste_id: string
         }
         Returns: {
@@ -16424,7 +16425,7 @@ export type Database = {
         Returns: string
       }
       rotina_para_impressao: {
-        Args: { p_teste_id: string }
+        Args: { p_semana?: number; p_teste_id: string }
         Returns: {
           categoria: string
           dia: number
@@ -16476,6 +16477,10 @@ export type Database = {
       sede_predominante_dosha: {
         Args: { p_dosha: string; p_tags: string }
         Returns: string
+      }
+      semana_rotina_atual: {
+        Args: { p_semana?: number; p_teste_id: string }
+        Returns: number
       }
       seo_conteudo: { Args: { p_path: string }; Returns: Json }
       seo_meta: { Args: { p_path: string }; Returns: Json }
