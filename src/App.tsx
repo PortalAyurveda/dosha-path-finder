@@ -61,6 +61,7 @@ const TerapeutaAcervoItem = lazy(() => import("./pages/TerapeutaAcervoItem"));
 const TerapeutaConvite = lazy(() => import("./pages/TerapeutaConvite"));
 const TerapeutaCadastro = lazy(() => import("./pages/TerapeutaCadastro"));
 const ConsultaSala = lazy(() => import("./pages/ConsultaSala"));
+const ConsultaTreinoPessoa = lazy(() => import("./pages/ConsultaTreinoPessoa"));
 const PainelTerapeuta = lazy(() => import("./pages/PainelTerapeuta"));
 const AvaliacaoTerapeuta = lazy(() => import("./pages/AvaliacaoTerapeuta"));
 const AvaliacaoFolha = lazy(() => import("./pages/AvaliacaoFolha"));
@@ -177,7 +178,7 @@ if (typeof window !== "undefined") {
 const LayoutOrBare = ({ children }: { children: React.ReactNode }) => {
   const { pathname } = useLocation();
   const SEM_MOLDURA = ["/aovivo", "/imprimir", "/detox/inscricao", "/detox/kit"];
-  if (pathname.startsWith("/consulta/") || SEM_MOLDURA.includes(pathname) || /^\/painel-terapeuta\/paciente\/[^/]+\/(?:avaliacao|indicacoes)\/[^/]+\/folha\/?$/.test(pathname) || /^\/cursos\/[^/]+\/imprimir\/[^/]+\/?$/.test(pathname) || /^\/atividade\/[^/]+\/imprimir\/?$/.test(pathname) || /^\/cursos\/[^/]+\/certificado\/?$/.test(pathname)) return <>{children}</>;
+  if (pathname.startsWith("/consulta/") || SEM_MOLDURA.includes(pathname) || /^\/painel-terapeuta\/paciente\/[^/]+\/(?:avaliacao|indicacoes)\/[^/]+\/folha\/?$/.test(pathname) || /^\/painel-terapeuta\/paciente\/[^/]+\/avaliacao\/[^/]+\/?$/.test(pathname) || /^\/cursos\/[^/]+\/imprimir\/[^/]+\/?$/.test(pathname) || /^\/atividade\/[^/]+\/imprimir\/?$/.test(pathname) || /^\/cursos\/[^/]+\/certificado\/?$/.test(pathname)) return <>{children}</>;
   return <Layout>{children}</Layout>;
 };
 
@@ -276,6 +277,7 @@ const RoutedApp = () => {
               <Route path="/terapeutas/:slug" element={<TerapeutaPerfil />} />
               <Route path="/terapeutas/:slug/acervo/:item" element={<TerapeutaAcervoItem />} />
               <Route path="/terapeutas/:slug/convite" element={<TerapeutaConvite />} />
+              <Route path="/consulta/treino/pessoa" element={<ConsultaTreinoPessoa />} />
               <Route path="/consulta/:id" element={<ConsultaSala />} />
               <Route path="/painel-terapeuta" element={<PainelTerapeuta />} />
               <Route path="/painel-terapeuta/paciente/:id" element={<PacienteTerapeuta />} />
