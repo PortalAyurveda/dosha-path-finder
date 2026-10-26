@@ -32,6 +32,7 @@ const LaunchPage = lazy(() => import("./pages/LaunchPage"));
 const PreviewLoading = lazy(() => import("./pages/PreviewLoading"));
 const TesteDeDosha = lazy(() => import("./pages/TesteDeDosha"));
 const MeuDosha = lazy(() => import("./pages/MeuDosha"));
+const MeuAcompanhamento = lazy(() => import("./pages/MeuAcompanhamento"));
 const MeuPerfil = lazy(() => import("./pages/MeuPerfil"));
 const Biblioteca = lazy(() => import("./pages/Biblioteca"));
 const TextosClassicos = lazy(() => import("./pages/TextosClassicos"));
@@ -243,6 +244,7 @@ const RoutedApp = () => {
               <Route path="/detox/kit" element={<DetoxKit />} />
               <Route path="/meu-dosha" element={<MeuDosha />} />
               <Route path="/meu-perfil" element={<MeuPerfil />} />
+              <Route path="/meu-acompanhamento" element={<MeuAcompanhamento />} />
               <Route path="/minha-rotina" element={<MinhaRotina />} />
               <Route path="/imprimir" element={<Imprimir />} />
               <Route path="/biblioteca" element={<Biblioteca />} />

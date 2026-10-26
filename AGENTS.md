@@ -25,3 +25,5 @@
 
 - Fit the teaching-board canvas to both available dimensions before applying zoom, and scale long source cards independently of normalized drawing coordinates; this keeps all content visible without changing saved strokes.
 - Keep the training Jitsi iframe mounted while participant events switch its CSS framing between a local-camera inset and the large call area; this avoids reconnecting when someone joins or leaves.
+
+- Keep Meu acompanhamento independently lazy-loaded with patient-only RPC contracts and dedicated views; reuse the existing chat, chart and sheet printing, and require explicit server-side assessment sharing.
