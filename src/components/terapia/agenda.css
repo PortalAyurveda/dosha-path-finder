@@ -4,4 +4,6 @@
 .agenda-marcado {background:hsl(var(--secondary)/.13);border:1px solid hsl(var(--secondary)/.3);color:hsl(var(--foreground));}
 .agenda-fechado {background:repeating-linear-gradient(135deg,hsl(var(--muted)),hsl(var(--muted)) 5px,hsl(var(--background)) 5px,hsl(var(--background)) 9px);color:hsl(var(--muted-foreground));border:1px solid hsl(var(--border));}
 .agenda-passado {background:hsl(var(--muted));color:hsl(var(--muted-foreground));}
-.agenda-tabs [role="tab"][data-state="active"]{background:hsl(var(--secondary)/.12);color:hsl(var(--foreground));}
+.agenda-tabs [role="tab"][data-state="active"]{background:hsl(var(--primary));color:hsl(var(--primary-foreground));}
+.agenda-tabs [role="tablist"]{background:transparent;gap:6px;}.agenda-tabs [role="tab"]{border:1px solid hsl(var(--border));border-radius:999px;padding:8px 14px;}
+.agenda-dia{background:hsl(var(--card));border:1px solid hsl(var(--border));border-radius:14px;padding:10px 8px;min-height:350px;}.agenda-dia h3{font-size:16px;}.agenda-dia small{display:block;color:hsl(var(--muted-foreground));font:12px 'DM Sans',sans-serif;}.agenda-hoje{border-color:hsl(var(--secondary));}.agenda-slot{font-size:13px;}.agenda-fechado{text-decoration:line-through;}
