@@ -585,6 +585,7 @@ const Header = () => {
 
       <RedeemCourseDialog open={redeemDialogOpen} onOpenChange={setRedeemDialogOpen} />
     </header>
+    </>
   );
 };
 
