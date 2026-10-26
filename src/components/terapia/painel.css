@@ -1,3 +1,9 @@
 .terapia-bloqueado {
-  background: repeating-linear-gradient(135deg, hsl(var(--muted)), hsl(var(--muted)) 5px, hsl(var(--background)) 5px, hsl(var(--background)) 10px);
+  background: repeating-linear-gradient(
+    135deg,
+    hsl(var(--muted)),
+    hsl(var(--muted)) 5px,
+    hsl(var(--background)) 5px,
+    hsl(var(--background)) 10px
+  );
 }
