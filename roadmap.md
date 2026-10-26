@@ -61,3 +61,4 @@
 - [ ] Parte 17: Meu acompanhamento, sete abas, entradas e liberação das avaliações
 - [ ] Parte 17: corrigir tamanho dos textos e notas nas indicações
 - [ ] Parte 17: conferir referências em 1366 px e 390 px, regras e fluxos
+- [ ] Usar minhas_consultas_acompanhamento já criada pelo usuário; não executar SQL
