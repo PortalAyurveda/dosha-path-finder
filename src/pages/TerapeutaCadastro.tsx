@@ -12,7 +12,10 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import PageContainer from "@/components/PageContainer";
-import { TERAPEUTA_ESPECIALIDADES, ANO_FORMACAO_MIN, ANO_FORMACAO_MAX } from "@/lib/terapeutaConstants";
+import { ANO_FORMACAO_MIN, ANO_FORMACAO_MAX } from "@/lib/terapeutaConstants";
+import { useQuery } from '@tanstack/react-query';
+import { terapia } from '@/lib/terapia';
+import { fotoCardJPG } from '@/lib/terapeutaCardImagem';
 import { fetchEstados, fetchMunicipios, type IbgeEstado, type IbgeMunicipio } from "@/lib/ibge";
 import { slugify } from "@/lib/slugify";
 import { getTherapistProfilePath } from "@/lib/terapeutas";
@@ -31,6 +34,7 @@ interface FormState {
   website: string;
   whatsapp: string;
   imagem: string;
+  imagem_card: string;
 }
 
 const EMPTY: FormState = {
@@ -46,12 +50,15 @@ const EMPTY: FormState = {
   website: "",
   whatsapp: "",
   imagem: "",
+  imagem_card: "",
 };
 
 const TerapeutaCadastro = () => {
   const { user, loading: authLoading } = useUser();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const config = useQuery({queryKey:['terapia-config'],queryFn:terapia.config});
+  const [cardJPG, setCardJPG] = useState<Blob>();
 
   const [form, setForm] = useState<FormState>(EMPTY);
   const [existingId, setExistingId] = useState<string | null>(null);
@@ -131,6 +138,7 @@ const TerapeutaCadastro = () => {
           website: data.website ?? "",
           whatsapp: data.whatsapp ?? "",
           imagem: data.imagem ?? data["imagem.1"] ?? "",
+          imagem_card: data.imagem_card ?? "",
         });
       } else {
         setForm((f) => ({ ...f, email: user.email! }));
@@ -232,13 +240,21 @@ const TerapeutaCadastro = () => {
       }
       const uploadFile = optimized.file;
       const ext = uploadFile.type === "image/webp" ? "webp" : (file.name.split(".").pop() || "jpg");
-      const path = `${slugify(user!.email!)}-${Date.now()}.${ext}`;
+      if (!user?.email) throw new Error('Entre na sua conta primeiro.');
+      const path = `${slugify(user.email)}-${Date.now()}.${ext}`;
       const { error } = await supabase.storage.from("terapeutas").upload(path, uploadFile, {
         cacheControl: "3600",
         upsert: true,
         contentType: uploadFile.type,
       });
       if (error) throw error;
+      const jpg = await fotoCardJPG(file);
+      setCardJPG(jpg);
+      if (form.nome.trim()) {
+        const cardPath = `cards/${existingSlug ?? slugify(form.nome)}.jpg`;
+        await terapia.arquivoEnviar('terapeutas', cardPath, jpg);
+        setForm(f => ({...f, imagem_card: supabase.storage.from('terapeutas').getPublicUrl(cardPath).data.publicUrl}));
+      }
       const { data } = supabase.storage.from("terapeutas").getPublicUrl(path);
       setForm((f) => ({ ...f, imagem: data.publicUrl }));
       setUploadError(null);
@@ -279,6 +295,12 @@ const TerapeutaCadastro = () => {
     setSubmitting(true);
     try {
       const slug = slugify(form.nome);
+      let imagemCard = form.imagem_card;
+      if (cardJPG) {
+        const cardPath = `cards/${existingSlug ?? slug}.jpg`;
+        await terapia.arquivoEnviar('terapeutas', cardPath, cardJPG);
+        imagemCard = supabase.storage.from('terapeutas').getPublicUrl(cardPath).data.publicUrl;
+      }
       const payload: Record<string, any> = {
         nome: form.nome.trim(),
         title: form.nome.trim(),
@@ -293,6 +315,7 @@ const TerapeutaCadastro = () => {
         website: form.website.trim() || null,
         whatsapp: form.whatsapp.trim() || null,
         imagem: form.imagem || null,
+        imagem_card: imagemCard || null,
         "terapeutas(dinamica)": existingSlug ?? slug,
       };
 
@@ -466,7 +489,7 @@ const TerapeutaCadastro = () => {
           <section className="space-y-3">
             <Label className="text-base font-semibold">Especialidades * <span className="text-xs font-normal text-muted-foreground">(marque todas que se aplicam)</span></Label>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-              {TERAPEUTA_ESPECIALIDADES.map((esp) => {
+              {(config.data?.especialidades ?? []).map((esp) => {
                 const checked = form.especialidades.includes(esp);
                 return (
                   <label
@@ -485,6 +508,8 @@ const TerapeutaCadastro = () => {
                 );
               })}
             </div>
+            {config.isPending && <p role="status" className="text-sm text-muted-foreground">Carregando especialidades…</p>}
+            {config.error && <p role="alert" className="text-sm text-destructive">{config.error.message}</p>}
           </section>
 
           {/* Formado desde */}

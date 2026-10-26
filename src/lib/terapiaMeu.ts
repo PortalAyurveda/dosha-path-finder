@@ -17,7 +17,7 @@ export interface MeuTerapeutaLigacao {
   folhas: { id: string; enviada_em: string; vista_em: string | null; diagnostico: string | null }[];
   regras: { texto?: string; sala?: string; cancelar_gratis_horas?: number; [k: string]: unknown } | null;
 }
-export interface GuiadaMinha { chave: string; titulo: string; instrucao?: string; texto?: string }
+export interface GuiadaMinha { chave: string; titulo: string; instrucao?: string; texto?: string; modelo?: string }
 export interface FotoMinha { id: string; tipo: string; titulo: string | null; path: string; criado_em: string }
 export interface FotosMinhas { guiadas: GuiadaMinha[] | null; fotos: FotoMinha[] }
 export interface MinhaFolha {
