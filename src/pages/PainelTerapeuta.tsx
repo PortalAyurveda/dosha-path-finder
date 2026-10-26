@@ -264,7 +264,7 @@ export default function PainelTerapeuta() {
                   executar={executar}
                   userId={acesso.userId}
                 />
-              ) : <AvatarPessoa nome={dados.terapeuta.nome} />}{" "}
+               )}{" "}
               {aba === "link" && <MeuLink painel={dados} executar={executar} />}{" "}
               {aba === "mensagens" && <Suspense fallback={<p role="status">Carregando conversas…</p>}><ListaConversas terapeuta userId={acesso.userId} convite={dados.terapeuta.link_convite}/></Suspense>}
                {aba === "acervo" && <Acervos userId={acesso.userId} painel={dados} />}
@@ -276,7 +276,7 @@ export default function PainelTerapeuta() {
                   executar={executar}
                   atualizar={atualizar}
                 />
-              ) : <AvatarPessoa nome={dados.terapeuta.nome} />}
+               )}
               {aba === "configuracoes" && (
                 <Configuracoes painel={dados} ocupado={ocupado} mudar={mudar} executar={executar} atualizar={atualizar} />
               )}

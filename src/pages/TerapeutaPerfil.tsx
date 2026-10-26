@@ -92,14 +92,6 @@ const TerapeutaPerfil = () => {
         <Skeleton className="h-4 w-full" />
         <Skeleton className="h-4 w-5/6" />
         <Skeleton className="h-4 w-4/6" />
-</div><aside className="perfil-publico-agenda">        <Suspense fallback={null}>
-          <div>
-          <ConsultaPublica
-            slug={terapeuta["terapeutas(dinamica)"]?.trim() || String(terapeuta.id)}
-            terapeutaId={String(terapeuta.id)}
-            primeiroNome={displayName.split(" ")[0]}
-          /></div>
-        </Suspense></aside></div>
       </main>
     );
   }
@@ -258,6 +250,7 @@ const TerapeutaPerfil = () => {
             <div />
           )}
         </nav>
+</div><aside className="perfil-publico-agenda"><Suspense fallback={null}><ConsultaPublica slug={requestedSlug} terapeutaId={String(terapeuta.id)} primeiroNome={displayName.split(" ")[0]}/></Suspense></aside></div>
       </main>
     </>
   );
