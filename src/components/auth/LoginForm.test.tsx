@@ -15,7 +15,7 @@ beforeEach(() => {
   auth.signInWithOtp.mockResolvedValue({ error: null });
   auth.verifyOtp.mockResolvedValue({ error: null });
 });
-afterEach(cleanup);
+afterEach(async () => { cleanup(); await new Promise(resolve => setTimeout(resolve, 100)); });
 const open = () => render(<MemoryRouter><LoginForm embedded emailOnly redirectPath="/terapeutas/juliana/convite?etapa=permissoes" /></MemoryRouter>);
 describe("login compartilhado do convite", () => {
   it("usa preparar-login e o mesmo envio OTP sem emailRedirectTo", async () => {

@@ -72,7 +72,7 @@ const TerapeutaCard = ({
     <article
       className="group flex gap-3.5 rounded-2xl border border-border bg-card p-3 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg cursor-pointer"
     >
-      <div className="w-[92px] sm:w-[132px] shrink-0 aspect-[4/5] rounded-xl overflow-hidden bg-muted">
+      <Link to={profilePath} aria-label={`Ver perfil de ${displayName}`} className="w-[92px] sm:w-[132px] shrink-0 aspect-[4/5] rounded-xl overflow-hidden bg-muted">
         {foto ? (
           <img
             src={foto}
@@ -88,7 +88,7 @@ const TerapeutaCard = ({
             {displayName[0] || "?"}
           </div>
         )}
-      </div>
+      </Link>
 
       <div className="flex flex-1 flex-col gap-1.5 min-w-0">
         <h3 className="text-[15px] sm:text-[17px] font-serif font-bold text-foreground leading-tight">

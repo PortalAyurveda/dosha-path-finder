@@ -13,7 +13,7 @@ import Nascimento from '@/components/terapia/meu/Nascimento';
 import type { PermissoesConvite } from '@/lib/terapiaConvite';
 
 export default function AgendamentoPublico({ slug, nome, agenda, atualizar }: { slug: string; nome: string; agenda: AgendaPublica; atualizar: () => Promise<unknown> }) {
-  const { user, isAnonymous, profile } = useUser();
+  const { user, isAnonymous, profile, loading } = useUser();
   const logado = !!user && !isAnonymous;
   const chave = `agenda-escolha:${slug}`;
   const [inicio, setInicio] = useState(() => sessionStorage.getItem(chave) ?? new URLSearchParams(window.location.search).get('horario') ?? '');
@@ -31,10 +31,10 @@ export default function AgendamentoPublico({ slug, nome, agenda, atualizar }: { 
   const temNascimento = nascimento || !!eu.data?.find(l => l.terapeuta.slug === slug)?.tem_nascimento;
   useEffect(() => { const t = setInterval(() => setAgora(Date.now()), 1000); return () => clearInterval(t); }, []);
   useEffect(() => {
-    if (!logado || !inicio || expira || marcada || reservando.current) return;
+    if (loading || !logado || !inicio || expira || marcada || reservando.current) return;
     reservando.current = true; setOcupado(true); setErro('');
     terapia.reservar(slug, inicio).then(setExpira).catch(e => { setErro(e.message); setInicio(''); sessionStorage.removeItem(chave); }).finally(() => { reservando.current = false; setOcupado(false); });
-  }, [logado, inicio, expira, marcada, slug, chave]);
+  }, [loading, logado, inicio, expira, marcada, slug, chave]);
   const expirou = !!expira && Date.parse(expira) <= agora;
   const horarios = agenda.horarios ?? [];
   const dias = useMemo(() => {
