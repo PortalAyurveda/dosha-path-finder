@@ -42,6 +42,9 @@ function Remarcar({ l, fechar, pronto }: { l: MeuTerapeutaLigacao; fechar: () =>
 
 
 function Ligacao({ l }: { l: MeuTerapeutaLigacao }) {
+  const [salvando,setSalvando]=useState(false);
+  const config=useQuery({queryKey:["terapia-config"],queryFn:terapia.config});
+  const totalFotos=config.data?.fotos_guiadas?.length??0;
   const qc = useQueryClient();
   const { doshaResult } = useUser();
   const recarregar = () => qc.invalidateQueries({ queryKey: ["meu-terapeuta"] });
@@ -63,10 +66,10 @@ function Ligacao({ l }: { l: MeuTerapeutaLigacao }) {
   const fraseSala = typeof l.regras?.sala === "string" ? l.regras.sala : "O botão da sala aparece aqui 10 minutos antes da consulta.";
   const teste = doshaResult as { created_at?: string } | null;
 
-  const cancelar = async () => { if (!p || !window.confirm(`Cancelar a consulta de ${dataExtenso(p.inicio)}?`)) return; setErro(""); try { await meu.cancelar(p.id); recarregar(); } catch (e) { setErro((e as Error).message); } };
+  const cancelar = async () => { if (!p || !window.confirm(`Cancelar a consulta de ${dataExtenso(p.inicio)}?`)) return; setErro("");setSalvando(true); try { await meu.cancelar(p.id); await recarregar(); } catch (e) { setErro((e as Error).message); } finally {setSalvando(false);} };
   const salvarMotivo = async () => { if (!p || motivo === (p.motivo ?? "")) return; setMotivoMsg(""); try { await meu.motivo(p.id, motivo); setMotivoMsg(`Salvo às ${new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}`); recarregar(); } catch (e) { setMotivoMsg((e as Error).message); } };
   const mudarPerm = async (k: keyof typeof perm, v: boolean) => { const antes = perm; const novo = { ...perm, [k]: v }; setPerm(novo); setErro(""); try { await meu.permissoes(l.ligacao, novo); recarregar(); } catch (e) { setPerm(antes); setErro((e as Error).message); } };
-  const desligar = async () => { if (!window.confirm(`Parar de ser acompanhada por ${l.terapeuta.nome}? Ela deixa de ver seus dados e suas próximas consultas são canceladas. Para voltar, será preciso um novo convite.`)) return; setErro(""); try { await meu.desligar(l.ligacao); recarregar(); } catch (e) { setErro((e as Error).message); } };
+  const desligar = async () => { if (!window.confirm(`Parar de ser acompanhada por ${l.terapeuta.nome}? Ela deixa de ver seus dados e suas próximas consultas são canceladas. Para voltar, será preciso um novo convite.`)) return; setErro("");setSalvando(true); try { await meu.desligar(l.ligacao); await recarregar(); } catch (e) { setErro((e as Error).message); } finally {setSalvando(false);} };
 
   return (
     <div id="meu-terapeuta-fotos" className="space-y-5 scroll-mt-24">
@@ -86,7 +89,7 @@ function Ligacao({ l }: { l: MeuTerapeutaLigacao }) {
           <p className="font-semibold capitalize">{dataExtenso(p.inicio)}</p>
           <p className="text-sm text-muted-foreground">Online, na sala do Portal · {Math.round((Date.parse(p.fim) - Date.parse(p.inicio)) / 60000)} min</p>
           {sala ? <div className="space-y-2"><Button asChild variant="secondary"><Link to={`/consulta/${p.id}`}>Entrar na sala</Link></Button><p className="text-xs text-muted-foreground">Use o Chrome ou o Safari para a chamada funcionar bem.</p></div>
-            : p.pode_cancelar ? <div className="flex flex-wrap gap-2"><Button variant="outline" onClick={() => setRemarcar(true)}>Remarcar</Button><Button variant="outline" onClick={cancelar}>Cancelar</Button></div>
+            : p.pode_cancelar ? <div className="flex flex-wrap gap-2"><Button variant="outline" onClick={() => setRemarcar(true)}>Remarcar</Button><Button variant="outline" disabled={salvando} onClick={cancelar}>Cancelar</Button></div>
             : regra && <p className="text-sm text-muted-foreground">{regra}</p>}
           {!sala && <p className="text-xs text-muted-foreground">{fraseSala}</p>}
         </div>}
@@ -96,7 +99,7 @@ function Ligacao({ l }: { l: MeuTerapeutaLigacao }) {
         <div className="space-y-4">
           <label className="block text-sm font-semibold">O que te traz a esta consulta?<Textarea className="mt-1 font-normal" rows={3} value={motivo} onChange={e => setMotivo(e.target.value)} onBlur={salvarMotivo} /></label>
           {motivoMsg && <p className="text-xs text-muted-foreground" role="status">{motivoMsg}</p>}
-          <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-border p-3"><span className="text-sm">Fotos para {nome} · {l.fotos_guiadas} de {l.fotos_total_guiadas} enviadas</span><Button size="sm" variant={l.fotos_guiadas < l.fotos_total_guiadas ? "secondary" : "outline"} onClick={() => setFotos(v => !v)}>{fotos ? "Fechar" : l.fotos_guiadas < l.fotos_total_guiadas ? "Enviar as que faltam" : "Ver fotos"}</Button></div>
+          <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-border p-3"><span className="text-sm">Fotos para {nome} · {l.fotos_guiadas} de {totalFotos} enviadas</span><Button size="sm" variant={l.fotos_guiadas < totalFotos ? "secondary" : "outline"} onClick={() => setFotos(v => !v)}>{fotos ? "Fechar" : l.fotos_guiadas < totalFotos ? "Enviar as que faltam" : "Ver fotos"}</Button></div>
           {fotos && <MeuTerapeutaFotos primeiroNome={nome} />}
           {l.pedir_nascimento && <div className="rounded-xl border border-border p-3"><div className="flex flex-wrap items-center justify-between gap-2"><span className="text-sm">Data, hora e cidade de nascimento</span>{l.tem_nascimento ? <span className="text-sm font-semibold text-secondary">✓ Feito</span> : <Button size="sm" variant="secondary" onClick={() => setNasc(v => !v)}>{nasc ? "Fechar" : "Preencher"}</Button>}</div>{nasc && !l.tem_nascimento && <div className="mt-3"><Nascimento pronto={() => { setNasc(false); recarregar(); }} /></div>}</div>}
           <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-border p-3"><span className="text-sm">Teste de dosha</span>{teste ? <span className="text-sm font-semibold text-secondary">✓ Feito{teste.created_at ? ` em ${diaBR(teste.created_at)}` : ""}</span> : <Button asChild size="sm" variant="secondary"><Link to="/teste-de-dosha">Fazer o teste</Link></Button>}</div>
@@ -122,7 +125,7 @@ function Ligacao({ l }: { l: MeuTerapeutaLigacao }) {
       </Bloco>
 
       {erro && <p role="alert" className="text-sm text-destructive">{erro}</p>}
-      <div className="border-t border-border pt-4"><Button variant="ghost" className="text-destructive" onClick={desligar}>Parar de ser acompanhada</Button></div>
+      <div className="border-t border-border pt-4"><Button variant="ghost" className="text-destructive" disabled={salvando} onClick={desligar}>Parar de ser acompanhada</Button></div>
       {conversar && <Suspense fallback={null}><ConversaPessoa slug={l.terapeuta.slug} fechar={()=>setConversar(false)} marcar={()=>{setConversar(false);window.location.assign(`/terapeutas/${l.terapeuta.slug}#agenda`);}}/></Suspense>}
       {remarcar && <Remarcar l={l} fechar={() => setRemarcar(false)} pronto={() => { setRemarcar(false); recarregar(); }} />}
     </div>

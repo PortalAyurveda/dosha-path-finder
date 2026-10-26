@@ -138,7 +138,7 @@ export const terapia = {
   folha: (id: string) => read<FolhaIndicacoes>(supabase.rpc('terapia_folha', { p_id: id })),
   folhasDa: (paciente: string) => read<FolhaIndicacoesLista[]>(supabase.rpc('terapia_folhas_da', { p_paciente: paciente })),
   indicacoesFontes: (paciente: string) => read<FontesIndicacoes>(supabase.rpc('terapia_indicacoes_fontes', { p_paciente: paciente })),
-  folhaSalvar: (id: string, dados: DadosIndicacoes, diagnostico: string, tratamento: string, retorno: string) => read<string>(supabase.rpc('terapia_folha_salvar', { p_id: id, p_dados: dados as unknown as Json, p_diagnostico: diagnostico, p_tratamento: tratamento, ...(retorno ? { p_retorno: retorno } : {}) })),
+  folhaSalvar: (id: string, dados: DadosIndicacoes, diagnostico: string, tratamento: string, retorno: string) => read<string>(supabase.rpc('terapia_folha_salvar', { p_id: id, p_dados: dados as unknown as Json, p_diagnostico: diagnostico, p_tratamento: tratamento, p_retorno: retorno || null })),
   folhaEnviar: (id: string) => read<string>(supabase.rpc('terapia_folha_enviar', { p_id: id })),
   tarotLista: () => read<Carta[]>(supabase.rpc('terapia_tarot')),
   tarotCarta: (numero:number) => read<Carta | null>(supabase.rpc('terapia_tarot',{p_numero:numero})),
@@ -292,7 +292,7 @@ export const diaBR = (s: string | null) =>
         "pt-BR",
         { day: "2-digit", month: "2-digit", timeZone: "America/Sao_Paulo" },
       )
-    : "—";
+    : "sem data";
 export const dataBR = (s: string) => {
   const partes = new Intl.DateTimeFormat("en-CA", {
     timeZone: "America/Sao_Paulo",

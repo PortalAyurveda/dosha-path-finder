@@ -64,9 +64,9 @@ export default function AgendamentoPublico({ slug, nome, agenda, atualizar }: { 
     {marcada ? <div className="space-y-3">
       <h3 className="flex items-center gap-2 font-serif text-lg font-bold"><Check className="h-5 w-5 text-secondary" />Consulta marcada</h3>
       <p className="text-sm">Com {nome} · {quando(marcada.inicio)}</p><p className="text-sm text-muted-foreground">Online, na sala do Portal · {Math.round((Date.parse(marcada.fim)-Date.parse(marcada.inicio))/60000)} min</p>
-      <p className="text-sm">O botão “Entrar na sala” aparece em Meu Perfil, Meu terapeuta, 10 minutos antes.</p>
+      <p className="text-sm">O botão “Entrar na sala” aparece em Meu acompanhamento, 10 minutos antes.</p>
       {agenda.regras?.texto && <p className="whitespace-pre-line text-xs text-muted-foreground">{agenda.regras.texto}</p>}
-      <CTAButton to="/meu-perfil#meu-terapeuta-fotos" className="h-auto min-h-10 px-4 py-2 text-sm">Enviar as fotos agora</CTAButton>
+      <CTAButton to="/meu-acompanhamento?aba=fotos" className="h-auto min-h-10 px-4 py-2 text-sm">Enviar as fotos agora</CTAButton>
       <Button variant="outline" className="h-auto whitespace-normal" onClick={baixar}><CalendarPlus className="mr-2 h-4 w-4" />Pôr na agenda do celular</Button>
     </div> : inicio ? <div className="space-y-4">
       <p className="text-sm font-semibold">Com {nome} · {quando(inicio)}</p><p className="text-xs text-muted-foreground">Online, na sala do Portal{escolhido ? ` · ${Math.round((Date.parse(escolhido.fim)-Date.parse(inicio))/60000)} min` : ''}</p>
@@ -84,7 +84,7 @@ export default function AgendamentoPublico({ slug, nome, agenda, atualizar }: { 
     </div> : <>
       <div className="flex items-center justify-between"><Button size="icon" variant="ghost" aria-label="Semana anterior" disabled={semana===0} onClick={()=>setSemana(0)}><ChevronLeft className="h-4 w-4" /></Button><p className="text-xs font-semibold">{semana===0 ? 'Próximos 7 dias' : 'Próxima semana'}</p><Button size="icon" variant="ghost" aria-label="Próxima semana" disabled={semana===1} onClick={()=>setSemana(1)}><ChevronRight className="h-4 w-4" /></Button></div>
       {!dias.length && <p className="text-sm text-muted-foreground">Sem horários livres nos próximos dias.</p>}
-      {dias.map(([d,hs])=><div key={d}><p className="mb-2 text-sm font-semibold capitalize">{new Date(`${d}T12:00:00-03:00`).toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'2-digit',timeZone:'America/Sao_Paulo'})}</p><div className="flex flex-wrap gap-2">{hs.map(h=><Button key={h.inicio} size="sm" variant="outline" onClick={()=>{setInicio(h.inicio);sessionStorage.setItem(chave,h.inicio);}}>{horaBR(h.inicio)}</Button>)}</div></div>)}
+      <div className="agenda-publica-dias">{dias.map(([d,hs])=><div key={d}><p className="mb-2 text-sm font-semibold capitalize">{new Date(`${d}T12:00:00-03:00`).toLocaleDateString('pt-BR',{weekday:'short',day:'2-digit',month:'2-digit',timeZone:'America/Sao_Paulo'})}</p><div className="flex flex-wrap gap-2">{hs.map(h=><Button key={h.inicio} size="sm" variant="outline" onClick={()=>{setInicio(h.inicio);sessionStorage.setItem(chave,h.inicio);}}>{horaBR(h.inicio)}</Button>)}</div></div>)}</div><p className="text-xs text-muted-foreground">Horários de Brasília. A consulta acontece aqui no Portal.</p><Button variant="secondary" disabled className="w-full">Escolha um horário</Button>
     </>}
   </div>;
 }
