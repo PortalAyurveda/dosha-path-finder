@@ -15,3 +15,5 @@
 - [x] Deixar em cinza os cursos que a pessoa não tem (inclusive o Detox da Primavera) em "Meus cursos"
 - [x] Deixar os cards de "Meus cursos" simétricos: sem logo amarelo e sem texto abaixo da capa
 - [x] Tirar "Seu Protocolo Samkhya" (e o selo do cupom) do /meu-dosha: diagnóstico completo mostra só o diagnóstico
+- [ ] Construir Parte 1 da área da terapeuta (termo, Hoje, Pacientes, Agenda, Meu link, Perfil e entrada no avatar)
+- [ ] Validar regras e telas da Parte 1; teste autenticado real depende das contas externas do usuário
