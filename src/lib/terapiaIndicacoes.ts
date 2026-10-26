@@ -1,7 +1,7 @@
 import type { Leitura } from './terapiaAvaliacao';
 export const INDICACOES_AUTOSAVE_MS = 2000;
 export interface SecaoIndicacoes { chave: string; titulo: string }
-export interface FonteIndicacao { queixa?:string; assunto?:string; id?: string | number; tipo?: string; titulo?: string; nome?: string; resumo?: string; texto?: string; livro?: string; referencia?: string; link?: string; slug?: string; imagem?: string; porque?: string; combina?: boolean; serve?:boolean; slot?: string; favorito?: boolean; vata?: number; pitta?: number; kapha?: number }
+export interface FonteIndicacao { queixa?:string; assunto?:string; id?: string | number; tipo?: string; titulo?: string; nome?: string; resumo?: string; texto?: string; livro?: string; referencia?: string; link?: string; slug?: string; imagem?: string; porque?: string; combina?: boolean; serve?:boolean; slot?: string; favorito?: boolean; origem?:string; vata?: number; pitta?: number; kapha?: number }
 export interface ItemIndicacao extends FonteIndicacao { id: string; titulo: string; nota: string }
 export interface DadosIndicacoes { secoes: Record<string, ItemIndicacao[]>; [chave: string]: unknown }
 export interface FolhaIndicacoes { avaliacao_id?:string|null; id: string; paciente_user_id: string; paciente_nome: string; criado_em: string; atualizado_em: string; enviada_em: string | null; vista_em: string | null; dados: Partial<DadosIndicacoes>; diagnostico: string | null; tratamento: string | null; retorno: string | null; secoes: SecaoIndicacoes[]; avaliacao: { id?:string; leitura: Leitura; resumo: string; criado_em: string } | null }
@@ -13,8 +13,8 @@ export function criarIndicacao(fonte: FonteIndicacao, id: string = crypto.random
   return { ...fonte, id, titulo: fonte.titulo ?? fonte.nome ?? [fonte.livro, fonte.referencia].filter(Boolean).join(' · '), nota: '' };
 }
 export function inserirIndicacao(dados: DadosIndicacoes, secao: string, item: ItemIndicacao): DadosIndicacoes {
-  const key = item.slug || item.link;
-  if (key && Object.values(dados.secoes).flat().some(i => (i.slug || i.link) === key)) return dados;
+  const key = item.slug || item.link || (item.tipo!=="texto" ? `${item.tipo}:${item.titulo}` : "");
+  if (key && Object.values(dados.secoes).flat().some(i => (i.slug || i.link || (i.tipo!=="texto" ? `${i.tipo}:${i.titulo}` : "")) === key)) return dados;
   return { ...dados, secoes: { ...dados.secoes, [secao]: [...(dados.secoes[secao] ?? []), item] } };
 }
 export function moverIndicacao(dados: DadosIndicacoes, itemId: string, destino: string, indice?: number): DadosIndicacoes {
@@ -39,7 +39,7 @@ export function queixaIndicacao(f:FonteIndicacao){return f.queixa??f.assunto??f.
 
 export function origemIndicacao(item:FonteIndicacao) {
  if(item.tipo==='texto') return '';
- if(item.favorito || /acervo|material|minha/.test(item.tipo??'')) return 'Do seu acervo';
+ if(item.origem==='acervo' || /acervo|material|minha/.test(item.tipo??'')) return 'Do seu acervo';
  if(item.tipo==='produto') return 'Produto Samkhya';
  if(item.tipo==='receita') return 'Receita do Portal';
  if(['aula','video','live'].includes(item.tipo??'')) return 'Aula do Portal';

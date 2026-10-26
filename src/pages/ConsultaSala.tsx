@@ -9,7 +9,7 @@ import {useSouTerapeuta} from '@/hooks/useSouTerapeuta';
 import {terapia,diaBR} from '@/lib/terapia';
 import {meu,dataExtenso} from '@/lib/terapiaMeu';
 import {isInAppBrowser} from '@/lib/inAppBrowser';
-import {sala,faseSala,fichaTreino,presencaRecente,enderecoTreinoPessoa,ESPERA_SALA_MS,AO_VIVO_MS} from '@/lib/consultaSala';
+import {sala,faseSala,destinoSaida,fichaTreino,presencaRecente,enderecoTreinoPessoa,ESPERA_SALA_MS,AO_VIVO_MS} from '@/lib/consultaSala';
 import type {SalaConsulta,SalaTreino} from '@/lib/consultaSala';
 import type {Avaliacao} from '@/lib/terapiaAvaliacao';
 import type {QuadroSalvo} from '@/lib/terapiaQuadro';
@@ -80,7 +80,7 @@ export default function ConsultaSala() {
  const fotos=useQuery({queryKey:['sala-minhas-fotos',user?.id],queryFn:meu.fotos,enabled:dados?.papel==='paciente'&&!entrou});
  const config=useQuery({queryKey:['sala-treino-config'],queryFn:terapia.config,enabled:dados?.papel==='paciente'&&!entrou,staleTime:10*60*1000});
  useEffect(()=>{const t=setInterval(()=>setAgora(Date.now()),1000);return()=>clearInterval(t);},[]);
- const sair=useCallback(()=>{if(dados?.papel==='terapeuta'){void (async()=>{if(!(await salvarFicha.current()))return;await sala.mostrar(dados.consulta,null).catch(()=>undefined);await sala.gravando(dados.consulta,false).catch(()=>undefined);setEntrou(false);setSaiuDaSala(true);})();}else{setEntrou(false);setSaiuDaSala(true);}},[dados]);
+ const sair=useCallback(()=>{if(dados?.papel==='terapeuta'){void (async()=>{if(!(await salvarFicha.current()))return;await sala.mostrar(dados.consulta,null).catch(()=>undefined);await sala.gravando(dados.consulta,false).catch(()=>undefined);setEntrou(false);setSaiuDaSala(true);if(dados&&destinoSaida(dados,Date.now())==='encerrada')setEncerrou(true);})();}else{setEntrou(false);setSaiuDaSala(true);if(dados&&destinoSaida(dados,Date.now())==='encerrada')setEncerrou(true);}},[dados]);
  useEffect(()=>{if(entrou&&fase==='encerrada')sair();},[entrou,fase,sair]);
  if(loading)return <p role="status" className="p-8">Carregando…</p>;
  if(!user||isAnonymous)return <Navigate to={`/entrar?redirect=${encodeURIComponent(`/consulta/${id??''}`)}`} replace/>;

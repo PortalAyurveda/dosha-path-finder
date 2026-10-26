@@ -58,7 +58,8 @@ export default function Hoje({
         </div>
       </Secao>
       <div className="space-y-4">
-        <Secao titulo={`Pede sua atenção · ${dados.atencao?.length??0}`}>
+        <Secao titulo="Pede sua atenção">
+          {(dados.atencao?.length??0)>0&&<span className="portal-atencao-num">{dados.atencao?.length}</span>}
           {(dados.atencao??[]).map((a,i)=>{const base=`/painel-terapeuta/paciente/${a.paciente_id}`;const url=a.tipo==='sem_folha'?`${base}/indicacoes/nova${a.consulta_id?`?consulta=${a.consulta_id}`:''}`:a.tipo==='folha_nao_vista'&&a.folha_id?`${base}/indicacoes/${a.folha_id}`:a.tipo==='mensagens'?`/painel-terapeuta?aba=mensagens&paciente=${a.paciente_id}`:`${base}?aba=fotos`;return <article key={i} className="flex items-start justify-between gap-3 border-b border-border py-3"><span className="portal-icone">{a.tipo==='mensagens'?<MessageCircle/>:a.tipo.includes('foto')?<Camera/>:<FileText/>}</span><div className="min-w-0 flex-1"><p className="text-sm font-semibold">{a.texto}</p>{a.detalhe&&<p className="text-xs text-muted-foreground">{a.detalhe}</p>}</div>{<Button asChild variant="outline" size="sm"><Link to={url}>{a.tipo==='sem_folha'?'Montar':a.tipo==='folha_nao_vista'?'Ver folha':a.tipo==='faltam_fotos'?'Ver fotos':'Ver'}</Link></Button>}</article>;})}
           {!dados.atencao?.length&&<p className="text-sm text-muted-foreground">Nada pede sua atenção.</p>}
         </Secao>

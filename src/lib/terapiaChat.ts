@@ -18,3 +18,5 @@ export const chat={
 };
 export function juntarMensagens(...paginas:Mensagem[][]){return [...new Map(paginas.flat().map(m=>[m.id,m])).values()].sort((a,b)=>a.id-b.id);}
 export function textoConvite(texto:string,link:string){return texto.split('{link}').join(link);}
+
+export function novaMensagemDaOutra(mensagens:Mensagem[],papel:'paciente'|'terapeuta',ultima?:number){const m=mensagens.filter(x=>x.autor!=='sistema'&&x.autor!==papel).at(-1);return m&&m.id!==ultima?m:undefined;}

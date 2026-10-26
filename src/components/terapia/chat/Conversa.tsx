@@ -4,7 +4,7 @@ import {Link} from 'react-router-dom';
 import {ArrowLeft,Send} from 'lucide-react';
 import {Button} from '@/components/ui/button';
 import {Textarea} from '@/components/ui/textarea';
-import {chat,CHAT_ABERTA_MS,CHAT_LISTA_MS,juntarMensagens,textoConvite,type Conversa as Dados,type Mensagem} from '@/lib/terapiaChat';
+import {chat,CHAT_ABERTA_MS,CHAT_LISTA_MS,juntarMensagens,novaMensagemDaOutra,textoConvite,type Conversa as Dados,type Mensagem} from '@/lib/terapiaChat';
 import {terapia,diaBR,horaBR} from '@/lib/terapia';
 import {OnlineAgora} from '../publico/ConsultaPublica';
 import {useUser} from '@/contexts/UserContext';
@@ -16,7 +16,7 @@ export default function Conversa({conversa,papel,voltar,marcar,convite}:{convers
  const lista=useQuery({queryKey:['chat-lista',papel==='terapeuta',user?.id],queryFn:papel==='paciente'?chat.minhas:chat.terapeuta,enabled:!!user,refetchInterval:CHAT_LISTA_MS});
  conversa=lista.data?.find(c=>c.id===conversa.id)??conversa;
  const pessoa=papel==='paciente'?conversa.terapeuta:conversa.paciente;
- const q=useQuery({queryKey:['chat-mensagens',conversa.id,papel],queryFn:async()=>{const m=await chat.mensagens(conversa.id);const nova=m.filter(x=>x.autor!=='sistema'&&x.autor!==papel).at(-1);if(!document.hidden&&nova&&nova.id!==lida.current){await chat.ler(conversa.id);lida.current=nova.id;void qc.invalidateQueries({queryKey:['chat-total']});void qc.invalidateQueries({queryKey:['chat-lista']});}return m;},refetchInterval:()=>document.hidden?false:CHAT_ABERTA_MS});
+ const q=useQuery({queryKey:['chat-mensagens',conversa.id,papel],queryFn:async()=>{const m=await chat.mensagens(conversa.id);const nova=novaMensagemDaOutra(m,papel,lida.current);if(!document.hidden&&nova&&nova.id!==lida.current){await chat.ler(conversa.id);lida.current=nova.id;void qc.invalidateQueries({queryKey:['chat-total']});void qc.invalidateQueries({queryKey:['chat-lista']});}return m;},refetchInterval:()=>document.hidden?false:CHAT_ABERTA_MS});
  useEffect(()=>{const visivel=()=>{if(!document.hidden)void q.refetch();};document.addEventListener('visibilitychange',visivel);return()=>document.removeEventListener('visibilitychange',visivel);},[conversa.id]);
  const mensagens=juntarMensagens(historico,q.data??[]);const primeiroSistema=mensagens.find(m=>m.autor==='sistema')?.id;
  useEffect(()=>{if(!q.data)return;setHistorico(h=>juntarMensagens(h,q.data??[]));if(q.data.length<50&&!historico.length)setAnteriores(false);const id=q.data.at(-1)?.id;if(id!==ultima.current){ultima.current=id;fim.current?.scrollIntoView({block:'nearest'});}},[q.data]);
