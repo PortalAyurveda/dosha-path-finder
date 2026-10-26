@@ -6,6 +6,8 @@ import type { FichaPaciente, FotosPaciente, NascimentoPaciente, RotinaPaciente, 
 import { FOTO_EXPIRA_SEGUNDOS } from "./terapiaPaciente";
 import type { Carta } from './terapiaAdicoes';
 import type { DadosIndicacoes, FolhaIndicacoes, FolhaIndicacoesLista, FontesIndicacoes } from './terapiaIndicacoes';
+import type { ItemAcervo,OpcoesAcervo } from './terapiaAcervo';
+import type { EstadoQuadro,QuadroSalvo } from './terapiaQuadro';
 export interface MunicipioNascimento { codigo_ibge:number; nome:string; uf:string; fuso:string }
 
 export interface Regra {
@@ -98,6 +100,18 @@ const read = async <T>(
   return data as T;
 };
 export const terapia = {
+  config: () => read<{acervo_opcoes:OpcoesAcervo}>(supabase.rpc('terapia_config_publica')),
+  acervo: () => read<ItemAcervo[]>(supabase.rpc('terapia_acervo')),
+  acervoSalvar: (item:ItemAcervo) => read<ItemAcervo>(supabase.rpc('terapia_acervo_salvar',{p:item as unknown as Json})),
+  acervoApagar: (id:string) => read<string|null>(supabase.rpc('terapia_acervo_apagar',{p_id:id})),
+  acervoItem: (slug:string,item:string) => read<ItemAcervo|null>(supabase.rpc('acervo_item',{p_terapeuta_slug:slug,p_item_slug:item})),
+  quadros: (avaliacao:string) => read<QuadroSalvo[]>(supabase.rpc('terapia_quadros_da',{p_avaliacao:avaliacao})),
+  quadroGuardar: (avaliacao:string,item:string,path:string,tracos:EstadoQuadro,id?:string) => read<string>(supabase.rpc('terapia_quadro_guardar',{p_avaliacao:avaliacao,p_item:item,p_imagem_path:path,p_tracos:tracos as unknown as Json,...(id?{p_id:id}:{})})),
+  quadroMostrar: (id:string,mostrar:boolean) => read<void>(supabase.rpc('terapia_quadro_mostrar',{p_id:id,p_mostrar:mostrar})),
+  quadroApagar: (id:string) => read<string|null>(supabase.rpc('terapia_quadro_apagar',{p_id:id})),
+  arquivoAssinado: async (bucket:string,path:string) => { const {data,error}=await supabase.storage.from(bucket).createSignedUrl(path,3600);if(error)throw new Error(error.message);if(!data?.signedUrl)throw new Error('Não foi possível abrir o arquivo.');return data.signedUrl; },
+  arquivoEnviar: async (bucket:string,path:string,arquivo:File|Blob) => {const {error}=await supabase.storage.from(bucket).upload(path,arquivo,{upsert:true});if(error)throw new Error(error.message);return path;},
+  arquivoApagar: async (bucket:string,path:string) => {const {error}=await supabase.storage.from(bucket).remove([path]);if(error)throw new Error(error.message);},
   folhaNova: (paciente: string, avaliacao?: string, consulta?: string) => read<string>(supabase.rpc('terapia_folha_nova', { p_paciente: paciente, ...(avaliacao ? { p_avaliacao: avaliacao } : {}), ...(consulta ? { p_consulta: consulta } : {}) })),
   folha: (id: string) => read<FolhaIndicacoes>(supabase.rpc('terapia_folha', { p_id: id })),
   folhasDa: (paciente: string) => read<FolhaIndicacoesLista[]>(supabase.rpc('terapia_folhas_da', { p_paciente: paciente })),

@@ -1,0 +1,8 @@
+export interface OpcoesAcervo { tipos: { chave:string; nome:string; secao?:string }[]; subcategorias:Record<string,string[]>; tags:string[] }
+export interface ConteudoAcervo { ingredientes?:{quantidade:string;item:string}[]; passos?:string[]; como_fazer?:string; duracao?:string; link?:string; inicio?:string; texto?:string; dica?:string; esperar?:string; [key:string]:unknown }
+export interface ItemAcervo { id?:string; tipo:string; titulo:string; slug?:string; resumo:string; subcategoria:string; periodo:string; vata:number; pitta:number; kapha:number; tags:string[]; serve_para:string[]; conteudo:ConteudoAcervo; arquivo_path?:string|null; visibilidade:string; revisao?:string; terapeuta?:{nome:string;slug:string;imagem?:string} }
+export const novoAcervo=():ItemAcervo=>({tipo:'receita',titulo:'',resumo:'',subcategoria:'',periodo:'',vata:0,pitta:0,kapha:0,tags:[],serve_para:[],conteudo:{},visibilidade:'meus_pacientes'});
+export function ordenarMinhas<T extends {serve?:boolean}>(itens:T[]) { return [...itens].sort((a,b)=>Number(!!b.serve)-Number(!!a.serve)); }
+export function enderecoAcervo(slug:string,item:string) { return `/terapeutas/${encodeURIComponent(slug)}/acervo/${encodeURIComponent(item)}`; }
+export function inicioYoutube(inicio:string) { const p=inicio.split(':').map(Number);return p.length===2&&p.every(Number.isFinite)?Math.max(0,p[0]*60+p[1]):0; }
+export function linkSeguro(link:string) { if(!link.trim())return '';try { const url=new URL(link,window.location.origin);return ['https:','http:'].includes(url.protocol)?url.href:''; }catch{return '';} }

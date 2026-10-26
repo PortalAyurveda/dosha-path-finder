@@ -1,0 +1,8 @@
+.quadro-tela { position: fixed; inset: 0; z-index: 100; background: hsl(var(--background)); display:flex; flex-direction:column; }
+.quadro-cor-foreground { background:hsl(var(--foreground)); }
+.quadro-cor-secondary { background:hsl(var(--secondary)); }
+.quadro-cor-muted-foreground { background:hsl(var(--muted-foreground)); }
+.quadro-cor-background { background:hsl(var(--background)); }
+.quadro-canvas { touch-action:none; background:hsl(var(--card)); width:100%; height:auto; display:block; }
+@media (max-width:1023px) { .quadro-corpo { display:flex; flex-direction:column; overflow:auto; } .quadro-fontes { max-height:28dvh; overflow:auto; flex-shrink:0; } }
+@media (max-width:1023px) { .quadro-fontes.quadro-ficha-aba { max-height:none; flex:1; min-height:0; } }

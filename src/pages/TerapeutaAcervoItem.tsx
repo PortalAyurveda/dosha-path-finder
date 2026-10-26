@@ -1,0 +1,7 @@
+import { useParams,Link } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { Helmet } from 'react-helmet-async';
+import { useUser } from '@/contexts/UserContext';
+import { terapia } from '@/lib/terapia';
+import Conteudo from '@/components/terapia/acervo/Conteudo';
+export default function TerapeutaAcervoItem() {const {slug,item}=useParams();const {user,loading}=useUser();const q=useQuery({queryKey:['acervo-item',slug,item,user?.id],queryFn:()=>terapia.acervoItem(slug??'',item??''),enabled:!loading&&!!slug&&!!item,retry:false});return <><Helmet><title>{q.data?.titulo??'Acervo da terapeuta'} | Portal Ayurveda</title><meta name="robots" content="noindex, nofollow"/></Helmet><main className="mx-auto max-w-3xl px-5 py-8"><Link to={`/terapeutas/${slug}`} className="text-sm text-muted-foreground">← {q.data?.terapeuta?.nome??'Terapeuta'}</Link>{loading||q.isPending?<p role="status" className="py-8">Carregando conteúdo…</p>:q.error?<p role="alert" className="py-8">{q.error.message}</p>:!q.data?<p className="py-8">Este conteúdo é só para quem é acompanhado por esta terapeuta</p>:<div className="mt-6"><Conteudo item={q.data}/><p className="mt-8 border-t border-border pt-4 text-sm text-muted-foreground">{q.data.terapeuta?.nome}</p></div>}</main></>;}

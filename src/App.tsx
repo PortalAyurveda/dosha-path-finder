@@ -57,6 +57,7 @@ const CursoRotinas = lazy(() => import("./pages/curso/Rotinas"));
 const CursoDravyaGuna = lazy(() => import("./pages/curso/DravyaGuna"));
 const TerapeutasDoBrasil = lazy(() => import("./pages/TerapeutasDoBrasil"));
 const TerapeutaPerfil = lazy(() => import("./pages/TerapeutaPerfil"));
+const TerapeutaAcervoItem = lazy(() => import("./pages/TerapeutaAcervoItem"));
 const TerapeutaConvite = lazy(() => import("./pages/TerapeutaConvite"));
 const TerapeutaCadastro = lazy(() => import("./pages/TerapeutaCadastro"));
 const PainelTerapeuta = lazy(() => import("./pages/PainelTerapeuta"));
@@ -272,6 +273,7 @@ const RoutedApp = () => {
               <Route path="/terapeutas-do-brasil/cadastro" element={<TerapeutaCadastro />} />
               <Route path="/terapeutas-do-brasil/:slug" element={<TerapeutaRedirect />} />
               <Route path="/terapeutas/:slug" element={<TerapeutaPerfil />} />
+              <Route path="/terapeutas/:slug/acervo/:item" element={<TerapeutaAcervoItem />} />
               <Route path="/terapeutas/:slug/convite" element={<TerapeutaConvite />} />
               <Route path="/painel-terapeuta" element={<PainelTerapeuta />} />
               <Route path="/painel-terapeuta/paciente/:id" element={<PacienteTerapeuta />} />

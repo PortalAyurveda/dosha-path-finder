@@ -33,3 +33,6 @@
 - [x] Construir Parte 5: indicações, catálogo do Portal, montagem, envio, histórico e impressão
 - [x] Validar Parte 5: 53 testes e fluxo no computador/celular com dados simulados; criação, arraste, +, ordem, notas, salvamento, envio, impressão, reabertura e falha com nova tentativa
 - [ ] Validar Parte 5 com conta real — bloqueado: Supabase externo sem sessão autenticada disponível
+- [x] Construir Parte 6: Meu acervo, itens, Minhas e quadro de aula com ficha em aba no celular
+- [x] Validar Parte 6: 68 testes; computador e celular com dados simulados, acervo e arquivos, Minhas e links, quadro e traços, fotos e língua assinadas, permissões, gravação ao trocar, reabertura, visibilidade, exclusão de arquivo e impressão
+- [ ] Validar Parte 6 com conta real — bloqueado: Supabase externo sem sessão autenticada disponível

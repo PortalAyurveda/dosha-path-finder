@@ -14,12 +14,14 @@ import Pacientes from "@/components/terapia/Pacientes";
 import Agenda from "@/components/terapia/Agenda";
 import MeuLink from "@/components/terapia/MeuLink";
 import Perfil from "@/components/terapia/Perfil";
+import MeuAcervo from "@/components/terapia/acervo/MeuAcervo";
 import "@/components/terapia/painel.css";
 const abas = [
   ["hoje", "Hoje"],
   ["pacientes", "Pacientes"],
   ["agenda", "Agenda"],
   ["link", "Meu link"],
+  ["acervo", "Meu acervo"],
   ["perfil", "Perfil público"],
 ];
 export default function PainelTerapeuta() {
@@ -258,6 +260,7 @@ export default function PainelTerapeuta() {
                 />
               )}{" "}
               {aba === "link" && <MeuLink painel={dados} executar={executar} />}{" "}
+              {aba === "acervo" && <MeuAcervo userId={acesso.userId} painel={dados} />}
               {aba === "perfil" && (
                 <Perfil
                   painel={dados}
