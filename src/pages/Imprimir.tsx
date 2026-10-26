@@ -287,11 +287,20 @@ export default function Imprimir() {
   const compras = comprasQuery.data ?? [];
   const rotina = rotinaQuery.data ?? [];
 
-  const folhas =
-    (querReceitas ? Math.ceil(nuggetIds.length / 6) : 0) +
-
-    (querSemana ? 2 : 0) +
-    (querCompras ? Math.max(1, Math.ceil(compras.length / 30)) : 0);
+  // Conta as folhas pela altura real da folha na tela (273 mm úteis por A4)
+  const [folhas, setFolhas] = useState(1);
+  const mostraFolha = !erro && !carregando && pecas.length > 0;
+  useEffect(() => {
+    if (!mostraFolha) return;
+    const el = document.getElementById("folha-impressao");
+    if (!el) return;
+    const pxPorMm = 96 / 25.4;
+    const medir = () => setFolhas(Math.max(1, Math.ceil((el.scrollHeight / pxPorMm - 24) / 273)));
+    medir();
+    const ro = new ResizeObserver(medir);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [mostraFolha]);
 
   const togglePeca = (p: Peca, on: boolean) => {
     const atual = new Set(pecas);

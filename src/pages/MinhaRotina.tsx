@@ -520,7 +520,8 @@ const MinhaRotina = () => {
 
   const [imprimirOpen, setImprimirOpen] = useState(false);
   const [pecasEscolhidas, setPecasEscolhidas] = useState<Record<string, boolean>>({
-    rotina: true,
+    dia: false,
+    semana: true,
     receitas: false,
     compras: false,
   });
@@ -616,6 +617,7 @@ const MinhaRotina = () => {
   );
   const rowBySlot = new Map<string, RotinaRow>();
   rowsDoDia.forEach((r) => rowBySlot.set(r.slot, r));
+  const idsReceitasDoDia = MEAL_SLOTS.map((s) => rowBySlot.get(s.slot)?.nugget_id).filter(Boolean) as string[];
 
 
   // Cuidados do glossário em destaque (2-3)
@@ -891,7 +893,8 @@ const MinhaRotina = () => {
           </DialogHeader>
           <div className="space-y-2">
             {[
-              { k: "rotina", icon: CalendarDays, titulo: "Sua rotina da semana", sub: "Os 7 dias, pra pôr na geladeira" },
+              { k: "dia", icon: BookOpen, titulo: "As receitas deste dia", sub: `${NOME_DIA[diaSelecionado]}, Semana ${semanaSelecionada}` },
+              { k: "semana", icon: CalendarDays, titulo: "Sua rotina da semana", sub: "Os 7 dias, pra pôr na geladeira" },
               { k: "receitas", icon: BookOpen, titulo: "As fichas de receita", sub: "Uma folha por receita, pra usar na cozinha" },
               { k: "compras", icon: ShoppingCart, titulo: "A lista de compras", sub: "Tudo que a semana pede, por setor do mercado" },
             ].map(({ k, icon: Ic, titulo, sub }) => (
@@ -937,6 +940,10 @@ const MinhaRotina = () => {
                 return;
               }
               setImprimirOpen(false);
+              if (pecasEscolhidas.dia) {
+                navigate(`/imprimir?pecas=receitas&ids=${idsReceitasDoDia.join(",")}&semana=${semanaSelecionada}`);
+                return;
+              }
               navigate(`/imprimir?pecas=${pecas.join(",")}&semana=${semanaSelecionada}`);
             }}
             className="w-full rounded-xl font-semibold text-white"
@@ -2077,7 +2084,7 @@ const TodasAsReceitas = ({
         </button>
       )}
 
-      {lista.length >= 1 && lista.length <= 12 && (
+      {lista.length >= 1 && (
         <div className="mt-4 flex justify-end">
           <button
             type="button"
@@ -2086,14 +2093,9 @@ const TodasAsReceitas = ({
             style={{ minHeight: 48, fontSize: 15, background: "#352F54" }}
           >
             <Printer className="h-5 w-5" strokeWidth={2} />
-            Imprimir estas receitas
+            Imprimir estas {lista.length} receitas
           </button>
         </div>
-      )}
-      {lista.length > 12 && (
-        <p className="mt-4 text-right text-sm text-muted-foreground">
-          Pra imprimir, filtre até 12 receitas.
-        </p>
       )}
     </section>
   );

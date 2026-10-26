@@ -689,18 +689,6 @@ export type Database = {
         }
         Relationships: []
       }
-      _ingest_token: {
-        Row: {
-          token: string
-        }
-        Insert: {
-          token: string
-        }
-        Update: {
-          token?: string
-        }
-        Relationships: []
-      }
       acomp_paginas: {
         Row: {
           atualizado_em: string
@@ -2199,6 +2187,21 @@ export type Database = {
           nome_completo_antigo?: string | null
           ref_id?: string
           tipo?: string
+        }
+        Relationships: []
+      }
+      backup_terapeutas_especialidade_20261026: {
+        Row: {
+          especialidade: string | null
+          id: string | null
+        }
+        Insert: {
+          especialidade?: string | null
+          id?: string | null
+        }
+        Update: {
+          especialidade?: string | null
+          id?: string | null
         }
         Relationships: []
       }
@@ -15405,6 +15408,7 @@ export type Database = {
         Returns: Json
       }
       consulta_sala: { Args: { p_consulta: string }; Returns: Json }
+      convite_previa: { Args: { p_slug?: string }; Returns: Json }
       corrigir_grafia: { Args: { t: string }; Returns: string }
       cortar_nas_ancoras: {
         Args: { p_ancoras: string[]; p_texto: string }
@@ -16734,20 +16738,6 @@ export type Database = {
       video_sala_resumo: { Args: { p_sala: string }; Returns: Json }
       video_slug_sitemap: { Args: { p_titulo: string }; Returns: string }
       videos_seo2_sincronizar: { Args: never; Returns: number }
-      videos_seo2026_receber: {
-        Args: {
-          p_duracao: number
-          p_fonte: string
-          p_legenda: string
-          p_origem: string
-          p_publicado: string
-          p_tipo: string
-          p_titulo: string
-          p_token: string
-          p_video_id: string
-        }
-        Returns: undefined
-      }
       videos_slugify: { Args: { p_titulo: string }; Returns: string }
       vincular_teste: { Args: { p_id_publico: string }; Returns: Json }
       vtt_falas: {
