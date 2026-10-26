@@ -35,18 +35,16 @@ export function ChaveSistema({
     <div className="flex items-center justify-between gap-3 rounded-lg border border-secondary/25 bg-secondary/5 p-3">
       <div>
         <label htmlFor={id} className="text-sm font-semibold">
-          Estou no sistema
+          Participar do Portal
         </label>
         <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-          {painel.sistema.no_sistema
-            ? "Seu cartão mostra agenda e “Marcar consulta”."
-            : "Seu cartão continua como hoje."}
+          Ativar coloca você como terapeuta com agenda disponível no Portal.
         </p>
       </div>
       <Switch
         id={id}
-        aria-label="Estou no sistema"
-        checked={painel.sistema.no_sistema}
+        aria-label="Participar do Portal"
+        checked={painel.sistema.participa ?? painel.sistema.no_sistema}
         disabled={ocupado}
         onCheckedChange={mudar}
         className="data-[state=checked]:bg-secondary"
