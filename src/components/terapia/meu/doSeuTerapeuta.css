@@ -1,0 +1,12 @@
+.do-seu-terapeuta .so-impressao { display: none; }
+@media print {
+  @page { size: A4 portrait; margin: 14mm; }
+  body.imprimindo-do-seu-terapeuta * { visibility: hidden; }
+  body.imprimindo-do-seu-terapeuta .do-seu-terapeuta.imprimir-este,
+  body.imprimindo-do-seu-terapeuta .do-seu-terapeuta.imprimir-este * { visibility: visible; }
+  body.imprimindo-do-seu-terapeuta .do-seu-terapeuta.imprimir-este { position: absolute; left: 0; top: 0; width: 100%; border: 0 !important; box-shadow: none !important; padding: 0 !important; background: hsl(var(--background)); font-size: 12px; }
+  .do-seu-terapeuta.imprimir-este .no-print { display: none !important; }
+  .do-seu-terapeuta.imprimir-este .so-impressao { display: block; }
+  .do-seu-terapeuta.imprimir-este h3 { break-after: avoid; }
+  .do-seu-terapeuta.imprimir-este li { break-inside: avoid; }
+}

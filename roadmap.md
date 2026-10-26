@@ -37,3 +37,4 @@
 - [x] Validar Parte 6: 68 testes; computador e celular com dados simulados, acervo e arquivos, Minhas e links, quadro e traços, fotos e língua assinadas, permissões, gravação ao trocar, reabertura, visibilidade, exclusão de arquivo e impressão
 - [ ] Validar Parte 6 com conta real — bloqueado: Supabase externo sem sessão autenticada disponível
 - [x] Ajustes Partes 1 e 6 (Participar do Portal, Estou online, Consulta agora, bibliotecas)
+- [x] Parte 7 · Meu terapeuta e Do seu terapeuta

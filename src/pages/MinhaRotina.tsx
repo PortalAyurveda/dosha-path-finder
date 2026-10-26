@@ -59,6 +59,7 @@ import NuggetDetalhe, { type Nugget } from "@/components/rotina/NuggetDetalhe";
 
 import NuggetIscaDialog from "@/components/rotina/NuggetIscaDialog";
 import PreviaRotina from "@/components/rotina/PreviaRotina";
+const IndicacoesNaRotina = lazy(() => import("@/components/terapia/meu/IndicacoesNaRotina"));
 
 
 // ===== Slots =====
@@ -792,6 +793,7 @@ const MinhaRotina = () => {
       title="Minha rotina"
       description="Seu planner ayurvédico diário, slot a slot."
     >
+      <Suspense fallback={null}><IndicacoesNaRotina /></Suspense>
       {/* Moldura: cabeçalho de contexto da semana */}
       <SemanaHeader
         agniPrincipal={agniInfo ?? null}
