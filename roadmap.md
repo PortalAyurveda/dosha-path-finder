@@ -53,3 +53,8 @@
 - [x] Construir Parte 9: mensagens, configurações, avisos e filtro de doshas combinados
 - [x] Validar Parte 9: 50 testes e conversas pessoa/terapeuta com respostas isoladas no computador/celular, convite, envio multilinha, configurações e agenda; nenhuma leitura direta de tabela de chat
 - [ ] Validar Parte 9 entre contas reais — bloqueado: Supabase externo sem sessão autenticada disponível
+- [x] Parte 15: refazer indicações na mesa com ficha, catálogo e folha, preservando dados e impressão
+- [x] Ajustar encaixe dos itens/modelos do quadro e vídeo de espera do treino
+- [x] Conferir Parte 15 em 1366 px e 390 px, testes e diferenças da referência
+
+- [ ] Validar Parte 15 com contas reais, fotos privadas e chamada entre dois aparelhos — bloqueado: Supabase externo sem sessão autenticada disponível

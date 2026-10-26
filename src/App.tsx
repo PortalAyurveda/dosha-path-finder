@@ -178,7 +178,7 @@ if (typeof window !== "undefined") {
 const LayoutOrBare = ({ children }: { children: React.ReactNode }) => {
   const { pathname } = useLocation();
   const SEM_MOLDURA = ["/aovivo", "/imprimir", "/detox/inscricao", "/detox/kit"];
-  if (pathname.startsWith("/consulta/") || SEM_MOLDURA.includes(pathname) || /^\/painel-terapeuta\/paciente\/[^/]+\/(?:avaliacao|indicacoes)\/[^/]+\/folha\/?$/.test(pathname) || /^\/painel-terapeuta\/paciente\/[^/]+\/avaliacao\/[^/]+\/?$/.test(pathname) || /^\/cursos\/[^/]+\/imprimir\/[^/]+\/?$/.test(pathname) || /^\/atividade\/[^/]+\/imprimir\/?$/.test(pathname) || /^\/cursos\/[^/]+\/certificado\/?$/.test(pathname)) return <>{children}</>;
+  if (pathname.startsWith("/consulta/") || SEM_MOLDURA.includes(pathname) || /^\/painel-terapeuta\/paciente\/[^/]+\/(?:avaliacao|indicacoes)\/[^/]+\/folha\/?$/.test(pathname) || /^\/painel-terapeuta\/paciente\/[^/]+\/(?:avaliacao|indicacoes)\/[^/]+\/?$/.test(pathname) || /^\/cursos\/[^/]+\/imprimir\/[^/]+\/?$/.test(pathname) || /^\/atividade\/[^/]+\/imprimir\/?$/.test(pathname) || /^\/cursos\/[^/]+\/certificado\/?$/.test(pathname)) return <>{children}</>;
   return <Layout>{children}</Layout>;
 };
 

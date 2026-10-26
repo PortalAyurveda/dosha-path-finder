@@ -43,3 +43,5 @@
 .sala-vista{position:fixed;top:41px;right:0;bottom:0;width:min(420px,100vw);z-index:80;box-shadow:0 0 40px -10px hsl(var(--foreground)/.5);overflow:auto}
 @media(max-width:900px){.sala-espera{grid-template-columns:1fr}.sala-p-main.com-quadro{grid-template-columns:1fr}.sala-p-main.com-quadro .sala-video{height:200px}.sala-p-main .sala-video{height:min(60dvh,520px)}}
 @media(prefers-reduced-motion:reduce){.sala-p *{scroll-behavior:auto}}
+
+.treino-esperando{min-height:460px}.treino-paciente{position:absolute;inset:0 0 78px;display:grid;place-items:center;background:hsl(var(--sala-fundo));color:hsl(var(--sala-texto))}.treino-paciente h2{font-size:30px;color:inherit}.treino-esperando .sala-video{position:absolute;right:18px;bottom:100px;width:180px;height:130px;min-height:0;border-radius:8px;overflow:hidden}.treino-esperando>.m-controles{margin-top:auto;z-index:1}.treino-esperando>[role=alert]{position:relative;margin-top:auto;margin-bottom:84px;z-index:1}.treino-esperando>.m-grav{z-index:2}@media(max-width:900px){.treino-esperando{min-height:340px}.treino-esperando .sala-video{width:120px;height:90px;bottom:94px;right:12px}.treino-paciente h2{font-size:24px}}
