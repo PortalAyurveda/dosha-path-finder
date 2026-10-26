@@ -935,7 +935,7 @@ const MinhaRotina = () => {
                 return;
               }
               setImprimirOpen(false);
-              navigate(`/imprimir?pecas=${pecas.join(",")}`);
+              navigate(`/imprimir?pecas=${pecas.join(",")}&semana=${semanaSelecionada}`);
             }}
             className="w-full rounded-xl font-semibold text-white"
             style={{ minHeight: 56, fontSize: 17, background: "#352F54" }}
@@ -1144,6 +1144,7 @@ const MinhaRotina = () => {
           onToggleSelecao={toggleSelecao}
           erroSelecao={erroSelecao}
           agniFracoOuIrregular={agniFracoOuIrregular}
+          semana={semanaSelecionada}
         />
       )}
       <div className="mt-8" style={{ paddingBottom: selecionados.size > 0 ? 104 : undefined }}>
@@ -1171,7 +1172,7 @@ const MinhaRotina = () => {
               <button
                 onClick={() =>
                   navigate(
-                    `/imprimir?pecas=receitas&ids=${[...selecionados].join(",")}`
+                    `/imprimir?pecas=receitas&ids=${[...selecionados].join(",")}&semana=${semanaSelecionada}`
                   )
                 }
                 className="inline-flex items-center gap-2 rounded-xl px-4 font-semibold text-white"
@@ -1181,7 +1182,7 @@ const MinhaRotina = () => {
                 Receitas
               </button>
               <button
-                onClick={() => navigate("/imprimir?pecas=compras")}
+                onClick={() => navigate(`/imprimir?pecas=compras&semana=${semanaSelecionada}`)}
                 className="inline-flex items-center gap-2 rounded-xl px-4 font-semibold text-white"
                 style={{ minHeight: 56, fontSize: 17, background: "#352F54" }}
               >
@@ -1903,6 +1904,7 @@ interface TodasAsReceitasProps {
   onToggleSelecao: (id: string) => void;
   erroSelecao: string | null;
   agniFracoOuIrregular: boolean;
+  semana: number;
 }
 
 const TodasAsReceitas = ({
@@ -1914,6 +1916,7 @@ const TodasAsReceitas = ({
   onToggleSelecao,
   erroSelecao,
   agniFracoOuIrregular,
+  semana,
 }: TodasAsReceitasProps) => {
   const navigate = useNavigate();
   const [busca, setBusca] = useState("");
@@ -2076,7 +2079,7 @@ const TodasAsReceitas = ({
         <div className="mt-4 flex justify-end">
           <button
             type="button"
-            onClick={() => navigate(`/imprimir?pecas=receitas&ids=${lista.map((r) => r.id).join(",")}`)}
+            onClick={() => navigate(`/imprimir?pecas=receitas&ids=${lista.map((r) => r.id).join(",")}&semana=${semana}`)}
             className="inline-flex items-center gap-2 rounded-xl px-4 font-semibold text-white"
             style={{ minHeight: 48, fontSize: 15, background: "#352F54" }}
           >
