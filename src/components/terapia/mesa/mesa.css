@@ -127,3 +127,8 @@
 @media (max-width:700px){.mesa-qa{grid-template-columns:1fr;display:flex;flex-direction:column;overflow:auto}.qa-lado{border-right:0;border-bottom:1px solid var(--m-line);flex:none}.qa-corpo>*{flex-shrink:0}
 .qa-th span{color:inherit}
 .qa-corpo{overflow:visible}.qa-meio{flex:none}.qa-quadro{min-height:360px}.palcoq{min-height:300px}.qa-ficha{overflow:visible;flex:none}.mesa-soma,.mesa-setores{padding:8px 12px}.mesa-conteudo{padding:12px}.mesa-hdr{padding:0 12px}.mesa-soma{position:static}}
+
+.sala-p :is(h1,h2,h3,p,span,li,label,b,ol),.mesa-sala-video :is(p,span,li,label,b),.qa-video :is(span,label,b){color:inherit}
+.qa-video .qa-toggle,.sala-p-quadro,.sala-fim{color:var(--m-ink)}
+.mesa-conteudo{container-type:inline-size}
+@container (max-width:560px){.m-fin{grid-template-columns:1fr}}

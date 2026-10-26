@@ -44,6 +44,6 @@ export default function VideoConsulta({codigo,consulta,terapeuta,sair,quadroAber
   <div ref={parent} className="sala-video" aria-label="Vídeo da consulta"/>
   {erro&&<div role="alert" className="flex flex-wrap items-center justify-center gap-3 p-2 text-sm"><p>{erro}</p><button type="button" className="m-btn" onClick={()=>setTentativa(t=>t+1)}>Tentar novamente</button></div>}
   {!quadroAberto&&controles(false)}
-  {quadroAberto&&slotCtl&&createPortal(<>{terapeuta&&<div className="ctl">{botoesTerapeuta}</div>}{controles(true)}</>,slotCtl)}
+  {quadroAberto&&slotCtl&&createPortal(terapeuta?<div className="ctl">{botoesTerapeuta}</div>:controles(true),slotCtl)}
  </section>;
 }
