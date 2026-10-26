@@ -23,8 +23,8 @@ const ListaConversas = lazy(()=>import('@/components/terapia/chat/ListaConversas
 const abas = [
   ["hoje", "Hoje"],
   ["pacientes", "Pacientes"],
-  ["mensagens", "Mensagens"],
   ["agenda", "Agenda"],
+  ["mensagens", "Mensagens"],
   ["link", "Meu link"],
   ["acervo", "Meu acervo"],
   ["perfil", "Perfil público"],

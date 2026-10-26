@@ -39,3 +39,6 @@
 .portal-mensagens .chat-bolha {width:85%;}.portal-mensagens .chat-conversa header h2 {font-family:'DM Sans',sans-serif;font-size:17px;}
 .portal-mensagens .chat-conversa form {display:flex;align-items:end;gap:8px;background:hsl(var(--card));}.portal-mensagens .chat-conversa form textarea{flex:1;}.portal-mensagens .chat-conversa form>div {flex-shrink:0;}
 @media(max-width:1023px){.portal-terapeuta nav[aria-label="Portal do terapeuta"] {padding:10px;background:hsl(var(--card));gap:8px;}.portal-terapeuta nav button{font-size:15px;}.portal-topo{flex-wrap:wrap;}.portal-hoje-acoes{flex-direction:column;align-items:flex-end;}.portal-hoje-acoes a,.portal-hoje-acoes button{font-size:13px!important;padding:6px 8px!important;height:auto;min-height:34px;}.portal-paciente>header,.portal-paciente>nav{margin-left:-16px;margin-right:-16px;padding-left:16px;padding-right:16px;}}
+
+.portal-terapeuta table td:nth-child(2)>div{flex-wrap:nowrap;font-size:12px;}.portal-terapeuta table td:last-child span {font-size:12px;}.portal-cartao>label~.divide-y{margin-top:0;}
+.portal-paciente .portal-cartao{padding:16px;}.portal-paciente .portal-cartao .h-2{height:12px;}.portal-paciente .portal-cartao .text-vata,.portal-paciente .portal-cartao .text-pitta,.portal-paciente .portal-cartao .text-kapha {font-size:17px;}
