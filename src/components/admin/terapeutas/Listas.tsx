@@ -1,0 +1,355 @@
+import type { ReactNode } from "react";
+import { ExternalLink, Check, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import type {
+  Participante,
+  ConsultaAdmin,
+  SugestaoAdmin,
+  AvaliacaoAdmin,
+} from "@/lib/terapiaAdmin";
+import { getTherapistProfilePath } from "@/lib/terapeutas";
+
+const data = (v: string | null) =>
+  v ? new Date(v).toLocaleDateString("pt-BR") : "—";
+function Tabela({
+  colunas,
+  children,
+}: {
+  colunas: string[];
+  children: ReactNode;
+}) {
+  return (
+    <div className="border border-border rounded-lg bg-card overflow-x-auto">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            {colunas.map((c) => (
+              <TableHead key={c} className="whitespace-nowrap text-xs">
+                {c}
+              </TableHead>
+            ))}
+          </TableRow>
+        </TableHeader>
+        <TableBody>{children}</TableBody>
+      </Table>
+    </div>
+  );
+}
+function Empty({ children }: { children: ReactNode }) {
+  return (
+    <p className="text-sm text-muted-foreground py-10 text-center">
+      {children}
+    </p>
+  );
+}
+export function Participantes({
+  lista,
+  busy,
+  onToggle,
+}: {
+  lista: Participante[];
+  busy: string | null;
+  onToggle: (t: Participante, v: boolean) => void;
+}) {
+  return (
+    <div className="space-y-4">
+      {!lista.length ? (
+        <Empty>Nenhuma terapeuta encontrada.</Empty>
+      ) : (
+        <Tabela
+          colunas={[
+            "Terapeuta",
+            "Status",
+            "Premium",
+            "Termo aceito",
+            "Participa",
+            "Pacientes",
+            "Consultas",
+            "Presença",
+            "Valor da consulta",
+            "Perfil",
+          ]}
+        >
+          {lista.map((t) => (
+            <TableRow key={t.id}>
+              <TableCell className="min-w-48 font-medium">{t.nome}</TableCell>
+              <TableCell>{t.status}</TableCell>
+              <TableCell>
+                <span
+                  className={`whitespace-nowrap text-xs rounded px-2 py-1 ${t.premium ? "bg-secondary/10 text-foreground" : "bg-muted text-muted-foreground"}`}
+                >
+                  {t.premium ? "Premium" : "sem Premium"}
+                </span>
+              </TableCell>
+              <TableCell className="whitespace-nowrap">
+                {data(t.termo_aceito_em)}
+              </TableCell>
+              <TableCell>
+                <Switch
+                  aria-label={`Participa: ${t.nome}`}
+                  checked={t.no_sistema}
+                  disabled={busy !== null}
+                  className="data-[state=checked]:bg-secondary"
+                  onCheckedChange={(v) => onToggle(t, v)}
+                />
+              </TableCell>
+              <TableCell>{t.pacientes}</TableCell>
+              <TableCell className="min-w-36">
+                <span className="block">{t.consultas_marcadas} marcadas</span>
+                <span className="text-muted-foreground">
+                  {t.consultas_realizadas} realizadas
+                </span>
+              </TableCell>
+              <TableCell className="whitespace-nowrap">
+                {t.online ? "online agora" : "—"}
+              </TableCell>
+              <TableCell className="whitespace-nowrap">
+                {t.valor_consulta === null
+                  ? "—"
+                  : t.valor_consulta === 0
+                    ? "Consulta gratuita"
+                    : t.valor_consulta.toLocaleString("pt-BR", {
+                        style: "currency",
+                        currency: "BRL",
+                      })}
+              </TableCell>
+              <TableCell>
+                <Button variant="outline" size="sm" asChild>
+                  <a
+                    href={getTherapistProfilePath(t.slug)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <ExternalLink />
+                    Ver perfil
+                  </a>
+                </Button>
+              </TableCell>
+            </TableRow>
+          ))}
+        </Tabela>
+      )}
+      <p className="text-xs text-muted-foreground">
+        A terapeuta aparece no diretório quando tem Premium, termo aceito,
+        agenda e valor da consulta, e liga “Participar do Portal”.
+      </p>
+    </div>
+  );
+}
+export function Consultas({ lista }: { lista: ConsultaAdmin[] }) {
+  return !lista.length ? (
+    <Empty>Nenhuma consulta neste período.</Empty>
+  ) : (
+    <Tabela
+      colunas={[
+        "Quando",
+        "Terapeuta",
+        "Paciente",
+        "Status",
+        "Presença",
+        "Juntos",
+        "O que traz",
+        "Avaliação",
+      ]}
+    >
+      {lista.map((c) => {
+        const eventos = c.presenca?.eventos ?? [];
+        return (
+          <TableRow key={c.id}>
+            <TableCell className="whitespace-nowrap">
+              {new Date(c.inicio).toLocaleString("pt-BR", {
+                dateStyle: "short",
+                timeStyle: "short",
+              })}
+            </TableCell>
+            <TableCell className="min-w-40">{c.terapeuta}</TableCell>
+            <TableCell className="min-w-40">{c.paciente}</TableCell>
+            <TableCell>{c.status}</TableCell>
+            <TableCell className="min-w-44">
+              {["terapeuta", "paciente"].map((p) => (
+                <span
+                  key={p}
+                  className={`block ${eventos.some((e) => e.papel === p && e.evento === "entrou") ? "text-foreground" : "text-muted-foreground"}`}
+                >
+                  {p}:{" "}
+                  {eventos.some((e) => e.papel === p && e.evento === "entrou")
+                    ? "entrou"
+                    : "não entrou"}
+                </span>
+              ))}
+            </TableCell>
+            <TableCell className="whitespace-nowrap">
+              {c.presenca ? `${c.presenca.minutos_juntos} min` : "—"}
+            </TableCell>
+            <TableCell className="min-w-52 whitespace-pre-wrap">
+              {c.motivo || "—"}
+            </TableCell>
+            <TableCell>{c.avaliacao ? `★ ${c.avaliacao.nota}` : "—"}</TableCell>
+          </TableRow>
+        );
+      })}
+    </Tabela>
+  );
+}
+export function Sugestoes({
+  lista,
+  busy,
+  onReview,
+}: {
+  lista: SugestaoAdmin[];
+  busy: string | null;
+  onReview: (s: SugestaoAdmin, d: "aprovado" | "recusado") => void;
+}) {
+  const pendentes = lista.filter((s) => s.revisao === "em_revisao");
+  return !pendentes.length ? (
+    <Empty>Nenhuma sugestão esperando.</Empty>
+  ) : (
+    <div className="grid md:grid-cols-2 gap-4">
+      {pendentes.map((s) => (
+        <article
+          key={s.id}
+          className="rounded-lg border border-border bg-card p-4 space-y-3 min-w-0"
+        >
+          <p className="text-xs text-muted-foreground uppercase">
+            {s.tipo} · {s.terapeuta} · Sugerido para o Portal
+          </p>
+          <h2 className="font-heading font-bold text-lg break-words">
+            {s.titulo}
+          </h2>
+          <p className="text-sm whitespace-pre-wrap">{s.resumo}</p>
+          {Array.isArray(s.conteudo.ingredientes) && (
+            <ul className="list-disc pl-5 text-sm space-y-1">
+              {s.conteudo.ingredientes.map((x, i) => (
+                <li key={i}>
+                  {typeof x === "string"
+                    ? x
+                    : x && typeof x === "object" && !Array.isArray(x)
+                      ? [x.quantidade, x.item]
+                          .filter((v) => typeof v === "string")
+                          .join(" ")
+                      : ""}
+                </li>
+              ))}
+            </ul>
+          )}
+          {Array.isArray(s.conteudo.passos) && (
+            <ol className="list-decimal pl-5 text-sm space-y-1">
+              {s.conteudo.passos.map((x, i) => (
+                <li key={i}>{typeof x === "string" ? x : ""}</li>
+              ))}
+            </ol>
+          )}
+          {typeof s.conteudo.como_fazer === "string" && (
+            <p className="text-sm whitespace-pre-wrap">
+              {s.conteudo.como_fazer}
+            </p>
+          )}
+          <div className="flex flex-wrap gap-2 text-xs">
+            {(["vata", "pitta", "kapha"] as const).map((d) => (
+              <span
+                key={d}
+                className={
+                  {
+                    vata: "bg-vata/20",
+                    pitta: "bg-pitta/20",
+                    kapha: "bg-kapha/20",
+                  }[d]
+                }
+              >
+                {d}: {s[d]}
+              </span>
+            ))}
+          </div>
+          {s.serve_para?.length > 0 && (
+            <p className="text-xs text-muted-foreground">
+              Serve para: {s.serve_para.join(", ")}
+            </p>
+          )}
+          <div className="flex gap-2">
+            <Button
+              variant="secondary"
+              className="rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm"
+              disabled={busy !== null}
+              onClick={() => onReview(s, "aprovado")}
+            >
+              <Check />
+              Aprovar
+            </Button>
+            <Button
+              variant="outline"
+              disabled={busy !== null}
+              onClick={() => onReview(s, "recusado")}
+            >
+              <X />
+              Recusar
+            </Button>
+          </div>
+        </article>
+      ))}
+    </div>
+  );
+}
+export function Avaliacoes({
+  lista,
+  busy,
+  onToggle,
+}: {
+  lista: AvaliacaoAdmin[];
+  busy: string | null;
+  onToggle: (a: AvaliacaoAdmin, v: boolean) => void;
+}) {
+  return (
+    <div className="space-y-4">
+      {!lista.length ? (
+        <Empty>Nenhuma avaliação ainda.</Empty>
+      ) : (
+        <Tabela
+          colunas={[
+            "Quando",
+            "Terapeuta",
+            "Paciente",
+            "Nota",
+            "Comentário",
+            "Publicar no perfil",
+          ]}
+        >
+          {lista.map((a) => (
+            <TableRow key={a.consulta_id}>
+              <TableCell className="whitespace-nowrap">
+                {data(a.criado_em)}
+              </TableCell>
+              <TableCell className="min-w-40">{a.terapeuta}</TableCell>
+              <TableCell className="min-w-40">{a.paciente}</TableCell>
+              <TableCell className="whitespace-nowrap">★ {a.nota}</TableCell>
+              <TableCell className="min-w-64 whitespace-pre-wrap">
+                {a.comentario || "—"}
+              </TableCell>
+              <TableCell>
+                <Switch
+                  className="data-[state=checked]:bg-secondary"
+                  aria-label={`Publicar no perfil: ${a.paciente}`}
+                  disabled={busy !== null}
+                  checked={a.publicar}
+                  onCheckedChange={(v) => onToggle(a, v)}
+                />
+              </TableCell>
+            </TableRow>
+          ))}
+        </Tabela>
+      )}
+      <p className="text-xs text-muted-foreground">
+        A nota entra na média do cartão sempre. O comentário só aparece no
+        perfil dela quando você publica.
+      </p>
+    </div>
+  );
+}

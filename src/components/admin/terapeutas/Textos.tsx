@@ -1,0 +1,138 @@
+import { useState } from "react";
+import { Save, Undo2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  gruposCMS,
+  terapiaAdmin,
+  type ConfigCMS,
+  type ValorCMS,
+} from "@/lib/terapiaAdmin";
+import EditorValor from "./EditorValor";
+import { useToast } from "@/hooks/use-toast";
+
+export default function Textos({
+  config,
+  onSaved,
+}: {
+  config: ConfigCMS;
+  onSaved: (chave: string, valor: ValorCMS) => void;
+}) {
+  const entries = gruposCMS(config);
+  const grupos = [...new Set(entries.map((e) => e.grupo))];
+  const [grupo, setGrupo] = useState(grupos[0] ?? "Outros");
+  const [draft, setDraft] = useState<ConfigCMS>({});
+  const [saving, setSaving] = useState<string | null>(null);
+  const { toast } = useToast();
+  const salvar = async (chave: string, valor: ValorCMS) => {
+    if (
+      chave === "sistema_ligado" &&
+      valor === false &&
+      config.sistema_ligado === true &&
+      !window.confirm(
+        "O diretório, a agenda e o Consulta agora ficam fora do ar para todas.",
+      )
+    )
+      return;
+    setSaving(chave);
+    try {
+      await terapiaAdmin.salvar(chave, valor);
+      onSaved(chave, valor);
+      setDraft((d) => {
+        const n = { ...d };
+        delete n[chave];
+        return n;
+      });
+      toast({ title: "Salvo!" });
+    } catch (e) {
+      toast({
+        title: "Erro ao salvar",
+        description: e instanceof Error ? e.message : "Tente novamente.",
+        variant: "destructive",
+      });
+    } finally {
+      setSaving(null);
+    }
+  };
+  return (
+    <div className="grid md:grid-cols-[220px_minmax(0,1fr)] gap-6">
+      <nav
+        aria-label="Grupos de textos"
+        className="flex md:flex-col overflow-x-auto gap-1 md:sticky md:top-20 self-start"
+      >
+        {grupos.map((g) => (
+          <Button
+            key={g}
+            variant="ghost"
+            className={`justify-start shrink-0 ${grupo === g ? "bg-secondary/10 text-foreground border-l-2 border-secondary" : ""}`}
+            onClick={() => setGrupo(g)}
+          >
+            {g}
+          </Button>
+        ))}
+      </nav>
+      <div className="min-w-0 space-y-8">
+        {entries
+          .filter((e) => e.grupo === grupo)
+          .map((e) => {
+            const valor = Object.prototype.hasOwnProperty.call(draft, e.chave)
+              ? draft[e.chave]
+              : e.valor;
+            const dirty = JSON.stringify(valor) !== JSON.stringify(e.valor);
+            return (
+              <section
+                key={e.chave}
+                className="space-y-4 pb-6 border-b border-border"
+              >
+                <header>
+                  <h2 className="font-heading font-bold text-lg break-words">
+                    {e.nome}
+                  </h2>
+                  {e.ajuda && (
+                    <p className="text-sm text-muted-foreground mt-1">
+                      {e.ajuda}
+                    </p>
+                  )}
+                </header>
+                <EditorValor
+                  valor={valor}
+                  nome={e.nome}
+                  id={`cms-${e.chave}`}
+                  onChange={(v) => setDraft((d) => ({ ...d, [e.chave]: v }))}
+                />
+                {e.chave === "termo" && (
+                  <p className="text-sm text-muted-foreground">
+                    Trocar a versão pede o aceite de novo a todas.
+                  </p>
+                )}
+                <div className="flex gap-2">
+                  <Button
+                    variant="secondary"
+                    className="rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm"
+                    disabled={!dirty || saving !== null}
+                    onClick={() => salvar(e.chave, valor)}
+                  >
+                    <Save />
+                    {saving === e.chave ? "Salvando…" : "Salvar"}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    disabled={!dirty || saving === e.chave}
+                    onClick={() =>
+                      setDraft((d) => {
+                        const n = { ...d };
+                        delete n[e.chave];
+                        return n;
+                      })
+                    }
+                  >
+                    <Undo2 />
+                    Desfazer
+                  </Button>
+                </div>
+              </section>
+            );
+          })}
+      </div>
+    </div>
+  );
+}
