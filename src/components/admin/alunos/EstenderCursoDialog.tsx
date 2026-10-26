@@ -1,0 +1,20 @@
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { dataAluno, erroAlunos, prazoAluno, rpcAlunos, vencimentoAluno, type ConfigAlunos, type CursoAluno } from "./AlunosTodos";
+export default function EstenderCursoDialog({ curso, config, onClose, onSucesso }: { curso: CursoAluno | null; config: ConfigAlunos | null; onClose: () => void; onSucesso: () => void }) {
+  const [idx, setIdx] = useState(0); const [ate, setAte] = useState(""); const [obs, setObs] = useState(""); const [avisar, setAvisar] = useState(true); const [saving, setSaving] = useState(false);
+  useEffect(() => { if (!curso) return; setIdx(Math.max(0, config?.prazos_estender.findIndex((p) => !curso.vitalicio || p.modo !== "meses") ?? 0)); setAte(""); setObs(""); setAvisar(true); }, [curso, config]);
+  const prazo = config?.prazos_estender[idx]; const nova = curso && prazo ? vencimentoAluno(curso, prazo, ate) : null;
+  const pronto = !!curso && !!prazo && !(curso.vitalicio && prazo.modo === "meses") && (prazo.modo !== "data" || !!ate);
+  async function estender() {
+    if (!curso || !prazo || !pronto || saving) return; setSaving(true);
+    try { const r = await rpcAlunos<{ ok: boolean; expira_em: string | null; email_enviado: boolean }>("admin_estender_curso", { p_matricula_id: curso.matricula_id, p_prazo: prazoAluno(prazo, ate), p_enviar_email: avisar, p_obs: obs.trim() || null }); if (!r.ok) throw new Error("Não foi possível estender o acesso."); toast.success(r.expira_em ? `Acesso estendido até ${dataAluno(r.expira_em)}` : "Acesso agora é vitalício"); onClose(); onSucesso(); } catch (e) { erroAlunos(e); } finally { setSaving(false); }
+  }
+  return <Dialog open={!!curso} onOpenChange={(v) => { if (!v && !saving) onClose(); }}><DialogContent className="max-w-lg max-h-[90dvh] overflow-y-auto max-sm:inset-0 max-sm:translate-x-0 max-sm:translate-y-0 max-sm:max-w-none max-sm:max-h-none max-sm:h-dvh max-sm:rounded-none max-sm:content-start" onEscapeKeyDown={(e) => { if (saving) e.preventDefault(); }} onPointerDownOutside={(e) => { if (saving) e.preventDefault(); }}><DialogHeader><DialogTitle className="pr-6 leading-snug">Estender {curso?.titulo}</DialogTitle><DialogDescription className="sr-only">Alterar o prazo de acesso ao curso.</DialogDescription></DialogHeader><section className="space-y-4"><div className="flex flex-wrap gap-2">{config?.prazos_estender.map((p, i) => <Button key={i} size="sm" variant={idx === i ? "default" : "outline"} disabled={saving || (curso?.vitalicio && p.modo === "meses")} aria-pressed={idx === i} onClick={() => setIdx(i)}>{p.rotulo}</Button>)}</div>{prazo?.modo === "data" && <Input type="date" aria-label="Nova data de vencimento" value={ate} disabled={saving} onChange={(e) => setAte(e.target.value)} />}<div className="rounded-lg bg-muted p-3 text-sm" aria-live="polite">{curso?.vitalicio ? "Hoje este acesso é vitalício." : prazo?.modo === "vitalicio" ? `Hoje vence ${dataAluno(curso?.expira_em)} e passa a ser vitalício.` : `Hoje vence ${dataAluno(curso?.expira_em)} e passa a vencer ${dataAluno(nova)}.`}</div><div className="space-y-2"><Label htmlFor="estender-obs">Observação (opcional)</Label><Textarea id="estender-obs" value={obs} disabled={saving} onChange={(e) => setObs(e.target.value)} /></div><div className="flex items-center gap-3"><Switch id="estender-avisar" checked={avisar} disabled={saving} onCheckedChange={setAvisar} /><Label htmlFor="estender-avisar">Enviar e-mail avisando a pessoa</Label></div><div className="flex justify-end gap-2"><Button variant="outline" disabled={saving} onClick={onClose}>Cancelar</Button><Button disabled={!pronto || saving} onClick={estender}>{saving ? "Estendendo..." : "Estender"}</Button></div></section></DialogContent></Dialog>;
+}
