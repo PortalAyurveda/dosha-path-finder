@@ -41,6 +41,6 @@
 - [x] Parte 8 · Diretório, agenda pública, CMS, convite e alertas
 - [x] Validar Parte 8 com testes e computador/celular; listar arquivos criados e alterados
 - [ ] Validar Parte 8 autenticada e alertas reais — bloqueado: Supabase externo sem sessão disponível
-- [ ] Construir Parte 10: sala, vídeo, presença, ficha, quadro ao vivo e treino sem persistência
-- [ ] Validar Parte 10 com testes e telas; listar arquivos
+- [x] Construir Parte 10: sala, vídeo, presença, ficha, quadro ao vivo e treino sem persistência
+- [x] Validar Parte 10: 61 testes e computador/celular com dados simulados; treino sem escrita, entrada/saída/avaliação, vídeo e quadro no mesmo arquivo; listar arquivos
 - [ ] Validar chamada real com duas contas — bloqueado: Supabase externo sem sessão disponível
