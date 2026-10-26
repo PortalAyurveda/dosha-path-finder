@@ -55,7 +55,7 @@ export function PassosParticipar({ painel, ocupado, mudar, irPara, abrirTermo, e
                 <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border text-xs font-semibold ${pronto ? "border-secondary bg-secondary text-secondary-foreground" : "border-border text-muted-foreground"}`}>{pronto ? <Check className="h-3.5 w-3.5" /> : i + 1}</span>
                 <span className={`flex-1 text-sm font-semibold ${pronto ? "text-muted-foreground line-through" : ""}`}>{NOMES[f]}</span>
                 {!pronto && f === "termo" && <Button size="sm" variant="outline" onClick={abrirTermo}>Ler e aceitar</Button>}
-                {!pronto && f === "agenda" && <Button size="sm" variant="outline" onClick={() => irPara("agenda")}>Ir para a Agenda</Button>}
+                {!pronto && f === "agenda" && <Button size="sm" variant="outline" onClick={() => irPara("agenda-fixos")}>Ir para a Agenda</Button>}
               </div>
               {!pronto && f === "premium" && (
                 <div className="mt-3 rounded-md border border-border p-3">

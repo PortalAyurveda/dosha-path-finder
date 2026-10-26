@@ -9,7 +9,7 @@ import CTAButton from "@/components/CTAButton";
 import { useToast } from "@/hooks/use-toast";
 import { useSouTerapeuta } from "@/hooks/useSouTerapeuta";
 import { terapia, saudacao } from "@/lib/terapia";
-import { TermoTexto } from "@/components/terapia/Comuns";
+import { AvatarPessoa, TermoTexto } from "@/components/terapia/Comuns";
 import Hoje from "@/components/terapia/Hoje";
 import Pacientes from "@/components/terapia/Pacientes";
 import Agenda from "@/components/terapia/Agenda";
@@ -28,14 +28,14 @@ const abas = [
   ["link", "Meu link"],
   ["acervo", "Meu acervo"],
   ["perfil", "Perfil público"],
-  ["config", "Configurações"],
+  ["configuracoes", "Configurações"],
 ];
 export default function PainelTerapeuta() {
   const acesso = useSouTerapeuta();
   const conversas = useQuery({queryKey:['chat-lista',true,acesso.userId],queryFn:chat.terapeuta,enabled:acesso.permitido,refetchInterval:CHAT_LISTA_MS});
   const totalMensagens = conversas.data?.reduce((n,c)=>n+c.nao_lidas,0)??0;
   const [params, setParams] = useSearchParams();
-  const selecionada = params.get("aba") ?? "hoje";
+  const selecionada = (params.get("aba") === "config" ? "configuracoes" : params.get("aba")) ?? "hoje";
   const aba = abas.some(([v]) => v === selecionada) ? selecionada : "hoje";
   const qc = useQueryClient();
   const { toast } = useToast();
@@ -98,7 +98,8 @@ export default function PainelTerapeuta() {
   const trocar = (v: string) => {
     setParams((p) => {
       const novo = new URLSearchParams(p);
-      novo.set("aba", v);
+      novo.set("aba", v === "agenda-fixos" ? "agenda" : v);
+      if (v === "agenda-fixos") novo.set("agenda", "fixos"); else novo.delete("agenda");
       return novo;
     });
   };
@@ -113,7 +114,7 @@ export default function PainelTerapeuta() {
     return (
       <main className="mx-auto max-w-6xl p-8">
         <p role="alert">
-          {erro?.message ?? "Não foi possível carregar a Portal do terapeuta."}
+          {erro?.message ?? "Não foi possível carregar o Portal do terapeuta."}
         </p>
         <Button
           variant="outline"
@@ -146,7 +147,7 @@ export default function PainelTerapeuta() {
           className={`h-11 shrink-0 justify-start rounded-md border-l-2 px-3 text-sm lg:w-full ${aba === v ? "border-secondary bg-secondary/10 font-semibold hover:bg-secondary/15" : "border-transparent text-muted-foreground"}`}
         >
           <span>{l}</span>{v === "mensagens" && totalMensagens > 0 && <span className="ml-auto rounded-full bg-secondary px-2 text-xs text-secondary-foreground">{totalMensagens}</span>}
-          {v === "hoje" && (
+          {v === "hoje" && total > 0 && (
             <span className="ml-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-secondary px-1 text-xs text-secondary-foreground">
               {total}
             </span>
@@ -163,7 +164,7 @@ export default function PainelTerapeuta() {
       {!emDia ? (
         <main className="mx-auto max-w-2xl px-5 py-10">
           <p className="mb-4 text-xs font-semibold uppercase text-muted-foreground">
-            Bem-vinda à Portal do terapeuta
+            Bem-vindo ao Portal do terapeuta
           </p>
           <TermoTexto painel={dados} />
           <div className="my-6 flex items-center gap-3">
@@ -199,21 +200,21 @@ export default function PainelTerapeuta() {
           </p>
         </main>
       ) : (
-        <div className="mx-auto grid min-h-[calc(100dvh-4rem)] max-w-7xl lg:grid-cols-[210px_minmax(0,1fr)]">
-          <aside className="hidden border-r border-border p-5 lg:block">
+        <div className="portal-terapeuta grid min-h-[calc(100dvh-4rem)] w-full lg:grid-cols-[220px_minmax(0,1fr)]">
+          <aside className="portal-lateral hidden border-r border-border p-3 lg:block">
             <div className="mb-5 flex items-center gap-3 border-b border-border pb-5">
-              {dados.terapeuta.imagem && (
+              {dados.terapeuta.imagem ? (
                 <img
                   src={dados.terapeuta.imagem}
                   alt=""
-                  className="h-12 w-10 rounded-md object-cover"
+                  className="h-10 w-10 rounded-xl object-cover"
                 />
-              )}
+              ) : <AvatarPessoa nome={dados.terapeuta.nome} />}
               <div>
                 <p className="text-sm font-semibold">
-                  {dados.terapeuta.primeiro_nome}
+                  {dados.terapeuta.nome}
                 </p>
-                <p className="text-xs text-muted-foreground">Terapeuta</p>
+                <p className="text-xs text-muted-foreground">Portal do terapeuta</p>
               </div>
             </div>
             {menu}
@@ -222,9 +223,9 @@ export default function PainelTerapeuta() {
             <div className="lg:hidden">
               {menu}
             </div>
-            <main className="p-4 sm:p-6 lg:p-7">
+            <main className={`portal-conteudo p-4 sm:p-6 ${aba === "mensagens" ? "portal-mensagens" : ""}`}>
               {passos && <div className="mb-6">{passos}</div>}
-              <h1 className="mb-6 font-serif text-2xl font-bold text-primary">
+              <div className="portal-topo"><h1 className="portal-titulo mb-5 font-serif font-bold text-primary">
                 {aba === "hoje"
                   ? saudacao(
                       dados.terapeuta.primeiro_nome,
@@ -237,7 +238,7 @@ export default function PainelTerapeuta() {
                   </span>
                 )}
               </h1>
-              {(aba === "hoje" || aba === "agenda") && <Button asChild variant="outline" className="mb-5"><Link to="/consulta/treino">Sala de treino</Link></Button>}
+              {(aba === "hoje" || aba === "agenda") && <Button asChild variant="outline" className="mb-5"><Link to="/consulta/treino">Sala de treino</Link></Button>}</div>
               {aba === "hoje" &&
                 (hoje.data ? (
                   <Hoje dados={hoje.data} agora={agora} />
@@ -263,7 +264,7 @@ export default function PainelTerapeuta() {
                   executar={executar}
                   userId={acesso.userId}
                 />
-              )}{" "}
+              ) : <AvatarPessoa nome={dados.terapeuta.nome} />}{" "}
               {aba === "link" && <MeuLink painel={dados} executar={executar} />}{" "}
               {aba === "mensagens" && <Suspense fallback={<p role="status">Carregando conversas…</p>}><ListaConversas terapeuta userId={acesso.userId} convite={dados.terapeuta.link_convite}/></Suspense>}
                {aba === "acervo" && <Acervos userId={acesso.userId} painel={dados} />}
@@ -275,8 +276,8 @@ export default function PainelTerapeuta() {
                   executar={executar}
                   atualizar={atualizar}
                 />
-              )}
-              {aba === "config" && (
+              ) : <AvatarPessoa nome={dados.terapeuta.nome} />}
+              {aba === "configuracoes" && (
                 <Configuracoes painel={dados} ocupado={ocupado} mudar={mudar} executar={executar} atualizar={atualizar} />
               )}
             </main>

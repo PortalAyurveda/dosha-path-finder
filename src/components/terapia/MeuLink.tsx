@@ -19,7 +19,7 @@ export default function MeuLink({
   return (
     <div className="grid gap-7 lg:grid-cols-[minmax(0,1.5fr)_minmax(240px,1fr)]">
       <Secao titulo="Mande para os seus pacientes">
-        <div className="mb-6 flex items-center gap-3 border-b border-border pb-5">
+        <div className="mb-5 flex items-center gap-3 rounded-xl border border-border bg-muted p-3">
           <p className="min-w-0 flex-1 break-words text-sm font-semibold">
             {link}
           </p>
@@ -31,7 +31,7 @@ export default function MeuLink({
         <h2 className="mb-3 text-xs font-semibold uppercase text-muted-foreground">
           Mensagem pronta
         </h2>
-        <p className="mb-4 whitespace-pre-wrap break-words text-sm leading-relaxed">
+        <p className="mb-4 rounded-xl bg-muted p-3 whitespace-pre-wrap break-words text-sm leading-relaxed">
           {mensagem}
         </p>
         <Button
@@ -43,7 +43,7 @@ export default function MeuLink({
           Copiar mensagem
         </Button>
       </Secao>
-      <Secao titulo="QR Code" className="lg:border-l lg:border-border lg:pl-6">
+      <Secao titulo="QR Code" className="">
         <QRCodeSVG
           value={link}
           size={168}
@@ -59,7 +59,7 @@ export default function MeuLink({
             ["pelo_link", "pelo link"],
             ["pela_agenda", "pela agenda"],
           ].map(([k, l]) => (
-            <div key={k} className="border-t border-border pt-3">
+            <div key={k} className="rounded-xl border border-border p-3">
               <p className="font-serif text-2xl font-bold text-secondary">
                 {painel.numeros[k as keyof Painel["numeros"]]}
               </p>

@@ -11,7 +11,7 @@ export function Secao({
   className?: string;
 }) {
   return (
-    <section className={`min-w-0 ${className}`}>
+    <section className={`portal-cartao min-w-0 ${className}`}>
       {titulo && (
         <h2 className="mb-4 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
           {titulo}
@@ -76,3 +76,8 @@ export const inicial = (nome: string) =>
     .slice(0, 2)
     .map((s) => s[0])
     .join("");
+
+export function AvatarPessoa({nome, id, grande=false}: {nome:string; id?:string; grande?:boolean}) {
+  const hash = Array.from(id || nome).reduce((n,c) => ((n * 31 + c.charCodeAt(0)) >>> 0), 0);
+  return <span aria-hidden="true" className={`portal-avatar portal-avatar-${hash % 6} ${grande ? 'portal-avatar-grande' : ''}`}>{inicial(nome)}</span>;
+}
