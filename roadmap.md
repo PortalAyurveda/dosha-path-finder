@@ -18,5 +18,6 @@
 - [x] Construir Parte 1 da área da terapeuta (termo, Hoje, Pacientes, Agenda, Meu link, Perfil e entrada no avatar)
 - [x] Validar regras e telas da Parte 1 no computador e celular com dados simulados, incluindo salvamentos e entrada pelo avatar
 - [ ] Validar Parte 1 com terapeuta real — bloqueado: Supabase externo sem sessão autenticada disponível; usuário testa com as contas combinadas
-- [ ] Construir Parte 2: convite da terapeuta e login existente dentro do cartão
-- [ ] Validar fluxo do convite e regras com testes e telas
+- [x] Construir Parte 2: convite da terapeuta e login existente dentro do cartão
+- [x] Validar fluxo do convite e regras com testes e telas (computador/celular simulados; convite inativo com RPC real)
+- [ ] Validar Parte 2 com paciente real — bloqueado: Supabase externo sem sessão autenticada disponível; usuário testa com as contas combinadas
