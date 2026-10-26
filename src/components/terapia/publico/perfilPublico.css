@@ -1,0 +1,11 @@
+.perfil-publico {font-size:15px;line-height:1.5;}
+.perfil-publico-grid {display:grid;grid-template-columns:minmax(0,1.7fr) minmax(340px,1fr);gap:32px;align-items:start;}
+.perfil-publico-nome {font-size:40px;line-height:1.2;}
+.perfil-publico-agenda {position:sticky;top:24px;}
+.perfil-publico-agenda>div>section {border-radius:14px;}
+.perfil-publico .therapist-portal-arch {clip-path:none;border-radius:50% 50% 12px 12px;overflow:hidden;}
+.perfil-publico .text-therapist-ink {color:hsl(var(--primary));}.perfil-publico .bg-therapist-soft\/80 {background:hsl(var(--muted));}.perfil-publico .border-therapist\/30{border-color:hsl(var(--border));}
+.consulta-online-selo {display:inline-block;background:hsl(var(--therapist-green-soft));color:hsl(var(--therapist-green-ink));border-radius:999px;padding:3px 8px;font-size:12px;font-weight:600;margin-bottom:8px;}
+.agenda-publica-dias {display:flex;gap:8px;overflow-x:auto;padding-bottom:8px;}
+.agenda-publica-dias>div{min-width:64px;flex:1;text-align:center;}.agenda-publica-dias>div>div{flex-direction:column;}.agenda-publica-dias button{width:100%;}
+@media(max-width:767px){.perfil-publico-grid{grid-template-columns:minmax(0,1fr);gap:16px;}.perfil-publico-nome{font-size:32px;}.perfil-publico-agenda{position:static;}}

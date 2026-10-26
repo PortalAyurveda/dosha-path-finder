@@ -27,3 +27,4 @@
 - Keep the training Jitsi iframe mounted while participant events switch its CSS framing between a local-camera inset and the large call area; this avoids reconnecting when someone joins or leaves.
 
 - Keep Meu acompanhamento independently lazy-loaded with patient-only RPC contracts and dedicated views; reuse the existing chat, chart and sheet printing, and require explicit server-side assessment sharing.
+- Scope the full-width therapist portal and public-profile presentation to their own CSS classes, with shared deterministic patient avatars; this preserves unrelated site pages and keeps identity presentation consistent.
