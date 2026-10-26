@@ -12674,6 +12674,8 @@ export type Database = {
           dados: Json
           id: string
           leitura: Json | null
+          mostrada_em: string | null
+          mostrar_pessoa: boolean
           paciente_user_id: string
           resumo: string | null
           terapeuta_id: string
@@ -12685,6 +12687,8 @@ export type Database = {
           dados?: Json
           id?: string
           leitura?: Json | null
+          mostrada_em?: string | null
+          mostrar_pessoa?: boolean
           paciente_user_id: string
           resumo?: string | null
           terapeuta_id: string
@@ -12696,6 +12700,8 @@ export type Database = {
           dados?: Json
           id?: string
           leitura?: Json | null
+          mostrada_em?: string | null
+          mostrar_pessoa?: boolean
           paciente_user_id?: string
           resumo?: string | null
           terapeuta_id?: string
@@ -16352,6 +16358,7 @@ export type Database = {
           slot: string
         }[]
       }
+      minhas_avaliacoes: { Args: never; Returns: Json }
       minhas_indicacoes: { Args: never; Returns: Json }
       mockups_buscar: {
         Args: {
@@ -16722,6 +16729,10 @@ export type Database = {
       }
       terapia_avaliacao: { Args: { p_id: string }; Returns: Json }
       terapia_avaliacao_apagar: { Args: { p_id: string }; Returns: undefined }
+      terapia_avaliacao_mostrar: {
+        Args: { p_id: string; p_mostrar: boolean }
+        Returns: Json
+      }
       terapia_avaliacao_nova: {
         Args: { p_consulta?: string; p_paciente: string }
         Returns: string
