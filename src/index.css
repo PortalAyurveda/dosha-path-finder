@@ -60,6 +60,9 @@ body {
     --vata: 228 100% 71%;
     --pitta: 0 100% 73%;
     --kapha: 105 50% 70%;
+    --vata-ink: 228 65% 45%;
+    --pitta-ink: 0 55% 42%;
+    --kapha-ink: 105 40% 30%;
     --akasha: 280 30% 56%;
 
     /* Textos Clássicos */

@@ -11,7 +11,7 @@ export interface ItemClinico { id: string; nome: string; texto?: string; sugesta
 export interface Marca extends ItemClinico { V:number; P:number; K:number; Vm:number; Pm:number; Km:number; marcado:boolean; nota:string }
 export interface DadosAvaliacao { versao:1; marcas:Record<string,Marca>; notas:Partial<Record<Setor,string>>; agni:Record<string,number>; ama:Record<Dosha,number>; [key:string]: unknown }
 export interface Leitura { V:number; P:number; K:number; [key:string]:unknown }
-export interface Avaliacao { id:string; paciente_id:string; paciente_nome:string; consulta_id:string|null; consulta_inicio:string|null; dados:Partial<DadosAvaliacao>; leitura:Partial<Leitura>|null; resumo:string|null; criado_em:string; atualizado_em:string }
+export interface Avaliacao { mostrar_pessoa?:boolean; mostrada_em?:string|null; id:string; paciente_id:string; paciente_nome:string; consulta_id:string|null; consulta_inicio:string|null; dados:Partial<DadosAvaliacao>; leitura:Partial<Leitura>|null; resumo:string|null; criado_em:string; atualizado_em:string }
 export interface AvaliacaoLista { id:string; consulta_id:string|null; leitura:Partial<Leitura>|null; resumo:string|null; criado_em:string; atualizado_em:string }
 export interface Conhecimento { id?:string; nome:string; texto?:string; sugestao?: unknown }
 export interface Biblioteca { sintomas?:ItemClinico[]; especificacoes?:ItemClinico[]; [key:string]:unknown }

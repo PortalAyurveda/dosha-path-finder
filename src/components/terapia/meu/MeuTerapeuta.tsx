@@ -136,5 +136,5 @@ export default function MeuTerapeuta() {
   if (!q.data?.length) return (
     <div className="space-y-3"><Suspense fallback={null}><ListaConversas/></Suspense><p className="text-sm leading-relaxed text-muted-foreground">Você ainda não está com um terapeuta no Portal. Se o seu terapeuta te mandou um link de convite, é só abrir o link.</p><Button asChild variant="secondary"><Link to="/terapeutas-do-brasil">Ver terapeutas do Brasil</Link></Button></div>
   );
-  return <div className="space-y-10"><Suspense fallback={null}><ListaConversas/></Suspense>{q.data.map(l => <Ligacao key={l.ligacao} l={l} />)}</div>;
+  return <div className="space-y-10"><Button asChild variant="secondary"><Link to="/meu-acompanhamento">Abrir Meu acompanhamento</Link></Button><Suspense fallback={null}><ListaConversas/></Suspense>{q.data.map(l => <Ligacao key={l.ligacao} l={l} />)}</div>;
 }

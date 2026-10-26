@@ -21,6 +21,7 @@ import { RedeemCourseDialog } from "@/components/RedeemCourseDialog";
 import { useSouTerapeuta } from "@/hooks/useSouTerapeuta";
 import { useOnlineTerapeuta } from "@/components/terapia/online/OnlineTerapeuta";
 import { useChatTotal } from '@/components/terapia/chat/ChatAvisos';
+import { useMeuAcompanhamento } from "@/hooks/useMeuAcompanhamento";
 import { Switch } from "@/components/ui/switch";
 
 
@@ -95,6 +96,7 @@ const Header = () => {
   const { permitido: souTerapeuta } = useSouTerapeuta();
   const onlineTerapeuta = useOnlineTerapeuta();
   const chatTotal = useChatTotal();
+  const acompanhamento = useMeuAcompanhamento();
   const { totalItens, abrirCarrinho } = useCart();
   const { immersive } = useImmersive();
 
@@ -571,7 +573,8 @@ const Header = () => {
                     Resgatar curso
                   </DropdownMenuItem>
                 )}
-                {!isAnonymous && <DropdownMenuItem asChild><Link to={souTerapeuta ? "/painel-terapeuta?aba=mensagens" : "/meu-perfil?section=terapeuta"}>Mensagens{chatTotal > 0 ? ` · ${chatTotal}` : ""}</Link></DropdownMenuItem>}
+                {!isAnonymous && !!acompanhamento.ligacoes.data?.length && <DropdownMenuItem asChild><Link to="/meu-acompanhamento">Meu acompanhamento{acompanhamento.total > 0 && <span className="ml-2 rounded-full bg-secondary px-2 text-xs text-secondary-foreground">{acompanhamento.total}</span>}</Link></DropdownMenuItem>}
+                {!isAnonymous && <DropdownMenuItem asChild><Link to={souTerapeuta ? "/painel-terapeuta?aba=mensagens" : "/meu-acompanhamento?aba=conversa"}>Mensagens{chatTotal > 0 ? ` · ${chatTotal}` : ""}</Link></DropdownMenuItem>}
                 {souTerapeuta && (
                   <DropdownMenuItem asChild>
                     <Link to="/painel-terapeuta?aba=hoje">Portal do terapeuta</Link>

@@ -11,7 +11,7 @@ import "./doSeuTerapeuta.css";
 const vistas = new Set<string>();
 const externo = (l: string) => /^https?:\/\//.test(l) && !l.includes("portalayurveda.com");
 
-export default function DoSeuTerapeuta({ folha, rodape }: { folha: MinhaFolha; rodape?: string }) {
+export default function DoSeuTerapeuta({ folha, rodape, acompanhamento=false }: { folha: MinhaFolha; rodape?: string; acompanhamento?:boolean }) {
   const [feitos, setFeitos] = useState(folha.feitos ?? []);
   const [erro, setErro] = useState("");
   const [imprimindo, setImprimindo] = useState(false);
@@ -45,10 +45,10 @@ export default function DoSeuTerapeuta({ folha, rodape }: { folha: MinhaFolha; r
     <article ref={ref} className={`do-seu-terapeuta rounded-2xl border border-secondary/30 bg-card p-5 md:p-6 ${imprimindo ? "imprimir-este" : ""}`} aria-label={`Do seu terapeuta: ${folha.terapeuta.nome}`}>
       <div className="so-impressao mb-4 flex items-center justify-between border-b border-border pb-3"><span className="font-serif text-lg font-bold">Indicações · {diaBR(folha.enviada_em)}</span><MarcaPortal /></div>
       <header className="flex flex-wrap items-center gap-3">
-        {folha.terapeuta.imagem ? <img src={folha.terapeuta.imagem} alt="" className="h-12 w-12 rounded-t-full rounded-b-md object-cover" /> : <span className="flex h-12 w-12 items-center justify-center rounded-t-full rounded-b-md bg-secondary/15 font-serif font-bold text-secondary">{nome[0]}</span>}
+        {!acompanhamento && (folha.terapeuta.imagem ? <img src={folha.terapeuta.imagem} alt="" className="h-12 w-12 rounded-t-full rounded-b-md object-cover" /> : <span className="flex h-12 w-12 items-center justify-center rounded-t-full rounded-b-md bg-secondary/15 font-serif font-bold text-secondary">{nome[0]}</span>)}
         <div className="min-w-0 flex-1">
-          <p className="text-xs font-semibold uppercase tracking-wide text-secondary">Do seu terapeuta</p>
-          <h2 className="font-serif text-lg font-bold text-primary">{folha.terapeuta.nome}</h2>
+          {!acompanhamento&&<p className="text-xs font-semibold uppercase tracking-wide text-secondary">Do seu terapeuta</p>}
+          <h2 className="font-serif text-lg font-bold text-primary">{acompanhamento?`Folha de ${diaBR(folha.enviada_em)}`:folha.terapeuta.nome}</h2>
           <p className="text-xs text-muted-foreground">Enviada em {diaBR(folha.enviada_em)}</p>
         </div>
         <Button variant="outline" size="sm" className="no-print" onClick={() => setImprimindo(true)}><Printer className="mr-2 h-4 w-4" />Imprimir</Button>
@@ -68,7 +68,7 @@ export default function DoSeuTerapeuta({ folha, rodape }: { folha: MinhaFolha; r
                   <li key={i.id} className="rounded-xl border border-border bg-background p-3">
                     <div className="flex flex-wrap items-start gap-3">
                       <div className="min-w-0 flex-1">
-                        <span className="no-print mb-1 inline-flex items-center gap-1 rounded-full bg-secondary/10 px-2 py-0.5 text-[11px] font-semibold text-secondary">● {nome} indicou</span>
+                        {!acompanhamento&&<span className="no-print mb-1 inline-flex items-center gap-1 rounded-full bg-secondary/10 px-2 py-0.5 text-[11px] font-semibold text-secondary">● {nome} indicou</span>}
                         <p className="font-semibold">{i.titulo}</p>
                         {i.texto && <p className="mt-1 whitespace-pre-wrap text-sm text-muted-foreground">{i.texto}</p>}
                         {i.nota && <p className="mt-1 whitespace-pre-wrap text-sm">{i.nota}</p>}
@@ -79,7 +79,7 @@ export default function DoSeuTerapeuta({ folha, rodape }: { folha: MinhaFolha; r
                           ? <Button asChild variant="outline" size="sm"><a href={link} target="_blank" rel="noreferrer">Abrir<ExternalLink className="ml-1 h-3 w-3" /></a></Button>
                           : <Button asChild variant="outline" size="sm"><Link to={link.replace(/^https?:\/\/(www\.)?portalayurveda\.com/, "") || "/"}>Abrir</Link></Button>)}
                         <Button size="sm" variant={hoje ? "secondary" : "outline"} aria-pressed={hoje} onClick={() => marcar(i.id, !hoje)}>{hoje && <Check className="mr-1 h-3 w-3" />}Feito hoje</Button>
-                        <div className="flex gap-1" aria-label="Últimos 7 dias">{semanaDoItem(feitos, i.id, agora).map(d => <span key={d.dia} title={d.dia.split("-").reverse().join("/")} className={`h-2 w-2 rounded-full ${d.feito ? "bg-secondary" : "bg-muted"}`} />)}</div>
+                        {!acompanhamento&&<div className="flex gap-1" aria-label="Últimos 7 dias">{semanaDoItem(feitos, i.id, agora).map(d => <span key={d.dia} title={d.dia.split("-").reverse().join("/")} className={`h-2 w-2 rounded-full ${d.feito ? "bg-secondary" : "bg-muted"}`} />)}</div>}
                       </div>
                     </div>
                   </li>
