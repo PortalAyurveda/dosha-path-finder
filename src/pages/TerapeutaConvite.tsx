@@ -28,7 +28,7 @@ export default function TerapeutaConvite() {
   useEffect(() => {
     if (!data) return;
     setPerm(permissoesConvite(data));
-    setEtapa(data.eu?.ja_ligado || (logado && params.get("etapa") === "permissoes") ? "permissoes" : "convite");
+    setEtapa(data.eu?.ja_ligado ? "permissoes" : params.get("etapa") === "permissoes" ? (logado ? "permissoes" : "entrar") : "convite");
     setErro("");
   }, [data, logado, params]);
 
