@@ -6,7 +6,7 @@ import {juntarModelo,modelosTerapia} from './terapiaModelos';
 import {fotosPedidos} from './terapiaFotoPedidos';
 import {fimTerapia} from './terapiaFim';
 import {meu} from './terapiaMeu';
-const rpc=vi.mocked(supabase.rpc);
+const rpc=supabase.rpc as unknown as ReturnType<typeof vi.fn>;
 beforeEach(()=>{rpc.mockReset();rpc.mockResolvedValue({data:null,error:null} as never);});
 describe('Parte 12: contratos e regras',()=>{
  it('semana recebe p_inicio date',async()=>{await agendaTerapia.semana('2026-10-26');expect(rpc).toHaveBeenCalledWith('terapia_agenda_semana',{p_inicio:'2026-10-26'});});
