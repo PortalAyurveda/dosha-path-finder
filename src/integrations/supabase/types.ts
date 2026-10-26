@@ -11950,6 +11950,38 @@ export type Database = {
           },
         ]
       }
+      terapeuta_bloqueios: {
+        Row: {
+          criado_em: string
+          dia: string
+          id: string
+          motivo: string | null
+          terapeuta_id: string
+        }
+        Insert: {
+          criado_em?: string
+          dia: string
+          id?: string
+          motivo?: string | null
+          terapeuta_id: string
+        }
+        Update: {
+          criado_em?: string
+          dia?: string
+          id?: string
+          motivo?: string | null
+          terapeuta_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "terapeuta_bloqueios_terapeuta_id_fkey"
+            columns: ["terapeuta_id"]
+            isOneToOne: false
+            referencedRelation: "portal_terapeutas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       terapeuta_pacientes: {
         Row: {
           criado_em: string
@@ -11999,6 +12031,74 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      terapeuta_sistema: {
+        Row: {
+          antecedencia_horas: number
+          atualizado_em: string
+          boas_vindas: string | null
+          msg_ausente: string | null
+          no_sistema: boolean
+          pedir_nascimento: boolean
+          terapeuta_id: string
+          termo_aceito_em: string | null
+          termo_versao: string | null
+          visto_em: string | null
+        }
+        Insert: {
+          antecedencia_horas?: number
+          atualizado_em?: string
+          boas_vindas?: string | null
+          msg_ausente?: string | null
+          no_sistema?: boolean
+          pedir_nascimento?: boolean
+          terapeuta_id: string
+          termo_aceito_em?: string | null
+          termo_versao?: string | null
+          visto_em?: string | null
+        }
+        Update: {
+          antecedencia_horas?: number
+          atualizado_em?: string
+          boas_vindas?: string | null
+          msg_ausente?: string | null
+          no_sistema?: boolean
+          pedir_nascimento?: boolean
+          terapeuta_id?: string
+          termo_aceito_em?: string | null
+          termo_versao?: string | null
+          visto_em?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "terapeuta_sistema_terapeuta_id_fkey"
+            columns: ["terapeuta_id"]
+            isOneToOne: true
+            referencedRelation: "portal_terapeutas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      terapia_config: {
+        Row: {
+          atualizado_em: string
+          chave: string
+          descricao: string | null
+          valor: Json
+        }
+        Insert: {
+          atualizado_em?: string
+          chave: string
+          descricao?: string | null
+          valor: Json
+        }
+        Update: {
+          atualizado_em?: string
+          chave?: string
+          descricao?: string | null
+          valor?: Json
+        }
+        Relationships: []
       }
       test_gpt54_vision: {
         Row: {
@@ -13646,7 +13746,10 @@ export type Database = {
       _nome_conta: { Args: { p_uid: string }; Returns: string }
       _normalizar_nome: { Args: { p: string }; Returns: string }
       _paciente_meu: { Args: { p_paciente: string }; Returns: string }
+      _ter_cfg: { Args: { p_chave: string }; Returns: Json }
+      _ter_sis_garante: { Args: { p_tid: string }; Returns: undefined }
       _terapeuta_id_de: { Args: { p_uid: string }; Returns: string }
+      _terapia_novidades: { Args: { p_tid: string }; Returns: Json }
       acervo_adicionar: {
         Args: {
           p_antes?: number
@@ -15619,7 +15722,26 @@ export type Database = {
         Args: { p_dia: number; p_mes: number }
         Returns: Json
       }
+      terapia_bloqueio_add: {
+        Args: { p_dia: string; p_motivo?: string }
+        Returns: undefined
+      }
+      terapia_bloqueio_tirar: { Args: { p_id: string }; Returns: undefined }
+      terapia_bloqueios: { Args: never; Returns: Json }
+      terapia_config_publica: { Args: never; Returns: Json }
+      terapia_config_salvar: {
+        Args: { p_chave: string; p_valor: Json }
+        Returns: undefined
+      }
+      terapia_hoje: { Args: never; Returns: Json }
+      terapia_no_sistema: { Args: { p_ligar: boolean }; Returns: boolean }
+      terapia_painel_eu: { Args: never; Returns: Json }
+      terapia_perfil_salvar: { Args: { p: Json }; Returns: undefined }
+      terapia_ping: { Args: never; Returns: undefined }
+      terapia_preferencias_salvar: { Args: { p: Json }; Returns: undefined }
+      terapia_semana: { Args: { p_inicio?: string }; Returns: Json }
       terapia_tarot: { Args: { p_numero?: number }; Returns: Json }
+      terapia_termo_aceitar: { Args: { p_versao: string }; Returns: undefined }
       termos_aplicar: { Args: { p_html: string }; Returns: string }
       text_to_bytea: { Args: { data: string }; Returns: string }
       tutor_detox_contexto: { Args: { p_email: string }; Returns: Json }
