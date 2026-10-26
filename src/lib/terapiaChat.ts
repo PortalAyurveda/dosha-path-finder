@@ -17,4 +17,4 @@ export const chat={
  preferencias:(boas_vindas:string,msg_ausente:string)=>read<void>(supabase.rpc('terapia_preferencias_salvar',{p:{boas_vindas,msg_ausente} as Json})),
 };
 export function juntarMensagens(...paginas:Mensagem[][]){return [...new Map(paginas.flat().map(m=>[m.id,m])).values()].sort((a,b)=>a.id-b.id);}
-export function textoConvite(texto:string,link:string){return texto.replaceAll('{link}',link);}
+export function textoConvite(texto:string,link:string){return texto.split('{link}').join(link);}

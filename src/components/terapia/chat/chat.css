@@ -4,4 +4,6 @@
 .chat-outra { background:hsl(var(--card)); color:hsl(var(--card-foreground)); }
 .chat-sistema { background:hsl(var(--secondary)/.10); border-color:hsl(var(--secondary)/.3); }
 .chat-lista { height: min(740px,75dvh); min-height:400px; }
-@media(max-width:767px){ .chat-lista {height:auto; min-height:0;} .chat-mobile-aberta {position:fixed;inset:0;z-index:60;background:hsl(var(--background));padding-bottom:env(safe-area-inset-bottom);} }
+.chat-pessoa {z-index:80; padding-bottom:env(safe-area-inset-bottom);}
+.chat-pessoa > button {display:none;}
+@media(max-width:767px){ .chat-lista {height:auto; min-height:0;} .chat-mobile-aberta {position:fixed;inset:0;z-index:80;background:hsl(var(--background));padding-bottom:env(safe-area-inset-bottom);} }
