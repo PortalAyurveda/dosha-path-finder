@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { terapia } from '@/lib/terapia';
-import { COR,DOSHAS,NOMES,especificacoes,marcada,sintoma,somas,novaMarca } from '@/lib/terapiaAvaliacao';
+import { COR,DOSHAS,NOMES,especificacoes,marcada,sintoma,somas,novaMarca,sugereNivel } from '@/lib/terapiaAvaliacao';
 import type { Biblioteca,ConteudoFicha,DadosAvaliacao,ItemClinico,Leitura,Marca,Setor } from '@/lib/terapiaAvaliacao';
 import Marcacao,{BotoesMarca,Etiquetas,Niveis,EditorMarca} from './Marcacao';
 interface Props { setor:Setor; dados:DadosAvaliacao; conteudo:ConteudoFicha; leitura:Leitura; resumo:string; biblioteca:Biblioteca; userId?:string; mudar:(d:DadosAvaliacao)=>void; ler:(l:Leitura)=>void; resumir:(s:string)=>void; guardar:(b:Biblioteca)=>Promise<boolean> }
