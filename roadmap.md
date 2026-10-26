@@ -38,3 +38,5 @@
 - [ ] Validar Parte 6 com conta real — bloqueado: Supabase externo sem sessão autenticada disponível
 - [x] Ajustes Partes 1 e 6 (Participar do Portal, Estou online, Consulta agora, bibliotecas)
 - [x] Parte 7 · Meu terapeuta e Do seu terapeuta
+- [ ] Parte 8 · Diretório, agenda pública, CMS, convite e alertas
+- [ ] Validar Parte 8 e listar arquivos criados e alterados
