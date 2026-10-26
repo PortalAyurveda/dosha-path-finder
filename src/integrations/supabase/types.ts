@@ -689,6 +689,18 @@ export type Database = {
         }
         Relationships: []
       }
+      _ingest_token: {
+        Row: {
+          token: string
+        }
+        Insert: {
+          token: string
+        }
+        Update: {
+          token?: string
+        }
+        Relationships: []
+      }
       acomp_paginas: {
         Row: {
           atualizado_em: string
@@ -3974,16 +3986,79 @@ export type Database = {
           },
         ]
       }
+      consulta_pedidos: {
+        Row: {
+          consulta_id: string | null
+          criado_em: string
+          duracao_min: number | null
+          em_minutos: number
+          expira_em: string
+          id: string
+          inicio: string | null
+          motivo: string | null
+          paciente_user_id: string
+          respondido_em: string | null
+          status: string
+          terapeuta_id: string
+        }
+        Insert: {
+          consulta_id?: string | null
+          criado_em?: string
+          duracao_min?: number | null
+          em_minutos?: number
+          expira_em?: string
+          id?: string
+          inicio?: string | null
+          motivo?: string | null
+          paciente_user_id: string
+          respondido_em?: string | null
+          status?: string
+          terapeuta_id: string
+        }
+        Update: {
+          consulta_id?: string | null
+          criado_em?: string
+          duracao_min?: number | null
+          em_minutos?: number
+          expira_em?: string
+          id?: string
+          inicio?: string | null
+          motivo?: string | null
+          paciente_user_id?: string
+          respondido_em?: string | null
+          status?: string
+          terapeuta_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "consulta_pedidos_consulta_id_fkey"
+            columns: ["consulta_id"]
+            isOneToOne: false
+            referencedRelation: "consultas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "consulta_pedidos_terapeuta_id_fkey"
+            columns: ["terapeuta_id"]
+            isOneToOne: false
+            referencedRelation: "portal_terapeutas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       consultas: {
         Row: {
           cancelada_em: string | null
           criado_em: string
           fim: string
+          gravando: boolean
           id: string
           inicio: string
           marcada_por: string
           motivo: string | null
           paciente_user_id: string
+          quadro_ao_vivo: string | null
+          quadro_ao_vivo_em: string | null
           sala_id: string | null
           status: string
           terapeuta_id: string
@@ -3992,11 +4067,14 @@ export type Database = {
           cancelada_em?: string | null
           criado_em?: string
           fim: string
+          gravando?: boolean
           id?: string
           inicio: string
           marcada_por?: string
           motivo?: string | null
           paciente_user_id: string
+          quadro_ao_vivo?: string | null
+          quadro_ao_vivo_em?: string | null
           sala_id?: string | null
           status?: string
           terapeuta_id: string
@@ -4005,16 +4083,26 @@ export type Database = {
           cancelada_em?: string | null
           criado_em?: string
           fim?: string
+          gravando?: boolean
           id?: string
           inicio?: string
           marcada_por?: string
           motivo?: string | null
           paciente_user_id?: string
+          quadro_ao_vivo?: string | null
+          quadro_ao_vivo_em?: string | null
           sala_id?: string | null
           status?: string
           terapeuta_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "consultas_quadro_ao_vivo_fkey"
+            columns: ["quadro_ao_vivo"]
+            isOneToOne: false
+            referencedRelation: "terapia_quadros"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "consultas_sala_id_fkey"
             columns: ["sala_id"]
@@ -12324,6 +12412,38 @@ export type Database = {
           },
         ]
       }
+      terapeuta_favoritos: {
+        Row: {
+          criado_em: string
+          item: Json
+          ref: string
+          terapeuta_id: string
+          tipo: string
+        }
+        Insert: {
+          criado_em?: string
+          item?: Json
+          ref: string
+          terapeuta_id: string
+          tipo: string
+        }
+        Update: {
+          criado_em?: string
+          item?: Json
+          ref?: string
+          terapeuta_id?: string
+          tipo?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "terapeuta_favoritos_terapeuta_id_fkey"
+            columns: ["terapeuta_id"]
+            isOneToOne: false
+            referencedRelation: "portal_terapeutas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       terapeuta_pacientes: {
         Row: {
           criado_em: string
@@ -12381,10 +12501,13 @@ export type Database = {
           boas_vindas: string | null
           msg_ausente: string | null
           no_sistema: boolean
+          online: boolean
+          online_desde: string | null
           pedir_nascimento: boolean
           terapeuta_id: string
           termo_aceito_em: string | null
           termo_versao: string | null
+          valor_consulta: number | null
           visto_em: string | null
         }
         Insert: {
@@ -12393,10 +12516,13 @@ export type Database = {
           boas_vindas?: string | null
           msg_ausente?: string | null
           no_sistema?: boolean
+          online?: boolean
+          online_desde?: string | null
           pedir_nascimento?: boolean
           terapeuta_id: string
           termo_aceito_em?: string | null
           termo_versao?: string | null
+          valor_consulta?: number | null
           visto_em?: string | null
         }
         Update: {
@@ -12405,10 +12531,13 @@ export type Database = {
           boas_vindas?: string | null
           msg_ausente?: string | null
           no_sistema?: boolean
+          online?: boolean
+          online_desde?: string | null
           pedir_nascimento?: boolean
           terapeuta_id?: string
           termo_aceito_em?: string | null
           termo_versao?: string | null
+          valor_consulta?: number | null
           visto_em?: string | null
         }
         Relationships: [
@@ -14224,6 +14353,7 @@ export type Database = {
       }
     }
     Functions: {
+      _bib_item: { Args: { p_ref: string; p_tipo: string }; Returns: Json }
       _certificados_pendentes_de_aviso: {
         Args: { p_user?: string }
         Returns: {
@@ -14272,14 +14402,21 @@ export type Database = {
       _nome_conta: { Args: { p_uid: string }; Returns: string }
       _normalizar_nome: { Args: { p: string }; Returns: string }
       _paciente_meu: { Args: { p_paciente: string }; Returns: string }
+      _pedido_json: {
+        Args: { p: Database["public"]["Tables"]["consulta_pedidos"]["Row"] }
+        Returns: Json
+      }
+      _pedidos_expirar: { Args: never; Returns: undefined }
       _slug: { Args: { p: string }; Returns: string }
       _so_admin: { Args: never; Returns: undefined }
       _ter_cfg: { Args: { p_chave: string }; Returns: Json }
       _ter_sis_garante: { Args: { p_tid: string }; Returns: undefined }
       _terapeuta_id_de: { Args: { p_uid: string }; Returns: string }
       _terapeuta_numeros: { Args: { p_tid: string }; Returns: Json }
+      _terapeuta_online: { Args: { p_tid: string }; Returns: boolean }
       _terapeuta_por_slug: { Args: { p_slug: string }; Returns: string }
       _terapeuta_premium: { Args: { p_tid: string }; Returns: boolean }
+      _terapia_falta_participar: { Args: { p_tid: string }; Returns: string[] }
       _terapia_novidades: { Args: { p_tid: string }; Returns: Json }
       acervo_adicionar: {
         Args: {
@@ -15224,12 +15361,43 @@ export type Database = {
         Args: { p_mp_payment_id: string }
         Returns: Json
       }
+      consulta_agora_cancelar: { Args: { p_id: string }; Returns: undefined }
+      consulta_agora_confirmar: {
+        Args: {
+          p_akasha?: boolean
+          p_fotos?: boolean
+          p_id: string
+          p_rotina?: boolean
+          p_teste?: boolean
+        }
+        Returns: Json
+      }
+      consulta_agora_do_pedido: { Args: { p_id: string }; Returns: Json }
+      consulta_agora_meu: { Args: { p_id: string }; Returns: Json }
+      consulta_agora_pedidos: { Args: never; Returns: Json }
+      consulta_agora_pedir: {
+        Args: { p_motivo?: string; p_slug: string }
+        Returns: Json
+      }
+      consulta_agora_responder: {
+        Args: { p_aceitar: boolean; p_em_minutos?: number; p_id: string }
+        Returns: Json
+      }
+      consulta_ao_vivo: { Args: { p_consulta: string }; Returns: Json }
       consulta_avaliar: {
         Args: { p_comentario?: string; p_consulta: string; p_nota: number }
         Returns: undefined
       }
+      consulta_gravando: {
+        Args: { p_consulta: string; p_gravando: boolean }
+        Returns: undefined
+      }
       consulta_motivo_salvar: {
         Args: { p_consulta: string; p_texto: string }
+        Returns: undefined
+      }
+      consulta_quadro_mostrar: {
+        Args: { p_consulta: string; p_quadro: string }
         Returns: undefined
       }
       consulta_remarcar: {
@@ -16277,7 +16445,6 @@ export type Database = {
           titulo: string
         }[]
       }
-      rotina_via_terapeuta: { Args: never; Returns: Json }
       rpg_admin_select: { Args: { _table: string }; Returns: Json }
       rpg_play: { Args: { _args?: Json; _fn: string }; Returns: Json }
       rpg_rpc: { Args: { _args?: Json; _fn: string }; Returns: Json }
@@ -16374,6 +16541,15 @@ export type Database = {
       }
       terapia_avaliacoes_da: { Args: { p_paciente: string }; Returns: Json }
       terapia_biblioteca: { Args: never; Returns: Json }
+      terapia_biblioteca_portal: {
+        Args: {
+          p_limite?: number
+          p_offset?: number
+          p_q?: string
+          p_tipo: string
+        }
+        Returns: Json
+      }
       terapia_biblioteca_salvar: { Args: { p_dados: Json }; Returns: undefined }
       terapia_bloqueio_add: {
         Args: { p_dia: string; p_motivo?: string }
@@ -16403,6 +16579,10 @@ export type Database = {
         }
         Returns: Json
       }
+      terapia_favoritar: {
+        Args: { p_favorito: boolean; p_ref: string; p_tipo: string }
+        Returns: boolean
+      }
       terapia_ficha_conteudo: { Args: never; Returns: Json }
       terapia_folha: { Args: { p_id: string }; Returns: Json }
       terapia_folha_apagar: { Args: { p_id: string }; Returns: undefined }
@@ -16429,9 +16609,10 @@ export type Database = {
         Returns: Json
       }
       terapia_no_sistema: { Args: { p_ligar: boolean }; Returns: boolean }
+      terapia_online: { Args: { p_ligar: boolean }; Returns: boolean }
       terapia_painel_eu: { Args: never; Returns: Json }
       terapia_perfil_salvar: { Args: { p: Json }; Returns: undefined }
-      terapia_ping: { Args: never; Returns: undefined }
+      terapia_ping: { Args: never; Returns: Json }
       terapia_preferencias_salvar: { Args: { p: Json }; Returns: undefined }
       terapia_quadro_apagar: { Args: { p_id: string }; Returns: string }
       terapia_quadro_guardar: {
@@ -16547,6 +16728,20 @@ export type Database = {
       video_sala_resumo: { Args: { p_sala: string }; Returns: Json }
       video_slug_sitemap: { Args: { p_titulo: string }; Returns: string }
       videos_seo2_sincronizar: { Args: never; Returns: number }
+      videos_seo2026_receber: {
+        Args: {
+          p_duracao: number
+          p_fonte: string
+          p_legenda: string
+          p_origem: string
+          p_publicado: string
+          p_tipo: string
+          p_titulo: string
+          p_token: string
+          p_video_id: string
+        }
+        Returns: undefined
+      }
       videos_slugify: { Args: { p_titulo: string }; Returns: string }
       vincular_teste: { Args: { p_id_publico: string }; Returns: Json }
       vtt_falas: {
