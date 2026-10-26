@@ -295,7 +295,7 @@ export default function Imprimir() {
     const el = document.getElementById("folha-impressao");
     if (!el) return;
     const pxPorMm = 96 / 25.4;
-    const medir = () => setFolhas(Math.max(1, Math.ceil(el.scrollHeight / pxPorMm / 273)));
+    const medir = () => setFolhas(Math.max(1, Math.ceil((el.scrollHeight / pxPorMm - 24) / 273)));
     medir();
     const ro = new ResizeObserver(medir);
     ro.observe(el);
