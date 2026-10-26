@@ -22,7 +22,7 @@ export function gruposClinicos(setor:Setor,c:ConteudoFicha):{nome:string;itens:I
  return [];
 }
 export function linhasFolha(d:DadosAvaliacao,c:ConteudoFicha) {
- const e=extras(d);const setores:[Setor,string][]=[...SETORES,...e.adicoes.map(a=>[a.id,a.nome] as [Setor,string])];
+ const e=extras(d);const setores:(readonly [Setor,string])[]=[...SETORES,...e.adicoes.map(a=>[a.id,a.nome] as [Setor,string])];
  return setores.map(([id,nome])=>{const linhas=Object.values(d.marcas).filter(m=>m.setor===id&&marcada(m)).map(m=>`${m.nome}${DOSHAS.flatMap(k=>[m[k]?`${k}+${m[k]}`:'',m[`${k}m`]?`${k}−${m[`${k}m`]}`:'']).filter(Boolean).length?' · '+DOSHAS.flatMap(k=>[m[k]?`${k}+${m[k]}`:'',m[`${k}m`]?`${k}−${m[`${k}m`]}`:'']).filter(Boolean).join(' · '):''}${m.nota?'\n'+m.nota:''}`);
  if(id==='agni'){c.AGNIS.forEach(([key,n])=>{if(d.agni[key])linhas.push(`${n}: ${d.agni[key]}`)});DOSHAS.forEach(k=>{if(d.ama[k])linhas.push(`Ama ${NOMES[k]}: ${d.ama[k]}`)});}
  if(id==='conversa')Object.entries(e.conversa).forEach(([q,r])=>{if(r.trim())linhas.push(`${q}\n${r}`)});
