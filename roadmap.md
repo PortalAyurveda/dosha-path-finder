@@ -27,3 +27,5 @@
 - [x] Construir Parte 4a: avaliação com os sete setores do núcleo, biblioteca, fotos anotadas e salvamento automático
 - [x] Validar regras e fluxo da Parte 4a com 39 testes e telas no computador/celular com dados simulados; acesso, permissões e falha de salvamento conferidos
 - [ ] Validar Parte 4a com conta real — bloqueado: Supabase externo sem sessão autenticada disponível
+- [ ] Construir Parte 4b: adições opcionais, Tarot, nascimento, mapa astral e folha A4
+- [ ] Validar Parte 4b com testes e fluxo completo disponível
