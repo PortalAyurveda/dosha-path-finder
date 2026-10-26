@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Navigate, useSearchParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
@@ -7,14 +8,15 @@ import { Checkbox } from "@/components/ui/checkbox";
 import CTAButton from "@/components/CTAButton";
 import { useToast } from "@/hooks/use-toast";
 import { useSouTerapeuta } from "@/hooks/useSouTerapeuta";
-import { terapia, PING_MS, saudacao } from "@/lib/terapia";
-import { ChaveSistema, TermoTexto } from "@/components/terapia/Comuns";
+import { terapia, saudacao } from "@/lib/terapia";
+import { TermoTexto } from "@/components/terapia/Comuns";
 import Hoje from "@/components/terapia/Hoje";
 import Pacientes from "@/components/terapia/Pacientes";
 import Agenda from "@/components/terapia/Agenda";
 import MeuLink from "@/components/terapia/MeuLink";
 import Perfil from "@/components/terapia/Perfil";
-import MeuAcervo from "@/components/terapia/acervo/MeuAcervo";
+import Acervos from "@/components/terapia/acervo/Acervos";
+import Configuracoes, { PassosParticipar } from "@/components/terapia/Participar";
 import "@/components/terapia/painel.css";
 const abas = [
   ["hoje", "Hoje"],
@@ -23,6 +25,7 @@ const abas = [
   ["link", "Meu link"],
   ["acervo", "Meu acervo"],
   ["perfil", "Perfil público"],
+  ["config", "Configurações"],
 ];
 export default function PainelTerapeuta() {
   const acesso = useSouTerapeuta();
@@ -34,6 +37,7 @@ export default function PainelTerapeuta() {
   const [aceito, setAceito] = useState(false);
   const [ocupado, setOcupado] = useState(false);
   const [agora, setAgora] = useState(Date.now());
+  const [termoAberto, setTermoAberto] = useState(false);
   const painel = useQuery({
     queryKey: ["terapia-painel", acesso.userId],
     queryFn: terapia.painel,
@@ -55,20 +59,14 @@ export default function PainelTerapeuta() {
     if (erro) toast({ title: erro.message, variant: "destructive" });
   }, [erro, toast]);
   useEffect(() => {
-    if (!acesso.permitido) return;
-    const id = setInterval(() => {
-      void terapia
-        .ping()
-        .catch((e) => toast({ title: e.message, variant: "destructive" }));
-    }, PING_MS);
-    return () => clearInterval(id);
-  }, [acesso.permitido, toast]);
-  useEffect(() => {
     const id = setInterval(() => setAgora(Date.now()), 1000);
     return () => clearInterval(id);
   }, []);
   const atualizar = () =>
-    qc.invalidateQueries({ queryKey: ["terapia-painel", acesso.userId] });
+    Promise.all([
+      qc.invalidateQueries({ queryKey: ["terapia-painel", acesso.userId] }),
+      qc.invalidateQueries({ queryKey: ["terapia-online"] }),
+    ]);
   const executar = async (fn: () => Promise<unknown>) => {
     try {
       await fn();
@@ -124,6 +122,10 @@ export default function PainelTerapeuta() {
       </main>
     );
   const dados = painel.data;
+  const participa = dados.sistema.participa ?? dados.sistema.no_sistema;
+  const passos = !participa && (
+    <PassosParticipar painel={dados} ocupado={ocupado} mudar={mudar} irPara={trocar} abrirTermo={() => setTermoAberto(true)} executar={executar} atualizar={atualizar} />
+  );
   const total = hoje.data?.consultas.filter((c) => c.hoje).length ?? 0;
   const menu = (
     <nav
@@ -209,17 +211,14 @@ export default function PainelTerapeuta() {
                 <p className="text-xs text-muted-foreground">Terapeuta</p>
               </div>
             </div>
-            <ChaveSistema painel={dados} ocupado={ocupado} mudar={mudar} />
-            <div className="mt-5">{menu}</div>
+            {menu}
           </aside>
           <div className="min-w-0">
             <div className="lg:hidden">
               {menu}
-              <div className="px-4 pt-4">
-                <ChaveSistema painel={dados} ocupado={ocupado} mudar={mudar} />
-              </div>
             </div>
             <main className="p-4 sm:p-6 lg:p-7">
+              {passos && <div className="mb-6">{passos}</div>}
               <h1 className="mb-6 font-serif text-2xl font-bold text-primary">
                 {aba === "hoje"
                   ? saudacao(
@@ -260,7 +259,7 @@ export default function PainelTerapeuta() {
                 />
               )}{" "}
               {aba === "link" && <MeuLink painel={dados} executar={executar} />}{" "}
-              {aba === "acervo" && <MeuAcervo userId={acesso.userId} painel={dados} />}
+              {aba === "acervo" && <Acervos userId={acesso.userId} painel={dados} />}
               {aba === "perfil" && (
                 <Perfil
                   painel={dados}
@@ -270,10 +269,20 @@ export default function PainelTerapeuta() {
                   atualizar={atualizar}
                 />
               )}
+              {aba === "config" && (
+                <Configuracoes painel={dados} ocupado={ocupado} mudar={mudar} executar={executar} atualizar={atualizar} />
+              )}
             </main>
           </div>
         </div>
       )}
+      <Dialog open={termoAberto} onOpenChange={setTermoAberto}>
+        <DialogContent className="max-h-[85dvh] overflow-y-auto">
+          <DialogTitle className="sr-only">{dados.termo.titulo}</DialogTitle>
+          <TermoTexto painel={dados} />
+          <CTAButton className="mt-4 h-10 px-5 py-2 text-base" disabled={ocupado} onClick={async () => { setOcupado(true); try { if (await executar(async () => { await terapia.aceitar(dados.termo.versao); await atualizar(); })) setTermoAberto(false); } finally { setOcupado(false); } }}>Aceitar o termo</CTAButton>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

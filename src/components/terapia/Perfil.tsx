@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import CTAButton from "@/components/CTAButton";
 import { Painel, terapia } from "@/lib/terapia";
-import { ChaveSistema, TermoTexto, Secao } from "./Comuns";
+import { TermoTexto, Secao } from "./Comuns";
 export default function Perfil({
   painel,
   ocupado,
@@ -103,9 +103,8 @@ export default function Perfil({
             </Button>
           </div>
         </div>
-        <Secao titulo="No sistema">
-          <ChaveSistema painel={painel} ocupado={ocupado} mudar={mudar} />
-          <p className="mt-4 text-xs text-muted-foreground">
+        <Secao titulo="Termo">
+          <p className="text-xs text-muted-foreground">
             Termo aceito em{" "}
             {painel.sistema.termo_aceito_em
               ? new Date(painel.sistema.termo_aceito_em).toLocaleDateString(

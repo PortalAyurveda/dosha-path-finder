@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
 import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -62,7 +61,7 @@ export function PassosParticipar({ painel, ocupado, mudar, irPara, abrirTermo, e
                 <div className="mt-3 rounded-md border border-border p-3">
                   {p?.titulo && <p className="text-sm font-semibold">{p.titulo}</p>}
                   {p?.texto && <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{p.texto}</p>}
-                  <CTAButton asChild className="mt-3 h-9 px-4 py-2 text-sm"><Link to={p?.link || "/assinar"}>{p?.botao || "Assinar o Premium"}</Link></CTAButton>
+                  <CTAButton to={p?.link || "/assinar"} className="mt-3 h-9 px-4 py-2 text-sm">{p?.botao || "Assinar o Premium"}</CTAButton>
                 </div>
               )}
               {!pronto && f === "valor" && <div className="mt-3"><ValorConsulta painel={painel} executar={executar} atualizar={atualizar} id="valor-passo" /></div>}
