@@ -44,3 +44,5 @@
 - [x] Construir Parte 10: sala, vídeo, presença, ficha, quadro ao vivo e treino sem persistência
 - [x] Validar Parte 10: 61 testes e computador/celular com dados simulados; treino sem escrita, entrada/saída/avaliação, vídeo e quadro no mesmo arquivo; listar arquivos
 - [ ] Validar chamada real com duas contas — bloqueado: Supabase externo sem sessão disponível
+- [ ] Construir Parte 11: Participantes, números, Consultas, Sugestões, Avaliações e Textos; preservar Cadastros
+- [ ] Validar Parte 11 com testes e telas disponíveis
