@@ -13,6 +13,8 @@ import {
   dataBR,
 } from "./terapia";
 import { supabase } from "@/integrations/supabase/client";
+import { filtrarPacientes } from '@/components/terapia/Pacientes';
+import type { Paciente } from './terapia';
 const regras = [
   {
     dia_semana: 1,
@@ -30,6 +32,19 @@ const regras = [
   },
 ];
 describe("Regras do painel da terapeuta", () => {
+  it('consulta identidade pelo banco sem inferir por perfil público', async () => {
+    vi.mocked(supabase.rpc).mockResolvedValueOnce({data:false,error:null} as never);
+    expect(await terapia.sou()).toBe(false);
+    expect(supabase.rpc).toHaveBeenCalledWith('sou_terapeuta');
+  });
+  it('filtro de consulta exige próxima consulta preenchida', () => {
+    const lista = [{nome:'Ana',proxima:null},{nome:'Maria',proxima:'2026-10-27T12:00:00Z'}] as Paciente[];
+    expect(filtrarPacientes(lista,'','consulta').map(p=>p.nome)).toEqual(['Maria']);
+  });
+  it('filtro de atenção exige pontos de atenção maiores que zero', () => {
+    const lista = [{nome:'Ana',teste:{atencao:0}},{nome:'Maria',teste:{atencao:1}}] as Paciente[];
+    expect(filtrarPacientes(lista,'','atencao').map(p=>p.nome)).toEqual(['Maria']);
+  });
   it('posiciona consultas pelo dia de São Paulo, inclusive virada UTC', () => {
     expect(dataBR('2026-10-27T01:00:00Z')).toBe('2026-10-26');
   });
