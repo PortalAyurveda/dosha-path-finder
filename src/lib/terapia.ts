@@ -186,13 +186,13 @@ export const diaBR = (s: string | null) =>
         { day: "2-digit", month: "2-digit", timeZone: "America/Sao_Paulo" },
       )
     : "—";
-export const dataBR = (s: string) =>
-  new Intl.DateTimeFormat("en-CA", {
+export const dataBR = (s: string) => {
+  const partes = new Intl.DateTimeFormat("en-CA", {
     timeZone: "America/Sao_Paulo",
     year: "numeric",
     month: "2-digit",
     day: "2-digit",
-  }).formatToParts(new Date(s)).reduce<Record<string, string>>((partes, parte) => {
-    partes[parte.type] = parte.value;
-    return partes;
-  }, {}) satisfies Record<string, string>;
+  }).formatToParts(new Date(s));
+  const valor = (tipo: string) => partes.find(p => p.type === tipo)?.value ?? '';
+  return `${valor('year')}-${valor('month')}-${valor('day')}`;
+};

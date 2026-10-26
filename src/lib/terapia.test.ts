@@ -10,6 +10,7 @@ import {
   limitesSemana,
   salaAberta,
   terapia,
+  dataBR,
 } from "./terapia";
 import { supabase } from "@/integrations/supabase/client";
 const regras = [
@@ -29,6 +30,9 @@ const regras = [
   },
 ];
 describe("Regras do painel da terapeuta", () => {
+  it('posiciona consultas pelo dia de São Paulo, inclusive virada UTC', () => {
+    expect(dataBR('2026-10-27T01:00:00Z')).toBe('2026-10-26');
+  });
   it("usa saudação pela hora e primeiro nome", () => {
     expect(saudacao("Juliana", 8)).toBe("Bom dia, Juliana");
     expect(saudacao("Juliana", 12)).toBe("Boa tarde, Juliana");
