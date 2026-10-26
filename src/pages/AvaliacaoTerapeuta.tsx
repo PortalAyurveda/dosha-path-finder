@@ -51,7 +51,6 @@ export function Editor({avaliacao,ficha,conteudo,biblioteca,userId,embedded=fals
  if(embedded)return <div className="mesa-sala-ficha-in"><div className="cab-pessoa"><h2>{ficha.nome}</h2><button type="button" className="m-btn" onClick={()=>setTeste(!teste)}>{teste?'Fechar teste':'Abrir teste'}</button></div>{teste&&<div className="teste-aberto">{testeCorpo}</div>}{painel(false)}{quadroEl}</div>;
  return <div className="mesa"><MesaHeader userId={userId}/>{quadro?quadroEl:<><div className="mesa-volta"><button type="button" disabled={saindo} onClick={voltar}>← {ficha.nome}</button></div><div className={`mesa-ficha ${teste?'':'sem-teste'}`}><aside className="mesa-teste" aria-label="Teste da pessoa"><div className="cab"><h2>{ficha.nome}</h2><button type="button" className="m-btn" onClick={()=>setTeste(!teste)}>{teste?'Fechar teste':'Ver teste'}</button></div>{teste&&testeCorpo}</aside><div className="mesa-av">{painel(false)}</div></div></>}</div>;
 }
-}
 export default function AvaliacaoTerapeuta() {
  const {id,avaliacaoId}=useParams();const [params]=useSearchParams();const acesso=useSouTerapeuta();const navigate=useNavigate();const [erroNova,setErroNova]=useState('');const criando=useRef(false);
  const ficha=useQuery({queryKey:['paciente-ficha',acesso.userId,id],queryFn:()=>{if(!id)throw new Error('Paciente não encontrado.');return terapia.ficha(id);},enabled:acesso.permitido&&!!id,retry:false});
