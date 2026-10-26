@@ -187,32 +187,32 @@ const TerapeutasDoBrasil = () => {
         {!!pontos.data?.length && <section className="border-y border-border py-4"><h2 className="font-serif text-lg font-bold">Pelo seu teste, {profile?.nome?.split(" ")[0] || "você"}</h2>{pontos.data.map(p=><div key={p.slug} className="mt-2"><p className="text-sm">{p.nome}</p><div className="flex flex-wrap gap-1">{p.especialidades.map(e=><Button key={e} size="sm" variant="outline" onClick={()=>setEspecialidadeSel(e)}>{e}</Button>)}</div></div>)}</section>}
         {chipsEspecialidade.length > 0 && (
           <div className="flex gap-1.5 overflow-x-auto scrollbar-hide pb-1 -mb-1">
-            <button
+            <Button
               type="button"
               onClick={() => setEspecialidadeSel(null)}
               className={cn(
-                "shrink-0 whitespace-nowrap rounded-full px-2.5 py-1 text-[11.5px] font-semibold transition-colors cursor-pointer",
+                "h-auto shrink-0 whitespace-nowrap rounded-full px-2.5 py-1 text-[11.5px] font-semibold transition-colors cursor-pointer",
                 !especialidadeSel
-                  ? "bg-[#352F54] text-white"
-                  : "bg-[#F1EEF8] text-[#4E3F7E]",
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-muted text-primary",
               )}
             >
               Todas
-            </button>
+            </Button>
             {chipsEspecialidade.map((chip) => {
               const selecionado = especialidadeSel === chip.nome;
               return (
-                <button
+                <Button
                   key={chip.nome}
                   type="button"
                   onClick={() =>
                     setEspecialidadeSel(selecionado ? null : chip.nome)
                   }
                   className={cn(
-                    "shrink-0 whitespace-nowrap rounded-full px-2.5 py-1 text-[11.5px] font-semibold transition-colors cursor-pointer",
+                    "h-auto shrink-0 whitespace-nowrap rounded-full px-2.5 py-1 text-[11.5px] font-semibold transition-colors cursor-pointer",
                     selecionado
-                      ? "bg-[#352F54] text-white"
-                      : "bg-[#F1EEF8] text-[#4E3F7E]",
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-muted text-primary",
                   )}
                 >
                   {chip.nome}
@@ -221,7 +221,7 @@ const TerapeutasDoBrasil = () => {
                   >
                     ({chip.total})
                   </span>
-                </button>
+                </Button>
               );
             })}
           </div>
@@ -257,7 +257,7 @@ const TerapeutasDoBrasil = () => {
               frase_card={t.frase_card}
               formado_desde={t.formado_desde}
               sistema={sistemaPorId.get(String(t.id))}
-              combina={splitTherapistSpecialties(t.especialidade).filter(e=>sugeridas.includes(e))}
+              combina={sistemaPorId.has(String(t.id)) ? splitTherapistSpecialties(t.especialidade).filter(e=>sugeridas.includes(e)) : []}
               temInstagram={!!t.instagram}
               online={sistemaPorId.get(String(t.id))?.online}
               valor={sistemaPorId.get(String(t.id))?.valor}
@@ -278,13 +278,13 @@ const TerapeutasDoBrasil = () => {
               Cadastre seu perfil gratuitamente e seja encontrado por pessoas em busca dos seus serviços.
             </p>
             <Link to="/terapeutas-do-brasil/cadastro">
-              <button
-                className="inline-flex items-center justify-center gap-2 font-bold text-sm uppercase tracking-wide px-8 py-4 mt-2 shadow-md hover:shadow-xl transition-all hover:scale-[1.03] rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm text-white"
-                style={{ background: "#FF7676" }}
+              <Button
+                className="inline-flex items-center justify-center gap-2 font-bold text-sm uppercase tracking-wide px-8 py-4 mt-2 shadow-md hover:shadow-xl transition-all hover:scale-[1.03] rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm bg-secondary text-secondary-foreground"
+
               >
                 <UserPlus className="h-4 w-4" />
                 Cadastre seu perfil
-              </button>
+              </Button>
             </Link>
           </section>
         }

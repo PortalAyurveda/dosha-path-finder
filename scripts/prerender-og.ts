@@ -471,7 +471,7 @@ function renderHtml(template: string, route: Route, faltando: Set<string>): stri
   const description = escapeHtml(route.description);
   const image = escapeHtml(route.image || DEFAULT_OG);
   const type = route.type || "website";
-  const imageType = /\.png(\?|$)/i.test(image) ? "image/png" : /\.webp(\?|$)/i.test(image) ? "image/webp" : "image/jpeg";
+  const imageType = image.includes("/functions/v1/og-convite?") ? "image/png" : /\.png(\?|$)/i.test(image) ? "image/png" : /\.webp(\?|$)/i.test(image) ? "image/webp" : "image/jpeg";
 
   let html = template;
   let ok = true;
