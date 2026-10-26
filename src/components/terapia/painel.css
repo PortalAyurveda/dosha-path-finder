@@ -42,3 +42,5 @@
 
 .portal-terapeuta table td:nth-child(2)>div{flex-wrap:nowrap;font-size:12px;}.portal-terapeuta table td:last-child span {font-size:12px;}.portal-cartao>label~.divide-y{margin-top:0;}
 .portal-paciente .portal-cartao{padding:16px;}.portal-paciente .portal-cartao .h-2{height:12px;}.portal-paciente .portal-cartao .text-vata,.portal-paciente .portal-cartao .text-pitta,.portal-paciente .portal-cartao .text-kapha {font-size:17px;}
+
+.portal-paciente section.portal-cartao>h2 {font-family:'Roboto Serif',Georgia,serif;font-size:20px;font-weight:700;}
