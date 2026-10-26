@@ -145,8 +145,8 @@ const AdminAgenda = () => {
       <>
         <Button size="sm" variant="outline" className={h} onClick={() => abrirVer(it)}><Eye className="w-3.5 h-3.5 mr-1" />Ver</Button>
         <Button size="sm" variant="outline" className={h} onClick={() => { setMudandoData(it); setNovaData(it.publicar_em?.slice(0, 10) || ""); }}>Mudar data</Button>
-        <Button size="icon" variant="outline" className={`${h} w-${mobile ? "10" : "8"}`} aria-label="Subir" disabled={idx === 0 || !!ocupado} onClick={() => trocar(it, fila[idx - 1])}><ArrowUp className="w-4 h-4" /></Button>
-        <Button size="icon" variant="outline" className={`${h} w-${mobile ? "10" : "8"}`} aria-label="Descer" disabled={idx === fila.length - 1 || !!ocupado} onClick={() => trocar(it, fila[idx + 1])}><ArrowDown className="w-4 h-4" /></Button>
+        <Button size="icon" variant="outline" className={mobile ? "h-10 w-10" : "h-8 w-8"} aria-label="Subir" disabled={idx === 0 || !!ocupado} onClick={() => trocar(it, fila[idx - 1])}><ArrowUp className="w-4 h-4" /></Button>
+        <Button size="icon" variant="outline" className={mobile ? "h-10 w-10" : "h-8 w-8"} aria-label="Descer" disabled={idx === fila.length - 1 || !!ocupado} onClick={() => trocar(it, fila[idx + 1])}><ArrowDown className="w-4 h-4" /></Button>
         {mobile ? (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
