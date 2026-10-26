@@ -2205,6 +2205,27 @@ export type Database = {
         }
         Relationships: []
       }
+      backup_terapia_config_20261026b: {
+        Row: {
+          atualizado_em: string | null
+          chave: string | null
+          descricao: string | null
+          valor: Json | null
+        }
+        Insert: {
+          atualizado_em?: string | null
+          chave?: string | null
+          descricao?: string | null
+          valor?: Json | null
+        }
+        Update: {
+          atualizado_em?: string | null
+          chave?: string | null
+          descricao?: string | null
+          valor?: Json | null
+        }
+        Relationships: []
+      }
       banner_eventos: {
         Row: {
           banner_id: string | null
@@ -14527,6 +14548,10 @@ export type Database = {
         Returns: Json
       }
       _folha_n_itens: { Args: { d: Json }; Returns: number }
+      _horario_motivo: {
+        Args: { p_com_antecedencia: boolean; p_inicio: string; p_tid: string }
+        Returns: string
+      }
       _horarios_livres: {
         Args: { p_dias: number; p_terapeuta: string }
         Returns: {
@@ -16844,6 +16869,7 @@ export type Database = {
       }
       terapia_quadros_da: { Args: { p_avaliacao: string }; Returns: Json }
       terapia_retorno_sugestoes: { Args: { p_paciente: string }; Returns: Json }
+      terapia_sala_treino: { Args: never; Returns: Json }
       terapia_semana: { Args: { p_inicio?: string }; Returns: Json }
       terapia_tarot: { Args: { p_numero?: number }; Returns: Json }
       terapia_termo_aceitar: { Args: { p_versao: string }; Returns: undefined }

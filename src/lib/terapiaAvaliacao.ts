@@ -48,3 +48,5 @@ export function sugestoes(valor:unknown):Dosha[] {
 export function sintoma(nome:string,c:ConteudoFicha,texto?:string,sugestao?:unknown):ItemClinico { return {id:`sintoma:${nome}`,nome,setor:'sintomas',texto:texto||c.DEF[nome],sugestao:c.SINT[nome]?.sug?.map(s=>s.d)??sugestoes(sugestao)}; }
 export function especificacoes(chave:string,sd:Subdosha):ItemClinico[] { return DOSHAS.flatMap(d=>sd[d].split(';').map(n=>n.trim()).filter(Boolean).map(nome=>({id:`sd:${chave}:${d}:${nome}`,nome,texto:nome,setor:'subdoshas' as const,subdosha:chave,sugestao:[d]}))); }
 export function coordenada(v:number) { return Math.max(0,Math.min(1,v)); }
+/** Nível 0–3 que a soma das marcações sugere (a terapeuta decide): proporcional ao maior dos três. */
+export function sugereNivel(soma:number,maior:number):number { if(soma<=0)return 0; return Math.min(3,Math.max(1,Math.round(soma/Math.max(maior,1)*3))); }

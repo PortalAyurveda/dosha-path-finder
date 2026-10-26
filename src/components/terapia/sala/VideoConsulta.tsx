@@ -1,6 +1,6 @@
 import {useEffect,useRef,useState} from 'react';
-import {Mic,MicOff,Video,VideoOff,PhoneOff,Disc} from 'lucide-react';
-import {Button} from '@/components/ui/button';
+import {createPortal} from 'react-dom';
+import {Mic,MicOff,Video,VideoOff} from 'lucide-react';
 import {sala,sairBeacon,PRESENCA_MS} from '@/lib/consultaSala';
 interface JitsiAPI { addListener:(event:string,cb:(payload:any)=>void)=>void; executeCommand:(command:string,...args:unknown[])=>void; dispose:()=>void }
 declare global { interface Window { JitsiMeetExternalAPI?:new(domain:string,options:Record<string,unknown>)=>JitsiAPI } }
@@ -10,22 +10,40 @@ function carregar(domain:string) {
  const existente=scripts.get(domain);if(existente)return existente;
  const p=new Promise<void>((resolve,reject)=>{const script=document.createElement('script');script.src=`https://${domain}/external_api.js`;script.onload=()=>resolve();script.onerror=()=>{scripts.delete(domain);reject(new Error('Não foi possível carregar o vídeo.'));};document.head.appendChild(script);});scripts.set(domain,p);return p;
 }
-export default function VideoConsulta({codigo,consulta,terapeuta,sair,compacto=false,quadroAberto=false}:{quadroAberto?:boolean;codigo:string;consulta:string;terapeuta:boolean;sair:()=>void;compacto?:boolean}) {
- const root=useRef<HTMLElement>(null);const origem=useRef<HTMLElement|null>(null);
- useEffect(()=>{const el=root.current;if(!el)return;if(!origem.current)origem.current=el.parentElement;const mover=()=>{const slot=document.getElementById("sala-video-quadro");if(quadroAberto&&slot&&el.parentElement!==slot)slot.appendChild(el);else if(!quadroAberto&&origem.current&&el.parentElement!==origem.current)origem.current.appendChild(el);};mover();const observer=new MutationObserver(mover);if(quadroAberto)observer.observe(document.body,{childList:true,subtree:true});return()=>{observer.disconnect();if(origem.current&&el.parentElement!==origem.current)origem.current.appendChild(el);};},[quadroAberto]);
+/** Ids dos lugares que o quadro de aula reserva para o vídeo e os botões. */
+export const SLOT_VIDEO='sala-video-quadro';export const SLOT_CONTROLES='sala-quadro-controles';
+/**
+ * O iframe do Jitsi fica sempre no mesmo nó (trocar de pai recarrega a chamada).
+ * Com o quadro aberto, só a posição muda: o vídeo segue o retângulo reservado pelo quadro.
+ */
+export default function VideoConsulta({codigo,consulta,terapeuta,sair,quadroAberto=false,treino=false,terapeutaNome,pessoaNome}:{quadroAberto?:boolean;codigo:string;consulta:string;terapeuta:boolean;sair:()=>void;treino?:boolean;terapeutaNome?:string;pessoaNome?:string;compacto?:boolean}) {
  const parent=useRef<HTMLDivElement>(null);const api=useRef<JitsiAPI>();const sairRef=useRef(sair);sairRef.current=sair;
- const [erro,setErro]=useState('');const [conectado,setConectado]=useState(false);const [mic,setMic]=useState(false);const [cam,setCam]=useState(false);const [gravando,setGravando]=useState(false);const [tentativa,setTentativa]=useState(0);
+ const [erro,setErro]=useState('');const [conectado,setConectado]=useState(false);const [mic,setMic]=useState(false);const [cam,setCam]=useState(false);const [gravando,setGravando]=useState(false);const [tela,setTela]=useState(false);const [tentativa,setTentativa]=useState(0);const [slotCtl,setSlotCtl]=useState<HTMLElement|null>(null);
+ useEffect(()=>{const el=parent.current;if(!el)return;if(!quadroAberto){el.classList.remove('mini');el.removeAttribute('style');setSlotCtl(null);return;}let raf=0;let ultimo='';
+  const seguir=()=>{const slot=document.getElementById(SLOT_VIDEO);const ctl=document.getElementById(SLOT_CONTROLES);setSlotCtl(c=>c===ctl?c:ctl);if(slot){const r=slot.getBoundingClientRect();const k=`${r.top}|${r.left}|${r.width}|${r.height}`;if(k!==ultimo){ultimo=k;el.classList.add('mini');Object.assign(el.style,{top:`${r.top}px`,left:`${r.left}px`,width:`${r.width}px`,height:`${r.height}px`,visibility:r.bottom<41||r.top>window.innerHeight?'hidden':'visible'});}}else if(ultimo!=='x'){ultimo='x';el.style.visibility='hidden';}raf=requestAnimationFrame(seguir);};
+  seguir();return()=>{cancelAnimationFrame(raf);};},[quadroAberto]);
+ useEffect(()=>{if(conectado)api.current?.executeCommand('setTileView',quadroAberto);},[quadroAberto,conectado]);
  useEffect(()=>{let ativo=true;let timer:ReturnType<typeof setInterval>|undefined;let joined=false;let ended=false;const erroEvento=(e:unknown)=>{if(ativo)setErro(e instanceof Error?e.message:String(e));};const evento=(e:'entrou'|'pulso'|'saiu'|'outro_entrou'|'outro_saiu')=>void sala.evento(codigo,e).catch(erroEvento);
- const fechar=()=>{if(ended)return;ended=true;if(joined){joined=false;evento('saiu');}sairRef.current();};
- sala.entrar(codigo).then(async d=>{await carregar(d.dominio);if(!ativo||!parent.current)return;const Constructor=window.JitsiMeetExternalAPI;if(!Constructor)throw new Error('Não foi possível iniciar o vídeo.');const instance=new Constructor(d.dominio,{roomName:d.sala,jwt:d.jwt,parentNode:parent.current,width:'100%',height:'100%',lang:'ptBR',userInfo:{displayName:d.nome},configOverwrite:{prejoinConfig:{enabled:false},disableInviteFunctions:true,toolbarButtons:[],startWithAudioMuted:false,startWithVideoMuted:false,localRecording:{enabled:terapeuta,notifyAllParticipants:true},hideConferenceSubject:true},interfaceConfigOverwrite:{SHOW_JITSI_WATERMARK:false,SHOW_WATERMARK_FOR_GUESTS:false,SHOW_BRAND_WATERMARK:false,SHOW_POWERED_BY:false,TOOLBAR_BUTTONS:[]}});api.current=instance;
- instance.addListener('videoConferenceJoined',()=>{joined=true;setConectado(true);evento('entrou');timer=setInterval(()=>evento('pulso'),PRESENCA_MS);});
- instance.addListener('participantJoined',()=>evento('outro_entrou'));instance.addListener('participantLeft',()=>evento('outro_saiu'));
- instance.addListener('audioMuteStatusChanged',e=>setMic(!!e.muted));instance.addListener('videoMuteStatusChanged',e=>setCam(!!e.muted));
- instance.addListener('recordingStatusChanged',e=>{if(e.mode!=='local')return;const on=!!e.on;setGravando(on);if(terapeuta)void sala.gravando(consulta,on).catch(erroEvento);if(e.error)setErro('A gravação local não pôde iniciar neste navegador.');});
- instance.addListener('videoConferenceLeft',fechar);instance.addListener('readyToClose',fechar);
- }).catch(erroEvento);
- const unload=()=>sairBeacon(codigo);window.addEventListener('pagehide',unload);
- return()=>{ativo=false;if(timer)clearInterval(timer);window.removeEventListener('pagehide',unload);if(joined){void sala.evento(codigo,'saiu').catch(()=>undefined);if(terapeuta)void sala.gravando(consulta,false).catch(()=>undefined);}api.current?.dispose();api.current=undefined;};
- },[codigo,consulta,terapeuta,tentativa]);
- return <section ref={root} className="space-y-3"><div ref={parent} className={`sala-video ${compacto?'sala-video-compacto':''}`} aria-label="Vídeo da consulta"/>{erro&&<div role="alert" className="text-sm"><p>{erro}</p><Button variant="outline" onClick={()=>setTentativa(t=>t+1)}>Tentar novamente</Button></div>}<div className="flex flex-wrap items-center justify-center gap-3"><Button size="icon" variant="outline" aria-label={mic?'Ligar microfone':'Desligar microfone'} disabled={!conectado} onClick={()=>api.current?.executeCommand('toggleAudio')}>{mic?<MicOff/>:<Mic/>}</Button><Button size="icon" variant="outline" aria-label={cam?'Ligar câmera':'Desligar câmera'} disabled={!conectado} onClick={()=>api.current?.executeCommand('toggleVideo')}>{cam?<VideoOff/>:<Video/>}</Button><Button variant="destructive" onClick={()=>{api.current?.executeCommand('hangup');sairRef.current();}}><PhoneOff className="mr-2 h-4 w-4"/>Sair</Button>{terapeuta&&<Button variant="outline" disabled={!conectado} onClick={()=>gravando?api.current?.executeCommand('stopRecording','local'):api.current?.executeCommand('startRecording',{mode:'local'})}><Disc className="mr-2 h-4 w-4"/>{gravando?'Parar gravação':'Gravar no meu computador'}</Button>}</div></section>;
+  const fechar=()=>{if(ended)return;ended=true;if(joined){joined=false;evento('saiu');}sairRef.current();};
+  sala.entrar(codigo).then(async d=>{await carregar(d.dominio);if(!ativo||!parent.current)return;const Constructor=window.JitsiMeetExternalAPI;if(!Constructor)throw new Error('Não foi possível iniciar o vídeo.');const instance=new Constructor(d.dominio,{roomName:d.sala,jwt:d.jwt,parentNode:parent.current,width:'100%',height:'100%',lang:'ptBR',userInfo:{displayName:d.nome},configOverwrite:{prejoinConfig:{enabled:false},disableInviteFunctions:true,toolbarButtons:[],startWithAudioMuted:false,startWithVideoMuted:false,localRecording:{enabled:terapeuta,notifyAllParticipants:true},hideConferenceSubject:true},interfaceConfigOverwrite:{SHOW_JITSI_WATERMARK:false,SHOW_WATERMARK_FOR_GUESTS:false,SHOW_BRAND_WATERMARK:false,SHOW_POWERED_BY:false,TOOLBAR_BUTTONS:[]}});api.current=instance;
+  instance.addListener('videoConferenceJoined',()=>{joined=true;setConectado(true);evento('entrou');timer=setInterval(()=>evento('pulso'),PRESENCA_MS);});
+  instance.addListener('participantJoined',()=>evento('outro_entrou'));instance.addListener('participantLeft',()=>evento('outro_saiu'));
+  instance.addListener('audioMuteStatusChanged',e=>setMic(!!e.muted));instance.addListener('videoMuteStatusChanged',e=>setCam(!!e.muted));
+  instance.addListener('screenSharingStatusChanged',e=>setTela(!!e.on));
+  instance.addListener('recordingStatusChanged',e=>{if(e.mode!=='local')return;const on=!!e.on;setGravando(on);if(terapeuta&&!treino)void sala.gravando(consulta,on).catch(erroEvento);if(e.error)setErro('A gravação local não pôde iniciar neste navegador.');});
+  instance.addListener('videoConferenceLeft',fechar);instance.addListener('readyToClose',fechar);
+  }).catch(erroEvento);
+  const unload=()=>sairBeacon(codigo);window.addEventListener('pagehide',unload);
+  return()=>{ativo=false;if(timer)clearInterval(timer);window.removeEventListener('pagehide',unload);if(joined){void sala.evento(codigo,'saiu').catch(()=>undefined);if(terapeuta&&!treino)void sala.gravando(consulta,false).catch(()=>undefined);}api.current?.dispose();api.current=undefined;};
+ },[codigo,consulta,terapeuta,tentativa,treino]);
+ const gravar=()=>gravando?api.current?.executeCommand('stopRecording','local'):api.current?.executeCommand('startRecording',{mode:'local'});
+ const botoesTerapeuta=terapeuta&&<><button type="button" className="m-grav-btn" aria-pressed={gravando} disabled={!conectado} onClick={gravar}>{gravando?'Parar gravação':'Gravar no meu computador'}</button>{gravando&&<span className="m-aviso">Gravando no computador da {terapeutaNome??'terapeuta'}{pessoaNome?` · a ${pessoaNome.split(' ')[0]} vê este aviso`:''}</span>}<button type="button" className="m-grav-btn" aria-pressed={tela} disabled={!conectado} onClick={()=>api.current?.executeCommand('toggleShareScreen')}>{tela?'Parar de compartilhar':'Compartilhar minha tela'}</button>{tela&&<span className="m-aviso info">Você está compartilhando a tela</span>}</>;
+ const controles=(mini:boolean)=><div className={mini?'ctl':'m-controles'}><button type="button" className="m-redondo" aria-label={mic?'Ligar microfone':'Desligar microfone'} disabled={!conectado} onClick={()=>api.current?.executeCommand('toggleAudio')}>{mic?<MicOff className="h-5 w-5"/>:<Mic className="h-5 w-5"/>}</button><button type="button" className="m-redondo" aria-label={cam?'Ligar câmera':'Desligar câmera'} disabled={!conectado} onClick={()=>api.current?.executeCommand('toggleVideo')}>{cam?<VideoOff className="h-5 w-5"/>:<Video className="h-5 w-5"/>}</button><button type="button" className="m-sair" onClick={()=>{api.current?.executeCommand('hangup');sairRef.current();}}>Sair</button></div>;
+ return <section className="sala-palco relative">
+  {terapeuta&&!quadroAberto&&<div className="m-grav">{botoesTerapeuta}</div>}
+  <div ref={parent} className="sala-video" aria-label="Vídeo da consulta"/>
+  {erro&&<div role="alert" className="flex flex-wrap items-center justify-center gap-3 p-2 text-sm"><p>{erro}</p><button type="button" className="m-btn" onClick={()=>setTentativa(t=>t+1)}>Tentar novamente</button></div>}
+  {!quadroAberto&&controles(false)}
+  {quadroAberto&&slotCtl&&createPortal(terapeuta?<div className="ctl">{botoesTerapeuta}</div>:controles(true),slotCtl)}
+ </section>;
 }
