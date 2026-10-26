@@ -792,6 +792,7 @@ const MinhaRotina = () => {
       title="Minha rotina"
       description="Seu planner ayurvédico diário, slot a slot."
     >
+      <Suspense fallback={null}><IndicacoesNaRotina /></Suspense>
       {/* Moldura: cabeçalho de contexto da semana */}
       <SemanaHeader
         agniPrincipal={agniInfo ?? null}
