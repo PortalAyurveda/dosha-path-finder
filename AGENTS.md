@@ -9,4 +9,4 @@
 - Keep patient records independently lazy-loaded beside the therapist panel, with patient views in dedicated therapy components and data contracts in the patient module; use existing therapy RPCs and permission-gated on-demand requests to avoid leaking private content.
 - Keep therapist invitations independently lazy-loaded beside therapist routes and share the existing authentication form with /entrar; embedded authentication suppresses default navigation while preserving email functions, messages and external-browser return destinations.
 
-- Keep therapy assessments independently lazy-loaded next to patient routes, with core sectors and photo annotations in dedicated assessment components; preserve the single JSON draft and existing RPCs to isolate editing from other portal views.
+- Keep therapy assessments and their print route independently lazy-loaded next to patient routes, with core sectors, optional additions and photo annotations in dedicated assessment components; preserve the single JSON draft and existing RPCs, and calculate birth charts locally to isolate editing and private content from other portal views.

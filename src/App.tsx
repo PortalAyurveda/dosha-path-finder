@@ -61,6 +61,7 @@ const TerapeutaConvite = lazy(() => import("./pages/TerapeutaConvite"));
 const TerapeutaCadastro = lazy(() => import("./pages/TerapeutaCadastro"));
 const PainelTerapeuta = lazy(() => import("./pages/PainelTerapeuta"));
 const AvaliacaoTerapeuta = lazy(() => import("./pages/AvaliacaoTerapeuta"));
+const AvaliacaoFolha = lazy(() => import("./pages/AvaliacaoFolha"));
 const PacienteTerapeuta = lazy(() => import("./pages/PacienteTerapeuta"));
 const Video = lazy(() => import("./pages/Video"));
 const Receita = lazy(() => import("./pages/Receita"));
@@ -172,7 +173,7 @@ if (typeof window !== "undefined") {
 const LayoutOrBare = ({ children }: { children: React.ReactNode }) => {
   const { pathname } = useLocation();
   const SEM_MOLDURA = ["/aovivo", "/imprimir", "/detox/inscricao", "/detox/kit"];
-  if (SEM_MOLDURA.includes(pathname) || /^\/cursos\/[^/]+\/imprimir\/[^/]+\/?$/.test(pathname) || /^\/atividade\/[^/]+\/imprimir\/?$/.test(pathname) || /^\/cursos\/[^/]+\/certificado\/?$/.test(pathname)) return <>{children}</>;
+  if (SEM_MOLDURA.includes(pathname) || /^\/painel-terapeuta\/paciente\/[^/]+\/avaliacao\/[^/]+\/folha\/?$/.test(pathname) || /^\/cursos\/[^/]+\/imprimir\/[^/]+\/?$/.test(pathname) || /^\/atividade\/[^/]+\/imprimir\/?$/.test(pathname) || /^\/cursos\/[^/]+\/certificado\/?$/.test(pathname)) return <>{children}</>;
   return <Layout>{children}</Layout>;
 };
 
@@ -273,6 +274,7 @@ const RoutedApp = () => {
               <Route path="/painel-terapeuta" element={<PainelTerapeuta />} />
               <Route path="/painel-terapeuta/paciente/:id" element={<PacienteTerapeuta />} />
               <Route path="/painel-terapeuta/paciente/:id/avaliacao/:avaliacaoId" element={<AvaliacaoTerapeuta />} />
+              <Route path="/painel-terapeuta/paciente/:id/avaliacao/:avaliacaoId/folha" element={<AvaliacaoFolha />} />
               <Route path="/akasha" element={<Akasha />} />
               <Route path="/video/:slug" element={<Video />} />
               <Route path="/receita/:slug" element={<Receita />} />
