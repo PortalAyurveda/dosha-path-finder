@@ -1,0 +1,18 @@
+import { describe,it,expect,vi } from 'vitest';
+vi.mock('@/integrations/supabase/client',()=>({supabase:{rpc:vi.fn().mockResolvedValue({data:null,error:null}),functions:{invoke:vi.fn().mockResolvedValue({data:{},error:null})}}}));
+import {supabase} from '@/integrations/supabase/client';
+import {sala,faseSala,presencaRecente,PRESENCA_MS,ESPERA_SALA_MS,AO_VIVO_MS,QUADRO_AO_VIVO_MS} from './consultaSala';
+import type {SalaConsulta} from './consultaSala';
+describe('Sala da consulta',()=>{
+ it('consulta usa p_consulta',async()=>{await sala.consultar('c');expect(supabase.rpc).toHaveBeenCalledWith('consulta_sala',{p_consulta:'c'});});
+ it('consulta ao vivo usa p_consulta',async()=>{await sala.aoVivo('c');expect(supabase.rpc).toHaveBeenCalledWith('consulta_ao_vivo',{p_consulta:'c'});});
+ it('retira quadro com p_quadro nulo',async()=>{await sala.mostrar('c',null);expect(supabase.rpc).toHaveBeenCalledWith('consulta_quadro_mostrar',{p_consulta:'c',p_quadro:null});});
+ it('avisa gravação com p_gravando',async()=>{await sala.gravando('c',false);expect(supabase.rpc).toHaveBeenCalledWith('consulta_gravando',{p_consulta:'c',p_gravando:false});});
+ it('avalia com nota e comentário exatos',async()=>{await sala.avaliar('c',5,'Muito boa');expect(supabase.rpc).toHaveBeenCalledWith('consulta_avaliar',{p_consulta:'c',p_nota:5,p_comentario:'Muito boa'});});
+ it('recusa nota fora de 1 a 5',async()=>{await expect(sala.avaliar('c',0,'')).rejects.toThrow();await expect(sala.avaliar('c',6,'')).rejects.toThrow();});
+ it('entrada envia c e acao',async()=>{await sala.entrar('codigo');expect(supabase.functions.invoke).toHaveBeenCalledWith('video-sala',{body:{c:'codigo',acao:'entrar'}});});
+ it('presença envia evento com c e acao',async()=>{await sala.evento('codigo','outro_entrou');expect(supabase.functions.invoke).toHaveBeenCalledWith('video-sala',{body:{c:'codigo',acao:'evento',evento:'outro_entrou'}});});
+ it('mantém os intervalos combinados',()=>{expect(PRESENCA_MS).toBe(60000);expect(ESPERA_SALA_MS).toBe(15000);expect(AO_VIVO_MS).toBe(3000);expect(QUADRO_AO_VIVO_MS).toBe(2000);});
+ it('respeita a abertura e fechamento devolvidos',()=>{const s={status:'marcada',abre_em:'2026-10-26T17:00:00Z',fecha_em:'2026-10-26T18:00:00Z'} as SalaConsulta;expect(faseSala(s,Date.parse('2026-10-26T16:59:59Z'))).toBe('aguarde');expect(faseSala(s,Date.parse(s.abre_em))).toBe('aberta');expect(faseSala(s,Date.parse(s.fecha_em))).toBe('encerrada');});
+ it('não considera presença antiga como online',()=>{expect(presencaRecente('2026-10-26T17:00:00Z',Date.parse('2026-10-26T17:01:00Z'))).toBe(true);expect(presencaRecente('2026-10-26T17:00:00Z',Date.parse('2026-10-26T17:02:00Z'))).toBe(false);});
+});
