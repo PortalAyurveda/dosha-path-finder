@@ -24,3 +24,6 @@
 - [x] Construir Parte 3: ficha da paciente, sete abas, fotos privadas, anotações e marcação de consulta
 - [x] Validar regras e fluxo da Parte 3 com testes e telas
 - [ ] Validar Parte 3 com terapeuta e paciente reais — bloqueado: Supabase externo sem sessão autenticada disponível; usuário testa com as contas combinadas
+- [ ] Construir Parte 4a: avaliação com os sete setores do núcleo, biblioteca, fotos anotadas e salvamento automático
+- [ ] Validar regras e fluxo da Parte 4a com testes e telas
+- [ ] Validar Parte 4a com conta real — bloqueado: Supabase externo sem sessão autenticada disponível
