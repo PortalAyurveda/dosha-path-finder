@@ -78,7 +78,7 @@
 .m-redondo{width:52px;height:52px;border-radius:50%;border:0;background:var(--m-sup);color:hsl(var(--sala-texto));display:grid;place-items:center;cursor:pointer}
 .m-redondo:disabled{opacity:.5}
 .m-sair{height:52px;border-radius:999px;border:0;background:var(--m-rec);color:hsl(var(--destructive-foreground));padding:0 22px;font-weight:700;cursor:pointer}
-.sala-video.mini{position:fixed;z-index:70;min-height:0;border-radius:8px;overflow:hidden}
+.sala-video.mini{position:fixed;z-index:70;min-height:0 !important;max-height:none !important;aspect-ratio:auto !important;border-radius:8px;overflow:hidden}
 /* quadro de aula */
 .mesa-qa{position:fixed;left:0;right:0;bottom:0;top:var(--mesa-hdr);z-index:60;display:grid;grid-template-columns:270px minmax(0,1fr) 300px;background:var(--m-bg);color:var(--m-ink)}
 .qa-lado{border-right:1px solid var(--m-line);background:hsl(var(--card));display:flex;flex-direction:column;min-width:0;min-height:0}
