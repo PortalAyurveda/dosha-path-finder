@@ -1,0 +1,23 @@
+import { describe,it,expect,vi,beforeEach } from 'vitest';
+vi.mock('@/integrations/supabase/client',()=>({supabase:{rpc:vi.fn().mockResolvedValue({data:[],error:null})}}));
+import {supabase} from '@/integrations/supabase/client';
+import {terapiaAdmin,numerosAdmin,comentariosPendentes,gruposCMS,vazioCMS,moverCMS,type Participante,type AvaliacaoAdmin} from './terapiaAdmin';
+beforeEach(()=>vi.clearAllMocks());
+describe('Admin dos terapeutas',()=>{
+ it('conta participação por em_atendimento, não pela chave no_sistema',()=>{const p=[{em_atendimento:true,no_sistema:false},{em_atendimento:false,no_sistema:true}] as Participante[];expect(numerosAdmin(p,[]).participando).toBe(1);});
+ it('conta online apenas por online verdadeiro',()=>{expect(numerosAdmin([{online:true},{online:false}] as Participante[],[]).online).toBe(1);});
+ it('conta total de terapeutas',()=>{expect(numerosAdmin([{},{}] as Participante[],[]).terapeutas).toBe(2);});
+ it('conta Premium verdadeiro',()=>{expect(numerosAdmin([{premium:true},{premium:false}] as Participante[],[]).premium).toBe(1);});
+ it('soma pacientes ligados',()=>{expect(numerosAdmin([{pacientes:3},{pacientes:4}] as Participante[],[]).pacientes).toBe(7);});
+ it('consultas do topo usam 30 dias',async()=>{await terapiaAdmin.consultas();expect(supabase.rpc).toHaveBeenCalledWith('admin_terapia_consultas',{p_dias:30});});
+ it.each([7,30,90])('seletor solicita %i dias',async(d)=>{await terapiaAdmin.consultas(d);expect(supabase.rpc).toHaveBeenCalledWith('admin_terapia_consultas',{p_dias:d});});
+ it('busca 200 avaliações',async()=>{await terapiaAdmin.avaliacoes();expect(supabase.rpc).toHaveBeenCalledWith('admin_avaliacoes',{p_limite:200});});
+ it('salva Participa com id e ligar',async()=>{await terapiaAdmin.participar('t',false);expect(supabase.rpc).toHaveBeenCalledWith('admin_terapia_no_sistema',{p_terapeuta:'t',p_ligar:false});});
+ it.each(['aprovado','recusado'] as const)('revisa sugestão como %s',async(d)=>{await terapiaAdmin.revisar('a',d);expect(supabase.rpc).toHaveBeenCalledWith('admin_acervo_revisar',{p_id:'a',p_decisao:d});});
+ it('publica comentário pela consulta',async()=>{await terapiaAdmin.publicar('c',true);expect(supabase.rpc).toHaveBeenCalledWith('admin_avaliacao_publicar',{p_consulta:'c',p_publicar:true});});
+ it('conta comentários ainda não publicados',()=>{expect(comentariosPendentes([{comentario:'Bom',publicar:false},{comentario:'Bom',publicar:true},{comentario:'',publicar:false}] as AvaliacaoAdmin[])).toBe(1);});
+ it('exclui ficha_ e inclui todas as outras chaves',()=>{const e=gruposCMS({ficha_dosha:{},nova:'oi',cms_rotulos:{nova:{grupo:'Sala',nome:'Nova',ajuda:'Ajuda'}}});expect(e.map(x=>x.chave)).toEqual(['nova','cms_rotulos']);expect(e[0].grupo).toBe('Sala');expect(e[1].grupo).toBe('Outros');});
+ it('novo objeto copia campos vazios',()=>{expect(vazioCMS({titulo:'Título',valor:10,ativo:true,campos:{nome:'N'},lista:['a']})).toEqual({titulo:'',valor:0,ativo:false,campos:{nome:''},lista:[]});});
+ it('mover mantém os valores',()=>{expect(moverCMS(['a','b','c'],1,0)).toEqual(['b','a','c']);});
+ it('salva a chave inteira',async()=>{await terapiaAdmin.salvar('termo',{versao:'2',texto:'Novo'});expect(supabase.rpc).toHaveBeenCalledWith('terapia_config_salvar',{p_chave:'termo',p_valor:{versao:'2',texto:'Novo'}});});
+});
