@@ -18,7 +18,7 @@ export interface Convite {
   eu?: { logado: boolean; proprio?: boolean; ja_ligado?: boolean; tem_teste?: boolean; perm?: PermissoesConvite | null };
 }
 export function textoConvite(texto: string, terapeuta: Convite["terapeuta"]) {
-  return texto?.replaceAll("{nome}", terapeuta?.nome ?? "").replaceAll("{primeiro}", terapeuta?.primeiro_nome ?? "") ?? "";
+  return texto?.split("{nome}").join(terapeuta?.nome ?? "").split("{primeiro}").join(terapeuta?.primeiro_nome ?? "") ?? "";
 }
 export function permissoesConvite(convite: Convite): PermissoesConvite {
   const perm = { teste: false, fotos: false, rotina: false, akasha: false };
