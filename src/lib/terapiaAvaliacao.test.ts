@@ -1,0 +1,20 @@
+import { describe,it,expect,vi } from 'vitest';
+vi.mock('@/integrations/supabase/client',()=>({supabase:{rpc:vi.fn()}}));
+import { supabase } from '@/integrations/supabase/client';
+import { terapia } from './terapia';
+import { AUTOSAVE_MS,SETORES,proximoNivel,iniciarDados,somas,novaMarca,nivel,coordenada } from './terapiaAvaliacao';
+import type { ConteudoFicha } from './terapiaAvaliacao';
+const conteudo={AGNIS:[['vishama','Vishama','Agni irregular','V']],DEF:{},SINT:{}} as ConteudoFicha;
+describe('Núcleo da avaliação',()=>{
+ it('inclui somente os sete setores da Parte 4a',()=>{expect(SETORES.map(([s])=>s)).toEqual(['dosha','sintomas','agni','dhatus','malas','subdoshas','fotos']);});
+ it('salvamento automático espera dois segundos',()=>{expect(AUTOSAVE_MS).toBe(2000);});
+ it('marcas positivas e negativas passam de zero a três e voltam a zero',()=>{expect([0,1,2,3].map(proximoNivel)).toEqual([1,2,3,0]);});
+ it('leitura final aceita somente zero a três',()=>{expect([-2,0,1,2,3,5].map(nivel)).toEqual([0,0,1,2,3,3]);});
+ it('queixas iniciam sem causa e o agni inicial vem do teste',()=>{const d=iniciarDados({}, {agni:'Agni irregular',queixas:{vata:'Insônia'}} as never,conteudo);expect(d.marcas['sintoma:Insônia']).toMatchObject({V:0,P:0,K:0,marcado:true});expect(d.agni.vishama).toBe(2);});
+ it('soma causas e antídotos de todas as áreas e o agni, sem misturar Ama',()=>{const d=iniciarDados({versao:1},null,conteudo);d.marcas.a={...novaMarca({id:'a',nome:'Insônia',setor:'sintomas'}),V:3,P:1,Vm:1};d.marcas.f={...novaMarca({id:'f',nome:'Ponto',setor:'fotos'}),K:2,Km:1};d.agni.vishama=2;d.ama.V=3;expect(somas(d,conteudo)).toEqual({V:4,P:1,K:1});});
+ it('reabrir rascunho não repõe queixas retiradas e preserva outras chaves',()=>{const d=iniciarDados({versao:1,marcas:{},outro:'preservado'},{queixas:{vata:'Insônia'}} as never,conteudo);expect(d.marcas).toEqual({});expect(d.outro).toBe('preservado');});
+ it('coordenadas da foto ficam entre zero e um',()=>{expect([-0.1,0.25,1.1].map(coordenada)).toEqual([0,0.25,1]);});
+ it('cria avaliação uma vez com consulta opcional pela função existente',async()=>{vi.mocked(supabase.rpc).mockResolvedValueOnce({data:'a',error:null} as never);expect(await terapia.avaliacaoNova('p','c')).toBe('a');expect(supabase.rpc).toHaveBeenCalledWith('terapia_avaliacao_nova',{p_paciente:'p',p_consulta:'c'});});
+ it('salva objeto único, leitura e resumo na avaliação',async()=>{vi.mocked(supabase.rpc).mockResolvedValueOnce({data:'2026-10-26',error:null} as never);const d=iniciarDados({},null,conteudo);await terapia.avaliacaoSalvar('a',d,{V:3,P:1,K:0},'Resumo');expect(supabase.rpc).toHaveBeenCalledWith('terapia_avaliacao_salvar',{p_id:'a',p_dados:d,p_leitura:{V:3,P:1,K:0},p_resumo:'Resumo'});});
+ it('permite biblioteca própria sem substituir dados anteriores',async()=>{vi.mocked(supabase.rpc).mockResolvedValueOnce({data:null,error:null} as never);const b={sintomas:[{id:'s',nome:'Novo',setor:'sintomas' as const}],outros:['anterior']};await terapia.bibliotecaSalvar(b);expect(supabase.rpc).toHaveBeenCalledWith('terapia_biblioteca_salvar',{p_dados:b});});
+});
