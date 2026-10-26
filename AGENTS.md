@@ -18,3 +18,4 @@
 - Keep the patient-side therapist views (Meu terapeuta in /meu-perfil, the shared Do seu terapeuta sheet block also shown atop /minha-rotina) lazy-loaded in src/components/terapia/meu with RPC access in src/lib/terapiaMeu.ts; the block prints itself via a body class and print CSS so patients never reach therapist routes.
 
 - Keep consultation rooms independently lazy-loaded and room RPC/video access in consultaSala; reuse the assessment editor and board with explicit in-memory training mode so practice never writes patient records and live rooms do not load other portal views.
+- Keep therapist administration in dedicated admin/terapeutas views with RPC contracts and CMS value helpers in terapiaAdmin; retain the original registration editor separately and build CMS fields recursively from public values so new keys require no hardcoded form.
