@@ -128,10 +128,15 @@ export default function Imprimir() {
   const [imprimindo, setImprimindo] = useState(false);
 
   const pecas = useMemo<Peca[]>(() => {
-    const raw = (searchParams.get("pecas") ?? "receitas").split(",").map((s) => s.trim());
-    const ok = raw.filter((s): s is Peca => (PECAS_VALIDAS as string[]).includes(s));
-    return ok.length > 0 ? ok : ["receitas"];
+    const bruto = searchParams.get("pecas");
+    if (bruto === null) return ["receitas"];
+    const raw = bruto.split(",").map((s) => s.trim());
+    return raw.filter((s): s is Peca => (PECAS_VALIDAS as string[]).includes(s));
   }, [searchParams]);
+
+  const semanaParam = Number(searchParams.get("semana"));
+  const semana = Number.isInteger(semanaParam) && semanaParam >= 1 && semanaParam <= 5 ? semanaParam : null;
+  const comSemana = semana ? { p_semana: semana } : {};
 
   // Lido só na primeira renderização: depois disso a seleção é estado local.
   const [idsIniciais] = useState<string[] | null>(() => {
@@ -172,10 +177,10 @@ export default function Imprimir() {
   });
 
   const rotinaQuery = useQuery({
-    queryKey: ["imprimir-rotina", testeId],
+    queryKey: ["imprimir-rotina", testeId, semana],
     enabled: !!testeId && temAcesso,
     queryFn: async () => {
-      const { data, error } = await supabase.rpc("rotina_para_impressao" as any, { p_teste_id: testeId! });
+      const { data, error } = await supabase.rpc("rotina_para_impressao" as any, { p_teste_id: testeId!, ...comSemana });
       if (error) throw error;
       return (data ?? []) as RotinaRow[];
     },
@@ -193,6 +198,27 @@ export default function Imprimir() {
     });
     return lista;
   }, [rotinaQuery.data]);
+
+  // Receitas vindas em ids= que não estão na semana: entram na lista com o título do banco.
+  const extrasQuery = useQuery({
+    queryKey: ["imprimir-extras", idsIniciais?.join(",") ?? ""],
+    enabled: temAcesso && !!idsIniciais?.length,
+    staleTime: Infinity,
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("receitas_para_impressao" as any, { p_nugget_ids: idsIniciais! });
+      if (error) throw error;
+      return (data ?? []) as ReceitaRow[];
+    },
+  });
+  const listaReceitas = useMemo(() => {
+    const vistos = new Set(receitasDaSemana.map((r) => r.nugget_id));
+    const extras = (idsIniciais ?? [])
+      .filter((id) => !vistos.has(id))
+      .map((id) => extrasQuery.data?.find((r) => r.nugget_id === id))
+      .filter((r): r is ReceitaRow => !!r)
+      .map((r) => ({ nugget_id: r.nugget_id, titulo: r.titulo }));
+    return [...extras, ...receitasDaSemana];
+  }, [receitasDaSemana, idsIniciais, extrasQuery.data]);
 
   const [selecionados, setSelecionados] = useState<string[] | null>(idsIniciais);
 
@@ -219,7 +245,7 @@ export default function Imprimir() {
     const atual = new Set(selecionados ?? []);
     if (on) atual.add(id);
     else atual.delete(id);
-    aplicarSelecao(receitasDaSemana.filter((r) => atual.has(r.nugget_id)).map((r) => r.nugget_id));
+    aplicarSelecao(listaReceitas.filter((r) => atual.has(r.nugget_id)).map((r) => r.nugget_id));
   };
 
   const receitasQuery = useQuery({
@@ -236,12 +262,13 @@ export default function Imprimir() {
 
   const pIds = selecionados === null ? null : selecionados;
   const comprasQuery = useQuery({
-    queryKey: ["imprimir-compras", testeId, pIds?.join(",") ?? "null"],
+    queryKey: ["imprimir-compras", testeId, pIds?.join(",") ?? "null", semana],
     enabled: temAcesso && querCompras && !!testeId,
     queryFn: async () => {
       const { data, error } = await supabase.rpc("lista_de_compras" as any, {
         p_teste_id: testeId!,
         p_nugget_ids: pIds,
+        ...comSemana,
       });
       if (error) throw error;
       return (data ?? []) as CompraRow[];
@@ -278,8 +305,8 @@ export default function Imprimir() {
     setErroVazio(false);
   };
 
-  const marcado = (p: Peca) => (searchParams.get("pecas") ?? "receitas").split(",").includes(p);
-  const nenhumaMarcada = !(marcado("semana") || marcado("receitas") || marcado("compras"));
+  const marcado = (p: Peca) => pecas.includes(p);
+  const nenhumaMarcada = pecas.length === 0;
 
   const imprimir = () => {
     if (imprimindo || carregando) return;
@@ -406,7 +433,7 @@ export default function Imprimir() {
                 <span>{label}</span>
               </label>
 
-              {p === "receitas" && marcado("receitas") && receitasDaSemana.length > 0 && (
+              {p === "receitas" && marcado("receitas") && listaReceitas.length > 0 && (
                 <div style={{ margin: "4px 0 12px" }}>
                   <h2 style={{ fontSize: 17, fontWeight: 700, margin: "0 0 8px", color: "#352F54" }}>
                     Quais receitas?
@@ -416,7 +443,7 @@ export default function Imprimir() {
                       type="button"
                       variant="outline"
                       style={{ height: 40, fontSize: 15 }}
-                      onClick={() => aplicarSelecao(receitasDaSemana.map((r) => r.nugget_id))}
+                      onClick={() => aplicarSelecao(listaReceitas.map((r) => r.nugget_id))}
                     >
                       Marcar todas
                     </Button>
@@ -438,7 +465,7 @@ export default function Imprimir() {
                       padding: "4px 10px",
                     }}
                   >
-                    {receitasDaSemana.map((r) => (
+                    {listaReceitas.map((r) => (
                       <label
                         key={r.nugget_id}
                         className="flex items-center gap-3 cursor-pointer"
@@ -460,7 +487,9 @@ export default function Imprimir() {
         </div>
 
         <p role="status" style={{ fontSize: 17, margin: "12px 0" }}>
-          {carregando
+          {nenhumaMarcada
+            ? "Marque o que você quer imprimir."
+            : carregando
             ? "Montando as suas folhas…"
             : querReceitas && nuggetIds.length === 0
               ? "Nenhuma receita marcada"
@@ -510,7 +539,7 @@ export default function Imprimir() {
         </div>
       )}
 
-      {!erro && !carregando && (
+      {!erro && !carregando && !nenhumaMarcada && (
         <div style={{ overflowX: "auto" }}>
           <div
             id="folha-impressao"
