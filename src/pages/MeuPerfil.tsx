@@ -1,5 +1,9 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, lazy, Suspense } from "react";
 import { Link, Navigate, useNavigate, useSearchParams } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { HeartHandshake } from "lucide-react";
+import { meu } from "@/lib/terapiaMeu";
+const MeuTerapeuta = lazy(() => import("@/components/terapia/meu/MeuTerapeuta"));
 import { toast } from "sonner";
 import {
   Camera,
@@ -209,7 +213,7 @@ const Card = ({ children, className = "" }: { children: React.ReactNode; classNa
 );
 
 // ---------- Accordion ----------
-type AccordionKey = "dados" | "assinatura" | "cursos" | "pedidos" | "escola";
+type AccordionKey = "dados" | "assinatura" | "terapeuta" | "cursos" | "pedidos" | "escola";
 
 const AccordionCard = ({
   id,
@@ -278,9 +282,13 @@ const Conteudo = ({
   const [loading, setLoading] = useState(true);
   const [searchParams, setSearchParams] = useSearchParams();
   const sectionParam = searchParams.get("section") as AccordionKey | null;
-  const validKeys: AccordionKey[] = ["dados", "assinatura", "cursos", "pedidos", "escola"];
+  const validKeys: AccordionKey[] = ["dados", "assinatura", "terapeuta", "cursos", "pedidos", "escola"];
   const initialOpen = sectionParam && validKeys.includes(sectionParam) ? sectionParam : null;
   const [openKey, setOpenKey] = useState<AccordionKey | null>(initialOpen);
+  const meuTerapeutaQ = useQuery({ queryKey: ["meu-terapeuta"], queryFn: meu.terapeuta });
+  const terapeutaResumo = meuTerapeutaQ.data?.length
+    ? meuTerapeutaQ.data.map((l) => l.terapeuta.nome).join(", ")
+    : meuTerapeutaQ.isLoading ? "" : "Sem terapeuta";
 
   useEffect(() => {
     if (sectionParam && validKeys.includes(sectionParam)) {
@@ -431,6 +439,19 @@ const Conteudo = ({
           onToggle={toggle}
         >
           <AssinaturaCard assinatura={assinatura} onChanged={refinarAssinatura} />
+        </AccordionCard>
+
+        <AccordionCard
+          id="terapeuta"
+          icon={<HeartHandshake className="h-5 w-5" />}
+          title="Meu terapeuta"
+          resumo={terapeutaResumo}
+          open={openKey === "terapeuta"}
+          onToggle={toggle}
+        >
+          <Suspense fallback={<p role="status" className="text-sm text-muted-foreground">Carregando…</p>}>
+            <MeuTerapeuta />
+          </Suspense>
         </AccordionCard>
 
         <AccordionCard
