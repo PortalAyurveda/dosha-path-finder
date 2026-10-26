@@ -30,3 +30,5 @@
 - [x] Construir Parte 4b: adições opcionais, Tarot, nascimento, mapa astral e folha A4
 - [x] Validar Parte 4b: 46 testes; fluxos de 4a e 4b no computador/celular com dados simulados, incluindo gravação, biblioteca, nascimento, reabertura, remoção e impressão
 - [ ] Validar Parte 4b com conta real e imagens privadas reais do Tarot — bloqueado: Supabase externo sem sessão autenticada disponível
+- [ ] Construir Parte 5: indicações, catálogo do Portal, montagem, envio, histórico e impressão
+- [ ] Validar Parte 5 com testes e fluxo no computador/celular
