@@ -1,22 +1,45 @@
-.consulta-sala { background:hsl(var(--sala-fundo));color:hsl(var(--sala-texto));min-height:100dvh; }
-.sala-camera { aspect-ratio:16/9;position:relative;background:hsl(var(--sala-superficie));display:flex;align-items:center;justify-content:center;overflow:hidden;border-radius:8px; }
-.sala-camera video { width:100%;height:100%;object-fit:cover; }
-.sala-camera > button { position:absolute; }
-.sala-video { width:100%;height: min(68dvh,780px);min-height:320px;background:hsl(var(--sala-superficie)); }
-.sala-video iframe { width:100%;height:100%;border:0; }
-.sala-video-compacto { height:220px;min-height:180px; }
-.sala-ficha { background:hsl(var(--background));color:hsl(var(--foreground));padding:20px;min-width:0;max-height:85dvh;overflow:auto; }
-.sala-quadro .quadro-tela { position:fixed;inset:0;z-index:100;min-height:650px;height:100dvh; }
-.sala-quadro .quadro-corpo { grid-template-columns:180px minmax(0,1fr) 260px; }
-.sala-quadro video { max-height:150px; }
-@media(max-width:1023px) { .sala-quadro .quadro-tela{height:100dvh;min-height:560px;} .sala-ficha{max-height:none;} .sala-video{height:52dvh;} .sala-video-compacto{height:200px;} }
-@media(prefers-reduced-motion:reduce){.consulta-sala * {scroll-behavior:auto;}}
-.sala-video-no-quadro{background:hsl(var(--sala-fundo));color:hsl(var(--sala-texto));padding:8px;flex-shrink:0;}
-.sala-video-no-quadro .sala-video{height:180px;min-height:120px;}
-.sala-video-no-quadro section{max-width:600px;margin:auto;}
-.consulta-sala > main button[class*="outline"],.consulta-sala > main section button[class*="outline"]{color:hsl(var(--foreground));}
-
-.consulta-sala :is(h1,h2,h3,p,span,li,label){color:inherit;}
-.consulta-sala .quadro-tela{color:hsl(var(--foreground));}
-.consulta-sala button:not(.bg-secondary):not(.bg-destructive){color:hsl(var(--foreground));}
-.consulta-sala textarea{color:hsl(var(--foreground));}
+/* Sala da consulta: vídeo, prévia da câmera e sala vista pela pessoa (referência sala-da-paciente). */
+.sala-video{width:100%;height:min(68dvh,780px);min-height:320px;background:hsl(var(--sala-superficie))}
+.sala-video iframe{width:100%;height:100%;border:0}
+.sala-camera{aspect-ratio:4/3;position:relative;background:hsl(var(--sala-superficie));display:flex;align-items:center;justify-content:center;overflow:hidden;border-radius:14px;color:hsl(var(--sala-texto))}
+.sala-camera video{width:100%;height:100%;object-fit:cover}
+.sala-previa-vazia{display:flex;flex-direction:column;align-items:center;gap:12px;font-size:15px}
+.sala-previa-ctl{position:absolute;bottom:14px;left:0;right:0;display:flex;justify-content:center;gap:18px}
+.sala-previa-ctl button{background:none;border:0;color:hsl(var(--sala-texto));cursor:pointer;padding:4px}
+.sala-previa-ctl button:disabled{opacity:.5}
+/* sala da pessoa */
+.sala-p{background:hsl(var(--sala-fundo));color:hsl(var(--sala-texto));min-height:100dvh;display:flex;flex-direction:column}
+.sala-p-hdr{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;padding:12px 18px;font-size:14px}
+.sala-p-hdr b{font-weight:700}
+.sala-p-hdr span.tempo{color:hsl(var(--sala-texto)/.7)}
+.sala-p-hdr .gravando{background:hsl(var(--destructive));color:hsl(var(--destructive-foreground));border-radius:999px;padding:3px 10px;font-weight:700;font-size:12.5px;display:inline-flex;gap:6px;align-items:center}
+.sala-p-hdr .gravando::before{content:"";width:8px;height:8px;border-radius:50%;background:currentColor}
+.sala-p-faixa{background:hsl(var(--accent));color:hsl(var(--accent-foreground));text-align:center;font-weight:700;font-size:13px;padding:6px}
+.sala-p-centro{flex:1;display:grid;place-items:center;padding:24px 16px}
+.sala-espera{display:grid;grid-template-columns:minmax(0,370px) minmax(0,370px);gap:18px;align-items:center;width:100%;max-width:760px}
+.sala-espera h1{font-family:'Roboto Serif',Georgia,serif;font-size:24px;font-weight:700;margin-bottom:10px;color:hsl(var(--sala-texto))}
+.sala-check{list-style:none;padding:0;margin:0 0 14px;display:grid;gap:6px;font-size:14.5px}
+.sala-check li{display:flex;gap:8px;align-items:center}
+.sala-check i{width:20px;height:20px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-size:12px;font-weight:700;flex:none;background:hsl(var(--kapha)/.55);color:hsl(var(--sala-texto))}
+.sala-check i.am{background:hsl(var(--accent)/.6)}
+.sala-check i.off{background:hsl(var(--sala-superficie))}
+.sala-entrar{width:100%;border:0;border-radius:12px;padding:12px;font-weight:700;font-size:15px;background:hsl(var(--secondary));color:hsl(var(--secondary-foreground));cursor:pointer}
+.sala-p-main{flex:1;display:flex;flex-direction:column;padding:8px 16px 0;max-width:1100px;width:100%;margin:0 auto}
+.sala-p-main .sala-video{height:calc(100dvh - 160px);min-height:300px;border-radius:14px;overflow:hidden}
+.sala-p-main.com-quadro{display:grid;grid-template-columns:minmax(0,1fr) 170px;gap:12px;align-items:start}
+.sala-p-main.com-quadro .sala-video{height:min(530px,calc(100dvh - 160px))}
+.sala-p-main.com-quadro .m-controles{grid-column:1/-1}
+.sala-p-quadro{background:hsl(var(--card));color:hsl(var(--card-foreground));border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:8px}
+.sala-p-quadro .m-eti{color:hsl(var(--muted-foreground))}
+.sala-p-quadro img{width:100%;max-height:calc(100dvh - 240px);object-fit:contain;border-radius:10px;background:hsl(var(--sala-superficie))}
+.sala-p-quadro p.nota{font-size:13px;color:hsl(var(--muted-foreground))}
+.sala-p-video{display:contents}
+.sala-fim{background:hsl(var(--card));color:hsl(var(--card-foreground));border-radius:14px;padding:24px;max-width:520px;width:100%;display:flex;flex-direction:column;gap:12px}
+.sala-fim h1{font-family:'Roboto Serif',Georgia,serif;font-size:24px;font-weight:700}
+.sala-fim .estrelas{display:flex;gap:4px}
+.sala-fim .estrelas button{background:none;border:0;padding:4px;cursor:pointer;color:hsl(var(--muted-foreground))}
+.sala-fim .estrelas button[aria-pressed="true"],.sala-fim .estrelas button.on{color:hsl(var(--accent))}
+.sala-fim .acoes{display:flex;flex-wrap:wrap;gap:8px}
+.sala-vista{position:fixed;top:41px;right:0;bottom:0;width:min(420px,100vw);z-index:80;box-shadow:0 0 40px -10px hsl(var(--foreground)/.5);overflow:auto}
+@media(max-width:900px){.sala-espera{grid-template-columns:1fr}.sala-p-main.com-quadro{grid-template-columns:1fr}.sala-p-main.com-quadro .sala-video{height:200px}.sala-p-main .sala-video{height:min(60dvh,520px)}}
+@media(prefers-reduced-motion:reduce){.sala-p *{scroll-behavior:auto}}
