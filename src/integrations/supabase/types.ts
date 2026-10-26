@@ -16151,6 +16151,7 @@ export type Database = {
         }[]
       }
       meus_pontos_atencao: { Args: never; Returns: Json }
+      minha_folha: { Args: { p_id: string }; Returns: Json }
       minha_rotina_por_teste: {
         Args: { p_teste_id: string }
         Returns: {
