@@ -102,7 +102,7 @@ describe("Adições da avaliação", () => {
     expect(r.createSignedUrl).toHaveBeenCalledWith("carta.jpg", 3600);
   });
   it("usa nascimento e busca de cidades existentes", async () => {
-    vi.mocked(supabase.rpc).mockResolvedValue({
+    vi.mocked(supabase.rpc as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({
       data: {},
       error: null,
     } as never);

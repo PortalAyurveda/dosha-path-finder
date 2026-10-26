@@ -33,7 +33,7 @@ const regras = [
 ];
 describe("Regras do painel da terapeuta", () => {
   it('consulta identidade pelo banco sem inferir por perfil público', async () => {
-    vi.mocked(supabase.rpc).mockResolvedValueOnce({data:false,error:null} as never);
+    vi.mocked(supabase.rpc as unknown as ReturnType<typeof vi.fn>).mockResolvedValueOnce({data:false,error:null} as never);
     expect(await terapia.sou()).toBe(false);
     expect(supabase.rpc).toHaveBeenCalledWith('sou_terapeuta');
   });
@@ -91,7 +91,7 @@ describe("Regras do painel da terapeuta", () => {
     expect(salaAberta(c, Date.parse("2026-10-26T12:50:00Z"))).toBe(true);
   });
   it("agenda busca a semana pela função acordada", async () => {
-    vi.mocked(supabase.rpc).mockResolvedValueOnce({
+    vi.mocked(supabase.rpc as unknown as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
       data: { inicio: "2026-10-26" },
       error: null,
     } as never);

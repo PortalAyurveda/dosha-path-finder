@@ -6,6 +6,9 @@ import { supabase } from "@/integrations/supabase/client";
 import PageContainer from "@/components/PageContainer";
 import SectionTitle from "@/components/SectionTitle";
 import TerapeutaCard from "@/components/terapeutas/TerapeutaCard";
+import { useUser } from "@/contexts/UserContext";
+import { horarioNestaSemana, ordenarDiretorio } from "@/lib/terapiaPublica";
+import { Checkbox } from "@/components/ui/checkbox";
 import { terapia } from "@/lib/terapia";
 import TerapeutaCardSkeleton from "@/components/terapeutas/TerapeutaCardSkeleton";
 import { Input } from "@/components/ui/input";
@@ -18,14 +21,21 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
-import { nomeCurtoEspecialidade, splitTherapistSpecialties } from "@/lib/terapeutas";
+import { splitTherapistSpecialties } from "@/lib/terapeutas";
 import Seo from "@/components/Seo";
 import BannerSlot from "@/components/banners/BannerSlot";
 
 const TerapeutasDoBrasil = () => {
   const [search, setSearch] = useState("");
   const [locationMode, setLocationMode] = useState(false);
-  const [sortBy, setSortBy] = useState("recentes");
+  const [sortBy, setSortBy] = useState("");
+  const [soPortal, setSoPortal] = useState(false);
+  const [estaSemana, setEstaSemana] = useState(false);
+  const { user, isAnonymous, profile } = useUser();
+  const config = useQuery({queryKey:["terapia-config"],queryFn:terapia.config});
+  const pontos = useQuery({queryKey:["meus-pontos-atencao",user?.id],queryFn:terapia.pontosAtencao,enabled:!!user && !isAnonymous});
+  const sugeridas = [...new Set((pontos.data ?? []).flatMap(p=>p.especialidades))];
+  const ordem = sortBy || config.data?.diretorio_ordem || "recomendados";
   const [especialidadeSel, setEspecialidadeSel] = useState<string | null>(null);
 
   const { data: terapeutas, isLoading } = useQuery({
@@ -42,7 +52,7 @@ const TerapeutasDoBrasil = () => {
     },
   });
 
-  const { data: noSistema } = useQuery({ queryKey: ["terapeutas-no-sistema"], queryFn: terapia.noSistema });
+  const { data: noSistema } = useQuery({ queryKey: ["terapeutas-no-sistema", user?.id], queryFn: terapia.noSistema });
   const sistemaPorId = useMemo(() => new Map((noSistema ?? []).map((t) => [String(t.id), t])), [noSistema]);
 
   const filtered = useMemo(() => {
@@ -66,30 +76,22 @@ const TerapeutasDoBrasil = () => {
     if (especialidadeSel) {
       results = results.filter((t) =>
         splitTherapistSpecialties(t.especialidade).some(
-          (esp) => nomeCurtoEspecialidade(esp) === especialidadeSel,
+          (esp) => esp === especialidadeSel,
         ),
       );
     }
 
-    if (sortBy === "experientes") {
-      results = [...results].sort(
-        (a, b) => (a.formado_desde ?? 9999) - (b.formado_desde ?? 9999)
-      );
-    } else if (sortBy === "novos") {
-      results = [...results].sort(
-        (a, b) => (b.formado_desde ?? 0) - (a.formado_desde ?? 0)
-      );
-    }
-
-    return results;
-  }, [terapeutas, search, locationMode, sortBy, especialidadeSel]);
+    if (soPortal) results = results.filter(t => sistemaPorId.has(String(t.id)));
+    if (estaSemana) results = results.filter(t => horarioNestaSemana(sistemaPorId.get(String(t.id))?.proximo ?? null));
+    return ordenarDiretorio(results, noSistema ?? [], ordem);
+  }, [terapeutas, search, locationMode, ordem, especialidadeSel, soPortal, estaSemana, sistemaPorId, noSistema]);
 
   const chipsEspecialidade = useMemo(() => {
     if (!terapeutas) return [] as Array<{ nome: string; total: number }>;
     const contagem = new Map<string, number>();
     terapeutas.forEach((t) => {
       const nomes = new Set(
-        splitTherapistSpecialties(t.especialidade).map(nomeCurtoEspecialidade),
+        splitTherapistSpecialties(t.especialidade),
       );
       nomes.forEach((nome) =>
         contagem.set(nome, (contagem.get(nome) ?? 0) + 1),
@@ -159,16 +161,16 @@ const TerapeutasDoBrasil = () => {
           </Button>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <SlidersHorizontal className="h-4 w-4 text-muted-foreground" />
-          <Select value={sortBy} onValueChange={setSortBy}>
+          <Select value={ordem} onValueChange={setSortBy}>
             <SelectTrigger className="w-48">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="recentes">Mais Recentes</SelectItem>
-              <SelectItem value="experientes">Mais Experientes</SelectItem>
-              <SelectItem value="novos">Novos Talentos</SelectItem>
+              <SelectItem value="recomendados">Recomendados</SelectItem>
+              <SelectItem value="proximo">Próximo horário</SelectItem>
             </SelectContent>
           </Select>
           {(search || especialidadeSel) && (
@@ -178,6 +180,8 @@ const TerapeutasDoBrasil = () => {
           )}
         </div>
 
+        <div className="flex flex-wrap gap-4 text-sm"><label className="flex items-center gap-2"><Checkbox checked={soPortal} onCheckedChange={v=>setSoPortal(v === true)} />Consulta online pelo Portal ({noSistema?.length ?? 0})</label><label className="flex items-center gap-2"><Checkbox checked={estaSemana} onCheckedChange={v=>setEstaSemana(v === true)} />Tem horário esta semana</label></div>
+        {!!pontos.data?.length && <section className="border-y border-border py-4"><h2 className="font-serif text-lg font-bold">Pelo seu teste, {profile?.nome?.split(" ")[0] || "você"}</h2>{pontos.data.map(p=><div key={p.slug} className="mt-2"><p className="text-sm">{p.nome}</p><div className="flex flex-wrap gap-1">{p.especialidades.map(e=><Button key={e} size="sm" variant="outline" onClick={()=>setEspecialidadeSel(e)}>{e}</Button>)}</div></div>)}</section>}
         {chipsEspecialidade.length > 0 && (
           <div className="flex gap-1.5 overflow-x-auto scrollbar-hide pb-1 -mb-1">
             <button
@@ -249,7 +253,8 @@ const TerapeutasDoBrasil = () => {
               imagem_card={t.imagem_card}
               frase_card={t.frase_card}
               formado_desde={t.formado_desde}
-              temWhatsapp={!!t.whatsapp}
+              sistema={sistemaPorId.get(String(t.id))}
+              combina={splitTherapistSpecialties(t.especialidade).filter(e=>sugeridas.includes(e))}
               temInstagram={!!t.instagram}
               online={sistemaPorId.get(String(t.id))?.online}
               valor={sistemaPorId.get(String(t.id))?.valor}

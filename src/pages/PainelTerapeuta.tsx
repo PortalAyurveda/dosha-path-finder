@@ -108,7 +108,7 @@ export default function PainelTerapeuta() {
     return (
       <main className="mx-auto max-w-6xl p-8">
         <p role="alert">
-          {erro?.message ?? "Não foi possível carregar a área da terapeuta."}
+          {erro?.message ?? "Não foi possível carregar a Portal do terapeuta."}
         </p>
         <Button
           variant="outline"
@@ -129,7 +129,7 @@ export default function PainelTerapeuta() {
   const total = hoje.data?.consultas.filter((c) => c.hoje).length ?? 0;
   const menu = (
     <nav
-      aria-label="Área da terapeuta"
+      aria-label="Portal do terapeuta"
       className="flex overflow-x-auto border-b border-border lg:flex-col lg:overflow-visible lg:border-0"
     >
       {abas.map(([v, l]) => (
@@ -153,12 +153,12 @@ export default function PainelTerapeuta() {
   return (
     <>
       <Helmet>
-        <title>Área da terapeuta | Portal Ayurveda</title>
+        <title>Portal do terapeuta | Portal Ayurveda</title>
       </Helmet>
       {!emDia ? (
         <main className="mx-auto max-w-2xl px-5 py-10">
           <p className="mb-4 text-xs font-semibold uppercase text-muted-foreground">
-            Bem-vinda à área da terapeuta
+            Bem-vinda à Portal do terapeuta
           </p>
           <TermoTexto painel={dados} />
           <div className="my-6 flex items-center gap-3">
@@ -189,7 +189,7 @@ export default function PainelTerapeuta() {
             Aceitar e entrar
           </CTAButton>
           <p className="mt-4 text-xs text-muted-foreground">
-            Depois de aceitar, você liga “Estou no sistema” quando quiser
+            Depois de aceitar, você liga “Participar do Portal” quando quiser
             aparecer com agenda no diretório.
           </p>
         </main>
