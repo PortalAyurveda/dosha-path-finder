@@ -27,3 +27,6 @@ export function basePrancha(p:PranchaQuadro,c:ConteudoFicha):BaseQuadro {
 }
 /** Mapa da língua da referência (viewBox 60×66), com as cores do tema. */
 export function svgLingua(tinta:string,traco:string):string { return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-8 0 80 66"><path d="M12 4 C10 30 14 52 30 60 C46 52 50 30 48 4" fill="none" stroke="${tinta}" stroke-width="1.5"/><path d="M30 8 V50 M30 16 L22 8 M30 16 L38 8 M30 40 L22 46 M30 40 L38 46" stroke="${traco}" stroke-width="1" fill="none"/><circle cx="30" cy="54" r="3" fill="none" stroke="${traco}"/><text x="49" y="12" font-size="3.5" font-family="DM Sans, sans-serif" fill="${tinta}">excreção</text><text x="49" y="32" font-size="3.5" font-family="DM Sans, sans-serif" fill="${tinta}">digestão</text><text x="36" y="60" font-size="3.5" font-family="DM Sans, sans-serif" fill="${tinta}">mente</text></svg>`; }
+
+/** Encaixa o item inteiro em 90% das duas dimensões disponíveis. */
+export function encaixarQuadro(w:number,h:number,areaW:number,areaH:number){const escala=Math.min(areaW*.9/Math.max(w,1),areaH*.9/Math.max(h,1));return {width:w*escala,height:h*escala};}
