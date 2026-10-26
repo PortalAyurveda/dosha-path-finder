@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Award, ListTodo, ImageIcon, FileText, Store, Library, MessageCircle, Users, ClipboardList, Video, ListChecks, ShoppingCart, Inbox, Crown, History, Soup, LayoutDashboard, Package, Tag, Megaphone, Ticket, GraduationCap, RefreshCw, Network, LayoutTemplate, DollarSign, BookOpen, Sparkles, Mail, Menu, ChevronDown, Shuffle } from "lucide-react";
+import { Award, ListTodo, ImageIcon, FileText, Store, Library, MessageCircle, Users, ClipboardList, Video, ListChecks, ShoppingCart, Inbox, Crown, History, Soup, LayoutDashboard, Package, Tag, Megaphone, Ticket, GraduationCap, RefreshCw, Network, LayoutTemplate, DollarSign, BookOpen, Sparkles, Mail, Menu, ChevronDown, Shuffle, CalendarDays } from "lucide-react";
 
 const links = [
   { to: "/admin", label: "Dashboard", icon: LayoutDashboard },
   { to: "/admin/dashboard-2", label: "Dashboard 2.0", icon: Network },
+  { to: "/admin/agenda", label: "Agenda", icon: CalendarDays },
   { to: "/admin/akasha", label: "Akasha", icon: MessageCircle },
   { to: "/admin/alunos", label: "Alunos", icon: GraduationCap },
   { to: "/admin/blog", label: "Artigos", icon: FileText },

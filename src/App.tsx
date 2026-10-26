@@ -75,6 +75,7 @@ const Admin = lazy(() => import("./pages/Admin"));
 const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
 const AdminDashboard2 = lazy(() => import("./pages/AdminDashboard2"));
 const AdminBlog = lazy(() => import("./pages/AdminBlog"));
+const AdminAgenda = lazy(() => import("./pages/AdminAgenda"));
 const AdminMensagens = lazy(() => import("./pages/AdminMensagens"));
 const Contato = lazy(() => import("./pages/Contato"));
 const AdminAkasha = lazy(() => import("./pages/AdminAkasha"));
@@ -322,6 +323,7 @@ const RoutedApp = () => {
               <Route path="/admin/mensagens" element={<AdminRoute><AdminMensagens /></AdminRoute>} />
               <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
               <Route path="/admin/dashboard-2" element={<AdminRoute><AdminDashboard2 /></AdminRoute>} />
+              <Route path="/admin/agenda" element={<AdminRoute><AdminAgenda /></AdminRoute>} />
               <Route path="/admin/imagens" element={<AdminRoute><Admin /></AdminRoute>} />
               <Route path="/admin/blog" element={<AdminRoute><AdminBlog /></AdminRoute>} />
               <Route path="/admin/akasha" element={<AdminRoute><AdminAkasha /></AdminRoute>} />
