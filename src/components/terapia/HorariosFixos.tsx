@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { ChevronLeft, ChevronRight, Plus, X } from "lucide-react";
+import { Plus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,13 +10,6 @@ import {
   terapia,
   Painel,
   Regra,
-  Semana,
-  limitesSemana,
-  minutos,
-  mudarSemana,
-  diaBR,
-  horaBR,
-  dataBR,
   regrasComDuracao,
 } from "@/lib/terapia";
 import { Secao } from "./Comuns";

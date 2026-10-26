@@ -99,6 +99,11 @@ function Ligacao({ l }: { l: MeuTerapeutaLigacao }) {
         </div>
       </Bloco>}
 
+      {!p && <Bloco titulo={`Fotos para ${nome}`}>
+        <Button size="sm" variant="secondary" onClick={() => setFotos(v => !v)}>{fotos ? "Fechar fotos" : "Ver fotos"}</Button>
+        {fotos && <div className="mt-4"><MeuTerapeutaFotos primeiroNome={nome} /></div>}
+      </Bloco>}
+
       <Bloco titulo={`Indicações de ${nome}`}>
         {!l.folhas.length ? <p className="text-sm text-muted-foreground">{nome} ainda não te enviou indicações.</p> : folha ? <div className="space-y-2"><Button size="sm" variant="ghost" onClick={() => setFolha("")}>← Fechar folha</Button><FolhasDoTerapeuta inicialId={folha} rodape={p ? `Dúvidas? Leve para a próxima consulta: ${dataExtenso(p.inicio)}.` : undefined} /></div>
           : <ul className="divide-y divide-border rounded-xl border border-border">{l.folhas.map(f => <li key={f.id} className="flex items-center justify-between gap-3 p-3 text-sm"><span>{diaBR(f.enviada_em)}{f.diagnostico ? ` · ${f.diagnostico.slice(0, 60)}` : ""}</span><Button size="sm" variant="outline" onClick={() => setFolha(f.id)}>Abrir</Button></li>)}</ul>}
