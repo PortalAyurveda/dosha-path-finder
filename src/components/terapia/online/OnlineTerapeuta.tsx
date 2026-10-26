@@ -16,7 +16,7 @@ export function OnlineTerapeutaProvider({ children }: { children: ReactNode }) {
   const painel = useQuery({ queryKey: ["terapia-painel", acesso.userId], queryFn: terapia.painel, enabled: acesso.permitido });
   const [ping, setPing] = useState<Ping | null>(null);
   const [mudando, setMudando] = useState(false);
-  const participa = ping?.participa ?? painel.data?.sistema.participa ?? false;
+  const participa = painel.data?.sistema.participa ?? ping?.participa ?? false;
   const online = participa && (ping?.online ?? painel.data?.sistema.online ?? false);
   const pingar = useCallback(async () => {
     try { const r = await terapia.ping(); if (r) setPing(r); } catch { /* tenta de novo no próximo intervalo */ }
