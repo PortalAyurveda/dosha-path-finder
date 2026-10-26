@@ -1,0 +1,14 @@
+import { describe, expect, it, vi } from 'vitest';
+vi.mock('@/integrations/supabase/client', () => ({ supabase: { rpc: vi.fn() } }));
+import { supabase } from '@/integrations/supabase/client';
+import { terapia } from './terapia';
+import { INDICACOES_AUTOSAVE_MS, criarIndicacao, iniciarIndicacoes, inserirIndicacao, moverIndicacao, diagnosticoDaAvaliacao } from './terapiaIndicacoes';
+describe('Ficha de indicações', () => {
+ it('espera dois segundos para salvar', () => expect(INDICACOES_AUTOSAVE_MS).toBe(2000));
+ it('preserva ordem e notas ao mover entre seções', () => { let d = iniciarIndicacoes({outra: 'preservada'}); d = inserirIndicacao(d,'cafe',{...criarIndicacao({titulo:'Chá'},'a'),nota:'Às 7h'}); d = inserirIndicacao(d,'almoco',criarIndicacao({titulo:'Arroz'},'b')); const m = moverIndicacao(d,'a','almoco',0); expect(m.secoes.cafe).toEqual([]); expect(m.secoes.almoco.map(i=>i.id)).toEqual(['a','b']); expect(m.secoes.almoco[0].nota).toBe('Às 7h'); expect(m.outra).toBe('preservada'); });
+ it('copia resumo e leitura da avaliação', () => expect(diagnosticoDaAvaliacao({resumo:'Sono irregular',leitura:{V:3,P:1,K:0},criado_em:''})).toBe('Sono irregular\nVata 3 · Pitta 1 · Kapha 0'));
+ it('cria folha com avaliação e consulta opcionais', async () => { vi.mocked(supabase.rpc).mockResolvedValue({data:'f',error:null} as never); await terapia.folhaNova('p','a','c'); expect(supabase.rpc).toHaveBeenCalledWith('terapia_folha_nova',{p_paciente:'p',p_avaliacao:'a',p_consulta:'c'}); });
+ it('salva objeto único e retorno em formato de data', async () => { vi.mocked(supabase.rpc).mockResolvedValue({data:'t',error:null} as never); const d = iniciarIndicacoes({}); await terapia.folhaSalvar('f',d,'Diagnóstico','Tratamento','2026-11-26'); expect(supabase.rpc).toHaveBeenCalledWith('terapia_folha_salvar',{p_id:'f',p_dados:d,p_diagnostico:'Diagnóstico',p_tratamento:'Tratamento',p_retorno:'2026-11-26'}); });
+ it('envia pela função existente', async () => { vi.mocked(supabase.rpc).mockResolvedValue({data:'t',error:null} as never); expect(await terapia.folhaEnviar('f')).toBe('t'); expect(supabase.rpc).toHaveBeenCalledWith('terapia_folha_enviar',{p_id:'f'}); });
+ it('preserva mensagens de erro do banco', async () => { vi.mocked(supabase.rpc).mockResolvedValue({data:null,error:{message:'Paciente não ligado a você.'}} as never); await expect(terapia.indicacoesFontes('p')).rejects.toThrow('Paciente não ligado a você.'); });
+});
