@@ -1,0 +1,14 @@
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { type PerguntaFormulario, type RespostaFormulario } from '@/lib/terapiaFormularios';
+
+export default function Pergunta({ pergunta: p, resposta: r, mudar, bloqueada = false }: { pergunta: PerguntaFormulario; resposta?: RespostaFormulario; mudar: (r: RespostaFormulario) => void; bloqueada?: boolean }) {
+  const id = `resposta-${p.id}`;
+  const opcoes = p.opcoes?.length ? p.opcoes : p.tipo === 'sim_nao' ? [{ id: 'sim', label: 'Sim' }, { id: 'nao', label: 'Não' }] : [];
+  const texto = typeof r === 'string' ? r : '';
+  return <div className="tf-resposta-pergunta"><label htmlFor={id} id={`label-${p.id}`} className="font-semibold">{p.texto}{p.obrigatoria && <span aria-label="obrigatória"> *</span>}</label>{p.ajuda && <p className="text-muted-foreground">{p.ajuda}</p>}
+    {p.tipo === 'texto_longo' ? <Textarea id={id} rows={3} value={texto} disabled={bloqueada} onChange={e => mudar(e.target.value)} /> : ['texto_curto', 'data'].includes(p.tipo) ? <Input id={id} type={p.tipo === 'data' ? 'date' : 'text'} value={texto} disabled={bloqueada} onChange={e => mudar(e.target.value)} /> : p.tipo === 'lista' ? <Select value={texto} onValueChange={mudar} disabled={bloqueada}><SelectTrigger id={id}><SelectValue placeholder="Escolher" /></SelectTrigger><SelectContent>{opcoes.map(o => <SelectItem key={o.id} value={o.id}>{o.label}</SelectItem>)}</SelectContent></Select> : p.tipo === 'escala' ? <div><div className="tf-numeros" role="group" aria-labelledby={`label-${p.id}`}>{Array.from({ length: Math.max(0, Math.min(101, (p.escala?.max ?? 10) - (p.escala?.min ?? 0) + 1)) }, (_, i) => i + (p.escala?.min ?? 0)).map(n => <Button key={n} variant="outline" aria-pressed={r === n} disabled={bloqueada} onClick={() => mudar(n)}>{n}</Button>)}</div><div className="flex justify-between gap-3 text-muted-foreground mt-2"><span>{p.escala?.rotulo_min}</span><span>{p.escala?.rotulo_max}</span></div></div> : <div className="tf-escolhas" role="group" aria-labelledby={`label-${p.id}`}>{opcoes.map(o => { const selecionada = Array.isArray(r) ? r.includes(o.id) : r === o.id; return <Button key={o.id} variant="outline" disabled={bloqueada} aria-pressed={selecionada} onClick={() => mudar(p.tipo === 'varias' ? selecionada ? (Array.isArray(r) ? r : []).filter(v => v !== o.id) : [...(Array.isArray(r) ? r : []), o.id] : o.id)}>{o.label}</Button>; })}</div>}
+  </div>;
+}

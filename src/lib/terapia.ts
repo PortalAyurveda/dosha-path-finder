@@ -106,7 +106,7 @@ export type TipoPortal = 'favoritos' | 'receita' | 'aula' | 'artigo' | 'produto'
 export interface ItemPortal { tipo: string; ref: string; titulo?: string; resumo?: string; link?: string; imagem?: string; vata?: number; pitta?: number; kapha?: number; livro?: string; referencia?: string; texto?: string; favorito: boolean }
 export interface BuscaPortal { q: string; total: number; grupos: { tipo: string; titulo: string; total: number; itens: FonteIndicacao[] }[] }
 export interface Hoje {
-  atencao?: {tipo:'mensagens'|'fotos'|'sem_folha'|'folha_nao_vista'|'faltam_fotos';texto:string;detalhe?:string;paciente_id:string;nome:string;em:string;consulta_id?:string;folha_id?:string;quantos?:number}[];
+  atencao?: {tipo:'mensagens'|'fotos'|'sem_folha'|'folha_nao_vista'|'faltam_fotos'|'formulario';texto:string;detalhe?:string;paciente_id:string;nome:string;em:string;consulta_id?:string;folha_id?:string;formulario_id?:string;envio_id?:string;quantos?:number}[];
   consultas: Consulta[];
   novidades: { texto: string; detalhe?: string }[];
   pendencias: { texto: string }[];

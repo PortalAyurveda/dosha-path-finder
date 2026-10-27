@@ -1,0 +1,28 @@
+import { useMemo, useRef, useState } from 'react';
+import { Link, Navigate, useParams } from 'react-router-dom';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { Helmet } from 'react-helmet-async';
+import { useUser } from '@/contexts/UserContext';
+import { Button } from '@/components/ui/button';
+import { filaRespostas, formularios, nomeTerapeutaFormulario, obrigatoriasFaltando, type FormularioMeu, type RespostasFormulario } from '@/lib/terapiaFormularios';
+import Pergunta from '@/components/terapia/formularios/Pergunta';
+import Resultado from '@/components/terapia/formularios/Resultado';
+import '@/components/terapia/formularios/formularios.css';
+export default function FormularioResponder() {
+  const { envio = '' } = useParams(); const { user, isAnonymous, loading } = useUser();
+  const q = useQuery({ queryKey: ['formulario-meu', user?.id, envio], queryFn: () => formularios.meu(envio), enabled: !!user && !isAnonymous && !!envio });
+  if (loading) return <p role="status" className="p-6">Carregando…</p>;
+  if (!user || isAnonymous) return <Navigate replace to={`/entrar?redirect=${encodeURIComponent(`/meu-acompanhamento/formulario/${envio}`)}`} />;
+  return <div className="tf tf-responder"><Helmet><title>Responder formulário | Portal Ayurveda</title><meta name="robots" content="noindex, nofollow" /></Helmet><header className="tf-marca">Portal Ayurveda</header>{q.error ? <div className="tf-resposta-corpo"><p role="alert">{q.error.message}</p><Button variant="outline" onClick={() => void q.refetch()}>Tentar novamente</Button></div> : !q.data ? <p role="status" className="p-6">Carregando formulário…</p> : <Responder key={envio} inicial={q.data} envio={envio} />}</div>;
+}
+function Responder({ inicial: f, envio }: { inicial: FormularioMeu; envio: string }) {
+  const qc = useQueryClient(); const [respostas, setRespostas] = useState<RespostasFormulario>(f.respostas ?? {}); const ref = useRef(respostas);
+  const [secao, setSecao] = useState(0); const [erro, setErro] = useState(''); const [salvando, setSalvando] = useState(0); const [enviando, setEnviando] = useState(false); const [enviado, setEnviado] = useState(!!f.respondido_em); const [resultado, setResultado] = useState(f.resultado); const [status, setStatus] = useState('');
+  const salvar = useMemo(() => filaRespostas((r, final) => formularios.responder(envio, r, final)), [envio]);
+  const secoes = f.secoes?.length ? f.secoes : [{ id: '', titulo: '' }]; const atual = secoes[secao]; const perguntas = f.perguntas.filter(p => !f.secoes?.length || p.secao === atual?.id);
+  const guardar = async (r: RespostasFormulario) => { setSalvando(v => v + 1); setStatus('Salvando…'); try { await salvar(r); void qc.invalidateQueries({ queryKey: ['formulario-meu'] }); setStatus('Respostas salvas'); setErro(''); } catch (e) { setErro(e instanceof Error ? e.message : String(e)); setStatus('Não foi possível salvar'); } finally { setSalvando(v => v - 1); } };
+  const continuar = () => { const faltam = obrigatoriasFaltando(perguntas, ref.current); if (faltam.length) { setErro(`Falta responder: ${faltam.map(p => p.texto).join('; ')}`); return; } setErro(''); setSecao(v => v + 1); window.scrollTo({ top: 0 }); };
+  const enviar = async () => { const faltam = obrigatoriasFaltando(f.perguntas, ref.current); if (faltam.length) { setErro(`Falta responder: ${faltam.map(p => p.texto).join('; ')}`); const index = secoes.findIndex(s => s.id === faltam[0]?.secao); if (index >= 0) setSecao(index); return; } setEnviando(true); setErro(''); try { const final = await salvar(ref.current, true); setEnviado(true); setResultado(final.resultado); void qc.invalidateQueries({ queryKey: ['formularios-meus'] }); void qc.invalidateQueries({ queryKey: ['formulario-meu'] }); } catch (e) { setErro(e instanceof Error ? e.message : String(e)); } finally { setEnviando(false); } };
+  const nome = nomeTerapeutaFormulario(f.terapeuta);
+  return <main className="tf-resposta-corpo"><Button asChild variant="link" className="self-start p-0"><Link to="/meu-acompanhamento">← Meu acompanhamento</Link></Button><h1>{f.nome}</h1>{enviado ? <><p className="text-lg">Pronto! {nome} vai ler antes da consulta.</p><Resultado resultado={resultado} pessoa /><Button asChild variant="outline" className="self-start"><Link to="/meu-acompanhamento">Voltar ao acompanhamento</Link></Button></> : <><p className="whitespace-pre-wrap text-muted-foreground">{f.abertura}</p><div className="tf-inferior"><h2>{atual?.titulo}</h2><span className="text-muted-foreground">{secao + 1} de {secoes.length}</span></div>{perguntas.map(p => <Pergunta key={p.id} pergunta={p} resposta={respostas[p.id]} bloqueada={enviando} mudar={r => { const next = { ...ref.current, [p.id]: r }; ref.current = next; setRespostas(next); void guardar(next); }} />)}{erro && <div><p role="alert" className="tf-erro">{erro}</p>{status === 'Não foi possível salvar' && <Button variant="outline" onClick={() => void guardar(ref.current)}>Tentar salvar novamente</Button>}</div>}<p role="status" className="text-muted-foreground">{salvando > 0 ? 'Salvando…' : status}</p><div className="tf-inferior"><Button variant="outline" disabled={secao === 0 || enviando} onClick={() => { setSecao(v => v - 1); setErro(''); }}>Voltar</Button>{secao < secoes.length - 1 ? <Button onClick={continuar}>Continuar</Button> : <Button variant="secondary" data-terapia-principal disabled={enviando} onClick={() => void enviar()}>{enviando ? 'Enviando…' : 'Enviar respostas'}</Button>}</div></>}</main>;
+}

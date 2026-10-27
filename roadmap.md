@@ -1,4 +1,7 @@
 - [x] Criar página de compra do Kit Detox
+- [x] Parte 27: formulários na biblioteca, editor/importação, resposta da pessoa, ficha e lembretes sem SQL nem edge function
+- [x] Parte 27: 234 testes e conferência 1366/390 com respostas simuladas; criação/cópia, importação, salvar/reler, responder/retomar, resultado, ficha e lembrete
+- [ ] Parte 27: validar envio automático na marcação, importação Google e respostas com contas reais — bloqueado: Supabase externo sem sessão autenticada disponível
 - [x] Parte 26: simplificar Bibliotecas, editor único e folhas prontas sem SQL
 - [x] Parte 26: 201 testes e conferência 1366/390 com respostas simuladas; salvar, reler, adicionar e copiar
 - [ ] Parte 26: validar com conta e arquivos reais — bloqueado: Supabase externo sem sessão; duração YouTube depende da informação disponibilizada pelo player

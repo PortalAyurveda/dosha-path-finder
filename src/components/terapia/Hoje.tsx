@@ -1,3 +1,5 @@
+import { useState } from 'react';
+import { formularios } from '@/lib/terapiaFormularios';
 import {Calendar,Video,MessageCircle,Camera,FileText,Sparkles} from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -15,6 +17,7 @@ export default function Hoje({
   agora: number;
 }) {
   const online = useOnlineTerapeuta();
+  const [lembrando,setLembrando]=useState('');const [erro,setErro]=useState('');const [lembrados,setLembrados]=useState<string[]>([]);
   const proxima = [...dados.consultas].filter(c => Date.parse(c.inicio) >= agora || Date.parse(c.fim) > agora).sort((a,b) => Date.parse(a.inicio)-Date.parse(b.inicio))[0];
   return (
     <><ComecePorAqui /><div className="grid gap-6 lg:grid-cols-[minmax(0,1.5fr)_minmax(280px,1fr)] items-start">
@@ -61,8 +64,9 @@ export default function Hoje({
       </Secao>
       <div className="space-y-4">
         <Secao titulo="Pede sua atenção">
+          {erro&&<p role="alert" className="text-destructive">{erro}</p>}
           {(dados.atencao?.length??0)>0&&<span className="portal-atencao-num">{dados.atencao?.length}</span>}
-          {(dados.atencao??[]).map((a,i)=>{const base=`/painel-terapeuta/paciente/${a.paciente_id}`;const url=a.tipo==='sem_folha'?`${base}/indicacoes/nova${a.consulta_id?`?consulta=${a.consulta_id}`:''}`:a.tipo==='folha_nao_vista'&&a.folha_id?`${base}/indicacoes/${a.folha_id}`:a.tipo==='mensagens'?`/painel-terapeuta?aba=mensagens&paciente=${a.paciente_id}`:`${base}?aba=fotos`;return <article key={i} className="flex items-start justify-between gap-3 border-b border-border py-3"><span className="portal-icone">{a.tipo==='mensagens'?<MessageCircle/>:a.tipo.includes('foto')?<Camera/>:<FileText/>}</span><div className="min-w-0 flex-1"><p className="text-sm font-semibold">{a.texto}</p>{a.detalhe&&<p className="text-xs text-muted-foreground">{a.detalhe}</p>}</div>{<Button asChild variant="outline" size="sm"><Link to={url}>{a.tipo==='sem_folha'?'Montar':a.tipo==='folha_nao_vista'?'Ver folha':a.tipo==='faltam_fotos'?'Ver fotos':'Ver'}</Link></Button>}</article>;})}
+          {(dados.atencao??[]).map((a,i)=>{const base=`/painel-terapeuta/paciente/${a.paciente_id}`;const url=a.tipo==='sem_folha'?`${base}/indicacoes/nova${a.consulta_id?`?consulta=${a.consulta_id}`:''}`:a.tipo==='folha_nao_vista'&&a.folha_id?`${base}/indicacoes/${a.folha_id}`:a.tipo==='mensagens'?`/painel-terapeuta?aba=mensagens&paciente=${a.paciente_id}`:`${base}?aba=fotos`;return <article key={i} className="flex items-start justify-between gap-3 border-b border-border py-3"><span className="portal-icone">{a.tipo==='mensagens'?<MessageCircle/>:a.tipo.includes('foto')?<Camera/>:<FileText/>}</span><div className="min-w-0 flex-1"><p className="text-sm font-semibold">{a.texto}</p>{a.detalhe&&<p className="text-xs text-muted-foreground">{a.detalhe}</p>}</div>{a.tipo==='formulario'?<Button variant="outline" size="sm" disabled={lembrando===a.envio_id||!a.formulario_id} onClick={async()=>{if(!a.formulario_id)return;setLembrando(a.envio_id??a.formulario_id);setErro('');try{await formularios.enviar(a.formulario_id,a.paciente_id,a.consulta_id);setLembrados(v=>[...v,a.envio_id??a.formulario_id??'']);}catch(e){setErro(e instanceof Error?e.message:String(e));}finally{setLembrando('');}}}>{lembrados.includes(a.envio_id??a.formulario_id??'')?'Lembrete enviado':'Lembrar'}</Button>:<Button asChild variant="outline" size="sm"><Link to={url}>{a.tipo==='sem_folha'?'Montar':a.tipo==='folha_nao_vista'?'Ver folha':a.tipo==='faltam_fotos'?'Ver fotos':'Ver'}</Link></Button>}</article>;})}
           {!dados.atencao?.length&&<p className="text-sm text-muted-foreground">Nada pede sua atenção.</p>}
         </Secao>
         <Secao titulo="Novidades">

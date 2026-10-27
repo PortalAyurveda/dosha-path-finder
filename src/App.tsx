@@ -33,6 +33,7 @@ const PreviewLoading = lazy(() => import("./pages/PreviewLoading"));
 const TesteDeDosha = lazy(() => import("./pages/TesteDeDosha"));
 const MeuDosha = lazy(() => import("./pages/MeuDosha"));
 const MeuAcompanhamento = lazy(() => import("./pages/MeuAcompanhamento"));
+const FormularioResponder = lazy(() => import("./pages/FormularioResponder"));
 const MeuPerfil = lazy(() => import("./pages/MeuPerfil"));
 const Biblioteca = lazy(() => import("./pages/Biblioteca"));
 const TextosClassicos = lazy(() => import("./pages/TextosClassicos"));
@@ -179,6 +180,7 @@ if (typeof window !== "undefined") {
 const LayoutOrBare = ({ children }: { children: React.ReactNode }) => {
   const { pathname } = useLocation();
   const SEM_MOLDURA = ["/aovivo", "/imprimir", "/detox/inscricao", "/detox/kit"];
+  if (pathname.startsWith('/meu-acompanhamento/formulario/')) return <>{children}</>;
   if (pathname.startsWith("/consulta/") || SEM_MOLDURA.includes(pathname) || /^\/painel-terapeuta\/paciente\/[^/]+\/(?:avaliacao|indicacoes)\/[^/]+\/folha\/?$/.test(pathname) || /^\/painel-terapeuta\/paciente\/[^/]+\/(?:avaliacao|indicacoes)\/[^/]+\/?$/.test(pathname) || /^\/cursos\/[^/]+\/imprimir\/[^/]+\/?$/.test(pathname) || /^\/atividade\/[^/]+\/imprimir\/?$/.test(pathname) || /^\/cursos\/[^/]+\/certificado\/?$/.test(pathname)) return <>{children}</>;
   return <Layout>{children}</Layout>;
 };
@@ -245,6 +247,7 @@ const RoutedApp = () => {
               <Route path="/meu-dosha" element={<MeuDosha />} />
               <Route path="/meu-perfil" element={<MeuPerfil />} />
               <Route path="/meu-acompanhamento" element={<MeuAcompanhamento />} />
+              <Route path="/meu-acompanhamento/formulario/:envio" element={<FormularioResponder />} />
               <Route path="/minha-rotina" element={<MinhaRotina />} />
               <Route path="/imprimir" element={<Imprimir />} />
               <Route path="/biblioteca" element={<Biblioteca />} />
