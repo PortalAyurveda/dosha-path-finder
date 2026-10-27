@@ -1,6 +1,6 @@
 import { describe,it,expect,vi,beforeEach } from 'vitest';
 import { conteudoUnico, novoAcervo, textoDoAcervo, tipoDoAnexo } from './terapiaAcervo';
-import { modelosTerapia, ordenarPorTeste } from './terapiaModelos';
+import { modelosTerapia, ordenarPorTeste, alternarDoshaModelo, DURACOES_FOLHA } from './terapiaModelos';
 const mocks=vi.hoisted(()=>({rpc:vi.fn()}));
 vi.mock('@/integrations/supabase/client',()=>({supabase:{rpc:mocks.rpc}}));
 describe('Parte 26: conteúdo único',()=>{
@@ -10,6 +10,8 @@ describe('Parte 26: conteúdo único',()=>{
  it('retirar anexo remove arquivo da referência salva',()=>expect(conteudoUnico({...novoAcervo(),arquivo_path:'u/a.pdf'},'Texto','','').arquivo_path).toBeNull());
 });
 describe('Parte 26: folhas prontas',()=>{
+ it('limita a seleção a um ou dois doshas e mantém a ordem aceita pelo banco',()=>{expect(alternarDoshaModelo('vata-pitta','kapha')).toBe('vata-pitta');expect(alternarDoshaModelo('kapha','vata')).toBe('vata-kapha');expect(alternarDoshaModelo('vata-pitta','pitta')).toBe('vata');});
+ it('oferece somente 7, 14, 21 ou 30 dias',()=>expect(DURACOES_FOLHA).toEqual([7,14,21,30]));
  beforeEach(()=>{mocks.rpc.mockReset();mocks.rpc.mockResolvedValue({data:'novo-id',error:null});});
  it('grava diretamente com os cinco momentos, tratamento e duração',async()=>{const p={nome:'Vata',dosha:'vata-pitta',serve_para:['Gases'],duracao_dias:21,tratamento:'Dar ritmo',dados:{secoes:{manha:[],refeicoes:[],noite:[],todo_dia:[],ler:[]}}};await modelosTerapia.gravar(p);expect(mocks.rpc).toHaveBeenCalledWith('terapia_modelo_gravar',{p});});
  it('copia por id e devolve id da cópia',async()=>{expect(await modelosTerapia.copiar('portal-id')).toBe('novo-id');expect(mocks.rpc).toHaveBeenCalledWith('terapia_modelo_copiar',{p_id:'portal-id'});});

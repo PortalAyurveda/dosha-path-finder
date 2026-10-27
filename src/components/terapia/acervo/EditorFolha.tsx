@@ -13,7 +13,7 @@ import Catalogo from '@/components/terapia/indicacoes/Catalogo';
 import Secao from '@/components/terapia/indicacoes/Secao';
 import { terapia } from '@/lib/terapia';
 import { iniciarIndicacoes, MOMENTOS, criarIndicacao, inserirIndicacao, moverIndicacao, type FonteIndicacao, type FontesIndicacoes } from '@/lib/terapiaIndicacoes';
-import { modelosTerapia, type ModeloIndicacoes, type ModeloGravar } from '@/lib/terapiaModelos';
+import { modelosTerapia, alternarDoshaModelo, DURACOES_FOLHA, type ModeloIndicacoes, type ModeloGravar } from '@/lib/terapiaModelos';
 import ServePara from './ServePara';
 import '@/components/terapia/mesa/mesa.css';
 import '@/components/terapia/indicacoes/folhaEsqueleto.css';

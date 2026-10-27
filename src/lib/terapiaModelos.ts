@@ -2,6 +2,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { iniciarIndicacoes, type DadosIndicacoes } from './terapiaIndicacoes';
 export interface ModeloIndicacoes {id:string;nome:string;descricao?:string|null;dosha?:string|null;tags?:string[];serve_para?:string[];duracao_dias?:number|null;itens:number;usos:number;do_portal?:boolean;tratamento?:string|null;dados?:Partial<DadosIndicacoes>}
 export type ModeloGravar = Pick<ModeloIndicacoes,'nome'|'descricao'|'dosha'|'tags'|'serve_para'|'duracao_dias'|'tratamento'|'dados'> & {id?:string};
+export const DURACOES_FOLHA = [7,14,21,30] as const;
+export function alternarDoshaModelo(atual:string,dosha:string) {const ordem=['vata','pitta','kapha'];const lista=atual.split('-').filter(x=>ordem.includes(x));if(!ordem.includes(dosha))return atual;if(lista.includes(dosha))return ordem.filter(x=>lista.includes(x)&&x!==dosha).join('-');if(lista.length>=2)return atual;return ordem.filter(x=>lista.includes(x)||x===dosha).join('-');}
 export interface ComecosFolha {ultima:{id:string;data:string;itens:number}|null;modelos:ModeloIndicacoes[]}
 const rpc = supabase.rpc.bind(supabase) as unknown as (n:string,p?:Record<string,unknown>)=>PromiseLike<{data:unknown;error:{message:string}|null}>;
 async function read<T>(n:string,p?:Record<string,unknown>):Promise<T>{const {data,error}=await rpc(n,p);if(error)throw new Error(error.message);return data as T;}
