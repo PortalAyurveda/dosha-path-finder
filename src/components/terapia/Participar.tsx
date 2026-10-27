@@ -33,7 +33,7 @@ export function ValorConsulta({ painel, executar, atualizar, id = "valor-consult
         <Input id={id} inputMode="decimal" placeholder="180" className="mt-1" value={texto} onChange={(e) => setTexto(e.target.value)} />
         <p className="mt-1 text-xs text-muted-foreground">{valor === 0 ? "Consulta gratuita" : valor != null ? `Aparece como ${reais(valor)}, combinado direto com você.` : "Combinado direto com a pessoa."}</p>
       </div>
-      <CTAButton type="submit" disabled={salvando || valor === null} className="h-10 px-5 py-2 text-sm">{salvando ? "Salvando…" : "Salvar"}</CTAButton>
+      <CTAButton data-terapia-principal type="submit" disabled={salvando || valor === null} className="h-10 px-5 py-2 text-sm">{salvando ? "Salvando…" : "Salvar"}</CTAButton>
     </form>
   );
 }

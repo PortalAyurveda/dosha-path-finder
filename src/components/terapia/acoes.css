@@ -1,0 +1,8 @@
+/* Hierarquia exclusiva de terapia; abas e estados preservados. */
+:is(.portal-terapeuta,.portal-paciente,.mesa,.acompanhamento,.perfil-publico,.terapia-acoes) :is(button,a).bg-secondary:not([data-terapia-principal]):not([aria-pressed]):not([aria-current]){background:hsl(var(--primary));color:hsl(var(--primary-foreground))}
+:is(.portal-terapeuta,.portal-paciente,.mesa,.acompanhamento,.perfil-publico,.terapia-acoes) :is(button,a).bg-secondary:not([data-terapia-principal]):not([aria-pressed]):not([aria-current]):hover{background:hsl(var(--primary)/.9)}
+:is(.portal-terapeuta,.portal-paciente,.mesa,.acompanhamento,.perfil-publico,.terapia-acoes) :is(button,a).border-input{border-color:hsl(var(--primary));color:hsl(var(--primary))}
+:is(.portal-terapeuta,.portal-paciente,.mesa,.acompanhamento,.perfil-publico,.terapia-acoes) .m-btn{border-color:hsl(var(--primary))}
+:is(.portal-terapeuta,.portal-paciente,.mesa,.acompanhamento,.perfil-publico,.terapia-acoes) .m-btn.sal:not([data-terapia-principal]){background:hsl(var(--primary));border-color:hsl(var(--primary));color:hsl(var(--primary-foreground))}
+:is(.portal-terapeuta,.portal-paciente,.mesa,.acompanhamento,.perfil-publico,.terapia-acoes) [data-terapia-principal]{background:hsl(var(--secondary));border-color:hsl(var(--secondary));color:hsl(var(--secondary-foreground))}
+:is(.portal-terapeuta,.portal-paciente,.mesa,.acompanhamento,.perfil-publico,.terapia-acoes) [data-terapia-principal]:hover{background:hsl(var(--secondary)/.9)}

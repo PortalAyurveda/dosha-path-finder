@@ -14,6 +14,7 @@ export default function Hoje({
   agora: number;
 }) {
   const online = useOnlineTerapeuta();
+  const proxima = [...dados.consultas].filter(c => Date.parse(c.inicio) >= agora || Date.parse(c.fim) > agora).sort((a,b) => Date.parse(a.inicio)-Date.parse(b.inicio))[0];
   return (
     <><div className="grid gap-6 lg:grid-cols-[minmax(0,1.5fr)_minmax(280px,1fr)] items-start">
       <Secao
@@ -36,7 +37,7 @@ export default function Hoje({
               <div className="portal-hoje-acoes">
                 {c.hoje &&
                   (salaAberta(c, agora) ? (
-                    <CTAButton asChild className="px-3 py-2 text-sm h-9">
+                    <CTAButton data-terapia-principal={c.id === proxima?.id ? true : undefined} asChild className="px-3 py-2 text-sm h-9">
                       <Link to={`/consulta/${c.id}`}>Entrar na sala</Link>
                     </CTAButton>
                   ) : (

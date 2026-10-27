@@ -32,6 +32,7 @@ import {
 import { cn } from "@/lib/utils";
 import { terapia } from "@/lib/terapia";
 import "@/components/terapia/publico/perfilPublico.css";
+import '@/components/terapia/acoes.css';
 import { useUser } from "@/contexts/UserContext";
 
 const TerapeutaPerfil = () => {
