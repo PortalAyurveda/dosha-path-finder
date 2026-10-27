@@ -34,8 +34,8 @@ export default function MeuLink({
         <p className="mb-4 rounded-xl bg-muted p-3 whitespace-pre-wrap break-words text-sm leading-relaxed">
           {mensagem}
         </p>
-        <Button
-          variant="outline"
+        <Button data-terapia-principal
+          variant="secondary"
           className="w-full"
           onClick={() => copiar(mensagem)}
         >

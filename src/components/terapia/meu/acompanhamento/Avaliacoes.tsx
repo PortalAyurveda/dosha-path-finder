@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { terapia } from '@/lib/terapia';
+import MarcadosDosha from '../../MarcadosDosha';
 import { nomeMarca,dataAcompanhamento,type AvaliacaoMinha } from '@/lib/meuAcompanhamento';
 const doshas=[['V','Vata'],['P','Pitta'],['K','Kapha']] as const;
 export function Leitura({a,ama=false}:{a:AvaliacaoMinha;ama?:boolean}) {

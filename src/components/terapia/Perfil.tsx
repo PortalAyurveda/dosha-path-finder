@@ -69,7 +69,7 @@ export default function Perfil({
             )}
           </div>
         ))}
-        <CTAButton
+        <CTAButton data-terapia-principal
           disabled={salvando}
           className="h-10 px-5 py-2 text-base"
           type="submit"

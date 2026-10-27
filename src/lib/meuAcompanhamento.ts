@@ -1,9 +1,11 @@
 import { supabase } from '@/integrations/supabase/client';
 import type { MeuTerapeutaLigacao, FotosMinhas } from './terapiaMeu';
+import type { TestePaciente } from './terapiaPaciente';
 export interface ConsultaMinha {id:string;inicio:string;fim:string;status:string;terapeuta_id:string;tipo:string;nota:number|null;folha_enviada:boolean;avaliacao_id:string|null}
 export const ABAS_ACOMPANHAMENTO = [['inicio','Início'],['indicacoes','Indicações'],['consultas','Consultas'],['avaliacao','Minha avaliação'],['evolucao','Minha evolução'],['fotos','Fotos'],['conversa','Conversa']] as const;
 export type AbaAcompanhamento = typeof ABAS_ACOMPANHAMENTO[number][0];
 export interface AvaliacaoMinha {
+  teste?: Pick<TestePaciente, 'queixas' | 'alimentos'> | null;
   id:string; data:string; mostrada_em:string; terapeuta:{nome:string;primeiro_nome:string;imagem:string|null;slug:string};
   leitura:Partial<Record<'V'|'P'|'K',number>>|null; ama:Partial<Record<'V'|'P'|'K',number>>|null; resumo:string|null;
   marcas:{chave:string;setor:string;V:number;P:number;K:number;Vm?:number;Pm?:number;Km?:number;nome?:string}[];
