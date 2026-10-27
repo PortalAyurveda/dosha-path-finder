@@ -50,3 +50,12 @@ export function especificacoes(chave:string,sd:Subdosha):ItemClinico[] { return 
 export function coordenada(v:number) { return Math.max(0,Math.min(1,v)); }
 /** Nível 0–3 que a soma das marcações sugere (a terapeuta decide): proporcional ao maior dos três. */
 export function sugereNivel(soma:number,maior:number):number { if(soma<=0)return 0; return Math.min(3,Math.max(1,Math.round(soma/Math.max(maior,1)*3))); }
+/** Situação da avaliação para a linha de contexto: concluída quando há leitura de dosha. */
+export function situacaoAvaliacao(a:Pick<Avaliacao,'leitura'>) {
+ return a.leitura&&DOSHAS.some(d=>nivel(a.leitura?.[d])>0)?'Avaliação concluída':'Avaliação em andamento';
+}
+/** Quantas queixas marcadas pertencem a um sistema (Digestivo, Respiratório…). */
+export function marcadosNoSistema(dados:DadosAvaliacao,ds:Partial<Record<Dosha,string[]>>) {
+ const nomes=new Set(DOSHAS.flatMap(d=>ds[d]??[]));
+ return Object.values(dados.marcas).filter(m=>m.setor==='sintomas'&&marcada(m)&&nomes.has(m.nome)).length;
+}

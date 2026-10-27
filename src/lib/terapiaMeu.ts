@@ -85,3 +85,14 @@ export function alternarFeito(feitos: { item: string; dia: string }[], item: str
   return feito ? [...sem, { item, dia: hoje }] : sem;
 }
 export const dataExtenso = (s: string) => new Date(s).toLocaleString("pt-BR", { weekday: "long", day: "numeric", month: "long", hour: "2-digit", minute: "2-digit", timeZone: "America/Sao_Paulo" });
+/** Seções da folha que combinam com a hora do dia (manhã, meio do dia, tarde, noite). */
+export function secoesDaHora(hora: number): string[] {
+  if (hora < 12) return ["acordar", "rotina_manha", "cafe_manha", "lanche_manha"];
+  if (hora < 15) return ["almoco"];
+  if (hora < 18) return ["lanche_tarde"];
+  return ["jantar", "ceia", "dormir", "tonico_noite"];
+}
+/** Título da seção fechada em Meu acompanhamento: progresso do dia, com ✓ quando tudo feito. */
+export function progressoSecao(titulo: string, feitos: number, total: number) {
+  return `${titulo} · ${feitos} de ${total} feitos${total > 0 && feitos >= total ? " ✓" : ""}`;
+}

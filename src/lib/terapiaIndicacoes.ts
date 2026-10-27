@@ -37,6 +37,15 @@ export function minhasComFavoritos(minhas: FonteIndicacao[] = [], favoritos: Fon
 /** A função atual identifica a queixa no texto de origem, sem inventar agrupamentos. */
 export function queixaIndicacao(f:FonteIndicacao){return f.queixa??f.assunto??f.porque?.match(/relatou\s+["“]([^"”]+)["”]/i)?.[1]??'';}
 
+/** Título da seção fechada na folha da terapeuta: contagem e primeiros nomes, ou "vazio". */
+export function tituloSecaoFechada(titulo:string,itens:ItemIndicacao[]) {
+ if(!itens.length) return `${titulo} · vazio`;
+ return `${titulo} · ${itens.length} ${itens.length===1?'item':'itens'} · ${itens.map(i=>i.titulo).join(', ')}`;
+}
+/** Situação da folha para a linha de contexto: rascunho ou data de envio. */
+export function situacaoIndicacoes(folha:Pick<FolhaIndicacoes,'enviada_em'>) {
+ return folha.enviada_em?`Indicações enviadas em ${new Date(folha.enviada_em).toLocaleDateString('pt-BR')}`:'Indicações em rascunho';
+}
 export function origemIndicacao(item:FonteIndicacao) {
  if(item.tipo==='texto') return '';
  if(item.origem==='acervo' || /acervo|material|minha/.test(item.tipo??'')) return 'Do seu acervo';
