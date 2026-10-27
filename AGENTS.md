@@ -1,5 +1,7 @@
 # Project Rules
 
+- Keep the therapist's complete-test table, historical-response sheet and scoring-display helpers in dedicated therapy modules; use only server-returned historical points and match the record before combining test data to avoid mixing different tests.
+
 - Keep admin students orchestration in its page and the original Formation workflow isolated from the RPC-only general student views; load release configuration once per page so every dialog uses the same server-defined options.
 
 - On narrow mobile headers below 390px, hide the cart shortcut before allowing navigation controls to overlap; the cart remains available through the store flow.

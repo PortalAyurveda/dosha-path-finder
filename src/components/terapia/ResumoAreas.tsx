@@ -1,6 +1,7 @@
 import { diaBR } from '@/lib/terapia';
-import { fraseResumoAreas, maiorDoshaComposicao } from '@/lib/terapiaPaciente';
-import type { ResumoAreas, TestePaciente } from '@/lib/terapiaPaciente';
+import { fraseResumoAreas } from '@/lib/terapiaPaciente';
+import type { ResumoAreas, TestePaciente, TesteCompleto } from '@/lib/terapiaPaciente';
+import TesteComposicao from './TesteComposicao';
 import { TituloPaciente } from './PacienteComuns';
 import './marcadosDosha.css';
 import './resumoAreas.css';
@@ -9,36 +10,18 @@ const DOSHAS = ['vata', 'pitta', 'kapha'] as const;
 const ROTULO = { vata: 'Vata', pitta: 'Pitta', kapha: 'Kapha' } as const;
 
 /** Cartão "Teste de dosha": frase de resumo, composição dos pontos e agni. */
-export function CartaoTesteResumo({ resumo: r, data }: { resumo: ResumoAreas; data?: string }) {
-  const maior = maiorDoshaComposicao(r.composicao);
-  const maiorTotal = Math.max(...DOSHAS.map(d => r.composicao[d]?.total ?? 0), 1);
-  const ex = r.composicao[maior];
+export function CartaoTesteResumo({ resumo: r, data, teste, completo }: { resumo: ResumoAreas; data?: string; teste?: TestePaciente | null; completo?: TesteCompleto | null }) {
   return <section className="portal-cartao resumo-areas">
     <TituloPaciente>Teste de dosha{data ? ` · ${diaBR(data)}` : ''}</TituloPaciente>
     <p className="ra-frase">{fraseResumoAreas(r)}</p>
-    <h3 className="ra-eti">De onde vêm os pontos</h3>
-    <div className="ra-barras">
-      {DOSHAS.map(d => { const cp = r.composicao[d]; const total = cp?.total ?? 0; return <div key={d} className="ra-linha">
-        <b className={`ra-dosha ra-${d}`}>{ROTULO[d]} {total}</b>
-        <div className={`ra-barra ra-${d}`} style={{ width: `${(total / maiorTotal) * 100}%` }} role="img" aria-label={`${ROTULO[d]} ${total}: ${cp?.perguntas ?? 0} das perguntas, ${cp?.queixas ?? 0} das queixas, ${cp?.alimentacao ?? 0} da alimentação`}>
-          {total > 0 && <><i className="q1" style={{ width: `${((cp?.perguntas ?? 0) / total) * 100}%` }} /><i className="q2" style={{ width: `${((cp?.queixas ?? 0) / total) * 100}%` }} /><i className="q3" style={{ width: `${((cp?.alimentacao ?? 0) / total) * 100}%` }} /></>}
-        </div>
-      </div>; })}
-    </div>
-    <div className="ra-legenda"><span><i className="l1" />Perguntas (corpo, mente, digestão, hábitos)</span><span><i className="l2" />Queixas</span><span><i className="l3" />Alimentação</span></div>
-    <p className="ra-sub">{ROTULO[maior]} {ex?.total ?? 0} = {ex?.perguntas ?? 0} das perguntas + {ex?.queixas ?? 0} das queixas + {ex?.alimentacao ?? 0} da alimentação.</p>
-    <h3 className="ra-eti">Agni</h3>
-    <div className="ra-agni">
-      {([['Irregular', r.agni.irregular, 'irregular'], ['Forte', r.agni.forte, 'forte'], ['Fraco', r.agni.fraco, 'fraco']] as const).map(([n, v, t]) => <span key={t} className={r.agni.tipo === t ? 'forte' : ''}>{n} {v}</span>)}
-      {r.agni.nivel != null && <span>{r.agni.texto || `Nível ${r.agni.nivel}`}</span>}
-    </div>
+    <TesteComposicao resumo={r} teste={teste} completo={completo} />
   </section>;
 }
 
 /** Cartão "Queixas por área": áreas em ordem, "Come muito" e o relato. */
 export function CartaoQueixasArea({ resumo: r, teste }: { resumo: ResumoAreas; teste?: TestePaciente | null }) {
   return <section className="portal-cartao resumo-areas">
-    <TituloPaciente>Queixas por área</TituloPaciente>
+    <TituloPaciente>Sintomas por área</TituloPaciente>
     {r.areas.map(a => <div key={a.area} className="ra-area">
       <h3>{a.area}<small>{a.qtd} de {a.de}</small></h3>
       <div className="terapia-marcados">{a.marcou.map(m => <span key={m.queixa} className={`terapia-queixa terapia-queixa-${m.dosha}`}>{m.queixa}</span>)}</div>
