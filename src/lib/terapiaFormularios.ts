@@ -34,7 +34,7 @@ export const formularios = {
   envios: (paciente: string) => rpc<EnvioFormulario[]>('terapia_formulario_envios', { p_paciente: paciente }),
   meus: () => rpc<FormularioMeuLista[]>('formularios_meus'),
   meu: (id: string) => rpc<FormularioMeu>('formulario_meu', { p_envio: id }),
-  responder: (id: string, respostas: RespostasFormulario, final: boolean) => rpc<unknown>('formulario_responder', { p_envio: id, p_respostas: respostas, p_final: final }),
+  responder: (id: string, respostas: RespostasFormulario, final: boolean) => rpc<{ respondido_em: string | null; resultado?: ResultadoFormulario | null }>('formulario_responder', { p_envio: id, p_respostas: respostas, p_final: final }),
   importar: async (url: string): Promise<ImportacaoFormulario> => {
     const { data, error } = await supabase.functions.invoke('formulario-importar-google', { body: { url } });
     if (error) {
@@ -72,7 +72,7 @@ export function moverPergunta(perguntas: PerguntaFormulario[], id: string, secao
 }
 export function consultaNosProximosDoisDias(inicio: string, agora: number) { const t = Date.parse(inicio); return t >= agora && t <= agora + 2 * 86400000; }
 /** Serializa snapshots inteiros; falhas ficam visíveis e uma nova tentativa pode reenviar o último estado. */
-export function filaRespostas(salvar: (r: RespostasFormulario, final: boolean) => Promise<unknown>) {
+export function filaRespostas<T>(salvar: (r: RespostasFormulario, final: boolean) => Promise<T>) {
   let fila: Promise<unknown> = Promise.resolve();
   return (r: RespostasFormulario, final = false) => { const snapshot = structuredClone(r); const atual = fila.catch(() => undefined).then(() => salvar(snapshot, final)); fila = atual; return atual; };
 }
