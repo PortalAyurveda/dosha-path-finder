@@ -17,3 +17,8 @@ describe('Parte 26: folhas prontas',()=>{
  it('copia por id e devolve id da cópia',async()=>{expect(await modelosTerapia.copiar('portal-id')).toBe('novo-id');expect(mocks.rpc).toHaveBeenCalledWith('terapia_modelo_copiar',{p_id:'portal-id'});});
  it('marca folha com sintomas correspondentes mesmo sem dosha igual',()=>{const lista=[{id:'1',nome:'Uma',itens:1,usos:0,dosha:'kapha',serve_para:['Azia']},{id:'2',nome:'Outra',itens:1,usos:0,dosha:'kapha',serve_para:['Gases']}];const r=ordenarPorTeste(lista,'pitta',['Gases']);expect(r.map(m=>[m.id,m.combina])).toEqual([['2',true],['1',false]]);});
 });
+describe('Parte 26: nome do tipo na tela',()=>{
+ it.each([['texto','Texto'],['foto','Foto'],['arquivo','PDF'],['aula','Vídeo'],['link','Link']])('tipo %s aparece como %s',(t,n)=>expect(nomeDoTipo(t)).toBe(n));
+ it('tipo fora da lista ganha só a primeira letra maiúscula',()=>expect(nomeDoTipo('receita_caseira')).toBe('Receita_caseira'));
+ it('tipo vazio não quebra a etiqueta',()=>expect(nomeDoTipo('')).toBe(''));
+});
