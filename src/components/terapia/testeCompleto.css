@@ -1,4 +1,6 @@
 .tc-tabela{width:100%;table-layout:fixed;border-collapse:collapse;font-size:13px;line-height:1.45}
+.tc-tabela span{font-size:inherit}.tc-tabela .tc-agni-cel span{font-size:11px}
+.tc-sheet .tc-parte-titulo{font-size:14px}.tc-sheet .tc-somas,.tc-sheet .tc-somas span{font-size:12px}.tc-sheet .tc-label{font-size:13px}.tc-sheet .tc-selo{font-size:11px}
 .tc-tabela th{font-size:11px;font-weight:600;text-transform:uppercase;color:hsl(var(--muted-foreground));padding:5px 4px;border-bottom:1px solid hsl(var(--border));text-align:center;letter-spacing:0}
 .tc-tabela th:first-child{width:43%;text-align:left}.tc-tabela.tc-detalhada th:first-child{width:34%}.tc-tabela.tc-detalhada th:last-child{width:27%;text-align:left}
 .tc-tabela td{padding:6px 4px;border-bottom:1px solid hsl(var(--muted));text-align:center;overflow-wrap:anywhere}
