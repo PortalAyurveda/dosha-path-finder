@@ -13,7 +13,7 @@
 .ac-prox{display:flex;gap:14px;align-items:center}
 .ac-foto-t{width:56px;height:56px;border-radius:50%;object-fit:cover;flex:none}
 .ac-data{font:700 18px/1.3 'Roboto Serif',serif}
-.ac-como{background:hsl(var(--card));border:1.5px solid hsl(var(--primary)/.25);border-radius:14px;padding:16px 18px;display:flex;flex-direction:column;gap:10px}
+.ac-como{background:hsl(var(--card));border:1.5px solid hsl(var(--primary)/.45);border-radius:14px;padding:16px 18px;display:flex;flex-direction:column;gap:10px}
 .ac-como ol{margin:0;padding-left:22px;list-style:decimal;display:flex;flex-direction:column;gap:6px}
 .ac-como button{align-self:flex-start}
 .ac-msgs{display:flex;flex-direction:column;gap:6px}
