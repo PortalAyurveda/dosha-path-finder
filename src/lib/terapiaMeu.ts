@@ -96,5 +96,4 @@ export function secoesDaHora(hora: number): string[] {
 /** Contagem do momento: "1 de 2 feito hoje". */
 export function progressoSecao(feitos: number, total: number) {
   return `${feitos} de ${total} feito hoje`;
-} · ${feitos} de ${total} feitos${total > 0 && feitos >= total ? " ✓" : ""}`;
 }
