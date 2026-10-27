@@ -56,16 +56,14 @@ describe('Parte 20 · mesa de avaliação', () => {
   });
 });
 
-describe('Parte 20 · sanfona em Meu acompanhamento', () => {
-  it('seção da hora: manhã, meio do dia, tarde e noite', () => {
-    expect(secoesDaHora(8)).toContain('cafe_manha');
-    expect(secoesDaHora(13)).toEqual(['almoco']);
-    expect(secoesDaHora(16)).toEqual(['lanche_tarde']);
-    expect(secoesDaHora(21)).toContain('jantar');
-    expect(secoesDaHora(21)).toContain('dormir');
+describe('Parte 22 · Seu dia no celular', () => {
+  it('momento da hora: até 11h Manhã, 11h–17h Refeições, depois Noite; sempre com Todo dia', () => {
+    expect(secoesDaHora(10)).toEqual(['manha', 'todo_dia']);
+    expect(secoesDaHora(11)).toEqual(['refeicoes', 'todo_dia']);
+    expect(secoesDaHora(16)).toEqual(['refeicoes', 'todo_dia']);
+    expect(secoesDaHora(17)).toEqual(['noite', 'todo_dia']);
   });
-  it('título fechado mostra o progresso do dia com ✓ quando tudo feito', () => {
-    expect(progressoSecao('Almoço', 1, 3)).toBe('Almoço · 1 de 3 feitos');
-    expect(progressoSecao('Café da manhã', 2, 2)).toBe('Café da manhã · 2 de 2 feitos ✓');
+  it('contagem do momento', () => {
+    expect(progressoSecao(1, 2)).toBe('1 de 2 feito hoje');
   });
 });
