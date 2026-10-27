@@ -66,10 +66,12 @@ export default function DoSeuTerapeuta({ folha, rodape, acompanhamento=false }: 
       {(folha.secoes ?? []).map(s => {
         const itens = dados.secoes[s.chave] ?? [];
         if (!itens.length) return null;
+        const aberta = abertas[s.chave] ?? true;
+        const feitosNaSecao = itens.filter(i => feitoHoje(feitos, i.id, agora)).length;
         return (
-          <section key={s.chave} className="mt-5">
-            <h3 className="mb-2 font-serif text-base font-bold text-primary">{s.titulo}</h3>
-            <ul className="space-y-2">
+          <section key={s.chave} className={`dst-secao mt-5 ${aberta ? "" : "fechada"}`}>
+            <h3 className="mb-2 font-serif text-base font-bold text-primary"><button type="button" className="dst-barra no-print" aria-expanded={aberta} onClick={() => setAbertas(a => ({ ...a, [s.chave]: !aberta }))}><ChevronDown size={16} className="dst-seta" aria-hidden="true" /><span>{aberta ? s.titulo : progressoSecao(s.titulo, feitosNaSecao, itens.length)}</span></button><span className="so-impressao">{s.titulo}</span></h3>
+            <ul className="dst-corpo space-y-2">
               {itens.map(i => {
                 const link = linkIndicacao(i);
                 const hoje = feitoHoje(feitos, i.id, agora);
