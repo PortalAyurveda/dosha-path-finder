@@ -33,3 +33,5 @@
 
 - Keep Meu acompanhamento independently lazy-loaded with patient-only RPC contracts and dedicated views; reuse the existing chat, chart and sheet printing, and require explicit server-side assessment sharing.
 - Scope the full-width therapist portal and public-profile presentation to their own CSS classes, with shared deterministic patient avatars; this preserves unrelated site pages and keeps identity presentation consistent.
+- Therapy sheets use one-click accordions with page-lifetime state: the therapist folha sections (Secao.tsx, titles via tituloSecaoFechada), the patient Do seu terapeuta sections (progress via progressoSecao, mobile opens only the time-of-day section from secoesDaHora), and the evaluation's per-system symptoms and dhatus cards (container query at 560px); print routes always render everything open, and adding/dragging into a closed section opens it and scrolls to the new item.
+- The patient Resumo tab renders the server-computed resumo_areas from acomp_ficha through src/components/terapia/ResumoAreas.tsx (resumoAreas.css) only when the test is shared and present; otherwise the legacy cards stay.

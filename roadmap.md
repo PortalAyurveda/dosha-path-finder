@@ -81,3 +81,6 @@
 - [x] Parte 19: busca global no catálogo, queixas por dosha, hierarquia dos botões e chave de participação sem SQL
 - [x] Parte 19: testes das regras e conferência em 1366 px e 390 px com respostas simuladas; busca, ampliar, adicionar/salvar/enviar, limpar, queixas, avaliação, Hoje, Agenda, acompanhamento e participação
 - [ ] Parte 19: confirmar busca, envio e participação com conta real — bloqueado: Supabase externo sem sessão autenticada disponível
+- [x] Parte 20: folha de indicações em sanfona, adicionar sem clique fantasma, sanfona em Meu acompanhamento, sanfonas de Sintomas/Dhatus, linha de contexto, aviso de envio e resumo por área
+- [x] Parte 20: 9 testes novos (243 no total) e conferência em 1366 px e 390 px com respostas simuladas; sanfonas, contagem, progresso, abertura ao adicionar e resumo por área
+- [ ] Parte 20: validar com contas reais e o resumo_areas do banco — bloqueado: Supabase externo sem sessão autenticada disponível
