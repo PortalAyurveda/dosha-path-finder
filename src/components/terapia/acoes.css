@@ -4,5 +4,5 @@
 :is(.portal-terapeuta,.portal-paciente,.mesa,.acompanhamento,.perfil-publico,.terapia-acoes) :is(button,a).border-input:not([aria-pressed]):not(.border-vata):not(.border-pitta):not(.border-kapha):not(.portal-atencao){border-color:hsl(var(--primary));color:hsl(var(--primary))}
 :is(.portal-terapeuta,.portal-paciente,.mesa,.acompanhamento,.perfil-publico,.terapia-acoes) .m-btn{border-color:hsl(var(--primary))}
 :is(.portal-terapeuta,.portal-paciente,.mesa,.acompanhamento,.perfil-publico,.terapia-acoes) .m-btn.sal:not([data-terapia-principal]){background:hsl(var(--primary));border-color:hsl(var(--primary));color:hsl(var(--primary-foreground))}
-:is(.portal-terapeuta,.portal-paciente,.mesa,.acompanhamento,.perfil-publico,.terapia-acoes) [data-terapia-principal]{background:hsl(var(--secondary));border-color:hsl(var(--secondary));color:hsl(var(--secondary-foreground))}
-:is(.portal-terapeuta,.portal-paciente,.mesa,.acompanhamento,.perfil-publico,.terapia-acoes) [data-terapia-principal]:hover{background:hsl(var(--secondary)/.9)}
+:is(.portal-terapeuta,.portal-paciente,.mesa,.acompanhamento,.perfil-publico,.terapia-acoes) :is(button,a)[data-terapia-principal]{background:hsl(var(--secondary));border-color:hsl(var(--secondary));color:hsl(var(--secondary-foreground))}
+:is(.portal-terapeuta,.portal-paciente,.mesa,.acompanhamento,.perfil-publico,.terapia-acoes) :is(button,a)[data-terapia-principal]:hover{background:hsl(var(--secondary)/.9)}
