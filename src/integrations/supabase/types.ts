@@ -10340,6 +10340,7 @@ export type Database = {
       paciente_fotos: {
         Row: {
           criado_em: string
+          enviada_por: string | null
           id: string
           path: string
           tipo: string
@@ -10348,6 +10349,7 @@ export type Database = {
         }
         Insert: {
           criado_em?: string
+          enviada_por?: string | null
           id?: string
           path: string
           tipo: string
@@ -10356,6 +10358,7 @@ export type Database = {
         }
         Update: {
           criado_em?: string
+          enviada_por?: string | null
           id?: string
           path?: string
           tipo?: string
@@ -17963,6 +17966,10 @@ export type Database = {
         }
         Returns: string
       }
+      terapia_foto_registrar: {
+        Args: { p_paciente: string; p_path: string; p_titulo?: string }
+        Returns: string
+      }
       terapia_hoje: { Args: never; Returns: Json }
       terapia_horario: {
         Args: { p_abrir: boolean; p_fim: string; p_inicio: string }
@@ -17987,6 +17994,7 @@ export type Database = {
       terapia_perfil_salvar: { Args: { p: Json }; Returns: undefined }
       terapia_ping: { Args: never; Returns: Json }
       terapia_preferencias_salvar: { Args: { p: Json }; Returns: undefined }
+      terapia_primeiros_passos: { Args: never; Returns: Json }
       terapia_quadro_apagar: { Args: { p_id: string }; Returns: string }
       terapia_quadro_guardar: {
         Args: {
