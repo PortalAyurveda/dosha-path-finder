@@ -1,4 +1,6 @@
 - [x] Criar página de compra do Kit Detox
+- [ ] Parte 21: guardar respostas, renomear sintomas, tabela e painel do teste completo, agni e pílulas de 12 px sem SQL
+- [ ] Parte 21: testar regras e conferir painel/Resumo em 1366 px e 390 px
 - [x] Criar cartão OfertaKit e inserir após compra/no curso
 - [x] Adicionar rota sem moldura
 - [x] Ajustar SamkhyaKit e KitCard para checkout próprio/frete grátis
