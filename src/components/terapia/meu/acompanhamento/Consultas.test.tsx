@@ -1,8 +1,12 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { cleanup, render } from "@testing-library/react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 vi.mock("@/integrations/supabase/client", () => ({ supabase: { rpc: vi.fn() } }));
 const { ProximaConsulta } = await import("./Consultas");
 import { salaLiberada, meu, type MeuTerapeutaLigacao } from "@/lib/terapiaMeu";
+
+const mostrar = (ui: React.ReactElement) =>
+  render(<QueryClientProvider client={new QueryClient()}>{ui}</QueryClientProvider>);
 
 const cancelar = vi.fn();
 Object.assign(meu, { cancelar, horarios: vi.fn() });
