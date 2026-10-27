@@ -74,11 +74,11 @@ export function PassosParticipar({ painel, ocupado, mudar, irPara, abrirTermo, e
 }
 
 export default function Configuracoes({ painel, ocupado, mudar, executar, atualizar }: { painel: Painel; ocupado: boolean; mudar: (v: boolean) => void; executar: (fn: () => Promise<unknown>) => Promise<boolean>; atualizar: () => Promise<unknown> }) {
-  const participa = painel.sistema.participa ?? painel.sistema.no_sistema;
+  const podeParticipar = passosFaltando(painel.sistema.falta).length === 0;
   return (
     <div className="grid items-start gap-6 lg:grid-cols-2">
       <Secao titulo="Portal">
-        {participa ? <ChaveSistema painel={painel} ocupado={ocupado} mudar={mudar} /> : <p className="text-sm text-muted-foreground">Complete os passos no topo do painel para ativar “Participar do Portal”.</p>}
+        {podeParticipar ? <ChaveSistema painel={painel} ocupado={ocupado} mudar={mudar} /> : <p className="text-sm text-muted-foreground">Complete os passos no topo do painel para ativar “Participar do Portal”.</p>}
       </Secao>
       <Secao titulo="Consulta">
         <ValorConsulta painel={painel} executar={executar} atualizar={atualizar} />
