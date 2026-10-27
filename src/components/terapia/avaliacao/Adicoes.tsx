@@ -97,14 +97,16 @@ export function Adicionar({
 export default function Adicoes({
   setor,
   dados,
-  mudar,
+  mudar: mudarOriginal,
   conteudo,
   biblioteca,
   guardar,
   paciente,
   treino=false,
   abrir,
+  semTitulo=false,
 }: {
+  semTitulo?: boolean;
   setor: Setor;
   dados: DadosAvaliacao;
   mudar: (d: DadosAvaliacao) => void;
@@ -116,7 +118,15 @@ export default function Adicoes({
   abrir: (s: Setor) => void;
 }) {
   const e = extras(dados);
-  const a = e.adicoes.find((a) => a.id === setor);
+  const real = e.adicoes.find((a) => a.id === setor);
+  // Setores das etapas (Língua, Unhas…) abrem sem precisar "adicionar"; entram na ficha na primeira marcação.
+  const fixo = ADICOES.find(([id]) => id === setor);
+  const a: Adicao | undefined = real ?? (fixo ? { id: fixo[0], nome: fixo[1] } : undefined);
+  const mudar = (d: DadosAvaliacao) => {
+    if (real || !a) return mudarOriginal(d);
+    const ex = extras(d);
+    mudarOriginal({ ...d, extras: { ...ex, adicoes: [...ex.adicoes.filter((x) => x.id !== setor), a] } });
+  };
   const [nome, setNome] = useState("");
   const [descricao, setDescricao] = useState("");
   const [dosha, setDosha] = useState("");
@@ -142,9 +152,9 @@ export default function Adicoes({
   if (!a) return null;
   return (
     <>
-      <div className="mb-5 flex flex-wrap items-center justify-between gap-2">
+      {!semTitulo && <div className="mb-5 flex flex-wrap items-center justify-between gap-2">
         <h2 className="font-serif text-lg font-bold text-primary">{a.nome}</h2>
-        <Button
+        {real && <Button
           variant="link"
           className="text-muted-foreground"
           onClick={() => {
@@ -153,8 +163,8 @@ export default function Adicoes({
           }}
         >
           Tirar da ficha
-        </Button>
-      </div>
+        </Button>}
+      </div>}
       {gruposClinicos(setor, conteudo).map((g) => (
         <section key={g.nome} className="mb-6 border-b border-border pb-5">
           <h3 className="mb-3 text-sm font-semibold text-primary">{g.nome}</h3>
