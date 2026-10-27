@@ -46,3 +46,28 @@ export function dataAcompanhamento(valor:string,comHora=false) {
   return `${texto}${comHora?`, às ${horaAcompanhamento(valor)}`:''}`;
 }
 export function desdeAcompanhamento(valor:string) {const data=new Date(valor);return Number.isNaN(data.getTime())?'sem data':data.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',timeZone:zonaAcompanhamento});}
+/** Endereços antigos (?aba=) rolam até o bloco certo da página única. */
+export function blocoDaAba(aba:string|null):string|null {
+  const m:Record<string,string>={conversa:'ac-conversa',indicacoes:'ac-seu-dia',consultas:'ac-consultas',avaliacao:'ac-consultas',fotos:'ac-mandou',evolucao:'ac-mandou',inicio:'ac-topo'};
+  return aba?m[aba]??null:null;
+}
+const TERMOS:[RegExp,string][]=[[/\bagni\b/i,'a força da digestão'],[/\bama\b/i,'resíduos que a digestão não terminou'],[/\bupadhatu\b/i,'tecidos de apoio do corpo'],[/\bdhatus?\b/i,'os tecidos do corpo'],[/\bmalas?\b/i,'o que o corpo elimina']];
+/** Junta uma explicação simples ao lado de palavras técnicas (ex.: "Agni irregular (agni: a força da digestão)"). */
+export function explicarTermo(texto:string) {
+  const t=TERMOS.find(([r])=>r.test(texto));
+  if(!t)return texto;
+  const palavra=texto.match(t[0])![0].toLowerCase();
+  return `${texto} (${palavra}: ${t[1]})`;
+}
+/** "26/10 · avaliação e folha" */
+export function linhaConsultaMinha(c:Pick<ConsultaMinha,'inicio'|'folha_enviada'|'status'>,temAvaliacao:boolean) {
+  const partes=[temAvaliacao?'avaliação':null,c.folha_enviada?'folha':null].filter(Boolean) as string[];
+  const oque=c.status==='cancelada'?'cancelada':partes.length?partes.join(' e '):'consulta';
+  return `${desdeAcompanhamento(c.inicio)} · ${oque}`;
+}
+const icsData=(v:string)=>new Date(v).toISOString().replace(/[-:]/g,'').replace(/\.\d{3}/,'');
+/** Arquivo de calendário (.ics) para a próxima consulta. */
+export function icsConsulta(p:{id:string;inicio:string;fim:string},nome:string,url:string) {
+  return ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Portal Ayurveda//PT','BEGIN:VEVENT',`UID:${p.id}@portalayurveda.com`,`DTSTAMP:${icsData(new Date().toISOString())}`,`DTSTART:${icsData(p.inicio)}`,`DTEND:${icsData(p.fim)}`,`SUMMARY:Consulta com ${nome}`,`DESCRIPTION:Por vídeo, aqui no Portal: ${url}`,`URL:${url}`,'END:VEVENT','END:VCALENDAR'].join('\r\n');
+}
+export const COMO_FUNCIONA_CHAVE='ac-como-funciona-visto';
