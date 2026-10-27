@@ -1,0 +1,20 @@
+.tc-tabela{width:100%;table-layout:fixed;border-collapse:collapse;font-size:13px;line-height:1.45}
+.tc-tabela th{font-size:11px;font-weight:600;text-transform:uppercase;color:hsl(var(--muted-foreground));padding:5px 4px;border-bottom:1px solid hsl(var(--border));text-align:center;letter-spacing:0}
+.tc-tabela th:first-child{width:43%;text-align:left}.tc-tabela.tc-detalhada th:first-child{width:34%}.tc-tabela.tc-detalhada th:last-child{width:27%;text-align:left}
+.tc-tabela td{padding:6px 4px;border-bottom:1px solid hsl(var(--muted));text-align:center;overflow-wrap:anywhere}
+.tc-tabela td:first-child{text-align:left}.tc-tabela .tc-agni-cel{text-align:left;font-size:11px}
+.tc-vata{color:hsl(var(--vata-ink))}.tc-pitta{color:hsl(var(--pitta-ink))}.tc-kapha{color:hsl(var(--kapha-ink))}
+.tc-zero{color:hsl(var(--muted-foreground)/.45)}.tc-numero{font-weight:600;display:inline-block;min-width:24px;padding:2px 4px;border-radius:6px}
+.tc-max.tc-vata{background:hsl(var(--vata)/.18)}.tc-max.tc-pitta{background:hsl(var(--pitta)/.18)}.tc-max.tc-kapha{background:hsl(var(--kapha)/.18)}
+.tc-separador td{border-top:2px solid hsl(var(--border))}.tc-total td{border-top:2px solid hsl(var(--primary));border-bottom:0;font-weight:700}
+.tc-agni-box{border:1px solid hsl(var(--border));border-radius:8px;padding:10px 12px;margin:12px 0}.tc-agni-box .ra-eti{margin:0 0 8px;letter-spacing:0}
+.tc-agni-somas,.tc-selos{display:flex;gap:6px;flex-wrap:wrap}.tc-selo{font-size:11px;font-weight:600;padding:2px 7px;border:1px solid hsl(var(--border));border-radius:8px;line-height:1.5}
+.tc-selo.tc-vata{background:hsl(var(--vata)/.12);border-color:hsl(var(--vata)/.4)}.tc-selo.tc-pitta{background:hsl(var(--pitta)/.12);border-color:hsl(var(--pitta)/.4)}.tc-selo.tc-kapha{background:hsl(var(--kapha)/.12);border-color:hsl(var(--kapha)/.4)}
+.tc-selo.tc-ganha{outline:2px solid hsl(var(--primary));outline-offset:1px}.tc-atual{font-size:13px;font-weight:700;margin-top:10px}.tc-nota{font-size:12px;color:hsl(var(--muted-foreground));line-height:1.5;margin-top:6px}
+.tc-sheet{width:100%;max-width:520px!important;padding:0;background:hsl(var(--card));display:flex;flex-direction:column;gap:0}
+.tc-sheet-header{padding:18px 48px 14px 18px;border-bottom:1px solid hsl(var(--border));text-align:left}.tc-sheet-title{font-family:'Roboto Serif',serif;font-size:18px;line-height:1.4}.tc-sheet-description{font-size:12px;line-height:1.5;margin-top:4px}
+.tc-sheet-body{overflow-y:auto;padding:6px 12px 18px;min-height:0}.tc-parte{border-bottom:1px solid hsl(var(--muted))}.tc-parte summary{list-style:none;display:flex;align-items:center;gap:8px;cursor:pointer;padding:12px 4px;font-size:14px;font-weight:700}.tc-parte summary::-webkit-details-marker{display:none}.tc-seta{width:14px;height:14px;flex-shrink:0;transition:transform .15s}.tc-parte[open] .tc-seta{transform:rotate(90deg)}
+.tc-parte-titulo{flex:1;min-width:0}.tc-somas{display:flex;gap:6px;font-size:12px;font-weight:500;white-space:nowrap}.tc-perguntas{padding:0 6px 12px 24px;display:grid;gap:12px}.tc-pergunta{font-size:13px;font-weight:600;line-height:1.5}
+.tc-resposta{display:flex;gap:8px;justify-content:space-between;align-items:flex-start;background:hsl(var(--muted));border-radius:8px;padding:6px 8px;margin-top:4px;font-size:13px;line-height:1.5}.tc-label{flex:1;min-width:0;overflow-wrap:anywhere}.tc-selos{justify-content:flex-end;max-width:47%;flex-shrink:0}.tc-resposta .tc-nota{margin:0}.tc-sheet .terapia-queixa{font-size:12px}
+@media(max-width:640px){.tc-sheet{max-width:100%!important}.tc-perguntas{padding-left:8px}.tc-resposta{flex-direction:column}.tc-selos{justify-content:flex-start;max-width:100%}.tc-tabela{font-size:12px}.tc-tabela th{font-size:10px}.tc-tabela td{padding:5px 2px}.tc-tabela.tc-detalhada th:first-child{width:33%}.tc-tabela.tc-detalhada th:last-child{width:25%}}
+@media(prefers-reduced-motion:reduce){.tc-seta{transition:none}}
