@@ -1,4 +1,7 @@
 - [x] Criar página de compra do Kit Detox
+- [x] Parte 21: guardar respostas, renomear sintomas, tabela e painel do teste completo, agni e pílulas de 12 px sem SQL
+- [x] Parte 21: 30 testes e conferência de painel/Resumo em 1366 px e 390 px com respostas simuladas, incluindo registro antigo e registro de outra data
+- [ ] Parte 21: validar gravação/leitura com conta real e sintomas/alimentos de registro anterior — bloqueado: Supabase externo sem sessão e contrato informado não inclui listas históricas de sintomas/alimentos no teste_completo
 - [x] Criar cartão OfertaKit e inserir após compra/no curso
 - [x] Adicionar rota sem moldura
 - [x] Ajustar SamkhyaKit e KitCard para checkout próprio/frete grátis

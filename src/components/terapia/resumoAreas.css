@@ -31,7 +31,7 @@
 .ra-lig h3{font-size:14px;font-weight:700;display:flex;justify-content:space-between;gap:8px}
 .ra-lig h3>span{font-weight:500;font-size:12px;color:hsl(var(--muted-foreground))}
 .ra-junto{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;font-size:12px;align-items:center;color:hsl(var(--muted-foreground))}
-.ra-j{border-radius:6px;padding:1px 8px;border:1px solid hsl(var(--border));color:hsl(var(--foreground))}
+.resumo-areas .ra-j{font-size:12px;line-height:1.5;border-radius:6px;padding:1px 8px;border:1px solid hsl(var(--border));color:hsl(var(--foreground))}
 .ra-j.tem{background:hsl(var(--primary));color:hsl(var(--primary-foreground));border-color:hsl(var(--primary))}
 .ra-j.nao{color:hsl(var(--muted-foreground))}
 .ra-relato{font-style:italic;font-size:14px;white-space:pre-wrap;line-height:1.6}

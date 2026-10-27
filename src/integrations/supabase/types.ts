@@ -6467,6 +6467,7 @@ export type Database = {
           produtos: string | null
           relato_aberto: string | null
           remedios: string | null
+          respostas: Json | null
           reteste_sessao_id: string | null
           texto_ia: string | null
           tipo: string
@@ -6513,6 +6514,7 @@ export type Database = {
           produtos?: string | null
           relato_aberto?: string | null
           remedios?: string | null
+          respostas?: Json | null
           reteste_sessao_id?: string | null
           texto_ia?: string | null
           tipo?: string
@@ -6559,6 +6561,7 @@ export type Database = {
           produtos?: string | null
           relato_aberto?: string | null
           remedios?: string | null
+          respostas?: Json | null
           reteste_sessao_id?: string | null
           texto_ia?: string | null
           tipo?: string
@@ -15518,6 +15521,7 @@ export type Database = {
         Returns: Json
       }
       _pedidos_expirar: { Args: never; Returns: undefined }
+      _respostas_expandir: { Args: { p: Json }; Returns: Json }
       _resumo_areas: { Args: { p_registro: string }; Returns: Json }
       _slots_fixos: {
         Args: { p_ate: string; p_de: string; p_terapeuta: string }
@@ -15538,6 +15542,11 @@ export type Database = {
       _terapia_atencao: { Args: { p_tid: string }; Returns: Json }
       _terapia_falta_participar: { Args: { p_tid: string }; Returns: string[] }
       _terapia_novidades: { Args: { p_tid: string }; Returns: Json }
+      _teste_completo_de: {
+        Args: { p_email: string; p_paciente: string }
+        Returns: Json
+      }
+      _teste_partes: { Args: { p_respostas: Json }; Returns: Json }
       acervo_adicionar: {
         Args: {
           p_antes?: number
