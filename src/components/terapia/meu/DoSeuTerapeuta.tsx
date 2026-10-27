@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { Check, ExternalLink, Printer } from "lucide-react";
+import { Check, ChevronDown, ExternalLink, Printer } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { MarcaPortal } from "@/components/impressao/PecasImpressao";
 import { dataAcompanhamento } from '@/lib/meuAcompanhamento';
 import { diaBR } from "@/lib/terapia";
 import { iniciarIndicacoes, linkCurto, linkIndicacao } from "@/lib/terapiaIndicacoes";
-import { alternarFeito, feitoHoje, meu, semanaDoItem, type MinhaFolha } from "@/lib/terapiaMeu";
+import { alternarFeito, feitoHoje, meu, progressoSecao, secoesDaHora, semanaDoItem, type MinhaFolha } from "@/lib/terapiaMeu";
 import "./doSeuTerapeuta.css";
 
 const vistas = new Set<string>();
@@ -42,6 +42,12 @@ export default function DoSeuTerapeuta({ folha, rodape, acompanhamento=false }: 
   };
   const dados = iniciarIndicacoes(folha.dados ?? {});
   const agora = new Date();
+  // No celular começa aberta só a seção da hora do dia; no computador, todas.
+  const [abertas, setAbertas] = useState<Record<string, boolean>>(() => {
+    const daHora = secoesDaHora(agora.getHours());
+    const mobile = window.matchMedia("(max-width: 760px)").matches;
+    return Object.fromEntries((folha.secoes ?? []).map(s => [s.chave, !mobile || daHora.includes(s.chave)]));
+  });
   const blocos: [string, string | null][] = [["Diagnóstico", folha.diagnostico], ["Tratamento", folha.tratamento], ["Retorno", folha.retorno ? (acompanhamento ? dataAcompanhamento(folha.retorno) : new Date(`${folha.retorno}T12:00:00`).toLocaleDateString("pt-BR")) : null]];
 
   return (
