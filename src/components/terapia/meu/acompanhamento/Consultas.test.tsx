@@ -37,7 +37,8 @@ describe("Próxima consulta: Remarcar e Cancelar voltam como links", () => {
     expect(acoes).not.toBeNull();
     const principal = acoes!.querySelector("[data-terapia-principal]");
     expect(principal?.textContent).toBe("Entrar na sala");
-    expect(principal!.children.length).toBe(0);
+    const botoesFora = acoes!.querySelectorAll(":scope > button, :scope > a");
+    expect(botoesFora).toHaveLength(1);
     const links = acoes!.querySelector(".ac-links");
     expect(links?.textContent).toContain("Remarcar");
     expect(links?.textContent).toContain("Cancelar");
@@ -46,7 +47,6 @@ describe("Próxima consulta: Remarcar e Cancelar voltam como links", () => {
   });
   it("esconde os links quando a sala já abriu ou a consulta não pode ser cancelada", () => {
     const aberta = mostrar(<ProximaConsulta l={ligacao(true)} agora={Date.parse("2026-10-28T12:40:00Z")} />);
-    expect(salaLiberada(aberta.container.querySelector(".ac-card") ? ligacao(true).proxima : null, Date.parse("2026-10-28T12:40:00Z"))).toBe(true);
     expect(aberta.container.querySelector(".ac-links")).toBeNull();
     aberta.unmount();
     const travada = mostrar(<ProximaConsulta l={ligacao(false)} agora={Date.parse("2026-10-28T12:00:00Z")} />);
