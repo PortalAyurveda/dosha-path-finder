@@ -1,12 +1,18 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import type { ReactElement } from "react";
 import { cleanup, render } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { MemoryRouter } from "react-router-dom";
 vi.mock("@/integrations/supabase/client", () => ({ supabase: { rpc: vi.fn() } }));
 const { ProximaConsulta } = await import("./Consultas");
-import { salaLiberada, meu, type MeuTerapeutaLigacao } from "@/lib/terapiaMeu";
+import { meu, type MeuTerapeutaLigacao } from "@/lib/terapiaMeu";
 
-const mostrar = (ui: React.ReactElement) =>
-  render(<QueryClientProvider client={new QueryClient()}>{ui}</QueryClientProvider>);
+const mostrar = (ui: ReactElement) =>
+  render(
+    <QueryClientProvider client={new QueryClient()}>
+      <MemoryRouter>{ui}</MemoryRouter>
+    </QueryClientProvider>,
+  );
 
 const cancelar = vi.fn();
 Object.assign(meu, { cancelar, horarios: vi.fn() });
