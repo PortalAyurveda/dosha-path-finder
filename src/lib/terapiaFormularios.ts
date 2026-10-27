@@ -49,7 +49,7 @@ export const formularios = {
     return data as ImportacaoFormulario;
   },
 };
-export const novoFormulario = (): Formulario => ({ nome: '', abertura: '', secoes: [{ id: crypto.randomUUID(), titulo: 'Seção 1' }], perguntas: [], pontua: false, mostrar_resultado: false, envio_primeira: false, envio_retorno: false, origem: 'portal' });
+export const novoFormulario = (): Formulario => ({ nome: '', abertura: '', secoes: [{ id: crypto.randomUUID(), titulo: 'Seção 1' }], perguntas: [], pontua: false, mostrar_resultado: false, envio_primeira: false, envio_retorno: false, origem: 'manual' });
 export const novaPergunta = (secao: string): PerguntaFormulario => ({ id: crypto.randomUUID(), secao, texto: '', tipo: 'texto_curto', obrigatoria: false });
 export const temOpcoes = (tipo: TipoPergunta) => ['escolha', 'varias', 'lista', 'sim_nao'].includes(tipo);
 export function mudarTipo(pergunta: PerguntaFormulario, tipo: TipoPergunta): PerguntaFormulario {
