@@ -15,7 +15,7 @@ import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useSouTerapeuta } from '@/hooks/useSouTerapeuta';
 import { terapia, diaBR, horaBR } from '@/lib/terapia';
-import { INDICACOES_AUTOSAVE_MS, criarIndicacao, diagnosticoDaAvaliacao, iniciarIndicacoes, inserirIndicacao, moverIndicacao } from '@/lib/terapiaIndicacoes';
+import { INDICACOES_AUTOSAVE_MS, criarIndicacao, diagnosticoDaAvaliacao, iniciarIndicacoes, inserirIndicacao, moverIndicacao, situacaoIndicacoes } from '@/lib/terapiaIndicacoes';
 import type { FolhaIndicacoes, FonteIndicacao, FontesIndicacoes, RascunhoIndicacoes } from '@/lib/terapiaIndicacoes';
 import ComecarFolha from '@/components/terapia/indicacoes/ComecarFolha';
 import Modelos from '@/components/terapia/indicacoes/Modelos';
