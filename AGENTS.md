@@ -1,5 +1,7 @@
 # Project Rules
 
+- Keep consultation forms RPC contracts and serialized response saves in terapiaFormularios, with dedicated library/editor/import/results views and a lazy bare patient response route; rely on server-owned dispatch and scoring so snapshots and private points never mix with assessments.
+
 - Keep the therapist's complete-test table, historical-response sheet and scoring-display helpers in dedicated therapy modules; use only server-returned historical points and match the record before combining test data to avoid mixing different tests.
 
 - Keep admin students orchestration in its page and the original Formation workflow isolated from the RPC-only general student views; load release configuration once per page so every dialog uses the same server-defined options.
