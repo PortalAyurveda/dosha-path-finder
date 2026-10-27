@@ -22,3 +22,7 @@ export function juntarModelo(atual:DadosIndicacoes,modelo:Partial<DadosIndicacoe
  return {...atual,secoes};
 }
 export function filtrarModelos(lista:ModeloIndicacoes[],busca:string,dosha:string){return lista.filter(m=>(!dosha||m.dosha?.toLowerCase().split(/[^a-z]+/).includes(dosha.toLowerCase()))&&`${m.nome} ${m.tags?.join(' ')??''}`.toLowerCase().includes(busca.toLowerCase()));}
+/** Dosha principal (primeira palavra) em minúsculas. */
+export const doshaPrincipal=(d?:string|null)=>(d??'').toLowerCase().match(/vata|pitta|kapha/)?.[0]??'';
+/** Folhas prontas: as que combinam com o dosha principal do teste vêm primeiro. */
+export function ordenarPorTeste(lista:ModeloIndicacoes[],dosha?:string|null){const d=doshaPrincipal(dosha);const combina=(m:ModeloIndicacoes)=>!!d&&doshaPrincipal(m.dosha)===d;return lista.map(m=>({...m,combina:combina(m)})).sort((a,b)=>Number(b.combina)-Number(a.combina));}

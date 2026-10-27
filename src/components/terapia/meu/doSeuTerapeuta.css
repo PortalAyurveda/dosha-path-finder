@@ -16,3 +16,30 @@
 .dst-secao.fechada .dst-seta{transform:rotate(-90deg)}
 .dst-secao.fechada .dst-corpo{display:none}
 @media print {.do-seu-terapeuta.imprimir-este .dst-corpo{display:block!important}}
+
+/* Parte 22 · Seu dia */
+.seu-dia{display:flex;flex-direction:column;gap:10px}
+.seu-dia .sd-topo{display:flex;gap:10px;align-items:flex-start}
+.seu-dia .sd-topo h2{font-family:'Roboto Serif',Georgia,serif;font-size:24px;font-weight:700;color:hsl(var(--primary))}
+.seu-dia .sd-topo p{font-size:13px;color:hsl(var(--muted-foreground))}
+.sd-acontece{background:hsl(var(--therapist-purple-soft));border:1px solid hsl(var(--primary)/.15);border-radius:12px;padding:12px 14px}
+.sd-acontece h3,.sd-eti{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:hsl(var(--muted-foreground));margin-bottom:4px}
+.sd-acontece p{white-space:pre-wrap;font-size:15px;line-height:1.5}
+.sd-cartao{background:hsl(var(--card));border:1px solid hsl(var(--border));border-radius:12px;padding:12px 14px}
+.sd-barra{display:flex;width:100%;align-items:center;gap:8px;background:none;border:0;padding:0;text-align:left;font-family:'Roboto Serif',Georgia,serif;font-size:16px;font-weight:700;color:hsl(var(--primary))}
+.sd-barra>span{flex:1}.sd-barra small{font:500 12.5px 'DM Sans',sans-serif;color:hsl(var(--muted-foreground))}
+.sd-seta{transition:transform .18s;flex:none;color:hsl(var(--muted-foreground))}.sd-cartao.fechada .sd-seta{transform:rotate(-90deg)}
+.sd-cartao ul{margin-top:6px}
+.sd-cartao li{display:grid;grid-template-columns:24px minmax(0,1fr);gap:10px;padding:9px 0;border-top:1px solid hsl(var(--muted));align-items:start}
+.sd-cartao li:first-child{border-top:0}
+.sd-ck{width:22px;height:22px;border-radius:6px}
+.sd-ck[data-state=checked]{background:hsl(var(--therapist-green-ink));border-color:hsl(var(--therapist-green-ink))}
+.sd-cartao li b{font-size:15px;display:block}.sd-cartao li small{display:block;font-size:13px;color:hsl(var(--muted-foreground))}
+.sd-cartao li small a{font-size:inherit;line-height:inherit;font-weight:600;color:hsl(var(--primary))}
+.sd-cartao li.feito b{text-decoration:line-through;color:hsl(var(--muted-foreground))}
+.sd-proxima p{font-size:15px}.sd-proxima a{font-size:13.5px;font-weight:600;color:hsl(var(--primary))}
+.seu-dia .sd-cartao>h3{text-transform:none;letter-spacing:0;margin:0}
+.seu-dia .sd-barra,.seu-dia .sd-barra>span{text-transform:none;letter-spacing:0;font-size:16px}
+.seu-dia .sd-barra small{text-transform:none;letter-spacing:0;font-size:12.5px}
+.seu-dia .sd-cartao li small,.seu-dia .sd-cartao li small *{font-size:13px;line-height:1.4}
+.seu-dia .sd-barra>span{font-family:'Roboto Serif',Georgia,serif!important;font-weight:700}
