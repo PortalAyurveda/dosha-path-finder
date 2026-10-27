@@ -5,12 +5,15 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { terapia } from '@/lib/terapia';
-import { COR,DOSHAS,NOMES,especificacoes,marcada,sintoma,somas,novaMarca,sugereNivel } from '@/lib/terapiaAvaliacao';
+import { COR,DOSHAS,NOMES,especificacoes,marcada,marcadosNoSistema,sintoma,somas,novaMarca,sugereNivel } from '@/lib/terapiaAvaliacao';
+import { ChevronDown } from 'lucide-react';
 import type { Biblioteca,ConteudoFicha,DadosAvaliacao,ItemClinico,Leitura,Marca,Setor } from '@/lib/terapiaAvaliacao';
 import Marcacao,{BotoesMarca,Etiquetas,Niveis,EditorMarca} from './Marcacao';
 interface Props { setor:Setor; dados:DadosAvaliacao; conteudo:ConteudoFicha; leitura:Leitura; resumo:string; biblioteca:Biblioteca; userId?:string; mudar:(d:DadosAvaliacao)=>void; ler:(l:Leitura)=>void; resumir:(s:string)=>void; guardar:(b:Biblioteca)=>Promise<boolean> }
 export default function Setores({setor,dados,conteudo:c,leitura,resumo,biblioteca,userId,mudar,ler,resumir,guardar}:Props) {
  const [busca,setBusca]=useState('');const [soMarcados,setSoMarcados]=useState(false);const [modo,setModo]=useState('escola');const [sdAberto,setSdAberto]=useState<string|null>(null);const [novaSpec,setNovaSpec]=useState('');
+ const [sistAbertos,setSistAbertos]=useState<Record<string,boolean>>({});
+ const [dhAbertos,setDhAbertos]=useState<Record<string,boolean>>(()=>Object.fromEntries(c.DHATUS.map(d=>[d.n,['f','up','ml'].some(k=>{const m=dados.marcas[`dhatu:${d.n}:${k}`];return m&&marcada(m);})])));
  const pesquisa=useQuery({queryKey:['avaliacao-busca',userId,busca.trim()],queryFn:()=>terapia.conhecimentoBusca(busca.trim()),enabled:busca.trim().length>=2});
  const marcar=(m:Marca)=>mudar({...dados,marcas:{...dados.marcas,[m.id]:m}});
  const tirar=(id:string)=>{const marcas={...dados.marcas};delete marcas[id];mudar({...dados,marcas});};
