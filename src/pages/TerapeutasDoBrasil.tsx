@@ -67,8 +67,6 @@ const TerapeutasDoBrasil = () => {
     let results = lista.filter((t) => {
       if (!q) return true;
       if (locationMode) {
-        const chipsAtende = useMemo(() => contarAtendimento((terapeutas ?? []) as any[]), [terapeutas]);
-
   return (
           t.cidade?.toLowerCase().includes(q) ||
           t.estado?.toLowerCase().includes(q)
@@ -109,6 +107,8 @@ const TerapeutasDoBrasil = () => {
       .map(([nome, total]) => ({ nome, total }))
       .sort((a, b) => b.total - a.total || a.nome.localeCompare(b.nome));
   }, [terapeutas]);
+
+  const chipsAtende = useMemo(() => contarAtendimento((terapeutas ?? []) as any[]), [terapeutas]);
 
   return (
     <>
