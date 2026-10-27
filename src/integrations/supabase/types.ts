@@ -15518,6 +15518,7 @@ export type Database = {
         Returns: Json
       }
       _pedidos_expirar: { Args: never; Returns: undefined }
+      _resumo_areas: { Args: { p_registro: string }; Returns: Json }
       _slots_fixos: {
         Args: { p_ate: string; p_de: string; p_terapeuta: string }
         Returns: {
