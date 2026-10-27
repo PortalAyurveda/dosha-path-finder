@@ -2211,6 +2211,138 @@ export type Database = {
         }
         Relationships: []
       }
+      backup_objetivo_edsonayurveda_20261026: {
+        Row: {
+          agni_nivel_atual: number | null
+          agni_nivel_meta: number | null
+          agni_tipo: string | null
+          alimentos_kapha_atual: number | null
+          alimentos_kapha_meta: number | null
+          alimentos_pitta_atual: number | null
+          alimentos_pitta_meta: number | null
+          alimentos_vata_atual: number | null
+          alimentos_vata_meta: number | null
+          causas: Json | null
+          created_at: string | null
+          dados_completos_llm: Json | null
+          data_fim: string | null
+          data_inicio: string | null
+          dosha_registro_id: string | null
+          frase_clinica: string | null
+          id: string | null
+          idade: number | null
+          imc_atual: number | null
+          imc_meta: number | null
+          kapha_atual: number | null
+          kapha_meta: number | null
+          kapha_status: string | null
+          n8n_response: Json | null
+          narrativa_clinica: Json | null
+          narrativa_enqueued_at: string | null
+          o_que_e: string | null
+          objetivos: Json | null
+          objetivos_status: Json | null
+          pitta_atual: number | null
+          pitta_meta: number | null
+          pitta_status: string | null
+          primario_slug: string | null
+          primario_tipo: string | null
+          status: string | null
+          suplementar_slug: string | null
+          upgrade_kit_slug: string | null
+          user_email: string | null
+          vata_atual: number | null
+          vata_meta: number | null
+          vata_status: string | null
+        }
+        Insert: {
+          agni_nivel_atual?: number | null
+          agni_nivel_meta?: number | null
+          agni_tipo?: string | null
+          alimentos_kapha_atual?: number | null
+          alimentos_kapha_meta?: number | null
+          alimentos_pitta_atual?: number | null
+          alimentos_pitta_meta?: number | null
+          alimentos_vata_atual?: number | null
+          alimentos_vata_meta?: number | null
+          causas?: Json | null
+          created_at?: string | null
+          dados_completos_llm?: Json | null
+          data_fim?: string | null
+          data_inicio?: string | null
+          dosha_registro_id?: string | null
+          frase_clinica?: string | null
+          id?: string | null
+          idade?: number | null
+          imc_atual?: number | null
+          imc_meta?: number | null
+          kapha_atual?: number | null
+          kapha_meta?: number | null
+          kapha_status?: string | null
+          n8n_response?: Json | null
+          narrativa_clinica?: Json | null
+          narrativa_enqueued_at?: string | null
+          o_que_e?: string | null
+          objetivos?: Json | null
+          objetivos_status?: Json | null
+          pitta_atual?: number | null
+          pitta_meta?: number | null
+          pitta_status?: string | null
+          primario_slug?: string | null
+          primario_tipo?: string | null
+          status?: string | null
+          suplementar_slug?: string | null
+          upgrade_kit_slug?: string | null
+          user_email?: string | null
+          vata_atual?: number | null
+          vata_meta?: number | null
+          vata_status?: string | null
+        }
+        Update: {
+          agni_nivel_atual?: number | null
+          agni_nivel_meta?: number | null
+          agni_tipo?: string | null
+          alimentos_kapha_atual?: number | null
+          alimentos_kapha_meta?: number | null
+          alimentos_pitta_atual?: number | null
+          alimentos_pitta_meta?: number | null
+          alimentos_vata_atual?: number | null
+          alimentos_vata_meta?: number | null
+          causas?: Json | null
+          created_at?: string | null
+          dados_completos_llm?: Json | null
+          data_fim?: string | null
+          data_inicio?: string | null
+          dosha_registro_id?: string | null
+          frase_clinica?: string | null
+          id?: string | null
+          idade?: number | null
+          imc_atual?: number | null
+          imc_meta?: number | null
+          kapha_atual?: number | null
+          kapha_meta?: number | null
+          kapha_status?: string | null
+          n8n_response?: Json | null
+          narrativa_clinica?: Json | null
+          narrativa_enqueued_at?: string | null
+          o_que_e?: string | null
+          objetivos?: Json | null
+          objetivos_status?: Json | null
+          pitta_atual?: number | null
+          pitta_meta?: number | null
+          pitta_status?: string | null
+          primario_slug?: string | null
+          primario_tipo?: string | null
+          status?: string | null
+          suplementar_slug?: string | null
+          upgrade_kit_slug?: string | null
+          user_email?: string | null
+          vata_atual?: number | null
+          vata_meta?: number | null
+          vata_status?: string | null
+        }
+        Relationships: []
+      }
       backup_objetivo_portalayurveda_20261026: {
         Row: {
           agni_nivel_atual: number | null
@@ -2343,6 +2475,42 @@ export type Database = {
         }
         Relationships: []
       }
+      backup_rotina_edsonayurveda_20261026: {
+        Row: {
+          created_at: string | null
+          dia: number | null
+          id: string | null
+          nugget_id: string | null
+          praticado: boolean | null
+          semana: number | null
+          slot: string | null
+          status: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          dia?: number | null
+          id?: string | null
+          nugget_id?: string | null
+          praticado?: boolean | null
+          semana?: number | null
+          slot?: string | null
+          status?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          dia?: number | null
+          id?: string | null
+          nugget_id?: string | null
+          praticado?: boolean | null
+          semana?: number | null
+          slot?: string | null
+          status?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       backup_rotina_portalayurveda_20261026: {
         Row: {
           created_at: string | null
@@ -2454,6 +2622,87 @@ export type Database = {
         }
         Relationships: []
       }
+      backup_terapeuta_teste_20261026: {
+        Row: {
+          cidade: string | null
+          codigo: string | null
+          "created date": string | null
+          email: string | null
+          especialidade: string | null
+          estado: string | null
+          formado_desde: number | null
+          frase_card: string | null
+          id: string | null
+          imagem: string | null
+          imagem_card: string | null
+          "imagem.1": string | null
+          instagram: string | null
+          nome: string | null
+          owner: string | null
+          pais: string | null
+          resumo: string | null
+          status: string | null
+          "terapeutas(dinamica)": string | null
+          title: string | null
+          "updated date": string | null
+          user_id: string | null
+          website: string | null
+          whatsapp: string | null
+        }
+        Insert: {
+          cidade?: string | null
+          codigo?: string | null
+          "created date"?: string | null
+          email?: string | null
+          especialidade?: string | null
+          estado?: string | null
+          formado_desde?: number | null
+          frase_card?: string | null
+          id?: string | null
+          imagem?: string | null
+          imagem_card?: string | null
+          "imagem.1"?: string | null
+          instagram?: string | null
+          nome?: string | null
+          owner?: string | null
+          pais?: string | null
+          resumo?: string | null
+          status?: string | null
+          "terapeutas(dinamica)"?: string | null
+          title?: string | null
+          "updated date"?: string | null
+          user_id?: string | null
+          website?: string | null
+          whatsapp?: string | null
+        }
+        Update: {
+          cidade?: string | null
+          codigo?: string | null
+          "created date"?: string | null
+          email?: string | null
+          especialidade?: string | null
+          estado?: string | null
+          formado_desde?: number | null
+          frase_card?: string | null
+          id?: string | null
+          imagem?: string | null
+          imagem_card?: string | null
+          "imagem.1"?: string | null
+          instagram?: string | null
+          nome?: string | null
+          owner?: string | null
+          pais?: string | null
+          resumo?: string | null
+          status?: string | null
+          "terapeutas(dinamica)"?: string | null
+          title?: string | null
+          "updated date"?: string | null
+          user_id?: string | null
+          website?: string | null
+          whatsapp?: string | null
+        }
+        Relationships: []
+      }
       backup_terapeutas_especialidade_20261026: {
         Row: {
           especialidade: string | null
@@ -2508,6 +2757,147 @@ export type Database = {
           chave?: string | null
           descricao?: string | null
           valor?: Json | null
+        }
+        Relationships: []
+      }
+      backup_teste_edsonayurveda_20261026: {
+        Row: {
+          agniforte: number | null
+          agnifraco: number | null
+          agniirregular: number | null
+          agniPrincipal: string | null
+          agravKaphaTags: string | null
+          agravPittaTags: string | null
+          agravVataTags: string | null
+          aliment: string | null
+          alimKapha: string | null
+          alimPitta: string | null
+          alimVata: string | null
+          altura: string | null
+          cidade: string | null
+          conhecimentoAyurveda: string | null
+          created_at: string | null
+          criado_por: string | null
+          cupom_id: string | null
+          diagn: string | null
+          doshaprincipal: string | null
+          email: string | null
+          espiritual: string | null
+          estado: string | null
+          foto_lingua_path: string | null
+          foto_lingua_url: string | null
+          id: string | null
+          idade: number | null
+          idPublico: string | null
+          imc: number | null
+          kaphascore: number | null
+          mentoria: string | null
+          nome: string | null
+          objetivo1: string | null
+          objetivo2: string | null
+          pais: string | null
+          peso: string | null
+          pittascore: number | null
+          produtos: string | null
+          relato_aberto: string | null
+          remedios: string | null
+          reteste_sessao_id: string | null
+          texto_ia: string | null
+          tipo: string | null
+          user_id: string | null
+          vatascore: number | null
+        }
+        Insert: {
+          agniforte?: number | null
+          agnifraco?: number | null
+          agniirregular?: number | null
+          agniPrincipal?: string | null
+          agravKaphaTags?: string | null
+          agravPittaTags?: string | null
+          agravVataTags?: string | null
+          aliment?: string | null
+          alimKapha?: string | null
+          alimPitta?: string | null
+          alimVata?: string | null
+          altura?: string | null
+          cidade?: string | null
+          conhecimentoAyurveda?: string | null
+          created_at?: string | null
+          criado_por?: string | null
+          cupom_id?: string | null
+          diagn?: string | null
+          doshaprincipal?: string | null
+          email?: string | null
+          espiritual?: string | null
+          estado?: string | null
+          foto_lingua_path?: string | null
+          foto_lingua_url?: string | null
+          id?: string | null
+          idade?: number | null
+          idPublico?: string | null
+          imc?: number | null
+          kaphascore?: number | null
+          mentoria?: string | null
+          nome?: string | null
+          objetivo1?: string | null
+          objetivo2?: string | null
+          pais?: string | null
+          peso?: string | null
+          pittascore?: number | null
+          produtos?: string | null
+          relato_aberto?: string | null
+          remedios?: string | null
+          reteste_sessao_id?: string | null
+          texto_ia?: string | null
+          tipo?: string | null
+          user_id?: string | null
+          vatascore?: number | null
+        }
+        Update: {
+          agniforte?: number | null
+          agnifraco?: number | null
+          agniirregular?: number | null
+          agniPrincipal?: string | null
+          agravKaphaTags?: string | null
+          agravPittaTags?: string | null
+          agravVataTags?: string | null
+          aliment?: string | null
+          alimKapha?: string | null
+          alimPitta?: string | null
+          alimVata?: string | null
+          altura?: string | null
+          cidade?: string | null
+          conhecimentoAyurveda?: string | null
+          created_at?: string | null
+          criado_por?: string | null
+          cupom_id?: string | null
+          diagn?: string | null
+          doshaprincipal?: string | null
+          email?: string | null
+          espiritual?: string | null
+          estado?: string | null
+          foto_lingua_path?: string | null
+          foto_lingua_url?: string | null
+          id?: string | null
+          idade?: number | null
+          idPublico?: string | null
+          imc?: number | null
+          kaphascore?: number | null
+          mentoria?: string | null
+          nome?: string | null
+          objetivo1?: string | null
+          objetivo2?: string | null
+          pais?: string | null
+          peso?: string | null
+          pittascore?: number | null
+          produtos?: string | null
+          relato_aberto?: string | null
+          remedios?: string | null
+          reteste_sessao_id?: string | null
+          texto_ia?: string | null
+          tipo?: string | null
+          user_id?: string | null
+          vatascore?: number | null
         }
         Relationships: []
       }
@@ -16814,7 +17204,7 @@ export type Database = {
         Args: { d: string; s: Json; val: number }
         Returns: string
       }
-      md_grafico_html_de: { Args: { d: Json }; Returns: string }
+      md_grafico_html_de: { Args: { d: Json; p_cfg?: Json }; Returns: string }
       md_html_agni: { Args: { meta: number; nivel: number }; Returns: string }
       md_html_quadro: {
         Args: { k: number; p: number; v: number }
@@ -16867,6 +17257,18 @@ export type Database = {
       md_posicao:
         | { Args: { p_dosha: string; p_v: number }; Returns: number }
         | { Args: { d: string; s: number }; Returns: number }
+      md_regs: {
+        Args: { p_id: string; p_user: string }
+        Returns: {
+          agni: string
+          created_at: string
+          kapha: number
+          m: string
+          pitta: number
+          tipo: string
+          vata: number
+        }[]
+      }
       md_regua: { Args: { d: string }; Returns: number[] }
       md_rev: { Args: { p_sess: string }; Returns: Json }
       md_rodape: { Args: { frase: string; lk?: string }; Returns: string }
@@ -16935,6 +17337,10 @@ export type Database = {
       }
       meu_dosha_grafico_dados: { Args: { p_idpublico: string }; Returns: Json }
       meu_dosha_grafico_html: { Args: { p_idpublico: string }; Returns: string }
+      meu_dosha_grafico_previa: {
+        Args: { p_caso: string; p_cfg: Json }
+        Returns: string
+      }
       meu_terapeuta: { Args: never; Returns: Json }
       meus_agravamentos: {
         Args: never
@@ -17364,6 +17770,10 @@ export type Database = {
       }
       terapia_bloqueio_tirar: { Args: { p_id: string }; Returns: undefined }
       terapia_bloqueios: { Args: never; Returns: Json }
+      terapia_busca_portal: {
+        Args: { p_limite?: number; p_q: string }
+        Returns: Json
+      }
       terapia_config_publica: { Args: never; Returns: Json }
       terapia_config_salvar: {
         Args: { p_chave: string; p_valor: Json }
