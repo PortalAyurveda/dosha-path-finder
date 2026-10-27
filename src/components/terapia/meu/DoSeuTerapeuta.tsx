@@ -59,7 +59,7 @@ export default function DoSeuTerapeuta({ folha, rodape, acompanhamento=false }: 
       {folha.diagnostico?.trim() && <section className="sd-acontece"><h3>O que está acontecendo</h3><p>{folha.diagnostico}</p></section>}
       {momentos.map(s => {
         const itens = dados.secoes[s.chave] ?? [];
-        const aberta = abertas[s.chave] ?? true;
+        const aberta = imprimindo || (abertas[s.chave] ?? true);
         const feitosNaSecao = itens.filter(i => feitoHoje(feitos, i.id, agora)).length;
         return (
           <section key={s.chave} className={`sd-cartao ${aberta ? "" : "fechada"}`}>
