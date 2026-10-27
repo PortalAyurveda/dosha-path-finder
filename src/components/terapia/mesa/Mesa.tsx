@@ -16,7 +16,7 @@ export function MesaHeader({nome,userId,direita}:{nome?:string;userId?:string;di
 
 const PONTOS=[['V','vata','Vata'],['P','pitta','Pitta'],['K','kapha','Kapha']] as const;
 /** Corpo do teste da pessoa (só leitura), usado na coluna da ficha, na sala e na aba Teste do quadro. */
-export function TesteCorpo({ficha,anterior}:{ficha:FichaPaciente;anterior?:AvaliacaoLista}) {
+export function TesteCorpo({ficha,anterior,fotos}:{ficha:FichaPaciente;anterior?:AvaliacaoLista;fotos?:ReactNode}) {
  const t=ficha.teste;
  return <>
   {ficha.permissoes.teste&&t&&<p className="m-muted">{[t.idade!=null?`${t.idade} anos`:null,[t.cidade,t.estado].filter(Boolean).join('/')||null,t.data?`teste de ${diaBR(t.data)}`:null].filter(Boolean).join(' · ')}</p>}
@@ -26,6 +26,7 @@ export function TesteCorpo({ficha,anterior}:{ficha:FichaPaciente;anterior?:Avali
    {([['Sintomas dos doshas',t.queixas],['Come muito',t.alimentos]] as const).map(([titulo,itens])=>marcadosPorDosha(itens).length>0&&<section key={titulo}><h3 className="m-eti">{titulo}</h3><MarcadosDosha grupos={itens}/></section>)}
    {t.relato&&<section><h3 className="m-eti">O que escreveu</h3><p className="m-rel whitespace-pre-wrap">“{t.relato}”</p></section>}
   </>}
+  {fotos}
   {anterior&&<section><h3 className="m-eti">Avaliação anterior · {diaBR(anterior.criado_em)}</h3><div><span className="m-tag">{PONTOS.map(([d])=>`${d}${anterior.leitura?.[d]??0}`).join(' · ')}</span></div>{anterior.resumo&&<p className="m-muted whitespace-pre-wrap">{anterior.resumo}</p>}</section>}
  </>;
 }

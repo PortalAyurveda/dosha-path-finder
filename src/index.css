@@ -58,6 +58,8 @@ body {
 
     /* Dosha colors */
     --vata: 228 100% 71%;
+    --sand: 43 30% 94%;
+    --sand-line: 42 27% 86%;
     --pitta: 0 100% 73%;
     --kapha: 105 50% 70%;
     --vata-ink: 228 65% 45%;

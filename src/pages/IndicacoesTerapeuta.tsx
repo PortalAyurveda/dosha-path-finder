@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Link, Navigate, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Helmet } from 'react-helmet-async';
@@ -45,6 +45,9 @@ function Editor({folha,fontes,terapeuta,userId,ficha}:{ficha:FichaPaciente;folha
  const mover=(id:string,s:string,i?:number)=>mudar(r=>({...r,dados:moverIndicacao(r.dados,id,s,i)}));
  const sensores=useSensors(useSensor(PointerSensor,{activationConstraint:{distance:8}}),useSensor(KeyboardSensor,{coordinateGetter:sortableKeyboardCoordinates}));
  const quando=distanciaRetorno(rascunho.retorno);
+ // "O que está acontecendo" cresce com o texto, sem rolagem interna.
+ const areaRef=useRef<HTMLTextAreaElement>(null);
+ useLayoutEffect(()=>{const el=areaRef.current;if(!el)return;el.style.height='auto';el.style.height=`${el.scrollHeight+2}px`;},[rascunho.diagnostico]);
  const usarModelo=async(m:{id:string})=>{setOcupado(true);try{const modelo=await modelosTerapia.modelo(m.id);mudar(r=>({...r,dados:juntarModelo(r.dados,iniciarIndicacoes(modelo.dados??{})),diagnostico:[r.diagnostico,modelo.tratamento].filter(t=>t?.trim()).join('\n')}));setJuntar(false);}catch(e){setErro(e instanceof Error?e.message:String(e));}finally{setOcupado(false);}};
  return <main className="mesa mesa-indicacoes fe"><MesaHeader nome={terapeuta}/>
  <div className="fe-barra"><p className="fe-volta"><Button variant="link" disabled={ocupado} onClick={()=>void abrir(`${base}?aba=consultas`)}>← {folha.paciente_nome}</Button><small> · Consulta de {new Date(folha.criado_em).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'})} · {folha.avaliacao?'Avaliação concluída · ':''}{situacaoIndicacoes({enviada_em:enviada})}</small></p>
@@ -59,7 +62,7 @@ function Editor({folha,fontes,terapeuta,userId,ficha}:{ficha:FichaPaciente;folha
    {!fichaAberta&&<Button variant="outline" size="sm" className="fe-ver-ficha" onClick={()=>setFichaAberta(true)}>Ver ficha</Button>}
    <article className="fe-papel">
     <div className="fe-parte"><span>1</span><h3>O que está acontecendo</h3>{folha.avaliacao&&<button type="button" className="fe-link" onClick={()=>mudar(r=>({...r,diagnostico:[r.diagnostico,diagnosticoDaAvaliacao(folha.avaliacao)].filter(t=>t.trim()).join('\n')}))}>Trazer da avaliação</button>}</div>
-    <Textarea aria-label="O que está acontecendo" className="fe-area" placeholder="Em palavras simples: o que está acontecendo e o que vamos fazer" value={rascunho.diagnostico} onChange={e=>mudar(r=>({...r,diagnostico:e.target.value}))}/>
+    <Textarea ref={areaRef} rows={3} aria-label="O que está acontecendo" className="fe-area" placeholder="Em palavras simples: o que está acontecendo e o que vamos fazer" value={rascunho.diagnostico} onChange={e=>mudar(r=>({...r,diagnostico:e.target.value}))}/>
     <div className="fe-parte"><span>2</span><h3>O que fazer</h3></div>
     {secoes.map(s=><Secao key={s.chave} secao={s} itens={rascunho.dados.secoes[s.chave]??[]} aberta={abertas[s.chave]??false} abrir={()=>setAbertas(a=>({...a,[s.chave]:true}))} piscando={piscando} buscar={()=>setBuscaAberta(true)} livre={(s,t)=>inserir(s,{titulo:t,tipo:'texto'})} nota={(id,v)=>mudar(r=>({...r,dados:{...r.dados,secoes:Object.fromEntries(Object.entries(r.dados.secoes).map(([s,itens])=>[s,itens.map(i=>i.id===id?{...i,nota:v}:i)]))}}))} tirar={id=>mudar(r=>({...r,dados:{...r.dados,secoes:Object.fromEntries(Object.entries(r.dados.secoes).map(([s,itens])=>[s,itens.filter(i=>i.id!==id)]))}}))}/>)}
     <div className="fe-parte"><span>3</span><h3>Próxima consulta</h3></div>

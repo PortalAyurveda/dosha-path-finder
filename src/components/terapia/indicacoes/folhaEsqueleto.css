@@ -54,3 +54,4 @@
  .fe-barra{padding:8px 12px}.fe-acoes button{height:34px;padding:4px 10px;font-size:12.5px}
  .fe-nota{text-align:left;padding:4px 12px}
 }
+.fe-area{overflow:hidden;resize:none;min-height:84px}
