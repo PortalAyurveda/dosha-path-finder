@@ -1600,6 +1600,50 @@ export type Database = {
         }
         Relationships: []
       }
+      assinatura_cancelamentos_admin: {
+        Row: {
+          acesso_ate: string | null
+          assinatura_id: string
+          criado_em: string
+          criado_por: string
+          feito_em: string | null
+          id: string
+          motivo: string | null
+          resposta: Json | null
+          status: string
+        }
+        Insert: {
+          acesso_ate?: string | null
+          assinatura_id: string
+          criado_em?: string
+          criado_por?: string
+          feito_em?: string | null
+          id?: string
+          motivo?: string | null
+          resposta?: Json | null
+          status?: string
+        }
+        Update: {
+          acesso_ate?: string | null
+          assinatura_id?: string
+          criado_em?: string
+          criado_por?: string
+          feito_em?: string | null
+          id?: string
+          motivo?: string | null
+          resposta?: Json | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assinatura_cancelamentos_admin_assinatura_id_fkey"
+            columns: ["assinatura_id"]
+            isOneToOne: false
+            referencedRelation: "assinaturas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       assinatura_cobrancas: {
         Row: {
           billing_reason: string | null
@@ -2184,6 +2228,27 @@ export type Database = {
         }
         Relationships: []
       }
+      backup_indicacoes_secoes_20261027: {
+        Row: {
+          atualizado_em: string | null
+          chave: string | null
+          descricao: string | null
+          valor: Json | null
+        }
+        Insert: {
+          atualizado_em?: string | null
+          chave?: string | null
+          descricao?: string | null
+          valor?: Json | null
+        }
+        Update: {
+          atualizado_em?: string | null
+          chave?: string | null
+          descricao?: string | null
+          valor?: Json | null
+        }
+        Relationships: []
+      }
       backup_nomes_12_08_2026: {
         Row: {
           criado_em: string
@@ -2757,6 +2822,45 @@ export type Database = {
           chave?: string | null
           descricao?: string | null
           valor?: Json | null
+        }
+        Relationships: []
+      }
+      backup_terapia_folha_modelos_20261027: {
+        Row: {
+          dados: Json | null
+          id: string | null
+          tratamento: string | null
+        }
+        Insert: {
+          dados?: Json | null
+          id?: string | null
+          tratamento?: string | null
+        }
+        Update: {
+          dados?: Json | null
+          id?: string | null
+          tratamento?: string | null
+        }
+        Relationships: []
+      }
+      backup_terapia_folhas_20261027: {
+        Row: {
+          dados: Json | null
+          diagnostico: string | null
+          id: string | null
+          tratamento: string | null
+        }
+        Insert: {
+          dados?: Json | null
+          diagnostico?: string | null
+          id?: string | null
+          tratamento?: string | null
+        }
+        Update: {
+          dados?: Json | null
+          diagnostico?: string | null
+          id?: string | null
+          tratamento?: string | null
         }
         Relationships: []
       }
