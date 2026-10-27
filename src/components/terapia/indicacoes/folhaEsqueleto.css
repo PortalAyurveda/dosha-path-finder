@@ -1,0 +1,56 @@
+/* Parte 22 · folha esqueleto: tela fixa na altura da janela, cada coluna rola sozinha */
+.mesa-indicacoes.fe{height:100dvh;display:flex;flex-direction:column;overflow:hidden;background:hsl(var(--background))}
+.fe-barra{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 18px;background:hsl(var(--card));border-bottom:1px solid var(--m-line);flex:none}
+.fe-volta{min-width:0}.fe-volta>button{height:auto;padding:0;font-size:15px!important;color:var(--m-ink)}.fe-volta small{font-size:12.5px!important;color:var(--m-muted)!important}
+.fe-acoes{display:flex;gap:6px;flex-wrap:wrap;align-items:center}.fe-acoes button{height:38px;padding:6px 13px;font-size:13.5px;font-weight:600}
+.fe-nota{font-size:12px!important;color:var(--m-muted)!important;text-align:right;padding:4px 18px;flex:none}
+.fe-corpo{flex:1;min-height:0;display:grid;grid-template-columns:260px minmax(0,1fr) 360px}
+.fe-corpo.sem-ficha{grid-template-columns:minmax(0,1fr) 360px}.fe-corpo.sem-busca{grid-template-columns:260px minmax(0,1fr)}.fe-corpo.sem-ficha.sem-busca{grid-template-columns:minmax(0,1fr)}
+.fe-ficha{min-height:0;overflow:auto;background:hsl(var(--surface-sun));border-right:1px solid var(--m-line)}
+.fe-ficha .ind-ficha{position:static;max-height:none;background:transparent;border:0;overflow:visible}
+.fe-meio{min-height:0;overflow:auto;padding:14px 18px 60px;position:relative}
+.fe-ver-ficha{position:absolute;left:12px;top:12px}.fe-mob{display:none}
+.fe-papel{background:hsl(var(--card));border:1px solid var(--m-line);border-radius:12px;padding:18px 22px;max-width:760px;margin:0 auto;font-size:14px}
+.fe-parte{display:flex;gap:10px;align-items:center;margin:20px 0 8px}.fe-parte:first-child{margin-top:0}
+.fe-parte>span{width:24px;height:24px;border-radius:50%;background:var(--m-ink);color:hsl(var(--primary-foreground))!important;display:grid;place-items:center;font:700 12px 'DM Sans',sans-serif!important;flex:none}
+.fe-parte h3{font-size:17px;flex:1}
+.fe-link{background:none;border:0;padding:0;font-size:12.5px;color:var(--m-muted);text-decoration:underline;cursor:pointer}
+.fe-area{border:1px solid var(--m-line);border-radius:10px;min-height:72px;font-size:14px;background:transparent}
+.fe-momento{border:1px solid var(--m-line);border-radius:10px;margin-bottom:8px;overflow:hidden}
+.fe-momento.sobre,.fe-vazio.sobre{border-color:hsl(var(--primary));background:hsl(var(--primary)/.04)}
+.fe-momento>h4{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:var(--m-soft);font:700 14px 'DM Sans',sans-serif}
+.fe-momento>h4 small{font-weight:500;color:var(--m-muted);font-size:12.5px!important}
+.fe-linha{display:grid;grid-template-columns:16px minmax(0,1fr) 18px;gap:10px;padding:8px 12px;border-top:1px solid var(--m-soft);align-items:start;background:hsl(var(--card))}
+.fe-linha b{font-size:14px;display:block}.fe-linha b a{color:var(--m-ink);text-decoration:underline;text-underline-offset:2px}
+.fe-linha textarea{display:block;width:100%;border:0;resize:none;overflow:hidden;background:transparent;font-size:12.5px;color:var(--m-muted);padding:0;line-height:1.4;min-height:18px}
+.fe-linha textarea:focus{outline:1px solid var(--m-line);border-radius:4px}
+.fe-alca,.fe-x{background:none;border:0;padding:2px 0;color:var(--m-muted);cursor:pointer}.fe-alca{cursor:grab}
+.fe-linha.novo{animation:ind-novo 1.5s ease-out}.fe-linha.arrastando{opacity:.5}
+.fe-add{display:flex;gap:8px;padding:8px 12px;border-top:1px solid var(--m-soft);align-items:center}
+.fe-add input{flex:1;min-width:0;border:1px dashed var(--m-line);border-radius:8px;padding:6px 10px;font-size:13px;background:transparent}
+.fe-buscar-link{background:none;border:0;color:var(--m-muted);font-size:12.5px;text-decoration:underline;cursor:pointer;white-space:nowrap}
+.fe-vazio{display:flex;width:100%;justify-content:space-between;align-items:center;padding:9px 12px;color:var(--m-muted);font-weight:600;font-size:13.5px;border:1px dashed var(--m-line);border-radius:10px;margin-bottom:8px;background:transparent;cursor:pointer}
+.fe-vazio:hover{color:var(--m-ink)}.fe-vazio small{font-weight:500;font-size:12px!important}
+.fe-data{display:flex;gap:10px;align-items:center}.fe-data input{max-width:200px}.fe-data small{color:var(--m-muted);font-size:13px!important}
+.fe-lado{min-height:0;overflow:auto;background:hsl(var(--card));border-left:1px solid var(--m-line)}
+.fe-busca{padding:12px 14px;display:flex;flex-direction:column;gap:10px}
+.fe-busca>header{display:flex;justify-content:space-between;align-items:center}.fe-busca h3{font-size:17px}
+.fe-bt{border:1.5px solid var(--m-ink);border-radius:8px;padding:4px 10px;font-size:12.5px;font-weight:600;background:hsl(var(--card));color:var(--m-ink)}
+.fe-abas{display:flex;gap:4px;flex-wrap:wrap}
+.fe-abas button{border:1.5px solid var(--m-line);border-radius:999px;padding:3px 10px;font-size:12.5px;font-weight:600;color:var(--m-muted);background:transparent}
+.fe-abas button[aria-pressed=true]{background:var(--m-ink);border-color:var(--m-ink);color:hsl(var(--primary-foreground))}
+.fe-caixas{display:flex;flex-direction:column;gap:6px}
+.fe-cx{border:1px solid var(--m-line);border-radius:10px;padding:8px 10px;display:flex;justify-content:space-between;gap:8px;align-items:center;font-size:13.5px;cursor:grab;background:hsl(var(--card))}
+.fe-cx b{font-weight:600;display:block}.fe-cx small{display:block;color:var(--m-muted);font-size:12px!important}
+.fe-cx.ja{opacity:.55}
+.fe-mais{width:26px;height:26px;border-radius:50%;background:var(--m-ink);color:hsl(var(--primary-foreground));display:grid;place-items:center;flex:none;border:0;cursor:pointer}.fe-mais:disabled{cursor:default}
+.fe-qd{font-size:12px!important;color:var(--m-muted)!important}
+.fe-buscar-fixo{position:fixed;right:18px;bottom:18px;z-index:30;box-shadow:0 8px 24px -10px hsl(var(--primary)/.6)}
+@media(max-width:980px){
+ .fe-corpo,.fe-corpo.sem-ficha,.fe-corpo.sem-busca{grid-template-columns:minmax(0,1fr)}
+ .fe-ficha,.fe-lado{position:fixed;inset:0;z-index:40;border:0}
+ .fe-ver-ficha{display:none}.fe-mob{display:block;margin-bottom:10px}
+ .fe-meio{padding:12px 10px 80px}.fe-papel{padding:14px 12px}
+ .fe-barra{padding:8px 12px}.fe-acoes button{height:34px;padding:4px 10px;font-size:12.5px}
+ .fe-nota{text-align:left;padding:4px 12px}
+}
