@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Check, Plus } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -20,7 +20,7 @@ function Imagem({ foto, className, alt }: { foto: FotoPaciente; className?: stri
   const url = useQuery({ queryKey: ['avaliacao-foto-url', foto.id, foto.path], queryFn: () => terapia.fotoAssinada(foto), staleTime: 50 * 60 * 1000, gcTime: 0 });
   return url.data ? <img src={url.data} alt={alt} className={className} /> : <span className="text-xs text-muted-foreground">{url.error ? url.error.message : 'Carregando…'}</span>;
 }
-function Ampliar({ titulo, children, abrir, fechar }: { titulo: string; children: React.ReactNode; abrir: boolean; fechar: () => void }) {
+function Ampliar({ titulo, children, abrir, fechar }: { titulo: string; children: ReactNode; abrir: boolean; fechar: () => void }) {
   return <Dialog open={abrir} onOpenChange={v => { if (!v) fechar(); }}><DialogContent className="max-h-[95dvh] max-w-4xl overflow-y-auto p-4"><DialogTitle>{titulo}</DialogTitle><DialogDescription className="sr-only">Foto ampliada</DialogDescription><div className="grid place-items-center [&_img]:max-h-[75dvh] [&_img]:max-w-full [&_img]:object-contain">{children}</div></DialogContent></Dialog>;
 }
 const doTipo = (tipo?: string, setor?: string) => !!tipo && !!setor && (tipo === setor || tipo.startsWith(setor));
@@ -56,7 +56,7 @@ export function SugestoesTeste({ lista, confirmar }: { lista: { nome: string; do
 }
 
 /** Os três cartões das etapas (são abas) e o cartão tracejado "+ Aprofundar". */
-export function CartoesEtapas({ etapa, contar, ir, compacto, aprofundar }: { etapa: Etapa; contar: (e: Etapa) => number; ir: (e: Etapa) => void; compacto: boolean; aprofundar: React.ReactNode }) {
+export function CartoesEtapas({ etapa, contar, ir, compacto, aprofundar }: { etapa: Etapa; contar: (e: Etapa) => number; ir: (e: Etapa) => void; compacto: boolean; aprofundar: ReactNode }) {
   return <nav className={`et-trilho ${compacto ? 'compacto' : ''}`} aria-label="Etapas da avaliação">{ETAPAS.map((e, i) => { const n = contar(e.id); return <button type="button" key={e.id} aria-pressed={etapa === e.id} className={`et ${etapa === e.id ? 'on' : ''} ${n > 0 ? 'feito' : ''}`} onClick={() => ir(e.id)}><span className="n">{n > 0 && etapa !== e.id ? <Check size={13} /> : i + 1}</span><span className="min-w-0"><b>{e.nome}{n > 0 ? ` · ${n}` : ''}</b>{!compacto && <small>{e.sub}</small>}</span></button>; })}{aprofundar}</nav>;
 }
 
