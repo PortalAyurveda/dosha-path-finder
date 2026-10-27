@@ -10,3 +10,9 @@
   .do-seu-terapeuta.imprimir-este h3 { break-after: avoid; }
   .do-seu-terapeuta.imprimir-este li { break-inside: avoid; }
 }
+/* Parte 20 · sanfona das seções da folha */
+.dst-barra{display:flex;align-items:center;gap:6px;background:none;border:0;padding:0;cursor:pointer;font:inherit;color:inherit;text-align:left}
+.dst-seta{flex:none;transition:transform .18s ease;color:hsl(var(--muted-foreground))}
+.dst-secao.fechada .dst-seta{transform:rotate(-90deg)}
+.dst-secao.fechada .dst-corpo{display:none}
+@media print {.do-seu-terapeuta.imprimir-este .dst-corpo{display:block!important}}

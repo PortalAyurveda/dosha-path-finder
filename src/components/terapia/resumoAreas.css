@@ -1,0 +1,38 @@
+/* Parte 20 · Resumo por área na página da pessoa */
+.resumo-areas .ra-frase{background:hsl(var(--muted)/.5);border-radius:10px;padding:10px 12px;font-size:14px;margin-bottom:14px}
+.ra-eti{font:700 11px/1.5 'DM Sans',sans-serif;text-transform:uppercase;letter-spacing:.06em;color:hsl(var(--muted-foreground));margin:16px 0 8px}
+.ra-barras{display:grid;gap:6px}
+.ra-linha{display:grid;grid-template-columns:76px 1fr;align-items:center;gap:10px;font-size:13px}
+.ra-dosha.ra-vata{color:hsl(var(--vata-ink))}
+.ra-dosha.ra-pitta{color:hsl(var(--pitta-ink))}
+.ra-dosha.ra-kapha{color:hsl(var(--kapha-ink))}
+.ra-barra{display:flex;height:16px;border-radius:6px;overflow:hidden;background:hsl(var(--muted)/.5)}
+.ra-barra i{display:block;height:100%}
+.ra-barra.ra-vata .q1{background:hsl(var(--vata))}.ra-barra.ra-vata .q2{background:hsl(var(--vata)/.55)}.ra-barra.ra-vata .q3{background:hsl(var(--vata)/.28)}
+.ra-barra.ra-pitta .q1{background:hsl(var(--pitta))}.ra-barra.ra-pitta .q2{background:hsl(var(--pitta)/.55)}.ra-barra.ra-pitta .q3{background:hsl(var(--pitta)/.28)}
+.ra-barra.ra-kapha .q1{background:hsl(var(--kapha))}.ra-barra.ra-kapha .q2{background:hsl(var(--kapha)/.55)}.ra-barra.ra-kapha .q3{background:hsl(var(--kapha)/.3)}
+.ra-legenda{display:flex;gap:14px;flex-wrap:wrap;font-size:11px;color:hsl(var(--muted-foreground));margin-top:8px}
+.ra-legenda i{display:inline-block;width:10px;height:10px;border-radius:3px;vertical-align:-1px;margin-right:4px}
+.ra-legenda .l1{background:hsl(var(--muted-foreground))}
+.ra-legenda .l2{background:hsl(var(--muted-foreground)/.55)}
+.ra-legenda .l3{background:hsl(var(--muted-foreground)/.25)}
+.ra-sub{font-size:12px;color:hsl(var(--muted-foreground));margin-top:6px}
+.ra-intro{margin:0 0 10px}
+.ra-agni{display:flex;gap:8px;flex-wrap:wrap;font-size:13px}
+.ra-agni span{border:1px solid hsl(var(--border));border-radius:8px;padding:4px 10px}
+.ra-agni .forte{border-color:hsl(var(--primary));font-weight:700}
+.ra-area{display:grid;grid-template-columns:150px 1fr;gap:4px 12px;padding:10px 0;border-top:1px solid hsl(var(--muted)/.6);align-items:start}
+.ra-area:first-of-type{border-top:0}
+.ra-area h3{font-size:13px;font-weight:700}
+.ra-area h3 small{display:block;font-weight:400;color:hsl(var(--muted-foreground));font-size:11px}
+.ra-falta{border-radius:999px;padding:3px 9px;font-size:12px;line-height:1.5;font-weight:500;border:1px dashed hsl(var(--border));color:hsl(var(--muted-foreground));background:hsl(var(--card))}
+.ra-lig{border:1px solid hsl(var(--border));border-radius:10px;padding:10px 12px;margin-bottom:10px}
+.ra-lig.ok{border-color:hsl(var(--therapist-yellow));background:hsl(var(--therapist-yellow-soft))}
+.ra-lig h3{font-size:14px;font-weight:700;display:flex;justify-content:space-between;gap:8px}
+.ra-lig h3>span{font-weight:500;font-size:12px;color:hsl(var(--muted-foreground))}
+.ra-junto{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;font-size:12px;align-items:center;color:hsl(var(--muted-foreground))}
+.ra-j{border-radius:6px;padding:1px 8px;border:1px solid hsl(var(--border));color:hsl(var(--foreground))}
+.ra-j.tem{background:hsl(var(--primary));color:hsl(var(--primary-foreground));border-color:hsl(var(--primary))}
+.ra-j.nao{color:hsl(var(--muted-foreground))}
+.ra-relato{font-style:italic;font-size:14px;white-space:pre-wrap;line-height:1.6}
+@media(max-width:640px){.ra-area{grid-template-columns:1fr}}

@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { Check, ExternalLink, Printer } from "lucide-react";
+import { Check, ChevronDown, ExternalLink, Printer } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { MarcaPortal } from "@/components/impressao/PecasImpressao";
 import { dataAcompanhamento } from '@/lib/meuAcompanhamento';
 import { diaBR } from "@/lib/terapia";
 import { iniciarIndicacoes, linkCurto, linkIndicacao } from "@/lib/terapiaIndicacoes";
-import { alternarFeito, feitoHoje, meu, semanaDoItem, type MinhaFolha } from "@/lib/terapiaMeu";
+import { alternarFeito, feitoHoje, meu, progressoSecao, secoesDaHora, semanaDoItem, type MinhaFolha } from "@/lib/terapiaMeu";
 import "./doSeuTerapeuta.css";
 
 const vistas = new Set<string>();
@@ -42,6 +42,12 @@ export default function DoSeuTerapeuta({ folha, rodape, acompanhamento=false }: 
   };
   const dados = iniciarIndicacoes(folha.dados ?? {});
   const agora = new Date();
+  // No celular começa aberta só a seção da hora do dia; no computador, todas.
+  const [abertas, setAbertas] = useState<Record<string, boolean>>(() => {
+    const daHora = secoesDaHora(agora.getHours());
+    const mobile = window.matchMedia("(max-width: 760px)").matches;
+    return Object.fromEntries((folha.secoes ?? []).map(s => [s.chave, !mobile || daHora.includes(s.chave)]));
+  });
   const blocos: [string, string | null][] = [["Diagnóstico", folha.diagnostico], ["Tratamento", folha.tratamento], ["Retorno", folha.retorno ? (acompanhamento ? dataAcompanhamento(folha.retorno) : new Date(`${folha.retorno}T12:00:00`).toLocaleDateString("pt-BR")) : null]];
 
   return (
@@ -60,10 +66,12 @@ export default function DoSeuTerapeuta({ folha, rodape, acompanhamento=false }: 
       {(folha.secoes ?? []).map(s => {
         const itens = dados.secoes[s.chave] ?? [];
         if (!itens.length) return null;
+        const aberta = abertas[s.chave] ?? true;
+        const feitosNaSecao = itens.filter(i => feitoHoje(feitos, i.id, agora)).length;
         return (
-          <section key={s.chave} className="mt-5">
-            <h3 className="mb-2 font-serif text-base font-bold text-primary">{s.titulo}</h3>
-            <ul className="space-y-2">
+          <section key={s.chave} className={`dst-secao mt-5 ${aberta ? "" : "fechada"}`}>
+            <h3 className="mb-2 font-serif text-base font-bold text-primary"><button type="button" className="dst-barra no-print" aria-expanded={aberta} onClick={() => setAbertas(a => ({ ...a, [s.chave]: !aberta }))}><ChevronDown size={16} className="dst-seta" aria-hidden="true" /><span>{aberta ? s.titulo : progressoSecao(s.titulo, feitosNaSecao, itens.length)}</span></button><span className="so-impressao">{s.titulo}</span></h3>
+            <ul className="dst-corpo space-y-2">
               {itens.map(i => {
                 const link = linkIndicacao(i);
                 const hoje = feitoHoje(feitos, i.id, agora);

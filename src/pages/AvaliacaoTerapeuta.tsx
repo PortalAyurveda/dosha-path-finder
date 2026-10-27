@@ -7,9 +7,9 @@ import { Switch } from '@/components/ui/switch';
 import { Dialog,DialogContent,DialogTitle,DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { useSouTerapeuta } from '@/hooks/useSouTerapeuta';
-import { terapia } from '@/lib/terapia';
+import { terapia,diaBR } from '@/lib/terapia';
 import type { FichaPaciente } from '@/lib/terapiaPaciente';
-import { AUTOSAVE_MS,DOSHAS,SETORES,iniciarDados,nivel,marcada,somas } from '@/lib/terapiaAvaliacao';
+import { AUTOSAVE_MS,DOSHAS,SETORES,iniciarDados,nivel,marcada,situacaoAvaliacao,somas } from '@/lib/terapiaAvaliacao';
 import type { Avaliacao,Biblioteca,ConteudoFicha,DadosAvaliacao,Leitura,Setor } from '@/lib/terapiaAvaliacao';
 import Setores from '@/components/terapia/avaliacao/Setores';
 import Fotos from '@/components/terapia/avaliacao/Fotos';
@@ -53,7 +53,7 @@ export function Editor({avaliacao,ficha,conteudo,biblioteca,userId,embedded=fals
  const resumoBase:BaseQuadro={chave:'resumo',nome:'Resumo da avaliação',linhas:[{b:'Sua leitura',t:DOSHAS.map(d=>`${d} ${estado.leitura[d]}`).join(' · ')},{b:'Ama',t:DOSHAS.map(d=>`${d} ${estado.dados.ama[d]}`).join(' · ')}],texto:estado.resumo};
  const quadroEl=quadro&&<Suspense fallback={<div role="status" className="mesa-qa p-6">Carregando quadro…</div>}><Quadro onLocalSave={treino?(q:QuadroSalvo)=>{setQuadroInicial(q);onQuadroLocal?.(q);}:undefined} onExibir={onExibir} treino={treino} consulta={consulta} videoTopo={videoTopo} fotosTreino={fotosTreino} avaliacao={avaliacao.id} userId={userId} ficha={ficha} conteudo={conteudo} dados={estado.dados} mudar={mudar} fichaEditor={painel(true)} testeBloco={testeCorpo} resumoBase={resumoBase} fechar={()=>{setQuadro(false);onQuadroChange?.(false);}} inicial={quadroInicial}/></Suspense>;
  if(embedded)return <div className="mesa-sala-ficha-in"><div className="cab-pessoa"><h2>{ficha.nome}</h2><button type="button" className="m-btn" onClick={()=>setTeste(!teste)}>{teste?'Fechar teste':'Abrir teste'}</button></div>{teste&&<div className="teste-aberto">{testeCorpo}</div>}{painel(false)}{quadroEl}</div>;
- return <div className="mesa"><MesaHeader userId={userId}/>{quadro?quadroEl:<><div className="mesa-volta"><button type="button" disabled={saindo} onClick={voltar}>← {ficha.nome}</button></div><div className={`mesa-ficha ${teste?'':'sem-teste'}`}><aside className="mesa-teste" aria-label="Teste da pessoa"><div className="cab"><h2>{ficha.nome}</h2><button type="button" className="m-btn" onClick={()=>setTeste(!teste)}>{teste?'Fechar teste':'Ver teste'}</button></div>{teste&&testeCorpo}</aside><div className="mesa-av">{painel(false)}</div></div></>}</div>;
+ return <div className="mesa"><MesaHeader userId={userId}/>{quadro?quadroEl:<><div className="mesa-volta"><button type="button" disabled={saindo} onClick={voltar}>← {ficha.nome}</button></div><p className="mesa-contexto">{ficha.nome} · {avaliacao.consulta_inicio?`Consulta de ${diaBR(avaliacao.consulta_inicio)}`:`Criada em ${diaBR(avaliacao.criado_em)}`} · {situacaoAvaliacao(avaliacao)}</p><div className={`mesa-ficha ${teste?'':'sem-teste'}`}><aside className="mesa-teste" aria-label="Teste da pessoa"><div className="cab"><h2>{ficha.nome}</h2><button type="button" className="m-btn" onClick={()=>setTeste(!teste)}>{teste?'Fechar teste':'Ver teste'}</button></div>{teste&&testeCorpo}</aside><div className="mesa-av">{painel(false)}</div></div></>}</div>;
 }
 export default function AvaliacaoTerapeuta() {
  const {id,avaliacaoId}=useParams();const [params]=useSearchParams();const acesso=useSouTerapeuta();const navigate=useNavigate();const [erroNova,setErroNova]=useState('');const criando=useRef(false);
