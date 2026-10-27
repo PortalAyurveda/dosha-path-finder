@@ -18,7 +18,7 @@
 .fe-area{border:1px solid var(--m-line);border-radius:10px;min-height:72px;font-size:14px;background:transparent}
 .fe-momento{border:1px solid var(--m-line);border-radius:10px;margin-bottom:8px;overflow:hidden}
 .fe-momento.sobre,.fe-vazio.sobre{border-color:hsl(var(--primary));background:hsl(var(--primary)/.04)}
-.fe-momento>h4{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:var(--m-soft);font:700 14px 'DM Sans',sans-serif}
+.fe-momento>h4{color:var(--m-ink);display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:var(--m-soft);font:700 14px 'DM Sans',sans-serif}
 .fe-momento>h4 small{font-weight:500;color:var(--m-muted);font-size:12.5px!important}
 .fe-linha{display:grid;grid-template-columns:16px minmax(0,1fr) 18px;gap:10px;padding:8px 12px;border-top:1px solid var(--m-soft);align-items:start;background:hsl(var(--card))}
 .fe-linha b{font-size:14px;display:block}.fe-linha b a{color:var(--m-ink);text-decoration:underline;text-underline-offset:2px}
