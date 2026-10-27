@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { COR } from '@/lib/terapiaAvaliacao';
 import { terapia } from '@/lib/terapia';
 import type { ItemAcervo } from '@/lib/terapiaAcervo';
-import { inicioYoutube,linkSeguro } from '@/lib/terapiaAcervo';
+import { inicioYoutube,linkSeguro,nomeDoTipo } from '@/lib/terapiaAcervo';
 export function EfeitosAcervo({item}:{item:Pick<ItemAcervo,'vata'|'pitta'|'kapha'>}) {return <div className="my-3 flex flex-wrap gap-2">{([['V',item.vata],['P',item.pitta],['K',item.kapha]] as const).map(([d,n])=>n!==0?<span key={d} className={`rounded border px-2 py-1 text-xs ${COR[d]}`}>{d}{n<0?'−':'+'}</span>:null)}</div>;}
 export default function ConteudoAcervo({item,compacto=false}:{item:ItemAcervo;compacto?:boolean}) {
  const arquivo=useQuery({queryKey:['acervo-arquivo',item.arquivo_path],queryFn:()=>terapia.arquivoAssinado('terapeutas-acervo',item.arquivo_path??''),enabled:!compacto&&!!item.arquivo_path,staleTime:50*60*1000,gcTime:0});

@@ -312,7 +312,7 @@ export default function Adicoes({
               })
             }
           >
-            Guardar área na minha biblioteca
+            Guardar área na Biblioteca pessoal
           </Button>
         </div>
       )}

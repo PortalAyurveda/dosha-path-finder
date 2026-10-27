@@ -5,6 +5,8 @@ export const novoAcervo=():ItemAcervo=>({tipo:'texto',titulo:'',resumo:'',subcat
 export type AnexoAcervo = '' | 'foto' | 'pdf' | 'link';
 export function youtubeId(link:string) { try { const u=new URL(/^https?:/.test(link)?link:`https://${link}`); if(u.hostname==='youtu.be')return u.pathname.slice(1).split('/')[0]; if(/(^|\.)youtube\.com$/.test(u.hostname))return u.searchParams.get('v')??u.pathname.match(/\/(?:embed|shorts)\/([^/]+)/)?.[1]??''; }catch{} return ''; }
 export function tipoDoAnexo(anexo:AnexoAcervo,link='') { return anexo==='foto'?'foto':anexo==='pdf'?'arquivo':anexo==='link'?(youtubeId(link)?'aula':'link'):'texto'; }
+const NOMES_TIPO:Record<string,string>={texto:'Texto',foto:'Foto',arquivo:'PDF',aula:'Vídeo',link:'Link',receita:'Receita',pratica:'Prática',indicacao:'Indicação',artigo:'Artigo'};
+export function nomeDoTipo(tipo:string) { return NOMES_TIPO[tipo]??(tipo?tipo[0].toUpperCase()+tipo.slice(1):tipo); }
 export function textoDoAcervo(item:ItemAcervo) {
  const c=item.conteudo??{}; const partes:string[]=[];
  const adicionar=(titulo:string,v:unknown)=>{if(v!==undefined&&v!==null&&String(v).trim())partes.push(`${titulo?`${titulo}\n`:''}${String(v)}`);};
