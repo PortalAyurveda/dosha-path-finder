@@ -22,7 +22,7 @@
 .seu-dia .sd-topo{display:flex;gap:10px;align-items:flex-start}
 .seu-dia .sd-topo h2{font-family:'Roboto Serif',Georgia,serif;font-size:24px;font-weight:700;color:hsl(var(--primary))}
 .seu-dia .sd-topo p{font-size:13px;color:hsl(var(--muted-foreground))}
-.sd-acontece{background:hsl(var(--primary)/.05);border:1px solid hsl(var(--primary)/.18);border-radius:12px;padding:12px 14px}
+.sd-acontece{background:hsl(var(--therapist-purple-soft));border:1px solid hsl(var(--primary)/.15);border-radius:12px;padding:12px 14px}
 .sd-acontece h3,.sd-eti{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:hsl(var(--muted-foreground));margin-bottom:4px}
 .sd-acontece p{white-space:pre-wrap;font-size:15px;line-height:1.5}
 .sd-cartao{background:hsl(var(--card));border:1px solid hsl(var(--border));border-radius:12px;padding:12px 14px}
@@ -35,6 +35,6 @@
 .sd-ck{width:22px;height:22px;border-radius:6px}
 .sd-ck[data-state=checked]{background:hsl(var(--therapist-green-ink));border-color:hsl(var(--therapist-green-ink))}
 .sd-cartao li b{font-size:15px;display:block}.sd-cartao li small{display:block;font-size:13px;color:hsl(var(--muted-foreground))}
-.sd-cartao li small a{font-weight:600;color:hsl(var(--primary))}
+.sd-cartao li small a{font-size:inherit;line-height:inherit;font-weight:600;color:hsl(var(--primary))}
 .sd-cartao li.feito b{text-decoration:line-through;color:hsl(var(--muted-foreground))}
 .sd-proxima p{font-size:15px}.sd-proxima a{font-size:13.5px;font-weight:600;color:hsl(var(--primary))}
