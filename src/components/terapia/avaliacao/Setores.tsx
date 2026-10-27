@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
@@ -9,7 +10,7 @@ import { COR,DOSHAS,NOMES,especificacoes,marcada,marcadosNoSistema,sintoma,somas
 import { ChevronDown } from 'lucide-react';
 import type { Biblioteca,ConteudoFicha,DadosAvaliacao,ItemClinico,Leitura,Marca,Setor } from '@/lib/terapiaAvaliacao';
 import Marcacao,{BotoesMarca,Etiquetas,Niveis,EditorMarca} from './Marcacao';
-interface Props { setor:Setor; dados:DadosAvaliacao; conteudo:ConteudoFicha; leitura:Leitura; resumo:string; biblioteca:Biblioteca; userId?:string; mudar:(d:DadosAvaliacao)=>void; ler:(l:Leitura)=>void; resumir:(s:string)=>void; guardar:(b:Biblioteca)=>Promise<boolean>; topo?:React.ReactNode }
+interface Props { setor:Setor; dados:DadosAvaliacao; conteudo:ConteudoFicha; leitura:Leitura; resumo:string; biblioteca:Biblioteca; userId?:string; mudar:(d:DadosAvaliacao)=>void; ler:(l:Leitura)=>void; resumir:(s:string)=>void; guardar:(b:Biblioteca)=>Promise<boolean>; topo?:ReactNode }
 export default function Setores({setor,dados,conteudo:c,leitura,resumo,biblioteca,userId,mudar,ler,resumir,guardar,topo}:Props) {
  const [busca,setBusca]=useState('');const [soMarcados,setSoMarcados]=useState(false);const [modo,setModo]=useState('escola');const [sdAberto,setSdAberto]=useState<string|null>(null);const [novaSpec,setNovaSpec]=useState('');
  const [sistAbertos,setSistAbertos]=useState<Record<string,boolean>>({});
