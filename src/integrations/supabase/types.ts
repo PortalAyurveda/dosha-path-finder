@@ -9262,6 +9262,24 @@ export type Database = {
         }
         Relationships: []
       }
+      meu_dosha_grafico_config: {
+        Row: {
+          atualizado_em: string
+          cfg: Json
+          id: number
+        }
+        Insert: {
+          atualizado_em?: string
+          cfg: Json
+          id?: number
+        }
+        Update: {
+          atualizado_em?: string
+          cfg?: Json
+          id?: number
+        }
+        Relationships: []
+      }
       meu_dosha_plantas: {
         Row: {
           chave: string
@@ -16786,14 +16804,17 @@ export type Database = {
       md_esc: { Args: { t: string }; Returns: string }
       md_estado: { Args: { p_ref: string; p_uid: string }; Returns: Json }
       md_faixa: { Args: { z: number }; Returns: string }
+      md_faixa_nome: { Args: { p_dosha: string; p_v: number }; Returns: string }
       md_faixa_normal: {
         Args: { p_dosha: string }
         Returns: Record<string, unknown>
       }
+      md_faixas: { Args: { p_dosha: string }; Returns: number[] }
       md_frase_faltam: {
         Args: { d: string; s: Json; val: number }
         Returns: string
       }
+      md_grafico_html_de: { Args: { d: Json }; Returns: string }
       md_html_agni: { Args: { meta: number; nivel: number }; Returns: string }
       md_html_quadro: {
         Args: { k: number; p: number; v: number }
@@ -16843,7 +16864,9 @@ export type Database = {
         Args: { s: Json; texto: string; titulo?: string }
         Returns: string
       }
-      md_posicao: { Args: { d: string; s: number }; Returns: number }
+      md_posicao:
+        | { Args: { p_dosha: string; p_v: number }; Returns: number }
+        | { Args: { d: string; s: number }; Returns: number }
       md_regua: { Args: { d: string }; Returns: number[] }
       md_rev: { Args: { p_sess: string }; Returns: Json }
       md_rodape: { Args: { frase: string; lk?: string }; Returns: string }
@@ -16868,6 +16891,10 @@ export type Database = {
       md_sec_sintomas: { Args: { e: Json; s: Json }; Returns: string }
       md_sec_tipos: { Args: { e: Json; s: Json }; Returns: string }
       md_sintomas: { Args: { tags: string }; Returns: string[] }
+      md_svg: {
+        Args: { cfg: Json; p_cel: boolean; p_dados: Json }
+        Returns: string
+      }
       md_svg_evolucao: {
         Args: { cols: Json; dest: string; gid?: string; w?: number }
         Returns: string
@@ -16906,6 +16933,8 @@ export type Database = {
         Args: { p_idpublico: string; p_meses?: number }
         Returns: Json
       }
+      meu_dosha_grafico_dados: { Args: { p_idpublico: string }; Returns: Json }
+      meu_dosha_grafico_html: { Args: { p_idpublico: string }; Returns: string }
       meu_terapeuta: { Args: never; Returns: Json }
       meus_agravamentos: {
         Args: never

@@ -75,3 +75,6 @@
 - [x] Alunos admin: separar Formação sem alterações e criar lista geral, ficha e diálogos pelas RPCs existentes, sem SQL
 - [x] Alunos admin: 10 testes de regras e conferência em 1366 px e 390 px com respostas simuladas; ficha, extensão, convite, cancelamento, Formação, adicionar e contrato
 - [ ] Alunos admin: validar ações com conta admin real — bloqueado: Supabase externo sem sessão autenticada disponível
+
+- [x] Trocar o gráfico do Meu Dosha pelo HTML pronto do banco (meu_dosha_grafico_html) no mesmo cartão #grafico
+- [ ] Conferir o gráfico do banco com sessão real — bloqueado: Supabase externo sem sessão autenticada disponível
