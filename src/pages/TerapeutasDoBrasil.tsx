@@ -239,7 +239,7 @@ const TerapeutasDoBrasil = () => {
               const sel = atendeSel === chip.nome;
               return (
                 <Button key={chip.nome} type="button" onClick={() => setAtendeSel(sel ? null : chip.nome)} className={cn("h-auto shrink-0 whitespace-nowrap rounded-full px-2.5 py-1 text-[11.5px] font-semibold transition-colors cursor-pointer", sel ? "bg-primary text-primary-foreground" : "bg-muted text-primary")}>
-                  {chip.nome}<span className={sel ? "ml-1 opacity-80" : "ml-1 opacity-60"}>({chip.total})</span>
+                  {chip.nome}<span className={sel ? "ml-1 text-primary-foreground opacity-80" : "ml-1 opacity-60"}>({chip.total})</span>
                 </Button>
               );
             })}
