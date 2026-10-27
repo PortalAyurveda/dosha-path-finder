@@ -15,7 +15,7 @@ const resumo: ResumoAreas = {
 
 describe('Parte 20 · resumo por área', () => {
   it('frase resume queixas, área principal, agni e alimentos do dosha com mais marcas', () => {
-    expect(fraseResumoAreas(resumo)).toBe('Marcou 9 de 42 queixas, a maioria em Mente e sono (3). Agni irregular. Come muito saladas e frutas.');
+    expect(fraseResumoAreas(resumo)).toBe('Marcou 9 de 42 sintomas, a maioria em Mente e sono (3). Agni irregular. Come muito saladas e frutas.');
   });
   it('sem queixas a frase começa pelo agni e usa "e" antes do último alimento', () => {
     expect(fraseResumoAreas({ ...resumo, queixas_total: 0, areas: [] })).toBe('Agni irregular. Come muito saladas e frutas.');

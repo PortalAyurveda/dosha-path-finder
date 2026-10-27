@@ -366,6 +366,7 @@ const [step, setStep] = useState(0);
 
       const dbPayload = {
         idPublico,
+        respostas: answers,
         user_id: sessionUid,
         email: info.email.toLowerCase(),
         nome: info.nome,
