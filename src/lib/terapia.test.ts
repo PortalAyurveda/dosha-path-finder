@@ -32,6 +32,8 @@ const regras = [
   },
 ];
 describe("Regras do painel da terapeuta", () => {
+  it('busca todo o Portal usando seis itens por grupo', async () => { vi.mocked(supabase.rpc as unknown as ReturnType<typeof vi.fn>).mockResolvedValueOnce({data:{q:'yoga',total:0,grupos:[]},error:null} as never); await terapia.buscaPortal('yoga'); expect(supabase.rpc).toHaveBeenCalledWith('terapia_busca_portal',{p_q:'yoga',p_limite:6}); });
+  it('amplia a busca até trinta itens por grupo', async () => { vi.mocked(supabase.rpc as unknown as ReturnType<typeof vi.fn>).mockResolvedValueOnce({data:{q:'yoga',total:0,grupos:[]},error:null} as never); await terapia.buscaPortal('yoga',30); expect(supabase.rpc).toHaveBeenCalledWith('terapia_busca_portal',{p_q:'yoga',p_limite:30}); });
   it('consulta identidade pelo banco sem inferir por perfil público', async () => {
     vi.mocked(supabase.rpc as unknown as ReturnType<typeof vi.fn>).mockResolvedValueOnce({data:false,error:null} as never);
     expect(await terapia.sou()).toBe(false);
