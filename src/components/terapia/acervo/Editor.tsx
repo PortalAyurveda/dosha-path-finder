@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Image, FileText, Link as LinkIcon, Check, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -16,13 +16,15 @@ export default function EditorAcervo({inicial,opcoes,userId,salvo,cancelar}:{ini
  const [link,setLink]=useState(inicial.conteudo.link??'');const [arquivo,setArquivo]=useState<File|null>(null);const [arquivoUrl,setArquivoUrl]=useState('');
  const [detalhes,setDetalhes]=useState(false);const [etiqueta,setEtiqueta]=useState('');const [erro,setErro]=useState('');const [ocupado,setOcupado]=useState(false);
  const [youtube,setYoutube]=useState<{titulo:string;duracao?:string}|null>(null);
+ const videoRef=useRef<HTMLIFrameElement>(null);
+ useEffect(()=>{const receber=(e:MessageEvent)=>{if(e.origin!=='https://www.youtube-nocookie.com'||e.source!==videoRef.current?.contentWindow)return;try{const d=typeof e.data==='string'?JSON.parse(e.data):e.data;const seconds=Number(d.info?.duration);if(seconds>0){const duracao=`${Math.floor(seconds/60)} min${Math.round(seconds%60)?` ${Math.round(seconds%60)} s`:''}`;setYoutube(v=>v?{...v,duracao}:v);}}catch{}};window.addEventListener('message',receber);return()=>window.removeEventListener('message',receber);},[]);
  const campo=(k:keyof ItemAcervo,v:unknown)=>setItem(i=>({...i,[k]:v}));
  useEffect(()=>{if(!arquivo)return;const url=URL.createObjectURL(arquivo);setArquivoUrl(url);return()=>URL.revokeObjectURL(url);},[arquivo]);
  useEffect(()=>{setYoutube(null);if(anexo!=='link'||!youtubeId(link))return;const ctrl=new AbortController();const t=setTimeout(()=>{void fetch(`https://www.youtube.com/oembed?url=${encodeURIComponent(`https://www.youtube.com/watch?v=${youtubeId(link)}`)}&format=json`,{signal:ctrl.signal}).then(r=>{if(!r.ok)throw new Error();return r.json();}).then(d=>setYoutube({titulo:d.title,duracao:String(inicial.conteudo.youtube_duracao??inicial.conteudo.duracao??'')||undefined})).catch(()=>{});},350);return()=>{clearTimeout(t);ctrl.abort();};},[link,anexo,inicial.conteudo]);
  const escolher=(v:AnexoAcervo)=>{setAnexo(v);setArquivo(null);setArquivoUrl('');setErro('');};
  const salvar=async()=>{setOcupado(true);setErro('');let novoPath:string|undefined;let gravado=false;try{
   if(anexo==='link'){const url=new URL(/^https?:/.test(link)?link:`https://${link}`);if(!['https:','http:'].includes(url.protocol))throw new Error('Informe um link válido.');}
-  if((anexo==='foto'||anexo==='pdf')&&!arquivo&&!item.arquivo_path)throw new Error('Escolha o arquivo do anexo.');
+  if((anexo==='foto'||anexo==='pdf')&&!arquivo&&(!item.arquivo_path||(anexo==='foto')!==(inicial.tipo==='foto')))throw new Error('Escolha o arquivo do anexo.');
   if(arquivo){novoPath=`${userId}/${crypto.randomUUID()}-${arquivo.name.replace(/[^a-zA-Z0-9._-]/g,'_')}`;await terapia.arquivoEnviar('terapeutas-acervo',novoPath,arquivo);}
   const p=conteudoUnico({...item,...(novoPath?{arquivo_path:novoPath}:{})},texto,anexo,link);
   if(youtube)p.conteudo={...p.conteudo,youtube_titulo:youtube.titulo,...(youtube.duracao?{youtube_duracao:youtube.duracao}:{})};

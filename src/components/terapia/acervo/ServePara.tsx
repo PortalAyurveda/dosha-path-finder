@@ -7,7 +7,7 @@ import { terapia } from '@/lib/terapia';
 import { COR } from '@/lib/terapiaAvaliacao';
 export default function ServePara({valor,mudar,readonly=false}:{valor:string[];mudar:(v:string[])=>void;readonly?:boolean}) {
  const [busca,setBusca]=useState(''); const [aberto,setAberto]=useState(false);
- const q=useQuery({queryKey:['terapia-ficha-conteudo'],queryFn:terapia.fichaConteudo,enabled:!readonly});
+ const q=useQuery({queryKey:['terapia-ficha-conteudo'],queryFn:terapia.fichaConteudo});
  const grupos=q.data?.SIST??{};
  const lista=Object.values(grupos).flatMap(g=>Object.entries(g).flatMap(([d,s])=>(s??[]).map(nome=>({nome,d}))));
  const unicos=lista.filter((s,i)=>lista.findIndex(x=>x.nome===s.nome)===i);
