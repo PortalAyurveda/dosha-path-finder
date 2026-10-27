@@ -1,6 +1,9 @@
 import { supabase } from '@/integrations/supabase/client';
 import { iniciarIndicacoes, type DadosIndicacoes } from './terapiaIndicacoes';
-export interface ModeloIndicacoes {id:string;nome:string;descricao?:string|null;dosha?:string|null;tags?:string[];itens:number;usos:number;do_portal?:boolean;tratamento?:string|null;dados?:Partial<DadosIndicacoes>}
+export interface ModeloIndicacoes {id:string;nome:string;descricao?:string|null;dosha?:string|null;tags?:string[];serve_para?:string[];duracao_dias?:number|null;itens:number;usos:number;do_portal?:boolean;tratamento?:string|null;dados?:Partial<DadosIndicacoes>}
+export type ModeloGravar = Pick<ModeloIndicacoes,'nome'|'descricao'|'dosha'|'tags'|'serve_para'|'duracao_dias'|'tratamento'|'dados'> & {id?:string};
+export const DURACOES_FOLHA = [7,14,21,30] as const;
+export function alternarDoshaModelo(atual:string,dosha:string) {const ordem=['vata','pitta','kapha'];const lista=atual.split('-').filter(x=>ordem.includes(x));if(!ordem.includes(dosha))return atual;if(lista.includes(dosha))return ordem.filter(x=>lista.includes(x)&&x!==dosha).join('-');if(lista.length>=2)return atual;return ordem.filter(x=>lista.includes(x)||x===dosha).join('-');}
 export interface ComecosFolha {ultima:{id:string;data:string;itens:number}|null;modelos:ModeloIndicacoes[]}
 const rpc = supabase.rpc.bind(supabase) as unknown as (n:string,p?:Record<string,unknown>)=>PromiseLike<{data:unknown;error:{message:string}|null}>;
 async function read<T>(n:string,p?:Record<string,unknown>):Promise<T>{const {data,error}=await rpc(n,p);if(error)throw new Error(error.message);return data as T;}
@@ -9,6 +12,8 @@ export const modelosTerapia={
  novaDe:(paciente:string,modelo:string|null,origem:string|null,avaliacao?:string,consulta?:string)=>read<string>('terapia_folha_nova_de',{p_paciente:paciente,p_modelo:modelo,p_folha_origem:origem,p_avaliacao:avaliacao??null,p_consulta:consulta??null}),
  lista:()=>read<ModeloIndicacoes[]>('terapia_modelos'),
  modelo:(id:string)=>read<ModeloIndicacoes>('terapia_modelo',{p_id:id}),
+ gravar:(p:ModeloGravar)=>read<string>('terapia_modelo_gravar',{p}),
+ copiar:(id:string)=>read<string>('terapia_modelo_copiar',{p_id:id}),
  salvar:(folha:string,nome:string)=>read<string>('terapia_modelo_salvar',{p_folha:folha,p_nome:nome}),
  apagar:(id:string)=>read<void>('terapia_modelo_apagar',{p_id:id}),
 };
@@ -25,4 +30,4 @@ export function filtrarModelos(lista:ModeloIndicacoes[],busca:string,dosha:strin
 /** Dosha principal (primeira palavra) em minúsculas. */
 export const doshaPrincipal=(d?:string|null)=>(d??'').toLowerCase().match(/vata|pitta|kapha/)?.[0]??'';
 /** Folhas prontas: as que combinam com o dosha principal do teste vêm primeiro. */
-export function ordenarPorTeste(lista:ModeloIndicacoes[],dosha?:string|null){const d=doshaPrincipal(dosha);const combina=(m:ModeloIndicacoes)=>!!d&&doshaPrincipal(m.dosha)===d;return lista.map(m=>({...m,combina:combina(m)})).sort((a,b)=>Number(b.combina)-Number(a.combina));}
+export function ordenarPorTeste(lista:ModeloIndicacoes[],dosha?:string|null,sintomas:string[]=[]){const d=doshaPrincipal(dosha);const combina=(m:ModeloIndicacoes)=>(!!d&&doshaPrincipal(m.dosha)===d)||(m.serve_para??[]).some(s=>sintomas.some(q=>q.trim().toLowerCase()===s.trim().toLowerCase()));return lista.map(m=>({...m,combina:combina(m)})).sort((a,b)=>Number(b.combina)-Number(a.combina));}

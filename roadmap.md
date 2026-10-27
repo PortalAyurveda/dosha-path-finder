@@ -1,4 +1,7 @@
 - [x] Criar página de compra do Kit Detox
+- [x] Parte 26: simplificar Bibliotecas, editor único e folhas prontas sem SQL
+- [x] Parte 26: 201 testes e conferência 1366/390 com respostas simuladas; salvar, reler, adicionar e copiar
+- [ ] Parte 26: validar com conta e arquivos reais — bloqueado: Supabase externo sem sessão; duração YouTube depende da informação disponibilizada pelo player
 - [x] Parte 21: guardar respostas, renomear sintomas, tabela e painel do teste completo, agni e pílulas de 12 px sem SQL
 - [x] Parte 21: 30 testes e conferência de painel/Resumo em 1366 px e 390 px com respostas simuladas, incluindo registro antigo e registro de outra data
 - [ ] Parte 21: validar gravação/leitura com conta real e sintomas/alimentos de registro anterior — bloqueado: Supabase externo sem sessão e contrato informado não inclui listas históricas de sintomas/alimentos no teste_completo

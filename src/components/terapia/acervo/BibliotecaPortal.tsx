@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
-import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { terapia, type ItemPortal, type TipoPortal } from "@/lib/terapia";
 import { COR } from "@/lib/terapiaAvaliacao";
 import { linkSeguro } from "@/lib/terapiaAcervo";
+import { modelosTerapia } from '@/lib/terapiaModelos';
+import EditorFolha from './EditorFolha';
 
 export const LIMITE_PORTAL = 24;
 const FILTROS: [TipoPortal, string][] = [["favoritos", "Favoritos"], ["receita", "Receitas"], ["aula", "Aulas"], ["artigo", "Artigos"], ["produto", "Produtos"], ["verso", "Versos"]];
@@ -37,19 +39,23 @@ function Cartao({ item, mudar, ocupado }: { ocupado:boolean; item: ItemPortal; m
   );
 }
 
-export default function BibliotecaPortal() {
+export default function BibliotecaPortal({userId}:{userId?:string}={}) {
   const [pendentes,setPendentes]=useState<string[]>([]);
   const [tipo, setTipo] = useState<TipoPortal>("receita");
   const [digitado, setDigitado] = useState("");
   const [busca, setBusca] = useState("");
   const [erro, setErro] = useState("");
+  const [folhas,setFolhas]=useState(false);const [editor,setEditor]=useState<string>();const [copiando,setCopiando]=useState(false);
   const qc = useQueryClient();
+  const modelos=useQuery({queryKey:['terapia-modelos',userId],queryFn:modelosTerapia.lista,enabled:folhas});
+  const copiar=async(id:string)=>{setCopiando(true);setErro('');try{const novo=await modelosTerapia.copiar(id);await qc.invalidateQueries({queryKey:['terapia-modelos']});setEditor(novo);}catch(e){setErro(e instanceof Error?e.message:String(e));}finally{setCopiando(false);}};
   useEffect(() => { const t = setTimeout(() => setBusca(digitado), 350); return () => clearTimeout(t); }, [digitado]);
   const chave = ["terapia-biblioteca-portal", tipo, busca];
   const q = useInfiniteQuery({
     queryKey: chave,
     queryFn: ({ pageParam }) => terapia.bibliotecaPortal(tipo, busca, LIMITE_PORTAL, pageParam),
     initialPageParam: 0,
+    enabled:!folhas,
     getNextPageParam: (ultima, todas) => (ultima.length < LIMITE_PORTAL ? undefined : todas.length * LIMITE_PORTAL),
   });
   const itens = q.data?.pages.flat() ?? [];
@@ -62,15 +68,18 @@ export default function BibliotecaPortal() {
       void qc.invalidateQueries({ queryKey: ["terapia-biblioteca-portal", "favoritos"] });
     } catch (e) { setErro(e instanceof Error ? e.message : String(e)); } finally {setPendentes(p=>p.filter(k=>k!==key));}
   };
+  if(editor)return <EditorFolha id={editor} voltar={()=>setEditor(undefined)} salvo={()=>{setEditor(undefined);void qc.invalidateQueries({queryKey:['terapia-modelos']});void qc.invalidateQueries({queryKey:['terapia-modelo']});}} copiar={id=>void copiar(id)}/>;
+  const listaFolhas=(modelos.data??[]).filter(m=>m.do_portal&&`${m.nome} ${m.descricao??''} ${m.serve_para?.join(' ')??''}`.toLowerCase().includes(busca.toLowerCase()));
   return (
     <>
       <Input aria-label="Buscar na Biblioteca do Portal" placeholder="Buscar na Biblioteca do Portal" value={digitado} onChange={(e) => setDigitado(e.target.value)} />
       <nav aria-label="Filtrar Biblioteca do Portal" className="my-5 flex flex-wrap gap-2">
-        {FILTROS.map(([v, n]) => <Button key={v} variant="outline" size="sm" aria-pressed={tipo === v} className={tipo === v ? "border-secondary bg-secondary/10" : ""} onClick={() => setTipo(v)}>{n}</Button>)}
+        {FILTROS.map(([v, n]) => <Button key={v} variant="outline" size="sm" aria-pressed={!folhas&&tipo === v} className={!folhas&&tipo === v ? "border-secondary bg-secondary/10" : ""} onClick={() => {setTipo(v);setFolhas(false);}}>{n}</Button>)}
+        <Button variant="outline" size="sm" aria-pressed={folhas} className={folhas?'border-secondary bg-secondary/10':''} onClick={()=>setFolhas(true)}>Folhas prontas</Button>
       </nav>
-      {tipo === "verso" && !busca && <p className="mb-4 text-xs text-muted-foreground">Versos em destaque. Busque para procurar em todos os livros.</p>}
-      {(erro || q.error) && <p role="alert" className="mb-4 text-sm text-destructive">{erro || q.error?.message}</p>}
-      {q.isPending ? <p role="status">Carregando…</p> : (
+      {!folhas&&tipo === "verso" && !busca && <p className="mb-4 text-xs text-muted-foreground">Versos em destaque. Busque para procurar em todos os livros.</p>}
+      {(erro || (!folhas&&q.error) || modelos.error) && <p role="alert" className="mb-4 text-sm text-destructive">{erro || (!folhas?q.error?.message:'') || modelos.error?.message}</p>}
+      {folhas?<>{modelos.isPending?<p role="status">Carregando folhas prontas…</p>:<div className="bibli-grade">{listaFolhas.map(m=><article key={m.id} className="bibli-cartao"><small>Folha pronta{m.dosha&&` · ${m.dosha}`}{m.duracao_dias&&` · ${m.duracao_dias} dias`}</small><h3>{m.nome}</h3><p>{m.descricao||`${m.itens} itens`}</p><div className="bibli-acoes"><Button size="sm" variant="outline" onClick={()=>setEditor(m.id)}>Ver</Button><Button size="sm" variant="outline" disabled={copiando} onClick={()=>void copiar(m.id)}>Copiar para as minhas</Button></div></article>)}</div>}{!modelos.isPending&&!listaFolhas.length&&<p className="py-8 text-muted-foreground">Nenhuma folha pronta encontrada.</p>}</>:q.isPending ? <p role="status">Carregando…</p> : (
         <>
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">{itens.map((i) => <Cartao key={`${i.tipo}:${i.ref}`} item={i} ocupado={pendentes.includes(`${i.tipo}:${i.ref}`)} mudar={(x) => void mudar(x)} />)}</div>
           {!itens.length && <p className="py-8 text-sm text-muted-foreground">{tipo === "favoritos" ? "Nenhum favorito ainda. Toque no coração de um item." : "Nada encontrado."}</p>}
