@@ -17,6 +17,9 @@ export function salaPacienteAberta(consulta: ConsultaPaciente, agora: number) { 
 export function textosMarcados(grupos: Record<string, string | string[] | null> | undefined) {
   return [...new Set(Object.values(grupos ?? {}).flatMap(v => Array.isArray(v) ? v : (v ?? '').split(',')).map(v => v.trim()).filter(Boolean))];
 }
+export function marcadosPorDosha(grupos: TestePaciente['queixas'] | undefined) {
+  return (['vata', 'pitta', 'kapha'] as const).flatMap(dosha => textosMarcados({ [dosha]: grupos?.[dosha] ?? null }).map(texto => ({ dosha, texto })));
+}
 export function guiadasEnviadas(dados: FotosPaciente) { return (dados.guiadas ?? []).filter(g => dados.fotos?.some(f => f.tipo === g.chave)).length; }
 export function fotoRecente(fotos: FotoPaciente[], tipo: string) { return fotos.filter(f => f.tipo === tipo).sort((a,b) => Date.parse(b.criado_em)-Date.parse(a.criado_em))[0]; }
 export function rotinaEmDia(feitos: number) { return feitos >= 5; }

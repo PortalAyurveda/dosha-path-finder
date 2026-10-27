@@ -5,7 +5,7 @@ import type { Convite, PermissoesConvite } from "./terapiaConvite";
 import type { FichaPaciente, FotosPaciente, NascimentoPaciente, RotinaPaciente, HorarioPaciente, FotoPaciente } from "./terapiaPaciente";
 import { FOTO_EXPIRA_SEGUNDOS } from "./terapiaPaciente";
 import type { Carta } from './terapiaAdicoes';
-import type { DadosIndicacoes, FolhaIndicacoes, FolhaIndicacoesLista, FontesIndicacoes } from './terapiaIndicacoes';
+import type { DadosIndicacoes, FolhaIndicacoes, FolhaIndicacoesLista, FontesIndicacoes, FonteIndicacao } from './terapiaIndicacoes';
 import type { ItemAcervo,OpcoesAcervo } from './terapiaAcervo';
 import type { EstadoQuadro,QuadroSalvo } from './terapiaQuadro';
 import type { ConfigPublica, NumerosTerapeuta, PontoAtencao, PreviaConvite, AvaliacaoPublica, ConsultaMarcada } from './terapiaPublica';
@@ -104,6 +104,7 @@ export interface AgendaPublica { no_sistema: boolean; online?: boolean; valor?: 
 export interface TerapeutaNoSistema { id: string; slug: string; online: boolean; valor: number | null; proximo: string | null; numeros?: NumerosTerapeuta; teste?: boolean }
 export type TipoPortal = 'favoritos' | 'receita' | 'aula' | 'artigo' | 'produto' | 'verso';
 export interface ItemPortal { tipo: string; ref: string; titulo?: string; resumo?: string; link?: string; imagem?: string; vata?: number; pitta?: number; kapha?: number; livro?: string; referencia?: string; texto?: string; favorito: boolean }
+export interface BuscaPortal { q: string; total: number; grupos: { tipo: string; titulo: string; total: number; itens: FonteIndicacao[] }[] }
 export interface Hoje {
   atencao?: {tipo:'mensagens'|'fotos'|'sem_folha'|'folha_nao_vista'|'faltam_fotos';texto:string;detalhe?:string;paciente_id:string;nome:string;em:string;consulta_id?:string;folha_id?:string;quantos?:number}[];
   consultas: Consulta[];
@@ -118,6 +119,7 @@ const read = async <T>(
   return data as T;
 };
 export const terapia = {
+  buscaPortal: (texto: string, limite = 6) => read<BuscaPortal>(supabase.rpc('terapia_busca_portal' as any, { p_q: texto, p_limite: limite } as any)),
   config: () => read<ConfigPublica & {acervo_opcoes:OpcoesAcervo}>(supabase.rpc('terapia_config_publica')),
   pontosAtencao: () => read<PontoAtencao[]>(supabase.rpc('meus_pontos_atencao')),
   convitePrevia: (slug: string) => read<PreviaConvite[]>(supabase.rpc('convite_previa', { p_slug: slug })),

@@ -227,7 +227,7 @@ export default function HorariosFixos({
             className="data-[state=checked]:bg-secondary"
           />
         </div>
-        <CTAButton
+        <CTAButton data-terapia-principal
           disabled={
             salvando ||
             agenda.isPending ||

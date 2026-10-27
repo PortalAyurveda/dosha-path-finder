@@ -14,6 +14,7 @@ import Consultas,{ProximaConsulta,AvaliarConsulta} from '@/components/terapia/me
 import Indicacoes from '@/components/terapia/meu/acompanhamento/Indicacoes';
 import Fotos from '@/components/terapia/meu/acompanhamento/Fotos';
 import '@/components/terapia/meu/acompanhamento/acompanhamento.css';
+import '@/components/terapia/acoes.css';
 const Grafico=lazy(()=>import('@/components/meudosha/v2/GraficoMeses'));
 const Conversa=lazy(()=>import('@/components/terapia/chat/Conversa'));
 function Chat({slug}:{slug:string}) {const q=useQuery({queryKey:['chat-abrir',slug],queryFn:()=>chat.abrir(slug)});return q.error?<p role="alert">{q.error.message}</p>:!q.data?<p role="status">Carregando conversa…</p>:<div className="ac-chat"><Suspense fallback={<p>Carregando…</p>}><Conversa key={q.data.id} conversa={q.data} papel="paciente" marcar={()=>window.location.assign(`/terapeutas/${slug}#agenda`)}/></Suspense></div>;}
@@ -28,7 +29,7 @@ export default function MeuAcompanhamento() {
   const head=<Helmet><title>Meu acompanhamento | Portal Ayurveda</title><meta name="description" content="Suas consultas, indicações e avaliações liberadas por seu terapeuta."/><meta name="robots" content="noindex, nofollow"/></Helmet>;
   if(ligacoes.error)return <main className="p-6">{head}<p role="alert">{ligacoes.error.message}</p><Button variant="outline" onClick={()=>void ligacoes.refetch()}>Tentar novamente</Button></main>;
   if(ligacoes.isLoading)return <main className="p-6" role="status">{head}Carregando acompanhamento…</main>;
-  if(!l)return <main className="mx-auto max-w-xl space-y-5 px-6 py-16">{head}<h1 className="font-serif text-[28px] font-bold">Você ainda não tem terapeuta pelo Portal</h1><Button asChild variant="secondary"><Link to="/terapeutas-do-brasil">Encontrar um terapeuta</Link></Button></main>;
+  if(!l)return <main className="mx-auto max-w-xl space-y-5 px-6 py-16">{head}<h1 className="font-serif text-[28px] font-bold">Você ainda não tem terapeuta pelo Portal</h1><Button data-terapia-principal asChild variant="secondary"><Link to="/terapeutas-do-brasil">Encontrar um terapeuta</Link></Button></main>;
   const nome=l.terapeuta.primeiro_nome;const lista=avaliacoesDa(avaliacoes.data??[],l.terapeuta.slug);const ultima=lista[0];const p=pendencias(l,fotos.data,consultas.data);const conversaTotal=conversas.data?.find(c=>c.terapeuta.slug===l.terapeuta.slug)?.nao_lidas??0;
   const counts:Partial<Record<AbaAcompanhamento,number>>={inicio:p.total,indicacoes:p.folhas.length,fotos:p.pedidos.length,consultas:p.avaliar.length,conversa:conversaTotal};
   const nav=<nav aria-label="Abas do acompanhamento" className="ac-nav">{ABAS_ACOMPANHAMENTO.map(([k,n])=><Button variant="ghost" key={k} aria-pressed={aba===k} onClick={()=>trocar(k)}>{n}{!!counts[k]&&<span className="ac-badge">{counts[k]}</span>}</Button>)}</nav>;

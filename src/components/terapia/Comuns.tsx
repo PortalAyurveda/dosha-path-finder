@@ -1,3 +1,4 @@
+import './acoes.css';
 import { ReactNode, useId } from "react";
 import { Switch } from "@/components/ui/switch";
 import { Painel } from "@/lib/terapia";

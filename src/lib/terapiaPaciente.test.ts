@@ -2,8 +2,10 @@ import { describe, it, expect, vi } from 'vitest';
 vi.mock('@/integrations/supabase/client', () => ({ supabase: { rpc: vi.fn(), storage: { from: vi.fn() } } }));
 import { supabase } from '@/integrations/supabase/client';
 import { terapia } from './terapia';
-import { proximaConsulta, salaPacienteAberta, rotinaEmDia, guiadasEnviadas, fotoRecente, textosMarcados } from './terapiaPaciente';
+import { proximaConsulta, salaPacienteAberta, rotinaEmDia, guiadasEnviadas, fotoRecente, textosMarcados, marcadosPorDosha } from './terapiaPaciente';
 describe('Regras da ficha da paciente', () => {
+  it('mantém queixas vinculadas aos doshas na ordem Vata, Pitta, Kapha', () => { expect(marcadosPorDosha({kapha:['Cansaço'],pitta:['Calor'],vata:['Insônia']})).toEqual([{dosha:'vata',texto:'Insônia'},{dosha:'pitta',texto:'Calor'},{dosha:'kapha',texto:'Cansaço'}]); });
+  it('mantém alimentos repetidos em doshas distintos sem perder origem', () => { expect(marcadosPorDosha({pitta:['Café'],vata:'Café, Café',kapha:null})).toEqual([{dosha:'vata',texto:'Café'},{dosha:'pitta',texto:'Café'}]); });
   it('sala libera exatamente dez minutos antes da consulta', () => { const c = { id:'c', inicio:'2026-10-28T12:00:00Z', status:'marcada' }; expect(salaPacienteAberta(c, Date.parse('2026-10-28T11:49:59Z'))).toBe(false); expect(salaPacienteAberta(c, Date.parse('2026-10-28T11:50:00Z'))).toBe(true); });
   it('considera somente a próxima consulta marcada futura', () => { const cs = [{id:'passada', inicio:'2026-10-20T12:00:00Z',status:'marcada'},{id:'cancelada',inicio:'2026-10-27T12:00:00Z',status:'cancelada'},{id:'proxima',inicio:'2026-10-28T12:00:00Z',status:'marcada'}]; expect(proximaConsulta(cs, Date.parse('2026-10-26T12:00:00Z'))?.id).toBe('proxima'); });
   it('rotina fica verde a partir de cinco dias feitos', () => { expect(rotinaEmDia(4)).toBe(false); expect(rotinaEmDia(5)).toBe(true); });

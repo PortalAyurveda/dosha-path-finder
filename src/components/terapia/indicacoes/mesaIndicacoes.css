@@ -1,4 +1,6 @@
 .mesa-indicacoes{--ind-mesa:hsl(var(--muted));--ind-shadow:0 14px 40px -24px hsl(var(--primary)/.5);background:var(--ind-mesa)}
+.ind-busca{padding:8px 12px}.ind-busca input{font-size:12px}.ind-grupo.ind-grupo-busca{font:700 11px/1.5 'DM Sans',sans-serif;text-transform:uppercase;letter-spacing:.06em;display:block}.ind-resultados .ind-grade{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.ind-resultados .ind-caixa{min-width:0}.ind-resultados section>button{height:auto;padding:8px 0}
+@media(max-width:640px){.ind-resultados .ind-grade{grid-template-columns:minmax(0,1fr);overflow:visible}.ind-busca input{font-size:13px}}
 .mesa-indicacoes :is(p,span,li,small,label){font-size:inherit;color:inherit;letter-spacing:0}
 .mesa-indicacoes button{font-size:13.5px;letter-spacing:0}
 .ind-layout{display:grid;grid-template-columns:260px 360px minmax(0,1fr);align-items:start;min-height:calc(100dvh - 78px)}

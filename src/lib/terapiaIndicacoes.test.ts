@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { terapia } from './terapia';
 import { INDICACOES_AUTOSAVE_MS, criarIndicacao, iniciarIndicacoes, inserirIndicacao, moverIndicacao, diagnosticoDaAvaliacao } from './terapiaIndicacoes';
 describe('Ficha de indicações', () => {
+ it('preserva referência e sânscrito de resultados da busca ao criar indicação',()=>{const fonte={tipo:'verso',ref:'v1',titulo:'Yoga',sanscrito:'योग',link:'/classicos/yoga',favorito:true,vata:-1};expect(criarIndicacao(fonte,'i1')).toEqual({...fonte,id:'i1',nota:''});});
  it('não duplica uma caixa já na folha ao inserir noutra seção',()=>{const item=criarIndicacao({tipo:'receita',slug:'cha',titulo:'Chá'},'a');const d=inserirIndicacao(iniciarIndicacoes({}),'cafe',item);expect(inserirIndicacao(d,'almoco',criarIndicacao({tipo:'receita',slug:'cha'},'b'))).toBe(d);expect(Object.values(d.secoes).flat()).toHaveLength(1);});
  it('permite textos livres distintos sem origem',()=>{let d=iniciarIndicacoes({});d=inserirIndicacao(d,'cafe',criarIndicacao({tipo:'texto',titulo:'Beber água'},'a'));d=inserirIndicacao(d,'cafe',criarIndicacao({tipo:'texto',titulo:'Descansar'},'b'));expect(d.secoes.cafe).toHaveLength(2);});
  it('apaga retorno no banco enviando nulo',async()=>{vi.mocked(supabase.rpc as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({data:'t',error:null} as never);await terapia.folhaSalvar('f',iniciarIndicacoes({}),'','','');expect(supabase.rpc).toHaveBeenLastCalledWith('terapia_folha_salvar',expect.objectContaining({p_retorno:null}));});

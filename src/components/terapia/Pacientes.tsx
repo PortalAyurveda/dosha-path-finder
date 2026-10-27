@@ -100,7 +100,7 @@ export default function Pacientes({
             {l}
           </Button>
         ))}
-        <CTAButton onClick={convidar} className="h-9 px-3 py-2 text-sm">
+        <CTAButton data-terapia-principal onClick={convidar} className="h-9 px-3 py-2 text-sm">
           + Convidar paciente
         </CTAButton>
       </div>

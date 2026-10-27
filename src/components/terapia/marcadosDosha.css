@@ -1,0 +1,2 @@
+.terapia-marcados{display:flex;flex-wrap:wrap;gap:6px}.terapia-queixa{border-radius:999px;padding:3px 9px;font-size:12px;line-height:1.5;font-weight:500}
+.terapia-queixa-vata{background:hsl(var(--vata)/.12);color:hsl(var(--vata-ink))!important}.terapia-queixa-pitta{background:hsl(var(--pitta)/.12);color:hsl(var(--pitta-ink))!important}.terapia-queixa-kapha{background:hsl(var(--kapha)/.16);color:hsl(var(--kapha-ink))!important}

@@ -1,7 +1,9 @@
 import type { ReactNode } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { terapia,diaBR } from '@/lib/terapia';
-import { textosMarcados } from '@/lib/terapiaPaciente';
+import MarcadosDosha from '../MarcadosDosha';
+import '../acoes.css';
+import { marcadosPorDosha } from '@/lib/terapiaPaciente';
 import type { FichaPaciente } from '@/lib/terapiaPaciente';
 import type { AvaliacaoLista } from '@/lib/terapiaAvaliacao';
 import './mesa.css';
@@ -21,7 +23,7 @@ export function TesteCorpo({ficha,anterior}:{ficha:FichaPaciente;anterior?:Avali
   {!ficha.permissoes.teste||!t?<p className="m-muted">{!ficha.permissoes.teste?"A pessoa não liberou o teste.":"Ainda não fez o teste"}</p>:<>
    <section><h3 className="m-eti">Teste de dosha (pontos)</h3><div><span className="m-tag">{PONTOS.map(([,k,n])=>`${n} ${t[k]??''}`).join(' · ')}</span>{t.agni&&<span className="m-tag">{t.agni}</span>}</div></section>
    {(ficha.pontos_atencao??[]).some(p=>p.completo)&&<section><h3 className="m-eti">Pontos de atenção</h3><div>{(ficha.pontos_atencao??[]).filter(p=>p.completo).map(p=><span key={p.slug} className="m-tag at" title={`Marcou ${p.marcou.length} de ${p.total}: ${p.marcou.join(', ')}`}>{p.nome}</span>)}</div></section>}
-   {([['Queixas que marcou',textosMarcados(t.queixas)],['Come muito',textosMarcados(t.alimentos)]] as const).map(([titulo,itens])=>itens.length>0&&<section key={titulo}><h3 className="m-eti">{titulo}</h3><div>{itens.map(i=><span key={i} className="m-tag">{i}</span>)}</div></section>)}
+   {([['Queixas que marcou',t.queixas],['Come muito',t.alimentos]] as const).map(([titulo,itens])=>marcadosPorDosha(itens).length>0&&<section key={titulo}><h3 className="m-eti">{titulo}</h3><MarcadosDosha grupos={itens}/></section>)}
    {t.relato&&<section><h3 className="m-eti">O que escreveu</h3><p className="m-rel whitespace-pre-wrap">“{t.relato}”</p></section>}
   </>}
   {anterior&&<section><h3 className="m-eti">Avaliação anterior · {diaBR(anterior.criado_em)}</h3><div><span className="m-tag">{PONTOS.map(([d])=>`${d}${anterior.leitura?.[d]??0}`).join(' · ')}</span></div>{anterior.resumo&&<p className="m-muted whitespace-pre-wrap">{anterior.resumo}</p>}</section>}

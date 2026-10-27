@@ -33,7 +33,7 @@ export function ValorConsulta({ painel, executar, atualizar, id = "valor-consult
         <Input id={id} inputMode="decimal" placeholder="180" className="mt-1" value={texto} onChange={(e) => setTexto(e.target.value)} />
         <p className="mt-1 text-xs text-muted-foreground">{valor === 0 ? "Consulta gratuita" : valor != null ? `Aparece como ${reais(valor)}, combinado direto com você.` : "Combinado direto com a pessoa."}</p>
       </div>
-      <CTAButton type="submit" disabled={salvando || valor === null} className="h-10 px-5 py-2 text-sm">{salvando ? "Salvando…" : "Salvar"}</CTAButton>
+      <CTAButton data-terapia-principal type="submit" disabled={salvando || valor === null} className="h-10 px-5 py-2 text-sm">{salvando ? "Salvando…" : "Salvar"}</CTAButton>
     </form>
   );
 }
@@ -74,11 +74,11 @@ export function PassosParticipar({ painel, ocupado, mudar, irPara, abrirTermo, e
 }
 
 export default function Configuracoes({ painel, ocupado, mudar, executar, atualizar }: { painel: Painel; ocupado: boolean; mudar: (v: boolean) => void; executar: (fn: () => Promise<unknown>) => Promise<boolean>; atualizar: () => Promise<unknown> }) {
-  const participa = painel.sistema.participa ?? painel.sistema.no_sistema;
+  const podeParticipar = passosFaltando(painel.sistema.falta).length === 0;
   return (
     <div className="grid items-start gap-6 lg:grid-cols-2">
       <Secao titulo="Portal">
-        {participa ? <ChaveSistema painel={painel} ocupado={ocupado} mudar={mudar} /> : <p className="text-sm text-muted-foreground">Complete os passos no topo do painel para ativar “Participar do Portal”.</p>}
+        {podeParticipar ? <ChaveSistema painel={painel} ocupado={ocupado} mudar={mudar} /> : <p className="text-sm text-muted-foreground">Complete os passos no topo do painel para ativar “Participar do Portal”.</p>}
       </Secao>
       <Secao titulo="Consulta">
         <ValorConsulta painel={painel} executar={executar} atualizar={atualizar} />
