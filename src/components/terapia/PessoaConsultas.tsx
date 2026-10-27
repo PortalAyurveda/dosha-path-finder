@@ -28,7 +28,7 @@ export default function PessoaConsultas({ ficha, userId, agora, executar }: { fi
       const futura = c.status === 'marcada' && Date.parse(c.inicio) > agora;
       return <article key={c.id} className="portal-cartao">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-3"><h3 className="font-semibold">{diaBR(c.inicio)} · {horaBR(c.inicio)}</h3><span className={`rounded px-2 py-1 text-xs ${c.status === 'realizada' ? 'paciente-status-ok' : c.status === 'marcada' ? 'paciente-status-pendente' : 'bg-muted text-muted-foreground'}`}>{c.status}</span></div>
+          <div className="flex items-center gap-3"><h3 className="text-base font-semibold">{diaBR(c.inicio)} · {horaBR(c.inicio)}</h3><span className={`rounded px-2 py-1 text-xs ${c.status === 'realizada' ? 'paciente-status-ok' : c.status === 'marcada' ? 'paciente-status-pendente' : 'bg-muted text-muted-foreground'}`}>{c.status}</span></div>
           {c.status !== 'cancelada' && <div className="flex flex-wrap gap-2">
             {!avaliacoes.length && <Button variant="outline" size="sm" asChild><Link to={`${base}/avaliacao/nova?consulta=${c.id}`}>Nova avaliação</Link></Button>}
             {!fs.length && !futura && <Button variant="outline" size="sm" asChild><Link to={`${base}/indicacoes/nova?consulta=${c.id}`}>Montar indicações</Link></Button>}
@@ -42,7 +42,7 @@ export default function PessoaConsultas({ ficha, userId, agora, executar }: { fi
         </div>}
       </article>;
     })}
-    {(geral.avaliacoes.length > 0 || geral.folhas.length > 0) && <article className="portal-cartao"><h3 className="mb-1 font-semibold">Sem consulta</h3>{geral.avaliacoes.map(linhaAvaliacao)}{geral.folhas.map(linhaFolha)}</article>}
+    {(geral.avaliacoes.length > 0 || geral.folhas.length > 0) && <article className="portal-cartao"><h3 className="mb-1 text-base font-semibold">Sem consulta</h3>{geral.avaliacoes.map(linhaAvaliacao)}{geral.folhas.map(linhaFolha)}</article>}
     <div className="portal-cartao"><PacienteAnotacoes key={ficha.paciente_id} titulo="Anotações gerais" paciente={ficha.paciente_id} notas={geral.notas} executar={executar} /></div>
   </section>;
 }
