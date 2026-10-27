@@ -1,5 +1,5 @@
 import { describe,it,expect,vi,beforeEach } from 'vitest';
-import { conteudoUnico, novoAcervo, textoDoAcervo, tipoDoAnexo } from './terapiaAcervo';
+import { conteudoUnico, novoAcervo, textoDoAcervo, tipoDoAnexo, nomeDoTipo } from './terapiaAcervo';
 import { modelosTerapia, ordenarPorTeste, alternarDoshaModelo, DURACOES_FOLHA } from './terapiaModelos';
 const mocks=vi.hoisted(()=>({rpc:vi.fn()}));
 vi.mock('@/integrations/supabase/client',()=>({supabase:{rpc:mocks.rpc}}));
