@@ -18,25 +18,17 @@ import Perfil from "@/components/terapia/Perfil";
 import Acervos from "@/components/terapia/acervo/Acervos";
 import Configuracoes, { PassosParticipar } from "@/components/terapia/Participar";
 import "@/components/terapia/painel.css";
+import { MENU_TERAPEUTA, ABAS_MEU_PERFIL, abaPainel, ehMeuPerfil } from "@/lib/terapiaPessoa";
 import { chat, CHAT_LISTA_MS } from '@/lib/terapiaChat';
 const ListaConversas = lazy(()=>import('@/components/terapia/chat/ListaConversas'));
-const abas = [
-  ["hoje", "Hoje"],
-  ["pacientes", "Pacientes"],
-  ["agenda", "Agenda"],
-  ["mensagens", "Mensagens"],
-  ["link", "Meu link"],
-  ["acervo", "Meu acervo"],
-  ["perfil", "Perfil público"],
-  ["configuracoes", "Configurações"],
-];
+
 export default function PainelTerapeuta() {
   const acesso = useSouTerapeuta();
   const conversas = useQuery({queryKey:['chat-lista',true,acesso.userId],queryFn:chat.terapeuta,enabled:acesso.permitido,refetchInterval:CHAT_LISTA_MS});
   const totalMensagens = conversas.data?.reduce((n,c)=>n+c.nao_lidas,0)??0;
   const [params, setParams] = useSearchParams();
-  const selecionada = (params.get("aba") === "config" ? "configuracoes" : params.get("aba")) ?? "hoje";
-  const aba = abas.some(([v]) => v === selecionada) ? selecionada : "hoje";
+  const aba = abaPainel(params.get("aba"));
+  const meuPerfil = ehMeuPerfil(aba);
   const qc = useQueryClient();
   const { toast } = useToast();
   const [aceito, setAceito] = useState(false);
@@ -57,7 +49,7 @@ export default function PainelTerapeuta() {
   const pacientes = useQuery({
     queryKey: ["terapia-pacientes", acesso.userId],
     queryFn: terapia.pacientes,
-    enabled: acesso.permitido && emDia && aba === "pacientes",
+    enabled: acesso.permitido && emDia && aba === "pessoas",
   });
   const erro = acesso.error || painel.error || hoje.error || pacientes.error;
   useEffect(() => {
@@ -129,7 +121,7 @@ export default function PainelTerapeuta() {
     );
   const dados = painel.data;
   const participa = dados.sistema.participa ?? dados.sistema.no_sistema;
-  const passos = !participa && (
+  const passos = !participa && aba === "configuracoes" && (
     <PassosParticipar painel={dados} ocupado={ocupado} mudar={mudar} irPara={trocar} abrirTermo={() => setTermoAberto(true)} executar={executar} atualizar={atualizar} />
   );
   const total = hoje.data?.consultas.filter((c) => c.hoje).length ?? 0;
@@ -138,13 +130,15 @@ export default function PainelTerapeuta() {
       aria-label="Portal do terapeuta"
       className="flex overflow-x-auto border-b border-border lg:flex-col lg:overflow-visible lg:border-0"
     >
-      {abas.map(([v, l]) => (
+      {[...MENU_TERAPEUTA, ["link", "Meu perfil"] as const].map(([v, l]) => {
+        const ativo = v === "link" ? meuPerfil : aba === v;
+        return (
         <Button
           key={v}
           variant="ghost"
-          aria-current={aba === v ? "page" : undefined}
+          aria-current={ativo ? "page" : undefined}
           onClick={() => trocar(v)}
-          className={`h-11 shrink-0 justify-start rounded-md border-l-2 px-3 text-sm lg:w-full ${aba === v ? "border-secondary bg-secondary/10 font-semibold hover:bg-secondary/15" : "border-transparent text-muted-foreground"}`}
+          className={`h-11 shrink-0 justify-start rounded-md border-l-2 px-3 text-sm lg:w-full ${v === "link" ? "portal-menu-separado" : ""} ${ativo ? "border-secondary bg-secondary/10 font-semibold hover:bg-secondary/15" : "border-transparent text-muted-foreground"}`}
         >
           <span>{l}</span>{v === "mensagens" && totalMensagens > 0 && <span className="ml-auto rounded-full bg-secondary px-2 text-xs text-secondary-foreground">{totalMensagens}</span>}
           {v === "hoje" && total > 0 && (
@@ -153,7 +147,7 @@ export default function PainelTerapeuta() {
             </span>
           )}
         </Button>
-      ))}
+      );})}
     </nav>
   );
   return (
@@ -224,21 +218,22 @@ export default function PainelTerapeuta() {
               {menu}
             </div>
             <main className={`portal-conteudo p-4 sm:p-6 ${aba === "mensagens" ? "portal-mensagens" : ""}`}>
-              {passos && <div className="mb-6">{passos}</div>}
               <div className="portal-topo"><h1 className="portal-titulo mb-5 font-serif font-bold text-primary">
                 {aba === "hoje"
                   ? saudacao(
                       dados.terapeuta.primeiro_nome,
                       new Date(agora).getHours(),
                     )
-                  : abas.find(([v]) => v === aba)?.[1]}
-                {aba === "pacientes" && (
+                  : meuPerfil ? "Meu perfil" : MENU_TERAPEUTA.find(([v]) => v === aba)?.[1]}
+                {aba === "pessoas" && (
                   <span className="ml-2 font-sans text-sm text-secondary">
                     {pacientes.data?.length ?? dados.numeros.pacientes}
                   </span>
                 )}
               </h1>
               {(aba === "hoje" || aba === "agenda") && <Button asChild variant="outline" className="mb-5"><Link to="/consulta/treino">Sala de treino</Link></Button>}</div>
+              {meuPerfil && <nav aria-label="Meu perfil" className="mb-6 flex overflow-x-auto border-b border-border">{ABAS_MEU_PERFIL.map(([v, l]) => <Button key={v} variant="ghost" aria-current={aba === v ? "page" : undefined} onClick={() => trocar(v)} className={`h-11 shrink-0 rounded-none border-b-2 px-4 text-sm hover:bg-secondary/10 ${aba === v ? "border-secondary font-semibold" : "border-transparent text-muted-foreground"}`}>{l}</Button>)}</nav>}
+              {passos && <div className="mb-6">{passos}</div>}
               {aba === "hoje" &&
                 (hoje.data ? (
                   <Hoje dados={hoje.data} agora={agora} />
@@ -247,7 +242,7 @@ export default function PainelTerapeuta() {
                     {hoje.error?.message ?? "Carregando consultas…"}
                   </p>
                 ))}
-              {aba === "pacientes" &&
+              {aba === "pessoas" &&
                 (pacientes.data ? (
                   <Pacientes
                     lista={pacientes.data}
@@ -255,7 +250,7 @@ export default function PainelTerapeuta() {
                   />
                 ) : (
                   <p role="status">
-                    {pacientes.error?.message ?? "Carregando pacientes…"}
+                    {pacientes.error?.message ?? "Carregando pessoas…"}
                   </p>
                 ))}
               {aba === "agenda" && (
@@ -267,7 +262,7 @@ export default function PainelTerapeuta() {
                )}{" "}
               {aba === "link" && <MeuLink painel={dados} executar={executar} />}{" "}
               {aba === "mensagens" && <Suspense fallback={<p role="status">Carregando conversas…</p>}><ListaConversas terapeuta userId={acesso.userId} convite={dados.terapeuta.link_convite}/></Suspense>}
-               {aba === "acervo" && <Acervos userId={acesso.userId} painel={dados} />}
+               {aba === "bibliotecas" && <Acervos userId={acesso.userId} painel={dados} />}
               {aba === "perfil" && (
                 <Perfil
                   painel={dados}
