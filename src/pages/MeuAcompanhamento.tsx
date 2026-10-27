@@ -25,14 +25,18 @@ function Foto({l}:{l:MeuTerapeutaLigacao}){return l.terapeuta.imagem?<img classN
 const capital=(t:string)=>t.charAt(0).toUpperCase()+t.slice(1);
 
 function Proxima({l,agora}:{l:MeuTerapeutaLigacao;agora:number}){
-  const p=l.proxima;
+  const qc=useQueryClient();const p=l.proxima;const [remarcar,setRemarcar]=useState(false);const [inicio,setInicio]=useState('');const [erro,setErro]=useState('');const [ocupado,setOcupado]=useState(false);
+  const horarios=useQuery({queryKey:['acomp-horarios',l.terapeuta.id],queryFn:()=>meu.horarios(l.terapeuta.id),enabled:remarcar});
+  const atualizar=()=>qc.invalidateQueries({queryKey:['meu-terapeuta']});
   if(!p)return <section className="ac-card" id="ac-proxima"><h2>Próxima consulta</h2><p>Nenhuma consulta marcada</p><Button data-terapia-principal variant="secondary" className="self-start" asChild><Link to={`/terapeutas/${l.terapeuta.slug}#agenda`}>Marcar consulta</Link></Button></section>;
   const pode=salaLiberada(p,agora);
   const calendario=()=>{const url=`${window.location.origin}/consulta/${p.id}`;const b=new Blob([icsConsulta(p,l.terapeuta.nome,url)],{type:'text/calendar'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='consulta.ics';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);};
   return <section className="ac-card" id="ac-proxima"><h2>Próxima consulta</h2><div className="ac-prox"><Foto l={l}/><div className="min-w-0"><b className="ac-data">{capital(dataAcompanhamento(p.inicio,true))}</b><p className="ac-muted">Por vídeo, aqui no Portal · a sala abre às {horaAcompanhamento(p.sala_abre_em)}</p></div></div>
-    <div className="ac-acoes">{pode?<Button data-terapia-principal variant="secondary" asChild><Link to={`/consulta/${p.id}`}>Entrar na sala</Link></Button>:<Button variant="outline" onClick={calendario}>Marcar no meu calendário</Button>}</div>
+    <div className="ac-acoes">{pode?<Button data-terapia-principal variant="secondary" asChild><Link to={`/consulta/${p.id}`}>Entrar na sala</Link></Button>:<Button variant="outline" onClick={calendario}>Marcar no meu calendário</Button>}{p.pode_cancelar&&!pode&&<p className="ac-links"><button type="button" className="ac-link" onClick={()=>setRemarcar(true)}>Remarcar</button><span aria-hidden="true">·</span><button type="button" className="ac-link" disabled={ocupado} onClick={async()=>{if(!window.confirm(`Cancelar a consulta de ${dataAcompanhamento(p.inicio,true)}?`))return;setOcupado(true);try{await meu.cancelar(p.id);await atualizar();}catch(e){setErro((e as Error).message);}finally{setOcupado(false);}}}>Cancelar</button></p>}</div>
+    <p className="ac-muted">{!pode&&!p.pode_cancelar?l.regras?.texto:'O botão “Entrar na sala” acende 10 minutos antes.'}</p>{erro&&<p role="alert">{erro}</p>}
     {/* Lugar reservado: "Responder antes da consulta" entra aqui quando existirem os formulários. */}
     <div data-responder-antes hidden/>
+    {remarcar&&<Dialog open onOpenChange={setRemarcar}><DialogContent className="max-h-[85dvh] overflow-y-auto"><DialogTitle>Remarcar com {l.terapeuta.primeiro_nome}</DialogTitle><DialogDescription>Escolha um novo horário nos próximos 14 dias.</DialogDescription>{horarios.isLoading?<p>Carregando horários…</p>:horarios.error?<p role="alert">{horarios.error.message}</p>:!horarios.data?.length?<p>Sem horários livres nos próximos 14 dias.</p>:<div className="flex flex-wrap gap-2">{horarios.data.map(h=><Button variant={inicio===h.inicio?'secondary':'outline'} key={h.inicio} onClick={()=>setInicio(h.inicio)}>{dataAcompanhamento(h.inicio,true)}</Button>)}</div>}{erro&&<p role="alert">{erro}</p>}<Button variant="secondary" disabled={!inicio||ocupado} onClick={async()=>{setOcupado(true);try{await meu.remarcar(p.id,inicio);await atualizar();setRemarcar(false);}catch(e){setErro((e as Error).message);}finally{setOcupado(false);}}}>Confirmar novo horário</Button></DialogContent></Dialog>}
   </section>;
 }
 
