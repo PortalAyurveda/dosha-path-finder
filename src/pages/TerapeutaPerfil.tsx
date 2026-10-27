@@ -1,3 +1,4 @@
+import { textoAtende } from "@/lib/terapiaPublica";
 import { Suspense, lazy, useState } from "react";
 const MensagemPerfil = lazy(() => import('@/components/terapia/chat/MensagemPerfil'));
 const ConsultaPublica = lazy(() => import("@/components/terapia/publico/ConsultaPublica"));
@@ -183,6 +184,12 @@ const TerapeutaPerfil = () => {
           {hasInstagram&&<a className="inline-flex items-center gap-2 text-sm" href={`https://instagram.com/${instagramHandle}`} target="_blank" rel="noreferrer"><Instagram size={16}/>@{instagramHandle}</a>}
         </div>
 
+        {(textoAtende((terapeuta as any).atendimento) || (terapeuta as any).formacao) && (
+          <div className="mb-6 space-y-1 text-sm text-foreground">
+            {textoAtende((terapeuta as any).atendimento) && <p><strong>Atende:</strong> {textoAtende((terapeuta as any).atendimento)}</p>}
+            {(terapeuta as any).formacao && <p><strong>Formação:</strong> {(terapeuta as any).formacao}</p>}
+          </div>
+        )}
         {especialidades.length > 0 && (
           <section className="mb-8">
             <h2 className="text-lg font-semibold text-foreground mb-3 font-serif">Especialidades</h2>
