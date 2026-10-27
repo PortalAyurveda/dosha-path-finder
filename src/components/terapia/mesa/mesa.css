@@ -136,3 +136,21 @@
 .m-treino+.mesa-sala{min-height:calc(100dvh - var(--mesa-hdr) - 54px);max-height:calc(100dvh - var(--mesa-hdr) - 54px)}
 .m-treino+.mesa-sala .mesa-sala-ficha{max-height:calc(100dvh - var(--mesa-hdr) - 54px)}
 @media (max-width:900px){.qa-video .slot{width:160px;height:60px}.qa-video .qa-toggle{flex-basis:100%;justify-content:center}.m-treino+.mesa-sala{max-height:none}}
+/* Parte 20 · linha de contexto e sanfonas da ficha */
+.mesa-contexto{padding:6px 16px;font-size:12.5px;color:var(--m-muted);background:hsl(var(--card));border-bottom:1px solid var(--m-line)}
+.m-sanfona{border-bottom:1px solid var(--m-line)}
+.m-sanfona-barra{display:flex;align-items:center;gap:8px;width:100%;background:none;border:0;padding:10px 2px;cursor:pointer;text-align:left;font-size:14px;font-weight:600;color:var(--m-ink)}
+.m-sanfona-barra .m-seta{flex:none;transition:transform .18s ease;color:var(--m-muted)}
+.m-sanfona.fechada .m-seta{transform:rotate(-90deg)}
+.m-sanfona-barra .m-conta{margin-left:auto;font-size:12px;font-weight:400;color:var(--m-muted)}
+.m-sanfona-corpo{padding:2px 0 12px}
+.dhatus-lista{container-type:inline-size}
+.dhatu-card .dhatu-seta{display:none}
+@container (max-width:560px){
+ .dhatu-card{border:1px solid var(--m-line);border-radius:10px;margin-bottom:8px;padding:0 10px}
+ .dhatu-card .dhatu-seta{display:inline-block;transition:transform .18s ease;color:var(--m-muted)}
+ .dhatu-card.fechado .dhatu-seta{transform:rotate(-90deg)}
+ .dhatu-card.fechado .dhatu-corpo{display:none}
+ .dhatu-card .dhatu-barra{display:flex;align-items:center;gap:8px;width:100%;background:none;border:0;padding:10px 0;cursor:pointer;text-align:left}
+ .dhatu-card .dhatu-marcas{margin-left:auto;font-size:11.5px;color:var(--m-muted)}
+}

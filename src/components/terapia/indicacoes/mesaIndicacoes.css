@@ -19,3 +19,17 @@
 @media(max-width:980px){.ind-layout,.ind-layout.sem-ficha{display:flex;flex-direction:column}.ind-ficha{position:static;width:100%;max-height:none}.ind-catalogo{position:static;max-height:none;width:100%;border-right:0}.ind-caixas{max-height:460px}.ind-direita{width:100%;padding:20px 16px}.ind-mobile-ficha{display:block}.ind-layout>.ind-ver-ficha{display:none}.ind-grade{display:flex;overflow-x:auto;scroll-snap-type:x proximity}.ind-caixa{flex:0 0 160px;scroll-snap-align:start}.ind-papel{padding:22px 16px}.ind-item-acoes{opacity:1;height:auto}.ind-ficha-cab button{margin-left:auto}.ind-acoes{justify-content:flex-start}.ind-status{text-align:left}}
 
 .mesa-indicacoes :is(p,span,small){line-height:inherit}.ind-porque{line-height:1.35!important}.ind-fontes{min-width:0;position:sticky;top:98px;max-height:calc(100dvh - 98px);display:flex;flex-direction:column}.ind-fontes .ind-catalogo{position:static;max-height:inherit}.ind-abas button{white-space:normal;min-width:0}.ind-grupo{display:flex;justify-content:space-between;gap:8px}.ind-grupo small{font:400 12px 'DM Sans',sans-serif;color:var(--m-muted)}.ind-resumo{font-size:11px!important;line-height:1.3;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;color:var(--m-muted)!important;margin-top:4px}.ind-efeitos{display:flex;margin-top:4px}.ind-efeitos .m-chip{font-size:10.5px;padding:0 4px}.ind-campo textarea,.ind-campo input,.ind-livre input{background:transparent}.ind-item textarea:focus-visible{outline:1px solid var(--m-ink);box-shadow:none}.ind-ficha{top:98px;max-height:calc(100dvh - 98px)}@media(max-width:980px){.ind-fontes{position:static;max-height:none;width:100%}.ind-catalogo .ind-abas{overflow:visible}.ind-abas button{white-space:nowrap}.ind-fontes .ind-catalogo{max-height:none}.ind-ficha{max-height:none}}
+/* Parte 20 · sanfona da folha de indicações */
+.ind-secao>h3{border-bottom:1px solid var(--m-line);padding-bottom:0}
+.ind-secao-barra{display:flex;align-items:center;gap:8px;width:100%;background:none;border:0;padding:6px 2px;cursor:pointer;text-align:left;color:var(--m-muted)}
+.ind-secao-barra:hover{color:var(--m-ink)}
+.ind-seta{flex:none;transition:transform .18s ease}
+.ind-secao.fechada .ind-seta{transform:rotate(-90deg)}
+.ind-secao-titulo{min-width:0;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ind-secao.fechada .ind-secao-titulo{text-transform:none;color:var(--m-ink)}
+.ind-secao.fechada{padding-bottom:2px}
+.ind-secao-n{flex:none}
+.ind-item.novo{animation:ind-novo 1.5s ease-out}
+@keyframes ind-novo{0%,60%{background:var(--m-ams)}100%{background:transparent}}
+.ind-aviso-envio{font-size:12.5px!important;color:var(--m-muted)!important;text-align:right;margin:0 0 4px}
+@media(max-width:980px){.ind-aviso-envio{text-align:left}}
