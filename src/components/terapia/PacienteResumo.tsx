@@ -11,7 +11,7 @@ import type { PontoAtencao } from '@/lib/terapiaPaciente';
 const doshas = ['vata', 'pitta', 'kapha'] as const;
 const fundos = { vata: 'bg-vata', pitta: 'bg-pitta', kapha: 'bg-kapha' };
 const textos = { vata: 'text-vata', pitta: 'text-pitta', kapha: 'text-kapha' };
-function Ponto({ ponto }: { ponto: PontoAtencao }) {
+export function Ponto({ ponto }: { ponto: PontoAtencao }) {
   const [aberto, setAberto] = useState(false);
   return <Popover open={aberto} onOpenChange={setAberto}><PopoverTrigger asChild><Button variant="outline" size="sm" onMouseEnter={() => setAberto(true)} className="portal-atencao h-auto whitespace-normal text-left text-xs hover:bg-muted">{ponto.nome}</Button></PopoverTrigger><PopoverContent onMouseLeave={() => setAberto(false)}><p className="text-sm">Marcou {ponto.marcou.length} de {ponto.total}: {ponto.marcou.join(', ')}</p>{ponto.anda_junto && <p className="mt-2 text-sm">Anda junto: {Array.isArray(ponto.anda_junto) ? ponto.anda_junto.join(', ') : ponto.anda_junto}</p>}</PopoverContent></Popover>;
 }
