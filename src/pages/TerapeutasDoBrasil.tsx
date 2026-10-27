@@ -67,7 +67,7 @@ const TerapeutasDoBrasil = () => {
     let results = lista.filter((t) => {
       if (!q) return true;
       if (locationMode) {
-  return (
+        return (
           t.cidade?.toLowerCase().includes(q) ||
           t.estado?.toLowerCase().includes(q)
         );
