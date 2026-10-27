@@ -78,3 +78,5 @@
 
 - [x] Trocar o gráfico do Meu Dosha pelo HTML pronto do banco (meu_dosha_grafico_html) no mesmo cartão #grafico
 - [ ] Conferir o gráfico do banco com sessão real — bloqueado: Supabase externo sem sessão autenticada disponível
+- [ ] Parte 19: busca global no catálogo, queixas por dosha, hierarquia dos botões e chave de participação sem SQL
+- [ ] Parte 19: testes das regras e conferência em 1366 px e 390 px
