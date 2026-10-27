@@ -7,10 +7,10 @@ import { filtrarModelos, modelosTerapia, ordenarPorTeste, type ModeloIndicacoes 
 import { iniciarIndicacoes, momentosDaFolha } from '@/lib/terapiaIndicacoes';
 
 /** Lista de folhas prontas (do Portal e minhas), com as que combinam com o teste primeiro. */
-export default function Modelos({ lista, usar, ocupado = false, dosha }: { lista: ModeloIndicacoes[]; usar: (m: ModeloIndicacoes) => void; ocupado?: boolean; dosha?: string | null }) {
+export default function Modelos({ lista, usar, ocupado = false, dosha, sintomas=[] }: { sintomas?:string[]; lista: ModeloIndicacoes[]; usar: (m: ModeloIndicacoes) => void; ocupado?: boolean; dosha?: string | null }) {
   const [busca, setBusca] = useState(''); const [ver, setVer] = useState<string>();
   const q = useQuery({ queryKey: ['terapia-modelo', ver], queryFn: () => modelosTerapia.modelo(ver ?? ''), enabled: !!ver });
-  const filtrados = ordenarPorTeste(filtrarModelos(lista, busca, ''), dosha);
+  const filtrados = ordenarPorTeste(filtrarModelos(lista, busca, ''), dosha, sintomas);
   return <>
     <Input aria-label="Buscar folhas prontas" placeholder="Buscar por nome ou etiqueta" value={busca} onChange={e => setBusca(e.target.value)} />
     <ul className="mt-3 grid gap-2">
