@@ -42,3 +42,4 @@
 .seu-dia .sd-barra,.seu-dia .sd-barra>span{text-transform:none;letter-spacing:0;font-size:16px}
 .seu-dia .sd-barra small{text-transform:none;letter-spacing:0;font-size:12.5px}
 .seu-dia .sd-cartao li small,.seu-dia .sd-cartao li small *{font-size:13px;line-height:1.4}
+.seu-dia .sd-barra>span{font-family:'Roboto Serif',Georgia,serif!important;font-weight:700}
