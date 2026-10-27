@@ -19,6 +19,7 @@ import { fotoCardJPG } from '@/lib/terapeutaCardImagem';
 import { fetchEstados, fetchMunicipios, type IbgeEstado, type IbgeMunicipio } from "@/lib/ibge";
 import { slugify } from "@/lib/slugify";
 import { getTherapistProfilePath } from "@/lib/terapeutas";
+import { listaAtendimento } from "@/lib/terapiaPublica";
 import { optimizeImageToWebP, formatBytes } from "@/lib/imageOptimize";
 
 interface FormState {
@@ -35,6 +36,9 @@ interface FormState {
   whatsapp: string;
   imagem: string;
   imagem_card: string;
+  frase_card: string;
+  atendimento: string[];
+  formacao: string;
 }
 
 const EMPTY: FormState = {
@@ -51,6 +55,9 @@ const EMPTY: FormState = {
   whatsapp: "",
   imagem: "",
   imagem_card: "",
+  frase_card: "",
+  atendimento: [],
+  formacao: "",
 };
 
 const TerapeutaCadastro = () => {
@@ -76,6 +83,9 @@ const TerapeutaCadastro = () => {
   const [success, setSuccess] = useState(false);
 
   const isBrasil = form.pais === "Brasil";
+  const cad = config.data?.cadastro ?? {};
+  const campos = cad.campos ?? {};
+  const limiteFrase = Number(campos.frase_card?.limite) || 120;
 
   // Load estados once
   useEffect(() => {
@@ -139,6 +149,9 @@ const TerapeutaCadastro = () => {
           whatsapp: data.whatsapp ?? "",
           imagem: data.imagem ?? data["imagem.1"] ?? "",
           imagem_card: data.imagem_card ?? "",
+          frase_card: data.frase_card ?? "",
+          atendimento: listaAtendimento(data.atendimento),
+          formacao: data.formacao ?? "",
         });
       } else {
         setForm((f) => ({ ...f, email: user.email! }));
@@ -316,6 +329,9 @@ const TerapeutaCadastro = () => {
         whatsapp: form.whatsapp.trim() || null,
         imagem: form.imagem || null,
         imagem_card: imagemCard || null,
+        ...(campos.frase_card?.mostrar ? { frase_card: form.frase_card.trim().slice(0, limiteFrase) || null } : {}),
+        ...(campos.atendimento?.mostrar ? { atendimento: form.atendimento } : {}),
+        ...(campos.formacao?.mostrar ? { formacao: form.formacao.trim() || null } : {}),
         "terapeutas(dinamica)": existingSlug ?? slug,
       };
 
@@ -349,15 +365,10 @@ const TerapeutaCadastro = () => {
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#FF7676]/10 text-[#FF7676] mb-6">
             <Check className="h-8 w-8" />
           </div>
-          <h1 className="text-2xl md:text-3xl font-serif font-bold text-foreground mb-3">
-            Cadastro enviado!
-          </h1>
-          <p className="text-muted-foreground mb-2">
-            Seu perfil foi enviado e está <strong>aguardando aprovação</strong> da nossa equipe.
-          </p>
-          <p className="text-sm text-muted-foreground mb-8">
-            Avisaremos por email assim que estiver publicado no diretório.
-          </p>
+          {cad.sucesso_titulo && <h1 className="text-2xl md:text-3xl font-serif font-bold text-foreground mb-3">{cad.sucesso_titulo}</h1>}
+          {cad.sucesso_texto && <p className="text-muted-foreground mb-2 whitespace-pre-line">{cad.sucesso_texto}</p>}
+          {cad.sucesso_detalhe && <p className="text-sm text-muted-foreground whitespace-pre-line">{cad.sucesso_detalhe}</p>}
+          <div className="mb-8" />
           <div className="flex gap-3 justify-center">
             <Button variant="outline" onClick={() => navigate("/terapeutas-do-brasil")}>
               Voltar ao diretório
@@ -392,9 +403,10 @@ const TerapeutaCadastro = () => {
         </Link>
 
         <header className="mb-8">
-          <h1 className="text-2xl md:text-3xl font-serif font-bold text-foreground">
-            {existingId ? "Edite seu perfil" : "Cadastre seu perfil"}
-          </h1>
+          {(existingId ? cad.titulo_editar : cad.titulo_novo) && <h1 className="text-2xl md:text-3xl font-serif font-bold text-foreground">
+            {existingId ? cad.titulo_editar : cad.titulo_novo}
+          </h1>}
+          {cad.chamada && <p className="text-muted-foreground mt-2 whitespace-pre-line">{cad.chamada}</p>}
           {existingId && existingStatus && (
             <p className="text-sm text-muted-foreground mt-1">
               Status atual:{" "}
@@ -456,7 +468,7 @@ const TerapeutaCadastro = () => {
                     </span>
                   </Button>
                 </label>
-                <p className="text-xs text-muted-foreground mt-2">JPG, PNG ou WebP, até 10MB. (HEIC do iPhone não é suportado — troque para "Mais compatível" em Ajustes → Câmera → Formatos.)</p>
+                {cad.aviso_foto && <p className="text-xs text-muted-foreground mt-2 whitespace-pre-line">{cad.aviso_foto}</p>}
                 {uploadError && (
                   <p className="text-xs text-destructive mt-2 font-medium">
                     ⚠ {uploadError}
@@ -485,6 +497,17 @@ const TerapeutaCadastro = () => {
             </p>
           </section>
 
+          {campos.frase_card?.mostrar && (
+            <section className="space-y-2">
+              <Label htmlFor="frase_card" className="text-base font-semibold">{campos.frase_card.rotulo}</Label>
+              <Input id="frase_card" value={form.frase_card} maxLength={limiteFrase} onChange={(e) => setForm({ ...form, frase_card: e.target.value.slice(0, limiteFrase) })} />
+              <div className="flex justify-between gap-3 text-xs text-muted-foreground">
+                <span>{campos.frase_card.ajuda}</span>
+                <span className="shrink-0" aria-live="polite">{form.frase_card.length} de {limiteFrase}</span>
+              </div>
+            </section>
+          )}
+
           {/* Especialidades */}
           <section className="space-y-3">
             <Label className="text-base font-semibold">Especialidades * <span className="text-xs font-normal text-muted-foreground">(marque todas que se aplicam)</span></Label>
@@ -512,6 +535,24 @@ const TerapeutaCadastro = () => {
             {config.error && <p role="alert" className="text-sm text-destructive">{config.error.message}</p>}
           </section>
 
+          {campos.atendimento?.mostrar && (
+            <section className="space-y-3">
+              <Label className="text-base font-semibold">{campos.atendimento.rotulo}</Label>
+              {campos.atendimento.ajuda && <p className="text-xs text-muted-foreground">{campos.atendimento.ajuda}</p>}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                {(campos.atendimento.opcoes ?? []).map((op) => {
+                  const checked = form.atendimento.includes(op);
+                  return (
+                    <label key={op} className={`flex items-start gap-2.5 p-3 rounded-lg border cursor-pointer transition-colors ${checked ? "border-[#FF7676] bg-[#FF7676]/5" : "border-border hover:bg-muted/50"}`}>
+                      <Checkbox checked={checked} onCheckedChange={() => setForm((f) => ({ ...f, atendimento: f.atendimento.includes(op) ? f.atendimento.filter((x) => x !== op) : [...f.atendimento, op] }))} className="mt-0.5" />
+                      <span className="text-sm leading-snug">{op}</span>
+                    </label>
+                  );
+                })}
+              </div>
+            </section>
+          )}
+
           {/* Formado desde */}
           <section className="space-y-2">
             <Label htmlFor="formado" className="text-base font-semibold">Atua como terapeuta desde</Label>
@@ -527,6 +568,14 @@ const TerapeutaCadastro = () => {
             />
             <p className="text-xs text-muted-foreground">Entre {ANO_FORMACAO_MIN} e {ANO_FORMACAO_MAX}.</p>
           </section>
+
+          {campos.formacao?.mostrar && (
+            <section className="space-y-2">
+              <Label htmlFor="formacao" className="text-base font-semibold">{campos.formacao.rotulo}</Label>
+              <Input id="formacao" value={form.formacao} onChange={(e) => setForm({ ...form, formacao: e.target.value })} />
+              {campos.formacao.ajuda && <p className="text-xs text-muted-foreground">{campos.formacao.ajuda}</p>}
+            </section>
+          )}
 
           {/* Localização */}
           <section className="space-y-3">
@@ -699,10 +748,8 @@ const TerapeutaCadastro = () => {
                 "Enviar perfil"
               )}
             </Button>
-            {!existingId && (
-              <p className="text-xs text-muted-foreground text-center max-w-md">
-                Após o envio, seu perfil ficará com status <strong>pendente</strong> e será revisado pela nossa equipe antes de ser publicado.
-              </p>
+            {!existingId && cad.aviso_pendente && (
+              <p className="text-xs text-muted-foreground text-center max-w-md whitespace-pre-line">{cad.aviso_pendente}</p>
             )}
           </div>
         </form>

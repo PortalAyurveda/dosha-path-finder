@@ -1,7 +1,7 @@
 export interface NumerosTerapeuta { nota: number | null; avaliacoes: number; comentarios?: number; atendimentos: number }
 export interface PontoAtencao { slug: string; nome: string; especialidades: string[] }
 export interface PreviaConvite { slug: string; titulo: string; descricao: string; imagem_previa: string }
-export interface ConfigPublica { quadro_pranchas?: import('./terapiaQuadro').PranchaQuadro[]; chat_textos?: import("./terapiaChat").ChatTextos; especialidades?: string[]; diretorio_ordem?: string; fotos_guiadas?: { chave: string; titulo: string; instrucao?: string; modelo?: string }[]; consulta_agora?: { prazo_min: number; som_repetir_seg: number } }
+export interface ConfigPublica { quadro_pranchas?: import('./terapiaQuadro').PranchaQuadro[]; chat_textos?: import("./terapiaChat").ChatTextos; especialidades?: string[]; cadastro?: CadastroTextos; diretorio_ordem?: string; fotos_guiadas?: { chave: string; titulo: string; instrucao?: string; modelo?: string }[]; consulta_agora?: { prazo_min: number; som_repetir_seg: number } }
 export interface AvaliacaoPublica { nota: number; comentario: string; primeiro_nome: string; quando: string }
 export interface ConsultaMarcada { consulta: string; inicio: string; fim: string }
 export const AGORA_ESPERA_MS = 15000;
@@ -33,4 +33,17 @@ const escaparICS = (s: string) => s.replace(/\\/g, '\\\\').replace(/\n/g, '\\n')
 export function consultaICS(c: ConsultaMarcada, nome: string) {
   const data = (s: string) => new Date(s).toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
   return ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Portal Ayurveda//Consulta//PT-BR','BEGIN:VEVENT',`UID:${c.consulta}@portalayurveda.com`,`DTSTAMP:${data(new Date().toISOString())}`,`DTSTART:${data(c.inicio)}`,`DTEND:${data(c.fim)}`,`SUMMARY:${escaparICS(`Consulta com ${nome}`)}`,`URL:https://portalayurveda.com/consulta/${encodeURIComponent(c.consulta)}`,'LOCATION:Sala online do Portal Ayurveda','END:VEVENT','END:VCALENDAR',''].join('\r\n');
+}export interface CampoCadastro { mostrar?: boolean; rotulo?: string; ajuda?: string; limite?: number; opcoes?: string[] }
+export interface CadastroTextos { titulo_novo?: string; titulo_editar?: string; chamada?: string; aviso_foto?: string; aviso_pendente?: string; sucesso_titulo?: string; sucesso_texto?: string; sucesso_detalhe?: string; campos?: { frase_card?: CampoCadastro; atendimento?: CampoCadastro; formacao?: CampoCadastro } }
+export function listaAtendimento(v: unknown): string[] {
+  return Array.isArray(v) ? v.map(x => String(x ?? '').trim()).filter(Boolean) : [];
+}
+export function textoAtende(v: unknown) {
+  const l = listaAtendimento(v);
+  return l.length < 2 ? l.join('') : `${l.slice(0, -1).join(', ')} e ${l[l.length - 1]}`;
+}
+export function contarAtendimento(lista: { atendimento?: unknown }[]) {
+  const m = new Map<string, number>();
+  lista.forEach(t => new Set(listaAtendimento(t.atendimento)).forEach(n => m.set(n, (m.get(n) ?? 0) + 1)));
+  return [...m.entries()].map(([nome, total]) => ({ nome, total })).sort((a, b) => b.total - a.total || a.nome.localeCompare(b.nome));
 }

@@ -11505,12 +11505,14 @@ export type Database = {
       }
       portal_terapeutas: {
         Row: {
+          atendimento: string[] | null
           cidade: string | null
           codigo: string | null
           "created date": string | null
           email: string | null
           especialidade: string | null
           estado: string | null
+          formacao: string | null
           formado_desde: number | null
           frase_card: string | null
           id: string
@@ -11531,12 +11533,14 @@ export type Database = {
           whatsapp: string | null
         }
         Insert: {
+          atendimento?: string[] | null
           cidade?: string | null
           codigo?: string | null
           "created date"?: string | null
           email?: string | null
           especialidade?: string | null
           estado?: string | null
+          formacao?: string | null
           formado_desde?: number | null
           frase_card?: string | null
           id?: string
@@ -11557,12 +11561,14 @@ export type Database = {
           whatsapp?: string | null
         }
         Update: {
+          atendimento?: string[] | null
           cidade?: string | null
           codigo?: string | null
           "created date"?: string | null
           email?: string | null
           especialidade?: string | null
           estado?: string | null
+          formacao?: string | null
           formado_desde?: number | null
           frase_card?: string | null
           id?: string

@@ -1,3 +1,4 @@
+import { listaAtendimento, contarAtendimento } from "@/lib/terapiaPublica";
 import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -37,6 +38,7 @@ const TerapeutasDoBrasil = () => {
   const sugeridas = [...new Set((pontos.data ?? []).flatMap(p=>p.especialidades))];
   const ordem = sortBy || config.data?.diretorio_ordem || "recomendados";
   const [especialidadeSel, setEspecialidadeSel] = useState<string | null>(null);
+  const [atendeSel, setAtendeSel] = useState<string | null>(null);
 
   const { data: terapeutas, isLoading } = useQuery({
     queryKey: ["terapeutas"],
@@ -84,10 +86,11 @@ const TerapeutasDoBrasil = () => {
       );
     }
 
+    if (atendeSel) results = results.filter((t) => listaAtendimento((t as any).atendimento).includes(atendeSel));
     if (soPortal) results = results.filter(t => sistemaPorId.has(String(t.id)));
     if (estaSemana) results = results.filter(t => horarioNestaSemana(sistemaPorId.get(String(t.id))?.proximo ?? null));
     return ordenarDiretorio(results, noSistema ?? [], ordem);
-  }, [terapeutas, lista, search, locationMode, ordem, especialidadeSel, soPortal, estaSemana, sistemaPorId, noSistema]);
+  }, [terapeutas, lista, search, locationMode, ordem, especialidadeSel, atendeSel, soPortal, estaSemana, sistemaPorId, noSistema]);
 
   const chipsEspecialidade = useMemo(() => {
     if (!terapeutas) return [] as Array<{ nome: string; total: number }>;
@@ -104,6 +107,8 @@ const TerapeutasDoBrasil = () => {
       .map(([nome, total]) => ({ nome, total }))
       .sort((a, b) => b.total - a.total || a.nome.localeCompare(b.nome));
   }, [terapeutas]);
+
+  const chipsAtende = useMemo(() => contarAtendimento((terapeutas ?? []) as any[]), [terapeutas]);
 
   return (
     <>
@@ -176,7 +181,7 @@ const TerapeutasDoBrasil = () => {
               <SelectItem value="proximo">Próximo horário</SelectItem>
             </SelectContent>
           </Select>
-          {(search || especialidadeSel) && (
+          {(search || especialidadeSel || atendeSel) && (
             <span className="text-sm text-muted-foreground ml-auto">
               {filtered.length} resultado{filtered.length !== 1 && "s"}
             </span>
@@ -221,6 +226,20 @@ const TerapeutasDoBrasil = () => {
                   >
                     ({chip.total})
                   </span>
+                </Button>
+              );
+            })}
+          </div>
+        )}
+        {chipsAtende.length > 0 && (
+          <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-hide pb-1 -mb-1" role="group" aria-label="Como atende">
+            <span className="shrink-0 text-xs font-semibold text-muted-foreground mr-1">Como atende</span>
+            <Button type="button" onClick={() => setAtendeSel(null)} className={cn("h-auto shrink-0 whitespace-nowrap rounded-full px-2.5 py-1 text-[11.5px] font-semibold transition-colors cursor-pointer", !atendeSel ? "bg-primary text-primary-foreground" : "bg-muted text-primary")}>Todos</Button>
+            {chipsAtende.map((chip) => {
+              const sel = atendeSel === chip.nome;
+              return (
+                <Button key={chip.nome} type="button" onClick={() => setAtendeSel(sel ? null : chip.nome)} className={cn("h-auto shrink-0 whitespace-nowrap rounded-full px-2.5 py-1 text-[11.5px] font-semibold transition-colors cursor-pointer", sel ? "bg-primary text-primary-foreground" : "bg-muted text-primary")}>
+                  {chip.nome}<span className={sel ? "ml-1 text-primary-foreground opacity-80" : "ml-1 opacity-60"}>({chip.total})</span>
                 </Button>
               );
             })}
