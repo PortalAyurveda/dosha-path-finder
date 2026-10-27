@@ -93,3 +93,6 @@
 - [x] Parte 20: folha de indicações em sanfona, adicionar sem clique fantasma, sanfona em Meu acompanhamento, sanfonas de Sintomas/Dhatus, linha de contexto, aviso de envio e resumo por área
 - [x] Parte 20: 9 testes novos (243 no total) e conferência em 1366 px e 390 px com respostas simuladas; sanfonas, contagem, progresso, abertura ao adicionar e resumo por área
 - [ ] Parte 20: validar com contas reais e o resumo_areas do banco — bloqueado: Supabase externo sem sessão autenticada disponível
+
+- [x] Rótulos: "Minha biblioteca" vira "Biblioteca pessoal" no painel de busca e na área de avaliação; etiqueta do tipo na prévia mostra Texto, Foto, PDF, Vídeo, Link
+- [x] Rótulos: 20 testes (311 no total) e conferência das abas e da prévia em tela cheia; contas reais seguem bloqueadas (Supabase externo sem sessão)
