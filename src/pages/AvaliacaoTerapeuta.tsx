@@ -9,7 +9,6 @@ import { Button } from '@/components/ui/button';
 import { useSouTerapeuta } from '@/hooks/useSouTerapeuta';
 import { terapia,diaBR } from '@/lib/terapia';
 import type { FichaPaciente } from '@/lib/terapiaPaciente';
-import { AUTOSACOES_PLACEHOLDER } from './__never__';
 import { AUTOSAVE_MS,DOSHAS,SETORES,iniciarDados,nivel,marcada,situacaoAvaliacao,somas } from '@/lib/terapiaAvaliacao';
 import type { Avaliacao,Biblioteca,ConteudoFicha,DadosAvaliacao,Leitura,Setor } from '@/lib/terapiaAvaliacao';
 import Setores from '@/components/terapia/avaliacao/Setores';
