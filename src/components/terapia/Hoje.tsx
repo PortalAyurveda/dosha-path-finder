@@ -6,6 +6,7 @@ import { Hoje as HojeDados, horaBR, diaBR, salaAberta } from "@/lib/terapia";
 import { inicial, Secao } from "./Comuns";
 import { Switch } from '@/components/ui/switch';
 import { useOnlineTerapeuta } from './online/OnlineTerapeuta';
+import ComecePorAqui from './ComecePorAqui';
 export default function Hoje({
   dados,
   agora,
@@ -16,7 +17,7 @@ export default function Hoje({
   const online = useOnlineTerapeuta();
   const proxima = [...dados.consultas].filter(c => Date.parse(c.inicio) >= agora || Date.parse(c.fim) > agora).sort((a,b) => Date.parse(a.inicio)-Date.parse(b.inicio))[0];
   return (
-    <><div className="grid gap-6 lg:grid-cols-[minmax(0,1.5fr)_minmax(280px,1fr)] items-start">
+    <><ComecePorAqui /><div className="grid gap-6 lg:grid-cols-[minmax(0,1.5fr)_minmax(280px,1fr)] items-start">
       <Secao
         titulo="Hoje e amanhã"
       >
