@@ -44,3 +44,21 @@
 .portal-paciente .portal-cartao{padding:16px;}.portal-paciente .portal-cartao .h-2{height:12px;}.portal-paciente .portal-cartao .text-vata,.portal-paciente .portal-cartao .text-pitta,.portal-paciente .portal-cartao .text-kapha {font-size:17px;}
 
 .portal-paciente section.portal-cartao>h2 {font-family:'Roboto Serif',Georgia,serif;font-size:20px;font-weight:700;}
+
+/* Parte 24 · Comece por aqui */
+.comece-aqui{background:hsl(var(--muted)/.55);border:1.5px solid hsl(var(--primary)/.18);border-radius:14px;padding:16px 18px;margin-bottom:20px}
+.comece-barra{height:8px;border-radius:9px;background:hsl(var(--card));margin:10px 0 12px;overflow:hidden}
+.comece-barra i{display:block;height:100%;background:hsl(var(--kapha))}
+.comece-passos{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px;list-style:none;margin:0;padding:0}
+.comece-passo{display:flex;flex-direction:column;background:hsl(var(--card));border:1.5px solid hsl(var(--border));border-radius:10px;padding:9px 10px;font-size:13px;color:hsl(var(--muted-foreground))}
+.comece-passo b{display:block;font-size:14px;color:hsl(var(--foreground));margin-bottom:2px}
+.comece-passo.feito{background:hsl(var(--kapha)/.08);border-color:hsl(var(--kapha)/.4)}
+.comece-passo.feito b{text-decoration:line-through;color:hsl(var(--muted-foreground))}
+.comece-ok{color:hsl(var(--kapha))}
+.comece-passo.proximo{border-color:hsl(var(--primary));box-shadow:0 0 0 2px hsl(var(--primary)/.12)}
+@media (max-width:1100px){.comece-passos{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media (max-width:640px){.comece-passos{grid-template-columns:1fr}}
+.pessoa-sanfona{background:hsl(var(--card));border:1px solid hsl(var(--border));border-radius:12px;margin-bottom:10px}
+.pessoa-sanfona>button{display:flex;width:100%;justify-content:space-between;align-items:center;gap:8px;padding:12px 16px;font-weight:700;text-align:left}
+.pessoa-sanfona>button small{font-weight:500;color:hsl(var(--muted-foreground))}
+.pessoa-sanfona>div{padding:0 16px 16px}
