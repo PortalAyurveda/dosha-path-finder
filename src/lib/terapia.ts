@@ -162,6 +162,15 @@ export const terapia = {
   avaliacaoSalvar: (id: string, dados: DadosAvaliacao, leitura: Leitura, resumo: string) => read<string>(supabase.rpc('terapia_avaliacao_salvar', { p_id: id, p_dados: dados as unknown as Json, p_leitura: leitura as unknown as Json, p_resumo: resumo })),
   ficha: (paciente: string) => read<FichaPaciente>(supabase.rpc('acomp_ficha', { p_paciente: paciente })),
   fotosPaciente: (paciente: string) => read<FotosPaciente>(supabase.rpc('acomp_fotos', { p_paciente: paciente })),
+  primeirosPassos: () => read<import('./terapiaPessoa').PrimeirosPassos>(supabase.rpc('terapia_primeiros_passos' as any)),
+  /** Terapeuta sobe uma foto da pessoa: Storage em pacientes-fotos/{pessoa}/terapeuta/{arquivo} e registro. */
+  fotoSubir: async (paciente: string, arquivo: File, titulo: string) => {
+    const ext = (arquivo.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '');
+    const path = `${paciente}/terapeuta/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+    const { error } = await supabase.storage.from('pacientes-fotos').upload(path, arquivo, { contentType: arquivo.type || undefined });
+    if (error) throw new Error(error.message);
+    return read<unknown>(supabase.rpc('terapia_foto_registrar' as any, { p_paciente: paciente, p_path: path, p_titulo: titulo } as any));
+  },
   nascimentoPaciente: (paciente: string) => read<NascimentoPaciente | null>(supabase.rpc('acomp_nascimento', { p_paciente: paciente })),
   rotinaPaciente: (paciente: string) => read<RotinaPaciente>(supabase.rpc('acomp_rotina', { p_paciente: paciente })),
   horariosPaciente: (terapeuta: string) => read<HorarioPaciente[]>(supabase.rpc('acomp_horarios_livres', { p_terapeuta: terapeuta, p_dias: 14 })),

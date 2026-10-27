@@ -13770,8 +13770,10 @@ export type Database = {
           descricao: string | null
           do_portal: boolean
           dosha: string | null
+          duracao_dias: number | null
           id: string
           nome: string
+          serve_para: string[]
           tags: string[]
           terapeuta_id: string | null
           tratamento: string | null
@@ -13784,8 +13786,10 @@ export type Database = {
           descricao?: string | null
           do_portal?: boolean
           dosha?: string | null
+          duracao_dias?: number | null
           id?: string
           nome: string
+          serve_para?: string[]
           tags?: string[]
           terapeuta_id?: string | null
           tratamento?: string | null
@@ -13798,8 +13802,10 @@ export type Database = {
           descricao?: string | null
           do_portal?: boolean
           dosha?: string | null
+          duracao_dias?: number | null
           id?: string
           nome?: string
+          serve_para?: string[]
           tags?: string[]
           terapeuta_id?: string | null
           tratamento?: string | null
@@ -13884,6 +13890,119 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      terapia_formulario_envios: {
+        Row: {
+          abertura: string | null
+          consulta_id: string | null
+          enviado_em: string
+          formulario_id: string | null
+          id: string
+          mostrar_resultado: boolean
+          nome: string
+          paciente_user_id: string
+          perguntas: Json
+          pontua: boolean
+          respondido_em: string | null
+          respostas: Json
+          resultado: Json | null
+          secoes: Json
+          terapeuta_id: string
+        }
+        Insert: {
+          abertura?: string | null
+          consulta_id?: string | null
+          enviado_em?: string
+          formulario_id?: string | null
+          id?: string
+          mostrar_resultado?: boolean
+          nome: string
+          paciente_user_id: string
+          perguntas?: Json
+          pontua?: boolean
+          respondido_em?: string | null
+          respostas?: Json
+          resultado?: Json | null
+          secoes?: Json
+          terapeuta_id: string
+        }
+        Update: {
+          abertura?: string | null
+          consulta_id?: string | null
+          enviado_em?: string
+          formulario_id?: string | null
+          id?: string
+          mostrar_resultado?: boolean
+          nome?: string
+          paciente_user_id?: string
+          perguntas?: Json
+          pontua?: boolean
+          respondido_em?: string | null
+          respostas?: Json
+          resultado?: Json | null
+          secoes?: Json
+          terapeuta_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "terapia_formulario_envios_formulario_id_fkey"
+            columns: ["formulario_id"]
+            isOneToOne: false
+            referencedRelation: "terapia_formularios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      terapia_formularios: {
+        Row: {
+          abertura: string | null
+          ativo: boolean
+          atualizado_em: string
+          criado_em: string
+          envio_primeira: boolean
+          envio_retorno: boolean
+          id: string
+          mostrar_resultado: boolean
+          nome: string
+          origem: string
+          perguntas: Json
+          pontua: boolean
+          secoes: Json
+          terapeuta_id: string | null
+        }
+        Insert: {
+          abertura?: string | null
+          ativo?: boolean
+          atualizado_em?: string
+          criado_em?: string
+          envio_primeira?: boolean
+          envio_retorno?: boolean
+          id?: string
+          mostrar_resultado?: boolean
+          nome: string
+          origem?: string
+          perguntas?: Json
+          pontua?: boolean
+          secoes?: Json
+          terapeuta_id?: string | null
+        }
+        Update: {
+          abertura?: string | null
+          ativo?: boolean
+          atualizado_em?: string
+          criado_em?: string
+          envio_primeira?: boolean
+          envio_retorno?: boolean
+          id?: string
+          mostrar_resultado?: boolean
+          nome?: string
+          origem?: string
+          perguntas?: Json
+          pontua?: boolean
+          secoes?: Json
+          terapeuta_id?: string | null
+        }
+        Relationships: []
       }
       terapia_quadros: {
         Row: {
@@ -15572,6 +15691,23 @@ export type Database = {
         Returns: Json
       }
       _folha_n_itens: { Args: { d: Json }; Returns: number }
+      _formulario_enviar: {
+        Args: {
+          p_consulta: string
+          p_formulario: string
+          p_paciente: string
+          p_tid: string
+        }
+        Returns: string
+      }
+      _formulario_resultado: {
+        Args: { p_perguntas: Json; p_respostas: Json; p_secoes: Json }
+        Returns: Json
+      }
+      _formulario_valido: {
+        Args: { p_perguntas: Json; p_secoes: Json }
+        Returns: undefined
+      }
       _horario_motivo: {
         Args: { p_com_antecedencia: boolean; p_inicio: string; p_tid: string }
         Returns: string
@@ -16925,6 +17061,12 @@ export type Database = {
         }[]
       }
       fmt_qtd: { Args: { q: number }; Returns: string }
+      formulario_meu: { Args: { p_envio: string }; Returns: Json }
+      formulario_responder: {
+        Args: { p_envio: string; p_final?: boolean; p_respostas: Json }
+        Returns: Json
+      }
+      formularios_meus: { Args: never; Returns: Json }
       foto_apagar: { Args: { p_id: string }; Returns: string }
       foto_registrar: {
         Args: {
@@ -17951,6 +18093,16 @@ export type Database = {
         Returns: string
       }
       terapia_folhas_da: { Args: { p_paciente: string }; Returns: Json }
+      terapia_formulario: { Args: { p_id: string }; Returns: Json }
+      terapia_formulario_apagar: { Args: { p_id: string }; Returns: undefined }
+      terapia_formulario_copiar: { Args: { p_id: string }; Returns: string }
+      terapia_formulario_enviar: {
+        Args: { p_consulta?: string; p_formulario: string; p_paciente: string }
+        Returns: string
+      }
+      terapia_formulario_envios: { Args: { p_paciente: string }; Returns: Json }
+      terapia_formulario_salvar: { Args: { p: Json }; Returns: string }
+      terapia_formularios: { Args: never; Returns: Json }
       terapia_foto_pedido_cancelar: {
         Args: { p_id: string }
         Returns: undefined
@@ -17983,6 +18135,8 @@ export type Database = {
       }
       terapia_modelo: { Args: { p_id: string }; Returns: Json }
       terapia_modelo_apagar: { Args: { p_id: string }; Returns: undefined }
+      terapia_modelo_copiar: { Args: { p_id: string }; Returns: string }
+      terapia_modelo_gravar: { Args: { p: Json }; Returns: string }
       terapia_modelo_salvar: {
         Args: { p_folha: string; p_id?: string; p_nome: string }
         Returns: string
