@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Printer } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
@@ -25,6 +25,7 @@ export default function DoSeuTerapeuta({ folha, rodape, acompanhamento=false, se
   const ref = useRef<HTMLElement>(null);
   const nome = folha.terapeuta.primeiro_nome;
   const dataFolha = acompanhamento ? dataAcompanhamento : diaBR;
+  const qc = useQueryClient();
   const fitaQ = useQuery({ queryKey: ["cuidados-fita"], queryFn: meu.fita, retry: false });
   const fita = fitaQ.data;
   const hoje = fita?.hoje ?? diaSP(new Date());
@@ -48,7 +49,7 @@ export default function DoSeuTerapeuta({ folha, rodape, acompanhamento=false, se
   const marcar = async (item: string, feito: boolean, diaMarca: string) => {
     const antes = feitos; setErro("");
     setFeitos(alternarFeitoDia(feitos, item, feito, diaMarca));
-    try { await meu.marcar(folha.id, item, feito, diaMarca); } catch (e) { setFeitos(antes); setErro((e as Error).message); }
+    try { await meu.marcar(folha.id, item, feito, diaMarca); void qc.invalidateQueries({ queryKey: ["cuidados-fita"] }); } catch (e) { setFeitos(antes); setErro((e as Error).message); }
   };
   const marcarLeitura = async (item: string, feito: boolean) => {
     const visto = vistos.find(v => v.item === item);
