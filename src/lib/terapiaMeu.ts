@@ -27,6 +27,16 @@ export interface MinhaFolha {
   secoes: SecaoIndicacoes[] | null;
   terapeuta: { nome: string; primeiro_nome: string; imagem: string | null; slug: string };
   feitos: { item: string; dia: string }[];
+  /** "Para ler e assistir": primeiro dia em que cada item foi marcado. */
+  vistos?: { item: string; dia: string }[];
+}
+/** Fita dos últimos 7 dias de cuidado (cuidados_fita). */
+export interface CuidadosFita {
+  hoje: string;
+  dias: { dia: string; dow: number; cuidou: boolean; pode_marcar: boolean }[];
+  mes: { nome: string; dias_com_cuidado: number };
+  folha_desde: string | null;
+  primeiro_cuidado: string | null;
 }
 export const BUCKET_FOTOS_PACIENTE = "pacientes-fotos";
 
@@ -61,7 +71,8 @@ export const meu = {
   indicacoes: () => read<MinhaFolha[]>(rpc("minhas_indicacoes")),
   folha: (id: string) => read<MinhaFolha>(rpc("minha_folha", { p_id: id })),
   vista: (folha: string) => read<void>(rpc("indicacao_vista", { p_folha: folha })),
-  marcar: (folha: string, item: string, feito: boolean) => read<void>(rpc("indicacao_marcar", { p_folha: folha, p_item: item, p_feito: feito })),
+  marcar: (folha: string, item: string, feito: boolean, dia?: string) => read<void>(rpc("indicacao_marcar", { p_folha: folha, p_item: item, p_feito: feito, ...(dia ? { p_dia: dia } : {}) })),
+  fita: () => read<CuidadosFita>(rpc("cuidados_fita")),
   permissoes: (ligacao: string, p: MeuTerapeutaLigacao["permissoes"]) => read<void>(rpc("acomp_permissoes", { p_ligacao: ligacao, p_teste: p.teste, p_fotos: p.fotos, p_rotina: p.rotina, p_akasha: p.akasha })),
   desligar: (ligacao: string) => read<void>(rpc("acomp_desligar", { p_ligacao: ligacao })),
 };
@@ -78,22 +89,30 @@ export function semanaDoItem(feitos: { item: string; dia: string }[], item: stri
   return Array.from({ length: 7 }, (_, i) => { const d = diaSP(new Date(agora.getTime() - (6 - i) * 86400000)); return { dia: d, feito: dias.has(d) }; });
 }
 export const feitoHoje = (feitos: { item: string; dia: string }[], item: string, agora: Date) => feitos.some(f => f.item === item && f.dia.slice(0, 10) === diaSP(agora));
+/** O item foi marcado na data (AAAA-MM-DD)? */
+export const feitoNoDia = (feitos: { item: string; dia: string }[], item: string, dia: string) => feitos.some(f => f.item === item && f.dia.slice(0, 10) === dia);
 export const salaLiberada = (p: { sala_abre_em: string } | null, agora: number) => !!p && agora >= Date.parse(p.sala_abre_em);
 export function alternarFeito(feitos: { item: string; dia: string }[], item: string, feito: boolean, agora: Date) {
-  const hoje = diaSP(agora);
-  const sem = feitos.filter(f => !(f.item === item && f.dia.slice(0, 10) === hoje));
-  return feito ? [...sem, { item, dia: hoje }] : sem;
+  return alternarFeitoDia(feitos, item, feito, diaSP(agora));
+}
+/** Marca ou desmarca o item numa data qualquer (hoje até 3 dias atrás). */
+export function alternarFeitoDia(feitos: { item: string; dia: string }[], item: string, feito: boolean, dia: string) {
+  const sem = feitos.filter(f => !(f.item === item && f.dia.slice(0, 10) === dia));
+  return feito ? [...sem, { item, dia }] : sem;
+}
+/** Faixa amarela do Seu dia: "Marcando ontem, segunda 26" / "Marcando anteontem, domingo 25" / "Marcando sábado, 24". */
+export function rotuloDiaMarcando(dia: string, hoje: string): string {
+  const diff = Math.round((new Date(`${hoje}T12:00:00`).getTime() - new Date(`${dia}T12:00:00`).getTime()) / 86400000);
+  const semana = new Date(`${dia}T12:00:00`).toLocaleDateString("pt-BR", { weekday: "long" });
+  const num = Number(dia.slice(8));
+  if (diff === 1) return `Marcando ontem, ${semana} ${num}`;
+  if (diff === 2) return `Marcando anteontem, ${semana} ${num}`;
+  return `Marcando ${semana}, ${num}`;
 }
 export const dataExtenso = (s: string) => new Date(s).toLocaleString("pt-BR", { weekday: "long", day: "numeric", month: "long", hour: "2-digit", minute: "2-digit", timeZone: "America/Sao_Paulo" });
-/** Seções da folha que combinam com a hora do dia (manhã, meio do dia, tarde, noite). */
-/** Momentos que começam abertos no celular: o da hora (até 11h, 11h–17h, depois) e Todo dia. */
-export function secoesDaHora(hora: number): string[] {
-  if (hora < 11) return ["manha", "todo_dia"];
-  if (hora < 17) return ["refeicoes", "todo_dia"];
-  return ["noite", "todo_dia"];
-}
 
-/** Contagem do momento: "1 de 2 feito hoje". */
-export function progressoSecao(feitos: number, total: number) {
-  return `${feitos} de ${total} feito hoje`;
+/** Contagem do momento: "1 de 2 feito hoje", "0 de 2" quando nada, ou "1 de 1 visto" na leitura. */
+export function progressoSecao(feitos: number, total: number, visto = false) {
+  if (visto) return `${feitos} de ${total} visto`;
+  return feitos > 0 ? `${feitos} de ${total} feito hoje` : `0 de ${total}`;
 }

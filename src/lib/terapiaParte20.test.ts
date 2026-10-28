@@ -3,7 +3,7 @@ import { fraseResumoAreas, maiorDoshaComposicao, doshaMaisAlimentos } from './te
 import type { ResumoAreas } from './terapiaPaciente';
 import { tituloSecaoFechada, situacaoIndicacoes } from './terapiaIndicacoes';
 import { situacaoAvaliacao, marcadosNoSistema, iniciarDados, novaMarca } from './terapiaAvaliacao';
-import { secoesDaHora, progressoSecao } from './terapiaMeu';
+import { progressoSecao } from './terapiaMeu';
 
 const resumo: ResumoAreas = {
   composicao: { vata: { total: 35, perguntas: 21, queixas: 12, alimentacao: 2 }, pitta: { total: 26, perguntas: 21, queixas: 4, alimentacao: 1 }, kapha: { total: 14, perguntas: 10, queixas: 2, alimentacao: 2 } },
@@ -57,12 +57,7 @@ describe('Parte 20 · mesa de avaliação', () => {
 });
 
 describe('Parte 22 · Seu dia no celular', () => {
-  it('momento da hora: até 11h Manhã, 11h–17h Refeições, depois Noite; sempre com Todo dia', () => {
-    expect(secoesDaHora(10)).toEqual(['manha', 'todo_dia']);
-    expect(secoesDaHora(11)).toEqual(['refeicoes', 'todo_dia']);
-    expect(secoesDaHora(16)).toEqual(['refeicoes', 'todo_dia']);
-    expect(secoesDaHora(17)).toEqual(['noite', 'todo_dia']);
-  });
+  // Parte 28: no celular todos os momentos ficam abertos (sem sanfona), então secoesDaHora deixou de existir.
   it('contagem do momento', () => {
     expect(progressoSecao(1, 2)).toBe('1 de 2 feito hoje');
   });

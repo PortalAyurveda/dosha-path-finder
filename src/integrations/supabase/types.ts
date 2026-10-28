@@ -15690,6 +15690,10 @@ export type Database = {
         }
         Returns: Json
       }
+      _cuidado_dias: {
+        Args: { p_ate: string; p_de: string; p_user: string }
+        Returns: string[]
+      }
       _data_extenso: { Args: { p: string }; Returns: string }
       _eh_terapeuta: { Args: never; Returns: string }
       _ficha_json: {
@@ -16841,6 +16845,7 @@ export type Database = {
         Args: { p_pedido_id: string }
         Returns: string
       }
+      cuidados_fita: { Args: never; Returns: Json }
       curso_email_confirmacao_conteudo: {
         Args: {
           p_com_nome: boolean
