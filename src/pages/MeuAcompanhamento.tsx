@@ -10,7 +10,7 @@ import { useUser } from '@/contexts/UserContext';
 import { useMeuAcompanhamento } from '@/hooks/useMeuAcompanhamento';
 import { acompanhamento,avaliacoesDa,dataAcompanhamento,desdeAcompanhamento,horaAcompanhamento,blocoDaAba,linhaConsultaMinha,icsConsulta,COMO_FUNCIONA_CHAVE } from '@/lib/meuAcompanhamento';
 import { meu,salaLiberada,type MeuTerapeutaLigacao } from '@/lib/terapiaMeu';
-import { chat } from '@/lib/terapiaChat';
+import { chat,marcarAberta } from '@/lib/terapiaChat';
 import { horaBR } from '@/lib/terapia';
 import Avaliacoes from '@/components/terapia/meu/acompanhamento/Avaliacoes';
 import { AvaliarConsulta } from '@/components/terapia/meu/acompanhamento/Consultas';
