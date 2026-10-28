@@ -3,7 +3,7 @@ import { fraseResumoAreas, maiorDoshaComposicao, doshaMaisAlimentos } from './te
 import type { ResumoAreas } from './terapiaPaciente';
 import { tituloSecaoFechada, situacaoIndicacoes } from './terapiaIndicacoes';
 import { situacaoAvaliacao, marcadosNoSistema, iniciarDados, novaMarca } from './terapiaAvaliacao';
-import { secoesDaHora, progressoSecao } from './terapiaMeu';
+import { progressoSecao } from './terapiaMeu';
 
 const resumo: ResumoAreas = {
   composicao: { vata: { total: 35, perguntas: 21, queixas: 12, alimentacao: 2 }, pitta: { total: 26, perguntas: 21, queixas: 4, alimentacao: 1 }, kapha: { total: 14, perguntas: 10, queixas: 2, alimentacao: 2 } },
