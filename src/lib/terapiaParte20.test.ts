@@ -57,12 +57,7 @@ describe('Parte 20 · mesa de avaliação', () => {
 });
 
 describe('Parte 22 · Seu dia no celular', () => {
-  it('momento da hora: até 11h Manhã, 11h–17h Refeições, depois Noite; sempre com Todo dia', () => {
-    expect(secoesDaHora(10)).toEqual(['manha', 'todo_dia']);
-    expect(secoesDaHora(11)).toEqual(['refeicoes', 'todo_dia']);
-    expect(secoesDaHora(16)).toEqual(['refeicoes', 'todo_dia']);
-    expect(secoesDaHora(17)).toEqual(['noite', 'todo_dia']);
-  });
+  // Parte 28: no celular todos os momentos ficam abertos (sem sanfona), então secoesDaHora deixou de existir.
   it('contagem do momento', () => {
     expect(progressoSecao(1, 2)).toBe('1 de 2 feito hoje');
   });
