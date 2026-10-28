@@ -2,14 +2,14 @@ import type { Leitura } from './terapiaAvaliacao';
 export const INDICACOES_AUTOSAVE_MS = 2000;
 export interface SecaoIndicacoes { chave: string; titulo: string }
 export interface FonteIndicacao { ref?: string; sanscrito?: string; queixa?:string; assunto?:string; id?: string | number; tipo?: string; titulo?: string; nome?: string; resumo?: string; texto?: string; livro?: string; referencia?: string; link?: string; slug?: string; imagem?: string; porque?: string; combina?: boolean; serve?:boolean; slot?: string; favorito?: boolean; origem?:string; vata?: number; pitta?: number; kapha?: number }
-export interface ItemIndicacao extends FonteIndicacao { id: string; titulo: string; nota: string }
+export interface ItemIndicacao extends FonteIndicacao { id: string; titulo: string; nota: string; /** Dias da semana em que o item vale (1 = segunda … 7 = domingo); ausente ou vazio = todo dia. */ dias?: number[] }
 export interface DadosIndicacoes { secoes: Record<string, ItemIndicacao[]>; [chave: string]: unknown }
 export interface FolhaIndicacoes { avaliacao_id?:string|null; id: string; paciente_user_id: string; paciente_nome: string; criado_em: string; atualizado_em: string; enviada_em: string | null; vista_em: string | null; dados: Partial<DadosIndicacoes>; diagnostico: string | null; tratamento: string | null; retorno: string | null; secoes: SecaoIndicacoes[]; avaliacao: { id?:string; leitura: Leitura; resumo: string; criado_em: string } | null }
 export interface FolhaIndicacoesLista { id: string; criado_em: string; enviada_em: string | null; vista_em: string | null }
 export interface FontesIndicacoes { dosha?:string|null; queixas?:string[]; minhas?:FonteIndicacao[]; favoritos?:FonteIndicacao[]; para_ela: FonteIndicacao[]; rotina_dela: FonteIndicacao[] | null; rotina: Record<string, FonteIndicacao[]>; samkhya: FonteIndicacao[]; aulas: FonteIndicacao[]; versos: FonteIndicacao[] }
 export interface RascunhoIndicacoes { dados: DadosIndicacoes; diagnostico: string; tratamento: string; retorno: string }
 /** Os 5 momentos da folha, na ordem em que aparecem. */
-export const MOMENTOS: SecaoIndicacoes[] = [{chave:'manha',titulo:'Manhã'},{chave:'refeicoes',titulo:'Refeições'},{chave:'noite',titulo:'Noite'},{chave:'todo_dia',titulo:'Todo dia'},{chave:'ler',titulo:'Para ler e assistir'}];
+export const MOMENTOS: SecaoIndicacoes[] = [{chave:'manha',titulo:'Manhã'},{chave:'refeicoes',titulo:'Refeições'},{chave:'noite',titulo:'Noite'},{chave:'todo_dia',titulo:'Ao longo do dia'},{chave:'ler',titulo:'Para ler e assistir'}];
 const CHAVES_MOMENTO = new Set(MOMENTOS.map(m => m.chave));
 /** Chaves antigas da folha e o momento novo de cada uma; desconhecidas vão para "Todo dia". */
 export function momentoDaChave(chave: string): string {
@@ -26,9 +26,35 @@ export const iniciarIndicacoes = (d: Partial<DadosIndicacoes> | null): DadosIndi
   for (const [chave, itens] of Object.entries(d?.secoes ?? {})) { const m = momentoDaChave(chave); secoes[m] = [...(secoes[m] ?? []), ...(Array.isArray(itens) ? itens : [])]; }
   return { ...d, secoes };
 };
-/** Momentos na ordem fixa, com os títulos que o banco mandar quando houver. */
+/** Momentos na ordem fixa, com os títulos que o banco mandar quando houver ("Todo dia" vira "Ao longo do dia" em todas as telas). */
 export function momentosDaFolha(secoes?: SecaoIndicacoes[] | null): SecaoIndicacoes[] {
-  return MOMENTOS.map(m => secoes?.find(s => s.chave === m.chave) ?? m);
+  return MOMENTOS.map(m => {
+    const s = secoes?.find(x => x.chave === m.chave);
+    return m.chave === 'todo_dia' ? m : (s ?? m);
+  });
+}
+
+/** Dias da semana: 1 = segunda … 7 = domingo. */
+export const DIAS_LETRAS = ['S', 'T', 'Q', 'Q', 'S', 'S', 'D'];
+export const DIAS_CURTOS = ['seg', 'ter', 'qua', 'qui', 'sex', 'sáb', 'dom'];
+export const DIAS_NOMES = ['segunda-feira', 'terça-feira', 'quarta-feira', 'quinta-feira', 'sexta-feira', 'sábado', 'domingo'];
+/** Dia da semana (1–7) de uma data AAAA-MM-DD. */
+export function dowDaData(dia: string): number { const d = new Date(`${dia}T12:00:00`).getDay(); return d === 0 ? 7 : d; }
+/** Dias em que o item vale, normalizados e ordenados; sem "dias" ou lista vazia = todos. */
+export function diasDoItem(item: Pick<ItemIndicacao, 'dias'>): number[] {
+  const lista = [...new Set((item.dias ?? []).filter(d => d >= 1 && d <= 7))].sort((a, b) => a - b);
+  return lista.length ? lista : [1, 2, 3, 4, 5, 6, 7];
+}
+/** Resumo dos dias do item: "" quando vale todo dia, senão "qua, sex e dom". */
+export function resumoDias(item: Pick<ItemIndicacao, 'dias'>): string {
+  const dias = diasDoItem(item);
+  if (dias.length === 7) return '';
+  const curtos = dias.map(d => DIAS_CURTOS[d - 1]);
+  return curtos.length === 1 ? curtos[0] : `${curtos.slice(0, -1).join(', ')} e ${curtos[curtos.length - 1]}`;
+}
+/** O item vale no dia da semana (1–7)? */
+export function itemValeNoDia(item: Pick<ItemIndicacao, 'dias'>, dow: number): boolean {
+  return diasDoItem(item).includes(dow);
 }
 /** "em 3 semanas", "em 5 dias", "hoje" ou "" para data passada/vazia. */
 export function distanciaRetorno(retorno: string, hoje: Date = new Date()): string {
