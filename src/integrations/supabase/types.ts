@@ -9187,6 +9187,33 @@ export type Database = {
         }
         Relationships: []
       }
+      lingua_beta: {
+        Row: {
+          criado_em: string
+          escolhas: Json
+          escrita: string | null
+          id: string
+          navegador: string | null
+          tem_foto: boolean
+        }
+        Insert: {
+          criado_em?: string
+          escolhas: Json
+          escrita?: string | null
+          id?: string
+          navegador?: string | null
+          tem_foto?: boolean
+        }
+        Update: {
+          criado_em?: string
+          escolhas?: Json
+          escrita?: string | null
+          id?: string
+          navegador?: string | null
+          tem_foto?: boolean
+        }
+        Relationships: []
+      }
       lingua_leituras: {
         Row: {
           created_at: string
