@@ -35,3 +35,6 @@
   .ct-pc{display:none}.ct-cel{display:block}span.ct-cel{display:inline}
   .ct-dir li{grid-template-columns:minmax(0,1fr) 70px 40px;gap:10px}
 }
+.ct-n,.ct-n span{white-space:nowrap;font-size:14px}
+.ct-total span{font-size:inherit;line-height:inherit}
+@media(max-width:760px){.ct-dir li{grid-template-columns:minmax(0,1fr) 64px 52px}.ct-total span.ct-pc{display:none}}
