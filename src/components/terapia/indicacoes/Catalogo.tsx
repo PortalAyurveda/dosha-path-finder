@@ -12,13 +12,13 @@ export function TipoIndicacao({ tipo }: { tipo?: string }) {
  const Icon = tipo === 'produto' ? ShoppingBag : tipo === 'receita' ? CookingPot : tipo === 'verso' ? BookOpen : tipo === 'aula' ? Video : FileText;
  return <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground"><Icon className="h-3.5 w-3.5" />{tipo ?? 'Texto'}</span>;
 }
-function Cartao({ fonte, chave, adicionar, ja }: { fonte: FonteIndicacao; chave: string; adicionar: (f: FonteIndicacao) => void; ja:boolean }) {
+function Cartao({ fonte, chave, adicionar, ja, rotulo }: { rotulo?: string; fonte: FonteIndicacao; chave: string; adicionar: (f: FonteIndicacao) => void; ja:boolean }) {
  const drag = useDraggable({ id: `fonte:${chave}`, data: { fonte } });
  const titulo=fonte.titulo??fonte.nome??[fonte.livro,fonte.referencia].filter(Boolean).join(' · ');
  const linha=linhaFonte({...fonte,queixa:fonte.queixa??(queixaIndicacao(fonte)||undefined)});
- return <article ref={drag.setNodeRef} {...drag.listeners} {...drag.attributes} className={`fe-cx ${ja?'ja':''} ${drag.isDragging?'arrastando':''}`}><div className="min-w-0"><b>{titulo}</b>{linha&&<small>{linha}</small>}</div><button type="button" className="fe-mais" disabled={ja} title={ja?'Já está na folha':`Adicionar ${titulo}`} aria-label={`Adicionar ${titulo}`} onPointerDown={e=>e.stopPropagation()} onClick={()=>adicionar(fonte)}>{ja?<Check size={14}/>:<Plus size={14}/>}</button></article>;
+ return <article ref={drag.setNodeRef} {...drag.listeners} {...drag.attributes} className={`fe-cx ${ja?'ja':''} ${drag.isDragging?'arrastando':''}`}><div className="min-w-0"><b>{titulo}</b>{linha&&<small>{linha}</small>}</div>{rotulo&&!ja?<button type="button" className="fe-mais-texto" aria-label={`${rotulo}: ${titulo}`} onPointerDown={e=>e.stopPropagation()} onClick={()=>adicionar(fonte)}><Plus size={14}/>{rotulo}</button>:<button type="button" className="fe-mais" disabled={ja} title={ja?'Já está na folha':`Adicionar ${titulo}`} aria-label={`Adicionar ${titulo}`} onPointerDown={e=>e.stopPropagation()} onClick={()=>adicionar(fonte)}>{ja?<Check size={14}/>:<Plus size={14}/>}</button>}</article>;
 }
-export default function Catalogo({ fontes, nome, adicionar, itens=[], fechar, geral=false }: { geral?:boolean; itens?:FonteIndicacao[]; fontes: FontesIndicacoes; nome: string; adicionar: (f: FonteIndicacao) => void; fechar?:()=>void }) {
+export default function Catalogo({ fontes, nome, adicionar, itens=[], fechar, geral=false, rotuloAdicionar }: { rotuloAdicionar?:string; geral?:boolean; itens?:FonteIndicacao[]; fontes: FontesIndicacoes; nome: string; adicionar: (f: FonteIndicacao) => void; fechar?:()=>void }) {
  const [aba,setAba]=useState(geral?'portal':'para');
  const [texto,setTexto]=useState('');
  const [q,setQ]=useState('');
@@ -36,7 +36,7 @@ export default function Catalogo({ fontes, nome, adicionar, itens=[], fechar, ge
   : aba==='para' ? [...(fontes.para_ela??[]),...(fontes.rotina_dela??[]).map(f=>({...f,tipo:f.tipo??'receita'}))]
   : aba==='produtos' ? [...(fontes.samkhya??[]).filter(f=>f.combina),...(fontes.samkhya??[]).filter(f=>!f.combina)].map(f=>({...f,tipo:'produto'}))
   : [...Object.values(fontes.rotina??{}).flat().map(f=>({...f,tipo:f.tipo??'receita'})),...(fontes.aulas??[]).map(f=>({...f,tipo:'aula'})),...(fontes.versos??[]).map(f=>({...f,tipo:'verso'}))];
- const cartoes=(l:FonteIndicacao[],chave:string)=>l.map((f,i)=><Cartao key={`${chave}-${i}`} chave={`${chave}-${i}`} fonte={f} adicionar={adicionar} ja={itens.some(x=>f.slug?x.slug===f.slug:f.link?x.link===f.link:f.ref?x.tipo===f.tipo&&x.ref===f.ref:x.titulo===(f.titulo??f.nome))}/>);
+ const cartoes=(l:FonteIndicacao[],chave:string)=>l.map((f,i)=><Cartao key={`${chave}-${i}`} chave={`${chave}-${i}`} fonte={f} rotulo={rotuloAdicionar} adicionar={adicionar} ja={itens.some(x=>f.slug?x.slug===f.slug:f.link?x.link===f.link:f.ref?x.tipo===f.tipo&&x.ref===f.ref:x.titulo===(f.titulo??f.nome))}/>);
  return <aside className="fe-busca" aria-label="Buscar para a folha"><header><h3>Buscar para a folha</h3>{fechar&&<button type="button" className="fe-bt" onClick={fechar}>Fechar</button>}</header>
   <div className="relative"><Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" aria-hidden="true"/><Input aria-label="Buscar em todo o Portal" placeholder="Buscar em todo o Portal: kitchari, sono, óleo…" value={texto} onChange={e=>setTexto(e.target.value)} className="w-full pl-9 pr-9"/>{texto&&<Button variant="ghost" size="icon" className="absolute right-0 top-0 h-10 w-9" aria-label="Limpar busca" onClick={()=>{setTexto('');setQ('');setExpandidos([]);}}><X size={16}/></Button>}</div>{buscando&&<p role="status" className="fe-qd">Buscando…</p>}
   {!ativa&&<nav className="fe-abas" aria-label="Onde buscar">{(geral?[['portal','Portal'],['minhas','Biblioteca pessoal'],['favoritos','Favoritos'],['produtos','Produtos']]:[['para',`Para ${nome}`],['portal','Portal'],['minhas','Biblioteca pessoal'],['produtos','Produtos']]).map(([v,n])=><Button type="button" key={v} variant="outline" aria-pressed={aba===v} onClick={()=>setAba(v)}>{n}</Button>)}</nav>}
