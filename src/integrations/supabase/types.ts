@@ -9187,6 +9187,27 @@ export type Database = {
         }
         Relationships: []
       }
+      lingua_autorizados: {
+        Row: {
+          ate: string | null
+          criado_em: string
+          motivo: string | null
+          user_id: string
+        }
+        Insert: {
+          ate?: string | null
+          criado_em?: string
+          motivo?: string | null
+          user_id: string
+        }
+        Update: {
+          ate?: string | null
+          criado_em?: string
+          motivo?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       lingua_beta: {
         Row: {
           criado_em: string
@@ -9211,6 +9232,63 @@ export type Database = {
           id?: string
           navegador?: string | null
           tem_foto?: boolean
+        }
+        Relationships: []
+      }
+      lingua_catalogo: {
+        Row: {
+          ativo: boolean
+          atualizado_em: string
+          descricao: string | null
+          extras: Json
+          nome: string | null
+          op_id: string
+          ordem: number | null
+        }
+        Insert: {
+          ativo?: boolean
+          atualizado_em?: string
+          descricao?: string | null
+          extras?: Json
+          nome?: string | null
+          op_id: string
+          ordem?: number | null
+        }
+        Update: {
+          ativo?: boolean
+          atualizado_em?: string
+          descricao?: string | null
+          extras?: Json
+          nome?: string | null
+          op_id?: string
+          ordem?: number | null
+        }
+        Relationships: []
+      }
+      lingua_chaves: {
+        Row: {
+          atualizado_em: string
+          chave: string
+          descricao: string
+          ligado: boolean
+          numero: number | null
+          texto: string | null
+        }
+        Insert: {
+          atualizado_em?: string
+          chave: string
+          descricao: string
+          ligado?: boolean
+          numero?: number | null
+          texto?: string | null
+        }
+        Update: {
+          atualizado_em?: string
+          chave?: string
+          descricao?: string
+          ligado?: boolean
+          numero?: number | null
+          texto?: string | null
         }
         Relationships: []
       }
@@ -9333,6 +9411,78 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      lingua_registros: {
+        Row: {
+          criado_em: string
+          escrita: string | null
+          foto_bucket: string | null
+          foto_path: string | null
+          id: string
+          leitura_em: string | null
+          leitura_status: string
+          leitura_texto: string | null
+          montagem: Json
+          origem: string
+          user_id: string
+        }
+        Insert: {
+          criado_em?: string
+          escrita?: string | null
+          foto_bucket?: string | null
+          foto_path?: string | null
+          id?: string
+          leitura_em?: string | null
+          leitura_status?: string
+          leitura_texto?: string | null
+          montagem: Json
+          origem?: string
+          user_id: string
+        }
+        Update: {
+          criado_em?: string
+          escrita?: string | null
+          foto_bucket?: string | null
+          foto_path?: string | null
+          id?: string
+          leitura_em?: string | null
+          leitura_status?: string
+          leitura_texto?: string | null
+          montagem?: Json
+          origem?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      lingua_tickets: {
+        Row: {
+          codigo: string
+          criado_em: string
+          expira_em: string
+          foto_bucket: string | null
+          foto_path: string | null
+          user_id: string
+          usos: number
+        }
+        Insert: {
+          codigo: string
+          criado_em?: string
+          expira_em?: string
+          foto_bucket?: string | null
+          foto_path?: string | null
+          user_id: string
+          usos?: number
+        }
+        Update: {
+          codigo?: string
+          criado_em?: string
+          expira_em?: string
+          foto_bucket?: string | null
+          foto_path?: string | null
+          user_id?: string
+          usos?: number
+        }
+        Relationships: []
       }
       lista_email: {
         Row: {
@@ -10564,6 +10714,7 @@ export type Database = {
           atualizado_em: string
           codigo: string
           condicao: Json | null
+          config: Json
           cor: string | null
           criado_em: string
           enunciado: string
@@ -10583,6 +10734,7 @@ export type Database = {
           atualizado_em?: string
           codigo: string
           condicao?: Json | null
+          config?: Json
           cor?: string | null
           criado_em?: string
           enunciado: string
@@ -10602,6 +10754,7 @@ export type Database = {
           atualizado_em?: string
           codigo?: string
           condicao?: Json | null
+          config?: Json
           cor?: string | null
           criado_em?: string
           enunciado?: string
@@ -10741,6 +10894,7 @@ export type Database = {
           abre_em: string | null
           ativa: boolean
           atualizado_em: string
+          config: Json
           criado_em: string
           fecha_em: string | null
           id: string
@@ -10759,6 +10913,7 @@ export type Database = {
           abre_em?: string | null
           ativa?: boolean
           atualizado_em?: string
+          config?: Json
           criado_em?: string
           fecha_em?: string | null
           id?: string
@@ -10777,6 +10932,7 @@ export type Database = {
           abre_em?: string | null
           ativa?: boolean
           atualizado_em?: string
+          config?: Json
           criado_em?: string
           fecha_em?: string | null
           id?: string
@@ -17339,7 +17495,19 @@ export type Database = {
         Returns: Json
       }
       kit_ja_comprado: { Args: { p_slug: string }; Returns: boolean }
+      lingua_acesso: { Args: { p_uid: string }; Returns: Json }
+      lingua_estado: { Args: never; Returns: Json }
+      lingua_historico_de: { Args: { p_uid: string }; Returns: Json }
       lingua_minhas: { Args: { p_programa: string }; Returns: Json }
+      lingua_registrar: {
+        Args: {
+          p_escrita: string
+          p_foto_bucket: string
+          p_foto_path: string
+          p_montagem: Json
+        }
+        Returns: Json
+      }
       lingua_salvar: {
         Args: { p_foto_path: string; p_n: number; p_programa: string }
         Returns: Json
