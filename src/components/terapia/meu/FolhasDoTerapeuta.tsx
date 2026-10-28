@@ -6,7 +6,7 @@ import { meu, type MinhaFolha } from "@/lib/terapiaMeu";
 import DoSeuTerapeuta from "./DoSeuTerapeuta";
 
 /** Mostra uma folha (já carregada ou por id) com o botão "Folhas anteriores". */
-export default function FolhasDoTerapeuta({ inicial, inicialId, rodape }: { inicial?: MinhaFolha; inicialId?: string; rodape?: string }) {
+export default function FolhasDoTerapeuta({ inicial, inicialId, rodape, semFita = false }: { inicial?: MinhaFolha; inicialId?: string; rodape?: string; semFita?: boolean }) {
   const [id, setId] = useState(inicialId ?? inicial?.id ?? "");
   const [lista, setLista] = useState(false);
   const folha = useQuery({ queryKey: ["minha-folha", id], queryFn: () => meu.folha(id), enabled: !!id && !(inicial && id === inicial.id), retry: false });
@@ -15,7 +15,7 @@ export default function FolhasDoTerapeuta({ inicial, inicialId, rodape }: { inic
   const folhas = (ligacoes.data ?? []).flatMap(l => l.folhas.map(f => ({ ...f, terapeuta: l.terapeuta.primeiro_nome })));
   return (
     <div className="space-y-3">
-      {atual ? <DoSeuTerapeuta folha={atual} rodape={rodape} /> : folha.error ? <p role="alert" className="text-sm text-destructive">{folha.error.message}</p> : <p role="status" className="text-sm text-muted-foreground">Carregando folha…</p>}
+      {atual ? <DoSeuTerapeuta folha={atual} rodape={rodape} semFita={semFita} /> : folha.error ? <p role="alert" className="text-sm text-destructive">{folha.error.message}</p> : <p role="status" className="text-sm text-muted-foreground">Carregando folha…</p>}
       <Button variant="ghost" size="sm" aria-expanded={lista} onClick={() => setLista(v => !v)}>{lista ? "Fechar folhas anteriores" : "Folhas anteriores"}</Button>
       {lista && (ligacoes.isLoading ? <p role="status" className="text-sm text-muted-foreground">Carregando…</p>
         : ligacoes.error ? <p role="alert" className="text-sm text-destructive">{ligacoes.error.message}</p>

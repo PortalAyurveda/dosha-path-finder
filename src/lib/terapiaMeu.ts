@@ -116,3 +116,6 @@ export function progressoSecao(feitos: number, total: number, visto = false) {
   if (visto) return `${feitos} de ${total} visto`;
   return feitos > 0 ? `${feitos} de ${total} feito hoje` : `0 de ${total}`;
 }
+
+/** "1 dia de cuidado" / "18 dias de cuidado". */
+export const diasDeCuidado = (n: number) => `${n} ${n === 1 ? "dia" : "dias"} de cuidado`;

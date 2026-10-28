@@ -7,5 +7,5 @@ export default function IndicacoesNaRotina() {
   const q = useQuery({ queryKey: ["minhas-indicacoes"], queryFn: meu.indicacoes });
   const folha = q.data?.[0];
   if (!folha) return null;
-  return <div className="mb-6"><FolhasDoTerapeuta inicial={folha} /></div>;
+  return <div className="mb-6"><FolhasDoTerapeuta inicial={folha} semFita /></div>;
 }
