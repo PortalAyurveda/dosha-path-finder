@@ -21,6 +21,9 @@ import Adicoes from '@/components/terapia/avaliacao/Adicoes';
 import { extras } from '@/lib/terapiaAdicoes';
 import { NotasArea } from '@/components/terapia/avaliacao/Marcacao';
 import Quadros from '@/components/terapia/quadro/Quadros';
+import FormulariosEnvios from '@/components/terapia/formularios/Envios';
+import '@/components/terapia/sala/salaAbas.css';
+const IndicacoesSala=lazy(()=>import('@/components/terapia/sala/IndicacoesSala'));
 import type { QuadroSalvo } from '@/lib/terapiaQuadro';
 import { MesaHeader,TesteCorpo } from '@/components/terapia/mesa/Mesa';
 const Quadro=lazy(()=>import('@/components/terapia/quadro/Quadro'));
@@ -35,7 +38,9 @@ export function Editor({pedirQuadro=0,avaliacao,ficha,conteudo,biblioteca,userId
  const salvar=useCallback(()=>{const snapshot=atual.current;setErro('');if(treino){setSalva(snapshot.versao);return Promise.resolve(true);}const tarefa=fila.current.catch(()=>undefined).then(async()=>{setSalvando(true);try{const t=await terapia.avaliacaoSalvar(avaliacao.id,snapshot.estado.dados,snapshot.estado.leitura,snapshot.estado.resumo);setSalvoEm(t);setSalva(snapshot.versao);return true;}catch(e){setErro(e instanceof Error?e.message:String(e));return false;}finally{setSalvando(false);}});fila.current=tarefa;return tarefa;},[avaliacao.id,treino]);
  useEffect(()=>{if(versao===salva)return;const t=setTimeout(()=>{void salvar();},AUTOSAVE_MS);return()=>clearTimeout(t);},[versao,salva,salvar]);
  useEffect(()=>{const sair=(e:BeforeUnloadEvent)=>{if(!treino&&atual.current.versao!==salva){e.preventDefault();e.returnValue='';}};window.addEventListener('beforeunload',sair);return()=>window.removeEventListener('beforeunload',sair);},[salva]);
- useEffect(()=>{onSaveReady?.(salvar);},[onSaveReady,salvar]);
+ const indSalvar=useRef<()=>Promise<boolean>>(async()=>true);const registrarInd=useCallback((fn:()=>Promise<boolean>)=>{indSalvar.current=fn;},[]);
+ useEffect(()=>{onSaveReady?.(async()=>(await salvar())&&(await indSalvar.current()));},[onSaveReady,salvar]);
+ const [abaSala,setAbaSala]=useState<'ficha'|'anotar'|'indicacoes'>('ficha');const [indAberta,setIndAberta]=useState(false);
  const mudar=(dados:DadosAvaliacao)=>{setEstado(e=>({...e,dados}));setVersao(v=>v+1);};const ler=(leitura:Leitura)=>{setEstado(e=>({...e,leitura}));setVersao(v=>v+1);};const resumir=(resumo:string)=>{setEstado(e=>({...e,resumo}));setVersao(v=>v+1);};
  const guardar=async(b:Biblioteca)=>{try{if(treino){setBibli(b);return true;}await terapia.bibliotecaSalvar(b);setBibli(b);qc.setQueryData(['avaliacao-biblioteca',userId],b);return true;}catch(e){setErro(e instanceof Error?e.message:String(e));return false;}};
  const voltar=async()=>{setSaindo(true);const ok=await salvar();if(ok){await Promise.all([qc.invalidateQueries({queryKey:['paciente-ficha',userId,ficha.paciente_id]}),qc.invalidateQueries({queryKey:['avaliacao',userId,avaliacao.id]})]);navigate(`/painel-terapeuta/paciente/${ficha.paciente_id}?aba=consultas`);}else setSaindo(false);};
@@ -83,7 +88,32 @@ export function Editor({pedirQuadro=0,avaliacao,ficha,conteudo,biblioteca,userId
  const quadroEl=quadro&&<Suspense fallback={<div role="status" className="mesa-qa p-6">Carregando quadro…</div>}><Quadro onLocalSave={treino?(q:QuadroSalvo)=>{setQuadroInicial(q);onQuadroLocal?.(q);}:undefined} onExibir={onExibir} treino={treino} consulta={consulta} videoTopo={videoTopo} fotosTreino={fotosTreino} avaliacao={avaliacao.id} userId={userId} ficha={ficha} conteudo={conteudo} fechar={()=>{setQuadro(false);onQuadroChange?.(false);}} inicial={quadroInicial}/></Suspense>;
  const abas=<nav className="av-abas" aria-label="Ficha ou avaliação"><button type="button" aria-pressed={aba==='ficha'} onClick={()=>setAba('ficha')}><b>Ficha da pessoa</b><small>o que ela trouxe</small></button><button type="button" aria-pressed={aba==='avaliacao'} onClick={()=>setAba('avaliacao')}><b>Minha avaliação</b><small>{idx>=0?`${idx+1} de 3 · ${ETAPAS[idx].nome}`:'Aprofundar'}</small></button></nav>;
  const corpo=estreito?<div className="av-estreito">{abas}{aba==='ficha'?fichaPessoa:painel(false)}</div>:<div className={`av-mesa ${teste?'':'sem-ficha'}`}>{teste?<aside className="av-ficha" aria-label="Ficha da pessoa">{fichaPessoa}</aside>:<button type="button" className="ff-bt av-abrir-ficha" onClick={()=>setTeste(true)}>Ver ficha</button>}{painel(false)}</div>;
- if(embedded)return <div ref={raiz} className="mesa-sala-ficha-in av-raiz">{corpo}{quadroEl}</div>;
+ // Sala (Parte 32): três abas grandes; tudo fica montado para não perder o que está sendo salvo.
+ const notaDe=(st:Setor)=><NotasArea setor={st} valor={estado.dados.notas[st]??''} mudar={v=>mudar({...estado.dados,notas:{...estado.dados.notas,[st]:v}})}/>;
+ const avancados=fixos.filter(x=>x.id!=='agni');
+ const sp=prof&&prof.id!=='agni'?prof.id:null;
+ const fichaSala=<div className="ff sala-ficha-ler"><h2>{ficha.nome}</h2><p className="m-muted">O que ela trouxe · só leitura</p><TesteCorpo ficha={ficha} fotos={<FotosFicha paciente={ficha.paciente_id} userId={userId} permitido={ficha.permissoes.fotos} treino={treino} fotosTreino={fotosTreino}/>}/>
+  {!!ficha.formularios?.length&&<section><h3 className="m-eti">Formulários respondidos</h3><FormulariosEnvios envios={ficha.formularios} paciente={ficha.paciente_id}/></section>}
+  {(anterior||!treino)&&<details className="sala-detalhes"><summary>Histórico e detalhes</summary>{!treino&&<LinhaConstancia paciente={ficha.paciente_id}/>}{anterior?<TesteCorpo ficha={{...ficha,permissoes:{...ficha.permissoes,teste:false}}} anterior={anterior}/>:null}</details>}</div>;
+ const anotar=<div className="sala-anotar" aria-busy={saindo}>
+  {somaLinha}{erro&&<p role="alert" className="text-sm text-destructive">{erro}</p>}
+  <section className="sala-bloco"><h3 className="av-h">O que observei</h3>{OBSERVAR.filter(([id])=>id!=='fotos').map(([id,n])=><div key={id} className="sala-sub"><h4>{n}</h4><div className="av-obs"><FotoDoItem setor={id} nome={n} paciente={ficha.paciente_id} userId={userId} permitido={ficha.permissoes.fotos} treino={treino} fotosTreino={fotosTreino}/><div className="min-w-0"><Adicoes semTitulo setor={id} dados={estado.dados} mudar={mudar} conteudo={conteudo} biblioteca={bibli} guardar={guardar} paciente={ficha.paciente_id} treino={treino} abrir={abrirSetor}/>{notaDe(id)}</div></div></div>)}</section>
+  <section className="sala-bloco"><h3 className="av-h">O que conversamos</h3><p className="av-exp">Toque em + para confirmar o que ela trouxe no teste. Só o que você marcar entra na avaliação.</p><Setores setor="sintomas" topo={<SugestoesTeste lista={sugestoes} confirmar={confirmar}/>} dados={estado.dados} conteudo={conteudo} leitura={estado.leitura} resumo={estado.resumo} biblioteca={bibli} userId={userId} mudar={mudar} ler={ler} resumir={resumir} guardar={guardar}/>{notaDe('sintomas')}</section>
+  <section className="sala-bloco"><h3 className="av-h">Minha conclusão</h3><Setores setor="agni" dados={estado.dados} conteudo={conteudo} leitura={estado.leitura} resumo={estado.resumo} biblioteca={bibli} userId={userId} mudar={mudar} ler={ler} resumir={resumir} guardar={guardar}/><Setores setor="dosha" dados={estado.dados} conteudo={conteudo} leitura={estado.leitura} resumo={estado.resumo} biblioteca={bibli} userId={userId} mudar={mudar} ler={ler} resumir={resumir} guardar={guardar}/>{notaDe('dosha')}<div className="mt-3">{chave}</div></section>
+  <details className="sala-avancado" open={avancados.length>0||undefined}><summary>Campos avançados{avancados.length>0&&<span> · {avancados.map(x=>x.nome).join(', ')}</span>}</summary>
+   <Aprofundar dados={estado.dados} mudar={mudar} abrir={abrirSetor} biblioteca={bibli} abertos={pilulas.filter(x=>x.id!=='agni')} atual={sp} contar={contagem} compacto/>
+   {sp&&<div className="sala-sub"><h4>{prof?.nome}</h4>{sp==='anotacoes'?null:['dhatus','malas','subdoshas'].includes(sp)?<Setores setor={sp} dados={estado.dados} conteudo={conteudo} leitura={estado.leitura} resumo={estado.resumo} biblioteca={bibli} userId={userId} mudar={mudar} ler={ler} resumir={resumir} guardar={guardar}/>:<Adicoes key={sp} setor={sp} dados={estado.dados} mudar={mudar} conteudo={conteudo} biblioteca={bibli} guardar={guardar} paciente={ficha.paciente_id} treino={treino} abrir={abrirSetor}/>}{notaDe(sp)}</div>}
+   <div className="sala-sub"><h4>Marcas nas fotos</h4><Fotos paciente={ficha.paciente_id} userId={userId} dados={estado.dados} mudar={mudar} permitido={ficha.permissoes.fotos} treino={treino} fotosTreino={fotosTreino}/>{!treino&&<Quadros avaliacao={avaliacao.id} userId={userId} abrir={abrirQuadro}/>}</div>
+  </details>
+  <div className="sala-fim-anotar"><Button data-terapia-principal className="m-btn pri" disabled={saindo} onClick={concluir}>Concluir avaliação</Button></div>{pergunta}
+ </div>;
+ const ABAS_SALA=[['ficha','Ficha','o que ela trouxe'],['anotar','Anotar','minha avaliação'],['indicacoes','Indicações','a folha da consulta']] as const;
+ if(embedded)return <div ref={raiz} className="mesa-sala-ficha-in av-raiz sala-abas-raiz">
+  <nav className="sala-abas" role="tablist" aria-label="Ficha, anotações e indicações">{ABAS_SALA.map(([k,n,sub])=><button type="button" role="tab" key={k} id={`sala-aba-${k}`} aria-selected={abaSala===k} aria-controls={`sala-painel-${k}`} onClick={()=>{setAbaSala(k);if(k==='indicacoes')setIndAberta(true);}}><b>{n}</b><small>{sub}</small></button>)}</nav>
+  <div role="tabpanel" id="sala-painel-ficha" aria-labelledby="sala-aba-ficha" hidden={abaSala!=='ficha'} className="sala-painel">{fichaSala}</div>
+  <div role="tabpanel" id="sala-painel-anotar" aria-labelledby="sala-aba-anotar" hidden={abaSala!=='anotar'} className="sala-painel">{anotar}</div>
+  <div role="tabpanel" id="sala-painel-indicacoes" aria-labelledby="sala-aba-indicacoes" hidden={abaSala!=='indicacoes'} className="sala-painel sala-painel-ind">{indAberta&&<Suspense fallback={<p role="status" className="p-5">Carregando indicações…</p>}><IndicacoesSala ficha={ficha} avaliacao={avaliacao.id} consulta={consulta} treino={treino} userId={userId} onSaveReady={registrarInd}/></Suspense>}</div>
+  {quadroEl}</div>;
  return <div className="mesa"><MesaHeader userId={userId}/>{quadro?quadroEl:<div ref={raiz} className="av-raiz"><div className="mesa-volta"><button type="button" disabled={saindo} onClick={voltar}>← {ficha.nome}</button></div><p className="mesa-contexto">{ficha.nome} · {avaliacao.consulta_inicio?`Consulta de ${diaBR(avaliacao.consulta_inicio)}`:`Criada em ${diaBR(avaliacao.criado_em)}`} · {situacaoAvaliacao(avaliacao)}</p>{corpo}</div>}</div>;
 }
 export default function AvaliacaoTerapeuta() {
