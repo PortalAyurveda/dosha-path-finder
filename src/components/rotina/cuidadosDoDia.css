@@ -1,0 +1,15 @@
+.rc-cartao{background:hsl(var(--card));border:1.5px solid hsl(var(--therapist-purple)/.7);border-radius:16px;padding:16px 16px 12px;margin-bottom:22px;display:flex;flex-direction:column;gap:10px}
+.rc-cab{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:4px 12px}
+.rc-cab h2{font-family:'Roboto Serif',Georgia,serif;font-size:21px;font-weight:700;color:hsl(var(--primary))}
+.rc-cab small{font-size:13.5px;color:hsl(var(--muted-foreground))}
+.rc-frase{font-size:15px;color:hsl(var(--foreground))}
+.rc-conta{text-align:right;font-size:13px;color:hsl(var(--muted-foreground))}
+.rc-lista li{display:grid;grid-template-columns:24px minmax(0,1fr);gap:12px;padding:11px 0;border-top:1px solid hsl(var(--muted));align-items:start}
+.rc-lista li:first-child{border-top:0}
+.rc-lista li.feito{background:hsl(var(--therapist-green-soft));border-radius:10px;padding:11px 10px;margin:0 -10px}
+.rc-lista li b{display:block;font-size:16px;font-weight:600;color:hsl(var(--foreground))}
+.rc-lista li small{display:block;font-size:13.5px;color:hsl(var(--muted-foreground));margin-top:2px}
+.rc-ver{background:none;border:0;padding:0;font:inherit;font-weight:700;color:hsl(var(--primary));cursor:pointer}
+.rc-evitei{display:flex;justify-content:space-between;align-items:baseline;margin-top:6px;font-family:'Roboto Serif',Georgia,serif;font-size:17px;font-weight:700;color:hsl(var(--primary))}
+.rc-evitei span{display:inline-flex;align-items:center;gap:6px}.rc-evitei svg{color:hsl(var(--therapist-green-ink))}
+.rc-evitei small{font:500 13px 'DM Sans',sans-serif;color:hsl(var(--muted-foreground))}

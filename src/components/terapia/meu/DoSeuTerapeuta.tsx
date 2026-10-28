@@ -1,20 +1,21 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
-import { Check, Printer } from "lucide-react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { Printer } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { MarcaPortal } from "@/components/impressao/PecasImpressao";
 import { dataAcompanhamento } from '@/lib/meuAcompanhamento';
 import { diaBR } from "@/lib/terapia";
-import { DIAS_CURTOS, dowDaData, iniciarIndicacoes, itemValeNoDia, linkCurto, linkIndicacao, momentosDaFolha, resumoDias, verTexto } from "@/lib/terapiaIndicacoes";
+import { dowDaData, iniciarIndicacoes, itemValeNoDia, linkCurto, linkIndicacao, momentosDaFolha, resumoDias, verTexto } from "@/lib/terapiaIndicacoes";
 import { alternarFeitoDia, diaSP, feitoNoDia, meu, progressoSecao, rotuloDiaMarcando, type MinhaFolha } from "@/lib/terapiaMeu";
 import "./doSeuTerapeuta.css";
+import FitaCuidados from "./FitaCuidados";
 
 const vistas = new Set<string>();
 const externo = (l: string) => /^https?:\/\//.test(l) && !l.includes("portalayurveda.com");
 
-export default function DoSeuTerapeuta({ folha, rodape, acompanhamento=false }: { folha: MinhaFolha; rodape?: string; acompanhamento?:boolean }) {
+export default function DoSeuTerapeuta({ folha, rodape, acompanhamento=false, semFita=false }: { folha: MinhaFolha; rodape?: string; acompanhamento?:boolean; semFita?: boolean }) {
   const [feitos, setFeitos] = useState(folha.feitos ?? []);
   const [vistos, setVistos] = useState(folha.vistos ?? []);
   const [erro, setErro] = useState("");
@@ -24,6 +25,7 @@ export default function DoSeuTerapeuta({ folha, rodape, acompanhamento=false }: 
   const ref = useRef<HTMLElement>(null);
   const nome = folha.terapeuta.primeiro_nome;
   const dataFolha = acompanhamento ? dataAcompanhamento : diaBR;
+  const qc = useQueryClient();
   const fitaQ = useQuery({ queryKey: ["cuidados-fita"], queryFn: meu.fita, retry: false });
   const fita = fitaQ.data;
   const hoje = fita?.hoje ?? diaSP(new Date());
@@ -47,7 +49,7 @@ export default function DoSeuTerapeuta({ folha, rodape, acompanhamento=false }: 
   const marcar = async (item: string, feito: boolean, diaMarca: string) => {
     const antes = feitos; setErro("");
     setFeitos(alternarFeitoDia(feitos, item, feito, diaMarca));
-    try { await meu.marcar(folha.id, item, feito, diaMarca); } catch (e) { setFeitos(antes); setErro((e as Error).message); }
+    try { await meu.marcar(folha.id, item, feito, diaMarca); void qc.invalidateQueries({ queryKey: ["cuidados-fita"] }); } catch (e) { setFeitos(antes); setErro((e as Error).message); }
   };
   const marcarLeitura = async (item: string, feito: boolean) => {
     const visto = vistos.find(v => v.item === item);
@@ -72,27 +74,7 @@ export default function DoSeuTerapeuta({ folha, rodape, acompanhamento=false }: 
         <div className="min-w-0 flex-1"><h2>Seu dia</h2><p>Do seu terapeuta {nome} · enviado em {enviadoEm}</p></div>
         <Button variant="outline" size="sm" className="no-print" onClick={() => setImprimindo(true)}><Printer className="mr-2 h-4 w-4" />Imprimir</Button>
       </header>
-      {fita && <div className="sd-fita no-print">
-        <div className="sd-fita-dias" role="group" aria-label="Últimos 7 dias">
-          {fita.dias.map(d => {
-            const ehHoje = d.dia === hoje;
-            const sel = d.dia === dia;
-            return (
-              <button key={d.dia} type="button" disabled={!d.pode_marcar && !ehHoje} aria-pressed={sel} aria-label={ehHoje ? "Hoje" : `${DIAS_CURTOS[d.dow - 1]} ${Number(d.dia.slice(8))}`}
-                className={`sd-fita-dia ${ehHoje ? "hoje" : ""} ${sel && !ehHoje ? "sel" : ""} ${d.pode_marcar || ehHoje ? "" : "travado"}`}
-                onClick={() => { setDiaSel(ehHoje ? null : d.dia); setVerTudo(false); }}>
-                <span className="sd-fita-dow">{ehHoje ? "Hoje" : DIAS_CURTOS[d.dow - 1][0].toUpperCase() + DIAS_CURTOS[d.dow - 1].slice(1)}</span>
-                <span className="sd-fita-num">{Number(d.dia.slice(8))}</span>
-                <span className={`sd-fita-bola ${d.cuidou ? "cuidou" : ""}`}>{d.cuidou && <Check size={12} strokeWidth={3} aria-hidden="true" />}</span>
-              </button>
-            );
-          })}
-        </div>
-        <p className="sd-fita-resumo">
-          {primeiroDia ? <b>1º dia da sua folha</b> : <><b>{fita.mes.dias_com_cuidado} dias de cuidado</b> em {fita.mes.nome}</>}
-          <span className="sd-fita-dica"> · toque em ontem ou anteontem para marcar o que ficou</span>
-        </p>
-      </div>}
+      {fita && !semFita && <FitaCuidados fita={fita} dia={dia} primeiroDia={primeiroDia} onDia={d => { setDiaSel(d); setVerTudo(false); }} />}
       {dia !== hoje && <div className="sd-faixa no-print" role="status"><span>{rotuloDiaMarcando(dia, hoje)}</span><button type="button" onClick={() => setDiaSel(null)}>Voltar para hoje</button></div>}
       {folha.diagnostico?.trim() && <section className="sd-acontece"><h3>O que está acontecendo</h3><p>{folha.diagnostico}</p></section>}
       {!momentos.length && <section className="sd-cartao sd-vazio">

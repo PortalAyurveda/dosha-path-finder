@@ -1,4 +1,5 @@
 import { lazy,Suspense,useCallback,useEffect,useRef,useState } from 'react';
+import { LinhaConstancia } from '@/components/terapia/ConstanciaFolha';
 import { Link,Navigate,useNavigate,useParams,useSearchParams } from 'react-router-dom';
 import { useQuery,useQueryClient } from '@tanstack/react-query';
 import { Helmet } from 'react-helmet-async';
@@ -77,7 +78,7 @@ export function Editor({avaliacao,ficha,conteudo,biblioteca,userId,embedded=fals
   {faixa}{pergunta}
  </div>;
  const testeCorpo=<TesteCorpo ficha={ficha} anterior={anterior}/>;
- const fichaPessoa=<div className="ff"><div className="ff-cab"><div><p className="ff-selo">Ficha da pessoa</p><small>O que ela trouxe · só leitura</small></div>{!estreito&&<button type="button" className="ff-bt" onClick={()=>setTeste(false)}>Fechar ficha</button>}</div><h2>{ficha.nome}</h2><TesteCorpo ficha={ficha} anterior={anterior} fotos={<FotosFicha paciente={ficha.paciente_id} userId={userId} permitido={ficha.permissoes.fotos} treino={treino} fotosTreino={fotosTreino}/>}/></div>;
+ const fichaPessoa=<div className="ff"><div className="ff-cab"><div><p className="ff-selo">Ficha da pessoa</p><small>O que ela trouxe · só leitura</small></div>{!estreito&&<button type="button" className="ff-bt" onClick={()=>setTeste(false)}>Fechar ficha</button>}</div><h2>{ficha.nome}</h2>{!treino&&<LinhaConstancia paciente={ficha.paciente_id}/>}<TesteCorpo ficha={ficha} anterior={anterior} fotos={<FotosFicha paciente={ficha.paciente_id} userId={userId} permitido={ficha.permissoes.fotos} treino={treino} fotosTreino={fotosTreino}/>}/></div>;
  const resumoBase:BaseQuadro={chave:'resumo',nome:'Resumo da avaliação',linhas:[{b:'Sua leitura',t:DOSHAS.map(d=>`${d} ${estado.leitura[d]}`).join(' · ')},{b:'Ama',t:DOSHAS.map(d=>`${d} ${estado.dados.ama[d]}`).join(' · ')}],texto:estado.resumo};
  const quadroEl=quadro&&<Suspense fallback={<div role="status" className="mesa-qa p-6">Carregando quadro…</div>}><Quadro onLocalSave={treino?(q:QuadroSalvo)=>{setQuadroInicial(q);onQuadroLocal?.(q);}:undefined} onExibir={onExibir} treino={treino} consulta={consulta} videoTopo={videoTopo} fotosTreino={fotosTreino} avaliacao={avaliacao.id} userId={userId} ficha={ficha} conteudo={conteudo} dados={estado.dados} mudar={mudar} fichaEditor={painel(true)} testeBloco={testeCorpo} resumoBase={resumoBase} fechar={()=>{setQuadro(false);onQuadroChange?.(false);}} inicial={quadroInicial}/></Suspense>;
  const abas=<nav className="av-abas" aria-label="Ficha ou avaliação"><button type="button" aria-pressed={aba==='ficha'} onClick={()=>setAba('ficha')}><b>Ficha da pessoa</b><small>o que ela trouxe</small></button><button type="button" aria-pressed={aba==='avaliacao'} onClick={()=>setAba('avaliacao')}><b>Minha avaliação</b><small>{idx>=0?`${idx+1} de 3 · ${ETAPAS[idx].nome}`:'Aprofundar'}</small></button></nav>;

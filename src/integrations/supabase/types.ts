@@ -15695,6 +15695,7 @@ export type Database = {
         Returns: string[]
       }
       _data_extenso: { Args: { p: string }; Returns: string }
+      _eh_conta_teste_terapia: { Args: never; Returns: boolean }
       _eh_terapeuta: { Args: never; Returns: string }
       _ficha_json: {
         Args: { p_paciente: string; p_terapeuta: string }
@@ -18054,6 +18055,10 @@ export type Database = {
         Returns: Json
       }
       terapia_conhecimento_nucleo: { Args: never; Returns: Json }
+      terapia_constancia_paciente: {
+        Args: { p_dias?: number; p_paciente: string }
+        Returns: Json
+      }
       terapia_conversas: { Args: never; Returns: Json }
       terapia_convite: { Args: { p_slug: string }; Returns: Json }
       terapia_convite_aceitar: {

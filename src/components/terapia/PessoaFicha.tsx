@@ -11,6 +11,7 @@ import PacienteEvolucao from './PacienteEvolucao';
 import PacienteRotina from './PacienteRotina';
 import { TituloPaciente, Trancado } from './PacienteComuns';
 import FormulariosEnvios from './formularios/Envios';
+import ConstanciaFolha from './ConstanciaFolha';
 
 const doshas = ['vata', 'pitta', 'kapha'] as const;
 const fundos = { vata: 'bg-vata', pitta: 'bg-pitta', kapha: 'bg-kapha' };
@@ -37,6 +38,7 @@ export default function PessoaFicha({ ficha, userId, cartao }: { ficha: FichaPac
   const trancado = <Trancado nome={ficha.nome} assunto="o teste de dosha" />;
   return <div className="max-w-5xl">
     <p className="mb-4 text-sm text-muted-foreground">O que ela trouxe: teste, sintomas, fotos e respostas. Só leitura.</p>
+    <ConstanciaFolha paciente={ficha.paciente_id} />
     <FormulariosEnvios envios={ficha.formularios} paciente={ficha.paciente_id}/>
     <Sanfona {...p('teste')} titulo="Teste de dosha" resumo={teste ? `${diaBR(teste.data)} · V ${teste.vata ?? 0} · P ${teste.pitta ?? 0} · K ${teste.kapha ?? 0}` : undefined}>
       {!permite ? trancado : resumo ? <div className="grid gap-6 md:grid-cols-2"><div className="space-y-6"><CartaoTesteResumo resumo={resumo} data={teste?.data} teste={teste} completo={ficha.teste_completo} /><CartaoQueixasArea resumo={resumo} teste={teste} /></div><div><CartaoPontosAtencao resumo={resumo} /></div></div>

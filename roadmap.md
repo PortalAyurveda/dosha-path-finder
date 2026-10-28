@@ -100,3 +100,6 @@
 - [x] Parte 28: dias da semana por item da folha (pílula Todo dia ▾), "Ao longo do dia", fita de 7 dias e marcar até 3 dias atrás no Seu dia, leitura uma vez (vistos), feito verde sem riscado, impressão com resumo de dias
 - [x] Parte 28: 12 testes novos (324 no total) e conferência em 1366 px e 390 px com respostas simuladas; fita, faixa de outro dia, filtro por dia, pílula e folha da terapeuta
 - [ ] Parte 28: validar marcação de dias anteriores e vistos com contas reais — bloqueado: Supabase externo sem sessão autenticada disponível
+
+- [x] Parte 29 · constância na Ficha da terapeuta
+- [x] Parte 30 · Minha Rotina com fita e Seus cuidados de hoje
