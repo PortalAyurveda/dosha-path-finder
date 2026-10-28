@@ -13,7 +13,7 @@ describe('Parte 9',()=>{
  it('lista pessoa por função',async()=>{await chat.minhas();expect(rpc).toHaveBeenCalledWith('chat_minhas');});
  it('busca 14 dias',async()=>{await chat.agenda('maria');expect(rpc).toHaveBeenCalledWith('terapeuta_agenda_publica',{p_slug:'maria',p_dias:14});});
  it('salva só as duas preferências',async()=>{await chat.preferencias('Olá','Ausente');expect(rpc).toHaveBeenCalledWith('terapia_preferencias_salvar',{p:{boas_vindas:'Olá',msg_ausente:'Ausente'}});});
- it('polling em 5 e 30 segundos',()=>{expect(CHAT_ABERTA_MS).toBe(5000);expect(CHAT_LISTA_MS).toBe(30000);});
+ it('polling só como rede de segurança, a cada 2 minutos',()=>{expect(CHAT_ABERTA_MS).toBe(120000);expect(CHAT_LISTA_MS).toBe(120000);});
  it('substitui convite',()=>{expect(textoConvite('Entre em {link}','/convite')).toBe('Entre em /convite');});
  it('ordena e atualiza sem duplicar histórico',()=>{const m={id:2,texto:'antes'} as Mensagem;expect(juntarMensagens([m,{id:1} as Mensagem],[{...m,texto:'agora'}]).map(m=>[m.id,m.texto])).toEqual([[1,undefined],[2,'agora']]);});
  it('vata inclui vata-pitta e vata-kapha mas não pitta',()=>{const lista=['vata','vata-pitta','vata-kapha','pitta'].map(dosha=>({id:dosha,nome:dosha,dosha,itens:0,usos:0}));expect(filtrarModelos(lista,'','vata').map(m=>m.id)).toEqual(['vata','vata-pitta','vata-kapha']);});

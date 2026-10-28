@@ -1,0 +1,35 @@
+/* Parte 32 · sala com três abas: Ficha, Anotar e Indicações */
+.sala-abas-raiz{display:flex;flex-direction:column;min-height:100%}
+.sala-abas{position:sticky;top:0;z-index:5;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;padding:8px;background:hsl(var(--card));border-bottom:1px solid var(--m-line)}
+.sala-abas button{display:flex;flex-direction:column;align-items:center;gap:1px;border:1px solid var(--m-line);border-radius:12px;background:var(--m-bg);color:var(--m-ink);padding:10px 4px;cursor:pointer;min-height:56px}
+.sala-abas button b{font-size:16px;font-family:'Roboto Serif',Georgia,serif}
+.sala-abas button small{font-size:11.5px;color:var(--m-muted)}
+.sala-abas button[aria-selected="true"]{background:var(--m-ink);border-color:var(--m-ink);color:hsl(var(--primary-foreground))}
+.sala-abas button[aria-selected="true"] small{color:hsl(var(--primary-foreground)/.8)}
+.sala-painel{padding:14px 16px 40px;min-width:0}
+.sala-painel[hidden]{display:none}
+.sala-ficha-ler{display:flex;flex-direction:column;gap:12px;font-size:14px}
+.sala-ficha-ler h2{font-size:20px}
+.sala-detalhes,.sala-avancado{border:1px solid var(--m-line);border-radius:12px;background:hsl(var(--card));padding:10px 14px}
+.sala-detalhes summary,.sala-avancado summary{cursor:pointer;font-weight:600;font-size:14px;color:var(--m-ink)}
+.sala-avancado summary span{font-weight:400;color:var(--m-muted)}
+.sala-detalhes[open]>*:not(summary),.sala-avancado[open]>*:not(summary){margin-top:10px}
+.sala-anotar{display:flex;flex-direction:column;gap:18px}
+.sala-bloco{display:flex;flex-direction:column;gap:10px;padding-bottom:14px;border-bottom:1px solid var(--m-line)}
+.sala-sub{display:flex;flex-direction:column;gap:6px}
+.sala-sub h4{font-weight:700;font-size:14.5px;color:var(--m-ink)}
+.sala-anotar .av-obs{grid-template-columns:1fr}
+.sala-fim-anotar{display:flex;justify-content:flex-end}
+.sala-painel-ind{padding:0}
+.sala-ind-vazia{display:flex;flex-direction:column;align-items:flex-start;gap:10px;padding:20px 16px}
+/* Folha embutida: rola dentro da aba, sem altura fixa da página própria */
+.mesa-indicacoes.fe.fe-sala{height:auto;overflow:visible;background:transparent}
+.fe-sala .fe-barra{padding:10px 12px}
+.fe-sala .fe-corpo{display:block}
+.fe-sala .fe-meio{overflow:visible;padding:10px 10px 30px}
+.fe-sala .fe-papel{padding:14px 14px}
+.fe-sala .fe-buscar-link{color:var(--m-ink);font-weight:700;text-decoration:none;border:1px solid var(--m-line);border-radius:999px;padding:4px 10px}
+.fe-gaveta{overflow:auto;display:flex;flex-direction:column}
+.fe-gaveta .fe-busca{position:static;max-height:none;border:0}
+.fe-gaveta-alvo{padding:12px 16px 0;font-size:13.5px;color:var(--m-muted)}
+.fe-mais-texto{display:inline-flex;align-items:center;gap:4px;flex:none;border:0;border-radius:999px;background:var(--m-ink);color:hsl(var(--primary-foreground));padding:5px 10px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap}

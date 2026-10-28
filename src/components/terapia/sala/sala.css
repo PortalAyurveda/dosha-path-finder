@@ -55,3 +55,6 @@
 @media(prefers-reduced-motion:reduce){.sala-p *{scroll-behavior:auto}}
 
 .treino-esperando{min-height:460px}.treino-paciente{position:absolute;inset:var(--sala-barra-altura,60px) 0 78px;display:grid;place-items:center;background:hsl(var(--sala-fundo));color:hsl(var(--sala-texto))}.treino-paciente h2{font-size:30px;color:inherit}.treino-esperando .sala-video{position:absolute;right:18px;bottom:100px;width:180px;height:130px;min-height:0;border-radius:8px;overflow:hidden}.treino-esperando>.m-controles{margin-top:auto;z-index:1}.treino-esperando>[role=alert]{position:relative;margin-top:auto;margin-bottom:84px;z-index:1}.treino-esperando>.m-grav{z-index:2}@media(max-width:900px){.treino-esperando{min-height:430px}.treino-esperando .sala-video{width:150px;height:105px;bottom:94px;right:12px}.treino-paciente h2{font-size:24px;align-self:start;margin-top:50px}}
+/* Parte 32: botão que abre o quadro perto do vídeo */
+.m-grav .sala-mostrar-tela{background:hsl(var(--card));color:var(--m-ink);border-color:hsl(var(--card));font-weight:700}
+.m-grav .sala-mostrar-tela:hover{background:hsl(var(--card)/.9);color:var(--m-ink)}

@@ -25,7 +25,7 @@ function Item({ item, secao, nota, tirar, dias, piscando }: { item: ItemIndicaca
   </article>;
 }
 
-export default function Secao({ secao, itens, nota, tirar, dias, livre, aberta, abrir, piscando, buscar }: { secao: SecaoIndicacoes; itens: ItemIndicacao[]; nota: (id: string, v: string) => void; tirar: (id: string) => void; dias: (id: string, dias: number[]) => void; livre: (s: string, t: string) => void; aberta: boolean; abrir: () => void; piscando: string | null; buscar: () => void }) {
+export default function Secao({ secao, itens, nota, tirar, dias, livre, aberta, abrir, piscando, buscar, rotuloBuscar }: { rotuloBuscar?: string; secao: SecaoIndicacoes; itens: ItemIndicacao[]; nota: (id: string, v: string) => void; tirar: (id: string) => void; dias: (id: string, dias: number[]) => void; livre: (s: string, t: string) => void; aberta: boolean; abrir: () => void; piscando: string | null; buscar: () => void }) {
   const drop = useDroppable({ id: `secao:${secao.chave}`, data: { secao: secao.chave } });
   const [texto, setTexto] = useState('');
   const vazio = !itens.length && !aberta;
@@ -37,7 +37,7 @@ export default function Secao({ secao, itens, nota, tirar, dias, livre, aberta, 
     <SortableContext items={itens.map(i => i.id)} strategy={verticalListSortingStrategy}>{itens.map(item => <Item key={item.id} item={item} secao={secao.chave} nota={nota} tirar={tirar} dias={dias} piscando={piscando === item.id} />)}</SortableContext>
     <form className="fe-add" onSubmit={e => { e.preventDefault(); if (texto.trim()) { livre(secao.chave, texto.trim()); setTexto(''); } }}>
       <input aria-label={`Escrever em ${secao.titulo}`} placeholder="+ escrever aqui…" value={texto} onChange={e => setTexto(e.target.value)} />
-      <button type="button" className="fe-buscar-link" onClick={buscar}>(ou Buscar)</button>
+      <button type="button" className="fe-buscar-link" onClick={buscar}>{rotuloBuscar ?? '(ou Buscar)'}</button>
     </form>
   </section>;
 }
