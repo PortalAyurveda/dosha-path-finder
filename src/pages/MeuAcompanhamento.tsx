@@ -10,7 +10,7 @@ import { useUser } from '@/contexts/UserContext';
 import { useMeuAcompanhamento } from '@/hooks/useMeuAcompanhamento';
 import { acompanhamento,avaliacoesDa,dataAcompanhamento,desdeAcompanhamento,horaAcompanhamento,blocoDaAba,linhaConsultaMinha,icsConsulta,COMO_FUNCIONA_CHAVE } from '@/lib/meuAcompanhamento';
 import { meu,salaLiberada,type MeuTerapeutaLigacao } from '@/lib/terapiaMeu';
-import { chat } from '@/lib/terapiaChat';
+import { chat,marcarAberta } from '@/lib/terapiaChat';
 import { horaBR } from '@/lib/terapia';
 import Avaliacoes from '@/components/terapia/meu/acompanhamento/Avaliacoes';
 import { AvaliarConsulta } from '@/components/terapia/meu/acompanhamento/Consultas';
@@ -50,7 +50,8 @@ function SeuDia({l}:{l:MeuTerapeutaLigacao}){
 function ConversaCurta({l}:{l:MeuTerapeutaLigacao}){
   const qc=useQueryClient();const nome=l.terapeuta.primeiro_nome;const [texto,setTexto]=useState('');const [erro,setErro]=useState('');const [ocupado,setOcupado]=useState(false);const [inteira,setInteira]=useState(false);
   const c=useQuery({queryKey:['chat-abrir',l.terapeuta.slug],queryFn:()=>chat.abrir(l.terapeuta.slug)});
-  const m=useQuery({queryKey:['chat-mensagens',c.data?.id,'paciente'],queryFn:()=>chat.mensagens(c.data!.id),enabled:!!c.data,refetchInterval:15000});
+  const m=useQuery({queryKey:['chat-mensagens',c.data?.id,'paciente'],queryFn:()=>chat.mensagens(c.data!.id),enabled:!!c.data,refetchInterval:120000});
+  useEffect(()=>c.data?marcarAberta(c.data.id):undefined,[c.data?.id]);
   const ultimas=(m.data??[]).filter(x=>x.autor!=='sistema').slice(-4);
   const enviar=async()=>{if(!c.data||!texto.trim())return;setOcupado(true);setErro('');try{await chat.enviar(c.data.id,texto.trim());setTexto('');await qc.invalidateQueries({queryKey:['chat-mensagens',c.data.id]});}catch(e){setErro((e as Error).message);}finally{setOcupado(false);}};
   return <section className="ac-card" id="ac-conversa"><div className="ac-cab"><h2>Conversa com {nome}</h2>{c.data&&<Button variant="link" className="h-auto p-0" onClick={()=>setInteira(true)}>Ver conversa inteira</Button>}</div>
@@ -75,7 +76,7 @@ export default function MeuAcompanhamento() {
   const {user,isAnonymous,loading}=useUser();const {ligacoes,consultas}=useMeuAcompanhamento();const [params,setParams]=useSearchParams();const [avaliar,setAvaliar]=useState('');const [agora,setAgora]=useState(Date.now());
   const [ver,setVer]=useState<{tipo:'avaliacao';id:string}|{tipo:'folha'}|null>(()=>params.get('avaliacao')?{tipo:'avaliacao',id:params.get('avaliacao')!}:null);
   const [comoFunciona,setComoFunciona]=useState(()=>{try{return !localStorage.getItem(COMO_FUNCIONA_CHAVE);}catch{return false;}});
-  const l=ligacoes.data?.find(l=>l.ligacao===params.get('terapeuta'))??ligacoes.data?.[0];
+  const l=ligacoes.data?.find(l=>l.ligacao===params.get('terapeuta')||l.terapeuta.slug===params.get('terapeuta'))??ligacoes.data?.[0];
   const avaliacoes=useQuery({queryKey:['minhas-avaliacoes',user?.id],queryFn:acompanhamento.avaliacoes,enabled:!!user&&!isAnonymous&&!!l,refetchInterval:30000,refetchIntervalInBackground:false});
   useEffect(()=>{const t=setInterval(()=>setAgora(Date.now()),30000);return()=>clearInterval(t);},[]);
   const bloco=blocoDaAba(params.get('aba'));

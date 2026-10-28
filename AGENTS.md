@@ -31,7 +31,7 @@
 - Keep therapist administration in dedicated admin/terapeutas views with RPC contracts and CMS value helpers in terapiaAdmin; retain the original registration editor separately and build CMS fields recursively from public values so new keys require no hardcoded form.
 - Keep weekly slot operations, photo requests, indication templates and consultation follow-up in dedicated therapy modules and views; reuse existing private upload and serialized indication saves, and cancel day appointments sequentially after one confirmation to preserve errors and avoid duplicate writes.
 
-- Keep patient and therapist messaging in shared dedicated chat views with RPC-only access; coordinate message and consultation title alerts through a single owner to avoid competing title timers.
+- Keep patient and therapist messaging in shared dedicated chat views with RPC-only access; one realtime chat_mensagens listener per signed-in user lives in ChatAvisos (inside OnlineTerapeutaProvider) and owns cache refresh, the new-message card, sound and title alerts, with polling only as a 2-minute safety net; open conversations register via marcarAberta so their own messages never raise a card.
 
 - Fit the teaching-board canvas to both available dimensions before applying zoom, and scale long source cards independently of normalized drawing coordinates; this keeps all content visible without changing saved strokes.
 - Keep the training Jitsi iframe mounted while participant events switch its CSS framing between a local-camera inset and the large call area; this avoids reconnecting when someone joins or leaves.
