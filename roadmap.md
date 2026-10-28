@@ -96,3 +96,7 @@
 
 - [x] Rótulos: "Minha biblioteca" vira "Biblioteca pessoal" no painel de busca e na área de avaliação; etiqueta do tipo na prévia mostra Texto, Foto, PDF, Vídeo, Link
 - [x] Rótulos: 20 testes (311 no total) e conferência das abas e da prévia em tela cheia; contas reais seguem bloqueadas (Supabase externo sem sessão)
+
+- [x] Parte 28: dias da semana por item da folha (pílula Todo dia ▾), "Ao longo do dia", fita de 7 dias e marcar até 3 dias atrás no Seu dia, leitura uma vez (vistos), feito verde sem riscado, impressão com resumo de dias
+- [x] Parte 28: 12 testes novos (324 no total) e conferência em 1366 px e 390 px com respostas simuladas; fita, faixa de outro dia, filtro por dia, pílula e folha da terapeuta
+- [ ] Parte 28: validar marcação de dias anteriores e vistos com contas reais — bloqueado: Supabase externo sem sessão autenticada disponível
