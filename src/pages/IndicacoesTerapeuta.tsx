@@ -43,6 +43,7 @@ function Editor({folha,fontes,terapeuta,userId,ficha}:{ficha:FichaPaciente;folha
  const [piscando,setPiscando]=useState<string|null>(null);
  const inserir=(s:string,f:FonteIndicacao)=>{const item=criarIndicacao(f);mudar(r=>({...r,dados:inserirIndicacao(r.dados,s,item)}));setAbertas(a=>({...a,[s]:true}));setPiscando(item.id);setTimeout(()=>setPiscando(p=>p===item.id?null:p),1500);setTimeout(()=>document.getElementById(`ind-item-${item.id}`)?.scrollIntoView({behavior:'smooth',block:'center'}),60);if(!largo())setBuscaAberta(false);};
  const mover=(id:string,s:string,i?:number)=>mudar(r=>({...r,dados:moverIndicacao(r.dados,id,s,i)}));
+ const mudarItem=(id:string,campo:'nota'|'dias',v:unknown)=>mudar(r=>({...r,dados:{...r.dados,secoes:Object.fromEntries(Object.entries(r.dados.secoes).map(([s,itens])=>[s,itens.map(i=>{if(i.id!==id)return i;const novo={...i,[campo]:v};if(campo==='dias'&&(v as number[]).length===7)delete novo.dias;return novo;})]))}}));
  const sensores=useSensors(useSensor(PointerSensor,{activationConstraint:{distance:8}}),useSensor(KeyboardSensor,{coordinateGetter:sortableKeyboardCoordinates}));
  const quando=distanciaRetorno(rascunho.retorno);
  // "O que está acontecendo" cresce com o texto, sem rolagem interna.
