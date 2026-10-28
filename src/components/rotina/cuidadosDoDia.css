@@ -1,4 +1,4 @@
-.rc-cartao{background:hsl(var(--card));border:1.5px solid hsl(var(--therapist-purple)/.45);border-radius:16px;padding:16px 16px 12px;margin-bottom:22px;display:flex;flex-direction:column;gap:10px}
+.rc-cartao{background:hsl(var(--card));border:1.5px solid hsl(var(--therapist-purple)/.7);border-radius:16px;padding:16px 16px 12px;margin-bottom:22px;display:flex;flex-direction:column;gap:10px}
 .rc-cab{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:4px 12px}
 .rc-cab h2{font-family:'Roboto Serif',Georgia,serif;font-size:21px;font-weight:700;color:hsl(var(--primary))}
 .rc-cab small{font-size:13.5px;color:hsl(var(--muted-foreground))}
