@@ -300,7 +300,7 @@ const FloatingAkasha = () => {
       <div
         className={`fixed z-[60] transition-all duration-200 origin-bottom-right ${
           open ? "opacity-100 scale-100 pointer-events-auto" : "opacity-0 scale-95 pointer-events-none"
-        } bottom-20 right-4 sm:right-6 w-[calc(100vw-2rem)] sm:w-[380px] h-[70vh] sm:h-[560px] max-h-[640px] bg-background border border-border rounded-2xl shadow-2xl flex flex-col overflow-hidden`}
+        } bottom-[70px] sm:bottom-[76px] right-4 sm:right-6 w-[calc(100vw-2rem)] sm:w-[380px] h-[70vh] sm:h-[560px] max-h-[640px] bg-background border border-border rounded-2xl shadow-2xl flex flex-col overflow-hidden`}
         role="dialog"
         aria-label="Akasha IA"
         aria-hidden={!open}
@@ -433,7 +433,7 @@ const FloatingAkasha = () => {
       {/* Botão flutuante */}
       <button
         onClick={() => { markEngaged(); setOpen((o) => !o); }}
-        className={`fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-[60] h-12 sm:h-14 rounded-full bg-white border border-akasha/20 ring-2 ring-akasha/10 flex items-center gap-2 pl-1.5 pr-4 text-akasha hover:scale-105 transition-all ${
+        className={`fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-[60] h-[46px] w-[46px] sm:h-10 sm:w-auto rounded-full overflow-hidden bg-white border border-akasha/20 ring-2 ring-akasha/10 flex items-center justify-center sm:justify-start gap-1.5 px-0 sm:pl-1 sm:pr-3.5 text-akasha hover:scale-105 transition-all ${
           !open && !engaged
             ? "akasha-call ring-akasha/40"
             : "shadow-[0_0_22px_-4px_hsl(var(--akasha)/0.45)] hover:shadow-[0_0_30px_-2px_hsl(var(--akasha)/0.6)]"
@@ -441,11 +441,11 @@ const FloatingAkasha = () => {
         aria-label={open ? "Fechar Akasha" : "Abrir Akasha"}
       >
         {open ? (
-          <X className="w-6 h-6 mx-2" />
+          <X className="w-5 h-5 sm:mx-1" />
         ) : (
           <>
-            <img src={AKASHA_FLOATING_LOGO} alt="" className="w-9 h-9 sm:w-11 sm:h-11 object-cover rounded-full shrink-0" loading="lazy" decoding="async" />
-            <span className="text-sm font-bold">Akasha</span>
+            <img src={AKASHA_FLOATING_LOGO} alt="" className="h-full w-full sm:h-8 sm:w-8 object-cover rounded-full shrink-0" loading="lazy" decoding="async" />
+            <span className="hidden sm:block text-xs font-bold">Akasha</span>
           </>
         )}
       </button>
