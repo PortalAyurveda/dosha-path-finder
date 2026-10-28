@@ -13,4 +13,12 @@ describe('Parte 6',()=>{
  it('põe itens que servem antes dos outros sem alterar a fonte',()=>{const itens=[{id:'a',serve:false},{id:'b',serve:true}];expect(ordenarMinhas(itens).map(i=>i.id)).toEqual(['b','a']);expect(itens[0].id).toBe('a');});
  it('usa o endereço aprovado do acervo',()=>expect(enderecoAcervo('juliana','cha')).toBe('/terapeutas/juliana/acervo/cha'));
  it('converte mm:ss em segundos',()=>expect(inicioYoutube('02:35')).toBe(155));
+});import {apagarPerto,desfazer,historicoVazio,refazer,registrar} from './terapiaQuadro';
+import type {TracoQuadro} from './terapiaQuadro';
+describe('Parte 32 · quadro',()=>{
+ const a:TracoQuadro={tipo:'pincel',cor:'vata',pontos:[{x:.1,y:.1},{x:.2,y:.1}]};const b:TracoQuadro={tipo:'pincel',cor:'pitta',pontos:[{x:.8,y:.8},{x:.9,y:.8}]};
+ it('Voltar desfaz o último passo e Avançar refaz',()=>{let h=registrar(historicoVazio(),[]);const v=desfazer(h,[a]);expect(v?.desenhos).toEqual([]);h=v!.h;const r=refazer(h,[]);expect(r?.desenhos).toEqual([a]);});
+ it('Limpar tudo pode ser desfeito com Voltar',()=>{const h=registrar(historicoVazio(),[a,b]);expect(desfazer(h,[])?.desenhos).toEqual([a,b]);});
+ it('um novo traço apaga o Avançar',()=>{let h=registrar(historicoVazio(),[]);h=desfazer(h,[a])!.h;expect(registrar(h,[]).futuro).toEqual([]);});
+ it('borracha tira só o traço tocado',()=>expect(apagarPerto([a,b],{x:.15,y:.1})).toEqual([b]));
 });
