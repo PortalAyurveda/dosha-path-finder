@@ -60,7 +60,7 @@
 .fe-linha-topo b{flex:1;min-width:0}
 .fe-dias-wrap{position:relative;flex:none}
 .fe-dias{display:inline-flex;align-items:center;gap:3px;border:1px solid var(--m-line);border-radius:999px;padding:2px 9px;font-size:12px;font-weight:600;color:var(--m-muted);background:transparent;cursor:pointer;white-space:nowrap}
-.fe-dias.parcial{border-color:hsl(var(--secondary));color:hsl(var(--secondary-foreground));background:hsl(var(--secondary)/.12)}
+.fe-dias.parcial{border-color:hsl(var(--secondary));color:color-mix(in srgb,hsl(var(--secondary)) 55%,hsl(var(--primary)));background:hsl(var(--secondary)/.14)}
 .fe-dias.fixa{cursor:default;color:var(--m-muted)}
 .fe-dias-caixa{position:absolute;right:0;top:calc(100% + 4px);z-index:30;display:flex;flex-direction:column;gap:6px;background:hsl(var(--card));border:1px solid var(--m-line);border-radius:12px;padding:10px;box-shadow:0 12px 32px -14px hsl(var(--primary)/.45);min-width:220px}
 .fe-dias-letras{display:flex;gap:4px}
