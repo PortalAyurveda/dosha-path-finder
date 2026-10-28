@@ -36,7 +36,32 @@
 .sd-ck[data-state=checked]{background:hsl(var(--therapist-green-ink));border-color:hsl(var(--therapist-green-ink))}
 .sd-cartao li b{font-size:15px;display:block}.sd-cartao li small{display:block;font-size:13px;color:hsl(var(--muted-foreground))}
 .sd-cartao li small a{font-size:inherit;line-height:inherit;font-weight:600;color:hsl(var(--primary))}
-.sd-cartao li.feito b{text-decoration:line-through;color:hsl(var(--muted-foreground))}
+/* Parte 28 · feito: fundo verde bem claro, sem riscar o texto */
+.sd-cartao li.feito{background:hsl(var(--therapist-green-soft));border-radius:10px;padding:9px 10px;margin:0 -10px}
+.sd-dias{color:hsl(var(--therapist-purple-ink));font-weight:600}
+.sd-visto{color:hsl(var(--therapist-green-ink))}
+.sd-vazio p{font-size:15px}.sd-vazio .sd-link{margin-top:4px}
+.sd-link{background:none;border:0;padding:0;font-size:13.5px;font-weight:600;color:hsl(var(--primary));text-decoration:underline;cursor:pointer}
+.sd-voltar{margin:0}
+/* Parte 28 · fita dos últimos 7 dias */
+.sd-fita{display:flex;flex-direction:column;gap:6px}
+.sd-fita-dias{display:flex;gap:4px}
+.sd-fita-dia{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;background:none;border:1.5px solid transparent;border-radius:12px;padding:6px 2px;cursor:pointer;color:inherit;font:inherit}
+.sd-fita-dia.travado{opacity:.45;cursor:default}
+.sd-fita-dia.hoje{border-color:hsl(var(--therapist-purple))}
+.sd-fita-dia.sel{border-color:hsl(var(--secondary))}
+.sd-fita-dow{font-size:11.5px;color:hsl(var(--muted-foreground))}
+.sd-fita-dia.hoje .sd-fita-dow{font-weight:700;color:hsl(var(--primary))}
+.sd-fita-num{font-size:14px;font-weight:600}
+.sd-fita-bola{width:20px;height:20px;border-radius:50%;border:1.5px solid hsl(var(--muted-foreground)/.4);display:grid;place-items:center;color:hsl(var(--primary-foreground))}
+.sd-fita-bola.cuidou{background:hsl(var(--therapist-green));border-color:hsl(var(--therapist-green))}
+.sd-fita-resumo{font-size:13px;color:hsl(var(--muted-foreground))}
+.sd-fita-resumo b{color:hsl(var(--therapist-green-ink));font-weight:700}
+.sd-fita-dica{font-size:12px}
+@media(max-width:760px){.sd-fita-dica{display:none}}
+/* Faixa amarela ao marcar outro dia */
+.sd-faixa{display:flex;align-items:center;justify-content:space-between;gap:10px;background:hsl(45 90% 92%);border:1px solid hsl(45 80% 75%);border-radius:10px;padding:8px 12px;font-size:13.5px}
+.sd-faixa button{background:none;border:0;padding:0;font-size:13px;font-weight:700;color:hsl(var(--primary));text-decoration:underline;cursor:pointer;white-space:nowrap}
 .sd-proxima p{font-size:15px}.sd-proxima a{font-size:13.5px;font-weight:600;color:hsl(var(--primary))}
 .seu-dia .sd-cartao>h3{text-transform:none;letter-spacing:0;margin:0}
 .seu-dia .sd-barra,.seu-dia .sd-barra>span{text-transform:none;letter-spacing:0;font-size:16px}
