@@ -121,7 +121,7 @@ export default function DoSeuTerapeuta({ folha, rodape, acompanhamento=false }: 
                       <b>{i.titulo}</b>
                       {leitura && visto && <small className="no-print sd-visto">visto em {new Date(`${visto.dia}T12:00:00`).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" })}{ver ? <> · {ver}</> : null}</small>}
                       {!(leitura && visto) && i.texto && <small className="whitespace-pre-wrap">{i.texto}</small>}
-                      {!(leitura && visto) && (resumo || i.nota || ver) && <small>{resumo && <span className="sd-dias">{resumo} · </span>}{i.nota}{i.nota && ver ? " · " : ""}{!i.nota && resumo && ver ? "" : ""}{ver && <span className="no-print">{ver}</span>}</small>}
+                      {!(leitura && visto) && (resumo || i.nota || ver) && <small>{resumo && <span className="sd-dias">{resumo} · </span>}{i.nota}{(i.nota || resumo) && ver ? " · " : ""}{ver && <span className="no-print">{ver}</span>}</small>}
                       {resumo && <small className="so-impressao">({resumo})</small>}
                       {link && <small className="so-impressao">{linkCurto(link)}</small>}
                     </div>
