@@ -300,7 +300,7 @@ const FloatingAkasha = () => {
       <div
         className={`fixed z-[60] transition-all duration-200 origin-bottom-right ${
           open ? "opacity-100 scale-100 pointer-events-auto" : "opacity-0 scale-95 pointer-events-none"
-        } bottom-20 right-4 sm:right-6 w-[calc(100vw-2rem)] sm:w-[380px] h-[70vh] sm:h-[560px] max-h-[640px] bg-background border border-border rounded-2xl shadow-2xl flex flex-col overflow-hidden`}
+        } bottom-[70px] sm:bottom-[76px] right-4 sm:right-6 w-[calc(100vw-2rem)] sm:w-[380px] h-[70vh] sm:h-[560px] max-h-[640px] bg-background border border-border rounded-2xl shadow-2xl flex flex-col overflow-hidden`}
         role="dialog"
         aria-label="Akasha IA"
         aria-hidden={!open}
