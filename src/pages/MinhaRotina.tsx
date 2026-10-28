@@ -59,6 +59,7 @@ import NuggetDetalhe, { type Nugget } from "@/components/rotina/NuggetDetalhe";
 
 import NuggetIscaDialog from "@/components/rotina/NuggetIscaDialog";
 import PreviaRotina from "@/components/rotina/PreviaRotina";
+import CuidadosDoDia from "@/components/rotina/CuidadosDoDia";
 const IndicacoesNaRotina = lazy(() => import("@/components/terapia/meu/IndicacoesNaRotina"));
 
 
@@ -551,7 +552,7 @@ const MinhaRotina = () => {
     const linhasHoje = rotinaRows
       ? rotinaRows.filter((r) => r.dia === diaHoje && (r.semana ?? 1) === semanaHoje)
       : undefined;
-    return (
+    const previa = (
       <PreviaRotina
         linhas={linhasHoje}
         temTeste={!!doshaResult?.idPublico}
@@ -560,6 +561,26 @@ const MinhaRotina = () => {
         dataLabel={agora.toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" })}
         doshaNome={doshaResult?.doshaprincipal ?? null}
       />
+    );
+    if (!doshaResult?.idPublico) return previa;
+    return (
+      <div className="mx-auto max-w-xl px-4 pt-8">
+        <CuidadosDoDia
+          userId={user.id}
+          habitos={(glossario?.habitos_diarios ?? []).slice(0, 3)}
+          alertas={(glossario?.alertas_cotidianos ?? []).slice(0, 3)}
+          frase="3 cuidados escolhidos pelo seu teste de dosha"
+        />
+        <section className="rounded-3xl border border-border bg-muted/40 p-4 sm:p-5" aria-labelledby="cardapio-semana">
+          <h2 id="cardapio-semana" className="font-serif font-bold text-xl text-primary">O seu cardápio da semana</h2>
+          <p className="mt-1 text-sm text-muted-foreground">Ritual da manhã, as receitas de cada refeição para o seu dosha, imprimir e lista de compras.</p>
+          <div className="mt-3 flex flex-wrap items-center gap-3">
+            <Button asChild variant="secondary" size="lg"><Link to="/assinar?ir=planos&utm_source=site&utm_medium=minha_rotina&utm_campaign=cuidados_rotina">Assinar por R$30/mês</Link></Button>
+            <span className="text-sm text-muted-foreground">menos de R$1 por dia</span>
+          </div>
+          <div className="-mx-4 sm:-mx-5">{previa}</div>
+        </section>
+      </div>
     );
   }
 
@@ -628,8 +649,6 @@ const MinhaRotina = () => {
   // referencia agora vem como "diaN:resto" (ex.: "dia1:cafe_manha").
   // Marcações antigas sem prefixo são ignoradas (não casam com nenhum dia).
   const acertoRotinaSlots = new Set<string>();
-  const acertoHabitos = new Set<string>();
-  const deslizes = new Set<string>();
   (pontosHoje ?? []).forEach((p) => {
     if (!p.referencia) return;
     const m = p.referencia.match(/^dia(\d+):(.*)$/s);
@@ -638,27 +657,7 @@ const MinhaRotina = () => {
     const resto = m[2];
     if (diaRef !== diaSelecionado) return;
     if (p.tipo === "acerto_rotina") acertoRotinaSlots.add(resto);
-    else if (p.tipo === "acerto_habito") acertoHabitos.add(resto);
-    else if (p.tipo === "deslize") deslizes.add(resto);
   });
-
-  // Contagens do dia (apenas marcações do dia selecionado)
-  const totalPossivel =
-    MEAL_SLOTS.length + PRACTICE_SLOTS.length + habitosGloss.length;
-  const feitosCount = acertoRotinaSlots.size + acertoHabitos.size;
-  const progressoPct = totalPossivel > 0 ? (feitosCount / totalPossivel) * 100 : 0;
-  const equilibrioDia = (pontosHoje ?? []).reduce((acc, r) => {
-    const m = r.referencia?.match(/^dia(\d+):/);
-    if (!m || Number(m[1]) !== diaSelecionado) return acc;
-    return acc + (r.pontos ?? 0);
-  }, 0);
-
-  // Nível do DIA (reseta a cada dia)
-  const nivelDia = (() => {
-    if (progressoPct < 33) return "Iniciante";
-    if (progressoPct < 66) return "Praticante";
-    return "Avançado";
-  })();
 
   // Helpers de mutação otimista em rotina_pontos
   const optimisticAdd = (linha: PontoRow) => {
@@ -715,7 +714,7 @@ const MinhaRotina = () => {
           nugget_id: row.nugget_id,
         });
         if (error && (error as any).code !== "23505") throw error;
-
+        queryClient.invalidateQueries({ queryKey: ["cuidados-fita"] });
       } catch {
         revertPontos();
         toast({ title: "Não consegui salvar", variant: "destructive" });
@@ -730,63 +729,11 @@ const MinhaRotina = () => {
           .eq("tipo", "acerto_rotina")
           .eq("referencia", ref);
         if (error) throw error;
-
+        queryClient.invalidateQueries({ queryKey: ["cuidados-fita"] });
       } catch {
         revertPontos();
         toast({ title: "Não consegui salvar", variant: "destructive" });
       }
-    }
-  };
-
-  const toggleHabito = async (habito: string) => {
-    if (!user) return;
-    if (!ehHoje) return;
-    const ref = `dia${diaSelecionado}:${habito}`;
-    const jaFeito = acertoHabitos.has(habito);
-    if (!jaFeito) {
-      optimisticAdd({ data: todayISO, tipo: "acerto_habito", pontos: 1, referencia: ref, nugget_id: null });
-      const { error } = await (supabase.from("rotina_pontos") as any).insert({
-        user_id: user.id, data: todayISO, tipo: "acerto_habito", pontos: 1, referencia: ref,
-      });
-      if (error && (error as any).code !== "23505") {
-        revertPontos();
-        toast({ title: "Não consegui salvar", variant: "destructive" });
-      }
-    } else {
-      optimisticRemove({ tipo: "acerto_habito", referencia: ref });
-      const { error } = await (supabase.from("rotina_pontos") as any)
-        .delete()
-        .eq("user_id", user.id)
-        .eq("data", todayISO)
-        .eq("tipo", "acerto_habito")
-        .eq("referencia", ref);
-      if (error) { revertPontos(); toast({ title: "Não consegui salvar", variant: "destructive" }); }
-    }
-  };
-
-  const toggleAlerta = async (alerta: string) => {
-    if (!user) return;
-    if (!ehHoje) return;
-    const ref = `dia${diaSelecionado}:${alerta}`;
-    const jaEscorregou = deslizes.has(alerta);
-    if (!jaEscorregou) {
-      optimisticAdd({ data: todayISO, tipo: "deslize", pontos: -1, referencia: ref, nugget_id: null });
-      const { error } = await (supabase.from("rotina_pontos") as any).insert({
-        user_id: user.id, data: todayISO, tipo: "deslize", pontos: -1, referencia: ref,
-      });
-      if (error && (error as any).code !== "23505") {
-        revertPontos();
-        toast({ title: "Não consegui salvar", variant: "destructive" });
-      }
-    } else {
-      optimisticRemove({ tipo: "deslize", referencia: ref });
-      const { error } = await (supabase.from("rotina_pontos") as any)
-        .delete()
-        .eq("user_id", user.id)
-        .eq("data", todayISO)
-        .eq("tipo", "deslize")
-        .eq("referencia", ref);
-      if (error) { revertPontos(); toast({ title: "Não consegui salvar", variant: "destructive" }); }
     }
   };
 
@@ -856,15 +803,17 @@ const MinhaRotina = () => {
             Imprimir
           </button>
         </div>
-        <div className="flex items-center gap-2 mt-3 flex-wrap">
-          <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-secondary/15 text-secondary text-xs font-medium border border-secondary/30">
-            {nivelDia}
-          </span>
-          <span className="text-xs text-muted-foreground">
-            Seus pontos: <span className="font-semibold text-foreground">{pontosTotal ?? 0}</span>
-          </span>
-        </div>
       </header>
+
+      <CuidadosDoDia
+        userId={user.id}
+        habitos={habitosGloss}
+        alertas={alertasGloss}
+        praticas={(dow, semana) => PRACTICE_SLOTS.map((p) => {
+          const row = (rotinaRows ?? []).find((r) => r.dia === dow && (r.semana ?? 1) === semana && r.slot === p.slot);
+          return { slot: p.slot, label: p.label, nuggetId: row?.nugget_id ?? null, nugget: row?.nugget_id ? nuggetsById.get(row.nugget_id) : undefined };
+        }).filter((p) => p.nuggetId)}
+      />
 
       {/* Link de isca: receita fora da semana atual — card completo por cima da tela */}
       {nuggetAlvo && (
@@ -997,41 +946,6 @@ const MinhaRotina = () => {
         })}
       </div>
 
-      {!ehHoje && (
-        <div className="mb-5 rounded-xl border border-border bg-muted/50 px-4 py-3 text-sm text-muted-foreground">
-          Você está vendo a <span className="font-medium text-foreground">Semana {semanaSelecionada} · {NOME_DIA[diaSelecionado]}</span> em modo de consulta.
-          Marcar progresso só vale no dia de hoje.{" "}
-          <button
-            onClick={() => { setSemanaSelecionada(semanaHoje); setDiaSelecionado(diaHoje); }}
-            className="font-semibold text-primary underline underline-offset-2"
-          >
-            Voltar para hoje
-          </button>
-        </div>
-      )}
-
-
-      {/* Indicadores do dia */}
-      <div className="mb-6">
-        <div className="flex items-baseline justify-between mb-1.5">
-          <span className="text-sm text-foreground font-medium">
-            Progresso do dia · {feitosCount} de {totalPossivel}
-          </span>
-          <span className="text-xs text-muted-foreground">
-            Equilíbrio:{" "}
-            <span
-              className={cn(
-                "font-medium",
-                equilibrioDia < 0 ? "text-muted-foreground" : "text-foreground"
-              )}
-            >
-              {equilibrioDia > 0 ? `+${equilibrioDia}` : equilibrioDia}
-            </span>
-          </span>
-        </div>
-        <Progress value={progressoPct} className="h-2" />
-      </div>
-
       <div className="space-y-8">
         {/* ===== Sua rotina (refeições) ===== */}
         <section>
@@ -1072,68 +986,6 @@ const MinhaRotina = () => {
           </div>
 
         </section>
-
-        {/* ===== Seus cuidados de hoje (práticas + hábitos do glossário) ===== */}
-        <section>
-          <h2 className="text-xs uppercase tracking-wider text-muted-foreground font-semibold mb-2">
-            Seus cuidados de hoje
-          </h2>
-          <div className="space-y-3">
-            {PRACTICE_SLOTS.map((s) => {
-              const row = rowBySlot.get(s.slot);
-              const nugget = row?.nugget_id ? nuggetsById.get(row.nugget_id) : undefined;
-              return (
-                <RotinaSlotCard
-                  key={s.slot}
-                  slotLabel={s.label}
-                  row={row}
-                  nugget={nugget}
-                  feito={acertoRotinaSlots.has(s.slot)}
-                  agniFracoOuIrregular={agniFracoOuIrregular}
-                  onToggleFeito={() => row && toggleFeito(row)}
-                  somenteLeitura={!ehHoje}
-                  focus={!!nugget && nugget.id === focusNuggetId}
-                />
-              );
-            })}
-            {habitosGloss.map((h, idx) => (
-              <HabitoCard
-                key={`hab-${idx}`}
-                habito={h.habito}
-                periodo={h.periodo}
-                feito={acertoHabitos.has(h.habito)}
-                onToggle={() => toggleHabito(h.habito)}
-                somenteLeitura={!ehHoje}
-              />
-            ))}
-          </div>
-        </section>
-
-        {/* ===== Evitar hoje ===== */}
-        {alertasGloss.length > 0 && (
-          <section>
-            <h2 className="text-xs uppercase tracking-wider text-muted-foreground font-semibold mb-2">
-              Evitar hoje
-            </h2>
-            <p className="text-xs text-muted-foreground mb-3">
-              espelho do dia — sem culpa, só consciência.
-            </p>
-            <div className="space-y-3">
-              {alertasGloss.map((a, idx) => (
-                <AlertaCard
-                  key={`al-${idx}`}
-                  alerta={a}
-                  escorregou={deslizes.has(a)}
-                  onToggle={() => toggleAlerta(a)}
-                  somenteLeitura={!ehHoje}
-                />
-              ))}
-            </div>
-          </section>
-        )}
-
-
-
 
         {/* ===== Sempre Faz Bem (suplementos personalizados) ===== */}
         <SuplementosSection
