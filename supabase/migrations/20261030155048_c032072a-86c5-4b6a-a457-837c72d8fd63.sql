@@ -1,0 +1,4 @@
+revoke execute on function public.terapeuta_solicitar(text,timestamptz), public.consulta_pedido_meu(text), public.consulta_pedido_salvar(uuid,text,boolean,boolean,boolean,boolean),
+ public.consulta_pedido_enviar(uuid,text,boolean,boolean,boolean,boolean), public.consulta_pedido_cancelar(uuid), public.meus_pedidos_consulta(), public.terapeuta_pedidos(),
+ public.terapeuta_pedido_responder(uuid,text,timestamptz,text), public.consulta_sugestao_responder(uuid,boolean), public._pedido_confirmar(uuid), public._pedido_json(public.consulta_solicitacoes) from public, anon;
+revoke execute on function public._pedido_json(public.consulta_solicitacoes) from authenticated;
