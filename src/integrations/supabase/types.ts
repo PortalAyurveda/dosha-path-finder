@@ -9211,26 +9211,41 @@ export type Database = {
       lingua_beta: {
         Row: {
           criado_em: string
+          email: string | null
           escolhas: Json
           escrita: string | null
+          foto_path: string | null
           id: string
+          ligado_em: string | null
           navegador: string | null
+          nome: string | null
+          registro_id: string | null
           tem_foto: boolean
         }
         Insert: {
           criado_em?: string
+          email?: string | null
           escolhas: Json
           escrita?: string | null
+          foto_path?: string | null
           id?: string
+          ligado_em?: string | null
           navegador?: string | null
+          nome?: string | null
+          registro_id?: string | null
           tem_foto?: boolean
         }
         Update: {
           criado_em?: string
+          email?: string | null
           escolhas?: Json
           escrita?: string | null
+          foto_path?: string | null
           id?: string
+          ligado_em?: string | null
           navegador?: string | null
+          nome?: string | null
+          registro_id?: string | null
           tem_foto?: boolean
         }
         Relationships: []
@@ -17497,7 +17512,19 @@ export type Database = {
       kit_ja_comprado: { Args: { p_slug: string }; Returns: boolean }
       lingua_acesso: { Args: { p_uid: string }; Returns: Json }
       lingua_estado: { Args: never; Returns: Json }
+      lingua_fotos_pesquisa: {
+        Args: { p_uid: string }
+        Returns: {
+          bucket: string
+          data: string
+          id: number
+          path: string
+          pesquisa: string
+        }[]
+      }
       lingua_historico_de: { Args: { p_uid: string }; Returns: Json }
+      lingua_ligar_beta: { Args: { p_beta: string }; Returns: string }
+      lingua_ligar_beta_pendentes: { Args: { p_uid: string }; Returns: number }
       lingua_minhas: { Args: { p_programa: string }; Returns: Json }
       lingua_registrar: {
         Args: {
