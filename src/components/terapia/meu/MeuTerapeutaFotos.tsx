@@ -25,7 +25,7 @@ function Quadro({ titulo, instrucao, modelo, foto, tipo, extraTitulo, ocupado, e
       <div className="mt-2 flex flex-wrap gap-2">
         {foto && modelo && <Button size="sm" variant="link" onClick={()=>setVerModelo(true)}>Ver modelo</Button>}
         <Button asChild size="sm" variant={foto ? "outline" : "secondary"} disabled={ocupado}>
-          <label className="cursor-pointer">{foto ? "Trocar" : "Enviar"}<input type="file" accept="image/*" capture="environment" className="sr-only" disabled={ocupado} onChange={e => { const f = e.target.files?.[0]; e.target.value = ""; if (f) enviar(tipo, f, extraTitulo, foto); }} /></label>
+          <label className="cursor-pointer">{foto ? "Trocar" : "Enviar"}<input type="file" accept="image/*" className="sr-only" disabled={ocupado} onChange={e => { const f = e.target.files?.[0]; e.target.value = ""; if (f) enviar(tipo, f, extraTitulo, foto); }} /></label>
         </Button>
         {foto && <Button size="sm" variant="ghost" disabled={ocupado} onClick={() => apagar(foto)} aria-label={`Apagar ${titulo}`}><Trash2 className="h-4 w-4" /></Button>}
       </div>
@@ -67,14 +67,14 @@ export default function MeuTerapeutaFotos({ primeiroNome }: { primeiroNome: stri
     <div className="space-y-4">
       <p className="text-sm text-muted-foreground">Essas fotos vão para {primeiroNome} ver antes da consulta. No celular, cada quadro abre a câmera.</p>
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-        {(q.data?.pedidos??[]).map(p=><article key={p.id} className="min-w-0 rounded-lg border border-secondary bg-secondary/5 p-3"><p className="mb-2 text-xs font-semibold">{p.terapeuta??primeiroNome} pediu</p><h3 className="text-sm font-semibold">{p.titulo}</h3>{p.instrucao&&<p className="my-2 text-xs">{p.instrucao}</p>}{p.modelo&&<img src={p.modelo} alt={`Modelo: ${p.titulo}`} className="my-2 aspect-[3/4] w-full object-contain"/>}{p.ate&&<p className="mb-2 text-xs text-muted-foreground">Até {diaBR(p.ate)}</p>}<Button asChild variant="secondary" size="sm" disabled={ocupado}><label className="cursor-pointer">Tirar foto<input type="file" accept="image/*" capture="environment" className="sr-only" disabled={ocupado} onChange={e=>{const f=e.target.files?.[0];e.target.value='';if(f)void enviar('extra',f,p.titulo,undefined,p.id);}}/></label></Button></article>)}
+        {(q.data?.pedidos??[]).map(p=><article key={p.id} className="min-w-0 rounded-lg border border-secondary bg-secondary/5 p-3"><p className="mb-2 text-xs font-semibold">{p.terapeuta??primeiroNome} pediu</p><h3 className="text-sm font-semibold">{p.titulo}</h3>{p.instrucao&&<p className="my-2 text-xs">{p.instrucao}</p>}{p.modelo&&<img src={p.modelo} alt={`Modelo: ${p.titulo}`} className="my-2 aspect-[3/4] w-full object-contain"/>}{p.ate&&<p className="mb-2 text-xs text-muted-foreground">Até {diaBR(p.ate)}</p>}<Button asChild variant="secondary" size="sm" disabled={ocupado}><label className="cursor-pointer">Enviar foto<input type="file" accept="image/*" className="sr-only" disabled={ocupado} onChange={e=>{const f=e.target.files?.[0];e.target.value='';if(f)void enviar('extra',f,p.titulo,undefined,p.id);}}/></label></Button></article>)}
         {guiadas.map(g => <Quadro key={g.chave} titulo={g.titulo} instrucao={g.instrucao ?? ('texto' in g ? String(g.texto ?? '') : '')} modelo={g.modelo} tipo={g.chave} foto={recente(g.chave)} ocupado={ocupado} enviar={enviar} apagar={apagar} />)}
         {fotos.filter(f => f.tipo === "extra").map(f => <Quadro key={f.id} titulo={f.titulo || "Outra foto"} tipo="extra" extraTitulo={f.titulo ?? undefined} foto={f} ocupado={ocupado} enviar={enviar} apagar={apagar} />)}
       </div>
       <div className="flex flex-wrap items-end gap-2 rounded-xl border border-dashed border-border p-3">
         <label className="min-w-[180px] flex-1 text-sm font-semibold">+ Outra foto<Input className="mt-1" placeholder="Título da foto" value={tituloExtra} onChange={e => setTituloExtra(e.target.value)} /></label>
         <Button asChild variant="outline" disabled={ocupado || !tituloExtra.trim()}>
-          <label className={tituloExtra.trim() ? "cursor-pointer" : "pointer-events-none opacity-50"}>Escolher foto<input type="file" accept="image/*" capture="environment" className="sr-only" disabled={ocupado || !tituloExtra.trim()} onChange={e => { const f = e.target.files?.[0]; e.target.value = ""; if (f) enviar("extra", f, tituloExtra.trim()); }} /></label>
+          <label className={tituloExtra.trim() ? "cursor-pointer" : "pointer-events-none opacity-50"}>Escolher foto<input type="file" accept="image/*" className="sr-only" disabled={ocupado || !tituloExtra.trim()} onChange={e => { const f = e.target.files?.[0]; e.target.value = ""; if (f) enviar("extra", f, tituloExtra.trim()); }} /></label>
         </Button>
       </div>
       {ocupado && <p role="status" className="text-sm text-muted-foreground">Enviando…</p>}
