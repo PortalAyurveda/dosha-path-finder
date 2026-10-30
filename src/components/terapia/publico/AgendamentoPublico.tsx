@@ -72,8 +72,10 @@ export default function AgendamentoPublico({ slug, nome, agenda, atualizar }: { 
     setOcupado(true); setErro('');
     try { if (pedido && ['preenchendo','aguardando','sugerida'].includes(pedido.status)) await pedidos.cancelar(pedido.id); }
     catch (e) { setErro(e instanceof Error ? e.message : String(e)); }
-    setPedido(null); setInicio(''); ultimo.current = ''; sessionStorage.removeItem(chave);
-    await qc.invalidateQueries({ queryKey: ['pedido-meu'] }); await atualizar(); setOcupado(false);
+    sessionStorage.removeItem(chave);
+    await qc.invalidateQueries({ queryKey: ['pedido-meu'] });
+    setPedido(null); setInicio(''); ultimo.current = '';
+    await atualizar(); setOcupado(false);
   };
   const agir = async (f: () => Promise<PedidoConsulta>) => {
     setOcupado(true); setErro('');
