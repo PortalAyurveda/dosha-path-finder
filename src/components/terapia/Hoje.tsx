@@ -9,6 +9,7 @@ import { inicial, Secao } from "./Comuns";
 import { Switch } from '@/components/ui/switch';
 import { useOnlineTerapeuta } from './online/OnlineTerapeuta';
 import ComecePorAqui from './ComecePorAqui';
+import PedidosConsulta from './PedidosConsulta';
 export default function Hoje({
   dados,
   agora,
@@ -63,6 +64,7 @@ export default function Hoje({
         </div>
       </Secao>
       <div className="space-y-4">
+        <PedidosConsulta />
         <Secao titulo="Pede sua atenção">
           {erro&&<p role="alert" className="text-destructive">{erro}</p>}
           {(dados.atencao?.length??0)>0&&<span className="portal-atencao-num">{dados.atencao?.length}</span>}
