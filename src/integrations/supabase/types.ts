@@ -4655,6 +4655,7 @@ export type Database = {
           email_cliente: string | null
           gateway: string
           id: string
+          itens: Json | null
           moeda: string
           mp_payment_id: string | null
           nome_cliente: string | null
@@ -4677,6 +4678,7 @@ export type Database = {
           email_cliente?: string | null
           gateway?: string
           id?: string
+          itens?: Json | null
           moeda?: string
           mp_payment_id?: string | null
           nome_cliente?: string | null
@@ -4699,6 +4701,7 @@ export type Database = {
           email_cliente?: string | null
           gateway?: string
           id?: string
+          itens?: Json | null
           moeda?: string
           mp_payment_id?: string | null
           nome_cliente?: string | null
@@ -16265,6 +16268,7 @@ export type Database = {
         Args: { p_matricula_id: string; p_obs?: string }
         Returns: Json
       }
+      admin_catalogo_calculadora: { Args: never; Returns: Json }
       admin_dashboard_resumo: { Args: never; Returns: Json }
       admin_estender_curso: {
         Args: {
