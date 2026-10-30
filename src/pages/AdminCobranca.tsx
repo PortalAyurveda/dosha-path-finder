@@ -8,6 +8,8 @@ import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import CalculadoraCobranca from "@/components/admin/CalculadoraCobranca";
 import { Copy, RefreshCw, Loader2 } from "lucide-react";
 
 type Cobranca = {
@@ -131,6 +133,15 @@ const AdminCobranca = () => {
           <p className="text-sm text-muted-foreground">Crie um link de pagamento e acompanhe as cobranças.</p>
         </div>
 
+        <Tabs defaultValue="cobrancas">
+          <TabsList>
+            <TabsTrigger value="cobrancas">Cobranças</TabsTrigger>
+            <TabsTrigger value="calculadora">Calculadora</TabsTrigger>
+          </TabsList>
+          <TabsContent value="calculadora" className="mt-4">
+            <CalculadoraCobranca />
+          </TabsContent>
+          <TabsContent value="cobrancas" className="mt-4 space-y-6">
         <Card className="p-5 space-y-4">
           <h2 className="text-lg font-semibold">Nova cobrança</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -260,6 +271,8 @@ const AdminCobranca = () => {
             </div>
           )}
         </Card>
+          </TabsContent>
+        </Tabs>
       </div>
     </>
   );
