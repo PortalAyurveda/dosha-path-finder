@@ -9562,6 +9562,39 @@ export type Database = {
         }
         Relationships: []
       }
+      lingua_sugestoes: {
+        Row: {
+          criado_em: string
+          email: string | null
+          id: string
+          navegador: string | null
+          nome: string | null
+          origem: string
+          texto: string
+          user_id: string | null
+        }
+        Insert: {
+          criado_em?: string
+          email?: string | null
+          id?: string
+          navegador?: string | null
+          nome?: string | null
+          origem: string
+          texto: string
+          user_id?: string | null
+        }
+        Update: {
+          criado_em?: string
+          email?: string | null
+          id?: string
+          navegador?: string | null
+          nome?: string | null
+          origem?: string
+          texto?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       lingua_tickets: {
         Row: {
           codigo: string
