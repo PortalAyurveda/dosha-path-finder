@@ -15,7 +15,7 @@ export default function Fotos({dados,nome}:{dados:FotosMinhas;nome:string}) {
   const enviar=async(tipo:string,f:File,titulo?:string,pedido?:string)=>{
     if(!user)return;setOcupado(true);setErro('');try{const path=await meu.fotoEnviar(user.id,f);try{await meu.fotoRegistrar(tipo,path,titulo,pedido);}catch(e){await meu.fotoTirarDoStorage(path).catch(()=>undefined);throw e;}await Promise.all([qc.invalidateQueries({queryKey:['fotos-minhas']}),qc.invalidateQueries({queryKey:['meu-terapeuta']})]);}catch(e){setErro((e as Error).message);}finally{setOcupado(false);}
   };
-  const entrada=(texto:string,tipo:string,titulo?:string,pedido?:string)=><Button asChild variant="secondary" disabled={ocupado}><label className="cursor-pointer">{texto}<input aria-label={titulo?`Enviar ${titulo}`:'Enviar foto'} className="sr-only" type="file" accept="image/*" capture="environment" disabled={ocupado} onChange={e=>{const f=e.target.files?.[0];e.target.value='';if(f)void enviar(tipo,f,titulo,pedido);}}/></label></Button>;
+  const entrada=(texto:string,tipo:string,titulo?:string,pedido?:string)=><Button asChild variant="secondary" disabled={ocupado}><label className="cursor-pointer">{texto}<input aria-label={titulo?`Enviar ${titulo}`:'Enviar foto'} className="sr-only" type="file" accept="image/*" disabled={ocupado} onChange={e=>{const f=e.target.files?.[0];e.target.value='';if(f)void enviar(tipo,f,titulo,pedido);}}/></label></Button>;
   const guiadas=dados.guiadas??[];const count=guiadas.filter(g=>dados.fotos.some(f=>f.tipo===g.chave)).length;
   const pedidos=(dados.pedidos??[]).filter(p=>!p.terapeuta||p.terapeuta===nome);
   const historico=dados.fotos.filter(f=>f.tipo===ver);
