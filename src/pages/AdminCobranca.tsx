@@ -8,6 +8,8 @@ import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import CalculadoraCobranca from "@/components/admin/CalculadoraCobranca";
 import { Copy, RefreshCw, Loader2 } from "lucide-react";
 
 type Cobranca = {
@@ -269,6 +271,8 @@ const AdminCobranca = () => {
             </div>
           )}
         </Card>
+          </TabsContent>
+        </Tabs>
       </div>
     </>
   );
