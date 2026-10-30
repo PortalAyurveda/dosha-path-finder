@@ -4993,6 +4993,96 @@ export type Database = {
           },
         ]
       }
+      consulta_solicitacoes: {
+        Row: {
+          atualizado_em: string
+          consulta_id: string | null
+          criado_em: string
+          dados: Json | null
+          enviada_em: string | null
+          fim: string
+          guardado_ate: string
+          id: string
+          inicio: string
+          motivo: string | null
+          pedido_inicio: string | null
+          perm_akasha: boolean
+          perm_fotos: boolean
+          perm_rotina: boolean
+          perm_teste: boolean
+          respondida_em: string | null
+          resposta_texto: string | null
+          status: string
+          sugerido_fim: string | null
+          sugerido_inicio: string | null
+          terapeuta_id: string
+          user_id: string
+        }
+        Insert: {
+          atualizado_em?: string
+          consulta_id?: string | null
+          criado_em?: string
+          dados?: Json | null
+          enviada_em?: string | null
+          fim: string
+          guardado_ate: string
+          id?: string
+          inicio: string
+          motivo?: string | null
+          pedido_inicio?: string | null
+          perm_akasha?: boolean
+          perm_fotos?: boolean
+          perm_rotina?: boolean
+          perm_teste?: boolean
+          respondida_em?: string | null
+          resposta_texto?: string | null
+          status?: string
+          sugerido_fim?: string | null
+          sugerido_inicio?: string | null
+          terapeuta_id: string
+          user_id: string
+        }
+        Update: {
+          atualizado_em?: string
+          consulta_id?: string | null
+          criado_em?: string
+          dados?: Json | null
+          enviada_em?: string | null
+          fim?: string
+          guardado_ate?: string
+          id?: string
+          inicio?: string
+          motivo?: string | null
+          pedido_inicio?: string | null
+          perm_akasha?: boolean
+          perm_fotos?: boolean
+          perm_rotina?: boolean
+          perm_teste?: boolean
+          respondida_em?: string | null
+          resposta_texto?: string | null
+          status?: string
+          sugerido_fim?: string | null
+          sugerido_inicio?: string | null
+          terapeuta_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "consulta_solicitacoes_consulta_id_fkey"
+            columns: ["consulta_id"]
+            isOneToOne: false
+            referencedRelation: "consultas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "consulta_solicitacoes_terapeuta_id_fkey"
+            columns: ["terapeuta_id"]
+            isOneToOne: false
+            referencedRelation: "portal_terapeutas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       consultas: {
         Row: {
           cancelada_em: string | null
@@ -13840,6 +13930,7 @@ export type Database = {
           antecedencia_horas: number
           atualizado_em: string
           boas_vindas: string | null
+          confirmacao_auto: boolean
           msg_ausente: string | null
           no_sistema: boolean
           online: boolean
@@ -13855,6 +13946,7 @@ export type Database = {
           antecedencia_horas?: number
           atualizado_em?: string
           boas_vindas?: string | null
+          confirmacao_auto?: boolean
           msg_ausente?: string | null
           no_sistema?: boolean
           online?: boolean
@@ -13870,6 +13962,7 @@ export type Database = {
           antecedencia_horas?: number
           atualizado_em?: string
           boas_vindas?: string | null
+          confirmacao_auto?: boolean
           msg_ausente?: string | null
           no_sistema?: boolean
           online?: boolean
@@ -15971,10 +16064,18 @@ export type Database = {
       _nome_conta: { Args: { p_uid: string }; Returns: string }
       _normalizar_nome: { Args: { p: string }; Returns: string }
       _paciente_meu: { Args: { p_paciente: string }; Returns: string }
-      _pedido_json: {
-        Args: { p: Database["public"]["Tables"]["consulta_pedidos"]["Row"] }
-        Returns: Json
-      }
+      _pedido_confirmar: { Args: { p_id: string }; Returns: Json }
+      _pedido_json:
+        | {
+            Args: { p: Database["public"]["Tables"]["consulta_pedidos"]["Row"] }
+            Returns: Json
+          }
+        | {
+            Args: {
+              s: Database["public"]["Tables"]["consulta_solicitacoes"]["Row"]
+            }
+            Returns: Json
+          }
       _pedidos_expirar: { Args: never; Returns: undefined }
       _respostas_expandir: { Args: { p: Json }; Returns: Json }
       _resumo_areas: { Args: { p_registro: string }; Returns: Json }
@@ -17025,6 +17126,30 @@ export type Database = {
         Args: { p_consulta: string; p_texto: string }
         Returns: undefined
       }
+      consulta_pedido_cancelar: { Args: { p_id: string }; Returns: undefined }
+      consulta_pedido_enviar: {
+        Args: {
+          p_akasha: boolean
+          p_fotos: boolean
+          p_id: string
+          p_motivo: string
+          p_rotina: boolean
+          p_teste: boolean
+        }
+        Returns: Json
+      }
+      consulta_pedido_meu: { Args: { p_slug: string }; Returns: Json }
+      consulta_pedido_salvar: {
+        Args: {
+          p_akasha: boolean
+          p_fotos: boolean
+          p_id: string
+          p_motivo: string
+          p_rotina: boolean
+          p_teste: boolean
+        }
+        Returns: Json
+      }
       consulta_quadro_mostrar: {
         Args: { p_consulta: string; p_quadro: string }
         Returns: undefined
@@ -17034,6 +17159,10 @@ export type Database = {
         Returns: Json
       }
       consulta_sala: { Args: { p_consulta: string }; Returns: Json }
+      consulta_sugestao_responder: {
+        Args: { p_aceitar: boolean; p_id: string }
+        Returns: Json
+      }
       convite_previa: { Args: { p_slug?: string }; Returns: Json }
       corrigir_grafia: { Args: { t: string }; Returns: string }
       cortar_nas_ancoras: {
@@ -17847,6 +17976,7 @@ export type Database = {
           sintoma: string
         }[]
       }
+      meus_pedidos_consulta: { Args: never; Returns: Json }
       meus_pontos_atencao: { Args: never; Returns: Json }
       minha_folha: { Args: { p_id: string }; Returns: Json }
       minha_rotina_por_teste: {
@@ -18213,9 +18343,23 @@ export type Database = {
         }
         Returns: Json
       }
+      terapeuta_pedido_responder: {
+        Args: {
+          p_acao: string
+          p_id: string
+          p_inicio?: string
+          p_texto?: string
+        }
+        Returns: Json
+      }
+      terapeuta_pedidos: { Args: never; Returns: Json }
       terapeuta_reservar: {
         Args: { p_inicio: string; p_slug: string }
         Returns: string
+      }
+      terapeuta_solicitar: {
+        Args: { p_inicio: string; p_slug: string }
+        Returns: Json
       }
       terapeutas_no_sistema: { Args: never; Returns: Json }
       terapeutas_perto: {
