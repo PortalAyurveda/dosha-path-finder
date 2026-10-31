@@ -77,15 +77,6 @@ const loadAnalytics = () => {
   clarityScript.async = true;
   clarityScript.src = `https://www.clarity.ms/tag/${CLARITY_ID}`;
   document.head.appendChild(clarityScript);
-
-  // Google AdSense (anúncios entram na fila window.adsbygoogle até o script chegar)
-  if (!document.querySelector('script[src*="adsbygoogle.js"]')) {
-    const ads = document.createElement("script");
-    ads.async = true;
-    ads.crossOrigin = "anonymous";
-    ads.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9271247722017355";
-    document.head.appendChild(ads);
-  }
 };
 
 const AnalyticsLoader = () => {
