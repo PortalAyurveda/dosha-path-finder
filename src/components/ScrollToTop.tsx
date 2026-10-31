@@ -184,6 +184,11 @@ const ScrollToTop = () => {
   // Anota a posição da entrada em que a pessoa está, a cada rolagem.
   useEffect(() => {
     lerArmazem();
+    try {
+      if ("scrollRestoration" in window.history) window.history.scrollRestoration = "manual";
+    } catch {
+      // ignora
+    }
     const aoRolar = () => {
       if (restaurando) return;
       anotarPosicao(Math.round(window.scrollY));
@@ -225,6 +230,28 @@ const ScrollToTop = () => {
 
     restauracaoAtiva?.parar(true);
     window.scrollTo({ top: 0, left: 0 });
+    // A tela nova chega aos pedaços (carregamento sob demanda, dados do banco) e o
+    // navegador às vezes "segura" a rolagem antiga ou ancora no rodapé. Mantém no topo
+    // por alguns quadros, até a pessoa mexer.
+    let ativo = true;
+    const parar = () => { ativo = false; };
+    const opts = { passive: true, once: true } as AddEventListenerOptions;
+    window.addEventListener("wheel", parar, opts);
+    window.addEventListener("touchmove", parar, opts);
+    window.addEventListener("keydown", parar, { once: true });
+    const inicio = performance.now();
+    const segurar = () => {
+      if (!ativo) return;
+      if (window.scrollY > 0) window.scrollTo(0, 0);
+      if (performance.now() - inicio < 800) requestAnimationFrame(segurar);
+    };
+    requestAnimationFrame(segurar);
+    return () => {
+      ativo = false;
+      window.removeEventListener("wheel", parar);
+      window.removeEventListener("touchmove", parar);
+      window.removeEventListener("keydown", parar);
+    };
   }, [pathname, search, hash, tipoDeNavegacao]);
 
   return null;
