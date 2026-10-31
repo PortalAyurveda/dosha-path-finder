@@ -76,6 +76,7 @@ const loadAnalytics = () => {
   const clarityScript = document.createElement("script");
   clarityScript.async = true;
   clarityScript.src = `https://www.clarity.ms/tag/${CLARITY_ID}`;
+  document.head.appendChild(clarityScript);
 };
 
 const AnalyticsLoader = () => {
