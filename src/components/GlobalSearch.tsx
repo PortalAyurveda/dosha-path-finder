@@ -213,7 +213,7 @@ const GlobalSearch = ({ open: openProp, onOpenChange, layout = "popover" }: Glob
           if (e.key === "Escape") close();
         }}
         placeholder="Buscar..."
-        className="border-0 shadow-none focus-visible:ring-0 h-7 px-2 text-sm bg-transparent text-foreground placeholder:text-muted-foreground"
+        className="min-w-0 flex-1 border-0 shadow-none outline-none focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 h-7 px-2 text-base md:text-sm bg-transparent text-foreground placeholder:text-muted-foreground appearance-none"
       />
       <button
         type="button"

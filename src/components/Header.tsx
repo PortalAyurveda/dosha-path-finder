@@ -609,7 +609,7 @@ const Header = () => {
       {searchOpen && (
         <div className="lg:hidden fixed inset-0 z-[100] bg-black/40" onClick={() => setSearchOpen(false)}>
           <div
-            className="absolute top-0 left-0 right-0 bg-primary px-3 pt-3 pb-3 shadow-xl"
+            className="absolute top-0 left-0 right-0 w-full max-w-full box-border overflow-visible bg-primary px-3 pb-3 pt-[max(0.75rem,env(safe-area-inset-top))] shadow-xl"
             onClick={(e) => e.stopPropagation()}
           >
             <GlobalSearch open layout="inline" onOpenChange={setSearchOpen} />

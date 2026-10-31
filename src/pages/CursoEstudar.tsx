@@ -996,7 +996,7 @@ const CursoEstudar = ({ impressao = false }: { impressao?: boolean }) => {
     const parametros = new URLSearchParams(searchParams);
     parametros.delete("aula");
     parametros.set("tab", "aulas");
-    navigate({ pathname: `/cursos/${slug}/estudar/${aula?.slug ?? id}`, search: `?${parametros.toString()}` });
+    navigate({ pathname: `/cursos/${slug}/estudar/${aula?.slug ?? id}`, search: `?${parametros.toString()}` }, { replace: true });
     if (id === aulaSelecionadaId) {
       setTimeout(
         () => document.getElementById("player-aula")?.scrollIntoView({ behavior: "smooth", block: "start" }),
@@ -1217,7 +1217,13 @@ const CursoEstudar = ({ impressao = false }: { impressao?: boolean }) => {
       <section style={{ background: SURFACE }}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 md:py-10">
           <Link
-            to="/meu-perfil"
+            to="/cursos"
+            onClick={(e) => {
+              if (location.key !== "default") {
+                e.preventDefault();
+                navigate(-1);
+              }
+            }}
             className="inline-flex items-center gap-1 text-sm mb-4 opacity-70 hover:opacity-100"
             style={{ color: PRIMARY }}
           >
