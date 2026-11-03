@@ -197,14 +197,22 @@ interface AkashaMessageContentProps {
   proseClassName?: string;
   onNavigate?: () => void;
   cards?: AkashaRichCard[] | null;
+  /** Modo Biblioteca do Portal: até 4 cards com etiqueta do tipo. */
+  biblioteca?: boolean;
 }
+
+const ETIQUETA: Partial<Record<InternalCard["kind"], string>> = {
+  receita: "Receita", video: "Aula", blog: "Artigo", produto: "Produto", kit: "Produto",
+};
 
 const MiniCard = ({
   card,
   onNavigate,
+  showTipo,
 }: {
   card: AkashaRichCard;
   onNavigate?: () => void;
+  showTipo?: boolean;
 }) => {
   const kind = kindFromTipo(card.tipo);
   const Icon = iconFor(kind);
@@ -234,6 +242,9 @@ const MiniCard = ({
         <span className="block text-xs font-medium leading-snug text-foreground line-clamp-2">
           {titulo}
         </span>
+        {showTipo && ETIQUETA[kind] && (
+          <span className="mt-0.5 inline-block rounded-full bg-akasha/10 px-2 py-0.5 text-[11px] font-semibold text-akasha">{ETIQUETA[kind]}</span>
+        )}
         {preco && (
           <span className="mt-0.5 block text-[11px] font-semibold text-akasha">{preco}</span>
         )}
@@ -262,7 +273,7 @@ const MiniCard = ({
   return <div className={className}>{inner}</div>;
 };
 
-const AkashaMessageContent = ({ content, proseClassName, onNavigate, cards: richCards }: AkashaMessageContentProps) => {
+const AkashaMessageContent = ({ content, proseClassName, onNavigate, cards: richCards, biblioteca }: AkashaMessageContentProps) => {
   const hasRich = Array.isArray(richCards) && richCards.length > 0;
   const sanitized = useMemo(() => stripSystemNoise(content), [content]);
   const { cleanText, cards } = useMemo(() => extractInternalCards(sanitized), [sanitized]);
@@ -274,8 +285,8 @@ const AkashaMessageContent = ({ content, proseClassName, onNavigate, cards: rich
       </div>
       {hasRich ? (
         <div className="mt-2 flex flex-col gap-1.5">
-          {richCards!.slice(0, 1).map((c, i) => (
-            <MiniCard key={i} card={c} onNavigate={onNavigate} />
+          {richCards!.slice(0, biblioteca ? 4 : 1).map((c, i) => (
+            <MiniCard key={i} card={c} onNavigate={onNavigate} showTipo={biblioteca} />
           ))}
         </div>
       ) : cards.length > 0 ? (

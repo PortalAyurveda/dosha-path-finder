@@ -5,6 +5,8 @@ import { useUser } from "@/contexts/UserContext";
 import { Send, Loader2, Lock } from "lucide-react";
 import AkashaMessageContent, { type AkashaRichCard } from "@/components/akasha/AkashaMessageContent";
 import MemoriaBadge from "@/components/akasha/MemoriaBadge";
+import AkashaModoBarra from "@/components/akasha/AkashaModoBarra";
+import { enviarConversa, enviarBiblioteca, TODOS_TIPOS, SUGESTOES_BIBLIOTECA, PLACEHOLDER_BIBLIOTECA, ERRO_BIBLIOTECA, type AkashaModo, type TipoBiblioteca } from "@/lib/akashaChat";
 import { Link } from "react-router-dom";
 
 // Tokens renovam no 1º dia de cada mês
@@ -17,7 +19,7 @@ const getNextResetLabel = () => {
 };
 
 const AKASHA_LOGO = "https://static.wixstatic.com/media/b8f47f_105371e1ade24ccd9bd3406b83bd925e~mv2.png";
-const WEBHOOK_URL = "https://n8n.portalayurveda.com/webhook/chat-ayurveda";
+import { AKASHA_CHAT_URL as WEBHOOK_URL } from "@/lib/akashaChat";
 
 interface AkashaTabProps {
   idPublico: string;
@@ -39,6 +41,7 @@ interface ChatMessage {
   content: string;
   time?: string;
   cards?: AkashaRichCard[] | null;
+  modo?: "biblioteca";
 }
 
 const formatBrazilTime = (value?: string | Date | null) => {
@@ -85,6 +88,8 @@ const AkashaTab = ({
   const { user, profile } = useUser();
   const queryClient = useQueryClient();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [modo, setModo] = useState<AkashaModo>("conversa");
+  const [tiposBib, setTiposBib] = useState<TipoBiblioteca[]>(TODOS_TIPOS);
   const [input, setInput] = useState(initialPergunta || "");
   const [sending, setSending] = useState(false);
   const prefilledRef = useRef(false);
@@ -171,34 +176,50 @@ const AkashaTab = ({
 
 
 
-  const sendMessage = async () => {
-    if (!input.trim() || sending) return;
+  const pushMsg = (m: ChatMessage) => {
+    setMessages(prev => {
+      const next = [...prev, m];
+      updateCache(next);
+      return next;
+    });
+  };
+
+  const sendMessage = async (texto?: string, modoEnvio: AkashaModo = modo) => {
+    const userMsg = (texto ?? input).trim();
+    if (!userMsg || sending) return;
 
     const isPremium = profile?.is_premium === true;
     const tokens = profile?.tokens_akasha ?? 10;
+
+    if (modoEnvio === "biblioteca") {
+      setInput("");
+      pushMsg({ role: "user", content: userMsg, time: getNowBrazilTime() });
+      setSending(true);
+      try {
+        const r = await enviarBiblioteca({ message: userMsg, email: resolvedEmail, contactId: idPublico, tipos: tiposBib });
+        pushMsg({ role: "assistant", content: r.resposta, time: getNowBrazilTime(), cards: r.cards, modo: "biblioteca" });
+      } catch {
+        pushMsg({ role: "assistant", content: ERRO_BIBLIOTECA, time: getNowBrazilTime() });
+      } finally {
+        setSending(false);
+        setModo("conversa");
+      }
+      return;
+    }
+
     if (!isPremium && tokens <= 0) {
-      const noTokenMsg: ChatMessage = {
+      pushMsg({
         role: "assistant",
         content: "Seus tokens Akasha acabaram. Em breve esta funcionalidade estará disponível como serviço premium. 🙏",
         time: getNowBrazilTime(),
-      };
-      setMessages(prev => {
-        const next = [...prev, noTokenMsg];
-        updateCache(next);
-        return next;
       });
       return;
     }
 
-    const userMsg = input.trim();
     setInput("");
-    const userChatMsg: ChatMessage = { role: "user", content: userMsg, time: getNowBrazilTime() };
-    setMessages(prev => {
-      const next = [...prev, userChatMsg];
-      updateCache(next);
-      return next;
-    });
+    pushMsg({ role: "user", content: userMsg, time: getNowBrazilTime() });
     setSending(true);
+    
 
     try {
       if (user?.id && !isPremium) {
@@ -220,28 +241,10 @@ const AkashaTab = ({
         nivelDeConhecimento: conhecimentoAyurveda,
       };
 
-      const response = await fetch(WEBHOOK_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      const data = await response.json();
-      const botReply = data?.resposta || data?.output || data?.text || "Desculpe, não consegui processar sua mensagem.";
-      const botCards: AkashaRichCard[] = Array.isArray(data?.cards) ? data.cards : [];
-
-      const botMsg: ChatMessage = { role: "assistant", content: botReply, time: getNowBrazilTime(), cards: botCards };
-      setMessages(prev => {
-        const next = [...prev, botMsg];
-        updateCache(next);
-        return next;
-      });
+      const r = await enviarConversa(payload);
+      pushMsg({ role: "assistant", content: r.resposta, time: getNowBrazilTime(), cards: r.cards });
     } catch {
-      const errMsg: ChatMessage = { role: "assistant", content: "Erro ao conectar com a Akasha. Tente novamente.", time: getNowBrazilTime() };
-      setMessages(prev => {
-        const next = [...prev, errMsg];
-        updateCache(next);
-        return next;
-      });
+      pushMsg({ role: "assistant", content: "Erro ao conectar com a Akasha. Tente novamente.", time: getNowBrazilTime() });
     } finally {
       setSending(false);
     }
@@ -298,6 +301,7 @@ const AkashaTab = ({
                 <AkashaMessageContent
                   content={msg.content}
                   cards={msg.cards}
+                  biblioteca={msg.modo === "biblioteca"}
                   proseClassName="prose prose-sm max-w-none [&_p]:text-sm [&_p]:leading-relaxed [&_p]:text-foreground [&_li]:text-sm [&_li]:text-foreground [&_strong]:text-foreground"
                 />
 
@@ -333,6 +337,22 @@ const AkashaTab = ({
       >
         {(isPremium || tokens > 0) ? (
           <div className="space-y-1.5">
+            {messages.length === 0 && !loadingHistory && (
+              <div className="flex flex-wrap justify-center gap-1.5 mb-1.5">
+                {SUGESTOES_BIBLIOTECA.map((sug) => (
+                  <button
+                    key={sug}
+                    type="button"
+                    disabled={sending}
+                    onClick={() => sendMessage(sug, "biblioteca")}
+                    className="min-h-[40px] rounded-full border border-akasha/30 bg-card px-3 text-sm font-medium text-akasha hover:bg-akasha/10"
+                  >
+                    {sug}
+                  </button>
+                ))}
+              </div>
+            )}
+            <AkashaModoBarra modo={modo} onModo={setModo} tipos={tiposBib} onTipos={setTiposBib} disabled={sending} />
             <div className="flex items-center gap-2 bg-card border border-border rounded-full px-4 py-2 shadow-lg shadow-akasha/5">
               <input
                 type="text"
@@ -341,9 +361,9 @@ const AkashaTab = ({
                 onKeyDown={handleKeyDown}
                 onFocus={(e) => {
                   // Garante que o input não fique escondido atrás do teclado no mobile
-                  setTimeout(() => e.currentTarget?.scrollIntoView({ block: "nearest", behavior: "smooth" }), 200);
+                  const el = e.currentTarget; setTimeout(() => el?.scrollIntoView({ block: "nearest", behavior: "smooth" }), 200);
                 }}
-                placeholder="Pergunte o que quiser de Ayurveda para Akasha IA"
+                placeholder={modo === "biblioteca" ? PLACEHOLDER_BIBLIOTECA : "Pergunte o que quiser de Ayurveda para Akasha IA"}
                 disabled={sending}
                 enterKeyHint="send"
                 autoComplete="off"
@@ -351,7 +371,7 @@ const AkashaTab = ({
                 style={{ fontSize: "16px" }}
               />
               <button
-                onClick={sendMessage}
+                onClick={() => sendMessage()}
                 disabled={sending || !input.trim()}
                 className="shrink-0 w-9 h-9 rounded-full bg-akasha text-white flex items-center justify-center disabled:opacity-40 transition-opacity hover:opacity-90"
                 aria-label="Enviar"
