@@ -1,4 +1,5 @@
-import { MessageCircle, Library, Check } from "lucide-react";
+import { Library, Check } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
 import { TIPOS_BIBLIOTECA, alternarTipo, type AkashaModo, type TipoBiblioteca } from "@/lib/akashaChat";
 
 interface Props {
@@ -9,48 +10,46 @@ interface Props {
   disabled?: boolean;
 }
 
-/** Barra acima do campo: Conversar / Biblioteca do Portal + fichas de tipo. */
+/** Linha discreta acima do campo: chave "Pesquisar na biblioteca" + fichas com ✓. */
 const AkashaModoBarra = ({ modo, onModo, tipos, onTipos, disabled }: Props) => {
-  const botao = (m: AkashaModo, rotulo: string, Icon: typeof Library) => {
-    const ativo = modo === m;
-    return (
-      <button
-        type="button"
-        onClick={() => onModo(m)}
-        disabled={disabled}
-        aria-pressed={ativo}
-        className={`flex-1 min-h-[44px] rounded-full px-3 text-sm font-semibold flex items-center justify-center gap-1.5 transition-colors disabled:opacity-60 ${
-          ativo ? "bg-akasha text-white shadow-sm" : "text-akasha hover:bg-akasha/10"
-        }`}
-      >
-        <Icon className="w-4 h-4 shrink-0" />
-        <span className="truncate">{rotulo}</span>
-      </button>
-    );
-  };
+  const ligado = modo === "biblioteca";
 
   return (
-    <div className="space-y-1.5 mb-1.5">
-      <div className="flex gap-1 rounded-full border border-akasha/20 bg-akasha/5 p-1" role="group" aria-label="Modo da Akasha">
-        {botao("conversa", "Conversar", MessageCircle)}
-        {botao("biblioteca", "Biblioteca do Portal", Library)}
-      </div>
-      {modo === "biblioteca" && (
-        <div className="flex flex-wrap gap-1.5" role="group" aria-label="O que procurar">
+    <div className="mb-1.5 space-y-1.5">
+      <label className="flex min-h-[32px] cursor-pointer items-center gap-2 px-1 text-xs font-medium text-muted-foreground">
+        <Switch
+          checked={ligado}
+          disabled={disabled}
+          onCheckedChange={(v) => onModo(v ? "biblioteca" : "conversa")}
+          aria-label="Pesquisar na biblioteca do Portal"
+          className="data-[state=checked]:bg-akasha"
+        />
+        <Library className={`h-3.5 w-3.5 ${ligado ? "text-akasha" : ""}`} />
+        <span className={ligado ? "text-akasha" : ""}>Pesquisar na biblioteca</span>
+      </label>
+      {ligado && (
+        <div className="flex flex-wrap gap-1.5 px-1" role="group" aria-label="O que procurar">
           {TIPOS_BIBLIOTECA.map(({ tipo, rotulo }) => {
             const marcado = tipos.includes(tipo);
             return (
               <button
                 key={tipo}
                 type="button"
+                role="checkbox"
+                aria-checked={marcado}
                 disabled={disabled}
-                aria-pressed={marcado}
                 onClick={() => onTipos(alternarTipo(tipos, tipo))}
-                className={`min-h-[40px] rounded-full border px-3 text-sm font-medium flex items-center gap-1 transition-colors ${
-                  marcado ? "border-akasha bg-akasha/10 text-akasha" : "border-border bg-card text-muted-foreground"
+                className={`flex min-h-[32px] items-center gap-1.5 rounded-full border px-2.5 text-xs font-medium transition-colors disabled:opacity-60 ${
+                  marcado ? "border-akasha/50 bg-akasha/10 text-akasha" : "border-border bg-card text-muted-foreground hover:border-akasha/30"
                 }`}
               >
-                {marcado && <Check className="w-3.5 h-3.5" />}
+                <span
+                  className={`flex h-3.5 w-3.5 items-center justify-center rounded-[4px] border ${
+                    marcado ? "border-akasha bg-akasha text-primary-foreground" : "border-muted-foreground/40"
+                  }`}
+                >
+                  {marcado && <Check className="h-2.5 w-2.5" strokeWidth={3} />}
+                </span>
                 {rotulo}
               </button>
             );
