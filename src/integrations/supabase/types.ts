@@ -689,6 +689,489 @@ export type Database = {
         }
         Relationships: []
       }
+      _rag2_cfg: {
+        Row: {
+          cfg: string
+          ctx: string | null
+          id: number
+          itens: Json | null
+          resp: string | null
+          uso: Json | null
+        }
+        Insert: {
+          cfg: string
+          ctx?: string | null
+          id: number
+          itens?: Json | null
+          resp?: string | null
+          uso?: Json | null
+        }
+        Update: {
+          cfg?: string
+          ctx?: string | null
+          id?: number
+          itens?: Json | null
+          resp?: string | null
+          uso?: Json | null
+        }
+        Relationships: []
+      }
+      _rag2_cfg_juiz: {
+        Row: {
+          id: number
+          juiz: string
+          notas: Json | null
+        }
+        Insert: {
+          id: number
+          juiz: string
+          notas?: Json | null
+        }
+        Update: {
+          id?: number
+          juiz?: string
+          notas?: Json | null
+        }
+        Relationships: []
+      }
+      _rag2_est: {
+        Row: {
+          doc_id: number
+          id: number
+          meta: Json | null
+          rel: number | null
+          rscore: number | null
+          t: string | null
+          vrank: number | null
+          vsim: number | null
+        }
+        Insert: {
+          doc_id: number
+          id: number
+          meta?: Json | null
+          rel?: number | null
+          rscore?: number | null
+          t?: string | null
+          vrank?: number | null
+          vsim?: number | null
+        }
+        Update: {
+          doc_id?: number
+          id?: number
+          meta?: Json | null
+          rel?: number | null
+          rscore?: number | null
+          t?: string | null
+          vrank?: number | null
+          vsim?: number | null
+        }
+        Relationships: []
+      }
+      _rag2_medida: {
+        Row: {
+          chars: number | null
+          pontos: number | null
+          video_id: string
+        }
+        Insert: {
+          chars?: number | null
+          pontos?: number | null
+          video_id: string
+        }
+        Update: {
+          chars?: number | null
+          pontos?: number | null
+          video_id?: string
+        }
+        Relationships: []
+      }
+      _rag2_modelo: {
+        Row: {
+          criado: string | null
+          ctx: string | null
+          id: number
+          juiz_g: Json | null
+          juiz_s: Json | null
+          nivel: string | null
+          pergunta: string | null
+          q: string | null
+          resp_gpt: string | null
+          resp_sonnet: string | null
+        }
+        Insert: {
+          criado?: string | null
+          ctx?: string | null
+          id: number
+          juiz_g?: Json | null
+          juiz_s?: Json | null
+          nivel?: string | null
+          pergunta?: string | null
+          q?: string | null
+          resp_gpt?: string | null
+          resp_sonnet?: string | null
+        }
+        Update: {
+          criado?: string | null
+          ctx?: string | null
+          id?: number
+          juiz_g?: Json | null
+          juiz_s?: Json | null
+          nivel?: string | null
+          pergunta?: string | null
+          q?: string | null
+          resp_gpt?: string | null
+          resp_sonnet?: string | null
+        }
+        Relationships: []
+      }
+      _rag2_multi: {
+        Row: {
+          criado: string | null
+          id: number
+          modelo: string
+          resp: string | null
+          uso: Json | null
+        }
+        Insert: {
+          criado?: string | null
+          id: number
+          modelo: string
+          resp?: string | null
+          uso?: Json | null
+        }
+        Update: {
+          criado?: string | null
+          id?: number
+          modelo?: string
+          resp?: string | null
+          uso?: Json | null
+        }
+        Relationships: []
+      }
+      _rag2_multi_juiz: {
+        Row: {
+          criado: string | null
+          id: number
+          juiz: string
+          notas: Json | null
+        }
+        Insert: {
+          criado?: string | null
+          id: number
+          juiz: string
+          notas?: Json | null
+        }
+        Update: {
+          criado?: string | null
+          id?: number
+          juiz?: string
+          notas?: Json | null
+        }
+        Relationships: []
+      }
+      _rag2_prompts: {
+        Row: {
+          atualizado: string | null
+          nome: string
+          texto: string
+        }
+        Insert: {
+          atualizado?: string | null
+          nome: string
+          texto: string
+        }
+        Update: {
+          atualizado?: string | null
+          nome?: string
+          texto?: string
+        }
+        Relationships: []
+      }
+      _rag2_real: {
+        Row: {
+          aud_id: number | null
+          busca: string | null
+          cand_old: Json | null
+          ctx_new: string | null
+          ctx_old: string | null
+          data_hora: string | null
+          id: number
+          itens_new: Json | null
+          juiz: Json | null
+          old_scores: Json | null
+          pergunta: string | null
+          resp_new: string | null
+          resp_old: string | null
+          resp_prod: string | null
+        }
+        Insert: {
+          aud_id?: number | null
+          busca?: string | null
+          cand_old?: Json | null
+          ctx_new?: string | null
+          ctx_old?: string | null
+          data_hora?: string | null
+          id?: number
+          itens_new?: Json | null
+          juiz?: Json | null
+          old_scores?: Json | null
+          pergunta?: string | null
+          resp_new?: string | null
+          resp_old?: string | null
+          resp_prod?: string | null
+        }
+        Update: {
+          aud_id?: number | null
+          busca?: string | null
+          cand_old?: Json | null
+          ctx_new?: string | null
+          ctx_old?: string | null
+          data_hora?: string | null
+          id?: number
+          itens_new?: Json | null
+          juiz?: Json | null
+          old_scores?: Json | null
+          pergunta?: string | null
+          resp_new?: string | null
+          resp_old?: string | null
+          resp_prod?: string | null
+        }
+        Relationships: []
+      }
+      _rag2_real_est: {
+        Row: {
+          doc_id: number
+          meta: Json | null
+          rid: number
+          rscore: number | null
+          t: string | null
+          vrank: number | null
+        }
+        Insert: {
+          doc_id: number
+          meta?: Json | null
+          rid: number
+          rscore?: number | null
+          t?: string | null
+          vrank?: number | null
+        }
+        Update: {
+          doc_id?: number
+          meta?: Json | null
+          rid?: number
+          rscore?: number | null
+          t?: string | null
+          vrank?: number | null
+        }
+        Relationships: []
+      }
+      _rag2_recanon: {
+        Row: {
+          ultimo: number | null
+        }
+        Insert: {
+          ultimo?: number | null
+        }
+        Update: {
+          ultimo?: number | null
+        }
+        Relationships: []
+      }
+      _rag2_resp: {
+        Row: {
+          cand_antigo: Json | null
+          cand_novo: Json | null
+          criado: string | null
+          ctx_antigo: string | null
+          ctx_novo: string | null
+          id: number
+          juiz: Json | null
+          nivel: string | null
+          pergunta: string | null
+          q: string | null
+          resp_antigo: string | null
+          resp_novo: string | null
+        }
+        Insert: {
+          cand_antigo?: Json | null
+          cand_novo?: Json | null
+          criado?: string | null
+          ctx_antigo?: string | null
+          ctx_novo?: string | null
+          id: number
+          juiz?: Json | null
+          nivel?: string | null
+          pergunta?: string | null
+          q?: string | null
+          resp_antigo?: string | null
+          resp_novo?: string | null
+        }
+        Update: {
+          cand_antigo?: Json | null
+          cand_novo?: Json | null
+          criado?: string | null
+          ctx_antigo?: string | null
+          ctx_novo?: string | null
+          id?: number
+          juiz?: Json | null
+          nivel?: string | null
+          pergunta?: string | null
+          q?: string | null
+          resp_antigo?: string | null
+          resp_novo?: string | null
+        }
+        Relationships: []
+      }
+      _rag2_resp_r1: {
+        Row: {
+          criado: string | null
+          ctx_antigo: string | null
+          ctx_novo: string | null
+          id: number
+          juiz: Json | null
+          nivel: string | null
+          pergunta: string | null
+          resp_antigo: string | null
+          resp_novo: string | null
+        }
+        Insert: {
+          criado?: string | null
+          ctx_antigo?: string | null
+          ctx_novo?: string | null
+          id: number
+          juiz?: Json | null
+          nivel?: string | null
+          pergunta?: string | null
+          resp_antigo?: string | null
+          resp_novo?: string | null
+        }
+        Update: {
+          criado?: string | null
+          ctx_antigo?: string | null
+          ctx_novo?: string | null
+          id?: number
+          juiz?: Json | null
+          nivel?: string | null
+          pergunta?: string | null
+          resp_antigo?: string | null
+          resp_novo?: string | null
+        }
+        Relationships: []
+      }
+      _rag2_rev_amostra: {
+        Row: {
+          id: number
+        }
+        Insert: {
+          id: number
+        }
+        Update: {
+          id?: number
+        }
+        Relationships: []
+      }
+      _rag2_rev_comp: {
+        Row: {
+          id: number
+          modelo: string
+          trocas: Json | null
+          util: number | null
+        }
+        Insert: {
+          id: number
+          modelo: string
+          trocas?: Json | null
+          util?: number | null
+        }
+        Update: {
+          id?: number
+          modelo?: string
+          trocas?: Json | null
+          util?: number | null
+        }
+        Relationships: []
+      }
+      _rag2_teste: {
+        Row: {
+          antigo: Json | null
+          auditoria_id: number | null
+          busca: string | null
+          emb: string | null
+          id: number
+          juiz: Json | null
+          nivel: string | null
+          novo: Json | null
+          ordem_a: string | null
+          pergunta: string | null
+        }
+        Insert: {
+          antigo?: Json | null
+          auditoria_id?: number | null
+          busca?: string | null
+          emb?: string | null
+          id?: number
+          juiz?: Json | null
+          nivel?: string | null
+          novo?: Json | null
+          ordem_a?: string | null
+          pergunta?: string | null
+        }
+        Update: {
+          antigo?: Json | null
+          auditoria_id?: number | null
+          busca?: string | null
+          emb?: string | null
+          id?: number
+          juiz?: Json | null
+          nivel?: string | null
+          novo?: Json | null
+          ordem_a?: string | null
+          pergunta?: string | null
+        }
+        Relationships: []
+      }
+      _rag2_v5: {
+        Row: {
+          cand: Json | null
+          criado: string | null
+          ctx: string | null
+          id: number
+          info: Json | null
+          juiz_g: Json | null
+          juiz_s: Json | null
+          nivel: string | null
+          pergunta: string | null
+          q: string | null
+          resp: string | null
+        }
+        Insert: {
+          cand?: Json | null
+          criado?: string | null
+          ctx?: string | null
+          id: number
+          info?: Json | null
+          juiz_g?: Json | null
+          juiz_s?: Json | null
+          nivel?: string | null
+          pergunta?: string | null
+          q?: string | null
+          resp?: string | null
+        }
+        Update: {
+          cand?: Json | null
+          criado?: string | null
+          ctx?: string | null
+          id?: number
+          info?: Json | null
+          juiz_g?: Json | null
+          juiz_s?: Json | null
+          nivel?: string | null
+          pergunta?: string | null
+          q?: string | null
+          resp?: string | null
+        }
+        Relationships: []
+      }
       acomp_paginas: {
         Row: {
           atualizado_em: string
@@ -3493,6 +3976,51 @@ export type Database = {
         }
         Relationships: []
       }
+      biblioteca_busca: {
+        Row: {
+          atualizado: string | null
+          embedding: string | null
+          imagem_url: string | null
+          kapha: number | null
+          link: string | null
+          pitta: number | null
+          ref: string
+          resumo: string | null
+          texto: string
+          tipo: string
+          titulo: string
+          vata: number | null
+        }
+        Insert: {
+          atualizado?: string | null
+          embedding?: string | null
+          imagem_url?: string | null
+          kapha?: number | null
+          link?: string | null
+          pitta?: number | null
+          ref: string
+          resumo?: string | null
+          texto: string
+          tipo: string
+          titulo: string
+          vata?: number | null
+        }
+        Update: {
+          atualizado?: string | null
+          embedding?: string | null
+          imagem_url?: string | null
+          kapha?: number | null
+          link?: string | null
+          pitta?: number | null
+          ref?: string
+          resumo?: string | null
+          texto?: string
+          tipo?: string
+          titulo?: string
+          vata?: number | null
+        }
+        Relationships: []
+      }
       bkp: {
         Row: {
           agniforte: number | null
@@ -6250,6 +6778,119 @@ export type Database = {
           metadata?: Json | null
         }
         Relationships: []
+      }
+      documents_akasha2026: {
+        Row: {
+          ano: number | null
+          categoria: string | null
+          chars: number | null
+          classif_em: string | null
+          classif_status: string | null
+          classificacao: Json | null
+          content: string
+          content_antes: string | null
+          content_corte: string | null
+          content_v1: string | null
+          criado_em: string
+          descartar: boolean
+          doshas: string[] | null
+          embedding: string | null
+          id: number
+          metadata: Json
+          minuto: number | null
+          motivo_descarte: string | null
+          pedaco: number | null
+          rev_aplicadas: Json | null
+          rev_em: string | null
+          rev_modelo: string | null
+          rev_pegou: string | null
+          rev_trocas: Json | null
+          rev_util: number | null
+          segundo: number | null
+          subtemas: string[] | null
+          tipo: string | null
+          titulo: string | null
+          total_pedacos: number | null
+          url_youtube: string | null
+          video_id: string
+        }
+        Insert: {
+          ano?: number | null
+          categoria?: string | null
+          chars?: number | null
+          classif_em?: string | null
+          classif_status?: string | null
+          classificacao?: Json | null
+          content: string
+          content_antes?: string | null
+          content_corte?: string | null
+          content_v1?: string | null
+          criado_em?: string
+          descartar?: boolean
+          doshas?: string[] | null
+          embedding?: string | null
+          id?: number
+          metadata?: Json
+          minuto?: number | null
+          motivo_descarte?: string | null
+          pedaco?: number | null
+          rev_aplicadas?: Json | null
+          rev_em?: string | null
+          rev_modelo?: string | null
+          rev_pegou?: string | null
+          rev_trocas?: Json | null
+          rev_util?: number | null
+          segundo?: number | null
+          subtemas?: string[] | null
+          tipo?: string | null
+          titulo?: string | null
+          total_pedacos?: number | null
+          url_youtube?: string | null
+          video_id: string
+        }
+        Update: {
+          ano?: number | null
+          categoria?: string | null
+          chars?: number | null
+          classif_em?: string | null
+          classif_status?: string | null
+          classificacao?: Json | null
+          content?: string
+          content_antes?: string | null
+          content_corte?: string | null
+          content_v1?: string | null
+          criado_em?: string
+          descartar?: boolean
+          doshas?: string[] | null
+          embedding?: string | null
+          id?: number
+          metadata?: Json
+          minuto?: number | null
+          motivo_descarte?: string | null
+          pedaco?: number | null
+          rev_aplicadas?: Json | null
+          rev_em?: string | null
+          rev_modelo?: string | null
+          rev_pegou?: string | null
+          rev_trocas?: Json | null
+          rev_util?: number | null
+          segundo?: number | null
+          subtemas?: string[] | null
+          tipo?: string | null
+          titulo?: string | null
+          total_pedacos?: number | null
+          url_youtube?: string | null
+          video_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "documents_akasha2026_video_id_fkey"
+            columns: ["video_id"]
+            isOneToOne: false
+            referencedRelation: "videos_seo2026"
+            referencedColumns: ["video_id"]
+          },
+        ]
       }
       documents_cursos: {
         Row: {
@@ -12080,6 +12721,42 @@ export type Database = {
           },
         ]
       }
+      rag2_canonicos: {
+        Row: {
+          ativo: boolean
+          id: number
+          nota: string | null
+          padrao: string
+          troca: string
+        }
+        Insert: {
+          ativo?: boolean
+          id?: number
+          nota?: string | null
+          padrao: string
+          troca: string
+        }
+        Update: {
+          ativo?: boolean
+          id?: number
+          nota?: string | null
+          padrao?: string
+          troca?: string
+        }
+        Relationships: []
+      }
+      rag2_termos_ok: {
+        Row: {
+          termo: string
+        }
+        Insert: {
+          termo: string
+        }
+        Update: {
+          termo?: string
+        }
+        Relationships: []
+      }
       rasaratna_samuccaya_verses: {
         Row: {
           adhyaya_name: string | null
@@ -15357,6 +16034,7 @@ export type Database = {
           duracao_seg: number | null
           excluido: boolean
           legenda: string | null
+          legenda_antiga: string | null
           legenda_fonte: string | null
           motivo_exclusao: string | null
           origem_lista: string | null
@@ -15375,6 +16053,7 @@ export type Database = {
           duracao_seg?: number | null
           excluido?: boolean
           legenda?: string | null
+          legenda_antiga?: string | null
           legenda_fonte?: string | null
           motivo_exclusao?: string | null
           origem_lista?: string | null
@@ -15393,6 +16072,7 @@ export type Database = {
           duracao_seg?: number | null
           excluido?: boolean
           legenda?: string | null
+          legenda_antiga?: string | null
           legenda_fonte?: string | null
           motivo_exclusao?: string | null
           origem_lista?: string | null
@@ -16110,6 +16790,7 @@ export type Database = {
             Returns: Json
           }
       _pedidos_expirar: { Args: never; Returns: undefined }
+      _rag2_recanon_lote: { Args: { p_n?: number }; Returns: number }
       _respostas_expandir: { Args: { p: Json }; Returns: Json }
       _resumo_areas: { Args: { p_registro: string }; Returns: Json }
       _slots_fixos: {
@@ -16754,6 +17435,9 @@ export type Database = {
         Returns: Json
       }
       auditoria_sugestao_conteudo: { Args: { p_email: string }; Returns: Json }
+      biblio_carregar: { Args: never; Returns: number }
+      biblio_embed_lote: { Args: { p_lim?: number }; Returns: number }
+      biblio_embed_textos: { Args: { p_textos: string[] }; Returns: string[] }
       bulk_merge_verse_sanskrit: {
         Args: { items: Json; target_table: string }
         Returns: number
@@ -16791,6 +17475,36 @@ export type Database = {
           publicado_em: string
           resumo: string
           titulo: string
+        }[]
+      }
+      buscar_biblioteca: {
+        Args: { p_n?: number; p_texto: string; p_tipos?: string[] }
+        Returns: {
+          imagem_url: string
+          kapha: number
+          link: string
+          pitta: number
+          resumo: string
+          similaridade: number
+          texto: string
+          tipo: string
+          titulo: string
+          vata: number
+        }[]
+      }
+      buscar_biblioteca_vec: {
+        Args: { p_n?: number; p_tipos?: string[]; p_vec: string }
+        Returns: {
+          imagem_url: string
+          kapha: number
+          link: string
+          pitta: number
+          resumo: string
+          similaridade: number
+          texto: string
+          tipo: string
+          titulo: string
+          vata: number
         }[]
       }
       buscar_minha_rotina: {
@@ -17792,6 +18506,20 @@ export type Database = {
           similarity: number
         }[]
       }
+      match_documents_akasha2026: {
+        Args: {
+          filter?: Json
+          match_count?: number
+          match_threshold?: number
+          query_embedding: string
+        }
+        Returns: {
+          content: string
+          id: number
+          metadata: Json
+          similarity: number
+        }[]
+      }
       match_documents_cursos: {
         Args: { filter?: Json; match_count?: number; query_embedding: string }
         Returns: {
@@ -18133,6 +18861,167 @@ export type Database = {
         }[]
       }
       publicar_artigo_do_dia: { Args: never; Returns: string }
+      rag2_aplicar: { Args: { p: Json }; Returns: number }
+      rag2_canonizar: { Args: { t: string }; Returns: string }
+      rag2_cfg_gravar: { Args: { p: Json }; Returns: number }
+      rag2_comparar: { Args: { p_n?: number }; Returns: number }
+      rag2_cortar: {
+        Args: {
+          p_alvo?: number
+          p_max?: number
+          p_min?: number
+          p_sobra?: number
+          p_video_id: string
+        }
+        Returns: number
+      }
+      rag2_cortar_lote: { Args: { p_n?: number }; Returns: number }
+      rag2_embed_lote: { Args: { p_lote?: number }; Returns: number }
+      rag2_embed_textos: { Args: { p_textos: string[] }; Returns: string[] }
+      rag2_erro: { Args: { p_ids: number[] }; Returns: undefined }
+      rag2_est_buscar: { Args: { p_k?: number }; Returns: number }
+      rag2_est_gravar: { Args: { p: Json }; Returns: number }
+      rag2_est_sel: {
+        Args: {
+          p_abs: number
+          p_cfg: string
+          p_k: number
+          p_n: number
+          p_orc: number
+          p_relp: number
+        }
+        Returns: number
+      }
+      rag2_est_sim: {
+        Args: { p_k: number; p_n: number; p_orc: number }
+        Returns: {
+          chars: number
+          k: number
+          n: number
+          orc: number
+          perg_sem_rel2: number
+          recall2: number
+          rel0: number
+          rel1: number
+          rel2: number
+          sem_nota: number
+          trechos: number
+        }[]
+      }
+      rag2_est_sim2: {
+        Args: {
+          p_abs: number
+          p_k: number
+          p_n: number
+          p_orc: number
+          p_relp: number
+          p_teto?: number
+        }
+        Returns: {
+          chars: number
+          k: number
+          n: number
+          orc: number
+          perg_sem_rel2: number
+          piso: string
+          recall2: number
+          rel0: number
+          rel1: number
+          rel2: number
+          trechos: number
+        }[]
+      }
+      rag2_filtro_frases: { Args: { t: string }; Returns: string }
+      rag2_frases: {
+        Args: { p_leg: string }
+        Returns: {
+          frase: string
+          ordem: number
+          seg: number
+        }[]
+      }
+      rag2_frases_de: {
+        Args: { t: string }
+        Returns: {
+          frase: string
+          n: number
+        }[]
+      }
+      rag2_juiz_gravar: { Args: { p: Json }; Returns: number }
+      rag2_juiz_pegar: {
+        Args: { p_n?: number }
+        Returns: {
+          id: number
+          payload: string
+        }[]
+      }
+      rag2_limpar: { Args: { t: string }; Returns: string }
+      rag2_modelo_gravar: { Args: { p: Json }; Returns: number }
+      rag2_multi_gravar: { Args: { p: Json }; Returns: number }
+      rag2_pegar_lote: {
+        Args: { p_grupos?: number; p_por?: number }
+        Returns: {
+          grupo: number
+          ids: number[]
+          payload: string
+        }[]
+      }
+      rag2_real_buscar: { Args: never; Returns: number }
+      rag2_real_gravar: { Args: { p: Json }; Returns: number }
+      rag2_real_sel: {
+        Args: {
+          p_abs: number
+          p_k: number
+          p_n: number
+          p_orc: number
+          p_relp: number
+        }
+        Returns: number
+      }
+      rag2_resp_ctx: { Args: { p: Json }; Returns: number }
+      rag2_resp_gravar: { Args: { p: Json }; Returns: number }
+      rag2_resp_pegar: {
+        Args: { p_n?: number }
+        Returns: {
+          cand_antigo: Json
+          cand_novo: Json
+          id: number
+          nivel: string
+          pergunta: string
+          q: string
+        }[]
+      }
+      rag2_rev_aplicar: {
+        Args: { p_limite?: number }
+        Returns: {
+          recusadas: number
+          trechos: number
+          trocas: number
+        }[]
+      }
+      rag2_rev_gravar: { Args: { p: Json; p_modelo: string }; Returns: number }
+      rag2_rev_pegar: {
+        Args: { p_amostra?: boolean; p_grupos: number; p_por: number }
+        Returns: {
+          grupo: number
+          ids: number[]
+          payload: string
+        }[]
+      }
+      rag2_troca_ok: {
+        Args: { p_de: string; p_para: string }
+        Returns: boolean
+      }
+      rag2_unidades: {
+        Args: { p_leg: string; p_quebra?: number }
+        Returns: {
+          frase: string
+          ordem: number
+          seg: number
+        }[]
+      }
+      rag2_v5_buscar: { Args: { p_k?: number; p_n?: number }; Returns: number }
+      rag2_v5_gravar: { Args: { p: Json }; Returns: number }
       random_curated_verse: {
         Args: { collection_slug?: string }
         Returns: {
