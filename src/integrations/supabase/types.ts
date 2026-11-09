@@ -1172,6 +1172,45 @@ export type Database = {
         }
         Relationships: []
       }
+      _rag2_v5full: {
+        Row: {
+          cards: Json | null
+          id: number
+          juiz: Json | null
+          resp: string | null
+        }
+        Insert: {
+          cards?: Json | null
+          id: number
+          juiz?: Json | null
+          resp?: string | null
+        }
+        Update: {
+          cards?: Json | null
+          id?: number
+          juiz?: Json | null
+          resp?: string | null
+        }
+        Relationships: []
+      }
+      _rag2_v5p: {
+        Row: {
+          id: number
+          juiz: Json | null
+          resp: string | null
+        }
+        Insert: {
+          id: number
+          juiz?: Json | null
+          resp?: string | null
+        }
+        Update: {
+          id?: number
+          juiz?: Json | null
+          resp?: string | null
+        }
+        Relationships: []
+      }
       acomp_paginas: {
         Row: {
           atualizado_em: string
