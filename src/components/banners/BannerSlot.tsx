@@ -4,6 +4,7 @@ import { useLocation } from "react-router-dom";
 import DOMPurify from "dompurify";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/contexts/UserContext";
+import { mountBannerCountdown } from "./bannerCountdown";
 
 
 interface BannerSlotProps {
@@ -74,6 +75,7 @@ const BannerSlot = ({ slot, className, fallback, minHeight, rotacao = "diaria", 
 
   const location = useLocation();
   const sorteioRef = useRef(Math.random());
+  const bannerRef = useRef<HTMLDivElement>(null);
 
 
 
@@ -161,6 +163,11 @@ const BannerSlot = ({ slot, className, fallback, minHeight, rotacao = "diaria", 
     });
   }, [escolhido]);
 
+  useEffect(() => {
+    if (!bannerRef.current || !cleanHtml) return;
+    return mountBannerCountdown(bannerRef.current);
+  }, [cleanHtml]);
+
   // Tag de dosha que motivou a escolha (se houver)
   const doshaTagEscolhido = useMemo(() => {
     const tags = (escolhido?.tags ?? []) as string[];
@@ -209,6 +216,7 @@ const BannerSlot = ({ slot, className, fallback, minHeight, rotacao = "diaria", 
 
   return (
     <div
+      ref={bannerRef}
       className={className}
       onClick={() => registrarEvento("clique")}
       dangerouslySetInnerHTML={{ __html: cleanHtml }}
