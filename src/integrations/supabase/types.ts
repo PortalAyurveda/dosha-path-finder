@@ -4523,6 +4523,143 @@ export type Database = {
           },
         ]
       }
+      cash_black_backup: {
+        Row: {
+          chave: string
+          guardado_em: string | null
+          tipo: string
+          valor_antes: number | null
+        }
+        Insert: {
+          chave: string
+          guardado_em?: string | null
+          tipo: string
+          valor_antes?: number | null
+        }
+        Update: {
+          chave?: string
+          guardado_em?: string | null
+          tipo?: string
+          valor_antes?: number | null
+        }
+        Relationships: []
+      }
+      cash_black_banners_desligados: {
+        Row: {
+          desligado_em: string
+          id: string
+          slot: string | null
+        }
+        Insert: {
+          desligado_em?: string
+          id: string
+          slot?: string | null
+        }
+        Update: {
+          desligado_em?: string
+          id?: string
+          slot?: string | null
+        }
+        Relationships: []
+      }
+      cashback_campanhas: {
+        Row: {
+          ativo: boolean
+          criado_em: string
+          expira_em: string
+          fim: string
+          inicio: string
+          libera_em: string
+          nome: string
+          pct: number
+          pix20_inicio: string | null
+          slug: string
+        }
+        Insert: {
+          ativo?: boolean
+          criado_em?: string
+          expira_em: string
+          fim: string
+          inicio: string
+          libera_em: string
+          nome: string
+          pct?: number
+          pix20_inicio?: string | null
+          slug: string
+        }
+        Update: {
+          ativo?: boolean
+          criado_em?: string
+          expira_em?: string
+          fim?: string
+          inicio?: string
+          libera_em?: string
+          nome?: string
+          pct?: number
+          pix20_inicio?: string | null
+          slug?: string
+        }
+        Relationships: []
+      }
+      cashback_movimentos: {
+        Row: {
+          campanha: string
+          criado_em: string
+          descricao: string | null
+          email: string
+          expira_em: string | null
+          id: string
+          libera_em: string | null
+          origem_id: string
+          origem_tipo: string
+          pago_em: string | null
+          tipo: string
+          user_id: string | null
+          vale_em: string
+          valor: number
+        }
+        Insert: {
+          campanha: string
+          criado_em?: string
+          descricao?: string | null
+          email: string
+          expira_em?: string | null
+          id?: string
+          libera_em?: string | null
+          origem_id: string
+          origem_tipo: string
+          pago_em?: string | null
+          tipo: string
+          user_id?: string | null
+          vale_em: string
+          valor: number
+        }
+        Update: {
+          campanha?: string
+          criado_em?: string
+          descricao?: string | null
+          email?: string
+          expira_em?: string | null
+          id?: string
+          libera_em?: string | null
+          origem_id?: string
+          origem_tipo?: string
+          pago_em?: string | null
+          tipo?: string
+          user_id?: string | null
+          vale_em?: string
+          valor?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cashback_movimentos_campanha_fkey"
+            columns: ["campanha"]
+            isOneToOne: false
+            referencedRelation: "cashback_campanhas"
+            referencedColumns: ["slug"]
+          },
+        ]
+      }
       certificado_avisos: {
         Row: {
           avisado_em: string
@@ -11375,7 +11512,7 @@ export type Database = {
           encerrada_html: string | null
           html: string
           imagem_url: string | null
-          preco_especial_id: string
+          preco_especial_id: string | null
           slug: string
           texto_botao: string
           texto_email: string
@@ -11390,7 +11527,7 @@ export type Database = {
           encerrada_html?: string | null
           html?: string
           imagem_url?: string | null
-          preco_especial_id: string
+          preco_especial_id?: string | null
           slug: string
           texto_botao?: string
           texto_email?: string
@@ -11405,7 +11542,7 @@ export type Database = {
           encerrada_html?: string | null
           html?: string
           imagem_url?: string | null
-          preco_especial_id?: string
+          preco_especial_id?: string | null
           slug?: string
           texto_botao?: string
           texto_email?: string
@@ -16335,6 +16472,26 @@ export type Database = {
           },
         ]
       }
+      cashback_resumo: {
+        Row: {
+          campanha: string | null
+          movimentos: number | null
+          origem_tipo: string | null
+          pessoas: number | null
+          tipo: string | null
+          vale_em: string | null
+          valor: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cashback_movimentos_campanha_fkey"
+            columns: ["campanha"]
+            isOneToOne: false
+            referencedRelation: "cashback_campanhas"
+            referencedColumns: ["slug"]
+          },
+        ]
+      }
       conteudo_tagged: {
         Row: {
           id: string | null
@@ -17607,6 +17764,11 @@ export type Database = {
           titulo: string
         }[]
       }
+      cash_black_agora: { Args: never; Returns: Json }
+      cash_black_banners: { Args: { p_ligar: boolean }; Returns: Json }
+      cash_black_pix20_ativo: { Args: never; Returns: boolean }
+      cash_black_virada: { Args: { p_ligar: boolean }; Returns: Json }
+      cashback_varrer: { Args: { p_campanha?: string }; Returns: Json }
       certificado_para_imprimir: { Args: { p_slug: string }; Returns: Json }
       chat_abrir: { Args: { p_slug: string }; Returns: Json }
       chat_enviar: {
@@ -17950,6 +18112,11 @@ export type Database = {
         Returns: Json
       }
       convite_previa: { Args: { p_slug?: string }; Returns: Json }
+      coredive_quadro_ler: { Args: never; Returns: Json }
+      coredive_quadro_salvar: {
+        Args: { p_dados: Json; p_quem?: string; p_versao: number }
+        Returns: Json
+      }
       corrigir_grafia: { Args: { t: string }; Returns: string }
       cortar_nas_ancoras: {
         Args: { p_ancoras: string[]; p_texto: string }
@@ -18746,6 +18913,7 @@ export type Database = {
       md_topo: { Args: { e: Json }; Returns: Json }
       md_zn: { Args: { d: string; s: number }; Returns: number }
       md_zona: { Args: { d: string; s: number }; Returns: string }
+      meu_cashback: { Args: never; Returns: Json }
       meu_dia: {
         Args: { p_idpublico: string }
         Returns: {
