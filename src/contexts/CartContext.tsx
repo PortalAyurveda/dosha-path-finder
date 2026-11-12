@@ -1,5 +1,6 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { lojaSupabase } from "@/integrations/supabase/loja-client";
 
 export type CartItem = {
   id: number;
@@ -65,6 +66,8 @@ const loadInitial = (): CartItem[] => {
 export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [itens, setItens] = useState<CartItem[]>(loadInitial);
   const [isOpen, setIsOpen] = useState(false);
+  const itensRef = useRef(itens);
+  itensRef.current = itens;
 
   useEffect(() => {
     try {
@@ -110,6 +113,51 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     document.addEventListener("visibilitychange", aoVoltarNaAba);
     return () => document.removeEventListener("visibilitychange", aoVoltarNaAba);
   }, []);
+
+  // Ao abrir o carrinho, atualiza preço normal e Pix de cada item com o valor atual
+  // (mesmas fontes das páginas de produto e kit); o carrinho salvo é regravado pelo efeito acima.
+  useEffect(() => {
+    if (!isOpen) return;
+    let cancelado = false;
+    (async () => {
+      const atuais = itensRef.current;
+      if (atuais.length === 0) return;
+      const precos = new Map<string, { n: number; p: number }>();
+      const slugsProd = [...new Set(atuais.filter((i) => i.tipo === "produto").map((i) => i.slug))];
+      const slugsKit = [...new Set(atuais.filter((i) => i.tipo === "kit").map((i) => i.slug))];
+      try {
+        if (slugsProd.length) {
+          const { data } = await lojaSupabase.from("produtos").select("slug, preco_normal, preco_pix").in("slug", slugsProd);
+          for (const r of (data ?? []) as { slug: string; preco_normal: number; preco_pix: number }[]) {
+            precos.set(`produto::${r.slug}`, { n: Number(r.preco_normal), p: Number(r.preco_pix) });
+          }
+        }
+        await Promise.all(slugsKit.map(async (slug) => {
+          const { data } = await supabase.rpc("kit_detalhe" as never, { p_slug: slug } as never);
+          const d = data as unknown;
+          const k = (Array.isArray(d) ? d[0] : d) as { preco_normal?: number; preco_pix?: number } | null;
+          if (k && k.preco_normal != null && k.preco_pix != null) {
+            precos.set(`kit::${slug}`, { n: Number(k.preco_normal), p: Number(k.preco_pix) });
+          }
+        }));
+      } catch {
+        return;
+      }
+      if (cancelado || precos.size === 0) return;
+      setItens((prev) => {
+        let mudou = false;
+        const next = prev.map((it) => {
+          const v = precos.get(`${it.tipo}::${it.slug}`);
+          if (!v || !Number.isFinite(v.n) || !Number.isFinite(v.p)) return it;
+          if (Number(it.preco_normal) === v.n && Number(it.preco_pix) === v.p) return it;
+          mudou = true;
+          return { ...it, preco_normal: v.n, preco_pix: v.p };
+        });
+        return mudou ? next : prev;
+      });
+    })();
+    return () => { cancelado = true; };
+  }, [isOpen]);
 
   const abrirCarrinho = useCallback(() => setIsOpen(true), []);
   const fecharCarrinho = useCallback(() => setIsOpen(false), []);
