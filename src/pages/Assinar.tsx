@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from "react";
+import { useCashBlack } from "@/lib/cashBlack";
+import { samkhyaTokens } from "@/components/samkhya/tokens";
 import { Helmet } from "react-helmet-async";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -311,6 +313,7 @@ const PortalMark = ({ size = 28 }: { size?: number }) => (
 const Assinar = () => {
   const { user, isAnonymous, profile, profileLoading, refreshProfile, doshaResult } = useUser();
   const [searchParams] = useSearchParams();
+  const { ativa: cashBlack } = useCashBlack();
   const itemParam = searchParams.get("item");
   const navigate = useNavigate();
   const [loadingPlan, setLoadingPlan] = useState<Plano | null>(null);
@@ -1595,6 +1598,11 @@ const Assinar = () => {
         {/* 8) ESCOLHA SEU PLANO */}
         <section id="planos" style={{ background: SURFACE }}>
           <div className="max-w-[1040px] mx-auto px-4 sm:px-6 py-12 md:py-16">
+            {cashBlack && (
+              <div className="mb-8 rounded-xl px-4 py-3 text-center text-sm md:text-base leading-snug" style={{ background: samkhyaTokens.roxoDark, color: samkhyaTokens.footerTexto }}>
+                <strong>CASH BLACK</strong> · Já estava pensando em assinar? Até 27/11, o valor da primeira cobrança vira crédito para usar no Portal ou na Samkhya. No Premium Anual, são R$ 597,00 em crédito.
+              </div>
+            )}
             <h2
               className="font-serif font-bold text-2xl md:text-[28px] text-center mb-2"
               style={{ color: PRIMARY }}

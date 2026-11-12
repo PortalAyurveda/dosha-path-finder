@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { motion } from "framer-motion";
 import { ShieldCheck, ArrowRight, Check, Calendar, Heart, Users, Award, Sparkles, Clock, Brain, Bot, BookOpen, Target, AlertTriangle, Sprout, Puzzle, Stethoscope, Zap, type LucideIcon } from "lucide-react";
 import type { CoursePricingData, CourseBranding, CourseBonusData } from "@/data/courses/courseTypes";
@@ -9,9 +10,11 @@ interface PricingSectionProps {
   branding: CourseBranding;
   bonus?: CourseBonusData;
   onCtaClick: () => void;
+  /** Substitui preço e botão durante a Cash Black. */
+  cashBlack?: ReactNode;
 }
 
-const PricingSection = ({ data, branding, bonus, onCtaClick }: PricingSectionProps) => {
+const PricingSection = ({ data, branding, bonus, onCtaClick, cashBlack }: PricingSectionProps) => {
   return (
     <section className="py-10 md:py-14 bg-white">
       <div className="max-w-2xl mx-auto px-6">
@@ -84,6 +87,7 @@ const PricingSection = ({ data, branding, bonus, onCtaClick }: PricingSectionPro
             Investimento
           </span>
 
+{cashBlack ? <div className="mt-4">{cashBlack}</div> : (<>
           {data.highlight && (
             <p className="text-sm md:text-base font-serif mt-3 mb-1" style={{ color: "#352F54" }}>
               {data.highlight}
@@ -119,6 +123,7 @@ const PricingSection = ({ data, branding, bonus, onCtaClick }: PricingSectionPro
             {data.ctaText}
             <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
           </motion.button>
+          </>)}
 
           <div className="mt-7 inline-flex items-start gap-3 p-3.5 max-w-lg mx-auto border border-gray-200 bg-gray-50 rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm text-left">
             <span

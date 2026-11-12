@@ -1,6 +1,6 @@
 import "@/components/samkhya/samkhya-fonts.css";
 import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Minus, Plus, Trash2, ShoppingBag, ChevronLeft } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Input } from "@/components/ui/input";
@@ -15,6 +15,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { trackPixel } from "@/lib/metaPixel";
 import { useFreteGratisConfig } from "@/hooks/useFreteGratisConfig";
 import { useCupomUsuario } from "@/hooks/useCupomUsuario";
+import { useCashBlack, brl, linkCashBlack } from "@/lib/cashBlack";
+import Relogio from "@/components/cashblack/Relogio";
 
 type FreteOpcao = {
   id: string | number;
@@ -85,6 +87,12 @@ const CartDrawer = () => {
 
   const [step, setStep] = useState<"cart" | "endereco" | "pagamento" | "pix">("cart");
   const [metodoPagamento, setMetodoPagamento] = useState<"pix" | "cartao" | "boleto">("pix");
+  const { ativa: cashBlack, fimMs: cbFim } = useCashBlack();
+  const subtotalNormal = itens.reduce((acc, it) => acc + Number(it.preco_normal) * it.quantidade, 0);
+  // Cash Black: o cartão (com crédito) começa marcado ao entrar na forma de pagamento.
+  useEffect(() => {
+    if (cashBlack && step === "pagamento") setMetodoPagamento("cartao");
+  }, [cashBlack, step]);
   type PixData = {
     pedido_id: string;
     numero_pedido: string;
@@ -264,7 +272,7 @@ const CartDrawer = () => {
   const freteSelecionado = opcoesFrete.find((f) => String(f.id) === freteId) || null;
   // Recalcula o desconto SEMPRE sobre o subtotal atual (não usa valor congelado)
   const descontoCupom = (() => {
-    if (!cupomAplicado) return 0;
+    if (!cupomAplicado || cashBlack) return 0;
     if (cupomAplicado.tipo_desconto === "frete_gratis") return 0;
     if (cupomAplicado.tipo_desconto === "percentual") {
       return Math.min(subtotal, (subtotal * Number(cupomAplicado.valor_desconto)) / 100);
@@ -328,6 +336,7 @@ const CartDrawer = () => {
   // quando o carrinho abre e ainda não há cupom aplicado. Roda apenas uma vez por código.
   useEffect(() => {
     if (!isOpen) return;
+    if (cashBlack) return;
     if (cupomAplicado) return;
     if (itens.length === 0) return;
     const codigo = cupomDoUsuario?.codigo || freteConfig?.cupom_automatico || "";
@@ -536,7 +545,7 @@ const CartDrawer = () => {
           cidade: form.cidade,
           estado: form.estado,
         },
-        cupom: cupomAplicado
+        cupom: cupomAplicado && !cashBlack
           ? {
               cupom_id: cupomAplicado.cupom_id,
               codigo: cupomAplicado.codigo,
@@ -963,8 +972,8 @@ const CartDrawer = () => {
             </div>
           ) : (
             <div className="space-y-4">
-              {/* Resumo do pedido */}
-              <div className="space-y-2 p-3 rounded-md" style={{ background: samkhyaTokens.cardBg, border: `1px solid ${samkhyaTokens.cardBorder}` }}>
+              {/* Resumo do pedido (na Cash Black os valores aparecem em cada opção) */}
+              <div className={`space-y-2 p-3 rounded-md ${cashBlack ? "hidden" : ""}`} style={{ background: samkhyaTokens.cardBg, border: `1px solid ${samkhyaTokens.cardBorder}` }}>
                 <div className="flex justify-between text-sm">
                   <span style={{ color: samkhyaTokens.textoSec }}>Subtotal</span>
                   <span style={{ color: samkhyaTokens.texto }}>{formatBRL(subtotal)}</span>
@@ -990,6 +999,55 @@ const CartDrawer = () => {
               </div>
 
               {/* Forma de pagamento */}
+              {cashBlack ? (() => {
+                const frete = freteSelecionado?.preco ?? 0;
+                const totalCartao = subtotalNormal + frete;
+                const totalPix = subtotal + frete;
+                const opcao = (id: "cartao" | "pix", conteudo: React.ReactNode) => (
+                  <label
+                    className="flex items-start gap-3 p-3 rounded-lg cursor-pointer"
+                    style={{ background: "#fff", border: `${metodoPagamento === id ? 2 : 1}px solid ${metodoPagamento === id ? samkhyaTokens.roxo : samkhyaTokens.cardBorder}` }}
+                  >
+                    <RadioGroupItem value={id} id={`pag-${id}`} className="mt-1" />
+                    <div className="flex-1 min-w-0 space-y-1">{conteudo}</div>
+                  </label>
+                );
+                return (
+                  <div className="pt-1 space-y-3">
+                    <div className="flex flex-wrap items-center justify-center gap-2 rounded-md px-3 py-2 text-xs" style={{ background: samkhyaTokens.roxoDark, color: samkhyaTokens.footerTexto }}>
+                      <span><strong>CASH BLACK</strong> termina em</span>
+                      {Number.isFinite(cbFim) && <Relogio fimMs={cbFim} pequeno />}
+                    </div>
+                    <p className="text-sm" style={{ color: samkhyaTokens.texto }}>Você escolhe como prefere aproveitar a Cash Black:</p>
+                    <RadioGroup value={metodoPagamento} onValueChange={(v) => setMetodoPagamento(v as "pix" | "cartao")} className="space-y-2">
+                      {opcao("cartao", <>
+                        <div className="flex justify-between gap-2">
+                          <p className="text-sm font-semibold" style={{ color: samkhyaTokens.roxo }}>Cash Black · Cartão em até 3x</p>
+                          <p className="text-sm font-semibold whitespace-nowrap" style={{ color: samkhyaTokens.texto }}>{brl(totalCartao)}</p>
+                        </div>
+                        <span className="inline-block rounded px-2 py-0.5 text-[11px] font-semibold" style={{ background: samkhyaTokens.ouro, color: "#fff" }}>{brl(subtotalNormal)} em crédito</span>
+                        <p className="text-xs leading-snug" style={{ color: samkhyaTokens.textoSec }}>
+                          Você paga {brl(totalCartao)}, já com o frete, e ganha {brl(subtotalNormal)} em crédito para cursos e assinatura do Portal. Pode usar a partir de 28/11.
+                        </p>
+                        <Link to={linkCashBlack(itens)} onClick={fecharCarrinho} className="text-xs font-semibold underline" style={{ color: samkhyaTokens.ouroText }}>Veja o que pode comprar ›</Link>
+                      </>)}
+                      {opcao("pix", <>
+                        <div className="flex justify-between gap-2">
+                          <p className="text-sm font-semibold" style={{ color: samkhyaTokens.roxo }}>Pix com 20% de desconto</p>
+                          <p className="text-sm whitespace-nowrap">
+                            <span className="line-through mr-1" style={{ color: samkhyaTokens.textoSec }}>{brl(totalCartao)}</span>
+                            <span className="font-semibold" style={{ color: samkhyaTokens.texto }}>{brl(totalPix)}</span>
+                          </p>
+                        </div>
+                        <span className="inline-block rounded px-2 py-0.5 text-[11px] font-semibold" style={{ background: samkhyaTokens.roxoLight, color: samkhyaTokens.roxo }}>Pague só {brl(totalPix)}</span>
+                        <p className="text-xs leading-snug" style={{ color: samkhyaTokens.textoSec }}>
+                          Você economiza {brl(subtotalNormal - subtotal)} nos produtos. O frete continua igual. Nesta opção, não ganha crédito.
+                        </p>
+                      </>)}
+                    </RadioGroup>
+                  </div>
+                );
+              })() : (
               <div className="pt-1">
                 <Label className="text-sm" style={{ color: samkhyaTokens.texto }}>
                   Forma de pagamento
@@ -1018,6 +1076,7 @@ const CartDrawer = () => {
                   ))}
                 </RadioGroup>
               </div>
+              )}
 
               <Button
                 onClick={handleFinalizar}
@@ -1027,7 +1086,7 @@ const CartDrawer = () => {
               >
                 {enviando
                   ? "Processando..."
-                  : metodoPagamento === "pix"
+                  : metodoPagamento === "pix" && !cashBlack
                     ? "Pagar com Pix"
                     : "Ir para o pagamento"}
               </Button>
@@ -1059,7 +1118,8 @@ const CartDrawer = () => {
               </div>
             )}
 
-            {/* Cupom de desconto */}
+            {/* Cupom de desconto (escondido durante a Cash Black) */}
+            {!cashBlack && (
             <div className="pt-2 border-t" style={{ borderColor: samkhyaTokens.cardBorder }}>
               {cupomAplicado ? (
                 <div className="flex items-center justify-between text-sm">
@@ -1106,6 +1166,7 @@ const CartDrawer = () => {
                 </>
               )}
             </div>
+            )}
 
             <div className="flex justify-between text-base font-medium pt-2 border-t" style={{ borderColor: samkhyaTokens.cardBorder }}>
               <span style={{ color: samkhyaTokens.texto }}>Total</span>

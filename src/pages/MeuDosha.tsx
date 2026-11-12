@@ -1112,7 +1112,7 @@ const MeuDosha = () => {
           }}
           className="w-full"
         >
-          <div className="sticky top-16 z-40 py-2 flex justify-center">
+          <div className="sticky top-[calc(4rem+var(--cb-faixa,0px))] z-40 py-2 flex justify-center">
           <TabsList className="grid grid-cols-4 h-auto max-w-6xl w-full mx-4 rounded-full bg-muted/95 backdrop-blur-sm shadow-sm gap-0.5 sm:gap-0 p-1">
             <TabsTrigger value="perfil" className="text-xs sm:text-sm py-1 flex items-center gap-1 bg-[#E8EEFF] sm:bg-transparent text-[#352F54] rounded-full">
               <span className="hidden sm:inline-flex">

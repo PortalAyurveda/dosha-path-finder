@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState, lazy, Suspense } from "react";
+import CreditosCashBlack from "@/components/cashblack/CreditosCashBlack";
 import { Link, Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { HeartHandshake } from "lucide-react";
@@ -412,6 +413,8 @@ const Conteudo = ({
       />
 
       <HistoriaCard stats={stats} onMudou={load} />
+
+      <CreditosCashBlack />
 
       
 

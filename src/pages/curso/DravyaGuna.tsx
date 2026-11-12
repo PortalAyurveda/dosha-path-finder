@@ -10,6 +10,7 @@ import ProblemSection from "@/components/course/ProblemSection";
 import OpportunitySection from "@/components/course/OpportunitySection";
 import SolutionSection from "@/components/course/SolutionSection";
 import ModulesSection from "@/components/course/ModulesSection";
+import CashBlackCurso, { useCursoCashBlack, type MetodoCurso } from "@/components/cashblack/CashBlackCurso";
 import PricingSection from "@/components/course/PricingSection";
 import TestimonialsSection from "@/components/course/TestimonialsSection";
 import AudienceSection from "@/components/course/AudienceSection";
@@ -19,10 +20,11 @@ import FinalCTASection from "@/components/course/FinalCTASection";
 const DravyaGuna = () => {
   const data = dravyaGunaData;
   const navigate = useNavigate();
+  const cb = useCursoCashBlack(data.meta.slug);
   const { user, isAnonymous } = useUser();
 
   const handleCtaClick = useCallback(
-    (origin: string) => async () => {
+    (origin: string, metodo?: MetodoCurso) => async () => {
       // eslint-disable-next-line no-console
       console.log("[course-cta]", { course: data.meta.slug, origin, ts: Date.now() });
       if (!user || isAnonymous) {
@@ -31,7 +33,7 @@ const DravyaGuna = () => {
       }
       try {
         const { data: resp, error } = await supabase.functions.invoke("create-cartao-curso", {
-          body: { curso_slug: data.meta.slug },
+          body: metodo ? { curso_slug: data.meta.slug, metodo } : { curso_slug: data.meta.slug },
         });
         if (error) throw error;
         if (resp?.ja_matriculado) {
@@ -83,6 +85,7 @@ const DravyaGuna = () => {
             branding={data.branding}
             bonus={data.bonus}
             onCtaClick={handleCtaClick("pricing")}
+            cashBlack={cb ? <CashBlackCurso preco={cb.preco} pix={cb.pix} onEscolher={(m) => handleCtaClick("cash-black", m)()} /> : undefined}
           />
         </div>
         <TestimonialsSection testimonials={data.testimonials} branding={data.branding} />

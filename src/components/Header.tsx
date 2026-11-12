@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import FaixaCashBlack from "@/components/cashblack/FaixaCashBlack";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { ArrowLeft, Menu, LogIn, LogOut, ShoppingBag, ShoppingCart, Home, CalendarHeart, ChevronDown, Search } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -199,11 +200,12 @@ const Header = () => {
 
   return (
     <>
-    <div aria-hidden="true" className="h-16 w-full shrink-0" />
+    <div aria-hidden="true" className="h-[calc(4rem+var(--cb-faixa,0px))] w-full shrink-0" />
     <header
       className={`fixed inset-x-0 top-0 z-50 w-full text-primary-foreground shadow-md ${isSamkhya ? "" : "bg-primary"}`}
       style={headerBg}
     >
+      <FaixaCashBlack />
       <div className="max-w-6xl mx-auto grid h-16 grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 px-2 sm:gap-3 sm:px-6">
         {/* LEFT — Hamburger (mobile) + Mobile search trigger + Desktop nav */}
         <div className="flex items-center gap-1 justify-self-start min-w-0 overflow-hidden sm:gap-1.5">

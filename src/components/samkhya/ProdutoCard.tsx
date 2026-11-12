@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import PrecoDisplay from "./PrecoDisplay";
+import { CashBlackLinhaCard } from "@/components/cashblack/CashBlackProduto";
 import { samkhyaTokens } from "./tokens";
 import type { LojaProdutoComCategorias } from "@/integrations/supabase/loja-client";
 
@@ -66,6 +67,7 @@ const ProdutoCard = ({ produto }: ProdutoCardProps) => {
         <div className="flex items-center justify-center">
           <PrecoDisplay precoNormal={Number(produto.preco_normal)} precoPix={Number(produto.preco_pix)} />
         </div>
+        <CashBlackLinhaCard precoNormal={Number(produto.preco_normal)} />
         <span
           className="mt-2 inline-flex items-center justify-center rounded-md px-5 py-2.5 text-sm font-medium text-white w-full transition-colors"
           style={{

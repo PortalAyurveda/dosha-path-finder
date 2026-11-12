@@ -21,6 +21,15 @@ export async function buscarRedirecionamento(path: string): Promise<string | nul
   return data.para_path;
 }
 
+/** Junta o que vem depois do "?" do endereço original ao destino. */
+export function juntarBusca(destino: string, busca: string): string {
+  const q = (busca || "").replace(/^\?/, "");
+  if (!q) return destino;
+  const [semHash, hash] = destino.split("#");
+  const sep = semHash.includes("?") ? (semHash.endsWith("?") || semHash.endsWith("&") ? "" : "&") : "?";
+  return `${semHash}${sep}${q}${hash !== undefined ? `#${hash}` : ""}`;
+}
+
 /** Executa o redirect (interno ou externo), sem tela intermediária. */
 export function aplicarRedirecionamento(destino: string) {
   if (/^https?:\/\//i.test(destino)) {

@@ -9,6 +9,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import SamkhyaLayout from "@/components/samkhya/SamkhyaLayout";
 import PrecoDisplay from "@/components/samkhya/PrecoDisplay";
+import { CashBlackProduto } from "@/components/cashblack/CashBlackProduto";
 import BotaoWhatsApp from "@/components/samkhya/BotaoWhatsApp";
 import BotaoAdicionarCarrinho from "@/components/samkhya/BotaoAdicionarCarrinho";
 import TabsConteudo from "@/components/samkhya/TabsConteudo";
@@ -150,6 +151,7 @@ const SamkhyaProduto = () => {
                   showParcelas
                   size="md"
                 />
+<CashBlackProduto slug={produto.slug} precoNormal={Number(produto.preco_normal)} precoPix={Number(produto.preco_pix)} />
                 <div className="flex flex-col gap-3">
                   <BotaoAdicionarCarrinho
                     item={{

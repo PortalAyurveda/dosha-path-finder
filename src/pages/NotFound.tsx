@@ -1,7 +1,7 @@
 import { useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
-import { aplicarRedirecionamento, buscarRedirecionamento } from "@/lib/redirecionamentos";
+import { aplicarRedirecionamento, buscarRedirecionamento, juntarBusca } from "@/lib/redirecionamentos";
 
 const NotFound = () => {
   const location = useLocation();
@@ -14,7 +14,7 @@ const NotFound = () => {
       const destino = await buscarRedirecionamento(location.pathname);
       if (cancelado) return;
       if (destino) {
-        aplicarRedirecionamento(destino);
+        aplicarRedirecionamento(juntarBusca(destino, location.search));
         return;
       }
       setVerificando(false);
@@ -23,7 +23,7 @@ const NotFound = () => {
     return () => {
       cancelado = true;
     };
-  }, [location.pathname]);
+  }, [location.pathname, location.search]);
 
   // O canonical é escrito por DOM pelo hook global useCanonical (em RoutedApp, o pai
   // desta página). Como o efeito do pai roda DEPOIS do efeito do filho, o setTimeout

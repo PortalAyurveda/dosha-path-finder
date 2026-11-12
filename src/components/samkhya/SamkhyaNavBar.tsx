@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { samkhyaTokens } from "./tokens";
+import { useCashBlack } from "@/lib/cashBlack";
 
 const ITEMS = [
   { slug: "vata", label: "Vata" },
@@ -16,6 +17,7 @@ const ITEMS = [
 
 const SamkhyaNavBar = () => {
   const location = useLocation();
+  const { ativa: cashBlack } = useCashBlack();
   const scrollRef = useRef<HTMLUListElement>(null);
   const [podeEsq, setPodeEsq] = useState(false);
   const [podeDir, setPodeDir] = useState(false);
@@ -61,7 +63,7 @@ const SamkhyaNavBar = () => {
 
   return (
     <nav
-      className="w-full sticky top-16 z-40"
+      className="w-full sticky top-[calc(4rem+var(--cb-faixa,0px))] z-40"
       style={{ background: samkhyaTokens.roxo }}
       aria-label="Categorias da Loja Samkhya"
     >
@@ -78,8 +80,19 @@ const SamkhyaNavBar = () => {
 
         <ul
           ref={scrollRef}
-          className="flex-1 flex justify-start md:justify-center gap-3 md:gap-5 overflow-x-auto scrollbar-hide"
+          className="flex-1 flex justify-start md:[justify-content:safe_center] gap-3 md:gap-5 overflow-x-auto scrollbar-hide"
         >
+          {cashBlack && (
+            <li>
+              <NavLink
+                to="/cash-black"
+                className="block rounded-full px-3 md:px-4 py-1 my-0.5 text-sm md:text-base whitespace-nowrap uppercase tracking-wider font-semibold hover:opacity-90"
+                style={{ background: samkhyaTokens.ouro, color: "#FFFFFF", fontFamily: samkhyaTokens.fonteCorpo }}
+              >
+                Cash Black
+              </NavLink>
+            </li>
+          )}
           {ITEMS.map((item) => {
             const to =
               item.slug === "kits"

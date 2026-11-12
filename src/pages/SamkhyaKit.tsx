@@ -5,6 +5,7 @@ import { ChevronLeft, Check } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import SamkhyaLayout from "@/components/samkhya/SamkhyaLayout";
 import PrecoDisplay from "@/components/samkhya/PrecoDisplay";
+import { CashBlackProduto } from "@/components/cashblack/CashBlackProduto";
 import BotaoWhatsApp from "@/components/samkhya/BotaoWhatsApp";
 import BotaoAdicionarCarrinho from "@/components/samkhya/BotaoAdicionarCarrinho";
 import { Button } from "@/components/ui/button";
@@ -254,6 +255,7 @@ const SamkhyaKit = () => {
                 showParcelas
                 size="md"
               />
+<CashBlackProduto slug={kit.slug} precoNormal={Number(kit.preco_normal)} precoPix={Number(kit.preco_pix)} />
               {kit.frete_gratis && (
                 <p className="-mt-8 text-sm font-semibold" style={{ color: samkhyaTokens.roxo }}>
                   Frete grátis

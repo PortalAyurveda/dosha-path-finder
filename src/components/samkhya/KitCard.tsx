@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { samkhyaTokens } from "./tokens";
+import { CashBlackLinhaCard } from "@/components/cashblack/CashBlackProduto";
 import { useFreteGratisConfig } from "@/hooks/useFreteGratisConfig";
 import type { LojaKit } from "@/integrations/supabase/loja-client";
 
@@ -110,6 +111,7 @@ const KitCard = ({ kit }: KitCardProps) => {
           ou {formatBRL(Number(kit.preco_pix))} no Pix{freteGratisSempre ? " · Frete grátis" : ""}
         </p>
       )}
+      <span className="mt-1 block"><CashBlackLinhaCard precoNormal={Number(kit.preco_normal)} /></span>
     </Link>
   );
 };
