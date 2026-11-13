@@ -28,6 +28,7 @@ const TerapeutaRedirect = () => {
 import Index from "./pages/Index";
 const MinhaRotina = lazy(() => import("./pages/MinhaRotina"));
 const MinhaLingua = lazy(() => import("./pages/MinhaLingua"));
+const UsarCredito = lazy(() => import("./pages/UsarCredito"));
 const Imprimir = lazy(() => import("./pages/Imprimir"));
 const LaunchPage = lazy(() => import("./pages/LaunchPage"));
 const PreviewLoading = lazy(() => import("./pages/PreviewLoading"));
@@ -251,6 +252,7 @@ const RoutedApp = () => {
               <Route path="/meu-acompanhamento/formulario/:envio" element={<FormularioResponder />} />
               <Route path="/minha-rotina" element={<MinhaRotina />} />
               <Route path="/minha-lingua" element={<MinhaLingua />} />
+              <Route path="/usar-credito" element={<UsarCredito />} />
               <Route path="/imprimir" element={<Imprimir />} />
               <Route path="/biblioteca" element={<Biblioteca />} />
               <Route path="/textos-classicos" element={<TextosClassicos />} />

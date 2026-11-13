@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { brl, type MeuCashback } from "@/lib/cashBlack";
@@ -47,6 +48,13 @@ const CreditosCashBlack = () => {
           ))}
         </ul>
       )}
+      <Link
+        to="/usar-credito"
+        className="mt-4 inline-flex min-h-11 items-center justify-center rounded-full px-6 font-semibold"
+        style={{ background: samkhyaTokens.ouro, color: "#fff" }}
+      >
+        Usar meu crédito
+      </Link>
       <p className="mt-4 text-xs text-muted-foreground leading-relaxed">
         Seu crédito já aparece aqui. A partir de 28/11, você poderá usá-lo nas compras. Não precisa gastar tudo de uma vez. O que sobrar continua valendo até 31/05/2027.
       </p>

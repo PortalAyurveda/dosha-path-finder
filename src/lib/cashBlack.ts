@@ -58,3 +58,26 @@ export type MeuCashback = {
   so_portal: number;
   movimentos: { tipo: string; valor: number; vale_em: string; descricao: string | null; pago_em: string | null }[];
 };
+
+/** Saldo de crédito do usuário logado (meu_cashback). Mesma chave em todo o site. */
+export function useMeuCashback(ligado: boolean) {
+  return useQuery({
+    queryKey: ["meu_cashback"],
+    enabled: ligado,
+    staleTime: 60 * 1000,
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("meu_cashback");
+      if (error) return null;
+      return data as unknown as MeuCashback;
+    },
+  });
+}
+
+/** Prazo de acesso de um curso: vitalício ou em anos. */
+export function prazoAcesso(acesso_meses: number | null, acesso_ate: string | null, agora = Date.now()) {
+  let meses = acesso_meses;
+  if (!meses && acesso_ate) meses = Math.round((new Date(acesso_ate).getTime() - agora) / (30.44 * 86400000));
+  if (!meses || meses <= 0) return "Acesso vitalício";
+  const anos = Math.max(1, Math.round(meses / 12));
+  return `Acesso por ${anos} ${anos === 1 ? "ano" : "anos"}`;
+}
