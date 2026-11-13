@@ -51,11 +51,12 @@ function clean(text: unknown, max = 200): string {
   return text.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim().slice(0, max);
 }
 
-/** Página mínima de um endereço antigo: manda na hora para o endereço novo (o Google trata como redirecionamento). */
+/** Página mínima de um endereço antigo: pula na hora para o endereço novo, sem mostrar nada e sem sujar o histórico. */
 function paginaDeRedirecionamento(alvo: string): string {
   const a = escapeHtml(alvo);
+  const alvoJs = JSON.stringify(alvo).replace(/</g, "\\u003c");
   const L = "\u003c";
-  return `${L}!doctype html>${L}html lang="pt-BR">${L}head>${L}meta charset="utf-8">${L}title>Esta página mudou de endereço${L}/title>${L}link rel="canonical" href="${a}">${L}meta http-equiv="refresh" content="0; url=${a}">${L}/head>${L}body>${L}p>Esta página mudou de endereço: ${L}a href="${a}">${a}${L}/a>${L}/p>${L}/body>${L}/html>`;
+  return `${L}!doctype html>${L}html lang="pt-BR">${L}head>${L}meta charset="utf-8">${L}title>Portal Ayurveda${L}/title>${L}link rel="canonical" href="${a}">${L}meta http-equiv="refresh" content="0; url=${a}">${L}script>(function(){var d=${alvoJs};var q=location.search;if(q){d+=(d.indexOf("?")>=0?"&":"?")+q.slice(1);}location.replace(d);})();${L}/script>${L}/head>${L}body style="background:#f0ede8">${L}/body>${L}/html>`;
 }
 
 function jsonParaScript(obj: unknown): string {
