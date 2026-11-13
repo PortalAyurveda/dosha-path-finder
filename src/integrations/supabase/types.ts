@@ -14,6 +14,24 @@ export type Database = {
   }
   public: {
     Tables: {
+      _bkp_agenda_render_20261113: {
+        Row: {
+          corpo_html: string | null
+          id: string | null
+          salvo_em: string | null
+        }
+        Insert: {
+          corpo_html?: string | null
+          id?: string | null
+          salvo_em?: string | null
+        }
+        Update: {
+          corpo_html?: string | null
+          id?: string | null
+          salvo_em?: string | null
+        }
+        Relationships: []
+      }
       _bkp_curso_diplomas_20261013: {
         Row: {
           carga_horaria: string | null
@@ -17768,6 +17786,7 @@ export type Database = {
       cash_black_banners: { Args: { p_ligar: boolean }; Returns: Json }
       cash_black_pix20_ativo: { Args: never; Returns: boolean }
       cash_black_virada: { Args: { p_ligar: boolean }; Returns: Json }
+      cashback_usar_cursos: { Args: { p_curso_ids: string[] }; Returns: Json }
       cashback_varrer: { Args: { p_campanha?: string }; Returns: Json }
       certificado_para_imprimir: { Args: { p_slug: string }; Returns: Json }
       chat_abrir: { Args: { p_slug: string }; Returns: Json }
