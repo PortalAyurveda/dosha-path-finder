@@ -1027,7 +1027,7 @@ const CartDrawer = () => {
                         </div>
                         <span className="inline-block rounded px-2 py-0.5 text-[11px] font-semibold" style={{ background: samkhyaTokens.ouro, color: "#fff" }}>{brl(subtotalNormal)} em crédito</span>
                         <p className="text-xs leading-snug" style={{ color: samkhyaTokens.textoSec }}>
-                          Você paga {brl(totalCartao)}, já com o frete, e ganha {brl(subtotalNormal)} em crédito para cursos e assinatura do Portal. Pode usar a partir de 28/11.
+                          Você paga {brl(totalCartao)}, já com o frete, e ganha {brl(subtotalNormal)} em crédito para cursos e assinatura do Portal.
                         </p>
                         <Link to={linkCashBlack(itens)} onClick={fecharCarrinho} className="text-xs font-semibold underline" style={{ color: samkhyaTokens.ouroText }}>Veja o que pode comprar ›</Link>
                       </>)}

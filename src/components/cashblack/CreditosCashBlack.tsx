@@ -32,20 +32,21 @@ const CreditosCashBlack = () => {
           </div>
         ))}
       </div>
-      <p className="mt-3 text-sm text-foreground/80">Disponível para usar de 28/11/2026 até 31/05/2027.</p>
       {data.movimentos?.length > 0 && (
         <ul className="mt-4 divide-y divide-border/60">
-          {data.movimentos.map((m, i) => (
-            <li key={i} className="py-2 text-sm">
-              <div className="flex justify-between gap-3">
-                <span className="text-foreground">{m.descricao || "—"}</span>
-                <span className="font-semibold whitespace-nowrap" style={{ color: samkhyaTokens.ouroText }}>+ {brl(Number(m.valor))}</span>
-              </div>
-              <div className="text-xs text-muted-foreground">
-                {m.vale_em === "portal" ? "Crédito para usar no Portal." : m.vale_em === "ambos" ? "Crédito para usar no Portal ou na Samkhya." : ""}
-              </div>
-            </li>
-          ))}
+          {data.movimentos.map((m, i) => {
+            const v = Number(m.valor);
+            const uso = v < 0;
+            return (
+              <li key={i} className="py-2 text-sm">
+                <div className="flex justify-between gap-3">
+                  <span className="text-foreground">{m.descricao || "—"}</span>
+                  <span className="font-semibold whitespace-nowrap" style={{ color: uso ? samkhyaTokens.roxo : samkhyaTokens.ouroText }}>{uso ? "−" : "+"} {brl(Math.abs(v))}</span>
+                </div>
+                {m.pago_em && <div className="text-xs text-muted-foreground">{new Date(m.pago_em).toLocaleDateString("pt-BR")}</div>}
+              </li>
+            );
+          })}
         </ul>
       )}
       <Link
@@ -56,7 +57,7 @@ const CreditosCashBlack = () => {
         Usar meu crédito
       </Link>
       <p className="mt-4 text-xs text-muted-foreground leading-relaxed">
-        Seu crédito já aparece aqui. A partir de 28/11, você poderá usá-lo nas compras. Não precisa gastar tudo de uma vez. O que sobrar continua valendo até 31/05/2027.
+        Seu crédito já vale. Use quando quiser, até 31/05/2027. Não precisa gastar tudo de uma vez.
       </p>
     </section>
   );

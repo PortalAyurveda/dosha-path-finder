@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, Navigate, useParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-import { ChevronLeft, Check } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import SamkhyaLayout from "@/components/samkhya/SamkhyaLayout";
 import PrecoDisplay from "@/components/samkhya/PrecoDisplay";
@@ -10,6 +10,7 @@ import BotaoWhatsApp from "@/components/samkhya/BotaoWhatsApp";
 import BotaoAdicionarCarrinho from "@/components/samkhya/BotaoAdicionarCarrinho";
 import { Button } from "@/components/ui/button";
 import { samkhyaTokens } from "@/components/samkhya/tokens";
+import KitEscolhas from "@/components/samkhya/KitEscolhas";
 
 type ItemFixo = {
   produto_id: number;
@@ -181,73 +182,7 @@ const SamkhyaKit = () => {
                 </ul>
               </div>
 
-              {kit.escolhas?.map((grupo) => (
-                <div key={grupo.grupo}>
-                  <h2
-                    className="text-base mb-3"
-                    style={{ color: samkhyaTokens.roxo, fontFamily: samkhyaTokens.fonteTitulo }}
-                  >
-                    {grupo.rotulo}
-                  </h2>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    {grupo.opcoes.map((op) => {
-                      const selecionado = selecoes[grupo.grupo] === op.produto_id;
-                      return (
-                        <button
-                          key={op.produto_id}
-                          type="button"
-                          onClick={() =>
-                            setSelecoes((prev) => ({ ...prev, [grupo.grupo]: op.produto_id }))
-                          }
-                          className="relative text-left rounded-md p-3 transition-colors"
-                          style={{
-                            background: selecionado ? "#fff" : samkhyaTokens.cardBg,
-                            border: `2px solid ${selecionado ? samkhyaTokens.ouro : samkhyaTokens.cardBorder}`,
-                            boxShadow: selecionado ? "0 1px 3px rgba(0,0,0,0.06)" : "none",
-                          }}
-                          aria-pressed={selecionado}
-                        >
-                          {selecionado && (
-                            <span
-                              className="absolute top-2 right-2 rounded-full p-0.5"
-                              style={{ background: samkhyaTokens.ouro, color: "#fff" }}
-                            >
-                              <Check className="h-3 w-3" />
-                            </span>
-                          )}
-                          <div className="flex gap-3 items-start">
-                            <div className="w-14 h-14 flex-shrink-0 rounded overflow-hidden bg-white flex items-center justify-center">
-                              {op.imagem_url ? (
-                                <img
-                                  src={op.imagem_url}
-                                  alt={op.nome}
-                                  className="max-w-full max-h-full object-contain"
-                                 loading="lazy" decoding="async" />
-                              ) : null}
-                            </div>
-                            <div className="min-w-0">
-                              <p
-                                className="text-sm font-medium"
-                                style={{ color: samkhyaTokens.roxo }}
-                              >
-                                {op.nome}
-                              </p>
-                              {op.resumo && (
-                                <p
-                                  className="text-xs mt-1 leading-snug"
-                                  style={{ color: samkhyaTokens.textoSec }}
-                                >
-                                  {op.resumo}
-                                </p>
-                              )}
-                            </div>
-                          </div>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              ))}
+              <KitEscolhas grupos={kit.escolhas ?? []} selecoes={selecoes} onChange={setSelecoes} />
 
               <PrecoDisplay
                 precoNormal={Number(kit.preco_normal)}

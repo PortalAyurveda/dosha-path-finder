@@ -107,3 +107,5 @@
 - [x] Prévia do link da Cash Black conferida com a imagem da campanha (13/11)
 - [x] Cash Black fase 2: saldo na faixa, página /usar-credito e botão no Meu Perfil
 - [ ] Cash Black fase 2: conferir saldo e uso com conta real — bloqueado: Supabase externo sem sessão
+- [x] Cash Black fase 3: assinatura, aba Samkhya com frete, extrato com +/− e nova nota
+- [ ] Cash Black fase 3: testar resgate Samkhya e Premium com conta real — bloqueado: Supabase externo sem sessão

@@ -33,7 +33,7 @@ const CashBlackCurso = ({ preco, pix, onEscolher }: { preco: number; pix: number
         <p className="text-sm text-muted-foreground">Em até 5x no cartão.</p>
         <p className="font-serif font-bold text-3xl" style={{ color: samkhyaTokens.roxoDark }}>{brl(preco)}</p>
         <p className="text-sm text-foreground/80 mb-3">
-          Você faz o curso e ganha {brl(preco)} em crédito. A partir de 28/11, pode usar esse valor em outros cursos do Portal ou em produtos da Samkhya.
+          Você faz o curso e ganha {brl(preco)} em crédito. Pode usar esse valor em outros cursos do Portal ou em produtos da Samkhya.
         </p>
         <button type="button" onClick={() => onEscolher("cartao")} className={botao} style={{ background: samkhyaTokens.ouro, color: samkhyaTokens.footerTexto }}>
           Aproveitar Cash Black
