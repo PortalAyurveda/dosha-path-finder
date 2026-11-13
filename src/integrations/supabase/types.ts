@@ -16894,6 +16894,35 @@ export type Database = {
     Functions: {
       _agora_prazo: { Args: never; Returns: string }
       _bib_item: { Args: { p_ref: string; p_tipo: string }; Returns: Json }
+      _brl:
+        | { Args: { p_fmt?: string; p_v: number }; Returns: string }
+        | { Args: { p_fmt: string; p_v: string }; Returns: string }
+      _cashback_email_uso: {
+        Args: {
+          p_assunto: string
+          p_corpo_html: string
+          p_cta_texto: string
+          p_cta_url: string
+          p_email: string
+          p_h1: string
+          p_h1sub: string
+          p_label: string
+          p_nome: string
+        }
+        Returns: undefined
+      }
+      _cashback_gastar: {
+        Args: {
+          p_chave: string
+          p_desc: string
+          p_email: string
+          p_origem_tipo: string
+          p_so_ambos: boolean
+          p_uid: string
+          p_valor: number
+        }
+        Returns: undefined
+      }
       _certificados_pendentes_de_aviso: {
         Args: { p_user?: string }
         Returns: {
@@ -17786,7 +17815,17 @@ export type Database = {
       cash_black_banners: { Args: { p_ligar: boolean }; Returns: Json }
       cash_black_pix20_ativo: { Args: never; Returns: boolean }
       cash_black_virada: { Args: { p_ligar: boolean }; Returns: Json }
+      cashback_resgatar_samkhya: {
+        Args: {
+          p_comprador: Json
+          p_endereco: Json
+          p_frete: Json
+          p_itens: Json
+        }
+        Returns: Json
+      }
       cashback_usar_cursos: { Args: { p_curso_ids: string[] }; Returns: Json }
+      cashback_usar_premium: { Args: never; Returns: Json }
       cashback_varrer: { Args: { p_campanha?: string }; Returns: Json }
       certificado_para_imprimir: { Args: { p_slug: string }; Returns: Json }
       chat_abrir: { Args: { p_slug: string }; Returns: Json }
