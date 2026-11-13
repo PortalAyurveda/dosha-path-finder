@@ -104,3 +104,4 @@
 
 - [x] Parte 29 · constância na Ficha da terapeuta
 - [x] Parte 30 · Minha Rotina com fita e Seus cuidados de hoje
+- [x] Prévia do link da Cash Black conferida com a imagem da campanha (13/11)
