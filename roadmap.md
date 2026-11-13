@@ -1,4 +1,5 @@
 - [x] Criar página de compra do Kit Detox
+- [x] Prévias dos links curtos: metadados do destino, reserva em falhas, 12 testes e navegador com redirecionamento preservado.
 - [x] Parte 27: formulários na biblioteca, editor/importação, resposta da pessoa, ficha e lembretes sem SQL nem edge function
 - [x] Parte 27: 234 testes e conferência 1366/390 com respostas simuladas; criação/cópia, importação, salvar/reler, responder/retomar, resultado, ficha e lembrete
 - [ ] Parte 27: validar envio automático na marcação, importação Google e respostas com contas reais — bloqueado: Supabase externo sem sessão autenticada disponível

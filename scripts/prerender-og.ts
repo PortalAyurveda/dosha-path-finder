@@ -19,6 +19,7 @@ import { montarRelacionados, type Relacionados } from "./seo/relacionados";
 import { corpoArtigo, corpoVideo, corpoReceita, corpoTerapeuta, corpoTesteDosha, blocoCorpo } from "./seo/corpos";
 import { TESTE_DOSHA_FAQ } from "../src/lib/testeDoshaFaq";
 import { akashaSlug } from "../src/lib/akashaSlug";
+import { htmlRedirecionamento, previaDoDestino, type PreviaRedirecionamento } from "./seo/redirecionamentos";
 import { lerFontes, lerConvites, BASE_URL, DEFAULT_OG, SITEMAP_SOURCE, AUTOR_NOME, type LinhaVideo, type LinhaRedirecionamento } from "./seo/fontes";
 
 interface Route {
@@ -52,11 +53,8 @@ function clean(text: unknown, max = 200): string {
 }
 
 /** Página mínima de um endereço antigo: pula na hora para o endereço novo, sem mostrar nada e sem sujar o histórico. */
-function paginaDeRedirecionamento(alvo: string): string {
-  const a = escapeHtml(alvo);
-  const alvoJs = JSON.stringify(alvo).replace(/</g, "\\u003c");
-  const L = "\u003c";
-  return `${L}!doctype html>${L}html lang="pt-BR">${L}head>${L}meta charset="utf-8">${L}title>Portal Ayurveda${L}/title>${L}link rel="canonical" href="${a}">${L}meta http-equiv="refresh" content="0; url=${a}">${L}script>(function(){var d=${alvoJs};var q=location.search;if(q){d+=(d.indexOf("?")>=0?"&":"?")+q.slice(1);}location.replace(d);})();${L}/script>${L}/head>${L}body style="background:#f0ede8">${L}/body>${L}/html>`;
+function paginaDeRedirecionamento(alvo: string, curto: string, previa: PreviaRedirecionamento): string {
+  return htmlRedirecionamento(alvo, curto, previa);
 }
 
 function jsonParaScript(obj: unknown): string {
@@ -627,6 +625,13 @@ async function main() {
   console.log(`[prerender] leia-tambem: ${relacionados.size} arquivos`);
 
   // Endereços antigos (tabela redirecionamentos). Endereço que ainda tem página própria não é tocado.
+  const previaPadrao: PreviaRedirecionamento = {
+    title: "Portal Ayurveda",
+    description: staticRoutes.find((r) => r.path === "/")?.description || "",
+    ogTitle: "Portal Ayurveda",
+    ogDescription: staticRoutes.find((r) => r.path === "/")?.description || "",
+    image: DEFAULT_OG,
+  };
   let redirecionados = 0;
   for (const r of redirecionamentos) {
     const de = (r.de_path || "").trim().replace(/\/+$/, "");
@@ -635,7 +640,8 @@ async function main() {
     const alvo = /^https?:\/\//i.test(para) ? para : `${BASE_URL}${para.startsWith("/") ? para : "/" + para}`;
     const pasta = resolve(distDir, de.replace(/^\//, ""));
     mkdirSync(pasta, { recursive: true });
-    writeFileSync(resolve(pasta, "index.html"), paginaDeRedirecionamento(alvo));
+    const previa = await previaDoDestino(para, BASE_URL, all, previaPadrao);
+    writeFileSync(resolve(pasta, "index.html"), paginaDeRedirecionamento(alvo, `${BASE_URL}${de}`, previa));
     redirecionados++;
   }
   console.log(`[prerender] redirecionamentos: ${redirecionados} páginas`);
