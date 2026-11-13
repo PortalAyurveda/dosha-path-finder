@@ -6,6 +6,7 @@ import { useUser } from "@/contexts/UserContext";
 import { toast } from "@/hooks/use-toast";
 import { dravyaGunaData } from "@/data/courses/dravyaGuna";
 import CourseHero from "@/components/course/CourseHero";
+import BannerSlot from "@/components/banners/BannerSlot";
 import ProblemSection from "@/components/course/ProblemSection";
 import OpportunitySection from "@/components/course/OpportunitySection";
 import SolutionSection from "@/components/course/SolutionSection";
@@ -75,6 +76,7 @@ const DravyaGuna = () => {
           onCtaClick={handleCtaClick("hero")}
           heroImage="https://api.portalayurveda.com/storage/v1/object/public/portal_images/cursos/1f0c4460-c6b6-44e9-b64c-82791d684118/1783004147715-caparemedios-site.webp"
         />
+        <BannerSlot slot="curso_topo" className="max-w-3xl mx-auto px-4 my-8 [&:empty]:hidden" />
         <ProblemSection data={data.problem} />
         {data.opportunity && <OpportunitySection data={data.opportunity} branding={data.branding} />}
         <SolutionSection data={data.solution} branding={data.branding} />

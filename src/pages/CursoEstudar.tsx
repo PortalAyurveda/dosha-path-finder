@@ -37,6 +37,7 @@ import { misturarAbas, useAbasExtras } from "@/components/atividades/base";
 import { getIconeLucide } from "@/lib/iconesLucide";
 import { EyeOff } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import BannerSlot from "@/components/banners/BannerSlot";
 
 const PORTAL_LOGO =
   "https://api.portalayurveda.com/storage/v1/object/public/portal_images/logo-positivo.png";
@@ -1287,6 +1288,8 @@ const CursoEstudar = ({ impressao = false }: { impressao?: boolean }) => {
           </div>
         </div>
       </section>
+
+      <BannerSlot slot="curso_estudar_topo" className="max-w-6xl mx-auto px-4 sm:px-6 my-6 [&:empty]:hidden" />
 
       {/* Conteúdo */}
       <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8 md:py-10">

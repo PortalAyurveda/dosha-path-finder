@@ -6,6 +6,7 @@ import { useUser } from "@/contexts/UserContext";
 import { toast } from "@/hooks/use-toast";
 import { diagnosticoAutocuidadoData } from "@/data/courses/diagnosticoAutocuidado";
 import CourseHero from "@/components/course/CourseHero";
+import BannerSlot from "@/components/banners/BannerSlot";
 import ProblemSection from "@/components/course/ProblemSection";
 import OpportunitySection from "@/components/course/OpportunitySection";
 import SolutionSection from "@/components/course/SolutionSection";
@@ -77,6 +78,7 @@ const Diagnostico = () => {
           onCtaClick={handleCtaClick("hero")}
           heroImage="https://api.portalayurveda.com/storage/v1/object/public/portal_images/cursos/2b1bc16b-47c4-45ca-a262-5d801190f89e/1783010941670-capa-diagn-site.webp"
         />
+        <BannerSlot slot="curso_topo" className="max-w-3xl mx-auto px-4 my-8 [&:empty]:hidden" />
         <ProblemSection data={data.problem} />
         {data.opportunity && <OpportunitySection data={data.opportunity} branding={data.branding} />}
         <SolutionSection data={data.solution} branding={data.branding} />

@@ -11,6 +11,7 @@ vi.mock('@/hooks/use-toast', () => ({ useToast: () => ({ toast: vi.fn() }) }));
 vi.mock('react-helmet-async', () => ({ Helmet: () => null }));
 vi.mock('@/components/PageContainer', () => ({ default: ({ children }: { children: React.ReactNode }) => <div>{children}</div> }));
 vi.mock('@/components/dosha/InterstitialLoading', () => ({ default: () => <div>resultado</div> }));
+vi.mock('@/components/banners/BannerSlot', () => ({ default: () => null }));
 vi.mock('@/lib/doshaTest', async importOriginal => {
   const original = await importOriginal<typeof import('@/lib/doshaTest')>();
   return { ...original, useDoshaTestContent: () => ({ loading: false, content: {

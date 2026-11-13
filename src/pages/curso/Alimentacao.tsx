@@ -6,6 +6,7 @@ import { useUser } from "@/contexts/UserContext";
 import { toast } from "@/hooks/use-toast";
 import { alimentacaoData } from "@/data/courses/alimentacao";
 import CourseHero from "@/components/course/CourseHero";
+import BannerSlot from "@/components/banners/BannerSlot";
 import ProblemSection from "@/components/course/ProblemSection";
 import OpportunitySection from "@/components/course/OpportunitySection";
 import SolutionSection from "@/components/course/SolutionSection";
@@ -77,6 +78,7 @@ const Alimentacao = () => {
           onCtaClick={handleCtaClick("hero")}
           heroImage="https://api.portalayurveda.com/storage/v1/object/public/portal_images/timothy-newman-pbwmdofmxtu-unsplash.jpg"
         />
+        <BannerSlot slot="curso_topo" className="max-w-3xl mx-auto px-4 my-8 [&:empty]:hidden" />
         <ProblemSection data={data.problem} />
         {data.opportunity && <OpportunitySection data={data.opportunity} branding={data.branding} />}
         <SolutionSection data={data.solution} branding={data.branding} />
