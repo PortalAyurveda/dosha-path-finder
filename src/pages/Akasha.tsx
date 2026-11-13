@@ -1,3 +1,4 @@
+import BannerSlot from "@/components/banners/BannerSlot";
 import { Navigate, useSearchParams } from "react-router-dom";
 import { Loader2 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
@@ -50,6 +51,7 @@ const Akasha = () => {
 
   return (
     <PageContainer title="Akasha" description="Converse com a Akasha, sua inteligência ayurvédica.">
+      <BannerSlot slot="akasha_topo" className="max-w-4xl mx-auto px-4 my-4 [&:empty]:hidden" />
       <AkashaTab
         idPublico={idPublico ?? ""}
         nome={doshaResult?.nome ?? null}

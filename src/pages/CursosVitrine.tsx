@@ -1,3 +1,4 @@
+import BannerSlot from "@/components/banners/BannerSlot";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { BookOpen, CheckCircle2, Lock, Clock3 } from "lucide-react";
@@ -261,6 +262,7 @@ const CursosVitrine = () => {
       description="Formação, alimentação, rotinas e mais — cursos em vídeo com acesso permanente."
     >
       <div className="max-w-6xl mx-auto px-4 py-10 md:py-16">
+        <BannerSlot slot="cursos_topo" className="mb-8 [&:empty]:hidden" />
         <header className="mb-10 md:mb-14 text-center max-w-2xl mx-auto">
           <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-muted-foreground mb-3">
             Escola do Portal

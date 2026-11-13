@@ -1,3 +1,4 @@
+import BannerSlot from "@/components/banners/BannerSlot";
 import { getTransformedImageUrl } from "@/lib/imageTransform";
 import { useState, useMemo, useEffect, useRef } from "react";
 import { Helmet } from "react-helmet-async";
@@ -115,6 +116,7 @@ const Blog = () => {
       </Helmet>
 
       <div className="max-w-6xl mx-auto px-4 py-8">
+        <BannerSlot slot="blog_topo" className="mb-8 [&:empty]:hidden" />
         {/* Header */}
         <div className="bg-surface-sun rounded-tl-3xl rounded-br-3xl rounded-tr-sm rounded-bl-sm p-8 md:p-12 mb-8 text-center">
           <h1 className="font-serif text-3xl md:text-4xl lg:text-5xl font-bold text-primary mb-3">

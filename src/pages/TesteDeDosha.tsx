@@ -1,3 +1,4 @@
+import BannerSlot from "@/components/banners/BannerSlot";
 import { useState, useEffect, useRef } from "react";
 import { Helmet } from "react-helmet-async";
 import InterstitialLoading from "@/components/dosha/InterstitialLoading";
@@ -751,6 +752,7 @@ const [step, setStep] = useState(0);
           <link rel="canonical" href="https://portalayurveda.com/teste-de-dosha" />
         </Helmet>
         {faixaAkasha}
+<BannerSlot slot="teste_dosha_topo" className="max-w-4xl mx-auto px-4 my-4 [&:empty]:hidden" />
         <section
           className="relative overflow-hidden min-h-[80vh]"
           style={{ background: "linear-gradient(100deg, hsl(228 70% 96%) 0%, hsl(0 70% 97%) 50%, hsl(48 80% 95%) 100%)" }}
@@ -848,6 +850,7 @@ const [step, setStep] = useState(0);
         <meta property="og:image" content="https://api.portalayurveda.com/storage/v1/object/public/portal_images/logo-positivo.png" />
       </Helmet>
       {faixaAkasha}
+<BannerSlot slot="teste_dosha_topo" className="max-w-4xl mx-auto px-4 my-4 [&:empty]:hidden" />
       <PageContainer title="Teste de Dosha" description="Descubra seu dosha predominante com nosso teste personalizado baseado no Ayurveda.">
       <div className="max-w-2xl mx-auto">
         {/* Progress */}
