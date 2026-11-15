@@ -8,6 +8,7 @@ import { lojaSupabase } from "@/integrations/supabase/loja-client";
 import { useUser } from "@/contexts/UserContext";
 import { useFreteGratisConfig } from "@/hooks/useFreteGratisConfig";
 import { brl, prazoAcesso, useMeuCashback } from "@/lib/cashBlack";
+import { prepararPedidoSamkhya, totaisCreditoSamkhya, type ResgateSamkhya } from "@/lib/creditoSamkhya";
 import { samkhyaTokens as t } from "@/components/samkhya/tokens";
 import KitEscolhas, { escolhasPadrao, rotuloEscolhas, type EscolhaGrupo } from "@/components/samkhya/KitEscolhas";
 
@@ -104,6 +105,7 @@ const UsarCredito = () => {
   const sobra = total - gastoPortal - gastoLoja;
   const restaLoja = Math.min(ambos - gastoLoja, sobra);
   const frete = fretes.find((f) => String(f.id) === freteId) ?? null;
+  const { freteCoberto, totalAPagar } = totaisCreditoSamkhya(ambos, gastoLoja, frete?.preco ?? 0);
   const cepOk = so(end.cep).length === 8;
 
   // Frete, do mesmo jeito do carrinho da Samkhya
@@ -192,10 +194,12 @@ const UsarCredito = () => {
           if (feitos.length || fezPremium) setLiberados({ cursos: feitos, premium: fezPremium });
           return;
         }
-        const r = data as unknown as { pedido_id: string; precisa_pagar: boolean };
-        if (r.precisa_pagar) await supabase.functions.invoke("create-pix-pagamento", { body: { renovar_pedido_id: r.pedido_id } });
+        const r = data as unknown as ResgateSamkhya;
+        const destino = await prepararPedidoSamkhya(r, (pedidoId) =>
+          supabase.functions.invoke("create-pix-pagamento", { body: { renovar_pedido_id: pedidoId } }),
+        );
         await atualizarSaldo();
-        navigate(`/samkhya/pedido/${r.pedido_id}`);
+        navigate(destino);
         return;
       }
       setLiberados({ cursos: feitos, premium: fezPremium });
@@ -340,11 +344,14 @@ const UsarCredito = () => {
                 </li>
               ))}
               {itensEscolhidos.length > 0 && frete && (
-                <li className="flex justify-between gap-2"><span>Frete</span><span className="whitespace-nowrap font-semibold">{brl(frete.preco)}</span></li>
+                <>
+                  <li className="flex justify-between gap-2"><span>Frete</span><span className="whitespace-nowrap font-semibold">{brl(frete.preco)}</span></li>
+                  <li className="flex justify-between gap-2"><span>Frete pago com crédito</span><span className="whitespace-nowrap font-semibold">{brl(freteCoberto)}</span></li>
+                </>
               )}
             </ul>
             <div className="mt-4 flex justify-between gap-2 border-t pt-3 font-semibold" style={{ borderColor: t.cardBorder }}>
-              <span>Sobra no crédito</span><span className="text-green-700">{brl(sobra)}</span>
+              <span>Sobra no crédito</span><span className="text-green-700">{brl(sobra - freteCoberto)}</span>
             </div>
           </div>
 
@@ -382,8 +389,10 @@ const UsarCredito = () => {
               )}
               {frete && (
                 <div className="mt-4 rounded-xl p-4" style={{ background: t.roxoLight }}>
-                  <div className="font-serif text-xl font-bold" style={{ color: t.roxoDark }}>Total a pagar: {brl(frete.preco)}</div>
-                  <p className="mt-1 text-sm">Os produtos saem do seu crédito. Você paga só o frete.</p>
+                  <div className="font-serif text-xl font-bold" style={{ color: t.roxoDark }}>Total a pagar: {brl(totalAPagar)}</div>
+                  <p className="mt-1 text-sm">{totalAPagar === 0
+                    ? "Seu crédito paga os produtos e o frete. Você não paga nada."
+                    : `Seu crédito paga os produtos e parte do frete. Falta pagar ${brl(totalAPagar)}, por Pix.`}</p>
                 </div>
               )}
             </div>
