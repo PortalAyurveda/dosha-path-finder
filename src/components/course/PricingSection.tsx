@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import FaixaCredito from "@/components/cashblack/FaixaCredito";
 import { motion } from "framer-motion";
 import { ShieldCheck, ArrowRight, Check, Calendar, Heart, Users, Award, Sparkles, Clock, Brain, Bot, BookOpen, Target, AlertTriangle, Sprout, Puzzle, Stethoscope, Zap, type LucideIcon } from "lucide-react";
 import type { CoursePricingData, CourseBranding, CourseBonusData } from "@/data/courses/courseTypes";
@@ -12,9 +13,10 @@ interface PricingSectionProps {
   onCtaClick: () => void;
   /** Substitui preço e botão durante a Cash Black. */
   cashBlack?: ReactNode;
+  slug?: string;
 }
 
-const PricingSection = ({ data, branding, bonus, onCtaClick, cashBlack }: PricingSectionProps) => {
+const PricingSection = ({ data, branding, bonus, onCtaClick, cashBlack, slug }: PricingSectionProps) => {
   return (
     <section className="py-10 md:py-14 bg-white">
       <div className="max-w-2xl mx-auto px-6">
@@ -124,6 +126,7 @@ const PricingSection = ({ data, branding, bonus, onCtaClick, cashBlack }: Pricin
             <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
           </motion.button>
           </>)}
+          {slug && <FaixaCredito className="mt-4 max-w-lg mx-auto" linha="Vale até 31/05/2027." para={`/usar-credito?curso=${slug}`} />}
 
           <div className="mt-7 inline-flex items-start gap-3 p-3.5 max-w-lg mx-auto border border-gray-200 bg-gray-50 rounded-tl-2xl rounded-br-2xl rounded-tr-sm rounded-bl-sm text-left">
             <span

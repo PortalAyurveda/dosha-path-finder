@@ -36,6 +36,7 @@ import { ClinicalThermometer } from "./MeuDosha";
 import DoshaPieChart from "@/components/charts/DoshaPieChart";
 import DoshaClock from "@/components/dosha/DoshaClock";
 import PreviaPersonalizada from "@/components/assinar/PreviaPersonalizada";
+import FaixaCredito from "@/components/cashblack/FaixaCredito";
 import PixAssinaturaDialog from "@/components/assinar/PixAssinaturaDialog";
 import FaixaAviso from "@/components/FaixaAviso";
 
@@ -330,6 +331,17 @@ const Assinar = () => {
   const isAssinante = profile?.subscription_status === "active";
   const planoAtual = (isAssinante ? (profile?.plano as Plano | null) : null) ?? null;
   const rankAtual = planoAtual ? RANK[planoAtual] : 0;
+  const logadoCredito = !!user && !isAnonymous;
+  const { data: statusCredito } = useQuery({
+    queryKey: ["meu_status_assinatura", user?.id],
+    enabled: logadoCredito,
+    staleTime: 60 * 1000,
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("meu_status_assinatura");
+      if (error) return null;
+      return data as unknown as { via?: string | null } | null;
+    },
+  });
 
   useEffect(() => {
     trackPixel("ViewContent", { content_name: "Pagina Assinar" });
@@ -465,7 +477,7 @@ const Assinar = () => {
   };
 
   const scrollToPlanos = () => {
-    document.getElementById("planos")?.scrollIntoView({ behavior: "smooth" });
+    document.getElementById("escolha-plano")?.scrollIntoView({ behavior: "smooth" });
   };
 
   function registrarEventoAssinar(evento: string, plano?: string | null) {
@@ -851,20 +863,85 @@ const Assinar = () => {
               Seu Ayurveda, do seu jeito
             </h1>
             <p
-              className="text-base md:text-lg max-w-xl mx-auto mb-6 leading-relaxed"
+              className="text-base md:text-lg max-w-xl mx-auto leading-relaxed"
               style={{ color: PRIMARY, opacity: 0.9, fontFamily: "'DM Sans', sans-serif" }}
             >
               Descubra seu dosha e receba o Portal inteiro moldado a você.
             </p>
-            <button
-              onClick={scrollToPlanos}
-              className="inline-flex items-center justify-center px-8 py-3.5 rounded-full text-white font-semibold text-base shadow-lg transition-colors"
-              style={{ backgroundColor: SALMAO }}
-              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = SALMAO_HOVER)}
-              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = SALMAO)}
+          </div>
+        </section>
+
+        {/* ESCOLHA SEU PLANO (faixa compacta) */}
+        <section style={{ background: SURFACE }}>
+          <div className="max-w-[1040px] mx-auto px-4 sm:px-6 py-8 md:py-12">
+            <div id="escolha-plano" style={{ scrollMarginTop: "calc(var(--cb-faixa, 0px) + 72px)" }}>
+              {cashBlack && (
+                <div className="mb-6 rounded-xl px-4 py-3 text-center text-sm md:text-base leading-snug" style={{ background: samkhyaTokens.roxoDark, color: samkhyaTokens.footerTexto }}>
+                  <strong>CASH BLACK</strong> · Já estava pensando em assinar? Até 27/11, o valor da primeira cobrança vira crédito para usar no Portal ou na Samkhya. No Premium Anual, são R$ 597,00 em crédito.
+                </div>
+              )}
+              <h2 className="font-serif font-bold text-2xl md:text-[28px] text-center mb-2" style={{ color: PRIMARY }}>
+                Escolha seu plano
+              </h2>
+            </div>
+            <p
+              className="text-center text-sm md:text-base mb-6 max-w-xl mx-auto"
+              style={{ color: PRIMARY, opacity: 0.8, fontFamily: "'DM Sans', sans-serif" }}
             >
-              Ver os planos
-            </button>
+              Comece pela rotina ou vá direto no Portal inteiro — a escolha é sua.
+            </p>
+            <FaixaCredito
+              className="mb-6"
+              para="/usar-credito"
+              linha={
+                statusCredito?.via === "cartao"
+                  ? "Você já paga no cartão? Use o crédito em meses do seu plano: as cobranças param por esses meses e voltam sozinhas depois. Ou passe para o Premium Anual. Vale até 31/05/2027."
+                  : "Paga meses de Minha Rotina (R$ 30 cada), de Premium (R$ 79,90 cada) ou o Premium Anual (R$ 597). Vale até 31/05/2027."
+              }
+            />
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4" data-testid="faixa-planos">
+              <div className="rounded-2xl border-2 p-4 flex flex-col gap-3 relative bg-white" style={{ borderColor: `${VERDE}55` }}>
+                {planoAtual === "rotina" && <SeuPlanoBadge />}
+                <div>
+                  <p className="text-[11px] uppercase tracking-wider font-bold" style={{ color: VERDE }}>Minha Rotina</p>
+                  <p className="font-serif font-bold text-[24px]" style={{ color: PRIMARY }}>R$ 30<span className="text-sm font-normal">/mês</span></p>
+                  <p className="text-[13px]" style={{ color: VERDE, fontFamily: "'DM Sans', sans-serif" }}>Menos de R$1 por dia.</p>
+                </div>
+                <CardAction plano="rotina" color={PRIMARY} label="Começar minha rotina" />
+              </div>
+              <div className="rounded-2xl border-2 p-4 flex flex-col gap-3 relative bg-white" style={{ borderColor: SALMAO }}>
+                {planoAtual === "mensal" && <SeuPlanoBadge />}
+                <div>
+                  <p className="text-[11px] uppercase tracking-wider font-bold" style={{ color: SALMAO }}>Premium</p>
+                  <p className="font-serif font-bold text-[24px]" style={{ color: PRIMARY }}>R$ 79,90<span className="text-sm font-normal">/mês</span></p>
+                  <p className="text-[13px]" style={{ color: SALMAO, fontFamily: "'DM Sans', sans-serif" }}>Tudo da Rotina, mais a companhia.</p>
+                </div>
+                <CardAction plano="mensal" color={PRIMARY} label="Assinar Premium" />
+              </div>
+              <div className="rounded-2xl border-2 p-4 flex flex-col gap-3 relative shadow-lg" style={{ background: DOURADO_BG, borderColor: DOURADO }}>
+                {planoAtual === "anual" ? <SeuPlanoBadge /> : (
+                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider text-white whitespace-nowrap" style={{ backgroundColor: DOURADO }}>
+                    Mais vantajoso
+                  </span>
+                )}
+                <div>
+                  <p className="text-[11px] uppercase tracking-wider font-bold" style={{ color: DOURADO_DARK }}>Premium Anual</p>
+                  <p className="font-serif font-bold text-[24px]" style={{ color: PRIMARY }}>R$ 49,75<span className="text-sm font-normal">/mês</span></p>
+                  <p className="text-[13px]" style={{ color: DOURADO_DARK, fontFamily: "'DM Sans', sans-serif" }}>R$ 597 cobrados uma vez por ano · economiza R$ 361,80</p>
+                </div>
+                <CardAction plano="anual" color={SALMAO} hoverColor={SALMAO_HOVER} label="Assinar Anual" />
+              </div>
+            </div>
+            <div className="text-center mt-5">
+              <button
+                type="button"
+                onClick={() => document.getElementById("planos")?.scrollIntoView({ behavior: "smooth" })}
+                className="text-sm underline underline-offset-4 font-medium"
+                style={{ color: PRIMARY, fontFamily: "'DM Sans', sans-serif" }}
+              >
+                Ver o que cada plano inclui ↓
+              </button>
+            </div>
           </div>
         </section>
 
@@ -1596,53 +1673,15 @@ const Assinar = () => {
         </section>
 
         {/* 8) ESCOLHA SEU PLANO */}
-        <section id="planos" style={{ background: SURFACE }}>
+        <section id="planos" style={{ background: SURFACE, scrollMarginTop: "calc(var(--cb-faixa, 0px) + 64px)" }}>
           <div className="max-w-[1040px] mx-auto px-4 sm:px-6 py-12 md:py-16">
-            {cashBlack && (
-              <div className="mb-8 rounded-xl px-4 py-3 text-center text-sm md:text-base leading-snug" style={{ background: samkhyaTokens.roxoDark, color: samkhyaTokens.footerTexto }}>
-                <strong>CASH BLACK</strong> · Já estava pensando em assinar? Até 27/11, o valor da primeira cobrança vira crédito para usar no Portal ou na Samkhya. No Premium Anual, são R$ 597,00 em crédito.
-              </div>
-            )}
             <h2
-              className="font-serif font-bold text-2xl md:text-[28px] text-center mb-2"
+              className="font-serif font-bold text-2xl md:text-[28px] text-center mb-10"
               style={{ color: PRIMARY }}
             >
-              Escolha seu plano
+              O que cada plano inclui
             </h2>
-            <p
-              className="text-center text-sm md:text-base mb-10 max-w-xl mx-auto"
-              style={{ color: PRIMARY, opacity: 0.8, fontFamily: "'DM Sans', sans-serif" }}
-            >
-              Comece pela rotina ou vá direto no Portal inteiro — a escolha é sua.
-            </p>
-
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 lg:grid-rows-[auto_auto_auto_auto_auto_1fr] gap-4 md:gap-5 items-stretch">
-              {/* CARD 0 — BÁSICO (GRÁTIS) */}
-              <div className={cardBase} style={{ background: "#fff", borderColor: "rgba(53,47,84,0.16)" }}>
-                <div className="flex items-center justify-between">
-                  <p className="text-[11px] uppercase tracking-wider font-bold" style={{ color: CINZA_ROTULO }}>
-                    Básico
-                  </p>
-                  <PortalMark size={22} />
-                </div>
-                <div>
-                  <h3 className="font-serif font-bold text-[20px] mb-1" style={{ color: PRIMARY }}>
-                    Descobrindo meu Dosha
-                  </h3>
-                  <p className="font-serif font-bold text-[26px] mb-1" style={{ color: PRIMARY }}>
-                    R$ 0
-                  </p>
-                  <p className="text-[13px]" style={{ color: CINZA_ROTULO, fontFamily: "'DM Sans', sans-serif" }}>
-                    Sempre grátis.
-                  </p>
-
-                </div>
-                <BaseBloco plano="basico" cor={CINZA_ROTULO} />
-                <FaixaAkasha plano="basico" cor={CINZA_ROTULO} />
-                <PlanoBloco plano="basico" cor={CINZA_ROTULO} />
-                <AcaoBasico />
-              </div>
-
               {/* CARD 1 — MINHA ROTINA */}
               <div className={cardBase} style={{ background: VERDE_BG, borderColor: `${VERDE}55` }}>
                 <div className="flex items-center justify-between">
@@ -1775,6 +1814,32 @@ const Assinar = () => {
                 />
 
               </div>
+              {/* CARD 0 — BÁSICO (GRÁTIS) */}
+              <div className={cardBase} style={{ background: "#fff", borderColor: "rgba(53,47,84,0.16)" }}>
+                <div className="flex items-center justify-between">
+                  <p className="text-[11px] uppercase tracking-wider font-bold" style={{ color: CINZA_ROTULO }}>
+                    Básico
+                  </p>
+                  <PortalMark size={22} />
+                </div>
+                <div>
+                  <h3 className="font-serif font-bold text-[20px] mb-1" style={{ color: PRIMARY }}>
+                    Descobrindo meu Dosha
+                  </h3>
+                  <p className="font-serif font-bold text-[26px] mb-1" style={{ color: PRIMARY }}>
+                    R$ 0
+                  </p>
+                  <p className="text-[13px]" style={{ color: CINZA_ROTULO, fontFamily: "'DM Sans', sans-serif" }}>
+                    Sempre grátis.
+                  </p>
+
+                </div>
+                <BaseBloco plano="basico" cor={CINZA_ROTULO} />
+                <FaixaAkasha plano="basico" cor={CINZA_ROTULO} />
+                <PlanoBloco plano="basico" cor={CINZA_ROTULO} />
+                <AcaoBasico />
+              </div>
+
             </div>
 
           </div>

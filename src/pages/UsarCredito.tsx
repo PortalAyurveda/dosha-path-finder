@@ -33,7 +33,7 @@ const UsarCredito = () => {
   const qc = useQueryClient();
   const { data: saldo } = useMeuCashback(logado);
   const { data: freteConfig } = useFreteGratisConfig();
-  const [aba, setAba] = useState<"portal" | "samkhya">("portal");
+  const [aba, setAba] = useState<"portal" | "samkhya">(() => (params.get("aba") === "samkhya" ? "samkhya" : "portal"));
   const [escolhidos, setEscolhidos] = useState<string[]>([]);
   const [plano, setPlano] = useState<PlanoCredito | null>(null);
   const [meses, setMeses] = useState<Record<PlanoCredito, number>>({ rotina: 1, mensal: 1, anual: 12 });

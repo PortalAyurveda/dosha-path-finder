@@ -10,6 +10,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { toast } from "sonner";
 import { useCart, getCartKey, PIX_PENDENTE_KEY } from "@/contexts/CartContext";
 import { useUser } from "@/contexts/UserContext";
+import FaixaCredito from "@/components/cashblack/FaixaCredito";
 import { samkhyaTokens } from "@/components/samkhya/tokens";
 import { supabase } from "@/integrations/supabase/client";
 import { trackPixel } from "@/lib/metaPixel";
@@ -972,6 +973,7 @@ const CartDrawer = () => {
             </div>
           ) : (
             <div className="space-y-4">
+              <FaixaCredito campo="samkhya_e_portal" linha="Crédito que vale na Samkhya, até 31/05/2027." para="/usar-credito?aba=samkhya" />
               {/* Resumo do pedido (na Cash Black os valores aparecem em cada opção) */}
               <div className={`space-y-2 p-3 rounded-md ${cashBlack ? "hidden" : ""}`} style={{ background: samkhyaTokens.cardBg, border: `1px solid ${samkhyaTokens.cardBorder}` }}>
                 <div className="flex justify-between text-sm">

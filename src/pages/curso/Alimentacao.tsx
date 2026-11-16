@@ -85,6 +85,7 @@ const Alimentacao = () => {
         <ModulesSection data={data.modules} branding={data.branding} />
         <div id="pricing">
           <PricingSection
+            slug={data.meta.slug}
             data={data.pricing}
             branding={data.branding}
             bonus={data.bonus}
