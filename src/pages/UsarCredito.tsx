@@ -259,8 +259,8 @@ const UsarCredito = () => {
         <div className="rounded-xl px-3 py-2" style={{ background: "rgba(255,255,255,0.1)" }}><div className="text-xs">Só no Portal</div><div className="text-lg font-bold">{brl(Number(saldo?.so_portal) || 0)}</div></div>
         <div className="rounded-xl px-3 py-2" style={{ background: "rgba(255,255,255,0.1)" }}><div className="text-xs">Portal ou Samkhya</div><div className="text-lg font-bold">{brl(ambos)}</div></div>
       </div>
-      {linhaAssin && <p className="mt-3 text-sm">{linhaAssin}</p>}
-      <p className="mt-2 text-sm">Seu crédito já vale. Use quando quiser, até 31/05/2027. Não precisa gastar tudo de uma vez.</p>
+      {linhaAssin && <p className="mt-3 text-sm" style={{ color: t.footerTexto }}>{linhaAssin}</p>}
+      <p className="mt-2 text-sm" style={{ color: t.footerTexto }}>Seu crédito já vale. Use quando quiser, até 31/05/2027. Não precisa gastar tudo de uma vez.</p>
     </div>
   );
 
@@ -485,9 +485,9 @@ const UsarCredito = () => {
         </aside>
       </div>
       {valorLeva > 0 && (
-        <div className="fixed inset-x-0 bottom-0 z-40 flex items-center justify-between gap-3 border-t px-4 pt-3 lg:hidden" style={{ background: t.fundo, borderColor: t.cardBorder, paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))" }}>
-          <span className="font-semibold">Você leva: {brl(valorLeva)}</span>
-          <button type="button" disabled={!podeUsar || enviando} onClick={usar} className="min-h-12 rounded-full px-5 font-semibold disabled:opacity-50" style={{ background: t.ouro, color: "#fff" }}>Usar meu crédito</button>
+        <div className="fixed inset-x-0 bottom-0 z-40 flex items-center justify-between gap-3 border-t pl-4 pr-20 pt-3 lg:hidden" style={{ background: t.fundo, borderColor: t.cardBorder, paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))" }}>
+          <span className="text-sm font-semibold">Você leva: <span className="whitespace-nowrap">{brl(valorLeva)}</span></span>
+          <button type="button" disabled={!podeUsar || enviando} onClick={usar} className="min-h-12 shrink-0 whitespace-nowrap rounded-full px-4 font-semibold disabled:opacity-50" style={{ background: t.ouro, color: "#fff" }}>Usar meu crédito</button>
         </div>
       )}
     </main>
