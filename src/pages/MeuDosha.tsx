@@ -10,6 +10,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import GraficoMeses from "@/components/meudosha/v2/GraficoMeses";
 import { SeuDia, MeusCursos, AkashaPerguntas, ArtigosComecar, TerapeutasPerto } from "@/components/meudosha/v2/SecoesMeuDosha";
 import HojeNoPortal from "@/components/home/HojeNoPortal";
+const LinhaAcompanhamento = lazy(() => import("@/components/terapia/meu/LinhaAcompanhamento"));
 const VersoERegistros = lazy(() => import("@/components/index/VersoERegistros"));
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -1218,6 +1219,7 @@ const MeuDosha = () => {
 
         </Tabs> : (
           <div className="space-y-10">
+            <Suspense fallback={null}><LinhaAcompanhamento /></Suspense>
             {cartaoHoje}
             <DiagnosticoCompleto
               email={result.email}

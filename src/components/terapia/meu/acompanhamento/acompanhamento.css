@@ -26,3 +26,16 @@
 .ac-mini img{width:100%;height:100%;object-fit:cover}
 .acompanhamento-dialogo .ac-chat{height:min(70dvh,600px)}
 @media(max-width:760px){.ac-colunas{grid-template-columns:1fr}.ac-como button{align-self:stretch}.ac-unica .ac-main{padding:16px}}
+.ac-unica .ac-main{max-width:760px;margin:0 auto;padding-bottom:96px}
+.ac-momento{border:2px solid hsl(var(--therapist-salmon))}
+.ac-entrar{min-height:52px;font-size:16px!important;width:100%}
+@media (min-width:640px){.ac-entrar{width:auto;align-self:flex-start;padding:0 32px}}
+.ac-pediu{display:flex;flex-direction:column;gap:4px;border-top:1px solid hsl(var(--border));padding-top:10px}
+.ac-pediu h3{font:700 15px/1.4 'DM Sans',sans-serif}
+.ac-fim{display:flex;flex-wrap:wrap;gap:8px 24px;padding:8px 0}
+.ac-conversar{position:fixed;left:16px;bottom:calc(16px + env(safe-area-inset-bottom));z-index:50;min-height:48px;border-radius:999px;gap:8px;padding:0 20px;box-shadow:0 6px 20px hsl(var(--foreground)/.18)}
+.ac-conversar-num{min-width:20px;border-radius:999px;background:hsl(var(--destructive));color:hsl(var(--destructive-foreground));font-size:12px;line-height:20px;padding:0 6px}
+.ac-conversa-inteira{width:100vw;max-width:none;height:100dvh;max-height:none;border-radius:0;padding:16px}
+.ac-conversa-inteira .ac-chat{height:auto}
+.acompanhamento .sd-ck{width:28px;height:28px;border-radius:8px}
+body:has(.ac-conversa-inteira) button[aria-label="Abrir Akasha"]{display:none}
