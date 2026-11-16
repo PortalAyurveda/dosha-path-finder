@@ -47,4 +47,4 @@
 - Keep the 7-day care ribbon in the shared FitaCuidados component (one per page; semFita hides the sheet's copy in Minha Rotina), the Minha Rotina care card in src/components/rotina/CuidadosDoDia.tsx with helpers in src/lib/rotinaCuidados.ts, and therapist constancy (terapia_constancia_paciente) in src/lib/terapiaConstancia.ts with ConstanciaFolha views; so markings from any day/source share one history.
 - Rooms keep three always-mounted tabs (Ficha, Anotar, Indicações) and the board as a video-bar overlay; IndicacoesSala reuses the indications Editor in `sala` mode (training never writes) so nothing leaves the room.
 - Consultation requests use consulta_solicitacoes via src/lib/terapiaPedidos.ts, holding slots in horario_reservas; consultas rows exist only after confirmation, so agenda functions stay unchanged.
-- Therapist nav and person-page moment/tabs live in terapiaPessoa; legacy ?aba= on Meu acompanhamento opens dialogs, keeping old links valid.
+- Therapist nav and person moment live in terapiaPessoa so old links stay valid.
