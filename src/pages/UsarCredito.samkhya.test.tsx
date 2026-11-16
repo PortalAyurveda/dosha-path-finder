@@ -42,8 +42,8 @@ describe("resgate Samkhya na página", () => {
       </Routes></MemoryRouter>);
       fireEvent.click(view.getByRole("tab", { name: "Samkhya" }));
       fireEvent.click(view.getByRole("button", { name: "Escolher" }));
-      await waitFor(() => expect(view.getByRole("button", { name: "Usar meu crédito" })).not.toBeDisabled());
-      fireEvent.click(view.getByRole("button", { name: "Usar meu crédito" }));
+      await waitFor(() => expect(view.getAllByRole("button", { name: "Usar meu crédito" })[0]).not.toBeDisabled());
+      fireEvent.click(view.getAllByRole("button", { name: "Usar meu crédito" })[0]);
       await waitFor(() => expect(view.getByTestId("address").textContent).toBe("/samkhya/pedido/pedido-123"));
       expect(mocks.rpc).toHaveBeenCalledWith("cashback_resgatar_samkhya", expect.objectContaining({ p_itens: [{ slug: "produto", quantidade: 1 }], p_frete: expect.objectContaining({ preco: 30 }) }));
       const chamadasPix = mocks.invoke.mock.calls.filter(([nome]) => nome === "create-pix-pagamento");

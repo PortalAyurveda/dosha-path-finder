@@ -10,6 +10,7 @@ import { useFreteGratisConfig } from "@/hooks/useFreteGratisConfig";
 import { brl, prazoAcesso, useMeuCashback } from "@/lib/cashBlack";
 import { prepararPedidoSamkhya, totaisCreditoSamkhya, type ResgateSamkhya } from "@/lib/creditoSamkhya";
 import { samkhyaTokens as t } from "@/components/samkhya/tokens";
+import { cartoesAssinatura, dataBR, linhaAssinatura, NOME_PLANO, somarMeses, totalPlano, type PlanoCredito, type StatusAssinatura } from "@/lib/creditoAssinatura";
 import KitEscolhas, { escolhasPadrao, rotuloEscolhas, type EscolhaGrupo } from "@/components/samkhya/KitEscolhas";
 
 type CursoCredito = { id: string; slug: string; titulo: string; capa_url: string | null; preco: number | null; acesso_meses: number | null; acesso_ate: string | null };
@@ -19,7 +20,8 @@ type Frete = { id: string | number; nome: string; empresa?: string; preco: numbe
 type End = { cep: string; logradouro: string; numero: string; complemento: string; bairro: string; cidade: string; estado: string };
 
 const EXCLUIDO = "mentoria-para-terapeutas";
-const PREMIUM = 597;
+const GUARDADO = "Seu crédito fica guardado até 31/05/2027.";
+type ItemLiberado = { titulo: string; ate?: string | null; volta?: string | null; cancelaNoFim?: boolean; slug?: string; sub?: string };
 const so = (s: string) => s.replace(/\D/g, "");
 const msgErro = (e: unknown) => (e && typeof e === "object" && "message" in e ? String((e as { message: string }).message) : "Não foi possível usar o crédito.");
 
@@ -33,18 +35,30 @@ const UsarCredito = () => {
   const { data: freteConfig } = useFreteGratisConfig();
   const [aba, setAba] = useState<"portal" | "samkhya">("portal");
   const [escolhidos, setEscolhidos] = useState<string[]>([]);
-  const [premium, setPremium] = useState(false);
+  const [plano, setPlano] = useState<PlanoCredito | null>(null);
+  const [meses, setMeses] = useState<Record<PlanoCredito, number>>({ rotina: 1, mensal: 1, anual: 12 });
   const [loja, setLoja] = useState<Record<string, Escolha>>({});
   const [enviando, setEnviando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
-  const [liberados, setLiberados] = useState<{ cursos: CursoCredito[]; premium: boolean } | null>(null);
+  const [liberados, setLiberados] = useState<{ itens: ItemLiberado[]; sobra: number } | null>(null);
   const [end, setEnd] = useState<End>({ cep: "", logradouro: "", numero: "", complemento: "", bairro: "", cidade: "", estado: "" });
   const [trocando, setTrocando] = useState(false);
   const [fretes, setFretes] = useState<Frete[]>([]);
   const [freteId, setFreteId] = useState("");
   const [calculando, setCalculando] = useState(false);
 
-  const jaPremium = !!profile?.is_premium && (!(profile as { premium_until?: string | null }).premium_until || new Date((profile as { premium_until?: string | null }).premium_until!).getTime() > Date.now());
+  const { data: statusRaw } = useQuery({
+    queryKey: ["meu_status_assinatura", user?.id],
+    enabled: logado,
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("meu_status_assinatura");
+      if (error) return null;
+      return data as unknown as StatusAssinatura;
+    },
+  });
+  const status = statusRaw && !Array.isArray(statusRaw) && typeof statusRaw === "object" ? (statusRaw as StatusAssinatura) : null;
+  const cartoes = cartoesAssinatura(status, meses);
+  const linhaAssin = linhaAssinatura(status);
 
   const { data: cursos } = useQuery({
     queryKey: ["usar_credito_cursos", user?.id],
@@ -101,12 +115,19 @@ const UsarCredito = () => {
   const escolhidosCursos = useMemo(() => lista.filter((c) => escolhidos.includes(c.id)), [lista, escolhidos]);
   const itensEscolhidos = useMemo(() => (itensLoja ?? []).filter((i) => loja[i.slug]).map((i) => ({ ...i, ...loja[i.slug] })), [itensLoja, loja]);
   const gastoLoja = itensEscolhidos.reduce((s, i) => s + i.preco * i.qtd, 0);
-  const gastoPortal = escolhidosCursos.reduce((s, c) => s + Number(c.preco || 0), 0) + (premium ? PREMIUM : 0);
+  const gastoPortal = escolhidosCursos.reduce((s, c) => s + Number(c.preco || 0), 0) + (plano ? totalPlano(plano, meses[plano]) : 0);
   const sobra = total - gastoPortal - gastoLoja;
   const restaLoja = Math.min(ambos - gastoLoja, sobra);
   const frete = fretes.find((f) => String(f.id) === freteId) ?? null;
   const { freteCoberto, totalAPagar } = totaisCreditoSamkhya(ambos, gastoLoja, frete?.preco ?? 0);
   const cepOk = so(end.cep).length === 8;
+  const precosPossiveis = [
+    ...cartoes.filter((c) => c.ligado).map((c) => totalPlano(c.plano, c.plano === "anual" ? 12 : 1)),
+    ...lista.map((c) => Number(c.preco || 0)),
+    ...(temSamkhya ? (itensLoja ?? []).map((i) => (i.preco <= ambos ? i.preco : Infinity)) : []),
+  ];
+  const naoCobreNada = !!saldo && precosPossiveis.length > 0 && precosPossiveis.every((v) => v > total);
+  const valorLeva = gastoPortal + gastoLoja + freteCoberto;
 
   // Frete, do mesmo jeito do carrinho da Samkhya
   const chaveFrete = JSON.stringify([so(end.cep), itensEscolhidos.map((i) => [i.slug, i.qtd, i.escolhas])]);
@@ -163,23 +184,39 @@ const UsarCredito = () => {
 
   const usar = async () => {
     setEnviando(true); setErro(null);
-    const feitos: CursoCredito[] = [];
-    let fezPremium = false;
+    const feitos: ItemLiberado[] = [];
+    const sobraFinal = sobra - freteCoberto;
+    const fim = () => setLiberados({ itens: feitos, sobra: Math.max(0, sobraFinal) });
     try {
       if (escolhidosCursos.length) {
-        const { error } = await supabase.rpc("cashback_usar_cursos", { p_curso_ids: escolhidosCursos.map((c) => c.id) });
+        const { data, error } = await supabase.rpc("cashback_usar_cursos", { p_curso_ids: escolhidosCursos.map((c) => c.id) });
         if (error) { setErro(msgErro(error)); return; }
-        feitos.push(...escolhidosCursos);
+        const ret = (data ?? {}) as { cursos?: { curso_id?: string; id?: string; acesso_ate?: string | null; expira_em?: string | null }[] };
+        for (const c of escolhidosCursos) {
+          const r = (ret.cursos ?? []).find((x) => (x.curso_id ?? x.id) === c.id);
+          const ate = r?.acesso_ate ?? r?.expira_em ?? null;
+          feitos.push({ titulo: c.titulo, slug: c.slug, ate, sub: ate ? undefined : prazoAcesso(c.acesso_meses, c.acesso_ate) });
+        }
         setEscolhidos([]);
       }
-      if (premium) {
-        const { error } = await supabase.rpc("cashback_usar_premium");
+      if (plano) {
+        const m = plano === "anual" ? 12 : meses[plano];
+        const { data, error } = await supabase.rpc("cashback_usar_assinatura" as never, { p_plano: plano, p_meses: m } as never);
         if (error) {
           setErro(msgErro(error));
-          if (feitos.length) setLiberados({ cursos: feitos, premium: false });
+          if (feitos.length) fim();
           return;
         }
-        fezPremium = true; setPremium(false); refreshProfile?.();
+        const d = (data ?? {}) as { acesso_ate?: string; cartao_pausado?: boolean; cartao_cancelado_no_fim?: boolean };
+        const pago = status?.pago_ate ? new Date(status.pago_ate.length === 10 ? status.pago_ate + "T12:00:00" : status.pago_ate) : new Date();
+        feitos.push({
+          titulo: `${NOME_PLANO[plano]} · ${m} ${m === 1 ? "mês" : "meses"}`,
+          ate: d.acesso_ate ?? null,
+          volta: d.cartao_pausado ? dataBR(somarMeses(pago, m)) : null,
+          cancelaNoFim: !!d.cartao_cancelado_no_fim,
+        });
+        setPlano(null); refreshProfile?.();
+        qc.invalidateQueries({ queryKey: ["meu_status_assinatura"] });
       }
       if (itensEscolhidos.length) {
         const { data: perfil } = await supabase.from("user_profiles").select("nome_completo,nome,telefone,cpf").eq("id", user!.id).maybeSingle();
@@ -191,7 +228,7 @@ const UsarCredito = () => {
         } as never);
         if (error) {
           setErro(msgErro(error));
-          if (feitos.length || fezPremium) setLiberados({ cursos: feitos, premium: fezPremium });
+          if (feitos.length) fim();
           return;
         }
         const r = data as unknown as ResgateSamkhya;
@@ -202,7 +239,7 @@ const UsarCredito = () => {
         navigate(destino);
         return;
       }
-      setLiberados({ cursos: feitos, premium: fezPremium });
+      fim();
     } finally {
       setEnviando(false);
       atualizarSaldo();
@@ -213,6 +250,17 @@ const UsarCredito = () => {
     <div className="rounded-2xl px-5 py-3" style={{ background: t.roxoDark, color: t.footerTexto }}>
       <div className="text-xs">Seu crédito</div>
       <div className="font-serif text-2xl font-bold">{brl(total)}</div>
+    </div>
+  );
+  const QuadroSaldoTopo = (
+    <div className="mt-4 rounded-2xl p-5" style={{ background: t.roxoDark, color: t.footerTexto }}>
+      <div className="font-serif text-xl font-bold md:text-2xl">Você tem {brl(total)} de crédito</div>
+      <div className="mt-3 grid grid-cols-2 gap-3">
+        <div className="rounded-xl px-3 py-2" style={{ background: "rgba(255,255,255,0.1)" }}><div className="text-xs">Só no Portal</div><div className="text-lg font-bold">{brl(Number(saldo?.so_portal) || 0)}</div></div>
+        <div className="rounded-xl px-3 py-2" style={{ background: "rgba(255,255,255,0.1)" }}><div className="text-xs">Portal ou Samkhya</div><div className="text-lg font-bold">{brl(ambos)}</div></div>
+      </div>
+      {linhaAssin && <p className="mt-3 text-sm">{linhaAssin}</p>}
+      <p className="mt-2 text-sm">Seu crédito já vale. Use quando quiser, até 31/05/2027. Não precisa gastar tudo de uma vez.</p>
     </div>
   );
 
@@ -242,23 +290,28 @@ const UsarCredito = () => {
   if (liberados) {
     return (
       <main className="mx-auto max-w-2xl px-4 py-10" style={{ color: t.texto }}>
-        <h1 className="font-serif text-2xl font-bold md:text-3xl" style={{ color: t.roxo }}>Cursos liberados</h1>
+        <h1 className="font-serif text-2xl font-bold md:text-3xl" style={{ color: t.roxo }}>Pronto! Liberado</h1>
         <ul className="mt-5 space-y-3">
-          {liberados.premium && <li className="rounded-2xl border bg-white p-4 font-semibold" style={{ borderColor: t.cardBorder }}>Assinatura Premium Anual</li>}
-          {liberados.cursos.map((c) => (
-            <li key={c.id} className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border bg-white p-4" style={{ borderColor: t.cardBorder }}>
-              <span className="font-semibold">{c.titulo}</span>
-              <Link to={`/cursos/${c.slug}/estudar`} className="inline-flex min-h-11 items-center rounded-full px-5 font-semibold" style={{ background: t.ouro, color: "#fff" }}>Abrir meu curso</Link>
+          {liberados.itens.map((c, i) => (
+            <li key={i} className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border bg-white p-4" style={{ borderColor: t.cardBorder }}>
+              <div>
+                <div className="font-semibold">{c.titulo}</div>
+                {c.ate ? <div className="text-sm">Liberado até {dataBR(c.ate)}</div> : c.sub && <div className="text-sm">{c.sub}</div>}
+                {c.volta && <div className="text-sm">O cartão volta a cobrar em {c.volta}</div>}
+                {c.cancelaNoFim && <div className="text-sm">A cobrança do seu cartão para no fim do período já pago.</div>}
+              </div>
+              {c.slug && <Link to={`/cursos/${c.slug}/estudar`} className="inline-flex min-h-11 items-center rounded-full px-5 font-semibold" style={{ background: t.ouro, color: "#fff" }}>Abrir meu curso</Link>}
             </li>
           ))}
         </ul>
         {erro && <p className="mt-4 text-sm text-destructive" role="alert">{erro}</p>}
-        <div className="mt-6 inline-block">{QuadroSaldo}</div>
+        <p className="mt-6 font-semibold">Sobrou no seu crédito {brl(liberados.sobra)}</p>
+        {liberados.sobra > 0 && <p className="mt-1 text-sm">{GUARDADO}</p>}
       </main>
     );
   }
 
-  const podeUsar = (escolhidos.length > 0 || premium || itensEscolhidos.length > 0) && (!itensEscolhidos.length || (cepOk && !!frete && !!end.numero.trim() && !!end.logradouro.trim()));
+  const podeUsar = (escolhidos.length > 0 || !!plano || itensEscolhidos.length > 0) && (!itensEscolhidos.length || (cepOk && !!frete && !!end.numero.trim() && !!end.logradouro.trim()));
   const campo = (k: keyof End, rotulo: string, cls = "") => (
     <label className={`block text-xs ${cls}`}>{rotulo}
       <input value={end[k]} onChange={(e) => setEnd({ ...end, [k]: e.target.value })} className="mt-1 w-full rounded-lg border bg-white px-3 py-2 text-base" style={{ borderColor: t.cardBorder }} />
@@ -266,11 +319,10 @@ const UsarCredito = () => {
   );
 
   return (
-    <main className="mx-auto max-w-6xl px-4 py-8 md:py-10" style={{ color: t.texto }}>
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <h1 className="font-serif text-2xl font-bold md:text-3xl" style={{ color: t.roxo }}>Escolha o que levar</h1>
-        {QuadroSaldo}
-      </div>
+    <main className={`mx-auto max-w-6xl px-4 py-8 md:py-10 ${valorLeva > 0 ? "pb-28 lg:pb-10" : ""}`} style={{ color: t.texto }}>
+      <h1 className="font-serif text-2xl font-bold md:text-3xl" style={{ color: t.roxo }}>Escolha o que levar</h1>
+      {naoCobreNada && <p className="mt-3 rounded-xl p-3 text-sm font-semibold" style={{ background: t.roxoLight, color: t.roxoDark }}>{GUARDADO}</p>}
+      {QuadroSaldoTopo}
       {temSamkhya && (
         <div className="mt-6 inline-flex rounded-full p-1" style={{ background: t.roxoLight }} role="tablist">
           {(["portal", "samkhya"] as const).map((a) => (
@@ -285,13 +337,40 @@ const UsarCredito = () => {
       <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_340px] lg:items-start">
         {aba === "portal" || !temSamkhya ? (
           <ul className="space-y-3">
-            {!jaPremium && (
-              <li className="rounded-2xl border bg-white p-3" style={{ borderColor: premium ? t.roxo : t.cardBorder, opacity: !premium && PREMIUM > sobra ? 0.5 : 1 }}>
-                <Cartao img={null} titulo="Assinatura Premium Anual" preco={PREMIUM} marcado={premium}>
-                  <BotaoEscolha marcado={premium} falta={PREMIUM - sobra} onClick={() => setPremium((p) => !p)} />
-                </Cartao>
-              </li>
-            )}
+            <li><h2 className="font-serif text-xl font-bold" style={{ color: t.roxo }}>Assinatura</h2></li>
+            {cartoes.map((c) => {
+              const m = c.plano === "anual" ? 12 : meses[c.plano];
+              const tot = totalPlano(c.plano, m);
+              const marcado = plano === c.plano;
+              const outro = plano && !marcado ? totalPlano(plano, meses[plano]) : 0;
+              const falta = tot - (sobra + outro);
+              return (
+                <li key={c.plano} className="rounded-2xl border bg-white p-4" style={{ borderColor: marcado ? t.roxo : t.cardBorder, opacity: c.ligado ? 1 : 0.6 }}>
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div className="min-w-0 flex-1">
+                      <div className="font-semibold leading-tight">{c.titulo}</div>
+                      <div className="font-bold" style={{ color: t.ouroText }}>{c.plano === "anual" ? brl(597) : `${brl(c.plano === "rotina" ? 30 : 79.9)} por mês`}</div>
+                      {c.plano === "anual" ? <div className="text-sm">12 meses</div> : c.ligado && (
+                        <div className="mt-2 flex items-center gap-2 text-sm">
+                          <button type="button" aria-label="Menos um mês" disabled={m <= 1} onClick={() => setMeses((x) => ({ ...x, [c.plano]: m - 1 }))} className="flex h-11 w-11 items-center justify-center rounded-full border disabled:opacity-40" style={{ borderColor: t.cardBorder }}><Minus className="h-4 w-4" /></button>
+                          <span className="min-w-16 text-center font-semibold">{m} {m === 1 ? "mês" : "meses"}</span>
+                          <button type="button" aria-label="Mais um mês" disabled={m >= 12} onClick={() => setMeses((x) => ({ ...x, [c.plano]: m + 1 }))} className="flex h-11 w-11 items-center justify-center rounded-full border disabled:opacity-40" style={{ borderColor: t.cardBorder }}><Plus className="h-4 w-4" /></button>
+                        </div>
+                      )}
+                      {c.ligado && <>
+                        <div className="mt-2 text-sm font-semibold">Total: {brl(tot)}</div>
+                        <div className="text-sm" style={{ color: t.textoSec }}>{c.rotuloData} {dataBR(c.data)}</div>
+                      </>}
+                      {c.aviso && <p className="mt-2 text-sm" style={{ color: t.textoSec }}>{c.aviso}</p>}
+                    </div>
+                    {c.ligado && (!marcado && falta > 0
+                      ? <span className="shrink-0 text-right text-xs font-semibold sm:text-sm">Faltam {brl(falta)}</span>
+                      : <BotaoEscolha marcado={marcado} falta={0} onClick={() => setPlano(marcado ? null : c.plano)} />)}
+                  </div>
+                </li>
+              );
+            })}
+            <li className="pt-3"><h2 className="font-serif text-xl font-bold" style={{ color: t.roxo }}>Cursos</h2></li>
             {lista.map((c) => {
               const preco = Number(c.preco || 0);
               const marcado = escolhidos.includes(c.id);
@@ -333,7 +412,7 @@ const UsarCredito = () => {
           <div className="rounded-2xl border p-5" style={{ background: t.fundo, borderColor: t.cardBorder }}>
             <h2 className="font-serif text-xl font-bold" style={{ color: t.roxo }}>Você leva</h2>
             <ul className="mt-3 space-y-2 text-sm">
-              {premium && <li className="flex justify-between gap-2"><span>Assinatura Premium Anual</span><span className="whitespace-nowrap font-semibold">{brl(PREMIUM)}</span></li>}
+              {plano && <li className="flex justify-between gap-2"><span>{NOME_PLANO[plano]} · {plano === "anual" ? 12 : meses[plano]} {plano !== "anual" && meses[plano] === 1 ? "mês" : "meses"}</span><span className="whitespace-nowrap font-semibold">{brl(totalPlano(plano, meses[plano]))}</span></li>}
               {escolhidosCursos.map((c) => (
                 <li key={c.id} className="flex justify-between gap-2"><span>{c.titulo}</span><span className="whitespace-nowrap font-semibold">{brl(Number(c.preco || 0))}</span></li>
               ))}
@@ -405,6 +484,12 @@ const UsarCredito = () => {
           </button>
         </aside>
       </div>
+      {valorLeva > 0 && (
+        <div className="fixed inset-x-0 bottom-0 z-40 flex items-center justify-between gap-3 border-t px-4 pt-3 lg:hidden" style={{ background: t.fundo, borderColor: t.cardBorder, paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))" }}>
+          <span className="font-semibold">Você leva: {brl(valorLeva)}</span>
+          <button type="button" disabled={!podeUsar || enviando} onClick={usar} className="min-h-12 rounded-full px-5 font-semibold disabled:opacity-50" style={{ background: t.ouro, color: "#fff" }}>Usar meu crédito</button>
+        </div>
+      )}
     </main>
   );
 };
