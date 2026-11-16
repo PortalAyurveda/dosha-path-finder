@@ -290,6 +290,27 @@ export type Database = {
         }
         Relationships: []
       }
+      _bkp_pedidos_itens_kit_20261116: {
+        Row: {
+          id: string | null
+          itens: Json | null
+          numero_pedido: string | null
+          salvo_em: string | null
+        }
+        Insert: {
+          id?: string | null
+          itens?: Json | null
+          numero_pedido?: string | null
+          salvo_em?: string | null
+        }
+        Update: {
+          id?: string | null
+          itens?: Json | null
+          numero_pedido?: string | null
+          salvo_em?: string | null
+        }
+        Relationships: []
+      }
       _bkp_portal_terapeutas_20261021: {
         Row: {
           cidade: string | null
@@ -2231,6 +2252,62 @@ export type Database = {
           valor?: number
         }
         Relationships: []
+      }
+      assinatura_pausas_credito: {
+        Row: {
+          assinatura_id: string | null
+          criado_em: string
+          email: string | null
+          feito_em: string | null
+          id: string
+          lote: string
+          meses: number
+          plano: string
+          resposta: Json | null
+          status: string
+          user_id: string
+          valor: number
+          volta_a_cobrar_em: string | null
+        }
+        Insert: {
+          assinatura_id?: string | null
+          criado_em?: string
+          email?: string | null
+          feito_em?: string | null
+          id?: string
+          lote: string
+          meses: number
+          plano: string
+          resposta?: Json | null
+          status?: string
+          user_id: string
+          valor: number
+          volta_a_cobrar_em?: string | null
+        }
+        Update: {
+          assinatura_id?: string | null
+          criado_em?: string
+          email?: string | null
+          feito_em?: string | null
+          id?: string
+          lote?: string
+          meses?: number
+          plano?: string
+          resposta?: Json | null
+          status?: string
+          user_id?: string
+          valor?: number
+          volta_a_cobrar_em?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assinatura_pausas_credito_assinatura_id_fkey"
+            columns: ["assinatura_id"]
+            isOneToOne: false
+            referencedRelation: "assinaturas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       assinaturas: {
         Row: {
@@ -17824,6 +17901,10 @@ export type Database = {
         }
         Returns: Json
       }
+      cashback_usar_assinatura: {
+        Args: { p_meses?: number; p_plano: string }
+        Returns: Json
+      }
       cashback_usar_cursos: { Args: { p_curso_ids: string[] }; Returns: Json }
       cashback_usar_premium: { Args: never; Returns: Json }
       cashback_varrer: { Args: { p_campanha?: string }; Returns: Json }
@@ -18993,6 +19074,7 @@ export type Database = {
         Args: { p_caso: string; p_cfg: Json }
         Returns: string
       }
+      meu_status_assinatura: { Args: never; Returns: Json }
       meu_terapeuta: { Args: never; Returns: Json }
       meus_agravamentos: {
         Args: never
@@ -19019,6 +19101,7 @@ export type Database = {
       minhas_avaliacoes: { Args: never; Returns: Json }
       minhas_consultas_acompanhamento: { Args: never; Returns: Json }
       minhas_indicacoes: { Args: never; Returns: Json }
+      minhas_pausas_credito: { Args: never; Returns: Json }
       mockups_buscar: {
         Args: {
           p_limite?: number
