@@ -109,3 +109,5 @@
 - [ ] Cash Black fase 2: conferir saldo e uso com conta real — bloqueado: Supabase externo sem sessão
 - [x] Cash Black fase 3: assinatura, aba Samkhya com frete, extrato com +/− e nova nota
 - [ ] Cash Black fase 3: testar resgate Samkhya e Premium com conta real — bloqueado: Supabase externo sem sessão
+- [ ] Simplificar consultas Etapa 1 (terapeuta): menu PC/celular com Mais, Hoje reordenado, página da pessoa com resumo, botão único e 2 abas
+- [ ] Simplificar consultas Etapa 2 (paciente): cartão do momento, Seu dia, links no fim, botão de conversa, título na Minha Rotina, linha no Meu Dosha

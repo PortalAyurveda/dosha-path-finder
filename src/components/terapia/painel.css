@@ -60,3 +60,14 @@
 @media (max-width:640px){.comece-passos{grid-template-columns:1fr}}
 @media (min-width:1024px){.portal-menu-separado{margin-top:10px;border-top:1px solid hsl(var(--border))!important;border-radius:0 0 6px 6px}}
 .comece-passo>span{font-size:14px;line-height:1.4}
+.portal-pedidos-destaque{border:2px solid hsl(var(--therapist-salmon))!important;}
+.portal-barra-baixo{position:fixed;left:0;right:0;bottom:0;z-index:40;display:grid;grid-template-columns:repeat(5,1fr);background:hsl(var(--background));border-top:1px solid hsl(var(--border));padding-bottom:env(safe-area-inset-bottom);}
+.portal-barra-baixo button{position:relative;display:flex;min-height:56px;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:11px;color:hsl(var(--muted-foreground));}
+.portal-barra-baixo button[aria-current=page]{color:hsl(var(--primary));font-weight:600;}
+.portal-barra-baixo svg{width:22px;height:22px;}
+.portal-barra-ponto{position:absolute;top:8px;left:calc(50% + 6px);width:9px;height:9px;border-radius:999px;background:hsl(var(--destructive));}
+.portal-barra-num{position:absolute;top:4px;left:calc(50% + 4px);min-width:18px;border-radius:999px;background:hsl(var(--secondary));color:hsl(var(--secondary-foreground));font-size:10px;line-height:18px;padding:0 4px;}
+@media (min-width:1024px){.portal-barra-baixo{display:none;}}
+@media (max-width:1023px){.portal-terapeuta{padding-bottom:calc(64px + env(safe-area-inset-bottom));}}
+@media (max-width:1023px){body:has(.portal-barra-baixo) button[aria-label="Abrir Akasha"]{bottom:calc(72px + env(safe-area-inset-bottom))!important;}}
+@media (max-width:1023px){body:has(.portal-barra-baixo) [role=region][aria-label="Consulta agora"]{bottom:calc(72px + env(safe-area-inset-bottom));}}

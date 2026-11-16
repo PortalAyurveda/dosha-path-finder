@@ -78,3 +78,43 @@ export function quandoConsulta(inicio: string, agora: number) {
   const quando = dia(d) === dia(h) ? 'hoje' : dia(d) === dia(amanha) ? 'amanhã' : d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', timeZone: 'America/Sao_Paulo' });
   return `${quando}, ${hora}`;
 }
+
+/** Menu do celular e grupo "Mais" do PC. */
+export const MENU_PRINCIPAL = [['hoje', 'Hoje'], ['agenda', 'Agenda'], ['pessoas', 'Pessoas'], ['mensagens', 'Mensagens']] as const;
+export const MENU_MAIS = [['link', 'Meu link'], ['perfil', 'Perfil público'], ['bibliotecas', 'Bibliotecas'], ['treino', 'Sala de treino'], ['configuracoes', 'Configurações']] as const;
+
+export type AbaPessoaNova = 'consultas' | 'mandou';
+/** As 2 abas da pessoa; endereços antigos (?aba=ficha/fotos/evolucao…) caem em "O que a pessoa mandou". */
+export function abaPessoaNova(valor: string | null): AbaPessoaNova {
+  return valor === 'consultas' || valor === 'anotacoes' ? 'consultas' : valor === null || valor === '' ? 'consultas' : 'mandou';
+}
+
+export type MomentoPessoa =
+  | { tipo: 'pedido'; pedido: string; inicio: string }
+  | { tipo: 'agora'; consulta: string; inicio: string }
+  | { tipo: 'marcada'; consulta: string; inicio: string }
+  | { tipo: 'sem_folha'; consulta: string; inicio: string }
+  | { tipo: 'folha'; folha: string; enviada_em: string; vista_em: string | null }
+  | { tipo: 'marcar' };
+/** A situação da pessoa, que decide o aviso e o botão principal único. */
+export function momentoPessoa(consultas: ConsultaPaciente[], folhas: FolhaIndicacoesLista[], pedido: { id: string; inicio: string; status: string } | undefined, agora: number): MomentoPessoa {
+  if (pedido && pedido.status === 'aguardando') return { tipo: 'pedido', pedido: pedido.id, inicio: pedido.inicio };
+  const b = botaoPrincipal(consultas, folhas, agora);
+  if (b.tipo === 'sala') return { tipo: 'agora', consulta: b.consulta, inicio: consultas.find(c => c.id === b.consulta)!.inicio };
+  const proxima = proximaConsulta(consultas, agora);
+  if (proxima) return { tipo: 'marcada', consulta: proxima.id, inicio: proxima.inicio };
+  if (b.tipo === 'indicacoes') return { tipo: 'sem_folha', consulta: b.consulta, inicio: consultas.find(c => c.id === b.consulta)!.inicio };
+  const enviada = folhas.filter(f => f.enviada_em).sort((a, c) => Date.parse(c.enviada_em!) - Date.parse(a.enviada_em!))[0];
+  if (enviada) return { tipo: 'folha', folha: enviada.id, enviada_em: enviada.enviada_em!, vista_em: enviada.vista_em };
+  return { tipo: 'marcar' };
+}
+
+const ddmm = (s: string) => new Date(s).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', timeZone: 'America/Sao_Paulo' });
+/** "Com você há X meses · X consultas · última folha em dd/mm". */
+export function linhaHistorico(ligado_em: string, consultas: ConsultaPaciente[], folhas: FolhaIndicacoesLista[], agora: number) {
+  const meses = Math.max(0, Math.floor((agora - Date.parse(ligado_em)) / (30.44 * 864e5)));
+  const feitas = consultas.filter(c => c.status === 'realizada').length;
+  const ultima = folhas.filter(f => f.enviada_em).sort((a, b) => Date.parse(b.enviada_em!) - Date.parse(a.enviada_em!))[0];
+  return [`Com você há ${meses} ${meses === 1 ? 'mês' : 'meses'}`, `${feitas} ${feitas === 1 ? 'consulta' : 'consultas'}`, ultima ? `última folha em ${ddmm(ultima.enviada_em!)}` : null].filter(Boolean).join(' · ');
+}
+export { ddmm };

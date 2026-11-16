@@ -18,7 +18,13 @@ import Perfil from "@/components/terapia/Perfil";
 import Acervos from "@/components/terapia/acervo/Acervos";
 import Configuracoes, { PassosParticipar } from "@/components/terapia/Participar";
 import "@/components/terapia/painel.css";
-import { MENU_TERAPEUTA, ABAS_MEU_PERFIL, abaPainel, ehMeuPerfil } from "@/lib/terapiaPessoa";
+import { MENU_TERAPEUTA, ABAS_MEU_PERFIL, MENU_PRINCIPAL, MENU_MAIS, abaPainel, ehMeuPerfil } from "@/lib/terapiaPessoa";
+import { Calendar, CalendarDays, Users, MessageCircle, MoreHorizontal } from "lucide-react";
+import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
+import { Switch } from "@/components/ui/switch";
+import { useOnlineTerapeuta } from "@/components/terapia/online/OnlineTerapeuta";
+import { pedidos } from "@/lib/terapiaPedidos";
+import { useNavigate } from "react-router-dom";
 import { chat, CHAT_LISTA_MS } from '@/lib/terapiaChat';
 const ListaConversas = lazy(()=>import('@/components/terapia/chat/ListaConversas'));
 
@@ -35,6 +41,10 @@ export default function PainelTerapeuta() {
   const [ocupado, setOcupado] = useState(false);
   const [agora, setAgora] = useState(Date.now());
   const [termoAberto, setTermoAberto] = useState(false);
+  const [maisAberto, setMaisAberto] = useState(false);
+  const online = useOnlineTerapeuta();
+  const navigate = useNavigate();
+  const listaPedidos = useQuery({ queryKey: ['terapia-pedidos'], queryFn: pedidos.daTerapeuta, enabled: acesso.permitido, refetchInterval: 120000 });
   const painel = useQuery({
     queryKey: ["terapia-painel", acesso.userId],
     queryFn: terapia.painel,
@@ -125,30 +135,46 @@ export default function PainelTerapeuta() {
     <PassosParticipar painel={dados} ocupado={ocupado} mudar={mudar} irPara={trocar} abrirTermo={() => setTermoAberto(true)} executar={executar} atualizar={atualizar} />
   );
   const total = hoje.data?.consultas.filter((c) => c.hoje).length ?? 0;
-  const menu = (
-    <nav
-      aria-label="Portal do terapeuta"
-      className="flex overflow-x-auto border-b border-border lg:flex-col lg:overflow-visible lg:border-0"
+  const temAviso = total > 0 || (listaPedidos.data ?? []).some((p) => p.status === "aguardando");
+  const irMais = (v: string) => { setMaisAberto(false); if (v === "treino") navigate("/consulta/treino"); else trocar(v); };
+  const itemMenu = (v: string, l: string, ativo: boolean, onClick: () => void) => (
+    <Button
+      key={v}
+      variant="ghost"
+      aria-current={ativo ? "page" : undefined}
+      onClick={onClick}
+      className={`h-11 shrink-0 justify-start rounded-md border-l-2 px-3 text-sm lg:w-full ${ativo ? "border-secondary bg-secondary/10 font-semibold hover:bg-secondary/15" : "border-transparent text-muted-foreground"}`}
     >
-      {[...MENU_TERAPEUTA, ["link", "Meu perfil"] as const].map(([v, l]) => {
-        const ativo = v === "link" ? meuPerfil : aba === v;
-        return (
-        <Button
-          key={v}
-          variant="ghost"
-          aria-current={ativo ? "page" : undefined}
-          onClick={() => trocar(v)}
-          className={`h-11 shrink-0 justify-start rounded-md border-l-2 px-3 text-sm lg:w-full ${v === "link" ? "portal-menu-separado" : ""} ${ativo ? "border-secondary bg-secondary/10 font-semibold hover:bg-secondary/15" : "border-transparent text-muted-foreground"}`}
-        >
-          <span>{l}</span>{v === "mensagens" && totalMensagens > 0 && <span className="ml-auto rounded-full bg-secondary px-2 text-xs text-secondary-foreground">{totalMensagens}</span>}
-          {v === "hoje" && total > 0 && (
-            <span className="ml-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-secondary px-1 text-xs text-secondary-foreground">
-              {total}
-            </span>
-          )}
-        </Button>
-      );})}
+      <span>{l}</span>
+      {v === "mensagens" && totalMensagens > 0 && <span className="ml-auto rounded-full bg-secondary px-2 text-xs text-secondary-foreground">{totalMensagens}</span>}
+      {v === "hoje" && total > 0 && <span className="ml-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-secondary px-1 text-xs text-secondary-foreground">{total}</span>}
+    </Button>
+  );
+  const menu = (
+    <nav aria-label="Portal do terapeuta" className="flex flex-col">
+      {MENU_PRINCIPAL.map(([v, l]) => itemMenu(v, l, aba === v, () => trocar(v)))}
+      <p className="portal-menu-separado mt-4 px-3 pb-1 pt-3 text-xs font-semibold uppercase text-muted-foreground">Mais</p>
+      {MENU_MAIS.map(([v, l]) => itemMenu(v, l, aba === v, () => irMais(v)))}
     </nav>
+  );
+  const icones = { hoje: CalendarDays, agenda: Calendar, pessoas: Users, mensagens: MessageCircle } as const;
+  const maisAtivo = MENU_MAIS.some(([v]) => v === aba);
+  const barra = (
+    <nav aria-label="Portal do terapeuta" className="portal-barra-baixo">
+      {MENU_PRINCIPAL.map(([v, l]) => { const I = icones[v]; return (
+        <button key={v} type="button" aria-current={aba === v ? "page" : undefined} onClick={() => trocar(v)}>
+          <I aria-hidden="true" />{l}
+          {v === "hoje" && temAviso && <span className="portal-barra-ponto" aria-label="Tem pedido ou consulta hoje" />}
+          {v === "mensagens" && totalMensagens > 0 && <span className="portal-barra-num">{totalMensagens}</span>}
+        </button>
+      ); })}
+      <button type="button" aria-current={maisAtivo ? "page" : undefined} aria-expanded={maisAberto} onClick={() => setMaisAberto(true)}>
+        <MoreHorizontal aria-hidden="true" />Mais
+      </button>
+    </nav>
+  );
+  const chaveOnline = online && (
+    <label className="flex items-center gap-2 text-sm">Estou online<Switch checked={online.online} disabled={online.mudando || !online.participa} onCheckedChange={(v) => void online.mudar(v)} className="data-[state=checked]:bg-secondary" /></label>
   );
   return (
     <>
@@ -211,12 +237,21 @@ export default function PainelTerapeuta() {
                 <p className="text-xs text-muted-foreground">Portal do terapeuta</p>
               </div>
             </div>
+            {chaveOnline && <div className="mb-4 px-1">{chaveOnline}</div>}
             {menu}
           </aside>
           <div className="min-w-0">
-            <div className="lg:hidden">
-              {menu}
+            <div className="flex items-center justify-between gap-3 border-b border-border px-4 py-3 lg:hidden">
+              <p className="min-w-0 truncate text-sm font-semibold">{dados.terapeuta.nome}</p>
+              {chaveOnline}
             </div>
+            {barra}
+            <Sheet open={maisAberto} onOpenChange={setMaisAberto}>
+              <SheetContent side="bottom" className="rounded-t-2xl pb-[calc(1.5rem+env(safe-area-inset-bottom))]">
+                <SheetTitle className="mb-2 font-serif text-primary">Mais</SheetTitle>
+                <nav aria-label="Mais" className="flex flex-col">{MENU_MAIS.map(([v, l]) => itemMenu(v, l, aba === v, () => irMais(v)))}</nav>
+              </SheetContent>
+            </Sheet>
             <main className={`portal-conteudo p-4 sm:p-6 ${aba === "mensagens" ? "portal-mensagens" : ""}`}>
               <div className="portal-topo"><h1 className="portal-titulo mb-5 font-serif font-bold text-primary">
                 {aba === "hoje"
@@ -224,15 +259,14 @@ export default function PainelTerapeuta() {
                       dados.terapeuta.primeiro_nome,
                       new Date(agora).getHours(),
                     )
-                  : meuPerfil ? "Meu perfil" : MENU_TERAPEUTA.find(([v]) => v === aba)?.[1]}
+                  : [...MENU_TERAPEUTA, ...ABAS_MEU_PERFIL].find(([v]) => v === aba)?.[1]}
                 {aba === "pessoas" && (
                   <span className="ml-2 font-sans text-sm text-secondary">
                     {pacientes.data?.length ?? dados.numeros.pacientes}
                   </span>
                 )}
               </h1>
-              {(aba === "hoje" || aba === "agenda") && <Button asChild variant="outline" className="mb-5"><Link to="/consulta/treino">Sala de treino</Link></Button>}</div>
-              {meuPerfil && <nav aria-label="Meu perfil" className="mb-6 flex overflow-x-auto border-b border-border">{ABAS_MEU_PERFIL.map(([v, l]) => <Button key={v} variant="ghost" aria-current={aba === v ? "page" : undefined} onClick={() => trocar(v)} className={`h-11 shrink-0 rounded-none border-b-2 px-4 text-sm hover:bg-secondary/10 ${aba === v ? "border-secondary font-semibold" : "border-transparent text-muted-foreground"}`}>{l}</Button>)}</nav>}
+</div>
               {passos && <div className="mb-6">{passos}</div>}
               {aba === "hoje" &&
                 (hoje.data ? (
