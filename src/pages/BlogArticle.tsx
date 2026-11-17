@@ -3,7 +3,8 @@ import { getTransformedImageUrl } from "@/lib/imageTransform";
 import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { Helmet } from "react-helmet-async";
-import { ArrowLeft } from "lucide-react";
+import { ChevronRight } from "lucide-react";
+import { AUTOR_ARTIGO, cursoDoArtigo, dataAtualizacao, dataBRArtigo } from "@/lib/artigoExtras";
 import { supabase } from "@/integrations/supabase/client";
 import { buscarRedirecionamento, aplicarRedirecionamento } from "@/lib/redirecionamentos";
 import { Badge } from "@/components/ui/badge";
@@ -143,9 +144,15 @@ const BlogArticle = () => {
       </Helmet>
 
       <article className="max-w-3xl mx-auto px-4 py-8">
-        <Link to="/blog" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-primary mb-6">
-          <ArrowLeft className="h-4 w-4" /> Voltar ao Blog
-        </Link>
+        <nav aria-label="Trilha" className="mb-6 text-sm text-muted-foreground">
+          <ol className="flex items-center gap-1.5 min-w-0">
+            <li className="shrink-0"><Link to="/" className="hover:text-primary">Início</Link></li>
+            <li className="shrink-0" aria-hidden="true"><ChevronRight className="h-3.5 w-3.5" /></li>
+            <li className="shrink-0"><Link to="/blog" className="hover:text-primary">Blog</Link></li>
+            <li className="shrink-0" aria-hidden="true"><ChevronRight className="h-3.5 w-3.5" /></li>
+            <li className="min-w-0 truncate text-foreground" aria-current="page">{article.title}</li>
+          </ol>
+        </nav>
 
         <div className="flex items-start justify-between gap-3">
           <h1 className="font-serif text-3xl md:text-4xl font-bold text-foreground mb-4 flex-1">
@@ -159,6 +166,22 @@ const BlogArticle = () => {
             {article.meta_description}
           </p>
         )}
+
+        {(() => {
+          const data = dataBRArtigo(dataAtualizacao(article as any));
+          return (
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mb-6">
+              <div className="flex items-center gap-3">
+                <img src={AUTOR_ARTIGO.foto} alt={AUTOR_ARTIGO.nome} width={44} height={44} loading="eager" className="h-11 w-11 rounded-full object-cover" />
+                <div className="leading-tight">
+                  <p className="text-sm font-semibold text-foreground">Por {AUTOR_ARTIGO.nome}</p>
+                  <p className="text-xs text-muted-foreground">{AUTOR_ARTIGO.linha}</p>
+                </div>
+              </div>
+              {data && <p className="text-xs text-muted-foreground">Atualizado em {data}</p>}
+            </div>
+          );
+        })()}
 
         {article.tags && (
           <div className="flex flex-wrap gap-2 mb-6">
@@ -216,6 +239,17 @@ const BlogArticle = () => {
           <span className="text-sm text-muted-foreground">Isso te fez bem?</span>
           <HeartButton contentType="artigo" contentId={article.id} />
         </div>
+
+        {(() => {
+          const curso = cursoDoArtigo(article.tags, article.title);
+          return (
+            <aside className="rounded-xl border border-border bg-muted/40 p-5 md:p-6 mb-8 text-center">
+              <h2 className="font-serif text-xl font-bold text-foreground mb-2">Continue aprendendo</h2>
+              <p className="text-muted-foreground mb-4">Se quiser se aprofundar nesse assunto, conheça o {curso.nome}.</p>
+              <a href={curso.rota} className="inline-flex items-center justify-center rounded-md bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-primary/90">Conhecer o curso</a>
+            </aside>
+          );
+        })()}
 
         <LeiaTambem slug={article.link_do_artigo} />
 

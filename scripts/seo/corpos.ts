@@ -7,6 +7,7 @@
 // passa pelo chat do Lovable, que apaga tudo que parece tag.
 
 import { limparDescricaoVideo } from "../../src/lib/videoDescricao";
+import { AUTOR_ARTIGO, cursoDoArtigo, dataAtualizacao, dataBRArtigo } from "../../src/lib/artigoExtras";
 import type { LinhaArtigo, LinhaVideo, LinhaReceita } from "./fontes";
 import type { Relacionados, Item } from "./relacionados";
 
@@ -46,10 +47,17 @@ function links(titulo: string, itens: Item[]): string {
 
 /** Artigo: título, resumo, o texto do artigo e o bloco Leia também / Assista também (como em BlogArticle.tsx). */
 export function corpoArtigo(p: LinhaArtigo, rel?: Relacionados): string {
+  const curso = cursoDoArtigo(p.tags, p.title);
+  const data = dataBRArtigo(dataAtualizacao(p));
   return [
+    tag("nav", `${A}a href="/">Início${A}/a> › ${A}a href="/blog">Blog${A}/a> › ${esc(limpo(p.title))}`),
     tag("h1", esc(limpo(p.title))),
     p.meta_description ? tag("p", esc(limpo(p.meta_description))) : "",
+    tag("p", `Por ${esc(AUTOR_ARTIGO.nome)}. ${esc(AUTOR_ARTIGO.linha)}.${data ? ` Atualizado em ${data}.` : ""}`),
     p.summary ?? "",
+    tag("h2", "Continue aprendendo") +
+      tag("p", `Se quiser se aprofundar nesse assunto, conheça o ${esc(curso.nome)}.`) +
+      `${A}a href="${curso.rota}">Conhecer o curso${A}/a>`,
     rel ? links("Leia também", rel.artigos) : "",
     rel ? links("Assista também", rel.videos) : "",
   ]

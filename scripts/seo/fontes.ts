@@ -28,6 +28,8 @@ export type LinhaArtigo = {
   summary: string | null;
   link_do_artigo: string;
   meta_description: string | null;
+  tags: string | null;
+  atualizado_em: string | null;
 };
 
 /** Linha da view videos_canonicos (as mesmas colunas da RPC find_video_canonico). */
@@ -135,7 +137,7 @@ export type Fontes = {
 export async function lerFontes(): Promise<Fontes> {
   const [artigos, videos, curtos, receitas, terapeutas, produtos, kits, categorias, redirecionamentos, registros] = await Promise.all([
     lerTudo<LinhaArtigo>(
-      "portal_conteudo?select=id,created_at,image_url,title,summary,link_do_artigo,meta_description&status=eq.published&link_do_artigo=not.is.null",
+      "portal_conteudo?select=id,created_at,image_url,title,summary,link_do_artigo,meta_description,tags,atualizado_em&status=eq.published&link_do_artigo=not.is.null",
       "id.asc"
     ),
 

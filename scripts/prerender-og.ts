@@ -306,15 +306,28 @@ async function dynamicRoutes(): Promise<{ routes: Route[]; counts: Contagens; re
       corpo: corpoArtigo(p, relacionados.get(p.link_do_artigo)),
       jsonld: {
         "@context": "https://schema.org",
-        "@type": "Article",
-        headline: clean(p.title, 110),
-        description: desc,
-        image,
-        datePublished: p.created_at || undefined,
-        mainEntityOfPage: `${BASE_URL}${rota}`,
-        inLanguage: "pt-BR",
-        author: { "@type": "Person", name: AUTOR_NOME },
-        publisher: editora,
+        "@graph": [
+          {
+            "@type": "Article",
+            headline: clean(p.title, 110),
+            description: desc,
+            image,
+            datePublished: p.created_at || undefined,
+            dateModified: p.atualizado_em || p.created_at || undefined,
+            mainEntityOfPage: `${BASE_URL}${rota}`,
+            inLanguage: "pt-BR",
+            author: { "@type": "Person", name: AUTOR_NOME },
+            publisher: editora,
+          },
+          {
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              { "@type": "ListItem", position: 1, name: "Início", item: `${BASE_URL}/` },
+              { "@type": "ListItem", position: 2, name: "Blog", item: `${BASE_URL}/blog` },
+              { "@type": "ListItem", position: 3, name: clean(p.title, 110), item: `${BASE_URL}${rota}` },
+            ],
+          },
+        ],
       },
     });
     bump("blog");
