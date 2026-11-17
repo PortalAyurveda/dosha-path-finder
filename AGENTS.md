@@ -22,7 +22,7 @@
 
 - Keep therapist collection editing and item display in dedicated collection components with a lazy item route; keep teaching boards independently lazy-loaded with canvas strokes and source metadata in their own module, reuse assessment marking, and delete Storage files using the paths returned by existing RPCs. This isolates the private editor and preserves resumable boards without altering other portal views.
 - Keep personal library content normalization in terapiaAcervo and ready-sheet RPCs in terapiaModelos; the dedicated ready-sheet editor reuses indication moments, catalog and section editing without patient context, so legacy content and Portal read-only templates remain isolated from consultation saves.
-- Keep therapist online presence, the global 2-minute ping and the "Consulta agora" alert in the lazy OnlineTerapeuta motor that Layout mounts only for signed-in therapists (context lives in online/contexto.ts; ChatAvisos loads lazily for any signed-in user), and the cart drawer lazy via CartDrawerSobDemanda; this keeps visitors from downloading therapy or checkout code.
+- Keep therapist online presence, the global 2-minute ping and the "Consulta agora" alert in the lazy OnlineTerapeuta motor that Layout mounts only for signed-in therapists, ChatAvisos lazily for any signed-in user and the cart drawer via CartDrawerSobDemanda, so visitors skip that code.
 - Keep public booking steps and directory rules in dedicated public-therapy modules, reuse the patient birth form, and generate invitation metadata from the public preview RPC; this isolates booking from private therapist views and keeps crawler previews consistent.
 - Keep the patient-side therapist views (Meu terapeuta in /meu-perfil, the shared Do seu terapeuta sheet block also shown atop /minha-rotina) lazy-loaded in src/components/terapia/meu with RPC access in src/lib/terapiaMeu.ts; the block prints itself via a body class and print CSS so patients never reach therapist routes.
 
@@ -49,4 +49,3 @@
 - Consultation requests use consulta_solicitacoes via src/lib/terapiaPedidos.ts, holding slots in horario_reservas; consultas rows exist only after confirmation, so agenda functions stay unchanged.
 - Therapist nav and person moment live in terapiaPessoa so old links stay valid.
 
-- vite manualChunks splits only framer-motion, supabase, react-query and react core; never group radix (it pulls lazy-only UI into the first load).

@@ -1,3 +1,4 @@
+// manualChunks: never group @radix-ui — it pulls lazy-only UI into the first load.
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
