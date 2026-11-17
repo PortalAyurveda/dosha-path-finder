@@ -152,6 +152,13 @@ const SamkhyaProduto = () => {
                   size="md"
                 />
 <CashBlackProduto slug={produto.slug} precoNormal={Number(produto.preco_normal)} precoPix={Number(produto.preco_pix)} />
+                <Link
+                  to="/politica-de-devolucao"
+                  className="text-sm underline underline-offset-2"
+                  style={{ color: samkhyaTokens.roxo }}
+                >
+                  Trocas e devoluções
+                </Link>
                 <div className="flex flex-col gap-3">
                   <BotaoAdicionarCarrinho
                     item={{

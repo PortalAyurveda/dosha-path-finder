@@ -16,7 +16,7 @@ import { readFileSync, writeFileSync, mkdirSync, existsSync } from "fs";
 import { resolve } from "path";
 import { limparDescricaoVideo } from "../src/lib/videoDescricao";
 import { montarRelacionados, type Relacionados } from "./seo/relacionados";
-import { corpoArtigo, corpoVideo, corpoReceita, corpoTerapeuta, corpoTesteDosha, blocoCorpo, corpoCursoPadrao, corpoCursoFormacao, corpoHubCursos } from "./seo/corpos";
+import { corpoArtigo, corpoVideo, corpoReceita, corpoTerapeuta, corpoTesteDosha, blocoCorpo, corpoCursoPadrao, corpoCursoFormacao, corpoHubCursos, corpoDevolucao } from "./seo/corpos";
 import { hubCursos } from "../src/data/courses/hub";
 import { NOME_CURSO } from "../src/data/courses/nomes";
 import { alimentacaoData } from "../src/data/courses/alimentacao";
@@ -178,6 +178,7 @@ const staticRoutes: Route[] = [
   { path: "/samkhya/todos", title: "Todos os produtos — Samkhya", description: "Catálogo completo de produtos ayurvédicos da loja Samkhya." },
   { path: "/politica-de-privacidade", title: "Política de Privacidade — Portal Ayurveda", description: "Como o Portal Ayurveda coleta, usa e protege seus dados pessoais." },
   { path: "/termos-de-uso", title: "Termos de Uso — Portal Ayurveda", description: "Termos e condições de uso do Portal Ayurveda." },
+  { path: "/politica-de-devolucao", title: "Trocas e devoluções | Samkhya", description: "Política de trocas e devoluções da loja Samkhya, do Portal Ayurveda.", corpo: corpoDevolucao() },
   { path: "/cursos", title: hubCursos.titulo, description: "Todos os cursos do Portal Ayurveda: formação, alimentação, rotinas e trilhas curtas para você aprofundar sua prática." },
 
   // Páginas que hoje entregam o HTML da home. Título e descrição são os que a própria

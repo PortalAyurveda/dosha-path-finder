@@ -65,6 +65,24 @@ export function corpoArtigo(p: LinhaArtigo, rel?: Relacionados): string {
     .join("\n");
 }
 
+/** Trocas e devoluções: o mesmo texto de PoliticaDeDevolucao.tsx. */
+export function corpoDevolucao(): string {
+  return [
+    tag("h1", "Trocas e devoluções"),
+    tag("p", "Esta política vale para as compras feitas na loja Samkhya, dentro do Portal Ayurveda."),
+    tag("h2", "Desistência da compra"),
+    tag("p", "Você pode desistir da compra em até 7 dias corridos, contados a partir do dia em que recebeu o pedido. O produto precisa estar fechado, sem uso e na embalagem original. Devolvemos o valor total pago, incluindo o frete."),
+    tag("h2", "Produto com defeito ou danificado"),
+    tag("p", "Se o produto chegar com defeito, danificado ou diferente do que você pediu, avise em até 30 dias depois de receber. Trocamos por um produto igual, sem custo para você."),
+    tag("h2", "Frete"),
+    tag("p", "O frete da devolução e da troca é por nossa conta. Depois do seu contato, enviamos as instruções para o envio."),
+    tag("h2", "Reembolso"),
+    tag("p", "O valor volta pelo mesmo meio de pagamento da compra, em até 7 dias úteis depois que o produto chega até nós. No cartão de crédito, o estorno aparece na fatura conforme o prazo do seu banco."),
+    tag("h2", "Como pedir"),
+    tag("p", "Escreva para contato@portalayurveda.com com o número do pedido e conte o que aconteceu. Se for defeito ou dano, mande uma foto do produto."),
+  ].join("\n");
+}
+
 /** Vídeo: título, índice de minutos e descrição, como em Video.tsx. */
 export function corpoVideo(v: LinhaVideo): string {
   const fonte = v.nova_descricao || v.mini_resumo || "";

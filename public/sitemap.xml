@@ -96,6 +96,11 @@
     <priority>0.3</priority>
   </url>
   <url>
+    <loc>https://portalayurveda.com/politica-de-devolucao</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
     <loc>https://portalayurveda.com/blog/entenda-processo-adoecimento-ayurveda</loc>
     <lastmod>2026-04-11</lastmod>
     <changefreq>weekly</changefreq>

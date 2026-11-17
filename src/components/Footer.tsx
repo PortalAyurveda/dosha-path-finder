@@ -162,6 +162,10 @@ const Footer = () => {
               Termos de Uso
             </Link>
             <span style={{ color: "rgba(255,255,255,0.3)" }}>·</span>
+            <Link to="/politica-de-devolucao" className="hover:underline" style={mutedStyle}>
+              Trocas e devoluções
+            </Link>
+            <span style={{ color: "rgba(255,255,255,0.3)" }}>·</span>
             <Link to="/devlog" rel="nofollow" className="hover:underline" style={mutedStyle}>
               Devlog
             </Link>
