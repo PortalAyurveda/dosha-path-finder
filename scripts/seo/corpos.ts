@@ -193,3 +193,15 @@ export function corpoCursoFormacao(nome: string, d: import("../../src/data/cours
   p.push(tag("h2", esc(limpo(d.faq.title))), ...d.faq.items.flatMap((f) => [tag("h3", esc(limpo(f.question))), tag("p", esc(limpo(f.answer)))]));
   return p.filter(Boolean).join("\n");
 }
+
+/** Vitrine /cursos: os mesmos blocos que CursosVitrine mostra, lidos de src/data/courses/hub.ts. */
+export function corpoHubCursos(h: typeof import("../../src/data/courses/hub").hubCursos): string {
+  const p: string[] = [tag("h1", esc(h.h1)), ...h.paragrafos.map((t) => tag("p", esc(t)))];
+  p.push(tag("h2", esc(h.comecar.titulo)), ...h.comecar.frases.map((t) => tag("p", esc(t))));
+  p.push(tag("p", `${A}a href="${h.comecar.link}">${esc(h.comecar.botao)}${A}/a>`));
+  p.push(links("Cursos", h.cursos.map((c) => ({ titulo: c.titulo, rota: c.href }) as Item)));
+  p.push(tag("h2", esc(h.caminhos.titulo)), ...h.caminhos.itens.map((c) => tag("h3", esc(c.titulo)) + tag("p", esc(c.texto))));
+  p.push(tag("h2", esc(h.professor.titulo)), ...h.professor.frases.map((t) => tag("p", esc(t))));
+  p.push(tag("h2", esc(h.faq.titulo)), ...h.faq.itens.map((f) => tag("h3", esc(f.q)) + tag("p", esc(f.a))));
+  return p.join("\n");
+}

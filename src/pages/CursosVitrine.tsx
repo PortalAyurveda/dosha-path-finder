@@ -7,6 +7,7 @@ import { useUser } from "@/contexts/UserContext";
 import PageContainer from "@/components/PageContainer";
 import { Button } from "@/components/ui/button";
 import { getTransformedImageUrl } from "@/lib/imageTransform";
+import { hubCursos as H } from "@/data/courses/hub";
 import {
   CursoCardCapa,
   CursoCardTituloAbaixo,
@@ -232,9 +233,9 @@ const CursosVitrine = () => {
   useEffect(() => {
     (async () => {
       const { data } = await supabase.from("cursos").select(CAMPOS).in("slug", ORDEM_VITRINE);
-      const cursosOrdenados = ORDEM_VITRINE.map((slug) =>
-        (data as Curso[] | null)?.find((c) => c.slug === slug),
-      ).filter((c): c is Curso => !!c);
+      const cursosOrdenados = [...((data as Curso[] | null) ?? [])].sort(
+        (a, b) => (a.ordem ?? 99) - (b.ordem ?? 99),
+      );
       setCursos(cursosOrdenados);
       if (user) {
         const { data: mats } = await supabase
@@ -258,21 +259,53 @@ const CursosVitrine = () => {
 
   return (
     <PageContainer
-      title="Cursos do Portal Ayurveda"
+      title={H.titulo}
       description="Formação, alimentação, rotinas e mais — cursos em vídeo com acesso permanente."
     >
       <div className="max-w-6xl mx-auto px-4 py-10 md:py-16">
         <BannerSlot slot="cursos_topo" className="mb-8 [&:empty]:hidden" />
         <header className="mb-10 md:mb-14 text-center max-w-2xl mx-auto">
           <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-muted-foreground mb-3">
-            Escola do Portal
+            {H.etiqueta}
           </p>
-          <h1 className="mb-4">Cursos do Portal</h1>
+          <h1 className="mb-4">{H.h1}</h1>
           <div className="h-px w-16 mx-auto mb-4 bg-gradient-to-r from-transparent via-primary/60 to-transparent" />
-          <p className="text-muted-foreground">
-            {"\n"}
-          </p>
+          {H.paragrafos.map((t) => (
+            <p key={t} className="text-muted-foreground mb-3">{t}</p>
+          ))}
         </header>
+
+        {(() => {
+          const alim = cursos.find((c) => c.slug === "alimentacao-e-nutricao");
+          const aluno = !!alim && matriculadas.has(alim.id);
+          return (
+            <section className="mb-12 md:mb-16 flex flex-col md:flex-row overflow-hidden rounded-2xl bg-card border border-border shadow-sm">
+              {alim?.capa_url && (
+                <img
+                  src={getTransformedImageUrl(alim.capa_url, 720)}
+                  alt={H.comecar.titulo}
+                  className="w-full md:w-2/5 aspect-[16/10] md:aspect-auto object-cover"
+                />
+              )}
+              <div className="p-6 md:p-8 flex flex-col justify-center gap-3">
+                <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-muted-foreground">{H.comecar.etiqueta}</p>
+                <h2 className="text-2xl md:text-3xl">{H.comecar.titulo}</h2>
+                {H.comecar.frases.map((t) => (
+                  <p key={t} className="text-muted-foreground">{t}</p>
+                ))}
+                <Button
+                  asChild
+                  className="self-start mt-2 hover:opacity-90"
+                  style={{ backgroundColor: "hsl(var(--therapist-salmon))", color: "hsl(var(--therapist-salmon-ink))" }}
+                >
+                  <Link to={aluno ? `/cursos/${alim!.slug}/estudar` : H.comecar.link}>
+                    {aluno ? H.comecar.botaoAluno : H.comecar.botao}
+                  </Link>
+                </Button>
+              </div>
+            </section>
+          );
+        })()}
 
         {loading ? (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -485,6 +518,41 @@ const CursosVitrine = () => {
             })}
           </div>
         )}
+
+        <section className="mt-16 md:mt-20">
+          <h2 className="text-center mb-8">{H.caminhos.titulo}</h2>
+          <div className="grid gap-5 md:grid-cols-3">
+            {H.caminhos.itens.map((c) => (
+              <div key={c.titulo} className="rounded-2xl border p-6"
+                style={{ backgroundColor: "hsl(var(--sand))", borderColor: "hsl(var(--sand-line))" }}>
+                <h3 className="text-xl mb-2">{c.titulo}</h3>
+                <p className="text-muted-foreground">{c.texto}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="mt-16 md:mt-20 max-w-3xl mx-auto flex flex-col md:flex-row items-center gap-6 md:gap-8 text-center md:text-left">
+          <img src={H.professor.foto} alt="Edson Osorio" loading="lazy" className="h-36 w-36 shrink-0 rounded-full object-cover" />
+          <div>
+            <h2 className="mb-3">{H.professor.titulo}</h2>
+            {H.professor.frases.map((t) => (
+              <p key={t} className="text-muted-foreground mb-2">{t}</p>
+            ))}
+          </div>
+        </section>
+
+        <section className="mt-16 md:mt-20 max-w-3xl mx-auto">
+          <h2 className="text-center mb-8">{H.faq.titulo}</h2>
+          <div className="space-y-6">
+            {H.faq.itens.map((f) => (
+              <div key={f.q}>
+                <h3 className="text-lg mb-1">{f.q}</h3>
+                <p className="text-muted-foreground">{f.a}</p>
+              </div>
+            ))}
+          </div>
+        </section>
       </div>
     </PageContainer>
   );

@@ -10,7 +10,7 @@ interface PageContainerProps {
 }
 
 const PageContainer = ({ title, description, children, className = "", noindex = false }: PageContainerProps) => {
-  const fullTitle = `${title} — Portal Ayurveda`;
+  const fullTitle = title.includes("Portal Ayurveda") ? title : `${title} — Portal Ayurveda`;
   return (
     <>
       <Helmet defer={false}>
