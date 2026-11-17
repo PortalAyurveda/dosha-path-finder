@@ -17,6 +17,18 @@ export default defineConfig(({ mode }) => ({
     target: "es2020",
     cssCodeSplit: true,
     reportCompressedSize: false,
+    rollupOptions: {
+      output: {
+        // Bibliotecas grandes em arquivos próprios: ficam em cache entre publicações.
+        manualChunks(id) {
+          if (!id.includes("node_modules")) return;
+          if (id.includes("framer-motion") || id.includes("motion-dom") || id.includes("motion-utils")) return "framer-motion";
+          if (id.includes("@supabase")) return "supabase";
+          if (id.includes("@tanstack")) return "react-query";
+          if (/node_modules\/(react|react-dom|scheduler|react-router|react-router-dom|@remix-run)\//.test(id)) return "react";
+        },
+      },
+    },
   },
   optimizeDeps: {
     include: ["react-dom", "react-dom/client", "@radix-ui/react-tooltip", "@radix-ui/react-portal"],

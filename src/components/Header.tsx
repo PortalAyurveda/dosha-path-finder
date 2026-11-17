@@ -20,8 +20,8 @@ import samkhyaLogo from "@/assets/samkhya-logo-cropped.png";
 import GlobalSearch from "@/components/GlobalSearch";
 import { RedeemCourseDialog } from "@/components/RedeemCourseDialog";
 import { useSouTerapeuta } from "@/hooks/useSouTerapeuta";
-import { useOnlineTerapeuta } from "@/components/terapia/online/OnlineTerapeuta";
-import { useChatTotal } from '@/components/terapia/chat/ChatAvisos';
+import { useOnlineTerapeuta } from "@/components/terapia/online/contexto";
+import { useChatTotal } from '@/components/terapia/chat/chatTotal';
 import { useMeuAcompanhamento } from "@/hooks/useMeuAcompanhamento";
 import { Switch } from "@/components/ui/switch";
 

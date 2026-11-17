@@ -22,7 +22,7 @@ import { MENU_TERAPEUTA, ABAS_MEU_PERFIL, MENU_PRINCIPAL, MENU_MAIS, abaPainel, 
 import { Calendar, CalendarDays, Users, MessageCircle, MoreHorizontal } from "lucide-react";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { Switch } from "@/components/ui/switch";
-import { useOnlineTerapeuta } from "@/components/terapia/online/OnlineTerapeuta";
+import { useOnlineTerapeuta } from "@/components/terapia/online/contexto";
 import { pedidos } from "@/lib/terapiaPedidos";
 import { useNavigate } from "react-router-dom";
 import { chat, CHAT_LISTA_MS } from '@/lib/terapiaChat';

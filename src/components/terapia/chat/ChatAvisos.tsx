@@ -9,7 +9,7 @@ import {chat,estaAberta,linkConversa,primeirasPalavras,type Conversa} from '@/li
 import {PING_MS} from '@/lib/terapia';
 import {avisoTitulo} from '@/lib/avisosTitulo';
 import {somConsulta} from '@/lib/consultaAgoraAvisos';
-import {useOnlineTerapeuta} from '../online/OnlineTerapeuta';
+import {useOnlineTerapeuta} from '../online/contexto';
 import {AvatarPessoa} from '../Comuns';
 import './chat.css';
 
@@ -17,7 +17,8 @@ interface Linha {id:number;conversa_id:string;autor:string;texto:string}
 interface Cartao {nome:string;imagem:string|null;avatarId:string;texto:string;link:string;mais:number}
 const AVISO_MS=10000;
 
-export function useChatTotal(){const {user,isAnonymous}=useUser();const q=useQuery({queryKey:['chat-total',user?.id],queryFn:chat.naoLidas,enabled:!!user&&!isAnonymous,refetchInterval:PING_MS,refetchIntervalInBackground:true});return user&&!isAnonymous?q.data??0:0;}
+import {useChatTotal} from './chatTotal';
+export {useChatTotal};
 
 export default function ChatAvisos(){
  const total=useChatTotal();const {user,isAnonymous}=useUser();const qc=useQueryClient();const location=useLocation();const navigate=useNavigate();

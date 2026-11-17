@@ -7,7 +7,7 @@ import {Button} from '@/components/ui/button';
 import {Switch} from '@/components/ui/switch';
 import {chat,CHAT_LISTA_MS} from '@/lib/terapiaChat';
 import {horaBR} from '@/lib/terapia';
-import {useOnlineTerapeuta} from '../online/OnlineTerapeuta';
+import {useOnlineTerapeuta} from '../online/contexto';
 import Conversa from './Conversa';
 import ConversaPessoa from './ConversaPessoa';
 import {useUser} from '@/contexts/UserContext';

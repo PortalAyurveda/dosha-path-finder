@@ -10,7 +10,7 @@ import Layout from "@/components/Layout";
 import AnalyticsLoader from "@/components/AnalyticsLoader";
 import AdminRoute from "./components/admin/AdminRoute";
 import { CartProvider } from "./contexts/CartContext";
-import CartDrawer from "./components/loja/CartDrawer";
+import CartDrawerSobDemanda from "./components/loja/CartDrawerSobDemanda";
 
 
 // Legado Wix: /posts/:slug → /blog/:slug
@@ -234,7 +234,7 @@ const RoutedApp = () => {
   return (
     <UserProvider>
       <CartProvider>
-      <CartDrawer />
+      <CartDrawerSobDemanda />
       <LayoutOrBare>
             <Suspense fallback={<RouteFallback />}>
             <Routes>

@@ -1,4 +1,4 @@
-import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useSouTerapeuta } from "@/hooks/useSouTerapeuta";
 import { useToast } from "@/hooks/use-toast";
@@ -6,12 +6,10 @@ import { PING_MS, terapia, type Ping } from "@/lib/terapia";
 import AvisoConsultaAgora from "./AvisoConsultaAgora";
 import { prepararAvisosConsulta } from '@/lib/consultaAgoraAvisos';
 
-import ChatAvisos from '../chat/ChatAvisos';
-interface EstadoOnline { participa: boolean; online: boolean; nome: string; mudando: boolean; mudar: (v: boolean) => Promise<void> }
-const Ctx = createContext<EstadoOnline | null>(null);
-export const useOnlineTerapeuta = () => useContext(Ctx);
+import type { EstadoOnline } from "./contexto";
 
-export function OnlineTerapeutaProvider({ children }: { children: ReactNode }) {
+// Carregado à parte (lazy) pelo Layout, só para quem é terapeuta. Entrega o estado pelo onValor.
+export default function OnlineTerapeutaMotor({ onValor }: { onValor: (v: EstadoOnline | null) => void }) {
   const acesso = useSouTerapeuta();
   const qc = useQueryClient();
   const { toast } = useToast();
@@ -43,11 +41,12 @@ export function OnlineTerapeutaProvider({ children }: { children: ReactNode }) {
     } finally { setMudando(false); }
   };
   const valor: EstadoOnline | null = acesso.permitido && painel.data ? { participa, online, nome: painel.data.terapeuta.nome, mudando, mudar } : null;
-  return (
-    <Ctx.Provider value={valor}>
-      <ChatAvisos/>
-      {children}
-      {valor && participa && <AvisoConsultaAgora key={acesso.userId} online={online} temPedidos={(ping?.pedidos_agora ?? 0) > 0} />}
-    </Ctx.Provider>
-  );
+  const nome = painel.data?.terapeuta.nome;
+  const pronto = acesso.permitido && !!painel.data;
+  useEffect(() => {
+    onValor(pronto ? { participa, online, nome: nome ?? "", mudando, mudar } : null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pronto, participa, online, nome, mudando]);
+  useEffect(() => () => onValor(null), [onValor]);
+  return valor && participa ? <AvisoConsultaAgora key={acesso.userId} online={online} temPedidos={(ping?.pedidos_agora ?? 0) > 0} /> : null;
 }
