@@ -18421,6 +18421,18 @@ export type Database = {
           indice: number
         }[]
       }
+      feed_google_merchant_produtos: {
+        Args: never
+        Returns: {
+          descricao: string
+          id: string
+          imagem: string
+          imagens_extra: string[]
+          link: string
+          preco: number
+          titulo: string
+        }[]
+      }
       fila_destravar: { Args: never; Returns: number }
       fila_estado: {
         Args: never
