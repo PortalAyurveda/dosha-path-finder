@@ -159,7 +159,7 @@ export const formacaoData: FormacaoData = {
       "Praticar desde o início — Você vai preparar medicamentos, fazer abhyangas, aplicar terapias, atender pacientes reais no ambulatório ao vivo",
       "Viver a experiência em comunidade — A cada módulo, você recebe um cardápio, uma rotina (dinacharya), preparações para fazer em casa. Você não estuda Ayurveda. Você vive Ayurveda junto com a turma.",
       "Ter suporte completo — Acesso à área interna do Portal Ayurveda com Guia completo de Alimentação e Nutrição, Guia completo de Dravya Guna, Protocolo de Atendimento, apostilas detalhadas, comunidade de terapeutas e as próximas novidades ainda por vir.",
-      "Aprender com UM professor do início ao fim (exceto o módulo de Saúde da Mulher) — Edson Osorío, 15 anos de clínica, mais de 4.500 alunos formados, te guiando módulo a módulo com coerência e profundidade",
+      "Aprender com UM professor do início ao fim (exceto o módulo de Saúde da Mulher) — Edson Osorio, 15 anos de clínica, mais de 4.500 alunos formados, te guiando módulo a módulo com coerência e profundidade",
       "Aplicar Ayurveda no Brasil de verdade — com ervas nacionais, clima tropical, alimentos locais. Não é tradução da Índia: é Ayurveda adaptado à nossa realidade",
     ],
     closing:
@@ -441,7 +441,7 @@ export const formacaoData: FormacaoData = {
       {
         number: 1,
         title: "Você aprende com quem pratica — e ensina — há anos",
-        body: "Edson Osorío não é só professor. É terapeuta ativo, com clínica real, pacientes reais, casos reais. Tudo o que você vai aprender aqui vem de 15 anos de prática clínica e mais de 13 anos de sala de aula.",
+        body: "Edson Osorio não é só professor. É terapeuta ativo, com clínica real, pacientes reais, casos reais. Tudo o que você vai aprender aqui vem de 15 anos de prática clínica e mais de 13 anos de sala de aula.",
       },
       {
         number: 2,
@@ -488,7 +488,7 @@ export const formacaoData: FormacaoData = {
     ],
   },
   professor: {
-    name: "Edson Osorío",
+    name: "Edson Osorio",
     role: "Terapeuta Ayurveda | Professor | Fundador do Portal Ayurveda",
     photo:
       "https://api.portalayurveda.com/storage/v1/object/public/portal_images/b8f47f-5f003e6165b44645b7163ec3dd646d32mv2-1.jpg",

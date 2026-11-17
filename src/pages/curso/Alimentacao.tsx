@@ -1,3 +1,4 @@
+import { NOME_CURSO } from "@/data/courses/nomes";
 import { useCallback } from "react";
 import { Helmet } from "react-helmet-async";
 import { useNavigate } from "react-router-dom";
@@ -73,6 +74,7 @@ const Alimentacao = () => {
 
       <main>
         <CourseHero
+          titulo={NOME_CURSO.alimentacao}
           data={data.hero}
           branding={data.branding}
           onCtaClick={handleCtaClick("hero")}

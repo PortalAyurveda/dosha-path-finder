@@ -153,3 +153,35 @@ export function blocoCorpo(rota: string, corpo: string): string {
     "o=new MutationObserver(ver);o.observe(r,{childList:true,subtree:true,characterData:true});ver();})();";
   return `\n    ${A}div id="seo-corpo" data-rota="${esc(rota)}">${corpo}${A}/div>\n    ${A}script>${script}${A}/script>`;
 }
+
+/** Cursos com landing própria (Alimentação, Rotinas, Diagnóstico, Dravya Guna): o que CourseHero e as seções mostram. */
+export function corpoCursoPadrao(nome: string, d: import("../../src/data/courses/courseTypes").CourseData): string {
+  const p: string[] = [tag("h1", esc(nome)), tag("h2", esc(d.hero.headline.replace(/\n/g, " ")))];
+  if (d.hero.subheadline) p.push(tag("p", esc(d.hero.subheadline)));
+  p.push(tag("p", esc(d.hero.description)));
+  p.push(tag("p", esc(`De ${d.hero.priceOld} por ${d.hero.priceNew}${d.hero.installments ? ` ou ${d.hero.installments}` : ""}`)));
+  p.push(tag("h2", esc(d.problem.title)), tag("p", esc(d.problem.intro)), lista(d.problem.bullets));
+  p.push(tag("h2", esc(d.solution.title)), tag("p", esc(d.solution.description)));
+  p.push(lista(d.solution.benefits.map((b) => `${b.title}: ${b.text}`)));
+  p.push(tag("h2", esc(d.modules.title)));
+  p.push(lista(d.modules.modules.map((m) => `Módulo ${m.number}: ${m.title}. ${m.description}`), true));
+  p.push(tag("h2", esc(d.audience.title)), lista(d.audience.audiences.map((a) => `${a.title}: ${a.description}`)));
+  p.push(tag("h2", esc(d.professor.name)), ...d.professor.bio.map((b) => tag("p", esc(limpo(b)))));
+  return p.filter(Boolean).join("\n");
+}
+
+/** Formação: o que FormacaoHero, ParaQuem, Programa, Professor, Investimento e FAQ mostram. */
+export function corpoCursoFormacao(nome: string, d: import("../../src/data/courses/formacao").FormacaoData): string {
+  const p: string[] = [tag("h1", esc(nome)), tag("h2", esc(d.hero.headline)), tag("p", esc(d.hero.subheadline))];
+  p.push(tag("p", esc(limpo(d.hero.details))), tag("p", esc(`${d.hero.startDate} · ${d.hero.endDate}`)));
+  p.push(tag("h2", esc(limpo(d.paraQuem.title))), lista(d.paraQuem.items.map(limpo)));
+  p.push(tag("h2", esc(limpo(d.programa.title))), tag("p", esc(limpo(d.programa.intro))));
+  for (const s of d.programa.semesters) {
+    p.push(tag("h3", esc(limpo(`${s.title} — ${s.subtitle}`))));
+    p.push(lista(s.modules.map((m) => limpo(`Módulo ${m.number}: ${m.title} (${m.format}, ${m.date}). ${m.description}`)), true));
+  }
+  p.push(tag("h2", esc(d.professor.name)), tag("p", esc(limpo(d.professor.role))), tag("p", esc(limpo(d.professor.text))));
+  p.push(tag("h2", esc(limpo(d.investimento.title))), tag("p", esc(limpo(d.investimento.total))));
+  p.push(tag("h2", esc(limpo(d.faq.title))), ...d.faq.items.flatMap((f) => [tag("h3", esc(limpo(f.question))), tag("p", esc(limpo(f.answer)))]));
+  return p.filter(Boolean).join("\n");
+}

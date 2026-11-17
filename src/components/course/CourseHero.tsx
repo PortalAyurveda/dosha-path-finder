@@ -9,9 +9,11 @@ interface CourseHeroProps {
   logo?: string;
   courseName?: string;
   heroImage?: string;
+  /** Nome do curso: linha pequena (h1) acima da chamada. */
+  titulo?: string;
 }
 
-const CourseHero = ({ data, branding, onCtaClick, logo, courseName = "Alimentação Ayurveda", heroImage }: CourseHeroProps) => {
+const CourseHero = ({ data, branding, onCtaClick, logo, courseName = "Alimentação Ayurveda", heroImage, titulo }: CourseHeroProps) => {
   return (
     <section
       id="top"
@@ -46,7 +48,13 @@ const CourseHero = ({ data, branding, onCtaClick, logo, courseName = "Alimentaç
              loading="lazy" decoding="async" />
           </motion.div>
 
-          <motion.h1
+          {titulo && (
+            <h1 className="text-xs md:text-sm font-bold uppercase tracking-wider mb-2" style={{ color: branding.darkColor }}>
+              {titulo}
+            </h1>
+          )}
+
+          <motion.h2
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -54,7 +62,7 @@ const CourseHero = ({ data, branding, onCtaClick, logo, courseName = "Alimentaç
             style={{ color: "#352F54" }}
           >
             {data.headline}
-          </motion.h1>
+          </motion.h2>
 
           {data.subheadline && (
             <motion.p
@@ -118,7 +126,7 @@ const CourseHero = ({ data, branding, onCtaClick, logo, courseName = "Alimentaç
               src={heroImage}
               alt={courseName}
               className="w-full max-w-[280px] h-[240px] md:h-[320px] mx-auto object-cover rounded-tl-[3rem] rounded-br-[3rem] rounded-tr-md rounded-bl-md shadow-lg"
-             loading="lazy" decoding="async" />
+              loading="eager" fetchPriority="high" decoding="async" />
           </motion.div>
         )}
       </div>

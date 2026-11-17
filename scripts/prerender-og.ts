@@ -16,7 +16,13 @@ import { readFileSync, writeFileSync, mkdirSync, existsSync } from "fs";
 import { resolve } from "path";
 import { limparDescricaoVideo } from "../src/lib/videoDescricao";
 import { montarRelacionados, type Relacionados } from "./seo/relacionados";
-import { corpoArtigo, corpoVideo, corpoReceita, corpoTerapeuta, corpoTesteDosha, blocoCorpo } from "./seo/corpos";
+import { corpoArtigo, corpoVideo, corpoReceita, corpoTerapeuta, corpoTesteDosha, blocoCorpo, corpoCursoPadrao, corpoCursoFormacao } from "./seo/corpos";
+import { NOME_CURSO } from "../src/data/courses/nomes";
+import { alimentacaoData } from "../src/data/courses/alimentacao";
+import { rotinasData } from "../src/data/courses/rotinas";
+import { diagnosticoAutocuidadoData } from "../src/data/courses/diagnosticoAutocuidado";
+import { dravyaGunaData } from "../src/data/courses/dravyaGuna";
+import { formacaoData } from "../src/data/courses/formacao";
 import { TESTE_DOSHA_FAQ } from "../src/lib/testeDoshaFaq";
 import { akashaSlug } from "../src/lib/akashaSlug";
 import { htmlRedirecionamento, previaDoDestino, type PreviaRedirecionamento } from "./seo/redirecionamentos";
@@ -196,6 +202,51 @@ const staticRoutes: Route[] = [
     description: "Aprenda a formular seus próprios remédios ayurvédicos com base na herbologia brasileira e indiana. 26 ervas e óleos estudados um a um, 26 aulas de receitas ayurvédicas passo a passo, certificado de 40h e bônus de Diagnóstico da Língua.",
   },
 ];
+
+// Cursos com landing própria: texto da tela e JSON-LD Course (+ FAQPage na Formação, a única que mostra perguntas).
+{
+  const curso = (nome: string, descricao: string, url: string, preco?: string) => ({
+    "@type": "Course",
+    name: nome,
+    description: descricao,
+    url,
+    inLanguage: "pt-BR",
+    provider: { "@type": "Organization", name: "Portal Ayurveda", sameAs: BASE_URL },
+    instructor: { "@type": "Person", name: "Edson Osorio" },
+    ...(preco
+      ? { offers: { "@type": "Offer", url, priceCurrency: "BRL", price: Number(preco.replace(/[^\d,]/g, "").replace(",", ".")).toFixed(2), category: "Paid", availability: "https://schema.org/InStock" } }
+      : {}),
+  });
+  const padrao = [
+    ["/curso/alimentacao", NOME_CURSO.alimentacao, alimentacaoData],
+    ["/curso/rotinas", NOME_CURSO.rotinas, rotinasData],
+    ["/curso/diagnostico", NOME_CURSO.diagnostico, diagnosticoAutocuidadoData],
+    ["/curso/dravya-guna", NOME_CURSO.dravyaGuna, dravyaGunaData],
+  ] as const;
+  for (const [path, nome, d] of padrao) {
+    const r = staticRoutes.find((x) => x.path === path);
+    if (!r) throw new Error(`rota de curso sem cadastro: ${path}`);
+    r.corpo = corpoCursoPadrao(nome, d);
+    r.jsonld = { "@context": "https://schema.org", ...curso(nome, r.description, `${BASE_URL}${path}`, d.pricing.priceNew) };
+  }
+  const f = staticRoutes.find((x) => x.path === "/curso/formacao");
+  if (!f) throw new Error("rota /curso/formacao sem cadastro");
+  f.corpo = corpoCursoFormacao(NOME_CURSO.formacao, formacaoData);
+  f.jsonld = {
+    "@context": "https://schema.org",
+    "@graph": [
+      curso(NOME_CURSO.formacao, f.description, `${BASE_URL}/curso/formacao`),
+      {
+        "@type": "FAQPage",
+        mainEntity: formacaoData.faq.items.map((q) => ({
+          "@type": "Question",
+          name: q.question.replace(/\u003c[^>]+>/g, " ").trim(),
+          acceptedAnswer: { "@type": "Answer", text: q.answer.replace(/\u003c[^>]+>/g, " ").replace(/\s+/g, " ").trim() },
+        })),
+      },
+    ],
+  };
+}
 
 // As 9 abas dos guias, com o título e a descrição que DoshaVata/Pitta/Kapha declaram no Helmet.
 // A aba de remédios responde em /remedios e /alquimia; o canônico é /remedios.

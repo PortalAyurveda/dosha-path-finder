@@ -1,3 +1,4 @@
+import { NOME_CURSO } from "@/data/courses/nomes";
 import { motion } from "framer-motion";
 import { Calendar } from "lucide-react";
 import type { FormacaoData } from "@/data/courses/formacao";
@@ -27,7 +28,11 @@ const FormacaoHero = ({ data, branding, onCtaClick }: Props) => (
 
     <div className="relative max-w-4xl mx-auto px-6 text-center">
 
-      <motion.h1
+      <h1 className="text-xs md:text-sm font-bold uppercase tracking-wider mb-2" style={{ color: branding.darkColor }}>
+        {NOME_CURSO.formacao}
+      </h1>
+
+      <motion.h2
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
@@ -35,7 +40,7 @@ const FormacaoHero = ({ data, branding, onCtaClick }: Props) => (
         style={{ color: branding.darkColor }}
       >
         {data.headline}
-      </motion.h1>
+      </motion.h2>
 
       <motion.p
         initial={{ opacity: 0, y: 16 }}
