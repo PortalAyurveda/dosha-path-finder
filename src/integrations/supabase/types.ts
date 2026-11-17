@@ -12168,6 +12168,7 @@ export type Database = {
       }
       portal_conteudo: {
         Row: {
+          atualizado_em: string | null
           created_at: string
           destaque_index: boolean | null
           destaque_ordem: number | null
@@ -12184,6 +12185,7 @@ export type Database = {
           video_url: string | null
         }
         Insert: {
+          atualizado_em?: string | null
           created_at?: string
           destaque_index?: boolean | null
           destaque_ordem?: number | null
@@ -12200,6 +12202,7 @@ export type Database = {
           video_url?: string | null
         }
         Update: {
+          atualizado_em?: string | null
           created_at?: string
           destaque_index?: boolean | null
           destaque_ordem?: number | null
@@ -17635,6 +17638,7 @@ export type Database = {
       artigo_do_dia: {
         Args: never
         Returns: {
+          atualizado_em: string | null
           created_at: string
           destaque_index: boolean | null
           destaque_ordem: number | null
