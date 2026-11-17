@@ -492,7 +492,7 @@ async function dynamicRoutes(): Promise<{ routes: Route[]; counts: Contagens; re
     const desc = clean(p.resumo_curto, 200) || `${clean(p.nome_display, 90)} — produto ayurvédico da loja Samkhya do Portal Ayurveda.`;
     const url = `${BASE_URL}/samkhya/produto/${p.slug}`;
     const image = p.imagem_url || DEFAULT_OG;
-    routes.push({ path: `/samkhya/produto/${p.slug}`, title: `${clean(p.nome_display, 90)} — Samkhya | Portal Ayurveda`, description: desc, image, type: "product", jsonld: ofertaJsonld(p.nome_display, desc, image, url, p.preco_pix ?? p.preco_normal) });
+    routes.push({ path: `/samkhya/produto/${p.slug}`, title: `${clean(p.nome_display, 90)} — Samkhya | Portal Ayurveda`, description: desc, image, type: "product", jsonld: ofertaJsonld(p.nome_display, desc, image, url, p.preco_normal ?? p.preco_pix) });
     bump("produto");
   }
   for (const k of kits) {
@@ -500,7 +500,7 @@ async function dynamicRoutes(): Promise<{ routes: Route[]; counts: Contagens; re
     const desc = clean(k.descricao_curta, 200) || `${clean(k.nome, 90)} — kit ayurvédico da loja Samkhya do Portal Ayurveda.`;
     const url = `${BASE_URL}/samkhya/kits/${k.slug}`;
     const image = k.imagem_url || DEFAULT_OG;
-    routes.push({ path: `/samkhya/kits/${k.slug}`, title: `${clean(k.nome, 90)} — Samkhya | Portal Ayurveda`, description: desc, image, type: "product", jsonld: ofertaJsonld(k.nome, desc, image, url, k.preco_pix ?? k.preco_normal) });
+    routes.push({ path: `/samkhya/kits/${k.slug}`, title: `${clean(k.nome, 90)} — Samkhya | Portal Ayurveda`, description: desc, image, type: "product", jsonld: ofertaJsonld(k.nome, desc, image, url, k.preco_normal ?? k.preco_pix) });
     bump("kit");
   }
   for (const c of categorias) {
