@@ -533,7 +533,7 @@ const CursosVitrine = () => {
         </section>
 
         <section className="mt-16 md:mt-20 max-w-3xl mx-auto flex flex-col md:flex-row items-center gap-6 md:gap-8 text-center md:text-left">
-          <img src={H.professor.foto} alt="Edson Osorio" loading="lazy" className="h-36 w-36 shrink-0 rounded-full object-cover" />
+          <img src={H.professor.foto} alt="Edson Osorio" className="h-36 w-36 shrink-0 rounded-full object-cover" />
           <div>
             <h2 className="mb-3">{H.professor.titulo}</h2>
             {H.professor.frases.map((t) => (
