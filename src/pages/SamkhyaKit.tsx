@@ -27,6 +27,7 @@ type EscolhaOpcao = {
   nome: string;
   imagem_url: string | null;
   resumo: string | null;
+  imagem_kit?: string | null;
   padrao?: boolean;
 };
 
@@ -104,6 +105,16 @@ const SamkhyaKit = () => {
     return nomes.length ? nomes.join(" · ") : undefined;
   }, [kit, selecoes]);
 
+  // Foto do kit acompanha a escolha (ex.: Chai). Sem foto própria, usa a capa.
+  const imagemKit = useMemo(() => {
+    if (!kit) return null;
+    for (const g of kit.escolhas ?? []) {
+      const op = g.opcoes.find((o) => o.produto_id === selecoes[g.grupo]);
+      if (op?.imagem_kit) return op.imagem_kit;
+    }
+    return kit.imagem_url;
+  }, [kit, selecoes]);
+
   if (kit?.checkout_proprio) return <Navigate to={kit.checkout_proprio} replace />;
 
   return (
@@ -142,8 +153,8 @@ const SamkhyaKit = () => {
         ) : (
           <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-start">
             <div className="aspect-square rounded-lg flex items-center justify-center p-4 md:p-6">
-              {kit.imagem_url ? (
-                <img src={kit.imagem_url} alt={kit.nome} className="max-h-full max-w-full object-contain"  loading="lazy" decoding="async" />
+              {imagemKit ? (
+                <img src={imagemKit} alt={kit.nome} className="max-h-full max-w-full object-contain" loading="lazy" decoding="async" />
               ) : (
                 <span style={{ color: samkhyaTokens.textoSec }}>Sem imagem</span>
               )}
@@ -216,7 +227,7 @@ const SamkhyaKit = () => {
                     preco_normal: Number(kit.preco_normal),
                     preco_pix: Number(kit.preco_pix),
                     stripe_price_id: kit.stripe_price_id ?? null,
-                    imagem_url: kit.imagem_url,
+                    imagem_url: imagemKit,
                     peso_gramas: kit.peso_gramas ?? 0,
                     tipo: "kit",
                     ...(Object.keys(selecoes).length > 0
