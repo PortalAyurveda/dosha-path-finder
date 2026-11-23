@@ -6,6 +6,10 @@ import { cn } from "@/lib/utils";
 interface ProdutoCarrosselProps {
   imagens: string[];
   alt: string;
+  /** Quando muda, a galeria vai para esta foto (se ela estiver na lista). */
+  destaque?: string | null;
+  /** Muda a cada clique numa opção do kit: a galeria volta para a foto da opção mesmo quando ela já estava marcada. */
+  destaqueVersao?: unknown;
 }
 
 /**
@@ -15,8 +19,15 @@ interface ProdutoCarrosselProps {
  * - Galeria de miniaturas clicáveis abaixo
  * - Suporte a teclado (← →)
  */
-export default function ProdutoCarrossel({ imagens, alt }: ProdutoCarrosselProps) {
+export default function ProdutoCarrossel({ imagens, alt, destaque, destaqueVersao }: ProdutoCarrosselProps) {
   const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    if (!destaque) return;
+    const i = imagens.indexOf(destaque);
+    if (i >= 0) setIndex(i);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [destaque, destaqueVersao]);
   const total = imagens.length;
   const hasMultiple = total > 1;
 

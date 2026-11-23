@@ -11,6 +11,7 @@ import BotaoAdicionarCarrinho from "@/components/samkhya/BotaoAdicionarCarrinho"
 import { Button } from "@/components/ui/button";
 import { samkhyaTokens } from "@/components/samkhya/tokens";
 import KitEscolhas from "@/components/samkhya/KitEscolhas";
+import ProdutoCarrossel from "@/components/samkhya/ProdutoCarrossel";
 
 type ItemFixo = {
   produto_id: number;
@@ -44,6 +45,7 @@ type KitDetalhe = {
   preco_pix: number;
   preco_normal: number;
   imagem_url: string | null;
+  imagens?: string[] | null;
   peso_gramas: number;
   stripe_price_id?: string | null;
   id?: number;
@@ -115,6 +117,17 @@ const SamkhyaKit = () => {
     return kit.imagem_url;
   }, [kit, selecoes]);
 
+  // Todas as fotos do kit: capa, foto de cada opção de escolha e extras, sem repetir.
+  const galeria = useMemo(() => {
+    if (!kit) return [];
+    const urls = [
+      kit.imagem_url,
+      ...(kit.escolhas ?? []).flatMap((g) => g.opcoes.map((o) => o.imagem_kit)),
+      ...(kit.imagens ?? []),
+    ];
+    return urls.filter((u, i, arr): u is string => !!u && arr.indexOf(u) === i);
+  }, [kit]);
+
   if (kit?.checkout_proprio) return <Navigate to={kit.checkout_proprio} replace />;
 
   return (
@@ -152,13 +165,7 @@ const SamkhyaKit = () => {
           </p>
         ) : (
           <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-start">
-            <div className="aspect-square rounded-lg flex items-center justify-center p-4 md:p-6">
-              {imagemKit ? (
-                <img src={imagemKit} alt={kit.nome} className="max-h-full max-w-full object-contain" loading="lazy" decoding="async" />
-              ) : (
-                <span style={{ color: samkhyaTokens.textoSec }}>Sem imagem</span>
-              )}
-            </div>
+            <ProdutoCarrossel imagens={galeria} alt={kit.nome} destaque={imagemKit} destaqueVersao={selecoes} />
 
             <div className="flex flex-col gap-10">
               <h1
