@@ -32,6 +32,21 @@ export type Database = {
         }
         Relationships: []
       }
+      _bkp_banners_cashblack_link_20261118: {
+        Row: {
+          html: string | null
+          id: string | null
+        }
+        Insert: {
+          html?: string | null
+          id?: string | null
+        }
+        Update: {
+          html?: string | null
+          id?: string | null
+        }
+        Relationships: []
+      }
       _bkp_curso_diplomas_20261013: {
         Row: {
           carga_horaria: string | null
@@ -272,6 +287,30 @@ export type Database = {
         }
         Relationships: []
       }
+      _bkp_kits_fotos_20261123: {
+        Row: {
+          id: number | null
+          imagem_url: string | null
+          imagens: string[] | null
+          salvo_em: string | null
+          slug: string | null
+        }
+        Insert: {
+          id?: number | null
+          imagem_url?: string | null
+          imagens?: string[] | null
+          salvo_em?: string | null
+          slug?: string | null
+        }
+        Update: {
+          id?: number | null
+          imagem_url?: string | null
+          imagens?: string[] | null
+          salvo_em?: string | null
+          slug?: string | null
+        }
+        Relationships: []
+      }
       _bkp_objetivos_agni_20261007: {
         Row: {
           agni_nivel_atual: number | null
@@ -287,6 +326,57 @@ export type Database = {
           agni_nivel_atual?: number | null
           agni_nivel_meta?: number | null
           id?: string | null
+        }
+        Relationships: []
+      }
+      _bkp_paginas_venda_cashblack_20261123: {
+        Row: {
+          ativo: boolean | null
+          atualizado_em: string | null
+          criado_em: string | null
+          css: string | null
+          descricao: string | null
+          encerrada_html: string | null
+          html: string | null
+          imagem_url: string | null
+          preco_especial_id: string | null
+          salvo_em: string | null
+          slug: string | null
+          texto_botao: string | null
+          texto_email: string | null
+          titulo: string | null
+        }
+        Insert: {
+          ativo?: boolean | null
+          atualizado_em?: string | null
+          criado_em?: string | null
+          css?: string | null
+          descricao?: string | null
+          encerrada_html?: string | null
+          html?: string | null
+          imagem_url?: string | null
+          preco_especial_id?: string | null
+          salvo_em?: string | null
+          slug?: string | null
+          texto_botao?: string | null
+          texto_email?: string | null
+          titulo?: string | null
+        }
+        Update: {
+          ativo?: boolean | null
+          atualizado_em?: string | null
+          criado_em?: string | null
+          css?: string | null
+          descricao?: string | null
+          encerrada_html?: string | null
+          html?: string | null
+          imagem_url?: string | null
+          preco_especial_id?: string | null
+          salvo_em?: string | null
+          slug?: string | null
+          texto_botao?: string | null
+          texto_email?: string | null
+          titulo?: string | null
         }
         Relationships: []
       }
