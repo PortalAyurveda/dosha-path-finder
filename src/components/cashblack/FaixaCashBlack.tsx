@@ -34,20 +34,20 @@ const FaixaCashBlack = () => {
       className="block min-w-0 flex-1 text-center text-[11px] sm:text-xs md:text-sm leading-tight px-3 py-1.5 hover:opacity-95"
     >
       {reta ? (
-        <span style={cor}>{forte} · Até 27/11: 20% no Pix ou 100% em crédito</span>
+        <span style={cor}>{forte} · Até 30/11: 20% no Pix ou 100% em crédito</span>
       ) : (
         <>
-          <span className="md:hidden" style={cor}>{forte} · 100% em crédito até 27/11 ›</span>
+          <span className="md:hidden" style={cor}>{forte} · 100% em crédito até 30/11 ›</span>
           <span className="hidden md:inline-flex items-center gap-2 justify-center" style={cor}>
             {naLoja ? (
               <>
-                <span style={cor}>{forte} · Compre na Samkhya e ganhe crédito no Portal até 27/11 ·</span>
+                <span style={cor}>{forte} · Compre na Samkhya e ganhe crédito no Portal até 30/11 ·</span>
                 {Number.isFinite(fimMs) && <Relogio fimMs={fimMs} pequeno />}
                 <span style={cor}>›</span>
               </>
             ) : (
               <>
-                <span style={cor}>{forte} · 100% em crédito até 27/11 ·</span>
+                <span style={cor}>{forte} · 100% em crédito até 30/11 ·</span>
                 {Number.isFinite(fimMs) && <Relogio fimMs={fimMs} pequeno />}
                 <span style={cor}>· Como funciona ›</span>
               </>

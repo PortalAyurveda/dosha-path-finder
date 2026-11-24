@@ -877,7 +877,7 @@ const Assinar = () => {
             <div id="escolha-plano" style={{ scrollMarginTop: "calc(var(--cb-faixa, 0px) + 72px)" }}>
               {cashBlack && (
                 <div className="mb-6 rounded-xl px-4 py-3 text-center text-sm md:text-base leading-snug" style={{ background: samkhyaTokens.roxoDark, color: samkhyaTokens.footerTexto }}>
-                  <strong>CASH BLACK</strong> · Já estava pensando em assinar? Até 27/11, o valor da primeira cobrança vira crédito para usar no Portal ou na Samkhya. No Premium Anual, são R$ 597,00 em crédito.
+                  <strong>CASH BLACK</strong> · Já estava pensando em assinar? Até 30/11, o valor da primeira cobrança vira crédito para usar no Portal ou na Samkhya. No Premium Anual, são R$ 597,00 em crédito.
                 </div>
               )}
               <h2 className="font-serif font-bold text-2xl md:text-[28px] text-center mb-2" style={{ color: PRIMARY }}>
