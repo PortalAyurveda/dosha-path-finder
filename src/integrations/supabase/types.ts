@@ -18263,6 +18263,7 @@ export type Database = {
         Returns: string
       }
       cobranca_entregar: { Args: { p_cobranca_id: string }; Returns: Json }
+      cobranca_status_publica: { Args: { p_id: string }; Returns: Json }
       coletar_dados_sintese_mensal: { Args: { p_email: string }; Returns: Json }
       confirmar_assinatura_pix: {
         Args: { p_mp_payment_id: string }
