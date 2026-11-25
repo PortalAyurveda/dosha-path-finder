@@ -5542,7 +5542,12 @@ export type Database = {
           criado_por: string | null
           descricao: string
           email_cliente: string | null
-          gateway: string
+          entrega_em: string | null
+          entrega_payload: Json | null
+          entrega_resultado: Json | null
+          entrega_status: string
+          entrega_tipo: string | null
+          gateway: string | null
           id: string
           itens: Json | null
           moeda: string
@@ -5565,7 +5570,12 @@ export type Database = {
           criado_por?: string | null
           descricao: string
           email_cliente?: string | null
-          gateway?: string
+          entrega_em?: string | null
+          entrega_payload?: Json | null
+          entrega_resultado?: Json | null
+          entrega_status?: string
+          entrega_tipo?: string | null
+          gateway?: string | null
           id?: string
           itens?: Json | null
           moeda?: string
@@ -5588,7 +5598,12 @@ export type Database = {
           criado_por?: string | null
           descricao?: string
           email_cliente?: string | null
-          gateway?: string
+          entrega_em?: string | null
+          entrega_payload?: Json | null
+          entrega_resultado?: Json | null
+          entrega_status?: string
+          entrega_tipo?: string | null
+          gateway?: string | null
           id?: string
           itens?: Json | null
           moeda?: string
@@ -18247,6 +18262,7 @@ export type Database = {
         Args: { p_amostra: string }
         Returns: string
       }
+      cobranca_entregar: { Args: { p_cobranca_id: string }; Returns: Json }
       coletar_dados_sintese_mensal: { Args: { p_email: string }; Returns: Json }
       confirmar_assinatura_pix: {
         Args: { p_mp_payment_id: string }
