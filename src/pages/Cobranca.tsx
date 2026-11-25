@@ -55,18 +55,14 @@ const Cobranca = () => {
     setErro(null);
     try {
       if (!pular) {
-        const { data: linha } = await supabase
-          .from("cobrancas")
-          .select("status, gateway, descricao, valor, nome_cliente")
-          .eq("id", id)
-          .maybeSingle();
+        const { data: linha } = await (supabase.rpc as any)("cobranca_status_publica", { p_id: id });
         const st = String((linha as any)?.status ?? "").toLowerCase();
         if (linha && (linha as any).gateway == null && st === "pendente") {
           setDados(null);
           setEscolha({
             descricao: (linha as any).descricao ?? null,
             valor: (linha as any).valor ?? null,
-            primeiro_nome: ((linha as any).nome_cliente ?? "").trim().split(/\s+/)[0] || null,
+            primeiro_nome: (linha as any).primeiro_nome ?? null,
           });
           return;
         }
