@@ -37,6 +37,8 @@ const Cobranca = () => {
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState<string | null>(null);
   const [copiado, setCopiado] = useState(false);
+  const [escolha, setEscolha] = useState<{ descricao: string | null; valor: number | null; primeiro_nome: string | null } | null>(null);
+  const [indoCartao, setIndoCartao] = useState(false);
   const [agora, setAgora] = useState(() => Date.now());
   const pollRef = useRef<number | null>(null);
 
@@ -47,11 +49,29 @@ const Cobranca = () => {
     }
   };
 
-  const buscar = useCallback(async () => {
+  const buscar = useCallback(async (pular = false) => {
     if (!id) return;
     setCarregando(true);
     setErro(null);
     try {
+      if (!pular) {
+        const { data: linha } = await supabase
+          .from("cobrancas")
+          .select("status, gateway, descricao, valor, nome_cliente")
+          .eq("id", id)
+          .maybeSingle();
+        const st = String((linha as any)?.status ?? "").toLowerCase();
+        if (linha && (linha as any).gateway == null && st === "pendente") {
+          setDados(null);
+          setEscolha({
+            descricao: (linha as any).descricao ?? null,
+            valor: (linha as any).valor ?? null,
+            primeiro_nome: ((linha as any).nome_cliente ?? "").trim().split(/\s+/)[0] || null,
+          });
+          return;
+        }
+      }
+      setEscolha(null);
       const { data, error } = await supabase.functions.invoke("cobranca-pix", {
         body: { cobranca_id: id },
       });
@@ -111,6 +131,33 @@ const Cobranca = () => {
     return () => window.clearInterval(t);
   }, [dados?.status, dados?.expira_em]);
 
+  const pagarCartao = async () => {
+    if (!id || indoCartao) return;
+    setIndoCartao(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("cobranca-cartao", { body: { cobranca_id: id } });
+      let payload: any = data;
+      if (error) {
+        try {
+          const ctx = (error as any)?.context;
+          if (ctx && typeof ctx.json === "function") payload = await ctx.json();
+        } catch {
+          /* ignore */
+        }
+      }
+      if (payload?.url) {
+        window.location.href = payload.url;
+        return;
+      }
+      setEscolha(null);
+      setErro(payload?.error || (error as any)?.message || "Não conseguimos abrir o pagamento com cartão.");
+    } catch (e: any) {
+      setEscolha(null);
+      setErro(String(e?.message ?? "Não conseguimos abrir o pagamento com cartão."));
+    }
+    setIndoCartao(false);
+  };
+
   const copiar = async () => {
     if (!dados?.qr_code) return;
     try {
@@ -147,9 +194,32 @@ const Cobranca = () => {
                 {erro.toLowerCase().includes("nao encontrada") ? "Este link não é válido" : "Não deu certo"}
               </h1>
               <p className="text-sm text-muted-foreground">{erro}</p>
-              <Button variant="outline" onClick={buscar}>
+              <Button variant="outline" onClick={() => buscar()}>
                 Tentar de novo
               </Button>
+            </div>
+          ) : escolha ? (
+            <div className="space-y-5">
+              <div className="text-center space-y-1">
+                {escolha.primeiro_nome && (
+                  <p className="text-sm text-muted-foreground">Olá, {escolha.primeiro_nome}!</p>
+                )}
+                <h1 className="text-xl font-serif font-semibold" style={{ color: PRIMARY }}>
+                  {escolha.descricao || "Pagamento"}
+                </h1>
+                <p className="text-2xl font-semibold" style={{ color: PRIMARY }}>
+                  {brl(escolha.valor)}
+                </p>
+              </div>
+              <div className="space-y-2">
+                <Button className="w-full" disabled={indoCartao} onClick={() => buscar(true)}>
+                  Pagar com Pix
+                </Button>
+                <Button className="w-full" variant="outline" disabled={indoCartao} onClick={pagarCartao}>
+                  {indoCartao && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                  Pagar com cartão
+                </Button>
+              </div>
             </div>
           ) : dados?.status === "pago" ? (
             <div className="text-center space-y-3">
@@ -171,7 +241,7 @@ const Cobranca = () => {
               <p className="text-sm text-muted-foreground">
                 Gere um novo código para concluir o pagamento.
               </p>
-              <Button onClick={buscar}>
+              <Button onClick={() => buscar(true)}>
                 {carregando && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
                 Gerar novo código
               </Button>
