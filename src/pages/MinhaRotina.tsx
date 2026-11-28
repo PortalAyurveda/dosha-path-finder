@@ -83,6 +83,14 @@ const MEAL_SLOTS: { slot: SlotKey; label: string }[] = [
   { slot: "tonico_noite", label: "tônico da noite" },
 ];
 
+const BLOCOS_CARDAPIO: { titulo: string; fundo: string; slots: SlotKey[] }[] = [
+  { titulo: "Manhã", fundo: "#FFF7D6", slots: ["cafe_manha", "lanche_manha"] },
+  { titulo: "Almoço, a principal refeição", fundo: "#FDE9DC", slots: ["almoco", "lanche_tarde"] },
+  { titulo: "Noite", fundo: "#EEEAF6", slots: ["jantar", "tonico_noite"] },
+];
+
+const SLOTS_OPCIONAIS = new Set<SlotKey>(["lanche_manha", "lanche_tarde"]);
+
 const PRACTICE_SLOTS: { slot: SlotKey; label: string }[] = [
   { slot: "rotina_manha", label: "ritual da manhã" },
   { slot: "bonus_diario", label: "bônus do dia" },
@@ -274,7 +282,7 @@ const MinhaRotina = () => {
       const { data, error } = await supabase
         .from("rotina_nuggets")
         .select(
-          "id, slug, titulo, icone_lucide, imagem_url, video_id, video_timestamp, vata, pitta, kapha, nugget_json"
+          "id, slug, titulo, icone_lucide, imagem_url, video_id, video_timestamp, vata, pitta, kapha, nugget_json, frase_cartao"
         );
       if (error) throw error;
       return (data ?? []) as Nugget[];
@@ -947,44 +955,54 @@ const MinhaRotina = () => {
       </div>
 
       <div className="space-y-8">
-        {/* ===== Sua rotina (refeições) ===== */}
-        <section>
-          <h2 className="text-xs uppercase tracking-wider text-muted-foreground font-semibold mb-2">
-            Sua rotina
-          </h2>
-          <div
-            className="rounded-2xl p-2 sm:p-3 space-y-2"
-            style={{
-              backgroundImage:
-                "linear-gradient(to bottom, rgba(242,204,3,0.22), rgba(242,204,3,0.06) 40%, rgba(54,47,86,0.10) 72%, rgba(54,47,86,0.26))",
-            }}
-          >
-            {MEAL_SLOTS.map((s) => {
-              const row = rowBySlot.get(s.slot);
-              const nugget = row?.nugget_id ? nuggetsById.get(row.nugget_id) : undefined;
-              return (
-                <RotinaSlotCard
-                  key={s.slot}
-                  slotLabel={s.label}
-                  row={row}
-                  nugget={nugget}
-                  feito={acertoRotinaSlots.has(s.slot)}
-                  agniFracoOuIrregular={agniFracoOuIrregular}
-                  onToggleFeito={() => row && toggleFeito(row)}
-                  somenteLeitura={!ehHoje}
-                  focus={!!nugget && nugget.id === focusNuggetId}
-                  linha
-                  favorito={!!nugget && favoritosSet.has(nugget.id)}
-                  onToggleFavorito={() => nugget && toggleFavorito(nugget.id)}
-                  mostrarLista={!!nugget}
-                  naLista={!!nugget && selecionados.has(nugget.id)}
-                  onToggleLista={() => nugget && toggleSelecao(nugget.id)}
-                  erroLista={!!nugget && erroSelecao === nugget.id}
-                />
-              );
-            })}
+        {/* ===== Cardápio do dia em 3 blocos ===== */}
+        <section className="space-y-4">
+          <div className="rounded-2xl px-4 py-3" style={{ background: "#F5EFE3" }}>
+            <h2 className="font-serif text-lg font-semibold text-foreground leading-snug">
+              Ideias para o seu prato de hoje
+            </h2>
+            <p className="mt-1 text-sm text-foreground/80 leading-relaxed">
+              Isto não é uma dieta para cortar comida. São preparos para você colocar no seu dia, junto da comida de casa.
+            </p>
           </div>
-
+          {BLOCOS_CARDAPIO.map((b) => {
+            const cartoes = b.slots
+              .map((slot) => {
+                const row = rowBySlot.get(slot);
+                const nugget = row?.nugget_id ? nuggetsById.get(row.nugget_id) : undefined;
+                return { slot, row, nugget };
+              })
+              .filter((c) => !!c.row?.nugget_id && !!c.nugget);
+            if (cartoes.length === 0) return null;
+            return (
+              <div key={b.titulo} className="rounded-2xl p-2 sm:p-3" style={{ background: b.fundo }}>
+                <h3 className="px-1 pt-1 pb-2 font-serif text-base font-semibold text-foreground">{b.titulo}</h3>
+                <div className="space-y-2">
+                  {cartoes.map(({ slot, row, nugget }) => (
+                    <RotinaSlotCard
+                      key={slot}
+                      slotLabel={MEAL_SLOTS.find((m) => m.slot === slot)?.label ?? slot}
+                      opcional={SLOTS_OPCIONAIS.has(slot)}
+                      row={row}
+                      nugget={nugget}
+                      feito={acertoRotinaSlots.has(slot)}
+                      agniFracoOuIrregular={agniFracoOuIrregular}
+                      onToggleFeito={() => row && toggleFeito(row)}
+                      somenteLeitura={!ehHoje}
+                      focus={!!nugget && nugget.id === focusNuggetId}
+                      linha
+                      favorito={!!nugget && favoritosSet.has(nugget.id)}
+                      onToggleFavorito={() => nugget && toggleFavorito(nugget.id)}
+                      mostrarLista={!!nugget}
+                      naLista={!!nugget && selecionados.has(nugget.id)}
+                      onToggleLista={() => nugget && toggleSelecao(nugget.id)}
+                      erroLista={!!nugget && erroSelecao === nugget.id}
+                    />
+                  ))}
+                </div>
+              </div>
+            );
+          })}
         </section>
 
         {/* ===== Sempre Faz Bem (suplementos personalizados) ===== */}
@@ -1321,6 +1339,7 @@ interface SlotCardProps {
   onToggleLista?: () => void;
   erroLista?: boolean;
   destaque?: string;
+  opcional?: boolean;
 }
 
 const RotinaSlotCard = ({
@@ -1343,6 +1362,7 @@ const RotinaSlotCard = ({
   onToggleLista,
   erroLista = false,
   destaque,
+  opcional = false,
 }: SlotCardProps) => {
 
 
@@ -1458,7 +1478,8 @@ const RotinaSlotCard = ({
         <Card
           ref={cardRef}
           className={cn(
-            "overflow-hidden transition-shadow duration-500 bg-background/80 backdrop-blur-[1px] border-border/60",
+            "overflow-hidden transition-shadow duration-500 backdrop-blur-[1px]",
+            opcional ? "bg-background/50 border-dashed border-2 border-[#352F54]/30" : "bg-background/80 border-border/60",
             ringOn && "ring-2 ring-primary ring-offset-2 ring-offset-background"
           )}
         >
@@ -1480,8 +1501,13 @@ const RotinaSlotCard = ({
                     )}
                   </span>
                   <span className="min-w-0 flex-1">
-                    <span className="block text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
+                    <span className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
                       {slotLabel}
+                      {opcional && (
+                        <span className="rounded-full px-1.5 py-0.5 normal-case tracking-normal text-[10px] font-semibold text-white" style={{ background: "#352F54" }}>
+                          Opcional
+                        </span>
+                      )}
                     </span>
                     <span className="flex items-start gap-1.5">
                       <span className="font-medium text-foreground text-sm leading-snug">
@@ -1491,6 +1517,11 @@ const RotinaSlotCard = ({
                         <Flame className="h-3.5 w-3.5 text-secondary shrink-0 mt-0.5" aria-label="bom para o seu agni" />
                       )}
                     </span>
+                    {nugget?.frase_cartao?.trim() && (
+                      <span className="mt-1 inline-block rounded-md px-2 py-0.5 text-xs font-medium leading-snug" style={{ background: "#DCFCE7", color: "#14532D" }}>
+                        + {nugget.frase_cartao.trim()}
+                      </span>
+                    )}
                     {destaque ? (
                       <span className="mt-0.5 block text-xs leading-snug line-clamp-2" style={{ color: "#15803D" }}>
                         {destaque}

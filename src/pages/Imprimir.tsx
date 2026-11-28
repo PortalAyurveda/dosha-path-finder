@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { useQuery } from "@tanstack/react-query";
@@ -90,7 +90,23 @@ const Cabecalho = ({ nome, dosha }: { nome: string; dosha: string | null }) => (
 );
 
 
-const CartaoReceita = ({ r }: { r: ReceitaRow }) => {
+const BLOCOS_IMPRESSAO: { titulo: string | null; slots: string[] }[] = [
+  { titulo: null, slots: ["ritual_manha"] },
+  { titulo: "Manhã", slots: ["cafe_manha", "lanche_manha"] },
+  { titulo: "Almoço, a principal refeição", slots: ["almoco", "lanche_tarde"] },
+  { titulo: "Noite", slots: ["jantar", "tonico_noite"] },
+  { titulo: null, slots: ["bonus"] },
+];
+const SLOTS_OPCIONAIS_IMPRESSAO = new Set(["lanche_manha", "lanche_tarde"]);
+
+const FraseImpressa = ({ frase, tamanho = "8.5pt" }: { frase?: string | null; tamanho?: string }) =>
+  frase?.trim() ? (
+    <span style={{ display: "block", fontSize: tamanho, fontStyle: "italic", margin: "0.8mm 0 0", color: "#000", lineHeight: 1.25 }}>
+      {frase.trim()}
+    </span>
+  ) : null;
+
+const CartaoReceita = ({ r, frase }: { r: ReceitaRow; frase?: string | null }) => {
   const apoio: string[] = [];
   if (r.rende_porcoes) apoio.push(`Rende ${r.rende_porcoes} ${r.rende_porcoes === 1 ? "porção" : "porções"}`);
   if (r.tempo_preparo_min) apoio.push(`${r.tempo_preparo_min} min`);
@@ -111,6 +127,7 @@ const CartaoReceita = ({ r }: { r: ReceitaRow }) => {
       <h3 className="font-serif" style={{ fontSize: "10.5pt", fontWeight: 700, margin: 0, color: "#000" }}>
         {r.titulo}
       </h3>
+      <FraseImpressa frase={frase} />
       {apoio.length > 0 && (
         <p style={{ fontSize: "8.5pt", margin: "1mm 0 0", color: "#000", lineHeight: 1.25 }}>{apoio.join(" · ")}</p>
       )}
@@ -255,10 +272,34 @@ export default function Imprimir() {
       const { data, error } = await supabase.rpc("receitas_para_impressao" as any, {
         p_nugget_ids: nuggetIds,
       });
+
       if (error) throw error;
       return (data ?? []) as ReceitaRow[];
     },
   });
+
+  const idsParaFrase = useMemo(() => {
+    const set = new Set<string>(nuggetIds);
+    (rotinaQuery.data ?? []).forEach((r) => r.nugget_id && set.add(r.nugget_id));
+    return Array.from(set).sort();
+  }, [nuggetIds, rotinaQuery.data]);
+
+  const frasesQuery = useQuery({
+    queryKey: ["imprimir-frases", idsParaFrase.join(",")],
+    enabled: temAcesso && idsParaFrase.length > 0,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("rotina_nuggets")
+        .select("id, frase_cartao" as any)
+        .in("id", idsParaFrase);
+      if (error) throw error;
+      return (data ?? []) as unknown as { id: string; frase_cartao: string | null }[];
+    },
+  });
+  const frases = useMemo(
+    () => new Map((frasesQuery.data ?? []).map((f) => [f.id, f.frase_cartao] as const)),
+    [frasesQuery.data]
+  );
 
   const pIds = selecionados === null ? null : selecionados;
   const comprasQuery = useQuery({
@@ -570,7 +611,7 @@ export default function Imprimir() {
                 <Cabecalho nome={nomeCompleto} dosha={dosha} />
                 <div style={{ columnCount: 2, columnGap: "6mm" }}>
                   {receitas.map((r) => (
-                    <CartaoReceita key={r.nugget_id} r={r} />
+                    <CartaoReceita key={r.nugget_id} r={r} frase={frases.get(r.nugget_id)} />
                   ))}
                 </div>
               </section>
@@ -603,7 +644,24 @@ export default function Imprimir() {
                         </tr>
                       </thead>
                       <tbody>
-                        {SLOTS.map((s) => (
+                        {BLOCOS_IMPRESSAO.map((bloco) => {
+                          const linhas = SLOTS.filter(
+                            (s) => bloco.slots.includes(s.slot) && dias.some((d) => rotina.some((r) => r.dia === d && r.slot === s.slot))
+                          );
+                          if (linhas.length === 0) return null;
+                          return (
+                            <Fragment key={bloco.slots[0]}>
+                              {bloco.titulo && (
+                                <tr>
+                                  <td
+                                    colSpan={dias.length + 1}
+                                    style={{ border: "0.5pt solid #000", fontSize: "12pt", fontWeight: 700, padding: "1.5mm 2mm", background: "#EEE" }}
+                                  >
+                                    {bloco.titulo}
+                                  </td>
+                                </tr>
+                              )}
+                        {linhas.map((s) => (
                           <tr key={s.slot}>
                             <td
                               style={{
@@ -617,6 +675,11 @@ export default function Imprimir() {
                               }}
                             >
                               {s.nome}
+                              {SLOTS_OPCIONAIS_IMPRESSAO.has(s.slot) && (
+                                <span style={{ display: "block", marginTop: "1mm", fontSize: "8pt", fontWeight: 700, border: "0.5pt solid #000", borderRadius: "2mm", padding: "0 1.5mm", width: "fit-content" }}>
+                                  Opcional
+                                </span>
+                              )}
                             </td>
                             {dias.map((d) => {
                               const item = rotina.find((r) => r.dia === d && r.slot === s.slot);
@@ -637,7 +700,10 @@ export default function Imprimir() {
                                           marginRight: "2mm",
                                         }}
                                       />
-                                      <span>{item.titulo}</span>
+                                      <span>
+                                        {item.titulo}
+                                        <FraseImpressa frase={frases.get(item.nugget_id)} tamanho="9pt" />
+                                      </span>
                                     </span>
                                   ) : null}
                                 </td>
@@ -645,6 +711,9 @@ export default function Imprimir() {
                             })}
                           </tr>
                         ))}
+                            </Fragment>
+                          );
+                        })}
                       </tbody>
                     </table>
                   </section>

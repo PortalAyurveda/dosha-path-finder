@@ -39,6 +39,7 @@ export interface Nugget {
   pitta: number | null;
   kapha: number | null;
   nugget_json: NuggetJson | null;
+  frase_cartao?: string | null;
 }
 
 export const formatScore = (n: number | null | undefined) => {
@@ -85,6 +86,11 @@ const NuggetDetalhe = ({
 
   return (
     <div className="space-y-4 text-sm text-foreground">
+      {nugget.frase_cartao?.trim() && (
+        <p className="rounded-md px-3 py-2 text-sm font-medium" style={{ background: "#DCFCE7", color: "#14532D" }}>
+          + {nugget.frase_cartao.trim()}
+        </p>
+      )}
       {nugget.imagem_url && (
         <img
           src={nugget.imagem_url}
