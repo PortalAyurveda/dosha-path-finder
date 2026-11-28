@@ -13786,12 +13786,14 @@ export type Database = {
           categoria: string | null
           chunk_index: number | null
           created_at: string | null
+          frase_cartao: string | null
           icone_lucide: string | null
           id: string
           imagem_prompt: string | null
           imagem_url: string | null
           kapha: number | null
           nugget_json: Json | null
+          papel: string | null
           periodo: string | null
           pitta: number | null
           revisado: boolean | null
@@ -13810,12 +13812,14 @@ export type Database = {
           categoria?: string | null
           chunk_index?: number | null
           created_at?: string | null
+          frase_cartao?: string | null
           icone_lucide?: string | null
           id?: string
           imagem_prompt?: string | null
           imagem_url?: string | null
           kapha?: number | null
           nugget_json?: Json | null
+          papel?: string | null
           periodo?: string | null
           pitta?: number | null
           revisado?: boolean | null
@@ -13834,12 +13838,14 @@ export type Database = {
           categoria?: string | null
           chunk_index?: number | null
           created_at?: string | null
+          frase_cartao?: string | null
           icone_lucide?: string | null
           id?: string
           imagem_prompt?: string | null
           imagem_url?: string | null
           kapha?: number | null
           nugget_json?: Json | null
+          papel?: string | null
           periodo?: string | null
           pitta?: number | null
           revisado?: boolean | null
